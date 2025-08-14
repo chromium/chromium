@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -142,6 +144,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
 
     set_start_session(false);
     ChromeAshTestBase::SetUp();
+    browser_controller_.emplace();
 
     SimulateUserLogin(kPrimaryUserId);
     user_manager_->UserLoggedIn(
@@ -245,6 +248,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     user_manager_->OnUserProfileWillBeDestroyed(kPrimaryUserId);
     profile_ = nullptr;
 
+    browser_controller_.reset();
     ChromeAshTestBase::TearDown();
     profile_manager_.reset();
     user_manager_.Reset();
@@ -289,6 +293,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   base::test::ScopedCommandLine scoped_command_line_;
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_helper_;
   ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};

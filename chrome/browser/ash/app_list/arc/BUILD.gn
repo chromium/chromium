@@ -144,6 +144,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",

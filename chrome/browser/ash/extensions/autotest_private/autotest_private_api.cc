@@ -150,7 +150,6 @@
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -783,14 +782,17 @@ aura::Window* FindAppWindowById(const int64_t id) {
 
 // Returns the first available Browser that is not a web app.
 Browser* GetFirstRegularBrowser() {
-  const BrowserList* list = BrowserList::GetInstance();
-  const web_app::AppBrowserController* (Browser::*app_controller)() const =
-      &Browser::app_controller;
-  auto iter = std::ranges::find(*list, nullptr, app_controller);
-  if (iter == list->end()) {
-    return nullptr;
-  }
-  return *iter;
+  Browser* result = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& delegate) {
+        if (!delegate.GetBrowser().app_controller()) {
+          result = &delegate.GetBrowser();
+          return ash::BrowserController::kBreakIteration;
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
+  return result;
 }
 
 ash::AppListViewState ToAppListViewState(

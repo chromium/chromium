@@ -33,6 +33,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   bool IsWebApp() const override;
   bool IsClosing() const override;
   bool IsActive() const override;
+  bool IsMinimized() const override;
   void Show() override;
   void ShowInactive() override;
   void Activate() override;

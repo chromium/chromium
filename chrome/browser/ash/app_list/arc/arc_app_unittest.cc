@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -62,6 +63,7 @@
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -497,6 +499,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     }
 
     model_ = std::make_unique<ash::ShelfModel>();
+    browser_controller_.emplace();
 
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
@@ -520,6 +523,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     arc_test_.TearDown();
     ResetBuilder();
     extensions::ExtensionServiceTestBase::TearDown();
+    browser_controller_.reset();
   }
 
   ArcState GetArcState() const { return GetParam(); }
@@ -917,6 +921,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
       scoped_callback_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;
   std::unique_ptr<ash::ShelfModel> model_;
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
 };
 
 class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {

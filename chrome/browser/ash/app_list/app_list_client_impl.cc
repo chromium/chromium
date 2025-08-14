@@ -44,6 +44,9 @@
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_controller_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -51,9 +54,7 @@
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -868,16 +869,16 @@ void AppListClientImpl::RecordOpenedResultFromSearchBox(
   // Check whether there is any Chrome non-app browser window open and not
   // minimized.
   bool non_app_browser_open_and_not_minimzed = false;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->type() != Browser::TYPE_NORMAL ||
-        browser->window()->IsMinimized()) {
-      // Skip if `browser` is not a normal browser or `browser` is minimized.
-      continue;
-    }
-
-    non_app_browser_open_and_not_minimzed = true;
-    break;
-  }
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (browser.GetType() != ash::BrowserType::kNormal ||
+            browser.IsMinimized()) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        non_app_browser_open_and_not_minimzed = true;
+        return ash::BrowserController::kBreakIteration;
+      });
 
   if (non_app_browser_open_and_not_minimzed) {
     UMA_HISTOGRAM_ENUMERATION(

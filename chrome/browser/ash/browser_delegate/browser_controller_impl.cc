@@ -92,6 +92,28 @@ BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleOnTheRecordBrowser() {
   return nullptr;
 }
 
+void BrowserControllerImpl::ForEachBrowser(
+    BrowserOrder order,
+    base::FunctionRef<IterationDirective(BrowserDelegate&)> callback) {
+  switch (order) {
+    case BrowserOrder::kAscendingCreationTime:
+      for (Browser* browser : *BrowserList::GetInstance()) {
+        if (callback(*GetDelegate(browser)) == kBreakIteration) {
+          break;
+        }
+      }
+      break;
+    case BrowserOrder::kAscendingActivationTime:
+      for (Browser* browser :
+           BrowserList::GetInstance()->OrderedByActivation()) {
+        if (callback(*GetDelegate(browser)) == kBreakIteration) {
+          break;
+        }
+      }
+      break;
+  }
+}
+
 BrowserDelegate* BrowserControllerImpl::GetBrowserForWindow(
     aura::Window* window) {
   BrowserView* browser_view =

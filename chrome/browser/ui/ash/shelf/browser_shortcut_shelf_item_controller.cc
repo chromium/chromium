@@ -18,6 +18,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -52,27 +54,31 @@ namespace {
 constexpr int kNoTab = std::numeric_limits<int>::max();
 
 // Gets a list of active browsers.
-BrowserList::BrowserVector GetListOfActiveBrowsers(
-    const ash::ShelfModel* model) {
-  BrowserList::BrowserVector active_browsers;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // Only include browsers for the active user.
-    if (!multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-      continue;
-    }
+std::vector<Browser*> GetListOfActiveBrowsers(const ash::ShelfModel* model) {
+  std::vector<Browser*> active_browsers;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& delegate) {
+        Browser* browser = &delegate.GetBrowser();
+        // Only include browsers for the active user.
+        if (!multi_user_util::IsProfileFromActiveUser(browser->profile())) {
+          return ash::BrowserController::kContinueIteration;
+        }
 
-    // Exclude invisible non-minimized browser windows on the active desk.
-    aura::Window* native_window = browser->window()->GetNativeWindow();
-    if (!browser->window()->IsVisible() && !browser->window()->IsMinimized() &&
-        ash::desks_util::BelongsToActiveDesk(native_window)) {
-      continue;
-    }
-    if (!IsBrowserRepresentedInBrowserList(browser, model) &&
-        !browser->is_type_normal()) {
-      continue;
-    }
-    active_browsers.push_back(browser);
-  }
+        // Exclude invisible non-minimized browser windows on the active desk.
+        aura::Window* native_window = browser->window()->GetNativeWindow();
+        if (!browser->window()->IsVisible() &&
+            !browser->window()->IsMinimized() &&
+            ash::desks_util::BelongsToActiveDesk(native_window)) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (!IsBrowserRepresentedInBrowserList(browser, model) &&
+            !browser->is_type_normal()) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        active_browsers.push_back(browser);
+        return ash::BrowserController::kContinueIteration;
+      });
   return active_browsers;
 }
 
@@ -326,13 +332,15 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
   std::vector<Browser*> items;
   // We use the list in the order of how the browsers got created - not the LRU
   // order.
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (BrowserList::const_iterator it = browser_list->begin();
-       it != browser_list->end(); ++it) {
-    if (IsBrowserRepresentedInBrowserList(*it, shelf_model_)) {
-      items.push_back(*it);
-    }
-  }
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& delegate) {
+        Browser* browser = &delegate.GetBrowser();
+        if (IsBrowserRepresentedInBrowserList(browser, shelf_model_)) {
+          items.push_back(browser);
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
   // If there are no suitable browsers we create a new one.
   if (items.empty()) {
     ash::NewWindowDelegate::GetInstance()->NewWindow(
@@ -378,19 +386,25 @@ void BrowserShortcutShelfItemController::OnBrowserAdded(Browser* browser) {
     return;
   }
 
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (BrowserList::const_iterator it = browser_list->begin();
-       it != browser_list->end(); ++it) {
-    if (*it == browser) {
-      continue;
-    }
-    if (ShouldRecordLaunchTime(*it, shelf_model_)) {
-      return;
-    }
-  }
+  bool browser_found = false;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& delegate) {
+        Browser* b = &delegate.GetBrowser();
+        if (b == browser) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (ShouldRecordLaunchTime(b, shelf_model_)) {
+          browser_found = true;
+          return ash::BrowserController::kBreakIteration;
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
 
-  extensions::ExtensionPrefs::Get(browser->profile())
-      ->SetLastLaunchTime(shelf_id().app_id, base::Time::Now());
+  if (!browser_found) {
+    extensions::ExtensionPrefs::Get(browser->profile())
+        ->SetLastLaunchTime(shelf_id().app_id, base::Time::Now());
+  }
 }
 
 void BrowserShortcutShelfItemController::OnBrowserClosing(Browser* browser) {

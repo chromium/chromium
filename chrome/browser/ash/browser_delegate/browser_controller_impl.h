@@ -32,6 +32,9 @@ class BrowserControllerImpl : public BrowserController,
   BrowserDelegate* GetLastUsedBrowser() override;
   BrowserDelegate* GetLastUsedVisibleBrowser() override;
   BrowserDelegate* GetLastUsedVisibleOnTheRecordBrowser() override;
+  void ForEachBrowser(BrowserOrder order,
+                      base::FunctionRef<IterationDirective(BrowserDelegate&)>
+                          callback) override;
   BrowserDelegate* GetBrowserForWindow(aura::Window* window) override;
   BrowserDelegate* FindWebApp(const AccountId& account_id,
                               webapps::AppId app_id,

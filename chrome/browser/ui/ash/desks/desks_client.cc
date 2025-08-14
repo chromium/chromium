@@ -36,6 +36,8 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
@@ -44,9 +46,6 @@
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/window_properties.h"
@@ -782,12 +781,17 @@ void DesksClient::RemoveLaunchPerformanceTracker(
 
 aura::Window* DesksClient::GetWindowByBrowserSessionId(
     SessionID browser_session_id) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->session_id() == browser_session_id) {
-      return browser->window()->GetNativeWindow();
-    }
-  }
-  return nullptr;
+  aura::Window* result = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (browser.GetSessionID() == browser_session_id) {
+          result = browser.GetNativeWindow();
+          return ash::BrowserController::kBreakIteration;
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
+  return result;
 }
 
 const ash::Desk* DesksClient::CreateEmptyDeskAndActivate(

@@ -43,7 +43,6 @@ static_library("growth") {
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/signin",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/web_applications",
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/growth",

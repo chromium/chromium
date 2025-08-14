@@ -77,11 +77,14 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "chrome_shelf_controller_unittest\.cc": [
+  "chrome_shelf_controller_unittest\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
     "+chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h",
     "+chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h",
     "+chrome/browser/ui/web_applications/test",
     "+chrome/browser/web_applications/isolated_web_apps",
+  ],
+  "shelf_context_menu_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
   ],
 }

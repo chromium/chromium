@@ -87,6 +87,9 @@ class BrowserDelegate {
   // Returns whether the browser window is active.
   virtual bool IsActive() const = 0;
 
+  // Returns whether the browser window is minimized.
+  virtual bool IsMinimized() const = 0;
+
   // Shows the browser window, or activates it if it's already visible.
   virtual void Show() = 0;
 

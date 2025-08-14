@@ -31,6 +31,8 @@
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/ash/extensions/media_player_api.h"
 #include "chrome/browser/ash/extensions/media_player_event_router.h"
@@ -140,22 +142,21 @@ void GetMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
 void GetBrowserMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
                                  const content::BrowserContext* context,
                                  MediaCaptureState* media_state_out) {
-  const BrowserList* desktop_list = BrowserList::GetInstance();
-
-  for (BrowserList::BrowserVector::const_iterator iter = desktop_list->begin();
-       iter != desktop_list->end(); ++iter) {
-    TabStripModel* tab_strip_model = (*iter)->tab_strip_model();
-    for (int i = 0; i < tab_strip_model->count(); ++i) {
-      content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
-      if (web_contents->GetBrowserContext() != context) {
-        continue;
-      }
-      GetMediaCaptureState(indicator, web_contents, media_state_out);
-      if (*media_state_out == MediaCaptureState::kAudioVideo) {
-        return;
-      }
-    }
-  }
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        for (size_t i = 0; i < browser.GetWebContentsCount(); ++i) {
+          content::WebContents* web_contents = browser.GetWebContentsAt(i);
+          if (web_contents->GetBrowserContext() != context) {
+            continue;
+          }
+          GetMediaCaptureState(indicator, web_contents, media_state_out);
+          if (*media_state_out == MediaCaptureState::kAudioVideo) {
+            return ash::BrowserController::kBreakIteration;
+          }
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
 }
 
 void GetAppMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
@@ -393,7 +394,6 @@ void MediaClientImpl::OnRequestUpdate(int render_process_id,
 
 void MediaClientImpl::OnBrowserSetLastActive(Browser* browser) {
   active_context_ = browser ? browser->profile() : nullptr;
-
   UpdateForceMediaClientKeyHandling();
 }
 

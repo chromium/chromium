@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
 
+#include "base/notreached.h"
+
 namespace ash {
 
 BrowserWindowInterface::Type ToInternalBrowserType(ash::BrowserType type) {
@@ -14,6 +16,8 @@ BrowserWindowInterface::Type ToInternalBrowserType(ash::BrowserType type) {
       return BrowserWindowInterface::TYPE_APP_POPUP;
     case BrowserType::kDevTools:
       return BrowserWindowInterface::TYPE_DEVTOOLS;
+    case BrowserType::kNormal:
+      return BrowserWindowInterface::TYPE_NORMAL;
     case BrowserType::kOther:
       NOTREACHED();
   }
@@ -28,6 +32,8 @@ BrowserType FromInternalBrowserType(
       return BrowserType::kAppPopup;
     case BrowserWindowInterface::TYPE_DEVTOOLS:
       return BrowserType::kDevTools;
+    case BrowserWindowInterface::TYPE_NORMAL:
+      return BrowserType::kNormal;
     default:
       return BrowserType::kOther;
   }

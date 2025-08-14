@@ -30,7 +30,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
@@ -229,37 +228,43 @@ content::WebContents* FindActiveWebContent(
     const Profile* profile,
     Browser::Type browser_type,
     const webapps::AppId& app_id = std::string()) {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
-      continue;
-    }
-    if (browser->type() != browser_type) {
-      continue;
-    }
-    if (browser->profile() != profile) {
-      continue;
-    }
-    // For web app type, it must match the app_id.
-    if (browser_type == Browser::TYPE_APP &&
-        !web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
-      continue;
-    }
+  content::WebContents* result = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+      [&](ash::BrowserDelegate& delegate) {
+        Browser* browser = &delegate.GetBrowser();
+        if (browser->IsAttemptingToCloseBrowser() ||
+            browser->IsBrowserClosing()) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (browser->type() != browser_type) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (browser->profile() != profile) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        // For web app type, it must match the app_id.
+        if (browser_type == Browser::TYPE_APP &&
+            !web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
+          return ash::BrowserController::kContinueIteration;
+        }
 
-    const auto* tab_strip_model = browser->tab_strip_model();
-    if (!tab_strip_model) {
-      CAMPAIGNS_LOG(ERROR) << "No tab_strip_model.";
-      continue;
-    }
+        const auto* tab_strip_model = browser->tab_strip_model();
+        if (!tab_strip_model) {
+          CAMPAIGNS_LOG(ERROR) << "No tab_strip_model.";
+          return ash::BrowserController::kContinueIteration;
+        }
 
-    auto* active_web_contents = tab_strip_model->GetActiveWebContents();
-    if (!active_web_contents) {
-      CAMPAIGNS_LOG(ERROR) << "No active web contents.";
-      continue;
-    }
+        auto* active_web_contents = tab_strip_model->GetActiveWebContents();
+        if (!active_web_contents) {
+          CAMPAIGNS_LOG(ERROR) << "No active web contents.";
+          return ash::BrowserController::kContinueIteration;
+        }
 
-    return active_web_contents;
-  }
-  return nullptr;
+        result = active_web_contents;
+        return ash::BrowserController::kBreakIteration;
+      });
+  return result;
 }
 
 const GURL FindActiveWebAppUrl(Profile* profile, const webapps::AppId& app_id) {

@@ -14,13 +14,13 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -46,14 +46,17 @@ Browser* GetBrowserWindowWithID(SessionID window_id) {
   if (!window_id.is_valid()) {
     return nullptr;
   }
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->session_id() == window_id) {
-      return browser;
-    }
-  }
-
-  // No window found with specified ID.
-  return nullptr;
+  Browser* result = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (browser.GetSessionID() == window_id) {
+          result = &browser.GetBrowser();
+          return ash::BrowserController::kBreakIteration;
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
+  return result;
 }
 
 void MakeWindowResizable(const BrowserWindow* window) {
@@ -438,23 +441,26 @@ void OnTaskSystemWebAppManagerImpl::SwitchToTab(SessionID tab_id) {
 }
 
 void OnTaskSystemWebAppManagerImpl::SetAllChromeTabsMuted(bool muted) {
-  Browser* const boca_browser =
-      GetBrowserWindowWithID(GetActiveSystemWebAppWindowID());
+  BrowserDelegate* const boca_browser =
+      ash::BrowserController::GetInstance()->GetDelegate(
+          GetBrowserWindowWithID(GetActiveSystemWebAppWindowID()));
   if (!boca_browser) {
     return;
   }
-  for (Browser* const browser : *BrowserList::GetInstance()) {
-    if (!browser || browser == boca_browser) {
-      continue;
-    }
-    for (int idx = 0; idx < browser->tab_strip_model()->count(); ++idx) {
-      content::WebContents* const tab =
-          browser->tab_strip_model()->GetWebContentsAt(idx);
-      if (tab) {
-        tab->SetAudioMuted(muted);
-      }
-    }
-  }
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (&browser == boca_browser) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        for (size_t idx = 0; idx < browser.GetWebContentsCount(); ++idx) {
+          content::WebContents* const tab = browser.GetWebContentsAt(idx);
+          if (tab) {
+            tab->SetAudioMuted(muted);
+          }
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
 }
 
 void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForTesting(

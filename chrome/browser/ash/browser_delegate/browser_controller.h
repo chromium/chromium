@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/functional/function_ref.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "components/webapps/common/web_app_id.h"
@@ -52,6 +53,20 @@ class BrowserController {
     int32_t restore_id;
   };
 
+  // See ForEachBrowser below.
+  enum class BrowserOrder {
+    kAscendingCreationTime,
+    kAscendingActivationTime,
+  };
+  using enum BrowserOrder;
+
+  // See ForEachBrowser below.
+  enum class IterationDirective {
+    kContinueIteration,
+    kBreakIteration,
+  };
+  using enum IterationDirective;
+
   static BrowserController* GetInstance();
 
   // Returns the corresponding delegate, possibly creating it first.
@@ -72,6 +87,13 @@ class BrowserController {
   // Returns (the delegate for) the most recently used browser that is
   // currently visible and on-the-record. Returns nullptr if there's none.
   virtual BrowserDelegate* GetLastUsedVisibleOnTheRecordBrowser() = 0;
+
+  // Iterates over (the delegates for) the currently existing browsers in the
+  // given order, invoking the callback for each. The callback can terminate the
+  // iteration early by returning kBreakIteration.
+  virtual void ForEachBrowser(
+      BrowserOrder order,
+      base::FunctionRef<IterationDirective(BrowserDelegate&)> callback) = 0;
 
   // Returns (the delegate for) the browser associated with the given native
   // window, if any. This can be nullptr when the browser is shutting down.

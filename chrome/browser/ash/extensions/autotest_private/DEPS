@@ -43,7 +43,6 @@ include_rules = [
   "+chrome/browser/ui/aura/accessibility",
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_tabstrip.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/toolbar",
@@ -59,7 +58,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "autotest_private_api\.cc": [
+  "autotest_private_api\\.cc": [
     "+ui/message_center",
   ],
 }

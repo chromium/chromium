@@ -111,6 +111,10 @@ bool BrowserDelegateImpl::IsActive() const {
   return browser_->window()->IsActive();
 }
 
+bool BrowserDelegateImpl::IsMinimized() const {
+  return browser_->window()->IsMinimized();
+}
+
 void BrowserDelegateImpl::Show() {
   browser_->window()->Show();
 }

@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -69,6 +70,7 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
                     .AddRegularUser(kAccountId));
 
     ChromeAshTestBase::SetUp();
+    browser_controller_.emplace();
 
     // Note: this is not following the production behavior because of test
     // utility. SessionManager is instantiated and as a part of
@@ -126,6 +128,7 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
     profile_ = nullptr;
     delegate_.reset();
     profile_manager_.reset();
+    browser_controller_.reset();
     ChromeAshTestBase::TearDown();
     user_manager_.Reset();
   }
@@ -165,6 +168,7 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
           TestingBrowserProcess::GetGlobal()->GetTestingLocalState(),
           /*cros_settings=*/nullptr)};
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
   raw_ptr<Profile> profile_;

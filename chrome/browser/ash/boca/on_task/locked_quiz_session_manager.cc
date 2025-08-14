@@ -7,9 +7,10 @@
 #include <memory>
 
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
@@ -25,14 +26,17 @@ Browser* GetBrowserWindowWithID(SessionID window_id) {
   if (!window_id.is_valid()) {
     return nullptr;
   }
-  for (Browser* const browser : *BrowserList::GetInstance()) {
-    if (browser->session_id() == window_id) {
-      return browser;
-    }
-  }
-
-  // No window found with specified ID.
-  return nullptr;
+  Browser* result = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (browser.GetSessionID() == window_id) {
+          result = &browser.GetBrowser();
+          return ash::BrowserController::kBreakIteration;
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
+  return result;
 }
 }  // namespace
 
