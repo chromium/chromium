@@ -13,6 +13,7 @@ include_rules = [
   "+third_party/blink/public",
   "+third_party/ink",
   "+third_party/skia/include/core",
+  "+third_party/skia/include/ports",
   "+ui/base",
   "+ui/events",
   "+ui/gfx",
