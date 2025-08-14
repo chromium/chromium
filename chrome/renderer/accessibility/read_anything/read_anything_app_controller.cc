@@ -1610,7 +1610,10 @@ std::vector<std::string> ReadAnythingAppController::GetAllFonts() const {
 void ReadAnythingAppController::RequestImageData(ui::AXNodeID node_id) const {
   if (features::IsReadAnythingImagesViaAlgorithmEnabled()) {
     DUMP_WILL_BE_CHECK(model_.GetAXNode(node_id));
-    auto target_tree_id = model_.active_tree_id();
+    // Use the root tree id instead of the active tree because the image
+    // downloader expects the main frame id, and the active tree id may be a
+    // child tree if no distillable content was in the root tree.
+    auto target_tree_id = model_.root_tree_id();
     CHECK_NE(target_tree_id, ui::AXTreeIDUnknown());
     page_handler_->OnImageDataRequested(target_tree_id, node_id);
   }
@@ -1622,7 +1625,10 @@ void ReadAnythingAppController::OnImageDataDownloaded(
     const SkBitmap& image) {
   // If the tree has changed since the request, do nothing with the downloaded
   // image.
-  if (tree_id != model_.active_tree_id()) {
+  // Check the root tree id instead of the active tree because the image
+  // downloader expects the main frame id, and the active tree id may be a
+  // child tree if no distillable content was in the root tree.
+  if (tree_id != model_.root_tree_id()) {
     return;
   }
   // Temporarily store the image so that javascript can fetch it.

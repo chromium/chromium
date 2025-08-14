@@ -250,6 +250,7 @@ class ReadAnythingAppModel {
   const ui::AXTreeID& active_tree_id() const { return active_tree_id_; }
   void SetActiveTreeId(ui::AXTreeID active_tree_id);
   void SetRootTreeId(ui::AXTreeID root_tree_id);
+  const ui::AXTreeID& root_tree_id() const { return root_tree_id_; }
 
   ukm::SourceId GetUkmSourceId() const;
   void SetUkmSourceIdForTree(const ui::AXTreeID& tree,
