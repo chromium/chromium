@@ -25,7 +25,7 @@
 
 #include "base/synchronization/lock.h"
 
-namespace WTF {
+namespace blink {
 
 static base::Lock& HashTableStatsLock() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
@@ -45,8 +45,8 @@ void HashTableStats::copy(const HashTableStats* other) {
 
   maxCollisions = other->maxCollisions;
   numCollisions = other->numCollisions;
-  memcpy(collisionGraph.data(), other->collisionGraph.data(),
-         sizeof(collisionGraph));
+  UNSAFE_TODO(memcpy(collisionGraph.data(), other->collisionGraph.data(),
+                     sizeof(collisionGraph)));
 }
 
 void HashTableStats::recordCollisionAtCount(int count) {
@@ -89,7 +89,7 @@ void HashTableStats::DumpStatsWithoutLock() {
   }
 
   DLOG(INFO) << std::fixed << std::setprecision(2)
-             << "WTF::HashTable statistics:\n"
+             << "blink::HashTable statistics:\n"
              << "    " << numAccesses << " accesses\n"
              << "    " << numCollisions << " total collisions, average "
              << (1.0 * (numAccesses + numCollisions) / numAccesses)
@@ -99,6 +99,6 @@ void HashTableStats::DumpStatsWithoutLock() {
              << "    " << numReinserts << " reinserts";
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif
