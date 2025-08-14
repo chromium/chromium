@@ -3149,9 +3149,8 @@ TEST_F(HostResolverManagerTest, Mdns) {
       HostPortPair("myhello.local", 80), NetworkAnonymizationKey(),
       NetLogWithSource(), parameters, resolve_context_.get()));
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseA, sizeof(kMdnsResponseA));
-  socket_factory_ptr->SimulateReceive(kMdnsResponseAAAA,
-                                      sizeof(kMdnsResponseAAAA));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseA);
+  socket_factory_ptr->SimulateReceive(kMdnsResponseAAAA);
 
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_THAT(
@@ -3182,8 +3181,7 @@ TEST_F(HostResolverManagerTest, Mdns_AaaaOnly) {
       HostPortPair("myhello.local", 80), NetworkAnonymizationKey(),
       NetLogWithSource(), parameters, resolve_context_.get()));
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseAAAA,
-                                      sizeof(kMdnsResponseAAAA));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseAAAA);
 
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_THAT(response.request()->GetAddressResults(),
@@ -3210,8 +3208,7 @@ TEST_F(HostResolverManagerTest, Mdns_Txt) {
       HostPortPair("myhello.local", 80), NetworkAnonymizationKey(),
       NetLogWithSource(), parameters, resolve_context_.get()));
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseTxt,
-                                      sizeof(kMdnsResponseTxt));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseTxt);
 
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_THAT(response.request()->GetTextResults(),
@@ -3233,8 +3230,7 @@ TEST_F(HostResolverManagerTest, Mdns_Ptr) {
       HostPortPair("myhello.local", 83), NetworkAnonymizationKey(),
       NetLogWithSource(), parameters, resolve_context_.get()));
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponsePtr,
-                                      sizeof(kMdnsResponsePtr));
+  socket_factory_ptr->SimulateReceive(kMdnsResponsePtr);
 
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_THAT(response.request()->GetHostnameResults(),
@@ -3256,8 +3252,7 @@ TEST_F(HostResolverManagerTest, Mdns_Srv) {
       HostPortPair("myhello.local", 83), NetworkAnonymizationKey(),
       NetLogWithSource(), parameters, resolve_context_.get()));
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseSrv,
-                                      sizeof(kMdnsResponseSrv));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseSrv);
 
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_THAT(response.request()->GetHostnameResults(),
@@ -3280,8 +3275,7 @@ TEST_F(HostResolverManagerTest, Mdns_Srv_Unrestricted) {
       NetworkAnonymizationKey(), NetLogWithSource(), parameters,
       resolve_context_.get()));
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseSrvUnrestricted,
-                                      sizeof(kMdnsResponseSrvUnrestricted));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseSrvUnrestricted);
 
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_THAT(response.request()->GetHostnameResults(),
@@ -3303,9 +3297,7 @@ TEST_F(HostResolverManagerTest, Mdns_Srv_Result_Unrestricted) {
       HostPortPair("myhello.local", 83), NetworkAnonymizationKey(),
       NetLogWithSource(), parameters, resolve_context_.get()));
 
-  socket_factory_ptr->SimulateReceive(
-      kMdnsResponseSrvUnrestrictedResult,
-      sizeof(kMdnsResponseSrvUnrestrictedResult));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseSrvUnrestrictedResult);
 
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_THAT(response.request()->GetHostnameResults(),
@@ -3330,8 +3322,7 @@ TEST_F(HostResolverManagerTest, Mdns_Nsec) {
       HostPortPair("myhello.local", 80), NetworkAnonymizationKey(),
       NetLogWithSource(), parameters, resolve_context_.get()));
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseNsec,
-                                      sizeof(kMdnsResponseNsec));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseNsec);
 
   EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
   response.ExpectNoResults();
@@ -3399,8 +3390,7 @@ TEST_F(HostResolverManagerTest, Mdns_WrongType) {
       NetLogWithSource(), parameters, resolve_context_.get()));
 
   // Not the requested type. Should be ignored.
-  socket_factory_ptr->SimulateReceive(kMdnsResponseTxt,
-                                      sizeof(kMdnsResponseTxt));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseTxt);
 
   ASSERT_TRUE(test_task_runner->HasPendingTask());
   test_task_runner->FastForwardBy(MDnsTransaction::kTransactionTimeout +
@@ -3441,7 +3431,7 @@ TEST_F(HostResolverManagerTest, Mdns_PartialResults) {
 
   ASSERT_TRUE(test_task_runner->HasPendingTask());
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseA, sizeof(kMdnsResponseA));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseA);
   test_task_runner->FastForwardBy(MDnsTransaction::kTransactionTimeout +
                                   kSleepFudgeFactor);
 
@@ -3471,9 +3461,8 @@ TEST_F(HostResolverManagerTest, Mdns_Cancel) {
 
   response.CancelRequest();
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseA, sizeof(kMdnsResponseA));
-  socket_factory_ptr->SimulateReceive(kMdnsResponseAAAA,
-                                      sizeof(kMdnsResponseAAAA));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseA);
+  socket_factory_ptr->SimulateReceive(kMdnsResponseAAAA);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(response.complete());
@@ -3610,10 +3599,9 @@ TEST_F(HostResolverManagerTest, MdnsListener) {
   ASSERT_THAT(listener->Start(&delegate), IsOk());
   ASSERT_THAT(delegate.address_results(), testing::IsEmpty());
 
-  socket_factory->SimulateReceive(kMdnsResponseA, sizeof(kMdnsResponseA));
-  socket_factory->SimulateReceive(kMdnsResponseA2, sizeof(kMdnsResponseA2));
-  socket_factory->SimulateReceive(kMdnsResponseA2Goodbye,
-                                  sizeof(kMdnsResponseA2Goodbye));
+  socket_factory->SimulateReceive(kMdnsResponseA);
+  socket_factory->SimulateReceive(kMdnsResponseA2);
+  socket_factory->SimulateReceive(kMdnsResponseA2Goodbye);
 
   // Per RFC6762 section 10.1, removals take effect 1 second after receiving the
   // goodbye message.
@@ -3676,7 +3664,7 @@ TEST_F(HostResolverManagerTest, MdnsListener_Expiration) {
   ASSERT_THAT(listener->Start(&delegate), IsOk());
   ASSERT_THAT(delegate.address_results(), testing::IsEmpty());
 
-  socket_factory->SimulateReceive(kMdnsResponseA, sizeof(kMdnsResponseA));
+  socket_factory->SimulateReceive(kMdnsResponseA);
 
   EXPECT_THAT(
       delegate.address_results(),
@@ -3714,8 +3702,7 @@ TEST_F(HostResolverManagerTest, MdnsListener_Txt) {
   ASSERT_THAT(listener->Start(&delegate), IsOk());
   ASSERT_THAT(delegate.text_results(), testing::IsEmpty());
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseTxt,
-                                      sizeof(kMdnsResponseTxt));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseTxt);
 
   EXPECT_THAT(
       delegate.text_results(),
@@ -3743,8 +3730,7 @@ TEST_F(HostResolverManagerTest, MdnsListener_Ptr) {
   ASSERT_THAT(listener->Start(&delegate), IsOk());
   ASSERT_THAT(delegate.text_results(), testing::IsEmpty());
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponsePtr,
-                                      sizeof(kMdnsResponsePtr));
+  socket_factory_ptr->SimulateReceive(kMdnsResponsePtr);
 
   EXPECT_THAT(
       delegate.hostname_results(),
@@ -3770,8 +3756,7 @@ TEST_F(HostResolverManagerTest, MdnsListener_Srv) {
   ASSERT_THAT(listener->Start(&delegate), IsOk());
   ASSERT_THAT(delegate.text_results(), testing::IsEmpty());
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseSrv,
-                                      sizeof(kMdnsResponseSrv));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseSrv);
 
   EXPECT_THAT(
       delegate.hostname_results(),
@@ -3797,8 +3782,7 @@ TEST_F(HostResolverManagerTest, MdnsListener_NonListeningTypes) {
 
   ASSERT_THAT(listener->Start(&delegate), IsOk());
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseAAAA,
-                                      sizeof(kMdnsResponseAAAA));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseAAAA);
 
   EXPECT_THAT(delegate.address_results(), testing::IsEmpty());
   EXPECT_THAT(delegate.text_results(), testing::IsEmpty());
@@ -3818,8 +3802,7 @@ TEST_F(HostResolverManagerTest, MdnsListener_RootDomain) {
 
   ASSERT_THAT(listener->Start(&delegate), IsOk());
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponsePtrRoot,
-                                      sizeof(kMdnsResponsePtrRoot));
+  socket_factory_ptr->SimulateReceive(kMdnsResponsePtrRoot);
 
   EXPECT_THAT(delegate.unhandled_results(),
               testing::ElementsAre(std::pair(MdnsListenerUpdateType::kAdded,
@@ -5323,8 +5306,7 @@ TEST_F(HostResolverManagerDnsTest, BypassDnsToMdnsWithNonAddress) {
       HostPortPair("myhello.local", 80), NetworkAnonymizationKey(),
       NetLogWithSource(), dns_parameters, resolve_context_.get()));
 
-  socket_factory_ptr->SimulateReceive(kMdnsResponseTxt,
-                                      sizeof(kMdnsResponseTxt));
+  socket_factory_ptr->SimulateReceive(kMdnsResponseTxt);
   proc_->SignalMultiple(1u);
 
   EXPECT_THAT(response.result_error(), IsOk());
