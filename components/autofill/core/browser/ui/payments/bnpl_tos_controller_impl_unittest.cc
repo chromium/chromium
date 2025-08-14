@@ -159,9 +159,8 @@ TEST_F(BnplTosControllerImplTest, GetTitle) {
 }
 
 TEST_F(BnplTosControllerImplTest, GetReviewText) {
-  EXPECT_EQ(
-      controller_->GetReviewText(),
-      GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT_V2, IssuerName()));
+  EXPECT_EQ(controller_->GetReviewText(),
+            GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT, IssuerName()));
 }
 
 TEST_F(BnplTosControllerImplTest, GetApproveText) {

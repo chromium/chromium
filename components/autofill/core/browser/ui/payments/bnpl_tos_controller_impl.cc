@@ -74,7 +74,7 @@ u16string BnplTosControllerImpl::GetTitle() const {
 }
 
 u16string BnplTosControllerImpl::GetReviewText() const {
-  return GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT_V2,
+  return GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT,
                          model_.issuer.GetDisplayName());
 }
 
