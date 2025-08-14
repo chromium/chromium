@@ -64,7 +64,8 @@ class ActorLoginDelegateImpl
 
   // Private helper methods for handling task completion. They should be
   // invoked asynchronously.
-  void OnGetCredentialsCompleted();
+  void OnGetCredentialsCompleted(CredentialsOrErrorReply callback,
+                                 CredentialsOrError result);
   void OnAttemptLoginCompleted(
       base::expected<LoginStatusResult, ActorLoginError> result);
 

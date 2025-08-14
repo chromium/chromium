@@ -277,4 +277,24 @@ TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion_FeatureOn) {
   ASSERT_TRUE(future4.Get().has_value());
 }
 
+TEST_F(ActorLoginDelegateImplTest, GetCredentialsAndAttemptLogin) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kActorLogin);
+  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
+
+  SetUpActorCredentialFillerDeps();
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  auto get_credentials_callback =
+      base::BindLambdaForTesting([&](CredentialsOrError result) {
+        ASSERT_TRUE(result.has_value());
+        delegate_->AttemptLogin(credential, future.GetCallback());
+      });
+
+  delegate_->GetCredentials(get_credentials_callback);
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
+}
+
 }  // namespace actor_login
