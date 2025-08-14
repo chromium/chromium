@@ -1047,11 +1047,6 @@ void AuthenticatorRequestDialogController::OnCableConnectingTimerComplete() {
   }
 }
 
-void AuthenticatorRequestDialogController::StartPhonePairing() {
-  DCHECK(model_->cable_qr_string);
-  SetCurrentStep(Step::kCableV2QRCode);
-}
-
 void AuthenticatorRequestDialogController::EnsureBleAdapterIsPoweredAndContinue(
     base::OnceClosure action) {
   after_ble_adapter_powered_ = std::move(action);

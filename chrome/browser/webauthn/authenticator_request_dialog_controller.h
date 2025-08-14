@@ -138,10 +138,6 @@ class AuthenticatorRequestDialogController
   // Called when `cable_connecting_sheet_timer_` completes.
   void OnCableConnectingTimerComplete();
 
-  // StartPhonePairing triggers the display of a QR code for pairing a new
-  // phone.
-  void StartPhonePairing();
-
   // Ensures that the Bluetooth adapter is powered before executing |action|.
   //  -- If the adapter is powered, run |action| directly.
   //  -- If Chrome does not have Bluetooth permissions, show an error (macOS).
