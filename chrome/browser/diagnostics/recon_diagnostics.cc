@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
@@ -44,9 +45,6 @@ namespace diagnostics {
 
 namespace {
 
-const int64_t kOneKilobyte = 1024;
-const int64_t kOneMegabyte = 1024 * kOneKilobyte;
-
 class InstallTypeTest;
 InstallTypeTest* g_install_type = nullptr;
 
@@ -61,15 +59,17 @@ class DiskSpaceTest : public DiagnosticsTest {
 
   bool ExecuteImpl(DiagnosticsModel::Observer* observer) override {
     base::FilePath data_dir;
-    if (!base::PathService::Get(chrome::DIR_USER_DATA, &data_dir))
+    if (!base::PathService::Get(chrome::DIR_USER_DATA, &data_dir)) {
       return false;
-    int64_t disk_space = base::SysInfo::AmountOfFreeDiskSpace(data_dir);
-    if (disk_space < 0) {
+    }
+    base::ByteCount disk_space =
+        base::ByteCount(base::SysInfo::AmountOfFreeDiskSpace(data_dir));
+    if (disk_space.is_negative()) {
       RecordFailure(DIAG_RECON_UNABLE_TO_QUERY, "Unable to query free space");
       return true;
     }
-    std::string printable_size = base::NumberToString(disk_space);
-    if (disk_space < 80 * kOneMegabyte) {
+    std::string printable_size = base::NumberToString(disk_space.InBytes());
+    if (disk_space < base::MiB(80)) {
       RecordFailure(DIAG_RECON_LOW_DISK_SPACE,
                     "Low disk space: " + printable_size);
       return true;
@@ -82,8 +82,7 @@ class DiskSpaceTest : public DiagnosticsTest {
 // Check if it is system install or per-user install.
 class InstallTypeTest : public DiagnosticsTest {
  public:
-  InstallTypeTest()
-      : DiagnosticsTest(DIAGNOSTICS_INSTALL_TYPE_TEST), user_level_(false) {}
+  InstallTypeTest() : DiagnosticsTest(DIAGNOSTICS_INSTALL_TYPE_TEST) {}
 
   InstallTypeTest(const InstallTypeTest&) = delete;
   InstallTypeTest& operator=(const InstallTypeTest&) = delete;
@@ -104,20 +103,17 @@ class InstallTypeTest : public DiagnosticsTest {
   bool system_level() const { return !user_level_; }
 
  private:
-  bool user_level_;
+  bool user_level_ = false;
 };
 
 // Checks that a given JSON file can be correctly parsed.
 class JSONTest : public DiagnosticsTest {
  public:
-  enum FileImportance {
-    NON_CRITICAL,
-    CRITICAL
-  };
+  enum FileImportance { NON_CRITICAL, CRITICAL };
 
   JSONTest(const base::FilePath& path,
            DiagnosticsTestId id,
-           int64_t max_file_size,
+           base::ByteCount max_file_size,
            FileImportance importance)
       : DiagnosticsTest(id),
         path_(path),
@@ -130,8 +126,7 @@ class JSONTest : public DiagnosticsTest {
   bool ExecuteImpl(DiagnosticsModel::Observer* observer) override {
     if (!base::PathExists(path_)) {
       if (importance_ == CRITICAL) {
-        RecordOutcome(DIAG_RECON_FILE_NOT_FOUND,
-                      "File not found",
+        RecordOutcome(DIAG_RECON_FILE_NOT_FOUND, "File not found",
                       DiagnosticsModel::TEST_FAIL_CONTINUE);
       } else {
         RecordOutcome(DIAG_RECON_FILE_NOT_FOUND_OK,
@@ -147,7 +142,7 @@ class JSONTest : public DiagnosticsTest {
       return true;
     }
 
-    if (file_size.value() > max_file_size_) {
+    if (file_size.value() > max_file_size_.InBytes()) {
       RecordFailure(DIAG_RECON_FILE_TOO_BIG, "File too big");
       return true;
     }
@@ -178,15 +173,14 @@ class JSONTest : public DiagnosticsTest {
 
  private:
   base::FilePath path_;
-  int64_t max_file_size_;
+  base::ByteCount max_file_size_;
   FileImportance importance_;
 };
 
 // Check that the flavor of the operating system is supported.
 class OperatingSystemTest : public DiagnosticsTest {
  public:
-  OperatingSystemTest()
-      : DiagnosticsTest(DIAGNOSTICS_OPERATING_SYSTEM_TEST) {}
+  OperatingSystemTest() : DiagnosticsTest(DIAGNOSTICS_OPERATING_SYSTEM_TEST) {}
 
   OperatingSystemTest(const OperatingSystemTest&) = delete;
   OperatingSystemTest& operator=(const OperatingSystemTest&) = delete;
@@ -206,26 +200,25 @@ struct TestPathInfo {
   bool is_directory;
   bool is_optional;
   bool test_writable;
-  int64_t max_size;
+  base::ByteCount max_size;
 };
 
 const TestPathInfo kPathsToTest[] = {
     {DIAGNOSTICS_PATH_DICTIONARIES_TEST, chrome::DIR_APP_DICTIONARIES, true,
-     true, false, 0},
+     true, false, base::ByteCount(0)},
     {DIAGNOSTICS_PATH_LOCAL_STATE_TEST, chrome::FILE_LOCAL_STATE, false, false,
-     true, 500 * kOneKilobyte},
+     true, base::KiB(500)},
     {DIAGNOSTICS_PATH_RESOURCES_TEST, chrome::FILE_RESOURCES_PACK, false, false,
-     false, 0},
+     false, base::ByteCount(0)},
     {DIAGNOSTICS_PATH_USER_DATA_TEST, chrome::DIR_USER_DATA, true, false, true,
-     850 * kOneMegabyte},
+     base::MiB(850)},
 };
 
 // Check that the user's data directory exists and the paths are writable.
 class PathTest : public DiagnosticsTest {
  public:
   explicit PathTest(const TestPathInfo& path_info)
-      : DiagnosticsTest(path_info.test_id),
-        path_info_(path_info) {}
+      : DiagnosticsTest(path_info.test_id), path_info_(path_info) {}
 
   PathTest(const PathTest&) = delete;
   PathTest& operator=(const PathTest&) = delete;
@@ -241,28 +234,30 @@ class PathTest : public DiagnosticsTest {
       return false;
     }
     if (!base::PathExists(dir_or_file)) {
-      RecordFailure(
-          DIAG_RECON_PATH_NOT_FOUND,
-          "Path not found: " +
-              base::UTF16ToUTF8(dir_or_file.LossyDisplayName()));
+      RecordFailure(DIAG_RECON_PATH_NOT_FOUND,
+                    "Path not found: " +
+                        base::UTF16ToUTF8(dir_or_file.LossyDisplayName()));
       return true;
     }
 
-    int64_t dir_or_file_size;
+    base::ByteCount dir_or_file_size;
     if (path_info_.is_directory) {
-      dir_or_file_size = base::ComputeDirectorySize(dir_or_file);
+      dir_or_file_size =
+          base::ByteCount(base::ComputeDirectorySize(dir_or_file));
     } else {
-      dir_or_file_size = base::GetFileSize(dir_or_file).value_or(0);
+      dir_or_file_size =
+          base::ByteCount(base::GetFileSize(dir_or_file).value_or(0));
     }
-    if (!dir_or_file_size && !path_info_.is_optional) {
+    if (dir_or_file_size.is_zero() && !path_info_.is_optional) {
       RecordFailure(DIAG_RECON_CANNOT_OBTAIN_SIZE,
                     "Cannot obtain size for: " +
                         base::UTF16ToUTF8(dir_or_file.LossyDisplayName()));
       return true;
     }
-    std::string printable_size = base::NumberToString(dir_or_file_size);
+    std::string printable_size =
+        base::NumberToString(dir_or_file_size.InBytes());
 
-    if (path_info_.max_size > 0) {
+    if (path_info_.max_size > base::ByteCount(0)) {
       if (dir_or_file_size > path_info_.max_size) {
         RecordFailure(DIAG_RECON_FILE_TOO_LARGE,
                       "Path contents too large (" + printable_size + ") for: " +
@@ -304,8 +299,9 @@ class VersionTest : public DiagnosticsTest {
     }
     std::string version_modifier =
         chrome::GetChannelName(chrome::WithExtendedStable(true));
-    if (!version_modifier.empty())
+    if (!version_modifier.empty()) {
       current_version += " " + version_modifier;
+    }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     current_version += " GCB";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -328,14 +324,14 @@ std::unique_ptr<DiagnosticsTest> MakeLocalOrSyncableBookmarksTest() {
   base::FilePath path = DiagnosticsTest::GetUserDefaultProfileDir();
   path = path.Append(bookmarks::kLocalOrSyncableBookmarksFileName);
   return std::make_unique<JSONTest>(path, DIAGNOSTICS_JSON_BOOKMARKS_TEST,
-                                    2 * kOneMegabyte, JSONTest::NON_CRITICAL);
+                                    base::MiB(2), JSONTest::NON_CRITICAL);
 }
 
 std::unique_ptr<DiagnosticsTest> MakeAccountBookmarksTest() {
   base::FilePath path = DiagnosticsTest::GetUserDefaultProfileDir();
   path = path.Append(bookmarks::kAccountBookmarksFileName);
   return std::make_unique<JSONTest>(path, DIAGNOSTICS_JSON_BOOKMARKS_TEST,
-                                    2 * kOneMegabyte, JSONTest::NON_CRITICAL);
+                                    base::MiB(2), JSONTest::NON_CRITICAL);
 }
 
 std::unique_ptr<DiagnosticsTest> MakeLocalStateTest() {
@@ -343,21 +339,21 @@ std::unique_ptr<DiagnosticsTest> MakeLocalStateTest() {
   base::PathService::Get(chrome::DIR_USER_DATA, &path);
   path = path.Append(chrome::kLocalStateFilename);
   return std::make_unique<JSONTest>(path, DIAGNOSTICS_JSON_LOCAL_STATE_TEST,
-                                    50 * kOneKilobyte, JSONTest::CRITICAL);
+                                    base::KiB(50), JSONTest::CRITICAL);
 }
 
 std::unique_ptr<DiagnosticsTest> MakePreferencesTest() {
   base::FilePath path = DiagnosticsTest::GetUserDefaultProfileDir();
   path = path.Append(chrome::kPreferencesFilename);
   return std::make_unique<JSONTest>(path, DIAGNOSTICS_JSON_PREFERENCES_TEST,
-                                    100 * kOneKilobyte, JSONTest::CRITICAL);
+                                    base::KiB(100), JSONTest::CRITICAL);
 }
 
 std::unique_ptr<DiagnosticsTest> MakeOperatingSystemTest() {
   return std::make_unique<OperatingSystemTest>();
 }
 
-std::unique_ptr<DiagnosticsTest> MakeDictonaryDirTest() {
+std::unique_ptr<DiagnosticsTest> MakeDictionaryDirTest() {
   return std::make_unique<PathTest>(kPathsToTest[0]);
 }
 
