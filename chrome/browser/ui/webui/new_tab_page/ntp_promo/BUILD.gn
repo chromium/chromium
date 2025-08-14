@@ -50,6 +50,7 @@ source_set("unit_tests") {
   deps = [
     ":ntp_promo",
     "//base/test:test_support",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/test:test_support",
   ]
 }

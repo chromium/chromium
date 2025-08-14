@@ -11,12 +11,17 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom-forward.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
 #include "components/user_education/test/test_user_education_storage_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,19 +119,33 @@ class NtpPromoHandlerTest : public testing::Test {
     EXPECT_EQ(kPromo2Button, completed[0].action_button_text);
   }
 
+  void SetUp() override {
+    // Construct a WebContents that the handler can work with.
+    profile_ = TestingProfile::Builder().Build();
+    ON_CALL(mock_browser(), GetProfile)
+        .WillByDefault(::testing::Return(profile_.get()));
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
+    webui::SetBrowserWindowInterface(web_contents_.get(), &mock_browser());
+
+    handler_ = NtpPromoHandler::CreateForTesting(
+        mock_client_.BindAndGetRemote(),
+        mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler>(),
+        web_contents_.get(), &mock_controller_);
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler test_enabler_;
   user_education::NtpPromoRegistry promo_registry_;
   user_education::test::TestUserEducationStorageService storage_service_;
   MockController mock_controller_{promo_registry_, storage_service_,
                                   user_education::NtpPromoControllerParams()};
   MockClient mock_client_;
+  std::unique_ptr<Profile> profile_;
   MockBrowserWindowInterface mock_browser_;
-  std::unique_ptr<NtpPromoHandler> handler_ = NtpPromoHandler::CreateForTesting(
-      mock_client_.BindAndGetRemote(),
-      mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler>(),
-      &mock_browser_,
-      &mock_controller_);
+  std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<NtpPromoHandler> handler_;
 };
 
 TEST_F(NtpPromoHandlerTest, PassesOnClick) {

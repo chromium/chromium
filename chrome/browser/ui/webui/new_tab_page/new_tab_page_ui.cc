@@ -990,9 +990,8 @@ void NewTabPageUI::CreateHelpBubbleHandler(
 void NewTabPageUI::CreateNtpPromoHandler(
     mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> client,
     mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> handler) {
-  ntp_promo_handler_ =
-      NtpPromoHandler::Create(std::move(client), std::move(handler),
-                              webui::GetBrowserWindowInterface(web_contents()));
+  ntp_promo_handler_ = NtpPromoHandler::Create(
+      std::move(client), std::move(handler), web_contents());
 }
 
 // OnColorProviderChanged can be called during the destruction process and
