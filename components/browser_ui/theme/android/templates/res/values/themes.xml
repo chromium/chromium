@@ -132,6 +132,19 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
 
         <item name="android:forceDarkAllowed">false</item>
+        {% endmacro %}
+        {{ misc_attributes() }}
+
+        {% macro adaptive_density_attributes() %}
+        <!-- General dimensions. -->
+        <item name="minInteractTargetSize">@dimen/min_touch_target_size</item>
+        <!-- We've created a new attr instead of android:listPreferredItemHeightSmall to keep the
+             changes limited to the UI components we choose. -->
+        <item name="listItemHeight">?attr/minInteractTargetSize</item>
+
+        <!-- Text dimensions. -->
+        <item name="textLargeSize">@dimen/text_size_large</item>
+        <item name="textLargeLeading">@dimen/text_size_large_leading</item>
 
         <!-- Toolbar button dimensions. -->
         <item name="toolbarButtonWidth">@dimen/toolbar_button_width</item>
@@ -149,7 +162,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="closeButtonWidth">@dimen/close_button_width</item>
         <item name="closeButtonHeight">@dimen/close_button_height</item>
         {% endmacro %}
-        {{ misc_attributes() }}
+        {{ adaptive_density_attributes() }}
 
         {% macro full_window_attributes() %}
         <!-- Window Properties -->
@@ -167,6 +180,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         {{ color_palette_light_attributes() }}
         {{ other_color_attributes() }}
         {{ misc_attributes() }}
+        {{ adaptive_density_attributes() }}
     </style>
     <style name="Theme.BrowserUI.DayNight.DialogWhenLarge" parent="Theme.BrowserUI.Light.DialogWhenLarge"/>
 
@@ -180,6 +194,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         {{ color_palette_light_attributes() }}
         {{ other_color_attributes() }}
         {{ misc_attributes() }}
+        {{ adaptive_density_attributes() }}
 
         {% macro alert_dialog_attributes() %}
         <item name="android:windowBackground">@drawable/dialog_bg_no_shadow</item>
@@ -232,6 +247,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         {{ color_palette_dark_attributes() }}
         {{ other_color_attributes() }}
         {{ misc_attributes() }}
+        {{ adaptive_density_attributes() }}
         {{ full_window_attributes() }}
     </style>
 
@@ -239,12 +255,14 @@ Note: This is a jinja2 template, processed at build time into the final resource
         {{ color_palette_dark_attributes() }}
         {{ other_color_attributes() }}
         {{ misc_attributes() }}
+        {{ adaptive_density_attributes() }}
     </style>
 
     <style name="Theme.BrowserUI.Dark.AlertDialog.NoActionBar" parent="Theme.Material3.Dark.Dialog.Alert">
         {{ color_palette_dark_attributes() }}
         {{ other_color_attributes() }}
         {{ misc_attributes() }}
+        {{ adaptive_density_attributes() }}
         {{ alert_dialog_attributes() }}
     </style>
 
@@ -291,15 +309,29 @@ Note: This is a jinja2 template, processed at build time into the final resource
     </style>
 
     <style name="ThemeOverlay.BrowserUI.DesktopDensity" parent="">
-        <item name="closeButtonWidth">@dimen/close_button_width_desktop</item>
-        <item name="closeButtonHeight">@dimen/close_button_height_desktop</item>
+        <!-- General dimensions. -->
+        <item name="minInteractTargetSize">@dimen/min_click_target_size</item>
+
+        <!-- Text dimensions. -->
+        <item name="textLargeSize">@dimen/text_size_large_desktop</item>
+        <item name="textLargeLeading">@dimen/text_size_large_leading_desktop</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.DesktopDensity.TabStrip" parent="">
+        <!-- Toolbar button dimensions. -->
         <item name="toolbarButtonWidth">@dimen/toolbar_button_width_desktop</item>
         <item name="toolbarButtonHeight">@dimen/toolbar_button_height_desktop</item>
         <item name="toolbarButtonMarginHorizontal">@dimen/toolbar_button_margin_horizontal_desktop</item>
         <item name="toolbarButtonMarginVertical">@dimen/toolbar_button_margin_vertical_desktop</item>
+
+        <!-- Location bar action button dimensions(e.g. bookmark, downloads). -->
         <item name="locationBarActionButtonWidth">@dimen/location_bar_action_icon_width_desktop</item>
         <item name="locationBarActionButtonHeight">@dimen/location_bar_action_icon_height_desktop</item>
         <item name="locationBarActionButtonMarginHorizontal">@dimen/location_bar_action_icon_margin_horizontal_desktop</item>
         <item name="locationBarActionButtonMarginVertical">@dimen/location_bar_action_icon_margin_vertical_desktop</item>
+
+        <!-- Close button dimensions. -->
+        <item name="closeButtonWidth">@dimen/close_button_width_desktop</item>
+        <item name="closeButtonHeight">@dimen/close_button_height_desktop</item>
     </style>
 </resources>

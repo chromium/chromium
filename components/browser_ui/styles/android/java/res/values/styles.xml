@@ -61,7 +61,7 @@ found in the LICENSE file.
     <style name="AppMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay">
         <item name="android:listDivider">@null</item>
         <item name="android:listPreferredItemHeightSmall">48dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:textAppearance">@style/TextAppearance.DensityAdaptive.TextLarge.Primary</item>
     </style>
 
     <style name="AlertDialogButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
@@ -129,6 +129,17 @@ found in the LICENSE file.
     </style>
 
     <!-- Text styles -->
+
+    <!-- Density adaptive text styles -->
+    <style name="TextAppearance.DensityAdaptive.TextLarge" parent="TextAppearance">
+        <item name="android:textSize">?attr/textLargeSize</item>
+        <item name="leading">?attr/textLargeLeading</item>
+    </style>
+
+    <style name="TextAppearance.DensityAdaptive.TextLarge.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
     <!-- Primary text styles -->
     <style name="TextAppearance.Headline.Primary">
         <item name="android:textColor">@color/default_text_color_list</item>

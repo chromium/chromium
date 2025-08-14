@@ -8,14 +8,20 @@ found in the LICENSE file.
 <resources>
   <attr name="defaultFontFamily" format="reference|string" />
   <attr name="defaultMediumFontFamily" format="reference|string" />
+
+  <attr name="minInteractTargetSize" format="dimension" />
+  <attr name="listItemHeight" format="dimension" />
+
   <attr name="toolbarButtonWidth" format="dimension" />
   <attr name="toolbarButtonHeight" format="dimension" />
   <attr name="toolbarButtonMarginHorizontal" format="dimension" />
   <attr name="toolbarButtonMarginVertical" format="dimension" />
+
   <attr name="locationBarActionButtonWidth" format="dimension" />
   <attr name="locationBarActionButtonHeight" format="dimension" />
   <attr name="locationBarActionButtonMarginHorizontal" format="dimension" />
   <attr name="locationBarActionButtonMarginVertical" format="dimension" />
+
   <attr name="closeButtonWidth" format="dimension" />
   <attr name="closeButtonHeight" format="dimension" />
 </resources>

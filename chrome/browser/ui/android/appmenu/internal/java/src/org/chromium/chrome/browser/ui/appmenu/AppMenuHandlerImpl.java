@@ -277,9 +277,7 @@ class AppMenuHandlerImpl
         ContextThemeWrapper wrapper =
                 new ContextThemeWrapper(mContext, R.style.AppMenuThemeOverlay);
 
-        TypedArray a =
-                wrapper.obtainStyledAttributes(
-                        new int[] {android.R.attr.listPreferredItemHeightSmall});
+        TypedArray a = wrapper.obtainStyledAttributes(new int[] {R.attr.listItemHeight});
         int itemRowHeight = a.getDimensionPixelSize(0, 0);
         a.recycle();
 

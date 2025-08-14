@@ -72,4 +72,7 @@ found in the LICENSE file.
     <declare-styleable name="TextViewWithClickableSpans">
         <attr name="spanBackgroundStrokeColor" format="color"/>
     </declare-styleable>
+
+    <attr name="textLargeSize" format="dimension"/>
+    <attr name="textLargeLeading" format="dimension"/>
 </resources>

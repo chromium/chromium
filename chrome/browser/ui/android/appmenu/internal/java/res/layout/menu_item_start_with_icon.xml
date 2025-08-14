@@ -26,12 +26,12 @@ found in the LICENSE file.
 
     <TextView
         android:id="@+id/menu_item_text"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:textAppearance="@style/TextAppearance.DensityAdaptive.TextLarge.Primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:singleLine="true"
         android:paddingStart="12dp"
-        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:minHeight="?attr/listItemHeight"
         android:duplicateParentState="true" />
 </LinearLayout>
