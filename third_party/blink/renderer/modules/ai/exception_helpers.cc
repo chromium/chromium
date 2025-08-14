@@ -175,7 +175,7 @@ String ValidateAndStringifyObject(const ScriptValue& input,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         kExceptionMessageInvalidResponseJsonSchema);
-    return WTF::String();
+    return String();
   }
   return ToBlinkString<String>(script_state->GetIsolate(), value,
                                kDoNotExternalize);
@@ -264,7 +264,7 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
 }
 
 // LINT.IfChange(ConvertModelAvailabilityCheckResultToDebugString)
-WTF::String ConvertModelAvailabilityCheckResultToDebugString(
+String ConvertModelAvailabilityCheckResultToDebugString(
     mojom::blink::ModelAvailabilityCheckResult result) {
   switch (result) {
     case mojom::blink::ModelAvailabilityCheckResult::

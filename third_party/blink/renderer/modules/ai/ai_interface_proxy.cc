@@ -105,7 +105,7 @@ void AIInterfaceProxy::GetLanguageDetectionModelImpl(
     ExecutionContext* execution_context,
     GetLanguageDetectionModelCallback callback) {
   GetLanguageDetectionDriverRemote(execution_context)
-      ->GetLanguageDetectionModel(WTF::BindOnce(
+      ->GetLanguageDetectionModel(blink::BindOnce(
           [](LanguageDetectionModel* language_detection_model,
              GetLanguageDetectionModelCallback callback, base::File model) {
             language_detection_model->LoadModelFile(std::move(model),

@@ -65,8 +65,8 @@ class AIWritingAssistanceCreateClient
           monitor_->BindRemote());
     }
 
-    RemoteCanCreate(WTF::BindOnce(&AIWritingAssistanceCreateClient::Create,
-                                  WrapPersistent(this)));
+    RemoteCanCreate(BindOnce(&AIWritingAssistanceCreateClient::Create,
+                             WrapPersistent(this)));
   }
   ~AIWritingAssistanceCreateClient() override = default;
 
@@ -86,7 +86,7 @@ class AIWritingAssistanceCreateClient
   // AIMojoCreateClient:
   void OnResult(mojo::PendingRemote<AIMojoClient> pending_remote) override {
     // Call `Cleanup` when this function returns.
-    RunOnDestruction run_on_destruction(WTF::BindOnce(
+    RunOnDestruction run_on_destruction(BindOnce(
         &AIWritingAssistanceCreateClient::Cleanup, WrapWeakPersistent(this)));
 
     if (!this->GetResolver()) {
@@ -126,7 +126,7 @@ class AIWritingAssistanceCreateClient
   void OnError(mojom::blink::AIManagerCreateClientError error,
                mojom::blink::QuotaErrorInfoPtr quota_error_info) override {
     // Call `Cleanup` when this function returns.
-    RunOnDestruction run_on_destruction(WTF::BindOnce(
+    RunOnDestruction run_on_destruction(BindOnce(
         &AIWritingAssistanceCreateClient::Cleanup, WrapWeakPersistent(this)));
 
     if (!this->GetResolver()) {

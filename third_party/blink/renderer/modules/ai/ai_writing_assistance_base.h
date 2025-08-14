@@ -113,9 +113,9 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
 
     if (create_abort_signal_) {
       CHECK(!create_abort_signal_->aborted());
-      create_abort_handle_ = create_abort_signal_->AddAlgorithm(WTF::BindOnce(
-          &AIWritingAssistanceBase::OnCreateAbortSignalAborted,
-          WrapWeakPersistent(this), WrapWeakPersistent(script_state)));
+      create_abort_handle_ = create_abort_signal_->AddAlgorithm(
+          BindOnce(&AIWritingAssistanceBase::OnCreateAbortSignalAborted,
+                   WrapWeakPersistent(this), WrapWeakPersistent(script_state)));
     }
   }
 
@@ -164,7 +164,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     RecordCreateOptionMetrics(*options, "availability");
     RemoteCanCreate(
         ai_manager_remote, options,
-        WTF::BindOnce(
+        BindOnce(
             [](ScriptPromiseResolver<V8Availability>* resolver,
                ExecutionContext* execution_context,
                mojom::blink::ModelAvailabilityCheckResult result) {
@@ -344,7 +344,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
 
     remote_->MeasureUsage(
         input, options->getContextOr(g_empty_string),
-        WTF::BindOnce(
+        BindOnce(
             [](ScriptPromiseResolver<IDLDouble>* resolver, AbortSignal* signal,
                std::optional<uint32_t> usage) {
               ExecutionContext* context = resolver->GetExecutionContext();

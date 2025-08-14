@@ -29,7 +29,7 @@ class ResolverWithAbortSignal final
     SetContextLifecycleNotifier(ExecutionContext::From(script_state));
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
-      abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
+      abort_handle_ = abort_signal_->AddAlgorithm(BindOnce(
           &ResolverWithAbortSignal<T>::OnAborted, WrapWeakPersistent(this)));
     }
   }

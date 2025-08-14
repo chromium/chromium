@@ -41,11 +41,11 @@ constexpr char kSchemaPrefix[] =
     "\n\nRemember to respond in JSON that follows this \"JSON Schema\" "
     "specification:\n";
 
-using ResolveCallback = base::OnceCallback<void(
-    WTF::Vector<mojom::blink::AILanguageModelPromptPtr>)>;
+using ResolveCallback =
+    base::OnceCallback<void(Vector<mojom::blink::AILanguageModelPromptPtr>)>;
 using RejectCallback = base::OnceCallback<void(const ScriptValue& error)>;
 
-LanguageModelMessageContent* MakeMessageTextContent(const WTF::String& value) {
+LanguageModelMessageContent* MakeMessageTextContent(const String& value) {
   auto* content = MakeGarbageCollected<LanguageModelMessageContent>();
   content->setType(
       V8LanguageModelMessageType(V8LanguageModelMessageType::Enum::kText));
@@ -104,9 +104,9 @@ class LanguageModelPromptBuilder
   explicit LanguageModelPromptBuilder(
       ScriptState* script_state,
       AbortSignal* abort_signal,
-      WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
+      HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
       const V8LanguageModelPrompt* input,
-      const WTF::String& json_schema,
+      const String& json_schema,
       ResolveCallback resolve_callback,
       RejectCallback reject_callback);
   void Trace(Visitor*) const override;
@@ -158,13 +158,13 @@ class LanguageModelPromptBuilder
                       ImageBitmap* bitmap);
 
   SelfKeepAlive<LanguageModelPromptBuilder> keep_alive_{this};
-  WTF::Vector<mojom::blink::AILanguageModelPromptPtr> processed_prompts_;
+  Vector<mojom::blink::AILanguageModelPromptPtr> processed_prompts_;
 
   int processed_remaining_ = 0;
   Member<ScriptState> script_state_;
   Member<AbortSignal> abort_signal_;
-  WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types_;
-  WTF::String json_schema_;
+  HashSet<mojom::blink::AILanguageModelPromptType> allowed_types_;
+  String json_schema_;
 
   ResolveCallback resolve_callback_;
   RejectCallback reject_callback_;
@@ -173,9 +173,9 @@ class LanguageModelPromptBuilder
 LanguageModelPromptBuilder::LanguageModelPromptBuilder(
     ScriptState* script_state,
     AbortSignal* abort_signal,
-    WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
+    HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
     const V8LanguageModelPrompt* input,
-    const WTF::String& json_schema,
+    const String& json_schema,
     ResolveCallback resolve_callback,
     RejectCallback reject_callback)
     : script_state_(script_state),
@@ -338,8 +338,8 @@ void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
           content, message_index, content_index++);
       task_runner->PostTask(
           FROM_HERE,
-          WTF::BindOnce(&LanguageModelPromptBuilder::ProcessEntry,
-                        WrapPersistent(this), WrapPersistent(pending_entry)));
+          BindOnce(&LanguageModelPromptBuilder::ProcessEntry,
+                   WrapPersistent(this), WrapPersistent(pending_entry)));
     }
     message_index++;
   }
@@ -467,7 +467,7 @@ void LanguageModelPromptBuilder::ToMojo(AudioBuffer* audio_buffer,
   // AudioBus::CreateByMixingToMono.
   audio_data->channel_count = 1;
   base::span<const float> channel0 = audio_buffer->getChannelData(0)->AsSpan();
-  audio_data->data = WTF::Vector<float>(channel0.size());
+  audio_data->data = Vector<float>(channel0.size());
   for (size_t i = 0; i < channel0.size(); ++i) {
     audio_data->data[i] = channel0[i];
     // If second channel exists, average the two channels to produce mono.
@@ -502,7 +502,7 @@ void LanguageModelPromptBuilder::AudioToMojo(base::span<uint8_t> bytes,
   audio_data->channel_count = bus->NumberOfChannels();
   CHECK_EQ(audio_data->channel_count, 1);
   // TODO(crbug.com/382180351): Avoid a copy.
-  audio_data->data = WTF::Vector<float>(bus->length());
+  audio_data->data = Vector<float>(bus->length());
   std::copy_n(bus->Channel(0)->Data(), bus->Channel(0)->length(),
               audio_data->data.begin());
   OnPromptContentProcessed(mojom::blink::AILanguageModelPromptContent::NewAudio(
@@ -577,9 +577,9 @@ void LanguageModelPromptBuilder::BitmapToMojo(
   promise.Then(
       script_state_,
       MakeGarbageCollected<ThenCallback<ImageBitmap>>(
-          WTF::BindOnce(&LanguageModelPromptBuilder::OnBitmapLoaded,
-                        WrapPersistent(this), WrapPersistent(entry))),
-      MakeGarbageCollected<ThenCallback<IDLAny, ScriptValue>>(WTF::BindOnce(
+          BindOnce(&LanguageModelPromptBuilder::OnBitmapLoaded,
+                   WrapPersistent(this), WrapPersistent(entry))),
+      MakeGarbageCollected<ThenCallback<IDLAny, ScriptValue>>(BindOnce(
           [](LanguageModelPromptBuilder* builder, ScriptState* script_state,
              ScriptValue value) { builder->Reject(std::move(value)); },
           WrapPersistent(this))));
@@ -620,8 +620,8 @@ void ConvertPromptInputsToMojo(
     ScriptState* script_state,
     AbortSignal* abort_signal,
     const V8LanguageModelPrompt* input,
-    WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
-    const WTF::String& json_schema,
+    HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
+    const String& json_schema,
     ResolveCallback resolve_callback,
     RejectCallback reject_callback) {
   MakeGarbageCollected<LanguageModelPromptBuilder>(

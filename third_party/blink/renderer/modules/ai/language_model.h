@@ -120,14 +120,14 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
       on_device_model::mojom::blink::ResponseConstraintPtr constraint,
       mojo::PendingRemote<mojom::blink::ModelStreamingResponder>
           pending_responder,
-      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
+      Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
 
   // Helper to make AILanguageModelProxy::MeasureInputUsage compatible with
   // ConvertPromptInputsToMojo callback.
   void ExecuteMeasureInputUsage(
       ScriptPromiseResolver<IDLDouble>* resolver,
       AbortSignal* signal,
-      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
+      Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
 
   // Validates and processed prompt input and returns the processed constraints.
   // Returns std::nullopt on failure.
@@ -142,7 +142,7 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
   uint32_t top_k_ = 0;
   float temperature_ = 0.0;
   // Prompt types supported by the language model in this session.
-  WTF::HashSet<mojom::blink::AILanguageModelPromptType> input_types_;
+  HashSet<mojom::blink::AILanguageModelPromptType> input_types_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AILanguageModel> language_model_remote_;

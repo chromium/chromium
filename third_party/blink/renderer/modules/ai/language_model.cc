@@ -96,7 +96,7 @@ void RejectResolver(ScriptPromiseResolverBase* resolver,
 
 // Logs (mojo converted) prompt message metrics.
 void LogPromptMessageMetrics(
-    const WTF::Vector<mojom::blink::AILanguageModelPromptPtr>& prompts) {
+    const Vector<mojom::blink::AILanguageModelPromptPtr>& prompts) {
   for (const auto& prompt : prompts) {
     std::string prefix =
         base::StrCat({AIMetrics::GetAIAPIUsageMetricName(
@@ -241,7 +241,7 @@ class AppendClient : public GarbageCollected<AppendClient>,
       ScriptState* script_state,
       LanguageModel* language_model,
       ScriptPromiseResolver<IDLUndefined>* resolver,
-      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts,
+      Vector<mojom::blink::AILanguageModelPromptPtr> prompts,
       AbortSignal* signal,
       base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
           complete_callback,
@@ -271,7 +271,7 @@ class AppendClient : public GarbageCollected<AppendClient>,
       base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
           complete_callback,
       base::RepeatingClosure overflow_callback,
-      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> input) {
+      Vector<mojom::blink::AILanguageModelPromptPtr> input) {
     LogPromptMessageMetrics(input);
     MakeGarbageCollected<AppendClient>(
         std::move(script_state), std::move(language_model), std::move(resolver),
@@ -309,7 +309,7 @@ class AppendClient : public GarbageCollected<AppendClient>,
     Cleanup();
   }
 
-  void OnStreaming(const WTF::String& text) override {
+  void OnStreaming(const String& text) override {
     NOTREACHED() << "Append() should not invoke `OnStreaming()`";
   }
 
@@ -375,7 +375,7 @@ bool ParseConstraint(
 
 // Gets the stringified schema that should be used to append to the prompt.
 // Returns an empty string if no schema should be added to the prompt.
-WTF::String GetSchemaForInput(
+String GetSchemaForInput(
     const on_device_model::mojom::blink::ResponseConstraintPtr& constraint,
     const LanguageModelPromptOptions* options) {
   if (options->omitResponseConstraintInput() || !constraint ||
@@ -541,7 +541,7 @@ ScriptPromise<V8Availability> LanguageModel::availability(
       AIInterfaceProxy::GetAIManagerRemote(
           ExecutionContext::From(script_state)),
       std::move(options), std::move(sampling_params_or_exception.value()),
-      WTF::BindOnce(
+      BindOnce(
           [](ScriptPromiseResolver<V8Availability>* resolver,
              mojom::blink::ModelAvailabilityCheckResult result) {
             Availability availability = HandleModelAvailabilityCheckResult(
@@ -592,7 +592,7 @@ ScriptPromise<IDLNullable<LanguageModelParams>> LanguageModel::params(
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(
           ExecutionContext::From(script_state));
-  ai_manager_remote->GetLanguageModelParams(WTF::BindOnce(
+  ai_manager_remote->GetLanguageModelParams(BindOnce(
       [](ScriptPromiseResolver<IDLNullable<LanguageModelParams>>* resolver,
          mojom::blink::AILanguageModelParamsPtr language_model_params) {
         if (!language_model_params) {
@@ -631,19 +631,18 @@ ScriptPromise<IDLString> LanguageModel::prompt(
   auto pending_remote = CreateModelExecutionResponder(
       script_state, options->getSignalOr(nullptr), resolver, task_runner_,
       AIMetrics::AISessionType::kLanguageModel,
-      WTF::BindOnce(&LanguageModel::OnResponseComplete, WrapPersistent(this)),
-      WTF::BindRepeating(&LanguageModel::OnQuotaOverflow, WrapPersistent(this)),
+      BindOnce(&LanguageModel::OnResponseComplete, WrapPersistent(this)),
+      BindRepeating(&LanguageModel::OnQuotaOverflow, WrapPersistent(this)),
       /*resolve_override_callback=*/base::NullCallback());
 
-  WTF::String json_schema = GetSchemaForInput(*processed_constraint, options);
+  String json_schema = GetSchemaForInput(*processed_constraint, options);
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
       json_schema,
-      WTF::BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
-                    WrapPersistent(script_state), WrapPersistent(resolver),
-                    std::move(*processed_constraint),
-                    std::move(pending_remote)),
-      WTF::BindOnce(&RejectResolver, WrapPersistent(resolver)));
+      BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
+               WrapPersistent(script_state), WrapPersistent(resolver),
+               std::move(*processed_constraint), std::move(pending_remote)),
+      BindOnce(&RejectResolver, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -664,18 +663,17 @@ ReadableStream* LanguageModel::promptStreaming(
   auto [stream, remote] = CreateModelExecutionStreamingResponder(
       script_state, options->getSignalOr(nullptr), task_runner_,
       AIMetrics::AISessionType::kLanguageModel,
-      WTF::BindOnce(&LanguageModel::OnResponseComplete, WrapPersistent(this)),
-      WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
-                         WrapPersistent(this)));
+      BindOnce(&LanguageModel::OnResponseComplete, WrapPersistent(this)),
+      BindRepeating(&LanguageModel::OnQuotaOverflow, WrapPersistent(this)));
 
-  WTF::String json_schema = GetSchemaForInput(*processed_constraint, options);
+  String json_schema = GetSchemaForInput(*processed_constraint, options);
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
       json_schema,
-      WTF::BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
-                    WrapPersistent(script_state), WrapPersistent(stream),
-                    std::move(*processed_constraint), std::move(remote)),
-      WTF::BindOnce(
+      BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
+               WrapPersistent(script_state), WrapPersistent(stream),
+               std::move(*processed_constraint), std::move(remote)),
+      BindOnce(
           [](ReadableStream* readable_stream, ScriptState* script_state,
              const ScriptValue& error) {
             ReadableStreamController* controller =
@@ -699,7 +697,7 @@ void LanguageModel::ExecutePrompt(
     on_device_model::mojom::blink::ResponseConstraintPtr constraint,
     mojo::PendingRemote<mojom::blink::ModelStreamingResponder>
         pending_responder,
-    WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts) {
+    Vector<mojom::blink::AILanguageModelPromptPtr> prompts) {
   LogPromptMessageMetrics(prompts);
   if (!language_model_remote_) {
     if (std::holds_alternative<ScriptPromiseResolverBase*>(
@@ -727,10 +725,10 @@ void LanguageModel::ExecutePrompt(
 void LanguageModel::ExecuteMeasureInputUsage(
     ScriptPromiseResolver<IDLDouble>* resolver,
     AbortSignal* signal,
-    WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts) {
+    Vector<mojom::blink::AILanguageModelPromptPtr> prompts) {
   language_model_remote_->MeasureInputUsage(
       std::move(prompts),
-      WTF::BindOnce(
+      BindOnce(
           [](ScriptPromiseResolver<IDLDouble>* resolver, AbortSignal* signal,
              std::optional<uint32_t> usage) {
             ExecutionContext* context = resolver->GetExecutionContext();
@@ -818,14 +816,14 @@ ScriptPromise<IDLUndefined> LanguageModel::append(
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
       /*json_schema=*/"",
-      WTF::BindOnce(&AppendClient::Create, WrapPersistent(script_state),
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    WrapPersistent(signal),
-                    WTF::BindOnce(&LanguageModel::OnResponseComplete,
-                                  WrapWeakPersistent(this)),
-                    WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
-                                       WrapWeakPersistent(this))),
-      WTF::BindOnce(&RejectResolver, WrapPersistent(resolver)));
+      blink::BindOnce(&AppendClient::Create, WrapPersistent(script_state),
+                      WrapPersistent(this), WrapPersistent(resolver),
+                      WrapPersistent(signal),
+                      BindOnce(&LanguageModel::OnResponseComplete,
+                               WrapWeakPersistent(this)),
+                      BindRepeating(&LanguageModel::OnQuotaOverflow,
+                                    WrapWeakPersistent(this))),
+      BindOnce(&RejectResolver, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -887,10 +885,9 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
       /*json_schema=*/"",
-      WTF::BindOnce(&LanguageModel::ExecuteMeasureInputUsage,
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    WrapPersistent(signal)),
-      WTF::BindOnce(&RejectResolver, WrapPersistent(resolver)));
+      BindOnce(&LanguageModel::ExecuteMeasureInputUsage, WrapPersistent(this),
+               WrapPersistent(resolver), WrapPersistent(signal)),
+      BindOnce(&RejectResolver, WrapPersistent(resolver)));
 
   return promise;
 }

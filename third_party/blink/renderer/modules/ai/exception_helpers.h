@@ -46,7 +46,7 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
     ModelStreamingResponseStatus error,
     mojom::blink::QuotaErrorInfoPtr quota_error_info);
 
-WTF::String ConvertModelAvailabilityCheckResultToDebugString(
+String ConvertModelAvailabilityCheckResultToDebugString(
     mojom::blink::ModelAvailabilityCheckResult result);
 
 // Throw the reason of the AbortSignal if it's aborted. If the reason is empty,

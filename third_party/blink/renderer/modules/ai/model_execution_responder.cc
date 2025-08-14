@@ -57,7 +57,7 @@ class Responder final : public GarbageCollected<Responder>,
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
       abort_handle_ = abort_signal_->AddAlgorithm(
-          WTF::BindOnce(&Responder::OnAborted, WrapWeakPersistent(this)));
+          BindOnce(&Responder::OnAborted, WrapWeakPersistent(this)));
     }
   }
   ~Responder() override = default;
@@ -207,8 +207,8 @@ class StreamingResponder final
         overflow_callback_(overflow_callback) {
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
-      abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
-          &StreamingResponder::OnAborted, WrapWeakPersistent(this)));
+      abort_handle_ = abort_signal_->AddAlgorithm(
+          BindOnce(&StreamingResponder::OnAborted, WrapWeakPersistent(this)));
     }
   }
   ~StreamingResponder() override = default;

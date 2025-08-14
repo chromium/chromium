@@ -87,8 +87,8 @@ class LanguageDetectorCreateTask
 
     AIInterfaceProxy::GetLanguageDetectionModelStatus(
         GetExecutionContext(),
-        WTF::BindOnce(&LanguageDetectorCreateTask::OnGotAvailability,
-                      WrapPersistent(this))
+        BindOnce(&LanguageDetectorCreateTask::OnGotAvailability,
+                 WrapPersistent(this))
             .Then(RejectOnDestruction(resolver)));
   }
 
@@ -126,15 +126,15 @@ class LanguageDetectorCreateTask
 
     AIInterfaceProxy::GetLanguageDetectionModel(
         GetExecutionContext(),
-        WTF::BindOnce(&LanguageDetectorCreateTask::OnModelLoaded,
-                      WrapPersistent(this))
+        blink::BindOnce(&LanguageDetectorCreateTask::OnModelLoaded,
+                        WrapPersistent(this))
             .Then(RejectOnDestruction(GetResolver())));
   }
 
   void OnModelLoaded(base::expected<LanguageDetectionModel*,
                                     DetectLanguageError> maybe_model) {
     // Call `Cleanup` when this function returns.
-    RunOnDestruction run_on_destruction(WTF::BindOnce(
+    RunOnDestruction run_on_destruction(BindOnce(
         &LanguageDetectorCreateTask::Cleanup, WrapWeakPersistent(this)));
 
     if (!GetResolver()) {
@@ -267,8 +267,8 @@ ScriptPromise<V8Availability> LanguageDetector::availability(
   }
 
   AIInterfaceProxy::GetLanguageDetectionModelStatus(
-      context, WTF::BindOnce(&OnGotStatus, WrapWeakPersistent(context),
-                             WrapPersistent(options), WrapPersistent(resolver))
+      context, BindOnce(&OnGotStatus, WrapWeakPersistent(context),
+                        WrapPersistent(options), WrapPersistent(resolver))
                    .Then(RejectOnDestruction(resolver)));
 
   return promise;
@@ -330,9 +330,9 @@ LanguageDetector::LanguageDetector(
       expected_input_languages_(std::move(expected_input_languages)) {
   if (create_abort_signal_) {
     CHECK(!create_abort_signal_->aborted());
-    create_abort_handle_ = create_abort_signal_->AddAlgorithm(WTF::BindOnce(
-        &LanguageDetector::OnCreateAbortSignalAborted, WrapWeakPersistent(this),
-        WrapWeakPersistent(script_state)));
+    create_abort_handle_ = create_abort_signal_->AddAlgorithm(
+        BindOnce(&LanguageDetector::OnCreateAbortSignalAborted,
+                 WrapWeakPersistent(this), WrapWeakPersistent(script_state)));
   }
 }
 
@@ -346,7 +346,7 @@ void LanguageDetector::Trace(Visitor* visitor) const {
 
 ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
     ScriptState* script_state,
-    const WTF::String& input,
+    const String& input,
     LanguageDetectorDetectOptions* options,
     ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -369,8 +369,8 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
 
   language_detection_model_->DetectLanguage(
       task_runner_, input,
-      WTF::BindOnce(LanguageDetector::OnDetectComplete,
-                    WrapPersistent(resolver)));
+      blink::BindOnce(LanguageDetector::OnDetectComplete,
+                      WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -397,7 +397,7 @@ void LanguageDetector::OnCreateAbortSignalAborted(ScriptState* script_state) {
 
 ScriptPromise<IDLDouble> LanguageDetector::measureInputUsage(
     ScriptState* script_state,
-    const WTF::String& input,
+    const String& input,
     LanguageDetectorDetectOptions* options,
     ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -419,9 +419,8 @@ ScriptPromise<IDLDouble> LanguageDetector::measureInputUsage(
           script_state, composite_signal);
 
   task_runner_->PostTask(
-      FROM_HERE,
-      WTF::BindOnce(&ResolverWithAbortSignal<IDLDouble>::Resolve<double>,
-                    WrapPersistent(resolver), 0));
+      FROM_HERE, BindOnce(&ResolverWithAbortSignal<IDLDouble>::Resolve<double>,
+                          WrapPersistent(resolver), 0));
 
   return resolver->Promise();
 }
@@ -431,7 +430,7 @@ double LanguageDetector::inputQuota() const {
 }
 
 HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
-    WTF::Vector<LanguageDetectionModel::LanguagePrediction> predictions) {
+    Vector<LanguageDetectionModel::LanguagePrediction> predictions) {
   double last_score = 1;
   double cumulative_confidence = 0;
 
@@ -514,7 +513,7 @@ HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
 
 void LanguageDetector::OnDetectComplete(
     ResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>* resolver,
-    base::expected<WTF::Vector<LanguageDetectionModel::LanguagePrediction>,
+    base::expected<Vector<LanguageDetectionModel::LanguagePrediction>,
                    DetectLanguageError> result) {
   if (resolver->aborted()) {
     return;

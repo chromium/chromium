@@ -145,7 +145,7 @@ class RunOnDestruction {
 template <typename T>
 base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver,
                                       AbortSignal* signal = nullptr) {
-  RunOnDestruction run_on_destruction(WTF::BindOnce(
+  RunOnDestruction run_on_destruction(BindOnce(
       [](ScriptPromiseResolver<T>* resolver, AbortSignal* signal) {
         if (signal && signal->aborted()) {
           resolver->Reject(signal->reason(resolver->GetScriptState()));
@@ -155,7 +155,7 @@ base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver,
       },
       WrapPersistent(resolver), WrapPersistent(signal)));
 
-  return WTF::BindOnce(
+  return BindOnce(
       [](RunOnDestruction resolver_holder) { resolver_holder.Reset(); },
       std::move(run_on_destruction));
 }
