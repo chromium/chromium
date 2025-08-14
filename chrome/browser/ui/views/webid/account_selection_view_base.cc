@@ -225,7 +225,7 @@ BEGIN_METADATA(BrandIconImageView)
 END_METADATA
 
 AccountHoverButton::AccountHoverButton(
-    PressedCallback callback,
+    AccountSelectionCallback callback,
     std::unique_ptr<views::View> icon_view,
     const std::u16string& title,
     const std::u16string& subtitle,
@@ -251,6 +251,8 @@ AccountHoverButton::AccountHoverButton(
                                                /*highlight_on_focus=*/true);
 }
 
+AccountHoverButton::~AccountHoverButton() = default;
+
 void AccountHoverButton::StateChanged(ButtonState old_state) {
   // Do not focus on hover since it causes odd scrolling. Do this by skipping
   // the code in HoverButton::StateChanged.
@@ -274,9 +276,14 @@ void AccountHoverButton::OnPressed(const ui::Event& event) {
                                  /*min=*/0,
                                  /*exclusive_max=*/10, /*buckets=*/11);
   has_been_clicked_ = true;
-  if (callback_) {
-    callback_.Run(event);
+  // If the callback |OnAccountSelected| returns false, e.g. the click is
+  // blocked by input protector, reset the state to handle future |OnPressed|.
+  if (callback_ && !callback_.Run(event)) {
+    has_been_clicked_ = false;
   }
+  // If callback_.Run(event) returns true, |this| may be destructed because the
+  // UI changes based on the selected account. Do not modify members afterwards
+  // if so.
 }
 
 bool AccountHoverButton::HasBeenClicked() {
@@ -315,7 +322,8 @@ void AccountHoverButton::ReplaceSecondaryViewWithSpinner() {
       ->ReplaceWithSpinner();
 }
 
-void AccountHoverButton::SetCallbackForTesting(PressedCallback callback) {
+void AccountHoverButton::SetCallbackForTesting(
+    AccountSelectionCallback callback) {
   callback_ = std::move(callback);
 }
 

@@ -537,7 +537,7 @@ void FedCmAccountSelectionView::OnAccountsDisplayed() {
   delegate_->OnAccountsDisplayed();
 }
 
-void FedCmAccountSelectionView::OnAccountSelected(
+bool FedCmAccountSelectionView::OnAccountSelected(
     const IdentityRequestAccountPtr& account,
     const ui::Event& event) {
   DCHECK(state_ != State::IDP_SIGNIN_STATUS_MISMATCH);
@@ -546,7 +546,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   if (input_protector_->IsPossiblyUnintendedInteraction(
           event, /*allow_key_events=*/false) ||
       is_occluded_by_pip_) {
-    return;
+    return false;
   }
 
   if (modal_account_chooser_state_) {
@@ -567,13 +567,13 @@ void FedCmAccountSelectionView::OnAccountSelected(
     state_ = State::VERIFYING;
     if (!NotifyDelegateOfAccountSelection(*account, idp_data)) {
       // `this` was deleted.
-      return;
+      return false;
     }
     // TODO(crbug.com/418214600): hand the control to show verifying UI over to
     // the backend.
     ShowVerifyingSheet(account);
     UpdateDialogPosition();
-    return;
+    return true;
   }
 
   // At this point, the account is a non-returning user. If the dialog is modal,
@@ -588,7 +588,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
     // assumption is true i.e. the user has closed the tab.
     modal_disclosure_dialog_state_ = webid::DisclosureDialogResult::kDestroy;
     UpdateDialogPosition();
-    return;
+    return true;
   }
 
   // At this point, the account is a non-returning user, the dialog is a bubble
@@ -598,6 +598,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   account_selection_view_->ShowSingleAccountConfirmDialog(
       account, /*show_back_button=*/true);
   UpdateDialogPosition();
+  return true;
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,

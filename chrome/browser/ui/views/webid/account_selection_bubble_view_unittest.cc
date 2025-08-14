@@ -48,6 +48,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/mock_input_event_activation_protector.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -86,12 +87,13 @@ class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {
             &test_url_loader_factory_);
   }
 
-  void OnAccountSelected(const IdentityRequestAccountPtr& account,
+  bool OnAccountSelected(const IdentityRequestAccountPtr& account,
                          const ui::Event& event) {
     // Simulate the account selection by calling ShowSingleAccountConfirmDialog
     // directly
     account_selection_view()->ShowSingleAccountConfirmDialog(
         account, /*show_back_button=*/false);
+    return true;
   }
 
   void ClickAccountHoverButton(webid::AccountHoverButton* account_hover_button,
@@ -1550,6 +1552,31 @@ TEST_F(AccountSelectionInteractionTest,
   PerformSingleAccountConfirmDialogChecks(kTitleSignIn,
                                           /*expected_icon_visibility=*/true,
                                           /*has_display_identifier=*/true);
+}
+
+TEST_F(AccountSelectionInteractionTest, ClickProtectionButtonState) {
+  const std::vector<std::string> kAccountSuffixes = {"1", "2", "3"};
+  CreateAndShowMultiAccountPicker(kAccountSuffixes);
+
+  AccountHoverButton* account_hover_button =
+      static_cast<AccountHoverButton*>(GetFirstAccountHoverButton());
+  IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
+      kAccountSuffix, idp_data_, LoginState::kSignUp);
+
+  auto input_protector =
+      std::make_unique<views::MockInputEventActivationProtector>();
+  EXPECT_CALL(*input_protector, IsPossiblyUnintendedInteraction)
+      .WillOnce(testing::Return(true));
+  account_selection_view_->SetInputEventActivationProtectorForTesting(
+      std::move(input_protector));
+
+  // If a click is rejected by input protector, the hover button should remain
+  // unclicked.
+  views::test::ButtonTestApi(account_hover_button)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks(),
+                                  ui::EF_LEFT_MOUSE_BUTTON, 0));
+  EXPECT_FALSE(account_hover_button->HasBeenClicked());
 }
 
 }  //  namespace webid

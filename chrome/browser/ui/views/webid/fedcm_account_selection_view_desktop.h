@@ -156,7 +156,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // chooser or clicks the "continue" button.
   // Takes `account` as well as `idp_data` since passing `account_id`
   // is insufficient in the multiple IDP case.
-  void OnAccountSelected(const IdentityRequestAccountPtr& account,
+  // Returns whether an account is successfully selected. e.g. if a user clicks
+  // the account too soon, the input protector may reject the click event, in
+  // which case the account selection will not go through and `false` will be
+  // returned.
+  bool OnAccountSelected(const IdentityRequestAccountPtr& account,
                          const ui::Event& event);
 
   // Called when the user clicks "privacy policy" or "terms of service" link.

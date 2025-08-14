@@ -565,8 +565,9 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   // We can pass crefs to OnAccountSelected because the `observer_` owns the
   // data.
   auto button = std::make_unique<ContinueButton>(
-      base::BindRepeating(&FedCmAccountSelectionView::OnAccountSelected,
-                          base::Unretained(owner_), account),
+      base::BindRepeating(
+          base::IgnoreResult(&FedCmAccountSelectionView::OnAccountSelected),
+          base::Unretained(owner_), account),
       button_title, this, idp_metadata,
       base::UTF8ToUTF16(account->display_identifier));
   views::MdTextButton* button_ptr = button.get();
