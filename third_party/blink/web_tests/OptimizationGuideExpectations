@@ -21,7 +21,6 @@ virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/dequantizeLi
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/erf.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/exp.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gemm.https.any.html?gpu [ Failure ]
-virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gru.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pow.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/quantizeLinear.https.any.html?gpu [ Failure ]
