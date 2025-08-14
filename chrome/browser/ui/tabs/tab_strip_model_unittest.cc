@@ -3563,6 +3563,77 @@ TEST_F(TabStripModelTest, MoveTabNext_PinnedDoesNotGroup) {
   tabstrip()->CloseAllTabs();
 }
 
+TEST_F(TabStripModelTest, MoveTabNext_Split) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 0, {1}));
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tabstrip()->ActivateTabAt(3);
+  tabstrip()->AddToNewSplit({4}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tabstrip()->AddToNewGroup({3, 4});
+  ASSERT_EQ("0 1s 2s 3g0s 4g0s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->ActivateTabAt(0);
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("1s 2s 0 3g0s 4g0s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("1s 2s 0g0 3g0s 4g0s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("1s 2s 3g0s 4g0s 0g0", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("1s 2s 3g0s 4g0s 0", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("1s 2s 3g0s 4g0s 0", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->ActivateTabAt(0);
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("1g0s 2g0s 3g0s 4g0s 0", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("3g0s 4g0s 1g0s 2g0s 0", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("3g0s 4g0s 1s 2s 0", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("3g0s 4g0s 0 1s 2s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("3g0s 4g0s 0 1s 2s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, MoveTabNext_SplitPinned) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 3, 3, {0}));
+  tabstrip()->ActivateTabAt(1);
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+  ASSERT_EQ("0p 1ps 2ps", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->ActivateTabAt(0);
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("1ps 2ps 0p", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("1ps 2ps 0p", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->ActivateTabAt(0);
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("0p 1ps 2ps", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabNext();
+  EXPECT_EQ("0p 1ps 2ps", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->CloseAllTabs();
+}
+
 TEST_F(TabStripModelTest, MoveTabPrevious) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 6, 3, {5}));
@@ -3638,6 +3709,76 @@ TEST_F(TabStripModelTest, MoveTabPrevious_GroupAtEnd) {
   tabstrip()->MoveTabPrevious();
   EXPECT_EQ("1 0", GetTabStripStateString(tabstrip()));
   EXPECT_EQ(tabstrip()->GetTabGroupForTab(0), std::nullopt);
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, MoveTabPrevious_Split) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 0, {0}));
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tabstrip()->AddToNewGroup({0, 1});
+  tabstrip()->ActivateTabAt(2);
+  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+  ASSERT_EQ("0g0s 1g0s 2s 3s 4", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->ActivateTabAt(4);
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("0g0s 1g0s 4 2s 3s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("0g0s 1g0s 4g0 2s 3s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("4g0 0g0s 1g0s 2s 3s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("4 0g0s 1g0s 2s 3s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("4 0g0s 1g0s 2s 3s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->ActivateTabAt(4);
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("4 0g0s 1g0s 2g0s 3g0s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("4 2g0s 3g0s 0g0s 1g0s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("4 2s 3s 0g0s 1g0s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("2s 3s 4 0g0s 1g0s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("2s 3s 4 0g0s 1g0s", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, MoveTabPrevious_SplitPinned) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 3, 3, {0}));
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+  ASSERT_EQ("0ps 1ps 2p", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->ActivateTabAt(2);
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("2p 0ps 1ps", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("2p 0ps 1ps", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->ActivateTabAt(2);
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("0ps 1ps 2p", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->MoveTabPrevious();
+  EXPECT_EQ("0ps 1ps 2p", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }

@@ -1132,9 +1132,10 @@ class TabStripModel {
   void SelectRelativeTab(TabRelativeDirection direction,
                          TabStripUserGestureDetails detail);
 
-  // Moves the active tabs into the next slot (kNext), or the
-  // previous slot (kPrevious). Respects group boundaries and creates
-  // movement slots into and out of groups.
+  // Moves the active tab (or its split if it is in one) into the next slot
+  // (kNext), or the previous slot (kPrevious). Respects group boundaries and
+  // creates movement slots into and out of groups. Treats split tabs as a
+  // single slot.
   void MoveTabRelative(TabRelativeDirection direction);
 
   // Implementation of MoveSelectedTabsTo. Moves |length| of the selected tabs
