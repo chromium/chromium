@@ -135,7 +135,7 @@ void SqliteBackendImpl::Insert(std::string_view key,
       "VALUES (?, ?, ?, CURRENT_TIMESTAMP)"));
 
   stm.BindString(0, key);
-  stm.BindString(1, base::as_string_view(content));
+  stm.BindBlob(1, content);
   stm.BindInt64(2, metadata.input_signature);
 
   DCHECK(stm.is_valid());
