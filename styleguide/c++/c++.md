@@ -208,9 +208,8 @@ Place platform-specific #includes in their own section below the "normal"
 
 ## Object ownership and calling conventions
 
-When functions need to take raw or smart pointers as parameters, use the
-following conventions. Here we refer to the parameter type as `T` and name as
-`t`.
+When functions need to take pointers as parameters, use the following
+conventions. Here we refer to the parameter type as `T` and name as `t`.
   * If the function does not modify `t`'s ownership, declare the param as `T*`.
     The caller is expected to ensure `t` stays alive as long as necessary,
     generally through the duration of the call. Exception: In rare cases (e.g.
@@ -223,12 +222,12 @@ following conventions. Here we refer to the parameter type as `T` and name as
     declare the param as `scoped_refptr<T>`. The caller can decide
     whether it wishes to transfer ownership (by calling `std::move(t)` when
     passing `t`) or retain its ref (by simply passing t directly).
-  * In short, functions should never take ownership of parameters passed as raw
-    pointers, and there should rarely be a need to pass smart pointers by const
+  * In short, functions should never take ownership of parameters passed as
+   `T*`, and there should rarely be a need to pass smart pointers by const
     ref.
 
 Conventions for return values are similar with an important distinction:
-  * Return raw pointers if-and-only-if the caller does not take ownership.
+  * Return `T*` if-and-only-if the caller does not take ownership.
   * Return `std::unique_ptr<T>` or `scoped_refptr<T>` by value when the impl is
     handing off ownership.
   * **Distinction**: Return `const scoped_refptr<T>&` when the impl retains
@@ -247,7 +246,7 @@ code when you find it, or at least not make such usage any more widespread.
 Use `const raw_ref<T>` or `raw_ptr<T>` for class and struct fields in place of a
 raw C++ reference `T&` or pointer `T*` whenever possible, except in paths that include
 `/renderer/` or `blink/public/web/`.  These are non-owning smart pointers that
-have improved memory-safety over raw pointers and references, and can prevent
+have improved memory-safety over `T*` and `T&`, and can prevent
 exploitation of a significant percentage of Use-after-Free bugs.
 
 Prefer `const raw_ref<T>` whenever the held pointer will never be null, and it's
