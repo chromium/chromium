@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/web_contents_tester.h"
@@ -50,7 +51,7 @@ class FileSystemChooserTest : public RenderViewHostImplTestHarness {
                                        std::move(accepts), include_accepts_all),
                                    std::u16string(), default_directory,
                                    suggested_name),
-        future.GetCallback(), base::ScopedClosureRunner());
+        future.GetCallback(), FileSystemChooser::ScopedObjects());
     return std::get<1>(future.Take());
   }
 
