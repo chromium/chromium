@@ -29,6 +29,8 @@ namespace ui {
 
 namespace {
 
+constexpr int kXkbGroupShift = 13;
+
 // MAP0 - MAP3:
 // These are the generated VKEY code maps from these layout datas on Windows:
 //   KBDA1.DLL
@@ -567,7 +569,7 @@ void GetKeycodeAndModifiers(const x11::Event& event,
                             uint32_t* modifiers) {
   if (auto* dev = event.As<x11::Input::DeviceEvent>()) {
     *keycode = dev->detail;
-    *modifiers = dev->mods.effective;
+    *modifiers = GetXI2StateFromEvent(*dev);
   } else if (auto* key = event.As<x11::KeyEvent>()) {
     *keycode = static_cast<uint32_t>(key->detail);
     *modifiers = static_cast<uint32_t>(key->state);
@@ -1491,6 +1493,15 @@ unsigned int XKeyCodeForWindowsKeyCode(ui::KeyboardCode key_code,
   //
   return static_cast<uint8_t>(
       connection->KeysymToKeycode(XKeysymForWindowsKeyCode(key_code, false)));
+}
+
+uint32_t GetXI2StateFromEvent(const x11::Input::DeviceEvent& xievent) {
+  // XI2 state includes the base modifiers and the effective keyboard group.
+  return xievent.mods.effective | (xievent.group.effective << kXkbGroupShift);
+}
+
+int XkbGroupForCoreState(int state) {
+  return (state >> kXkbGroupShift) & 0x3;
 }
 
 }  // namespace ui
