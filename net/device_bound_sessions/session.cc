@@ -330,7 +330,7 @@ bool Session::ShouldDeferRequest(
     return false;
   }
 
-  // TODO(crbug.com/353766029): Refactor this.
+  // TODO(crbug.com/438783631): Refactor this.
   // The below is all copied from AddCookieHeaderAndStart. We should refactor
   // it.
   CookieStore* cookie_store = request->context()->cookie_store();
