@@ -512,8 +512,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         } else {
             newSelectedTab = getTabAt(MathUtils.clamp(i, 0, currentTabCount - 1));
         }
-        mCurrentTabSupplier.set(newSelectedTab);
         mModelDelegate.requestToShowTab(newSelectedTab, type);
+        mCurrentTabSupplier.set(newSelectedTab);
 
         if (newSelectedTab != null) {
             Token tabGroupId = newSelectedTab.getTabGroupId();
