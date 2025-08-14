@@ -144,6 +144,9 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kInvalidRefreshToken[];
 // Name of the Google authentication cookie.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGaiaSigninCookieName[];
 
+// OAuth2 scope for Chrome Web Store.
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kWebstoreOAuth2Scope[];
+
 // Constants for the Chrome Refresh Token Binding.
 inline constexpr std::string_view kTokenBindingAssertionSentinel =
     "DBSC_CHALLENGE_IF_REQUIRED";

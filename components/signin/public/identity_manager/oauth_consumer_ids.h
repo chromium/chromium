@@ -31,7 +31,12 @@ enum class OAuthConsumerId {
   kSupervisedUserListFamilyMembers = 17,
   kSupervisedUserClassifyUrl = 18,
   kSupervisedUserCreatePermissionRequest = 19,
-  kMaxValue = kSupervisedUserCreatePermissionRequest,
+  kExtensionDownloader = 20,
+  kEnclaveManager = 21,
+  kNtpDriveService = 22,
+  kForceSigninVerifier = 23,
+  kCaptureModeDelegate = 24,
+  kMaxValue = kCaptureModeDelegate,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

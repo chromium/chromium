@@ -322,8 +322,7 @@ void DriveService::GetDriveFilesInternal() {
   }
 
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "ntp_drive_module", identity_manager_,
-      signin::ScopeSet({GaiaConstants::kDriveReadOnlyOAuth2Scope}),
+      signin::OAuthConsumerId::kNtpDriveService, identity_manager_,
       base::BindOnce(&DriveService::OnTokenReceived,
                      weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,

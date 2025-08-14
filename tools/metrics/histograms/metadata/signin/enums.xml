@@ -724,6 +724,11 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Supervised User (list family members)"/>
   <int value="18" label="Supervised User (classify url)"/>
   <int value="19" label="Supervised User (create permission request)"/>
+  <int value="20" label="Extension Downloader"/>
+  <int value="21" label="Enclave Manager"/>
+  <int value="22" label="Ntp Drive Service"/>
+  <int value="23" label="Force Signin Verifier"/>
+  <int value="24" label="Capture Mode Delegate"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

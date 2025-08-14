@@ -105,8 +105,6 @@ namespace {
 
 ChromeCaptureModeDelegate* g_instance = nullptr;
 
-constexpr char kConsumerName[] = "ChromeCaptureModeDelegate";
-
 // The image quality when encoding the image being searched into the body of the
 // POST request.
 constexpr int kEncodingQualityJpeg = 40;
@@ -1014,11 +1012,9 @@ void ChromeCaptureModeDelegate::GetPrimaryAccountAccessToken(
     return;
   }
 
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kSupportContentOAuth2Scope);
   primary_account_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          kConsumerName, identity_manager, scopes,
+          signin::OAuthConsumerId::kCaptureModeDelegate, identity_manager,
           base::BindOnce(
               &ChromeCaptureModeDelegate::PrimaryAccountAccessTokenAvailable,
               base::Unretained(this), std::move(callback)),

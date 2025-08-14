@@ -35,6 +35,11 @@ constexpr char kSupervisedUserClassifyUrlName[] =
     "supervised_user_classify_url";
 constexpr char kSupervisedUserCreatePermissionRequestName[] =
     "supervised_user_create_permission_request";
+constexpr char kExtensionDownloaderName[] = "extension_downloader";
+constexpr char kEnclaveManagerName[] = "enclave_manager";
+constexpr char kNtpDriveServiceName[] = "ntp_drive_service";
+constexpr char kForceSigninVerifierName[] = "force_signin_verifier";
+constexpr char kCaptureModeDelegateName[] = "capture_mode_delegate";
 
 }  // namespace
 
@@ -151,6 +156,26 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kSupervisedUserCreatePermissionRequestName,
           /*scopes=*/{GaiaConstants::kClassifyUrlKidPermissionOAuth2Scope});
+    case OAuthConsumerId::kExtensionDownloader:
+      return OAuthConsumer(
+          /*name=*/kExtensionDownloaderName,
+          /*scopes=*/{GaiaConstants::kWebstoreOAuth2Scope});
+    case OAuthConsumerId::kEnclaveManager:
+      return OAuthConsumer(
+          /*name=*/kEnclaveManagerName,
+          /*scopes=*/{GaiaConstants::kPasskeysEnclaveOAuth2Scope});
+    case OAuthConsumerId::kNtpDriveService:
+      return OAuthConsumer(
+          /*name=*/kNtpDriveServiceName,
+          /*scopes=*/{GaiaConstants::kDriveReadOnlyOAuth2Scope});
+    case OAuthConsumerId::kForceSigninVerifier:
+      return OAuthConsumer(
+          /*name=*/kForceSigninVerifierName,
+          /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+    case OAuthConsumerId::kCaptureModeDelegate:
+      return OAuthConsumer(
+          /*name=*/kCaptureModeDelegateName,
+          /*scopes=*/{GaiaConstants::kSupportContentOAuth2Scope});
   }
   NOTREACHED();
 }

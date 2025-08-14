@@ -148,11 +148,9 @@ void ForceSigninVerifier::SendRequestIfNetworkAvailable(
     return;
   }
 
-  signin::ScopeSet oauth2_scopes;
-  oauth2_scopes.insert(GaiaConstants::kChromeSyncOAuth2Scope);
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          "force_signin_verifier", identity_manager_, oauth2_scopes,
+          signin::OAuthConsumerId::kForceSigninVerifier, identity_manager_,
           base::BindOnce(&ForceSigninVerifier::OnAccessTokenFetchComplete,
                          weak_factory_.GetWeakPtr()),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,

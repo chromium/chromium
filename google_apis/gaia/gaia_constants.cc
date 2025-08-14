@@ -253,6 +253,10 @@ const char kLensOAuth2Scope[] = "https://www.googleapis.com/auth/lens";
 // OAuth2 scope for DevTools GenAI features.
 const char kAidaOAuth2Scope[] = "https://www.googleapis.com/auth/aida";
 
+// OAuth2 scope for Chrome Web Store.
+const char kWebstoreOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromewebstore.readonly";
+
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up
 // the ClientOAuth endpoint protocol.  The comment above each constant explains
