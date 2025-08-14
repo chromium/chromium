@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOCOMPLETE_AIM_ELIGIBILITY_SERVICE_H_
-#define CHROME_BROWSER_AUTOCOMPLETE_AIM_ELIGIBILITY_SERVICE_H_
+#ifndef COMPONENTS_OMNIBOX_BROWSER_AIM_ELIGIBILITY_SERVICE_H_
+#define COMPONENTS_OMNIBOX_BROWSER_AIM_ELIGIBILITY_SERVICE_H_
 
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 
 class AimEligibilityServiceObserver;
@@ -20,22 +21,11 @@ class PrefRegistrySimple;
 class PrefService;
 class TemplateURLService;
 
-// If disabled, AIM is completely turned off (kill switch).
-BASE_DECLARE_FEATURE(kAimEnabled);
-
-// If enabled, uses the server response for AIM eligibility.
-BASE_DECLARE_FEATURE(kAimServerEligibilityEnabled);
-
-// If enabled, uses the server response for AIM eligibility for English locales.
-BASE_DECLARE_FEATURE(kAimServerEligibilityEnabledEn);
-
 namespace network {
 class SimpleURLLoader;
-class SharedURLLoaderFactory;
 }  // namespace network
 
-// Utility service to check if the user is eligible for certain AI mode features
-// based on e.g. locale. Does not check feature states.
+// Utility service to check if the profile is eligible for AI mode features.
 class AimEligibilityService : public KeyedService {
  public:
   // See comment for `WriteToPref()`.
@@ -46,13 +36,11 @@ class AimEligibilityService : public KeyedService {
       TemplateURLService& template_url_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~AimEligibilityService() override;
-  AimEligibilityService(const AimEligibilityService&) = delete;
-  AimEligibilityService& operator=(const AimEligibilityService&) = delete;
 
   // Checks if the application country matches the given country.
-  static bool IsCountry(const std::string& country);
+  bool IsCountry(const std::string& country) const;
   // Checks if the application language matches the given language.
-  static bool IsLanguage(const std::string& language);
+  bool IsLanguage(const std::string& language) const;
 
   // Register observers to notify when eligibility may have changed. Eligibility
   // is re-checked periodically.
@@ -71,6 +59,11 @@ class AimEligibilityService : public KeyedService {
   // Virtual for testing purposes.
   virtual bool IsAimEligible() const;
 
+ protected:
+  // Virtual methods for platform-specific country and locale access.
+  virtual std::string GetCountryCode() const = 0;
+  virtual std::string GetLocale() const = 0;
+
  private:
   // Notify `observers_` ineligibles may have changed.
   void NotifyObservers() const;
@@ -79,15 +72,16 @@ class AimEligibilityService : public KeyedService {
   // `most_recent_response_` if parsing fails.
   bool ParseResponseString(const std::string& response_string);
 
-  // Write and read `most_recent_response_` to pref so it can be used when GWS
+  // Write and read `most_recent_response_` to pref so it can be used when the
   // server is unavailable.
   void WriteToPref(const std::string& response_string) const;
   void ReadFromPref();
 
-  // Fetch eligibility from GWS server.
-  void StartGwsRequest();
-  void OnGwsResponse(std::unique_ptr<network::SimpleURLLoader> loader,
-                     std::unique_ptr<std::string> response_string);
+  // Fetch eligibility from the server.
+  void StartServerEligibilityRequest();
+  void OnServerEligibilityResponse(
+      std::unique_ptr<network::SimpleURLLoader> loader,
+      std::unique_ptr<std::string> response_string);
 
   static constexpr char kResponsePrefName[] =
       "aim_eligibility_service.aim_eligibility_response";
@@ -98,11 +92,11 @@ class AimEligibilityService : public KeyedService {
   const raw_ref<TemplateURLService> template_url_service_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // Update on each successfully GWS response.
+  // Update on each successfully server response.
   omnibox::AimEligibilityResponse most_recent_response_;
 
-  // For binding the `OnGwsResponse()` callback.
+  // For binding the `OnServerEligibilityResponse()` callback.
   base::WeakPtrFactory<AimEligibilityService> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_AUTOCOMPLETE_AIM_ELIGIBILITY_SERVICE_H_
+#endif  // COMPONENTS_OMNIBOX_BROWSER_AIM_ELIGIBILITY_SERVICE_H_

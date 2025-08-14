@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 
 namespace ntp_composebox {
 
@@ -46,8 +46,8 @@ bool IsNtpSearchboxComposeEntrypointEnabled(Profile* profile) {
   // Since the base::Feature default state cannot be set based on a dynamic
   // condition, use a dedicated feature to control the entrypoint for English
   // locales in the US, allowing for targeted rollbacks if needed.
-  if (AimEligibilityService::IsCountry("us") &&
-      AimEligibilityService::IsLanguage("en")) {
+  if (aim_eligibility_service->IsCountry("us") &&
+      aim_eligibility_service->IsLanguage("en")) {
     return base::FeatureList::IsEnabled(
         kNtpSearchboxComposeEntrypointEnglishUs);
   }

@@ -8,7 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service.h"
+#include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -47,7 +47,7 @@ std::unique_ptr<KeyedService>
 AimEligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<AimEligibilityService>(
+  return std::make_unique<ChromeAimEligibilityService>(
       CHECK_DEREF(profile->GetPrefs()),
       CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(profile)),
       profile->GetDefaultStoragePartition()

@@ -351,11 +351,10 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
-    The AIM Eligibility service makes HTTP requests to a GWS backend to
-    determine which AI features the user is eligible for. The requests are
-    triggered by certain infrequent actions that affect the user profile (e.g.
-    startup, switching profiles, signing in, etc), and also periodically: once
-    every N hours.
+    The AIM Eligibility service makes HTTP requests to determine which AI
+    features the user is eligible for. The requests are triggered by certain
+    infrequent actions that affect the user profile (e.g. startup, switching
+    profiles, signing in, etc), and also periodically: once every N hours.
 
     The response is expected to be pretty stable over time. Even if the request
     is made once every N hours, the response might not change for weeks or
@@ -369,15 +368,14 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.AimEligibility.GwsRequest"
-    enum="GwsAimEligibilityRequestStatus" expires_after="2026-08-05">
+    enum="ServerAimEligibilityRequestStatus" expires_after="2026-08-05">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
-    The AIM Eligibility service makes HTTP requests to a GWS backend to
-    determine which AI features the user is eligible for. The requests are
-    triggered by certain infrequent actions that affect the user profile (e.g.
-    startup, switching profiles, signing in, etc), and also periodically: once
-    every N hours.
+    The AIM Eligibility service makes HTTP requests to determine which AI
+    features the user is eligible for. The requests are triggered by certain
+    infrequent actions that affect the user profile (e.g. startup, switching
+    profiles, signing in, etc), and also periodically: once every N hours.
 
     This metric logs the status of the request.
   </summary>

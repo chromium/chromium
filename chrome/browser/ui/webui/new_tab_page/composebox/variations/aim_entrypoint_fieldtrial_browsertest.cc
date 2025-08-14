@@ -10,8 +10,8 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -24,7 +24,7 @@
 #include "content/public/test/browser_test.h"
 
 // A test AimEligibilityService that returns fixed eligibility values.
-class TestingAimEligibilityService : public AimEligibilityService {
+class TestingAimEligibilityService : public ChromeAimEligibilityService {
  public:
   explicit TestingAimEligibilityService(
       bool is_locally_eligible,
@@ -32,9 +32,9 @@ class TestingAimEligibilityService : public AimEligibilityService {
       bool server_eligibility_enabled,
       PrefService& pref_service,
       TemplateURLService& template_url_service)
-      : AimEligibilityService(pref_service,
-                              template_url_service,
-                              /*url_loader_factory=*/nullptr),
+      : ChromeAimEligibilityService(pref_service,
+                                    template_url_service,
+                                    /*url_loader_factory=*/nullptr),
         is_locally_eligible_(is_locally_eligible),
         is_server_eligible_(is_server_eligible),
         server_eligibility_enabled_(server_eligibility_enabled) {}
