@@ -34,9 +34,11 @@ def main(args):
   logging.info('Detected platform %s', platform)
 
   out_dir = SOURCE_ROOT / f'build/modules/{platform}'
+  out_build = out_dir / 'BUILD.gn'
   # Otherwise gn will error out because it tries to import a file that doesn't exist.
-  if not out_dir.is_dir():
-    shutil.copytree(out_dir.parent / 'linux-x64', out_dir)
+  if not out_build.is_file():
+    out_dir.mkdir(exist_ok=True)
+    shutil.copyfile(out_dir.parent / 'linux-x64/BUILD.gn', out_build)
 
   if args.compile:
     ps, files = compiler.compile_one(args.compile)
