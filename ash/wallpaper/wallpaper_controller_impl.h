@@ -122,13 +122,12 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Returns custom wallpaper path. Appends |sub_dir|, |wallpaper_files_id| and
   // |file_name| to custom wallpaper directory.
-  static base::FilePath GetCustomWallpaperPath(
-      const std::string& sub_dir,
-      const std::string& wallpaper_files_id,
-      const std::string& file_name);
+  base::FilePath GetCustomWallpaperPath(const std::string& sub_dir,
+                                        const std::string& wallpaper_files_id,
+                                        const std::string& file_name) const;
 
   // Returns custom wallpaper directory by appending corresponding |sub_dir|.
-  static base::FilePath GetCustomWallpaperDir(const std::string& sub_dir);
+  base::FilePath GetCustomWallpaperDir(const std::string& sub_dir) const;
 
   // Returns the k mean color of the current wallpaper.
   SkColor GetKMeanColor() const;
@@ -717,6 +716,10 @@ class ASH_EXPORT WallpaperControllerImpl
   // If the user has a Google Photos wallpaper set.
   bool IsGooglePhotosWallpaperSet() const;
 
+  base::FilePath GetUserGooglePhotosWallpaperDir(
+      const AccountId& account_id) const;
+  base::FilePath GetUserSeaPenWallpaperDir(const AccountId& account_id) const;
+
   // Checks to make sure the currently selected Google Photos wallpaper still
   // exists in the user's Google Photos library.
   void CheckGooglePhotosStaleness(const AccountId& account_id,
@@ -812,6 +815,12 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Cached OOBE wallpaper.
   CachedDefaultWallpaper cached_oobe_wallpaper_;
+
+  // The paths of wallpaper directories.
+  base::FilePath wallpapers_dir_;
+  base::FilePath custom_wallpapers_dir_;
+  base::FilePath google_photos_wallpapers_dir_;
+  base::FilePath sea_pen_wallpaper_dir_;
 
   // The paths of the customized default wallpapers, if they exist.
   base::FilePath customized_default_small_path_;

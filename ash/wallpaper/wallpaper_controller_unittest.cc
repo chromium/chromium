@@ -257,30 +257,31 @@ bool WriteJPEGFile(const base::FilePath& path,
 }
 
 // Returns custom wallpaper path. Creates the directory if it doesn't exist.
-base::FilePath GetCustomWallpaperPath(const char* sub_dir,
+base::FilePath GetCustomWallpaperPath(const WallpaperControllerImpl& controller,
+                                      const char* sub_dir,
                                       const std::string& wallpaper_files_id,
                                       const std::string& file_name) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath wallpaper_path =
-      WallpaperControllerImpl::GetCustomWallpaperPath(
-          sub_dir, wallpaper_files_id, file_name);
+      controller.GetCustomWallpaperPath(sub_dir, wallpaper_files_id, file_name);
   if (!base::DirectoryExists(wallpaper_path.DirName()))
     base::CreateDirectory(wallpaper_path.DirName());
 
   return wallpaper_path;
 }
 
-void WaitUntilCustomWallpapersDeleted(const AccountId& account_id) {
+void WaitUntilCustomWallpapersDeleted(const WallpaperControllerImpl& controller,
+                                      const AccountId& account_id) {
   const std::string wallpaper_file_id = GetDummyFileId(account_id);
 
   base::FilePath small_wallpaper_dir =
-      WallpaperControllerImpl::GetCustomWallpaperDir(kSmallWallpaperSubDir)
+      controller.GetCustomWallpaperDir(kSmallWallpaperSubDir)
           .Append(wallpaper_file_id);
   base::FilePath large_wallpaper_dir =
-      WallpaperControllerImpl::GetCustomWallpaperDir(kLargeWallpaperSubDir)
+      controller.GetCustomWallpaperDir(kLargeWallpaperSubDir)
           .Append(wallpaper_file_id);
   base::FilePath original_wallpaper_dir =
-      WallpaperControllerImpl::GetCustomWallpaperDir(kOriginalWallpaperSubDir)
+      controller.GetCustomWallpaperDir(kOriginalWallpaperSubDir)
           .Append(wallpaper_file_id);
 
   while (base::PathExists(small_wallpaper_dir) ||
@@ -688,9 +689,9 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
 
     std::string file_name = GetDummyFileName(account_id);
     base::FilePath small_wallpaper_path = GetCustomWallpaperPath(
-        kSmallWallpaperSubDir, wallpaper_files_id, file_name);
+        *controller_, kSmallWallpaperSubDir, wallpaper_files_id, file_name);
     base::FilePath large_wallpaper_path = GetCustomWallpaperPath(
-        kLargeWallpaperSubDir, wallpaper_files_id, file_name);
+        *controller_, kLargeWallpaperSubDir, wallpaper_files_id, file_name);
 
     // Saves the small/large resolution wallpapers to small/large custom
     // wallpaper paths.
@@ -2019,7 +2020,7 @@ TEST_P(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {
   // and the user is no longer policy controlled.
   ClearWallpaperCount();
   controller_->RemovePolicyWallpaper(kAccountId1);
-  WaitUntilCustomWallpapersDeleted(kAccountId1);
+  WaitUntilCustomWallpapersDeleted(*controller_, kAccountId1);
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   WallpaperInfo default_wallpaper_info(
@@ -2060,15 +2061,12 @@ TEST_P(WallpaperControllerTest, ShowUserWallpaper_OriginalFallback) {
   base::FilePath saved_wallpaper = custom_wallpaper_dir_.GetPath().Append(
       "small/user1@test.com-hash/user1@test.com-file");
   ASSERT_TRUE(base::PathExists(saved_wallpaper));
-  base::CreateDirectory(
-      WallpaperControllerImpl::GetCustomWallpaperDir("original")
-          .Append("user1@test.com-hash"));
-  ASSERT_TRUE(base::PathExists(
-      WallpaperControllerImpl::GetCustomWallpaperDir("original")));
+  base::CreateDirectory(controller_->GetCustomWallpaperDir("original")
+                            .Append("user1@test.com-hash"));
+  ASSERT_TRUE(base::PathExists(controller_->GetCustomWallpaperDir("original")));
   ASSERT_TRUE(
-      base::Move(saved_wallpaper,
-                 WallpaperControllerImpl::GetCustomWallpaperDir("original")
-                     .Append(wallpaper_info.location)));
+      base::Move(saved_wallpaper, controller_->GetCustomWallpaperDir("original")
+                                      .Append(wallpaper_info.location)));
   ASSERT_FALSE(base::PathExists(saved_wallpaper));
   ClearDecodeFilePaths();
 
@@ -2101,7 +2099,7 @@ TEST_P(WallpaperControllerTest, ShowUserWallpaper_MissingFile) {
 
   // Delete wallpaper file.
   controller_->RemoveUserWallpaper(kAccountId1, base::DoNothing());
-  WaitUntilCustomWallpapersDeleted(kAccountId1);
+  WaitUntilCustomWallpapersDeleted(*controller_, kAccountId1);
   ClearDecodeFilePaths();
 
   // Show wallpaper
@@ -3070,9 +3068,9 @@ TEST_P(WallpaperControllerTest, VerifyWallpaperCache) {
 // on the desktop resolution.
 TEST_P(WallpaperControllerTest, ShowCustomWallpaperWithCorrectResolution) {
   const base::FilePath small_custom_wallpaper_path = GetCustomWallpaperPath(
-      kSmallWallpaperSubDir, kWallpaperFilesId1, kFileName1);
+      *controller_, kSmallWallpaperSubDir, kWallpaperFilesId1, kFileName1);
   const base::FilePath large_custom_wallpaper_path = GetCustomWallpaperPath(
-      kLargeWallpaperSubDir, kWallpaperFilesId1, kFileName1);
+      *controller_, kLargeWallpaperSubDir, kWallpaperFilesId1, kFileName1);
 
   CreateAndSaveWallpapers(kAccountId1);
   ClearWallpaperCount();
@@ -3314,7 +3312,7 @@ TEST_P(WallpaperControllerTest, UpdateCurrentWallpaperLayout) {
 TEST_P(WallpaperControllerTest, RemoveUserWithCustomWallpaper) {
   SimulateUserLogin(kAccountId1);
   base::FilePath small_wallpaper_path_1 = GetCustomWallpaperPath(
-      kSmallWallpaperSubDir, kWallpaperFilesId1, kFileName1);
+      *controller_, kSmallWallpaperSubDir, kWallpaperFilesId1, kFileName1);
 
   // Set a custom wallpaper for |kUser1| and verify the wallpaper exists.
   CreateAndSaveWallpapers(kAccountId1);
@@ -3322,8 +3320,9 @@ TEST_P(WallpaperControllerTest, RemoveUserWithCustomWallpaper) {
 
   // Now login another user and set a custom wallpaper for the user.
   SimulateUserLogin(kAccountId2);
-  base::FilePath small_wallpaper_path_2 = GetCustomWallpaperPath(
-      kSmallWallpaperSubDir, kWallpaperFilesId2, GetDummyFileName(kAccountId2));
+  base::FilePath small_wallpaper_path_2 =
+      GetCustomWallpaperPath(*controller_, kSmallWallpaperSubDir,
+                             kWallpaperFilesId2, GetDummyFileName(kAccountId2));
   CreateAndSaveWallpapers(kAccountId2);
   EXPECT_TRUE(base::PathExists(small_wallpaper_path_2));
 
@@ -3331,7 +3330,7 @@ TEST_P(WallpaperControllerTest, RemoveUserWithCustomWallpaper) {
   controller_->RemoveUserWallpaper(kAccountId2, base::DoNothing());
   // Wait until all files under the user's custom wallpaper directory are
   // removed.
-  WaitUntilCustomWallpapersDeleted(kAccountId2);
+  WaitUntilCustomWallpapersDeleted(*controller_, kAccountId2);
   EXPECT_FALSE(base::PathExists(small_wallpaper_path_2));
 
   // Verify that the other user's wallpaper is not affected.
@@ -3343,7 +3342,7 @@ TEST_P(WallpaperControllerTest, RemoveUserWithCustomWallpaper) {
 TEST_P(WallpaperControllerTest, RemoveUserWithDefaultWallpaper) {
   SimulateUserLogin(kAccountId1);
   base::FilePath small_wallpaper_path_1 = GetCustomWallpaperPath(
-      kSmallWallpaperSubDir, kWallpaperFilesId1, kFileName1);
+      *controller_, kSmallWallpaperSubDir, kWallpaperFilesId1, kFileName1);
   // Set a custom wallpaper for |kUser1| and verify the wallpaper exists.
   CreateAndSaveWallpapers(kAccountId1);
   EXPECT_TRUE(base::PathExists(small_wallpaper_path_1));
