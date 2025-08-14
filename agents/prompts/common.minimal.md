@@ -34,6 +34,12 @@ single agentic tool.
 Unless otherwise instructed, run tests with:
 `tools/autotest.py --quiet --run-all -C {OUT_DIR} {RELEVANT_TEST_FILENAMES}`
 
+When using `tools/autotest.py`:
+* Do not invoke `autoninja` beforehand because `autotest.py` automatically
+  builds relevant targets.
+* Build targets containing colons (`:`) are not valid inputs for
+  `{RELEVANT_TEST_FILENAMES}`.
+
 ## Coding
 
 * Stay on task: Do not address code health issues or TODOs in code unless it is

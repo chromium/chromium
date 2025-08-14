@@ -40,6 +40,13 @@ GEMINI_CLI=1 is set, but nice for the command to be correct from the start.-->
 Unless otherwise instructed, run tests with:
 `tools/autotest.py --quiet --run-all -C {OUT_DIR} {RELEVANT_TEST_FILENAMES}`
 
+When using `tools/autotest.py`:
+<!-- Avoid passing nonexistent/irrelevant build targets to `autoninja`. -->
+* Do not invoke `autoninja` beforehand because `autotest.py` automatically
+  builds relevant targets.
+* Build targets containing colons (`:`) are not valid inputs for
+  `{RELEVANT_TEST_FILENAMES}`.
+
 ## Coding
 
 <!-- Try to prevent agent from fixing TODOs that appear close to code that it's
