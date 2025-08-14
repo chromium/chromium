@@ -4,6 +4,7 @@
 
 #include "content/browser/storage_access/storage_access_handle.h"
 
+#include "base/byte_count.h"
 #include "base/functional/callback_helpers.h"
 #include "base/types/pass_key.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
@@ -32,10 +33,12 @@ void EstimateImplAfterGetBucketUsageAndQuota(
     int64_t usage,
     int64_t quota) {
   if (code != blink::mojom::QuotaStatusCode::kOk) {
-    std::move(callback).Run(/*usage=*/0, /*quota=*/0, /*success=*/false);
+    std::move(callback).Run(/*usage=*/base::ByteCount(0),
+                            /*quota=*/base::ByteCount(0), /*success=*/false);
     return;
   }
-  std::move(callback).Run(usage, quota, /*success=*/true);
+  std::move(callback).Run(base::ByteCount(usage), base::ByteCount(quota),
+                          /*success=*/true);
 }
 
 }  // namespace
@@ -129,7 +132,8 @@ void StorageAccessHandle::EstimateImpl(
     storage::QuotaErrorOr<std::set<storage::BucketInfo>> bucket_set) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!bucket_set.has_value()) {
-    std::move(callback).Run(/*usage=*/0, /*quota=*/0, /*success=*/false);
+    std::move(callback).Run(/*usage=*/base::ByteCount(0),
+                            /*quota=*/base::ByteCount(0), /*success=*/false);
     return;
   }
   storage::BucketInfo bucket_info;
@@ -140,7 +144,8 @@ void StorageAccessHandle::EstimateImpl(
     }
   }
   if (bucket_info.is_null()) {
-    std::move(callback).Run(/*usage=*/0, /*quota=*/0, /*success=*/true);
+    std::move(callback).Run(/*usage=*/base::ByteCount(0),
+                            /*quota=*/base::ByteCount(0), /*success=*/true);
     return;
   }
   static_cast<RenderFrameHostImpl&>(render_frame_host())
