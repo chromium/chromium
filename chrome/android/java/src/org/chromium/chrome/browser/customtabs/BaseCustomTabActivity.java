@@ -41,6 +41,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -886,11 +887,21 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             mTabFactory.destroyTabModelOrchestrator();
         }
 
+        if (mTabProvider == null || mTabProvider.getTab() == null) {
+            return;
+        }
+
+        final var tabModelSelector = getTabModelSelectorSupplier().get();
+        final var tab = mTabProvider.get();
+        // Keep a tab alive when re-parenting.
+        final var isReparenting =
+                tabModelSelector != null
+                        && tabModelSelector.isReparentingInProgress()
+                        && AsyncTabParamsManagerSingleton.getInstance()
+                                .hasParamsForTabId(tab.getId());
         // If tab models have not been initialized, any early created tabs would leak.
-        if (mTabProvider != null
-                && mTabProvider.getTab() != null
-                && !mTabProvider.getTab().isDestroyed()) {
-            mTabProvider.getTab().destroy();
+        if (!tab.isDestroyed() && !isReparenting) {
+            tab.destroy();
         }
     }
 

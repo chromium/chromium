@@ -44,6 +44,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -3096,6 +3097,37 @@ public class CustomTabActivityTest {
         assertNotNull(
                 "Page info should have been shown.",
                 PageInfoController.getLastPageInfoController());
+    }
+
+    @Test
+    @MediumTest
+    public void testTabReparentedOnDensityChange() {
+        // Start the initial activity and get its tab.
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
+        CustomTabActivity initialActivity = mCustomTabActivityTestRule.getActivity();
+        Tab tab1 = initialActivity.getActivityTab();
+        Assert.assertNotNull("Initial tab should not be null", tab1);
+
+        // Trigger the recreation via onConfigurationChanged and wait for the new activity instance
+        // to be resumed.
+        Configuration currentConfig = initialActivity.getResources().getConfiguration();
+        Configuration newConfig = new Configuration(currentConfig);
+        newConfig.densityDpi += 20;
+
+        CustomTabActivity recreatedActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        CustomTabActivity.class,
+                        Stage.RESUMED,
+                        () -> initialActivity.onConfigurationChanged(newConfig));
+        mCustomTabActivityTestRule.setActivity(recreatedActivity);
+
+        // Wait for the old activity to be destroyed.
+        ApplicationTestUtils.waitForActivityState(initialActivity, Stage.DESTROYED);
+
+        // Verify that the tab was re-parented.
+        Tab tab2 = recreatedActivity.getActivityTab();
+        Assert.assertNotNull("Tab in new activity should not be null", tab2);
+        Assert.assertSame("Tab should be the same instance after recreation", tab1, tab2);
     }
 
     private void rotateCustomTabActivity(CustomTabActivity activity, int orientation) {
