@@ -4461,7 +4461,6 @@ static_library("browser") {
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/infobars",
       "//chrome/browser/ui/views/infobars:impl",
-      "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
@@ -4667,10 +4666,6 @@ static_library("browser") {
       # TODO(crbug.com/437811373): Remove this circular dependency when
       # c/b/password_manager/password_store_utils.h gets componentized.
       "//chrome/browser/ui/passwords/bubble_controllers:impl",
-
-      # TODO(crbug.com/434882143): Remove this circular dependency when
-      # c/b/privacy_sandbox/tracking_protection_settings_factory.h gets componentized.
-      "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
     ]
 
     #!is_android
