@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, RunAtTimingsAllFire) {
     // Load the URL and make sure each script set for the different timings have
     // fired.
     const GURL url = embedded_test_server()->GetURL(path);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
     // Note: These checks don't ensure the correct ordering of injection, but
     // that is verified in the JS files themselves.
@@ -339,8 +339,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, RunAtTimingsAllFire) {
     listener_end.Reset();
     listener_idle.Reset();
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
     EXPECT_TRUE(listener_start.WaitUntilSatisfied());
     EXPECT_TRUE(listener_end.WaitUntilSatisfied());
     EXPECT_TRUE(listener_idle.WaitUntilSatisfied());
@@ -358,21 +357,22 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "content_scripts/duplicate_script_injection")));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   // Test that a script that matches two separate, yet overlapping match
   // patterns is only injected once.
-  ASSERT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.getElementsByClassName('injected-once')"
-                      ".length == 1"));
+  ASSERT_EQ(true,
+            content::EvalJs(web_contents,
+                            "document.getElementsByClassName('injected-once')"
+                            ".length == 1"));
 
   // Test that a script injected at two different load process times, document
   // idle and document end, is injected exactly twice.
-  ASSERT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.getElementsByClassName('injected-twice')"
-                      ".length == 2"));
+  ASSERT_EQ(true,
+            content::EvalJs(web_contents,
+                            "document.getElementsByClassName('injected-twice')"
+                            ".length == 2"));
 }
 
 // Tests that content scripts detaching its Window during evaluation shouldn't
@@ -386,22 +386,23 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, DetachDuringEvaluation) {
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("content_scripts/detach_during_evaluation")));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   // The iframe is removed by `detach.js`.
-  EXPECT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.getElementById('injected') === null"));
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents,
+                            "document.getElementById('injected') === null"));
 
   // `detach.js` is evaluated, and detaches the iframe.
   EXPECT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      web_contents,
                       "document.getElementById('detach-evaluated') !== null"));
 
   // `detach2.js` isn't evaluated because the iframe is detached.
   EXPECT_EQ(
       false,
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(web_contents,
                       "document.getElementById('detach2-evaluated') !== null"));
 }
 
@@ -455,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, FetchExemptFromCSP) {
   GURL csp_page_url = embedded_test_server()->GetURL(
       "bar.com",
       "/extensions/page_with_csp.html?fetchUrl=" + redirect_url.spec());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), csp_page_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), csp_page_url));
 
   // Ensure the fetch is exempt from the page CSP and succeeds.
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -471,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, FetchExemptFromCSP) {
   csp_page_url = embedded_test_server()->GetURL(
       "bar.com",
       "/extensions/page_with_csp.html?fetchUrl=" + redirect_url.spec());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), csp_page_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), csp_page_url));
 
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("Failed to fetch", listener.message());
@@ -575,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   // the patterns specified for the content script.
   GURL url =
       embedded_test_server()->GetURL("/extensions/test_file_with_body.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   constexpr char kInjectedBodyColor[] = "rgb(0, 0, 255)";  // Blue
   EXPECT_EQ(kInjectedBodyColor, get_element_color("body"));
   EXPECT_EQ(0, get_style_sheet_count())
@@ -585,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   // The loaded extension has an exclude match for "extensions/test_file.html",
   // so no CSS should be injected.
   url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   EXPECT_NE(kInjectedBodyColor, get_element_color("body"));
   EXPECT_EQ(0, get_style_sheet_count());
 
@@ -595,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   url = embedded_test_server()
             ->GetURL("/extensions/test_file_with_body.html")
             .ReplaceComponents(replacements);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   EXPECT_NE(kInjectedBodyColor, get_element_color("body"));
   EXPECT_EQ(0, get_style_sheet_count());
 
@@ -607,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   // The extension styles should win by specificity, since they are in the same
   // style origin ("author").
   url = embedded_test_server()->GetURL("/extensions/test_file_with_style.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   constexpr char kInjectedDivColor[] = "rgb(0, 0, 255)";  // Blue
   constexpr char kOriginalDivColor[] = "rgb(255, 0, 0)";  // Red
   EXPECT_EQ(kInjectedDivColor, get_element_color("#div1"));
@@ -649,17 +650,18 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptExtensionAPIs) {
   const extensions::Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("content_scripts/extension_api"));
 
+  auto* web_contents = GetActiveWebContents();
   ResultCatcher catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
       embedded_test_server()->GetURL("/extensions/api_test/content_scripts/"
                                      "extension_api/functions.html")));
   EXPECT_TRUE(catcher.GetNextResult());
 
   // Navigate to a page that will cause a content script to run that starts
   // listening for an extension event.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
       embedded_test_server()->GetURL(
           "/extensions/api_test/content_scripts/extension_api/events.html")));
 
@@ -839,8 +841,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptBlockingScript) {
   const Extension* ext2 = LoadExtension(ext_dir2.UnpackedPath());
   ASSERT_TRUE(ext2);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   auto* js_dialog_manager =
       javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents);
   base::RunLoop dialog_wait;
@@ -890,8 +891,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   const Extension* ext2 = LoadExtension(ext_dir2.UnpackedPath());
   ASSERT_TRUE(ext2);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   auto* js_dialog_manager =
       javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents);
   base::RunLoop dialog_wait;
@@ -932,8 +932,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   const Extension* ext1 = LoadExtension(ext_dir1.UnpackedPath());
   ASSERT_TRUE(ext1);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   auto* js_dialog_manager =
       javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents);
   base::RunLoop dialog_wait;
@@ -976,18 +975,15 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL("chrome://newtab"), ui::PAGE_TRANSITION_LINK));
   browser()->tab_strip_model()->ActivateTabAt(0);
-  content::WebContents* tab_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab_contents = GetActiveWebContents();
 
   EXPECT_EQ(new_tab_override->GetResourceURL("newtab.html"),
             tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_FALSE(listener.was_satisfied());
   listener.Reset();
 
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/empty.html"),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(NavigateToURL(tab_contents,
+                            embedded_test_server()->GetURL("/empty.html")));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(listener.was_satisfied());
 }
@@ -1026,19 +1022,14 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   ResultCatcher catcher;
   test_listener.Reply(std::string());
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+  auto* web_contents = GetActiveWebContents();
   EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(profile()),
-            browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetLastCommittedURL());
-  EXPECT_FALSE(
-      did_script_inject(browser()->tab_strip_model()->GetActiveWebContents()));
+            web_contents->GetLastCommittedURL());
+  EXPECT_FALSE(did_script_inject(web_contents));
 
   // Next, check content script injection.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), search::GetNewTabPageURL(profile())));
-  EXPECT_FALSE(
-      did_script_inject(browser()->tab_strip_model()->GetActiveWebContents()));
+  ASSERT_TRUE(NavigateToURL(web_contents, search::GetNewTabPageURL(profile())));
+  EXPECT_FALSE(did_script_inject(web_contents));
 
   // The extension should inject on "normal" urls.
 
@@ -1046,17 +1037,15 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   // loads over http instead of https. example2.com loads over https.
   GURL unprotected_url1 = embedded_test_server()->GetURL(
       "example1.com", "/extensions/test_file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unprotected_url1));
-  EXPECT_TRUE(
-      did_script_inject(browser()->tab_strip_model()->GetActiveWebContents()));
+  ASSERT_TRUE(NavigateToURL(web_contents, unprotected_url1));
+  EXPECT_TRUE(did_script_inject(web_contents));
 
   // Test on an HTTPS URL. If HTTPS-Upgrades feature is enabled, this URL is
   // upgraded to HTTPS.
   GURL unprotected_url2 = embedded_test_server()->GetURL(
       "example2.com", "/extensions/test_file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unprotected_url2));
-  EXPECT_TRUE(
-      did_script_inject(browser()->tab_strip_model()->GetActiveWebContents()));
+  ASSERT_TRUE(NavigateToURL(web_contents, unprotected_url2));
+  EXPECT_TRUE(did_script_inject(web_contents));
 }
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, SameSiteCookies) {
@@ -1170,7 +1159,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptBypassingSandbox) {
 
   GURL url = embedded_test_server()->GetURL(
       "example.com", "/extensions/page_with_sandbox_csp.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -1216,7 +1205,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
   GURL url = embedded_test_server()->GetURL(
       "example.com", "/extensions/page_with_sandbox_csp.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -1244,10 +1233,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, InifiniteLoopInGetEffectiveURL) {
 
   // Create an "infinite" loop for hopping over parent/opener:
   // subframe1 ---parent---> mainFrame ---opener--> subframe1 ...
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL(url::kAboutBlankURL)));
   ASSERT_TRUE(content::ExecJs(web_contents,
                               R"(
                                   var iframe = document.createElement('iframe');
@@ -1332,15 +1319,15 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ContentScriptUrls) {
   auto load_page_and_check_error = [this, extension](const char* host) {
     SCOPED_TRACE(host);
     ResultCatcher catcher;
-    content::WebContentsConsoleObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    content::WebContentsConsoleObserver observer(GetActiveWebContents());
     auto filter =
         [](const content::WebContentsConsoleObserver::Message& message) {
           return message.message == u"TestMessage";
         };
     observer.SetFilter(base::BindRepeating(filter));
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL(host, "/simple.html")));
+    ASSERT_TRUE(
+        NavigateToURL(GetActiveWebContents(),
+                      embedded_test_server()->GetURL(host, "/simple.html")));
     ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
     ASSERT_EQ(1u, observer.messages().size());
     GURL source_url(observer.messages()[0].source_id);
@@ -1368,7 +1355,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, StorageApiDefaultAccessTest) {
   // then continues the test, so we need a separate ResultCatcher.
   ResultCatcher catcher;
   GURL url(embedded_test_server()->GetURL("/extensions/test_file.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -1387,7 +1374,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   // then continues the test, so we need a separate ResultCatcher.
   ResultCatcher catcher;
   GURL url(embedded_test_server()->GetURL("/extensions/test_file.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -1407,7 +1394,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, StorageApiAllowMixedAccessTest) {
   // then continues the test, so we need a separate ResultCatcher.
   ResultCatcher catcher;
   GURL url(embedded_test_server()->GetURL("/extensions/test_file.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -1462,13 +1449,12 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, MhtmlIframe) {
   GURL page_url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("extensions")),
       base::FilePath(FILE_PATH_LITERAL("mhtml-with-subframes.mht")));
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  EXPECT_TRUE(NavigateToURL(web_contents, page_url));
 
   // Verify that the subframes are at the expected URLs:
   // * Not `file:` URLs - the URLs come from inside MHTML,
   // * URLs will match the URLs patterns from the extension manifest above.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* subframe1 = content::ChildFrameAt(web_contents, 0);
   ASSERT_TRUE(subframe1);
   EXPECT_EQ(subframe1->GetLastCommittedURL(), kExpectedFrame1Url);
@@ -1683,10 +1669,9 @@ bool ContentScriptRelatedFrameTest::DidScriptRunInFrame(
 
 content::WebContents* ContentScriptRelatedFrameTest::NavigateTab(
     const GURL& url) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(NavigateToURL(web_contents, url));
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
   return web_contents;
@@ -1702,8 +1687,7 @@ content::WebContents* ContentScriptRelatedFrameTest::OpenPopup(
       opener_web_contents, content::JsReplace("window.open($1);", url.spec())));
   popup_observer.Wait();
   EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
-  content::WebContents* popup =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* popup = GetActiveWebContents();
   EXPECT_EQ(url, popup->GetLastCommittedURL());
   EXPECT_NE(popup, opener_web_contents);
   return popup;
@@ -1858,8 +1842,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   // parent.
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(R"("navigated")", result);
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
   EXPECT_EQ(null_document_url(), tab->GetLastCommittedURL());
   content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
   // Sanity check: The main frame should have been re-written. The test passes
@@ -2209,10 +2192,8 @@ IN_PROC_BROWSER_TEST_P(NTPInterceptionTest, ContentScript) {
 
   // Ensure that the extension isn't able to inject the script into the New Tab
   // Page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL(chrome::kChromeUINewTabURL)));
   ASSERT_TRUE(search::IsInstantNTP(web_contents));
 
   EXPECT_EQ(false, EvalJs(web_contents, "document.title !== 'Fake NTP';"));
@@ -2241,12 +2222,12 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CoepFrameTest) {
   auto handle = server.StartAndReturnHandle();
   const GURL url = server.GetURL("/hello.html");
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   const std::u16string kPassed = u"PASSED";
   const std::u16string kFailed = u"FAILED";
-  content::TitleWatcher watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), kPassed);
+  content::TitleWatcher watcher(web_contents, kPassed);
   watcher.AlsoWaitForTitle(kFailed);
 
   ASSERT_EQ(kPassed, watcher.WaitAndGetTitle());
@@ -2377,11 +2358,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiFencedFrameTest,
   ASSERT_TRUE(LoadExtension(document_start_extension_dir.UnpackedPath()));
 
   ExtensionTestMessageListener listener;
-  content::WebContents* tab_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab_contents = GetActiveWebContents();
 
   GURL extension_test_url = extension->GetResourceURL("test.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_test_url));
+  ASSERT_TRUE(NavigateToURL(tab_contents, extension_test_url));
 
   EXPECT_EQ(extension_test_url,
             tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
