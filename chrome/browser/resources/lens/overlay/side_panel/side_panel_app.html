@@ -185,16 +185,33 @@
   #composeboxContainer {
     /* Temporary CSS to make the composebox visible. */
     --ntp-composebox-background-color: #F0F2F5;
+    display: none;
     inset-block-end: 0;
     position: absolute;
     width: 100%;
     z-index: 2;
-    display: none;
+  }
+
+  #composeboxContainer::before {
+    content: '';
+    background: linear-gradient(180deg, transparent 1%, white 52px);
+    inset: -66px 0 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
   }
 
   /* Show the composebox when enabled. */
   :host([enable-aim-searchbox]) #composeboxContainer {
-    display: block;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #composebox {
+    position: relative;
+    width: calc(100% - 32px); /* 16px on each side */
+    margin-bottom: 30px;
   }
 
   :host(:not([show-upload-progress])) #uploadProgressBarContainer,
