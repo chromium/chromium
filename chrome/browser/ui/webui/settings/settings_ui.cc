@@ -545,13 +545,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   // AI
   bool show_glic_section = false;
+  bool glic_disallowed_by_admin = false;
 
 #if BUILDFLAG(ENABLE_GLIC)
   auto glic_enablement = glic::GlicEnabling::EnablementForProfile(profile);
   show_glic_section = glic_enablement.ShouldShowSettingsPage();
-  html_source->AddBoolean("showGlicSettings", show_glic_section);
-  html_source->AddBoolean("glicDisallowedByAdmin",
-                          glic_enablement.DisallowedByAdmin());
+  glic_disallowed_by_admin = glic_enablement.DisallowedByAdmin();
 
   if (glic_enablement.IsProfileEligible()) {
     AddSettingsPageUIHandler(std::make_unique<GlicHandler>());
@@ -567,6 +566,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                                 base::Unretained(this)));
   }
 #endif
+
+  html_source->AddBoolean("showGlicSettings", show_glic_section);
+  html_source->AddBoolean("glicDisallowedByAdmin", glic_disallowed_by_admin);
 
   const bool use_is_setting_visible = base::FeatureList::IsEnabled(
       optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi);
