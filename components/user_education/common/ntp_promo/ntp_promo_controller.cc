@@ -126,7 +126,7 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos(
 
   std::vector<NtpPromoIdentifier> pending_promo_ids;
   std::vector<NtpPromoIdentifier> completed_promo_ids;
-  const auto now = base::Time::Now();
+  const auto now = storage_service_->GetCurrentTime();
 
   for (const auto& id : registry_->GetNtpPromoIdentifiers()) {
     const auto* spec = registry_->GetNtpPromoSpecification(id);
@@ -194,14 +194,15 @@ void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id,
   registry_->GetNtpPromoSpecification(id)->action_callback().Run(browser);
 
   auto prefs = storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
-  prefs.last_clicked = base::Time::Now();
+  prefs.last_clicked = storage_service_->GetCurrentTime();
   storage_service_->SaveNtpPromoData(id, prefs);
   LogPromoClicked(id);
 }
 
 void NtpPromoController::SetAllPromosSnoozed(bool snooze) {
   NtpPromoPreferences prefs = storage_service_->ReadNtpPromoPreferences();
-  prefs.last_snoozed = snooze ? base::Time::Now() : base::Time();
+  prefs.last_snoozed =
+      snooze ? storage_service_->GetCurrentTime() : base::Time();
   storage_service_->SaveNtpPromoPreferences(prefs);
 }
 
@@ -260,7 +261,7 @@ bool NtpPromoController::ArePromosBlocked() const {
   NtpPromoPreferences prefs = storage_service_->ReadNtpPromoPreferences();
   return prefs.disabled ||
          (!prefs.last_snoozed.is_null() &&
-          base::Time::Now() <
+          storage_service_->GetCurrentTime() <
               prefs.last_snoozed + params_.promos_snoozed_hide_duration);
 }
 
