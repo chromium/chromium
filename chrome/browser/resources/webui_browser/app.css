@@ -18,6 +18,8 @@ cr-searchbox {
   --cr-searchbox-icon-size-in-searchbox: 20px;
   --cr-searchbox-icon-top-position: 0;
   --cr-searchbox-match-padding: 4px 0;
+
+  margin: 0 10px;
 }
 
 cr-searchbox[dropdown-is-visible] {

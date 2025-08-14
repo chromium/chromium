@@ -9,7 +9,7 @@ import type {TabStripApiProxy} from './tab_strip_api.js';
 import {TabStripApiProxyImpl} from './tab_strip_api.js';
 import type {TabsSnapshot} from './tab_strip_api.mojom-webui.js';
 import type {Container, Tab, TabCreatedContainer} from './tab_strip_api_data_model.mojom-webui.js';
-import type {OnTabActiveChangedEvent, OnTabGroupVisualsChangedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from './tab_strip_api_events.mojom-webui.js';
+import type {OnTabActiveChangedEvent, OnTabDataChangedEvent, OnTabGroupVisualsChangedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from './tab_strip_api_events.mojom-webui.js';
 import type {NodeId} from './tab_strip_api_types.mojom-webui.js';
 
 export class TabStripController {
@@ -88,9 +88,6 @@ export class TabStripController {
     // callbackRouter.tabMoved.addListener(this.onTabMoved_.bind(this));
     callbackRouter.onTabsClosed.addListener(this.onTabsClosed_.bind(this));
     // callbackRouter.tabReplaced.addListener(this.onTabReplaced_.bind(this));
-    // callbackRouter.tabUpdated.addListener(this.onTabUpdated_.bind(this));
-    callbackRouter.onTabActiveChanged.addListener(
-        this.onTabActiveChanged_.bind(this));
     // callbackRouter.tabCloseCancelled.addListener(
     //     this.onTabCloseCancelled_.bind(this));
     // callbackRouter.tabGroupStateChanged.addListener(
@@ -135,22 +132,22 @@ export class TabStripController {
     });
   }
 
-  private onTabActiveChanged_(event: OnTabActiveChangedEvent) {
+  onTabActiveChanged(event: OnTabActiveChangedEvent) {
     const tabId = event.tab.id;
     this.tabStrip_.activateTab(tabId);
     // TODO(webium): Once ContentRegion is implemented:
     // this.contentRegion_.activateTab_(tabId);
   }
 
-  /* TODO(webium): get these working.
+  /* TODO(webium): get this working.
   private onTabGroupStateChanged_(tabId: NodeId, _: number, groupId?: NodeId) {
     this.tabStrip_.setTabGroupForTab_(tabId, groupId);
   }
-
-  private onTabUpdated_(tab: Tab) {
-    this.tabStrip_.updateTab(tab);
-  }
   */
+
+  onTabDataChanged(onTabDataChangedEvent: OnTabDataChangedEvent) {
+    this.tabStrip_.updateTab(onTabDataChangedEvent.tab);
+  }
 
   private onTabGroupVisualsChanged_(event: OnTabGroupVisualsChangedEvent) {
     const {tabGroup} = event.data;

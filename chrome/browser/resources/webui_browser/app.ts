@@ -13,7 +13,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
-import type {TabStrip} from './tab_strip.js';
+import {TabStripApiProxyImpl} from './tab_strip_api.js';
+import type {OnTabActiveChangedEvent, OnTabDataChangedEvent} from './tab_strip_api_events.mojom-webui.js';
 import {TabStripController} from './tab_strip_controller.js';
 
 export class WebuiBrowserAppElement extends CrLitElement {
@@ -30,6 +31,8 @@ export class WebuiBrowserAppElement extends CrLitElement {
   }
 
   private tabStripController_: TabStripController;
+  protected backButtonDisabled_: boolean = true;
+  protected forwardButtonDisabled_: boolean = true;
 
   constructor() {
     super();
@@ -37,9 +40,24 @@ export class WebuiBrowserAppElement extends CrLitElement {
     this.tabStripController_ = new TabStripController();
   }
 
+  override connectedCallback() {
+    // Important. Properties are not reactive without calling
+    // super.connectedCallback().
+    super.connectedCallback();
+
+    const tabsApiCallbackRouter =
+        TabStripApiProxyImpl.getInstance().getCallbackRouter();
+    tabsApiCallbackRouter.onTabDataChanged.addListener(
+        this.onTabDataChanged_.bind(this));
+    tabsApiCallbackRouter.onTabActiveChanged.addListener(
+        this.onTabActiveChanged_.bind(this));
+  }
+
   static override get properties() {
     return {
       guestId_: {type: Number},
+      backButtonDisabled_: {state: true, type: Boolean},
+      forwardButtonDisabled_: {state: true, type: Boolean},
     };
   }
 
@@ -69,9 +87,50 @@ export class WebuiBrowserAppElement extends CrLitElement {
     BrowserProxy.getPageHandler().close();
   }
 
+  protected onBackClick_(_: Event) {
+    /* TODO(webium): Once ContentRegion is implemented:
+    if (this.$.contentRegion.activeWebview_) {
+      this.$.contentRegion.activeWebview_.goBack();
+    }*/
+  }
+
+  protected onForwardClick_(_: Event) {
+    /* TODO(webium): Once ContentRegion is implemented:
+    if (this.$.contentRegion.activeWebview_) {
+      this.$.contentRegion.activeWebview_.goForward();
+    }*/
+  }
+
+  private async updateToolbarButtons_() {
+    /* TODO(webium): Once ContentRegion is implemented:
+    const webview = this.$.contentRegion.activeWebview_;
+    if (webview) {
+      const [canGoBack, canGoForward] =
+          await Promise.all([webview.canGoBack(), webview.canGoForward()]);
+      this.backButtonDisabled_ = !canGoBack;
+      this.forwardButtonDisabled_ = !canGoForward;
+    } else {
+      this.backButtonDisabled_ = true;
+      this.forwardButtonDisabled_ = true;
+    }*/
+  }
+
+  private onTabActiveChanged_(e: OnTabActiveChangedEvent) {
+    // Update the tab strip *before* the toolbar buttons, as the tab strip
+    // update may affect how the toolbar buttons are updated.
+    this.tabStripController_.onTabActiveChanged(e);
+    this.updateToolbarButtons_();
+  }
+
+  private onTabDataChanged_(e: OnTabDataChangedEvent) {
+    // Update the tab strip *before* the toolbar buttons, as the tab strip
+    // update may affect how the toolbar buttons are updated.
+    this.tabStripController_.onTabDataChanged(e);
+    this.updateToolbarButtons_();
+  }
+
   protected onTabstripAdded_(e: CustomEvent) {
-    const tabstrip: TabStrip = e.detail.tabstrip;
-    this.tabStripController_.init(tabstrip);
+    this.tabStripController_.init(e.detail.tabstrip);
   }
 
   protected onTabClick_(e: CustomEvent) {

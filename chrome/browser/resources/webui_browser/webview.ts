@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './webview.css.js';
 
 export interface WebviewElement {
@@ -64,6 +65,26 @@ export class WebviewElement extends CrLitElement {
         resolve();
       }, 100);
     });
+  }
+
+  goBack() {
+    BrowserProxy.getPageHandler().goBack(this.guestId);
+  }
+
+  goForward() {
+    BrowserProxy.getPageHandler().goForward(this.guestId);
+  }
+
+  async canGoBack(): Promise<boolean> {
+    const {canGoBack} =
+        await BrowserProxy.getPageHandler().canGoBack(this.guestId);
+    return canGoBack;
+  }
+
+  async canGoForward(): Promise<boolean> {
+    const {canGoForward} =
+        await BrowserProxy.getPageHandler().canGoForward(this.guestId);
+    return canGoForward;
   }
 }
 

@@ -27,6 +27,12 @@ export function getHtml(this: WebuiBrowserAppElement) {
     </div>
   </div>
   <div id="searchBar">
+    <cr-icon-button iron-icon="cr:arrow-back"
+      .disabled="${this.backButtonDisabled_}"
+      @click="${this.onBackClick_}"></cr-icon-button>
+    <cr-icon-button iron-icon="cr:arrow-forward"
+      .disabled="${this.forwardButtonDisabled_}"
+      @click="${this.onForwardClick_}"></cr-icon-button>
     <cr-searchbox id="address"></cr-searchbox>
   </div>
   <cr-webview id="exampleWebview" guest-id="${this.guestId_}"></cr-webview>
