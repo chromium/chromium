@@ -1458,7 +1458,18 @@ const CSSValue* BorderBottomWidth::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ZoomAdjustedPixelValue(style.BorderBottomWidth(), style);
+  int width = 0;
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // border-*-width should be independent of the border-*-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled() &&
+      value_phase == CSSValuePhase::kComputedValue) {
+    width = style.BorderBottomWidthInternal();
+  } else {
+    width = style.BorderBottomWidth();
+  }
+
+  return ZoomAdjustedPixelValue(width, style);
 }
 
 const CSSValue* BorderCollapse::CSSValueFromComputedStyleInternal(
@@ -1723,7 +1734,18 @@ const CSSValue* BorderLeftWidth::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ZoomAdjustedPixelValue(style.BorderLeftWidth(), style);
+  int width = 0;
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // border-*-width should be independent of the border-*-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled() &&
+      value_phase == CSSValuePhase::kComputedValue) {
+    width = style.BorderLeftWidthInternal();
+  } else {
+    width = style.BorderLeftWidth();
+  }
+
+  return ZoomAdjustedPixelValue(width, style);
 }
 
 const CSSValue* BorderRightColor::ParseSingleValue(
@@ -1800,7 +1822,18 @@ const CSSValue* BorderRightWidth::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ZoomAdjustedPixelValue(style.BorderRightWidth(), style);
+  int width = 0;
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // border-*-width should be independent of the border-*-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled() &&
+      value_phase == CSSValuePhase::kComputedValue) {
+    width = style.BorderRightWidthInternal();
+  } else {
+    width = style.BorderRightWidth();
+  }
+
+  return ZoomAdjustedPixelValue(width, style);
 }
 
 const CSSValue* BorderStartStartRadius::ParseSingleValue(
@@ -1923,7 +1956,18 @@ const CSSValue* BorderTopWidth::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ZoomAdjustedPixelValue(style.BorderTopWidth(), style);
+  int width = 0;
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // border-*-width should be independent of the border-*-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled() &&
+      value_phase == CSSValuePhase::kComputedValue) {
+    width = style.BorderTopWidthInternal();
+  } else {
+    width = style.BorderTopWidth();
+  }
+
+  return ZoomAdjustedPixelValue(width, style);
 }
 
 const CSSValue* BorderShape::ParseSingleValue(
@@ -2725,8 +2769,19 @@ const CSSValue* ColumnRuleWidth::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForGapDecorationWidthDataList(
-      style.ColumnRuleWidth(), style, value_phase);
+  GapDataList<int> widths;
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // column-rule-width should be independent of the column-rule-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled() &&
+      value_phase == CSSValuePhase::kComputedValue) {
+    widths = style.ColumnRuleWidthInternal();
+  } else {
+    widths = style.ColumnRuleWidth();
+  }
+
+  return ComputedStyleUtils::ValueForGapDecorationWidthDataList(widths, style,
+                                                                value_phase);
 }
 
 const CSSValue* RowRuleWidth::ParseSingleValue(
@@ -7348,7 +7403,18 @@ const CSSValue* OutlineWidth::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ZoomAdjustedPixelValue(style.OutlineWidth(), style);
+  int width = 0;
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // outline-width should be independent of the outline-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled() &&
+      value_phase == CSSValuePhase::kComputedValue) {
+    width = style.OutlineWidthInternal();
+  } else {
+    width = style.OutlineWidth();
+  }
+
+  return ZoomAdjustedPixelValue(width, style);
 }
 
 const CSSValue* OverflowAnchor::CSSValueFromComputedStyleInternal(

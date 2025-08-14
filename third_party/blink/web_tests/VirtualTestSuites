@@ -453,6 +453,17 @@
     "owners": ["samomekarajr@microsoft.com", "javiercon@microsoft.com"]
   },
   {
+    "prefix": "computed-width-values-depend-on-style-values",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-typed-om/the-stylepropertymap/properties/border-width.html",
+      "external/wpt/css/css-typed-om/the-stylepropertymap/properties/outline-width.html"
+    ],
+    "args": ["--disable-blink-features=DecoupleComputedBorderWidthFromStyle"],
+    "expires": "Apr 30, 2026",
+    "owners": ["samomekarajr@microsoft.com", "kbabbitt@microsoft.com"]
+  },
+  {
     "prefix": "css-line-clamp-line-breaking-ellipsis",
     "platforms": [
       "Linux"

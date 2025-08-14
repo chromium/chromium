@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Can set 'border-top-width' to the 'thin' keyword: thin
+  assert_approx_equals: expected 1 +/- 0.000001 but got 0
+[FAIL] Can set 'border-top-width' to the 'medium' keyword: medium
+  assert_approx_equals: expected 3 +/- 0.000001 but got 0
+[FAIL] Can set 'border-top-width' to the 'thick' keyword: thick
+  assert_approx_equals: expected 5 +/- 0.000001 but got 0
+[FAIL] Can set 'border-left-width' to the 'thin' keyword: thin
+  assert_approx_equals: expected 1 +/- 0.000001 but got 0
+[FAIL] Can set 'border-left-width' to the 'medium' keyword: medium
+  assert_approx_equals: expected 3 +/- 0.000001 but got 0
+[FAIL] Can set 'border-left-width' to the 'thick' keyword: thick
+  assert_approx_equals: expected 5 +/- 0.000001 but got 0
+[FAIL] Can set 'border-right-width' to the 'thin' keyword: thin
+  assert_approx_equals: expected 1 +/- 0.000001 but got 0
+[FAIL] Can set 'border-right-width' to the 'medium' keyword: medium
+  assert_approx_equals: expected 3 +/- 0.000001 but got 0
+[FAIL] Can set 'border-right-width' to the 'thick' keyword: thick
+  assert_approx_equals: expected 5 +/- 0.000001 but got 0
+[FAIL] Can set 'border-bottom-width' to the 'thin' keyword: thin
+  assert_approx_equals: expected 1 +/- 0.000001 but got 0
+[FAIL] Can set 'border-bottom-width' to the 'medium' keyword: medium
+  assert_approx_equals: expected 3 +/- 0.000001 but got 0
+[FAIL] Can set 'border-bottom-width' to the 'thick' keyword: thick
+  assert_approx_equals: expected 5 +/- 0.000001 but got 0
+Harness: the test ran to completion.
+

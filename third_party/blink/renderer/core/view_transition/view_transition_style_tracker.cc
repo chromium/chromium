@@ -1529,7 +1529,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
             CSSProperty::Get(id).CSSValueFromComputedStyle(
                 layout_object->StyleRef(),
                 /*layout_object=*/nullptr,
-                /*allow_visited_style=*/false, CSSValuePhase::kComputedValue)) {
+                /*allow_visited_style=*/false, CSSValuePhase::kResolvedValue)) {
       builder.Insert(id, css_value->CssText());
     }
   };

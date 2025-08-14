@@ -1666,6 +1666,12 @@
       // https://chromestatus.com/feature/5134293578285056
       name: "Database",
     },
+    {
+      // https://crbug.com/393631108
+      name: "DecoupleComputedBorderWidthFromStyle",
+      public: true,
+      status: "experimental",
+    },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.
