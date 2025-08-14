@@ -71,6 +71,23 @@ bool IsEmpty(const page_load_metrics::mojom::DomainLookupTiming& timing) {
   return !timing.domain_lookup_start && !timing.domain_lookup_end;
 }
 
+bool IsEmpty(const mojom::LcpResourceLoadTimings& timing) {
+  return !timing.discovery_time && !timing.load_start && !timing.load_end;
+}
+
+bool IsEmpty(const mojom::LargestContentfulPaintTiming& timing) {
+  return !timing.largest_image_paint && !timing.largest_text_paint &&
+         (!timing.resource_load_timings ||
+          IsEmpty(*timing.resource_load_timings));
+}
+
+bool IsEmpty(const mojom::SoftNavigationMetrics& timing) {
+  return !timing.count && !timing.start_time.is_zero() &&
+         !timing.navigation_id &&
+         (!timing.largest_contentful_paint ||
+          IsEmpty(*timing.largest_contentful_paint));
+}
+
 bool IsEmpty(const page_load_metrics::mojom::PageLoadTiming& timing) {
   return timing.navigation_start.is_null() && !timing.connect_start &&
          !timing.connect_end && !timing.response_start &&
