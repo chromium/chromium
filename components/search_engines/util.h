@@ -17,6 +17,7 @@
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
 class KeywordWebDataService;
 class PrefService;
@@ -224,7 +225,7 @@ TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
 // request. `query_start_time` is the time that the user clicked the submit
 // button.
 GURL GetUrlForAim(TemplateURLService* turl_service,
-                  const std::string& aim_entrypoint,
+                  omnibox::ChromeAimEntryPoint aim_entrypoint,
                   const base::Time& query_start_time,
                   const std::u16string& query_text = std::u16string());
 
@@ -240,7 +241,7 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
 // the server supports it.
 GURL GetUrlForMultimodalAim(
     TemplateURLService* turl_service,
-    const std::string& aim_entrypoint,
+    omnibox::ChromeAimEntryPoint aim_entrypoint,
     const base::Time& query_start_time,
     const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,
