@@ -12,7 +12,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/bits.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
@@ -85,6 +87,14 @@
 namespace gpu {
 
 namespace {
+
+// Allows ExternalVkImage to use CPU readback+upload path for it instead of
+// using Vulkan staging buffer. This might be less efficient path than using
+// staging buffers. This is fine since it is used on linux only when a user
+// forces Vulkan ON.
+BASE_FEATURE(kUseCpuFallbackPathForExternalVkImage,
+             "UseCpuFallbackPathForExternalVkImage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 class ScopedDedicatedMemoryObject {
  public:
@@ -471,8 +481,10 @@ bool ExternalVkImageBacking::BeginAccess(
   }
 
   if (readonly && !reads_in_progress_) {
-    UpdateContent(kInVkImage);
-    if (!gl_textures_.empty()) {
+    if (!is_updating_content_) {
+      UpdateContent(kInVkImage);
+    }
+    if (!gl_textures_.empty() && !is_updating_content_) {
       UpdateContent(kInGLTexture);
     }
   }
@@ -945,6 +957,11 @@ ExternalVkImageBacking::ProduceOverlay(SharedImageManager* manager,
 }
 
 void ExternalVkImageBacking::UpdateContent(uint32_t content_flags) {
+  // This flag is used in order to avoid infinite recursion for cases when
+  // ::BeginAccess() will call UpdateContent(kInGLTexture) which would call
+  // ::CopyPixelsFromVkImageToGLTexture, which now will call ReadbackToMemory,
+  // which will call ::BeginAccess() again.
+  base::AutoReset<bool> auto_reset(&is_updating_content_, true);
   // Only support one backing for now.
   DCHECK(content_flags == kInVkImage || content_flags == kInGLTexture);
 
@@ -989,6 +1006,71 @@ ExternalVkImageBacking::GetMapPlaneData() const {
 }
 
 void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
+  if (base::FeatureList::IsEnabled(kUseCpuFallbackPathForExternalVkImage)) {
+    DCHECK(use_separate_gl_texture());
+    DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
+
+    if (!MakeGLContextCurrent()) {
+      return;
+    }
+
+    auto [plane_data, total_data_bytes] = GetMapPlaneData();
+    std::vector<uint8_t> cpu_buffer(total_data_bytes);
+
+    std::vector<SkPixmap> pixmaps;
+    for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
+      auto& sk_image_info = plane_data[plane].image_info;
+      uint8_t* memory = cpu_buffer.data() + plane_data[plane].offset;
+      pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
+
+      if (!gl_textures_[plane].ReadbackToMemory(pixmaps.back())) {
+        DLOG(ERROR) << "GL readback failed";
+        return;
+      }
+    }
+
+    if (!UploadToVkImage(pixmaps)) {
+      DLOG(ERROR) << "UploadToVkImage failed";
+    }
+  } else {
+    CopyPixelsFromGLTextureToVkImageUsingStagingBuffer();
+  }
+}
+
+void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
+  if (base::FeatureList::IsEnabled(kUseCpuFallbackPathForExternalVkImage)) {
+    DCHECK(use_separate_gl_texture());
+    DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
+
+    if (!MakeGLContextCurrent()) {
+      return;
+    }
+
+    auto [plane_data, total_data_bytes] = GetMapPlaneData();
+    std::vector<uint8_t> cpu_buffer(total_data_bytes);
+
+    std::vector<SkPixmap> pixmaps;
+    for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
+      auto& sk_image_info = plane_data[plane].image_info;
+      uint8_t* memory = cpu_buffer.data() + plane_data[plane].offset;
+      pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
+    }
+
+    if (!ReadbackToMemory(pixmaps)) {
+      DLOG(ERROR) << "ReadbackToMemory failed";
+      return;
+    }
+
+    if (!UploadToGLTexture(pixmaps)) {
+      DLOG(ERROR) << "UploadToGLTexture failed";
+    }
+  } else {
+    CopyPixelsFromVKImageToGLTextureUsingStagingBuffer();
+  }
+}
+
+void ExternalVkImageBacking::
+    CopyPixelsFromGLTextureToVkImageUsingStagingBuffer() {
   DCHECK(use_separate_gl_texture());
   DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
 
@@ -1116,7 +1198,8 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
                                                        stage_allocation);
 }
 
-void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
+void ExternalVkImageBacking::
+    CopyPixelsFromVKImageToGLTextureUsingStagingBuffer() {
   DCHECK(use_separate_gl_texture());
   DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
 
