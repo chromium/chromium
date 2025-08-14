@@ -152,10 +152,11 @@ void EncodeRow(RandomAccessIterator pos,
     }
     if (it != UNSAFE_TODO(pos + 1)) {  // More than one pixel
       output->push_back(static_cast<char>((it - pos) - 1));
-      if (monochrome)
+      if (monochrome) {
         EncodePixelToMonochrome<InputStruct>(&*pos, output);
-      else
+      } else {
         EncodePixelToRGB<InputStruct>(&*pos, output);
+      }
       pos = it;
     } else {
       // Finds how many pixels there are each different from the previous one.
@@ -174,10 +175,11 @@ void EncodeRow(RandomAccessIterator pos,
       }
       output->push_back(static_cast<char>(1 - (it - pos)));
       while (pos != it) {
-        if (monochrome)
+        if (monochrome) {
           EncodePixelToMonochrome<InputStruct>(&*pos, output);
-        else
+        } else {
           EncodePixelToRGB<InputStruct>(&*pos, output);
+        }
         UNSAFE_TODO(++pos);
       }
     }

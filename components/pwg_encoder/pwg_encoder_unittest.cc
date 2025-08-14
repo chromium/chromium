@@ -27,8 +27,9 @@ std::unique_ptr<BitmapImage> MakeSampleBitmap() {
   auto bitmap_image = std::make_unique<BitmapImage>(
       gfx::Size(kRasterWidth, kRasterHeight), BitmapImage::RGBA);
   base::span<uint32_t> bitmap_data = bitmap_image->pixels();
-  for (int i = 0; i < kRasterWidth * kRasterHeight; i++)
+  for (int i = 0; i < kRasterWidth * kRasterHeight; i++) {
     bitmap_data[i] = 0xFFFFFF;
+  }
 
   for (int i = 0; i < kRasterWidth; i++) {
     for (int j = 200; j < 300; j++) {
