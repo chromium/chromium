@@ -581,6 +581,12 @@ BASE_FEATURE_PARAM(bool,
                    "mandatory_reauth",
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationClickToCall,
+                   &kPageActionsMigration,
+                   "click_to_call",
+                   false);
+
 BASE_FEATURE(kSavePasswordsContextualUi,
              "SavePasswordsContextualUi",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -357,6 +357,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationFind);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationCollaborationMessaging);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationPriceTracking);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationAutofillMandatoryReauth);
+BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationClickToCall);
 
 // Determines whether the "save password" page action displays different UI if
 // the user has said to never save passwords for that site.

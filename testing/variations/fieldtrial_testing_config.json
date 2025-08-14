@@ -17144,6 +17144,7 @@
                     "name": "Enabled",
                     "params": {
                         "autofill_address": "true",
+                        "click_to_call": "true",
                         "collaboration_messaging": "true",
                         "discounts": "true",
                         "file_system_access": "true",
