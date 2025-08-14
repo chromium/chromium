@@ -174,6 +174,7 @@ public class WebAppHeaderLayoutCoordinator
                         new ObservableSupplierImpl<>(),
                         mControlsEnabledSupplier,
                         mThemeColorProvider,
+                        mIncognitoStateProvider,
                         /* isWebApp= */ true);
 
         final ChromeImageButton backButton = mView.findViewById(R.id.back_button);

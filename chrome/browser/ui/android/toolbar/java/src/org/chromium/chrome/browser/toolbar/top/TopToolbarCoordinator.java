@@ -224,6 +224,7 @@ public class TopToolbarCoordinator implements Toolbar {
                             mNtpLoadingSupplier,
                             toolbarNavControlsEnabledSupplier,
                             normalThemeColorProvider,
+                            incognitoStateProvider,
                             /* isWebApp= */ false);
         }
 

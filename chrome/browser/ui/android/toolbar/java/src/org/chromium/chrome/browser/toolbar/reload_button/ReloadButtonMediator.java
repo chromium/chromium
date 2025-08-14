@@ -101,7 +101,6 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         mModel.set(ReloadButtonProperties.LONG_CLICK_LISTENER, this::showActionToastOnReloadButton);
 
         updateBackground(mThemeColorProvider.getBrandedColorScheme());
-        mThemeColorProvider.addTintObserver(this);
 
         mNtpLoadingObserver =
                 (isLoading) -> {
@@ -250,7 +249,6 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
 
         mNtpLoadingSupplier.removeObserver(mNtpLoadingObserver);
         mEnabledSupplier.removeObserver(mEnabledObserver);
-        mThemeColorProvider.removeTintObserver(this);
         mTabObserver.destroy();
     }
 }
