@@ -13,8 +13,6 @@ class RenderFrameHost;
 
 namespace save_to_drive {
 
-class SaveToDriveEventDispatcher;
-
 // This class is responsible for orchastrating the entire save to Drive flow
 // on the browser process from showing the account chooser, reading the file
 // size, and initiating the appropriate drive uploader to save the file to
@@ -24,7 +22,7 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
  public:
   SaveToDriveFlow(const SaveToDriveFlow&) = delete;
   SaveToDriveFlow& operator=(const SaveToDriveFlow&) = delete;
-  ~SaveToDriveFlow() override;
+  ~SaveToDriveFlow() override = default;
 
   // Starts the save to Drive flow.
   void Run();
@@ -36,10 +34,7 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
  private:
   friend class content::DocumentUserData<SaveToDriveFlow>;
 
-  SaveToDriveFlow(content::RenderFrameHost* render_frame_host,
-                  std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher);
-
-  std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher_;
+  explicit SaveToDriveFlow(content::RenderFrameHost* render_frame_host);
 
   DOCUMENT_USER_DATA_KEY_DECL();
 };

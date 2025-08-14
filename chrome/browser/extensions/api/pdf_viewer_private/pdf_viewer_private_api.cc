@@ -13,7 +13,6 @@
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "chrome/browser/save_to_drive/save_to_drive_flow.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/pref_names.h"
@@ -131,19 +130,13 @@ ExtensionFunction::ResponseAction PdfViewerPrivateSaveToDriveFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   using SaveToDriveFlow = save_to_drive::SaveToDriveFlow;
 
-  if (SaveToDriveFlow::GetForCurrentDocument(render_frame_host())) {
+  auto* flow = SaveToDriveFlow::GetForCurrentDocument(render_frame_host());
+  if (flow) {
     return RespondNow(Error("An upload is already in progress"));
   }
-  auto event_dispatcher =
-      save_to_drive::SaveToDriveEventDispatcher::Create(render_frame_host());
-  if (!event_dispatcher) {
-    return RespondNow(Error("Failed to create event dispatcher"));
-  }
-  save_to_drive::SaveToDriveFlow::CreateForCurrentDocument(
-      render_frame_host(), std::move(event_dispatcher));
-
-  auto* flow = SaveToDriveFlow::GetForCurrentDocument(render_frame_host());
+  flow = SaveToDriveFlow::GetOrCreateForCurrentDocument(render_frame_host());
   flow->Run();
+
   return RespondNow(NoArguments());
 #else
   return RespondNow(Error("Not supported"));

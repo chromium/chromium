@@ -8,12 +8,10 @@ assert(enable_pdf_save_to_drive)
 
 source_set("save_to_drive") {
   public = [
-    "save_to_drive_event_dispatcher.h",
     "save_to_drive_flow.h",
   ]
 
   sources = [
-    "save_to_drive_event_dispatcher.cc",
     "save_to_drive_flow.cc",
   ]
 
@@ -23,12 +21,6 @@ source_set("save_to_drive") {
   ]
 
   deps = [
-    "//base",
-    "//chrome/browser/pdf",
-    "//chrome/common/extensions",
-    "//chrome/common/extensions/api",
     "//content/public/browser",
-    "//extensions/browser",
-    "//pdf:features",
   ]
 }
