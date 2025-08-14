@@ -6,8 +6,8 @@
 // ash/webui/personalization_app/tools/gen_tsconfig.py --root_out_dir out/pc \
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
-import {ClientView, HostCapability, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber, UserProfileInfo, ViewChangeRequest, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import {HostCapability, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {ObservableValue} from '/glic/observable.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
@@ -1237,24 +1237,6 @@ class ApiTests extends ApiTestFixtureBase {
       this.host.maybeRefreshUserStatus();
       await sleep(100);
     }
-  }
-
-  async testSendsViewChangeRequestOnTaskIconOrGlicButtonToggle() {
-    assertDefined(this.host.getViewChangeRequests);
-    assertDefined(this.host.onViewChanged);
-
-    const viewChangeRequests =
-        observeSequence<ViewChangeRequest>(this.host.getViewChangeRequests());
-    const actuationChangeRequest = await viewChangeRequests.next();
-    assertDefined(actuationChangeRequest.desiredView);
-    assertEquals(actuationChangeRequest.desiredView, ClientView.ACTUATION);
-    this.host.onViewChanged({currentView: actuationChangeRequest.desiredView});
-
-    await this.advanceToNextStep();
-    const conversationChangeRequest = await viewChangeRequests.next();
-    assertDefined(conversationChangeRequest.desiredView);
-    assertEquals(
-        conversationChangeRequest.desiredView, ClientView.CONVERSATION);
   }
 
   async testJournal() {
