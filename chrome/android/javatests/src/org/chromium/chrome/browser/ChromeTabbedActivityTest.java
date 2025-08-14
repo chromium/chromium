@@ -749,8 +749,11 @@ public class ChromeTabbedActivityTest {
                         Tab curTab = tabModel.getTabAt(i);
                         Assert.assertEquals(
                                 "tabGroupId is incorrect", TAB_GROUP_ID, curTab.getTabGroupId());
-                        Assert.assertEquals(
-                                "rootId is incorrect", expectedRootId, curTab.getRootId());
+                        // Tab collection no longer uses rootId.
+                        if (!ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
+                            Assert.assertEquals(
+                                    "rootId is incorrect", expectedRootId, curTab.getRootId());
+                        }
                     }
 
                     // Verify other tab group properties.
