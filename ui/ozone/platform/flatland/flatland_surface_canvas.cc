@@ -206,8 +206,7 @@ void FlatlandSurfaceCanvas::ResizeCanvas(const gfx::Size& viewport_size,
 
   fuchsia::ui::composition::RegisterBufferCollectionArgs args;
   args.set_export_token(std::move(export_token));
-  args.set_buffer_collection_token(fuchsia::sysmem::BufferCollectionTokenHandle(
-      collection_token_for_flatland.Unbind().TakeChannel()));
+  args.set_buffer_collection_token2(std::move(collection_token_for_flatland));
   args.set_usage(
       fuchsia::ui::composition::RegisterBufferCollectionUsage::DEFAULT);
 
