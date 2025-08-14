@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/passage_embeddings/passage_embedder_model_observer.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
+#include "components/permissions/features.h"
 
 namespace passage_embeddings {
 
@@ -50,7 +51,8 @@ std::unique_ptr<KeyedService>
 PassageEmbedderModelObserverFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(kPassageEmbedder) &&
-      !history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
+      !history_embeddings::IsHistoryEmbeddingsFeatureEnabled() &&
+      !base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4)) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
