@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 namespace {
 
@@ -232,10 +233,12 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
   if (@available(iOS 26, *)) {
     titleID = @"IDS_IOS_KEYBOARD_SETTINGS";
   }
+  UIImage* image = DefaultSymbolWithConfiguration(@"gearshape", nil);
   return [self cr_commandWithInput:@","
                      modifierFlags:Command
                             action:@selector(keyCommand_showSettings)
-                   titleIDAsString:titleID];
+                   titleIDAsString:titleID
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_stop {
@@ -364,10 +367,12 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_clearBrowsingData {
+  UIImage* image = DefaultSymbolWithConfiguration(@"trash", nil);
   return [self cr_commandWithInput:UIKeyInputDelete
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_clearBrowsingData)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_closeAll {
@@ -443,9 +448,24 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
                       modifierFlags:(UIKeyModifierFlags)modifierFlags
                              action:(SEL)action
                     titleIDAsString:(NSString*)messageID {
+  return [self cr_commandWithInput:input
+                     modifierFlags:modifierFlags
+                            action:action
+                   titleIDAsString:messageID
+                             image:nil];
+}
+
+// The title ID string is used as a key to NSLocalizedString because key
+// commands can be requested by the OS very early on, before the resource bundle
+// of the localized strings is loaded.
++ (instancetype)cr_commandWithInput:(NSString*)input
+                      modifierFlags:(UIKeyModifierFlags)modifierFlags
+                             action:(SEL)action
+                    titleIDAsString:(NSString*)messageID
+                              image:(UIImage*)image {
   UIKeyCommand* keyCommand =
       [self commandWithTitle:NSLocalizedString(messageID, @"")
-                       image:nil
+                       image:image
                       action:action
                        input:input
                modifierFlags:modifierFlags

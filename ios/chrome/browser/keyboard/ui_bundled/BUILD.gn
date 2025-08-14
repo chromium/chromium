@@ -10,7 +10,10 @@ source_set("ui_bundled") {
     "menu_builder.h",
     "menu_builder.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/symbols",
+  ]
 }
 
 source_set("unit_tests") {
