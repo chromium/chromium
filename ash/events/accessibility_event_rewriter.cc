@@ -120,63 +120,61 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
   // Save continuation for |OnUnhandledSpokenFeedbackEvent()|.
   chromevox_continuation_ = continuation;
 
-  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled() ||
+      !event.IsKeyEvent()) {
     return false;
   }
 
-  if (event.IsKeyEvent()) {
-    const ui::KeyEvent* key_event = event.AsKeyEvent();
-    ui::EventRewriterAsh::MutableKeyState state(key_event);
+  const ui::KeyEvent* key_event = event.AsKeyEvent();
+  ui::EventRewriterAsh::MutableKeyState state(key_event);
 
-    // On new rewriter sequence, modifiers are already rewritten before
-    // this rewriter.
-    if (!features::IsKeyboardRewriterFixEnabled()) {
-      event_rewriter_ash_->RewriteModifierKeys(*key_event, &state);
-    }
-
-    // Remove the Search modifier before asking for function keys to be
-    // rewritten, then restore the flags. This allows ChromeVox to receive keys
-    // mappings for raw f1-f12 as e.g. back, but also Search+f1-f12 as
-    // Search+back (rather than just f1-f12).
-    int original_flags = state.flags;
-    state.flags = original_flags & ~ui::EF_COMMAND_DOWN;
-    event_rewriter_ash_->RewriteFunctionKeys(*key_event, &state);
-    state.flags = original_flags;
-
-    std::unique_ptr<ui::Event> rewritten_event;
-    ui::EventRewriterAsh::BuildRewrittenKeyEvent(*key_event, state,
-                                                 &rewritten_event);
-    ui::KeyEvent* rewritten_key_event = rewritten_event.get()->AsKeyEvent();
-
-    // Account for positional keys which we want to remap.
-    if (try_rewriting_positional_keys_for_chromevox_) {
-      const ui::KeyboardCode remapped_key_code =
-          ui::KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
-              key_event->code(), key_event->key_code());
-      if (remapped_key_code != ui::VKEY_UNKNOWN)
-        rewritten_key_event->set_key_code(remapped_key_code);
-    }
-
-    bool capture = chromevox_capture_all_keys_;
-
-    // Always capture the Search key.
-    capture |= rewritten_key_event->IsCommandDown() ||
-               rewritten_key_event->key_code() == ui::VKEY_LWIN ||
-               rewritten_key_event->key_code() == ui::VKEY_RWIN;
-
-    // Don't capture tab as it gets consumed by Blink so never comes back
-    // unhandled. In third_party/WebKit/Source/core/input/EventHandler.cpp, a
-    // default tab handler consumes tab even when no focusable nodes are found;
-    // it sets focus to Chrome and eats the event.
-    if (rewritten_key_event->GetDomKey() == ui::DomKey::TAB)
-      capture = false;
-
-    delegate_->DispatchKeyEventToChromeVox(rewritten_key_event->Clone(),
-                                           capture);
-    return capture;
+  // On new rewriter sequence, modifiers are already rewritten before
+  // this rewriter.
+  if (!features::IsKeyboardRewriterFixEnabled()) {
+    event_rewriter_ash_->RewriteModifierKeys(*key_event, &state);
   }
 
-  return false;
+  // Remove the Search modifier before asking for function keys to be
+  // rewritten, then restore the flags. This allows ChromeVox to receive keys
+  // mappings for raw f1-f12 as e.g. back, but also Search+f1-f12 as
+  // Search+back (rather than just f1-f12).
+  int original_flags = state.flags;
+  state.flags = original_flags & ~ui::EF_COMMAND_DOWN;
+  event_rewriter_ash_->RewriteFunctionKeys(*key_event, &state);
+  state.flags = original_flags;
+
+  std::unique_ptr<ui::Event> rewritten_event;
+  ui::EventRewriterAsh::BuildRewrittenKeyEvent(*key_event, state,
+                                               &rewritten_event);
+  ui::KeyEvent* rewritten_key_event = rewritten_event.get()->AsKeyEvent();
+
+  // Account for positional keys which we want to remap.
+  if (try_rewriting_positional_keys_for_chromevox_) {
+    const ui::KeyboardCode remapped_key_code =
+        ui::KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
+            key_event->code(), key_event->key_code());
+    if (remapped_key_code != ui::VKEY_UNKNOWN) {
+      rewritten_key_event->set_key_code(remapped_key_code);
+    }
+  }
+
+  bool capture = chromevox_capture_all_keys_;
+
+  // Always capture the Search key.
+  capture |= rewritten_key_event->IsCommandDown() ||
+             rewritten_key_event->key_code() == ui::VKEY_LWIN ||
+             rewritten_key_event->key_code() == ui::VKEY_RWIN;
+
+  // Don't capture tab as it gets consumed by Blink so never comes back
+  // unhandled. In third_party/WebKit/Source/core/input/EventHandler.cpp, a
+  // default tab handler consumes tab even when no focusable nodes are found;
+  // it sets focus to Chrome and eats the event.
+  if (rewritten_key_event->GetDomKey() == ui::DomKey::TAB) {
+    capture = false;
+  }
+
+  delegate_->DispatchKeyEventToChromeVox(rewritten_key_event->Clone(), capture);
+  return capture;
 }
 
 bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
