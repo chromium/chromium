@@ -62,6 +62,9 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
   const raw_ptr<Browser> browser_;
   views::ViewTracker bubble_tracker_;
 
+  base::ScopedObservation<views::View, views::ViewObserver>
+      bubble_view_observation_{this};
+
   std::unique_ptr<ExtensionsMenuViewController> controller_;
 };
 
