@@ -8928,6 +8928,9 @@ crbug.com/904592 external/wpt/css/filter-effects/backdrop-filter-svg-blur.html [
 crbug.com/333639341 [ Fuchsia ] fast/writing-mode/english-lr-text.html [ Failure Pass ]
 
 # Temporarily disable tests to land frontend changes
+crbug.com/407751016 http/tests/devtools/a11y-axe-core/elements/event-listeners-a11y-test.js [ Failure Pass ]
+
+# Temporarily disable tests to land frontend changes
 crbug.com/325441197 http/tests/devtools/elements/elements-panel-limited-children.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/elements/inspect-limited-children.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/elements/styles/show-all-properties.js [ Failure Pass ]
