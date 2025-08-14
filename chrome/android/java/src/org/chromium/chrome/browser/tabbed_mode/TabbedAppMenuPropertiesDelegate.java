@@ -697,7 +697,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())
                                 ? R.string.hide_reading_mode_text
                                 : R.string.show_reading_mode_text,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_reader_mode_24dp : 0));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_mobile_friendly_24dp : 0));
     }
 
     private boolean shouldShowGetImageDescriptionsItem(@Nullable Tab currentTab) {
