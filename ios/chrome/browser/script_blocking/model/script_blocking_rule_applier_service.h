@@ -51,7 +51,7 @@ class ScriptBlockingRuleApplierService
   void Shutdown() override;
 
   // script_blocking::ContentRuleListData::Observer:
-  void OnScriptBlockingRuleListUpdated(const std::string& rules_json) override;
+  void OnScriptBlockingRuleListUpdated() override;
 
   // privacy_sandbox::TrackingProtectionSettingsObserver:
   void OnTrackingProtectionExceptionsChanged() override;

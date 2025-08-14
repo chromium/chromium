@@ -26,8 +26,7 @@ class ContentRuleListData final {
   // content rule list data.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnScriptBlockingRuleListUpdated(
-        const std::string& rules_json) = 0;
+    virtual void OnScriptBlockingRuleListUpdated() = 0;
 
    protected:
     ~Observer() override = default;

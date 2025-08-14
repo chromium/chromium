@@ -18,10 +18,7 @@ namespace {
 // A mock observer to verify notification logic.
 class MockObserver : public ContentRuleListData::Observer {
  public:
-  MOCK_METHOD(void,
-              OnScriptBlockingRuleListUpdated,
-              (const std::string& rules_json),
-              (override));
+  MOCK_METHOD(void, OnScriptBlockingRuleListUpdated, (), (override));
 };
 
 class ScopedObserver {
@@ -72,7 +69,7 @@ TEST_F(ContentRuleListDataTest, AddObserver_NotifiesOnSet) {
   ScopedObserver scoped_observer(data_.get(), observer);
 
   const std::string test_rules = R"([{"id": 1, "action": "block"}])";
-  EXPECT_CALL(observer, OnScriptBlockingRuleListUpdated(test_rules));
+  EXPECT_CALL(observer, OnScriptBlockingRuleListUpdated());
 
   data_->SetContentRuleList(test_rules);
 }
@@ -85,7 +82,7 @@ TEST_F(ContentRuleListDataTest, AddObserver_NotifiesImmediatelyIfDataExists) {
   testing::StrictMock<MockObserver> observer;
   // The observer should be notified immediately, because it adds itself as an
   // observer during its construction, and data is already available.
-  EXPECT_CALL(observer, OnScriptBlockingRuleListUpdated(test_rules));
+  EXPECT_CALL(observer, OnScriptBlockingRuleListUpdated());
   ScopedObserver scoped_observer(data_.get(), observer);
 }
 
@@ -111,8 +108,8 @@ TEST_F(ContentRuleListDataTest, SetContentRuleList_NotifiesMultipleObservers) {
   ScopedObserver scoped_observer2(data_.get(), observer2);
 
   const std::string test_rules = R"([{"id": 4}])";
-  EXPECT_CALL(observer1, OnScriptBlockingRuleListUpdated(test_rules));
-  EXPECT_CALL(observer2, OnScriptBlockingRuleListUpdated(test_rules));
+  EXPECT_CALL(observer1, OnScriptBlockingRuleListUpdated());
+  EXPECT_CALL(observer2, OnScriptBlockingRuleListUpdated());
 
   data_->SetContentRuleList(test_rules);
 }

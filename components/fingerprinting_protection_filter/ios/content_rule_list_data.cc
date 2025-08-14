@@ -23,7 +23,7 @@ void ContentRuleListData::SetContentRuleList(std::string content_rule_list) {
   content_rule_list_ = std::move(content_rule_list);
   // Notify all registered observers of the update.
   for (auto& observer : observers_) {
-    observer.OnScriptBlockingRuleListUpdated(*content_rule_list_);
+    observer.OnScriptBlockingRuleListUpdated();
   }
 }
 
@@ -40,7 +40,7 @@ void ContentRuleListData::AddObserver(ContentRuleListData::Observer* observer) {
   // If a rule list is already available, notify the new observer immediately
   // so it doesn't have to wait for the next update.
   if (content_rule_list_.has_value()) {
-    observer->OnScriptBlockingRuleListUpdated(*content_rule_list_);
+    observer->OnScriptBlockingRuleListUpdated();
   }
 }
 

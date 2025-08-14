@@ -58,10 +58,11 @@ void ScriptBlockingRuleApplierService::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void ScriptBlockingRuleApplierService::OnScriptBlockingRuleListUpdated(
-    const std::string& rules_json) {
+void ScriptBlockingRuleApplierService::OnScriptBlockingRuleListUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ApplyRules(rules_json);
+  const std::optional<std::string>& rules =
+      script_blocking::ContentRuleListData::GetInstance().GetContentRuleList();
+  ApplyRules(rules.has_value() ? *rules : "");
 }
 
 void ScriptBlockingRuleApplierService::OnTrackingProtectionExceptionsChanged() {
