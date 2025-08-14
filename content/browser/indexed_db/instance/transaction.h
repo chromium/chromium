@@ -129,8 +129,8 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // appropriate helper functions.
   blink::mojom::IDBValuePtr BuildMojoValue(IndexedDBValue value);
 
-  enum class RunTasksResult { kError, kNotFinished, kCommitted, kAborted };
-  std::tuple<RunTasksResult, Status> RunTasks();
+  enum class RunTasksResult { kNotFinished, kCommitted, kAborted };
+  StatusOr<RunTasksResult> RunTasks();
 
   // Returns metadata relevant to idb-internals.
   storage::mojom::IdbTransactionMetadataPtr GetIdbInternalsMetadata() const;

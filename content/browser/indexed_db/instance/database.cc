@@ -361,13 +361,12 @@ Status Database::RunTasks() {
 
         // Process the queue for transactions that are STARTED or COMMITTING.
         // Add transactions that can be removed to a queue.
-        Transaction::RunTasksResult task_result;
-        Status transaction_status;
-        std::tie(task_result, transaction_status) = txn->RunTasks();
-        switch (task_result) {
-          case Transaction::RunTasksResult::kError:
-            CHECK(!transaction_status.ok());
-            return transaction_status;
+        StatusOr<Transaction::RunTasksResult> task_result = txn->RunTasks();
+        if (!task_result.has_value()) {
+          return task_result.error();
+        }
+
+        switch (task_result.value()) {
           case Transaction::RunTasksResult::kCommitted:
           case Transaction::RunTasksResult::kAborted:
             if (txn->mode() ==

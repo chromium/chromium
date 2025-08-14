@@ -993,17 +993,17 @@ Status Transaction::CommitPhaseTwo() {
   return s;
 }
 
-std::tuple<Transaction::RunTasksResult, Status> Transaction::RunTasks() {
+StatusOr<Transaction::RunTasksResult> Transaction::RunTasks() {
   TRACE_EVENT1("IndexedDB", "Transaction::RunTasks", "txn.id", id());
 
   DCHECK(!processing_event_queue_);
 
   // May have been aborted.
   if (aborted_) {
-    return {RunTasksResult::kAborted, Status::OK()};
+    return RunTasksResult::kAborted;
   }
   if (IsTaskQueueEmpty() && !is_commit_pending_) {
-    return {RunTasksResult::kNotFinished, Status::OK()};
+    return RunTasksResult::kNotFinished;
   }
 
   processing_event_queue_ = true;
@@ -1028,10 +1028,7 @@ std::tuple<Transaction::RunTasksResult, Status> Transaction::RunTasks() {
     }
     if (!result.ok()) {
       processing_event_queue_ = false;
-      return {
-          RunTasksResult::kError,
-          result,
-      };
+      return base::unexpected(result);
     }
 
     run_preemptive_queue =
@@ -1044,18 +1041,17 @@ std::tuple<Transaction::RunTasksResult, Status> Transaction::RunTasks() {
   // and the front-end requested a commit, it is now safe to do so.
   if (!HasPendingTasks() && state_ == STARTED && is_commit_pending_) {
     processing_event_queue_ = false;
-    // This can delete |this|.
     Status result = DoPendingCommit();
     if (!result.ok()) {
-      return {RunTasksResult::kError, result};
-    }
+      // This can delete |this|.
+      return base::unexpected(result);
+    };
   }
 
   // The transaction may have been aborted while processing tasks.
   if (state_ == FINISHED) {
     processing_event_queue_ = false;
-    return {aborted_ ? RunTasksResult::kAborted : RunTasksResult::kCommitted,
-            Status::OK()};
+    return aborted_ ? RunTasksResult::kAborted : RunTasksResult::kCommitted;
   }
 
   DCHECK(state_ == STARTED || state_ == COMMITTING) << state_;
@@ -1068,7 +1064,7 @@ std::tuple<Transaction::RunTasksResult, Status> Transaction::RunTasks() {
                                              ptr_factory_.GetWeakPtr()));
   }
   processing_event_queue_ = false;
-  return {RunTasksResult::kNotFinished, Status::OK()};
+  return RunTasksResult::kNotFinished;
 }
 
 storage::mojom::IdbTransactionMetadataPtr Transaction::GetIdbInternalsMetadata()
