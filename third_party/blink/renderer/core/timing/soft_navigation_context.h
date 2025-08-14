@@ -108,6 +108,9 @@ class CORE_EXPORT SoftNavigationContext
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  // Called when `SoftNavigationHeuristics` is shut down on frame detach.
+  void Shutdown();
+
   void Trace(Visitor* visitor) const;
 
  private:
