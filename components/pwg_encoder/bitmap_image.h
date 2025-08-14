@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -34,6 +35,7 @@ class BitmapImage {
 
   uint8_t* pixel_data();
   const uint8_t* pixel_data() const;
+  base::span<uint32_t> pixels();
 
   const uint8_t* GetPixel(const gfx::Point& point) const;
 

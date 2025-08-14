@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/pwg_encoder/bitmap_image.h"
@@ -25,16 +26,15 @@ const int kRasterDPI = 72;
 std::unique_ptr<BitmapImage> MakeSampleBitmap() {
   auto bitmap_image = std::make_unique<BitmapImage>(
       gfx::Size(kRasterWidth, kRasterHeight), BitmapImage::RGBA);
-  uint32_t* bitmap_data =
-      reinterpret_cast<uint32_t*>(bitmap_image->pixel_data());
+  base::span<uint32_t> bitmap_data = bitmap_image->pixels();
   for (int i = 0; i < kRasterWidth * kRasterHeight; i++)
-    UNSAFE_TODO(bitmap_data[i]) = 0xFFFFFF;
+    bitmap_data[i] = 0xFFFFFF;
 
   for (int i = 0; i < kRasterWidth; i++) {
     for (int j = 200; j < 300; j++) {
       int row_start = j * kRasterWidth;
       uint32_t red = (i * 255) / kRasterWidth;
-      UNSAFE_TODO(bitmap_data[row_start + i]) = red;
+      bitmap_data[row_start + i] = red;
     }
   }
 
@@ -43,9 +43,9 @@ std::unique_ptr<BitmapImage> MakeSampleBitmap() {
     for (int j = 400; j < 500; j++) {
       int row_start = j * kRasterWidth;
       if ((i / 40) % 2 == 0) {
-        UNSAFE_TODO(bitmap_data[row_start + i]) = 255 << 8;
+        bitmap_data[row_start + i] = 255 << 8;
       } else {
-        UNSAFE_TODO(bitmap_data[row_start + i]) = 255 << 16;
+        bitmap_data[row_start + i] = 255 << 16;
       }
     }
   }

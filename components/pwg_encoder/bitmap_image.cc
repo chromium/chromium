@@ -25,6 +25,10 @@ const uint8_t* BitmapImage::pixel_data() const {
   return base::as_bytes(data_.as_span()).data();
 }
 
+base::span<uint32_t> BitmapImage::pixels() {
+  return data_;
+}
+
 const uint8_t* BitmapImage::GetPixel(const gfx::Point& point) const {
   DCHECK_LT(point.x(), size_.width());
   DCHECK_LT(point.y(), size_.height());
