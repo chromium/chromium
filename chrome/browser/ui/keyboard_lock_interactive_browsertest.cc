@@ -14,7 +14,6 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -161,12 +160,10 @@ void KeyboardLockInteractiveBrowserTest::SetUpOnMainThread() {
           [](content::RenderFrameHost* render_frame_host,
              content::PermissionRequestDescription request_description,
              base::OnceCallback<void(
-                 const std::vector<content::PermissionResult>&)> callback) {
-            std::move(callback).Run(std::vector<content::PermissionResult>(
+                 const std::vector<content::PermissionStatus>&)> callback) {
+            std::move(callback).Run(std::vector<content::PermissionStatus>(
                 request_description.permissions.size(),
-                content::PermissionResult(
-                    content::PermissionStatus::GRANTED,
-                    content::PermissionStatusSource::UNSPECIFIED)));
+                content::PermissionStatus::GRANTED));
           });
   FullscreenKeyboardBrowserTestBase::SetUpOnMainThread();
 }

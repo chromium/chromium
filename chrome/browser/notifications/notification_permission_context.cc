@@ -23,7 +23,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
-#include "content/public/browser/permission_result.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
@@ -145,9 +144,7 @@ void NotificationPermissionContext::DecidePermission(
   // around the restriction by posting a message to their Service Worker, where
   // showing a notification is allowed.
   if (request_data->requesting_origin != request_data->embedding_origin) {
-    std::move(callback).Run(content::PermissionResult(
-        blink::mojom::PermissionStatus::DENIED,
-        content::PermissionStatusSource::UNSPECIFIED));
+    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
 

@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/document_service.h"
-#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom.h"
@@ -24,7 +23,7 @@ class WebContents;
 namespace webapps {
 enum class InstallResultCode;
 enum class InstallableStatusCode;
-}  // namespace webapps
+}
 namespace web_app {
 class AppLock;
 struct WebAppInstallInfo;
@@ -120,12 +119,12 @@ class WebInstallServiceImpl
       webapps::InstallableStatusCode error_code);
 
   void RequestWebInstallPermission(
-      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-          callback);
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
 
   void OnPermissionDecided(
       InstallCallbackWithMetrics callback_with_metrics,
-      const std::vector<content::PermissionResult>& permission_result);
+      const std::vector<blink::mojom::PermissionStatus>& permission_status);
 
   // `install_info` was fetched from an install url and is used to populate the
   // background launch dialog.

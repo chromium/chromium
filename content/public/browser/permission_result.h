@@ -63,8 +63,6 @@ struct CONTENT_EXPORT PermissionResult {
   PermissionResult& operator=(PermissionResult&&);
   ~PermissionResult();
 
-  bool operator==(const PermissionResult& rhs) const;
-
   PermissionStatus status;
   PermissionStatusSource source;
 

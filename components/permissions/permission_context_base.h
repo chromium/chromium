@@ -59,7 +59,7 @@ static constexpr base::TimeDelta kOneTimePermissionMaximumLifetime =
     base::Hours(16);
 
 using BrowserPermissionCallback =
-    base::OnceCallback<void(content::PermissionResult)>;
+    base::OnceCallback<void(blink::mojom::PermissionStatus)>;
 
 // This base class contains common operations for granting permissions.
 // It offers the following functionality:

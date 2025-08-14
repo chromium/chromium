@@ -14,7 +14,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/webrtc/media_stream_device_enumerator_impl.h"
 #include "content/public/browser/media_stream_request.h"
-#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
@@ -27,7 +26,7 @@ enum class PermissionType;
 namespace content {
 enum class PermissionStatusSource;
 class WebContents;
-}  // namespace content
+}
 
 namespace webrtc {
 
@@ -100,7 +99,7 @@ class MediaStreamDevicesController {
 
   // Called when a permission prompt is answered through the PermissionManager.
   void PromptAnsweredGroupedRequest(
-      const std::vector<content::PermissionResult>& permission_result);
+      const std::vector<blink::mojom::PermissionStatus>& permissions_status);
 
   bool HasAvailableDevices(blink::PermissionType permission,
                            const std::vector<std::string>& device_ids) const;

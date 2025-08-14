@@ -29,8 +29,8 @@ using ::blink::mojom::CapturedWheelAction;
 using ::blink::mojom::CapturedWheelActionPtr;
 using ::blink::mojom::ZoomLevelAction;
 using CSCResult = ::blink::mojom::CapturedSurfaceControlResult;
-using CSCPermissionResult = CapturedSurfaceControlPermissionManager::
-    CapturedSurfaceControlPermissionStatus;
+using CSCPermissionResult =
+    CapturedSurfaceControlPermissionManager::PermissionResult;
 
 const char* const kUrlString = "http://www.example.com/";
 

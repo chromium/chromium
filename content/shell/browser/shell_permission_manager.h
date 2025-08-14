@@ -28,7 +28,8 @@ class ShellPermissionManager : public PermissionControllerDelegate {
   void RequestPermissions(
       RenderFrameHost* render_frame_host,
       const PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback)
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
@@ -36,7 +37,8 @@ class ShellPermissionManager : public PermissionControllerDelegate {
   void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       const PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback)
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
   blink::mojom::PermissionStatus GetPermissionStatus(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,

@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -145,8 +144,8 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
 
   void DoRequestPermissions(
       const std::vector<blink::PermissionType> request_permissions,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)>
-          result_callback);
+      base::OnceCallback<void(
+          const std::vector<blink::mojom::PermissionStatus>&)> result_callback);
 
   // The following steps are ordered in the general flow for "RequestSession"
   // GetPermissionStatus will result in a call to OnPermissionResult which then
@@ -159,12 +158,12 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   void OnPermissionResultsForMode(
       SessionRequestData request,
       const std::vector<blink::PermissionType>& permissions,
-      const std::vector<PermissionResult>& results);
+      const std::vector<blink::mojom::PermissionStatus>& permission_statuses);
 
   void OnPermissionResultsForFeatures(
       SessionRequestData request,
       const std::vector<blink::PermissionType>& permissions,
-      const std::vector<PermissionResult>& results);
+      const std::vector<blink::mojom::PermissionStatus>& permission_statuses);
 
   void EnsureRuntimeInstalled(SessionRequestData request,
                               BrowserXRRuntimeImpl* runtime);

@@ -60,8 +60,8 @@ class BackgroundSyncPermissionContextTest
   }
 
   void TrackPermissionDecision(base::RepeatingClosure done_closure,
-                               content::PermissionResult permission_result) {
-    permission_granted_ = permission_result.status == PermissionStatus::GRANTED;
+                               PermissionStatus permission_status) {
+    permission_granted_ = permission_status == PermissionStatus::GRANTED;
     std::move(done_closure).Run();
   }
 

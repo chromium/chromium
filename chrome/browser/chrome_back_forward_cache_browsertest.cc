@@ -38,7 +38,6 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -245,10 +244,8 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents(), url_b));
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-  base::MockOnceCallback<void(content::PermissionResult)> callback;
-  EXPECT_CALL(callback, Run(content::PermissionResult(
-                            blink::mojom::PermissionStatus::ASK,
-                            content::PermissionStatusSource::UNSPECIFIED)));
+  base::MockOnceCallback<void(blink::mojom::PermissionStatus)> callback;
+  EXPECT_CALL(callback, Run(blink::mojom::PermissionStatus::ASK));
   browser()
       ->profile()
       ->GetPermissionController()

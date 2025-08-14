@@ -55,13 +55,14 @@ class ExclusiveAccessPermissionManagerTest : public BrowserWithTestWindowTest {
   }
 
   void WaitForPermissionControllerResponse(
-      std::optional<content::PermissionResult> pointer_lock_response,
-      std::optional<content::PermissionResult> keyboard_lock_response) {
+      std::optional<blink::mojom::PermissionStatus> pointer_lock_response,
+      std::optional<blink::mojom::PermissionStatus> keyboard_lock_response) {
     EXPECT_CALL(permission_controller_, RequestPermissionsFromCurrentDocument)
         .WillRepeatedly(testing::WithArgs<1, 2>(testing::Invoke(
             [&](content::PermissionRequestDescription description,
                 base::OnceCallback<void(
-                    const std::vector<content::PermissionResult>&)> callback) {
+                    const std::vector<blink::mojom::PermissionStatus>&)>
+                    callback) {
               switch (blink::PermissionDescriptorToPermissionType(
                   description.permissions.at(0))) {
                 case blink::PermissionType::POINTER_LOCK:
@@ -98,9 +99,7 @@ TEST_F(ExclusiveAccessPermissionManagerTest, GrantPermission) {
   QueuePointerLockRequest();
   EXPECT_CALL(pointer_granted_callback_, Run);
   WaitForPermissionControllerResponse(
-      /*pointer_lock_response=*/content::PermissionResult(
-          blink::mojom::PermissionStatus::GRANTED,
-          content::PermissionStatusSource::UNSPECIFIED),
+      /*pointer_lock_response=*/blink::mojom::PermissionStatus::GRANTED,
       /*keyboard_lock_response=*/std::nullopt);
 }
 
@@ -108,9 +107,7 @@ TEST_F(ExclusiveAccessPermissionManagerTest, DenyPermission) {
   QueuePointerLockRequest();
   EXPECT_CALL(pointer_denied_callback_, Run);
   WaitForPermissionControllerResponse(
-      /*pointer_lock_response=*/content::PermissionResult(
-          blink::mojom::PermissionStatus::DENIED,
-          content::PermissionStatusSource::UNSPECIFIED),
+      /*pointer_lock_response=*/blink::mojom::PermissionStatus::DENIED,
       /*keyboard_lock_response=*/std::nullopt);
 }
 
@@ -129,12 +126,8 @@ TEST_F(ExclusiveAccessPermissionManagerTest, HandleMultipleRequests) {
   EXPECT_CALL(keyboard_denied_callback_, Run);
   QueueKeyboardLockRequest();
   WaitForPermissionControllerResponse(
-      /*pointer_lock_response=*/content::PermissionResult(
-          blink::mojom::PermissionStatus::GRANTED,
-          content::PermissionStatusSource::UNSPECIFIED),
-      /*keyboard_lock_response=*/content::PermissionResult(
-          blink::mojom::PermissionStatus::DENIED,
-          content::PermissionStatusSource::UNSPECIFIED));
+      /*pointer_lock_response=*/blink::mojom::PermissionStatus::GRANTED,
+      /*keyboard_lock_response=*/blink::mojom::PermissionStatus::DENIED);
 }
 
 TEST_F(ExclusiveAccessPermissionManagerTest,

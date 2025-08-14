@@ -15,7 +15,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/host_zoom_map.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -34,8 +33,7 @@ using ::blink::ZoomValuesEqual;
 using ::blink::mojom::CapturedSurfaceControlResult;
 using ::blink::mojom::ZoomLevelAction;
 using PermissionManager = CapturedSurfaceControlPermissionManager;
-using CapturedSurfaceControlPermissionStatus =
-    PermissionManager::CapturedSurfaceControlPermissionStatus;
+using PermissionResult = PermissionManager::PermissionResult;
 using CapturedSurfaceInfo = CapturedSurfaceController::CapturedSurfaceInfo;
 
 void OnZoomLevelChangeOnUI(
@@ -321,18 +319,16 @@ CapturedSurfaceControlResult FinalizeRequestPermission(
 void OnPermissionCheckResult(
     base::OnceCallback<CapturedSurfaceControlResult()> action_callback,
     base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback,
-    CapturedSurfaceControlPermissionStatus permission_check_result) {
+    PermissionResult permission_check_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (permission_check_result ==
-      CapturedSurfaceControlPermissionStatus::kDenied) {
+  if (permission_check_result == PermissionResult::kDenied) {
     std::move(reply_callback)
         .Run(CapturedSurfaceControlResult::kNoPermissionError);
     return;
   }
 
-  if (permission_check_result ==
-      CapturedSurfaceControlPermissionStatus::kError) {
+  if (permission_check_result == PermissionResult::kError) {
     std::move(reply_callback).Run(CapturedSurfaceControlResult::kUnknownError);
     return;
   }
@@ -352,9 +348,7 @@ void OnPermissionCheckResult(
 // action callback if it is permitted, and reports the result to the renderer.
 //
 // It is assumed that `action_callback` runs on the UI thread.
-base::OnceCallback<
-    void(PermissionManager::CapturedSurfaceControlPermissionStatus)>
-ComposeCallbacks(
+base::OnceCallback<void(PermissionResult)> ComposeCallbacks(
     base::OnceCallback<CapturedSurfaceControlResult(void)> action_callback,
     base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback) {
   // Callback for reporting result of both permission-prompt as well as action

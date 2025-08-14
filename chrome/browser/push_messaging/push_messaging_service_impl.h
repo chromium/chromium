@@ -35,7 +35,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/browser/child_process_host.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 
@@ -283,7 +282,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                    RegisterCallback callback,
                    int render_process_id,
                    int render_frame_id,
-                   content::PermissionResult permission_result);
+                   blink::mojom::PermissionStatus permission_status);
 
   void SubscribeEnd(RegisterCallback callback,
                     const std::string& subscription_id,

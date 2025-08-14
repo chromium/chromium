@@ -7,7 +7,6 @@
 
 #include "chrome/common/buildflags.h"
 #include "components/permissions/permission_util.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/common/buildflags.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
@@ -118,7 +117,7 @@ class ChromeWebViewPermissionHelperDelegate
 
   void OnGeolocationPermissionResponse(
       bool user_gesture,
-      base::OnceCallback<void(content::PermissionResult)> callback,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
       bool allow,
       const std::string& user_input);
 
@@ -145,19 +144,19 @@ class ChromeWebViewPermissionHelperDelegate
                                        bool allowed);
 
   void OnClipboardReadWritePermissionResponse(
-      base::OnceCallback<void(content::PermissionResult)> callback,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
       bool user_gesture,
       bool allow,
       const std::string& user_input);
 
   void OnClipboardSanitizedWritePermissionResponse(
-      base::OnceCallback<void(content::PermissionResult)> callback,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
       bool allow,
       const std::string& user_input);
 
   void RequestEmbedderFramePermission(
       bool user_gesture,
-      base::OnceCallback<void(content::PermissionResult)> callback,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
       blink::PermissionType permission_type);
 
   WebViewGuest* web_view_guest() {

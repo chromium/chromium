@@ -49,7 +49,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -115,8 +114,7 @@ void PermissionContextBase::RequestPermission(
 
   if (!rfh) {
     // Permission request is not allowed without a valid RenderFrameHost.
-    std::move(callback).Run(content::PermissionResult(
-        PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED));
+    std::move(callback).Run(PermissionStatus::ASK);
     return;
   }
 
@@ -170,9 +168,7 @@ void PermissionContextBase::RequestPermission(
                                     content_settings_type_);
         PermissionUmaUtil::RecordPermissionRequestedFromFrame(
             content_settings_type_, rfh);
-        std::move(callback).Run(content::PermissionResult(
-            PermissionStatus::DENIED,
-            content::PermissionStatusSource::UNSPECIFIED));
+        std::move(callback).Run(PermissionStatus::DENIED);
         return;
       case content::PermissionStatusSource::MULTIPLE_DISMISSALS:
         static constexpr char kPermissionBlockedRepeatedDismissalsReason[] =
@@ -524,8 +520,7 @@ void PermissionContextBase::DecidePermission(
   // TODO(felt): sometimes |permission_request_manager| is null. This check is
   // meant to prevent crashes. See crbug.com/457091.
   if (!permission_request_manager) {
-    std::move(callback).Run(content::PermissionResult(
-        PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED));
+    std::move(callback).Run(PermissionStatus::ASK);
     return;
   }
 
@@ -673,7 +668,7 @@ void PermissionContextBase::NotifyPermissionSet(
 
   if (persist) {
     // Clone new value, because we need it again for the callback.
-    UpdateSetting(request_data, new_value,
+    UpdateSetting(request_data, std::move(new_value),
                   decision == PermissionDecision::kAllowThisTime);
   }
 
@@ -687,9 +682,8 @@ void PermissionContextBase::NotifyPermissionSet(
     }
   }
 
-  std::move(callback).Run(content::PermissionResult(
-      PermissionUtil::PermissionDecisionToPermissionStatus(decision),
-      content::PermissionStatusSource::UNSPECIFIED, new_value));
+  std::move(callback).Run(
+      PermissionUtil::PermissionDecisionToPermissionStatus(decision));
 }
 
 void PermissionContextBase::CleanUpRequest(

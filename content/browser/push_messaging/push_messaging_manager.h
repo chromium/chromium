@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -89,7 +88,7 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
                    const std::vector<uint8_t>& auth,
                    blink::mojom::PushRegistrationStatus status);
   void DidRequestPermissionInIncognito(RegisterData data,
-                                       PermissionResult permission_result);
+                                       blink::mojom::PermissionStatus status);
 
   void DidCheckForExistingRegistration(
       RegisterData data,

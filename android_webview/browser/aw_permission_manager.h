@@ -41,16 +41,18 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
   void RequestPermissions(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-          callback) override;
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      override;
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
   void RequestPermissionsFromCurrentDocument(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-          callback) override;
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      override;
   blink::mojom::PermissionStatus GetPermissionStatus(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const GURL& requesting_origin,
@@ -141,6 +143,6 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
   base::WeakPtrFactory<AwPermissionManager> weak_ptr_factory_{this};
 };
 
-}  // namespace android_webview
+} // namespace android_webview
 
 #endif  // ANDROID_WEBVIEW_BROWSER_AW_PERMISSION_MANAGER_H_

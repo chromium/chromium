@@ -51,15 +51,15 @@ void GeolocationServiceImplContext::RequestPermission(
                   CreatePermissionDescriptorForPermissionType(
                       blink::PermissionType::GEOLOCATION),
               user_gesture),
-          base::BindOnce(&GeolocationServiceImplContext::HandlePermissionResult,
+          base::BindOnce(&GeolocationServiceImplContext::HandlePermissionStatus,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void GeolocationServiceImplContext::HandlePermissionResult(
+void GeolocationServiceImplContext::HandlePermissionStatus(
     PermissionCallback callback,
-    PermissionResult permission_result) {
+    blink::mojom::PermissionStatus permission_status) {
   has_pending_permission_request_ = false;
-  std::move(callback).Run(permission_result);
+  std::move(callback).Run(permission_status);
 }
 
 GeolocationServiceImpl::GeolocationServiceImpl(
@@ -112,19 +112,18 @@ void GeolocationServiceImpl::CreateGeolocation(
       // request finishes. To avoid calling a callback on a destroyed object,
       // use a WeakPtr and skip the callback if the object is invalid.
       base::BindOnce(
-          &GeolocationServiceImpl::CreateGeolocationWithPermissionResult,
+          &GeolocationServiceImpl::CreateGeolocationWithPermissionStatus,
           weak_factory_.GetWeakPtr(), std::move(receiver),
           std::move(scoped_callback)));
 }
 
-void GeolocationServiceImpl::CreateGeolocationWithPermissionResult(
+void GeolocationServiceImpl::CreateGeolocationWithPermissionStatus(
     mojo::PendingReceiver<device::mojom::Geolocation> receiver,
     CreateGeolocationCallback callback,
-    PermissionResult permission_result) {
-  std::move(callback).Run(permission_result.status);
-  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
+    blink::mojom::PermissionStatus permission_status) {
+  std::move(callback).Run(permission_status);
+  if (permission_status != blink::mojom::PermissionStatus::GRANTED)
     return;
-  }
 
   IncrementActivityCount();
 

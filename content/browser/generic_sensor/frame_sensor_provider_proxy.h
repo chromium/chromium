@@ -10,7 +10,6 @@
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
-#include "content/public/browser/permission_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/sensor.mojom-shared.h"
@@ -45,7 +44,7 @@ class FrameSensorProviderProxy final
 
   void OnPermissionRequestCompleted(device::mojom::SensorType type,
                                     GetSensorCallback callback,
-                                    PermissionResult permission_result);
+                                    blink::mojom::PermissionStatus);
 
   mojo::ReceiverSet<blink::mojom::WebSensorProvider> receiver_set_;
 

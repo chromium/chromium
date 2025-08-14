@@ -86,13 +86,12 @@ class ScopedPartitionedOriginBrowserClient
 
 class PermissionManagerTest : public content::RenderViewHostTestHarness {
  public:
-  void OnPermissionChange(content::PermissionResult result) {
-    if (!quit_closure_.is_null()) {
+  void OnPermissionChange(PermissionStatus permission) {
+    if (!quit_closure_.is_null())
       std::move(quit_closure_).Run();
-    }
     callback_called_ = true;
     callback_count_++;
-    callback_result_ = result.status;
+    callback_result_ = permission;
   }
 
  protected:
@@ -166,10 +165,10 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
                 CreatePermissionDescriptorForPermissionType(type),
             /*user_gesture=*/true, rfh->GetLastCommittedOrigin().GetURL())),
         base::BindOnce(
-            [](base::OnceCallback<void(content::PermissionResult)> callback,
-               const std::vector<content::PermissionResult>& result) {
-              DCHECK_EQ(result.size(), 1U);
-              std::move(callback).Run(result[0]);
+            [](base::OnceCallback<void(PermissionStatus)> callback,
+               const std::vector<PermissionStatus>& state) {
+              DCHECK_EQ(state.size(), 1U);
+              std::move(callback).Run(state[0]);
             },
             base::BindOnce(&PermissionManagerTest::OnPermissionChange,
                            base::Unretained(this))));
@@ -186,10 +185,10 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
                 CreatePermissionDescriptorForPermissionType(type),
             /*user_gesture=*/true, rfh->GetLastCommittedOrigin().GetURL()),
         base::BindOnce(
-            [](base::OnceCallback<void(content::PermissionResult)> callback,
-               const std::vector<content::PermissionResult>& result) {
-              DCHECK_EQ(result.size(), 1U);
-              std::move(callback).Run(result[0]);
+            [](base::OnceCallback<void(PermissionStatus)> callback,
+               const std::vector<PermissionStatus>& state) {
+              DCHECK_EQ(state.size(), 1U);
+              std::move(callback).Run(state[0]);
             },
             base::BindOnce(&PermissionManagerTest::OnPermissionChange,
                            base::Unretained(this))));

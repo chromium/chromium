@@ -48,7 +48,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   virtual void RequestPermissions(
       RenderFrameHost* render_frame_host,
       const PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)>
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)>
           callback) = 0;
 
   // Requests permissions from the current document in the given
@@ -59,7 +59,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   virtual void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       const PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)>
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)>
           callback) = 0;
 
   // Returns the permission status of a given requesting_origin/embedding_origin

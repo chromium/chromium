@@ -10,7 +10,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
@@ -36,7 +35,8 @@ class GeolocationServiceImplContext {
       const GeolocationServiceImplContext&) = delete;
 
   ~GeolocationServiceImplContext();
-  using PermissionCallback = base::OnceCallback<void(PermissionResult)>;
+  using PermissionCallback =
+      base::OnceCallback<void(blink::mojom::PermissionStatus)>;
   void RequestPermission(RenderFrameHost* render_frame_host,
                          bool user_gesture,
                          PermissionCallback callback);
@@ -44,8 +44,8 @@ class GeolocationServiceImplContext {
  private:
   bool has_pending_permission_request_ = false;
 
-  void HandlePermissionResult(PermissionCallback callback,
-                              PermissionResult permission_result);
+  void HandlePermissionStatus(PermissionCallback callback,
+                              blink::mojom::PermissionStatus permission_status);
 
   base::WeakPtrFactory<GeolocationServiceImplContext> weak_factory_{this};
 };
@@ -79,10 +79,10 @@ class CONTENT_EXPORT GeolocationServiceImpl
 
  private:
   // Creates the Geolocation Service.
-  void CreateGeolocationWithPermissionResult(
+  void CreateGeolocationWithPermissionStatus(
       mojo::PendingReceiver<device::mojom::Geolocation> receiver,
       CreateGeolocationCallback callback,
-      PermissionResult permission_result);
+      blink::mojom::PermissionStatus permission_status);
 
   void IncrementActivityCount();
   void DecrementActivityCount();

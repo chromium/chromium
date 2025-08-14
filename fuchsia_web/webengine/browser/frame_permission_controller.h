@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
@@ -63,8 +62,8 @@ class FramePermissionController {
   void RequestPermissions(
       const std::vector<blink::PermissionType>& permissions,
       const url::Origin& requesting_origin,
-      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-          callback);
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
 
  private:
   struct PermissionSet {

@@ -156,17 +156,17 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void RequestPermissions(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback);
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback);
   void RequestPermissionFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
-      base::OnceCallback<void(PermissionResult)> callback) override;
+      base::OnceCallback<void(PermissionStatus)> callback) override;
   // WARNING: Permission requests order is not guaranteed.
   // TODO(crbug.com/40864728): Migrate to `std::set`.
   void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback)
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
       override;
   void ResetPermission(blink::PermissionType permission,
                        const url::Origin& origin) override;

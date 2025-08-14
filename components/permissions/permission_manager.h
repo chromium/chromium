@@ -101,21 +101,20 @@ class PermissionManager : public KeyedService,
   void RequestPermissions(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-          callback) override;
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
+      override;
   void RequestPermissionsInternal(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-          callback);
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback);
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
   void RequestPermissionsFromCurrentDocument(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-          callback) override;
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
+      override;
   PermissionStatus GetPermissionStatus(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const GURL& requesting_origin,
@@ -157,10 +156,10 @@ class PermissionManager : public KeyedService,
   // than one permission, it will wait for the remaining permissions to be
   // resolved. When all the permissions have been resolved, the PendingRequest's
   // callback is run.
-  void OnPermissionsRequestResponse(
+  void OnPermissionsRequestResponseStatus(
       PendingRequestLocalId request_local_id,
       int permission_id,
-      content::PermissionResult permission_result);
+      PermissionStatus status);
 
   // permissions::Observer:
   void OnPermissionChanged(const ContentSettingsPattern& primary_pattern,

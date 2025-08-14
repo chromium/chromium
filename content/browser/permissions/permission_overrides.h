@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/types/optional_ref.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/permission_result.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
@@ -46,9 +45,10 @@ class CONTENT_EXPORT PermissionOverrides {
 
   // Get override for |requesting_origin| and |embedding_origin| set for
   // |permission|, if specified.
-  std::optional<PermissionResult> Get(const url::Origin& requesting_origin,
-                                      const url::Origin& embedding_origin,
-                                      blink::PermissionType permission) const;
+  std::optional<blink::mojom::PermissionStatus> Get(
+      const url::Origin& requesting_origin,
+      const url::Origin& embedding_origin,
+      blink::PermissionType permission) const;
 
   // Sets status for |permissions| to GRANTED in |requesting_origin| and
   // |embedding_origin|, and DENIED for all others. Null |requesting_origin| and

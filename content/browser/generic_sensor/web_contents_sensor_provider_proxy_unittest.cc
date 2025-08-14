@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
-
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
+#include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -31,15 +30,14 @@ class TestPermissionManager : public MockPermissionManager {
   void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       const PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback)
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override {
     ASSERT_EQ(request_description.permissions.size(), 1ul);
     ASSERT_EQ(blink::PermissionDescriptorToPermissionType(
                   request_description.permissions[0]),
               blink::PermissionType::SENSORS);
-    std::move(callback).Run(
-        {PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                          PermissionStatusSource::UNSPECIFIED)});
+    std::move(callback).Run({blink::mojom::PermissionStatus::GRANTED});
   }
 };
 

@@ -20,7 +20,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -43,9 +42,8 @@ namespace extensions {
 namespace {
 
 void CallbackWrapper(base::OnceCallback<void(bool)> callback,
-                     content::PermissionResult permission_result) {
-  std::move(callback).Run(permission_result.status ==
-                          blink::mojom::PermissionStatus::GRANTED);
+                     blink::mojom::PermissionStatus status) {
+  std::move(callback).Run(status == blink::mojom::PermissionStatus::GRANTED);
 }
 
 // Checks the embedder's permissions policy for whether the feature is enabled
@@ -340,13 +338,11 @@ void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
 
 void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
     bool user_gesture,
-    base::OnceCallback<void(content::PermissionResult)> callback,
+    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
     bool allow,
     const std::string& user_input) {
   if (!allow) {
-    std::move(callback).Run(content::PermissionResult(
-        blink::mojom::PermissionStatus::DENIED,
-        content::PermissionStatusSource::UNSPECIFIED));
+    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
 
@@ -466,14 +462,12 @@ void ChromeWebViewPermissionHelperDelegate::RequestClipboardReadWritePermission(
 
 void ChromeWebViewPermissionHelperDelegate::
     OnClipboardReadWritePermissionResponse(
-        base::OnceCallback<void(content::PermissionResult)> callback,
+        base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
         bool user_gesture,
         bool allow,
         const std::string& user_input) {
   if (!allow) {
-    std::move(callback).Run(content::PermissionResult(
-        blink::mojom::PermissionStatus::DENIED,
-        content::PermissionStatusSource::UNSPECIFIED));
+    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
 
@@ -519,13 +513,11 @@ void ChromeWebViewPermissionHelperDelegate::
 
 void ChromeWebViewPermissionHelperDelegate::
     OnClipboardSanitizedWritePermissionResponse(
-        base::OnceCallback<void(content::PermissionResult)> callback,
+        base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
         bool allow,
         const std::string& user_input) {
   if (!allow) {
-    std::move(callback).Run(content::PermissionResult(
-        blink::mojom::PermissionStatus::DENIED,
-        content::PermissionStatusSource::UNSPECIFIED));
+    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
 
@@ -538,12 +530,10 @@ void ChromeWebViewPermissionHelperDelegate::
 
 void ChromeWebViewPermissionHelperDelegate::RequestEmbedderFramePermission(
     bool user_gesture,
-    base::OnceCallback<void(content::PermissionResult)> callback,
+    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
     blink::PermissionType permission_type) {
   if (!web_view_guest()->attached()) {
-    std::move(callback).Run(content::PermissionResult(
-        blink::mojom::PermissionStatus::DENIED,
-        content::PermissionStatusSource::UNSPECIFIED));
+    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
 

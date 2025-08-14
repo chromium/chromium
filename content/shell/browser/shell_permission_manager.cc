@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/common/shell_switches.h"
@@ -85,27 +84,27 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
 
 ShellPermissionManager::ShellPermissionManager() = default;
 
-ShellPermissionManager::~ShellPermissionManager() {}
+ShellPermissionManager::~ShellPermissionManager() {
+}
 
 void ShellPermissionManager::RequestPermissions(
     RenderFrameHost* render_frame_host,
     const PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<PermissionResult>&)> callback) {
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {
   if (render_frame_host->IsNestedWithinFencedFrame()) {
-    std::move(callback).Run(std::vector<PermissionResult>(
+    std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
         request_description.permissions.size(),
-        PermissionResult(blink::mojom::PermissionStatus::DENIED,
-                         PermissionStatusSource::UNSPECIFIED)));
+        blink::mojom::PermissionStatus::DENIED));
     return;
   }
-  std::vector<PermissionResult> result;
+  std::vector<blink::mojom::PermissionStatus> result;
   for (const auto& permission : request_description.permissions) {
-    result.emplace_back(
+    result.push_back(
         IsAllowlistedPermissionType(
             blink::PermissionDescriptorToPermissionType(permission))
             ? blink::mojom::PermissionStatus::GRANTED
-            : blink::mojom::PermissionStatus::DENIED,
-        PermissionStatusSource::UNSPECIFIED);
+            : blink::mojom::PermissionStatus::DENIED);
   }
   std::move(callback).Run(result);
 }
@@ -119,22 +118,21 @@ void ShellPermissionManager::ResetPermission(
 void ShellPermissionManager::RequestPermissionsFromCurrentDocument(
     content::RenderFrameHost* render_frame_host,
     const PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<PermissionResult>&)> callback) {
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {
   if (render_frame_host->IsNestedWithinFencedFrame()) {
-    std::move(callback).Run(std::vector<PermissionResult>(
+    std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
         request_description.permissions.size(),
-        PermissionResult(blink::mojom::PermissionStatus::DENIED,
-                         PermissionStatusSource::UNSPECIFIED)));
+        blink::mojom::PermissionStatus::DENIED));
     return;
   }
-  std::vector<PermissionResult> result;
+  std::vector<blink::mojom::PermissionStatus> result;
   for (const auto& permission : request_description.permissions) {
-    result.push_back(PermissionResult(
+    result.push_back(
         IsAllowlistedPermissionType(
             blink::PermissionDescriptorToPermissionType(permission))
             ? blink::mojom::PermissionStatus::GRANTED
-            : blink::mojom::PermissionStatus::DENIED,
-        PermissionStatusSource::UNSPECIFIED));
+            : blink::mojom::PermissionStatus::DENIED);
   }
   std::move(callback).Run(result);
 }

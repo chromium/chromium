@@ -74,7 +74,7 @@ class GeolocationPermissionContextDelegateTests
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       bool user_gesture,
-      base::OnceCallback<void(content::PermissionResult)> callback) {
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
     PermissionManagerFactory::GetForProfile(profile())
         ->RequestPermissionsFromCurrentDocument(
             render_frame_host,
@@ -83,10 +83,11 @@ class GeolocationPermissionContextDelegateTests
                     CreatePermissionDescriptorForPermissionType(permission),
                 user_gesture),
             base::BindOnce(
-                [](base::OnceCallback<void(content::PermissionResult)> callback,
-                   const std::vector<content::PermissionResult>& result) {
-                  DCHECK_EQ(result.size(), 1U);
-                  std::move(callback).Run(result[0]);
+                [](base::OnceCallback<void(blink::mojom::PermissionStatus)>
+                       callback,
+                   const std::vector<blink::mojom::PermissionStatus>& state) {
+                  DCHECK_EQ(state.size(), 1U);
+                  std::move(callback).Run(state[0]);
                 },
                 std::move(callback)));
   }
@@ -115,8 +116,8 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
   RequestPermissionFromCurrentDocument(
       blink::PermissionType::GEOLOCATION, main_rfh(), true,
       base::BindOnce(
-          [](base::RunLoop* run_loop, content::PermissionResult result) {
-            EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
+          [](base::RunLoop* run_loop, blink::mojom::PermissionStatus status) {
+            EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
             run_loop->Quit();
           },
           &run_loop));

@@ -15,7 +15,6 @@
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/browser/permission_descriptor_util.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -45,9 +44,9 @@ class TestPermissionContext : public MidiSysexPermissionContext {
 
   bool tab_context_updated() { return tab_context_updated_; }
 
-  void TrackPermissionDecision(content::PermissionResult permission_result) {
+  void TrackPermissionDecision(PermissionStatus permission_status) {
     permission_set_ = true;
-    permission_granted_ = permission_result.status == PermissionStatus::GRANTED;
+    permission_granted_ = permission_status == PermissionStatus::GRANTED;
   }
 
  protected:

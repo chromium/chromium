@@ -14,7 +14,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "content/public/browser/permission_descriptor_util.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_controller.h"
 #include "content/public/test/test_browser_context.h"
@@ -140,8 +139,7 @@ class KeySystemSupportImplTest : public RenderViewHostTestHarness {
                             blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER),
                     main_rfh()->HasTransientUserActivation()),
                 _))
-        .WillByDefault(RunOnceCallback<2>(PermissionResult(
-            permission_status, PermissionStatusSource::UNSPECIFIED)));
+        .WillByDefault(RunOnceCallback<2>(permission_status));
 
     KeySystemSupportImpl::GetForCurrentDocument(main_rfh())
         ->OnProtectedMediaIdentifierPermissionUpdated(permission_status);

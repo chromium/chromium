@@ -95,8 +95,8 @@ void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
 void FrameSensorProviderProxy::OnPermissionRequestCompleted(
     SensorType type,
     GetSensorCallback callback,
-    PermissionResult permission_result) {
-  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
+    blink::mojom::PermissionStatus status) {
+  if (status != blink::mojom::PermissionStatus::GRANTED) {
     std::move(callback).Run(
         device::mojom::SensorCreationResult::ERROR_NOT_ALLOWED, nullptr);
     return;

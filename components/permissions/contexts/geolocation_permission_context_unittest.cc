@@ -59,7 +59,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -168,7 +167,7 @@ class GeolocationPermissionContextTests
       const GURL& requesting_origin);
 
   void PermissionResponse(const PermissionRequestID& id,
-                          content::PermissionResult permission_result);
+                          PermissionStatus permission_status);
   void CheckPermissionMessageSent(int request_id, bool allowed);
   void CheckPermissionMessageSentForTab(int tab, int request_id, bool allowed);
   void CheckPermissionMessageSentInternal(MockRenderProcessHost* process,
@@ -295,12 +294,12 @@ GeolocationPermissionContextTests::GetPermissionStatus(
 
 void GeolocationPermissionContextTests::PermissionResponse(
     const PermissionRequestID& id,
-    content::PermissionResult permission_result) {
+    PermissionStatus permission_status) {
   LOG(ERROR) << "GeolocationPermissionContextTests::PermissionResponse "
-             << id.ToString() << " " << permission_result.status;
+             << id.ToString() << " " << permission_status;
   responses_[id.global_render_frame_host_id().child_id] =
       std::make_pair(id.request_local_id_for_testing(),
-                     permission_result.status == PermissionStatus::GRANTED);
+                     permission_status == PermissionStatus::GRANTED);
 }
 
 void GeolocationPermissionContextTests::OnPermissionChanged(

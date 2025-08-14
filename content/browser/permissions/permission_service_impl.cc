@@ -132,12 +132,8 @@ class PermissionServiceImpl::PendingRequest {
         std::vector<PermissionStatus>(request_size_, PermissionStatus::DENIED));
   }
 
-  void RunCallback(const std::vector<PermissionResult>& results) {
-    std::vector<PermissionStatus> permission_statuses;
-    for (const auto& result : results) {
-      permission_statuses.push_back(result.status);
-    }
-    std::move(callback_).Run(permission_statuses);
+  void RunCallback(const std::vector<PermissionStatus>& results) {
+    std::move(callback_).Run(results);
   }
 
  private:
@@ -328,7 +324,7 @@ void PermissionServiceImpl::RequestPermissionsInternal(
 
 void PermissionServiceImpl::OnRequestPermissionsResponse(
     int pending_request_id,
-    const std::vector<PermissionResult>& results) {
+    const std::vector<PermissionStatus>& results) {
   PendingRequest* request = pending_requests_.Lookup(pending_request_id);
   request->RunCallback(results);
   pending_requests_.Remove(pending_request_id);

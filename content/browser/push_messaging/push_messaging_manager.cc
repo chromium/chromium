@@ -377,10 +377,10 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
 
 void PushMessagingManager::DidRequestPermissionInIncognito(
     RegisterData data,
-    PermissionResult permission_result) {
+    blink::mojom::PermissionStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Notification permission should always be denied in incognito.
-  DCHECK_EQ(blink::mojom::PermissionStatus::DENIED, permission_result.status);
+  DCHECK_EQ(blink::mojom::PermissionStatus::DENIED, status);
   SendSubscriptionError(
       std::move(data),
       blink::mojom::PushRegistrationStatus::INCOGNITO_PERMISSION_DENIED);

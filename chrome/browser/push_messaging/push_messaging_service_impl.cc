@@ -905,12 +905,10 @@ void PushMessagingServiceImpl::SubscribeFromWorker(
         app_identifier.origin());
   }
 
-  DoSubscribe(
-      std::move(app_identifier), std::move(options),
-      std::move(register_callback),
-      /* render_process_id= */ -1, /* render_frame_id= */ -1,
-      content::PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                content::PermissionStatusSource::UNSPECIFIED));
+  DoSubscribe(std::move(app_identifier), std::move(options),
+              std::move(register_callback),
+              /* render_process_id= */ -1, /* render_frame_id= */ -1,
+              blink::mojom::PermissionStatus::GRANTED);
 }
 
 blink::mojom::PermissionStatus PushMessagingServiceImpl::GetPermissionStatus(
@@ -1024,8 +1022,8 @@ void PushMessagingServiceImpl::DoSubscribe(
     RegisterCallback register_callback,
     int render_process_id,
     int render_frame_id,
-    content::PermissionResult permission_result) {
-  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
+    blink::mojom::PermissionStatus permission_status) {
+  if (permission_status != blink::mojom::PermissionStatus::GRANTED) {
     SubscribeEndWithError(
         std::move(register_callback),
         blink::mojom::PushRegistrationStatus::PERMISSION_DENIED);
@@ -1826,11 +1824,9 @@ void PushMessagingServiceImpl::UpdateSubscription(
   }
   // Subscribe using the new subscription information, this will overwrite
   // the expiration time of |app_identifier|
-  DoSubscribe(
-      app_identifier, std::move(options), std::move(register_callback),
-      -1 /* render_process_id */, -1 /* render_frame_id */,
-      content::PermissionResult(permission_status,
-                                content::PermissionStatusSource::UNSPECIFIED));
+  DoSubscribe(app_identifier, std::move(options), std::move(register_callback),
+              -1 /* render_process_id */, -1 /* render_frame_id */,
+              permission_status);
 }
 
 void PushMessagingServiceImpl::DidUpdateSubscription(

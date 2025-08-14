@@ -41,8 +41,9 @@ class WebTestPermissionManager
   void RequestPermissions(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-          callback) override;
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      override;
 
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
@@ -50,8 +51,9 @@ class WebTestPermissionManager
   void RequestPermissionsFromCurrentDocument(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-          callback) override;
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      override;
   blink::mojom::PermissionStatus GetPermissionStatus(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const GURL& requesting_origin,

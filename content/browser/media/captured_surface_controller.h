@@ -94,9 +94,8 @@ class CONTENT_EXPORT CapturedSurfaceController {
   };
 
  private:
-  using CapturedSurfaceControlPermissionStatus =
-      CapturedSurfaceControlPermissionManager::
-          CapturedSurfaceControlPermissionStatus;
+  using PermissionResult =
+      CapturedSurfaceControlPermissionManager::PermissionResult;
 
   void OnZoomLevelChange(int subscription_version, int zoom_level);
 

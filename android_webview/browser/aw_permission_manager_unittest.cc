@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
-#include "content/public/browser/permission_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
@@ -40,9 +39,8 @@ class AwBrowserPermissionRequestDelegateForTesting final
                        PermissionType type,
                        bool grant) {
     for (auto it = request_.begin(); it != request_.end(); ++it) {
-      if ((*it)->type != type || (*it)->origin != origin) {
+      if ((*it)->type != type || (*it)->origin != origin)
         continue;
-      }
       PermissionCallback callback = std::move((*it)->callback);
       request_.erase(it);
       std::move(callback).Run(grant);
@@ -198,21 +196,19 @@ class AwPermissionManagerTest : public testing::Test {
   AwPermissionManagerTest()
       : render_frame_host(nullptr) {}
 
-  void PermissionRequestResponse(
-      int id,
-      const std::vector<content::PermissionResult>& permission_result) {
-    ASSERT_EQ(permission_result.size(), 1u);
-    resolved_permission_status.push_back(permission_result[0].status);
+  void PermissionRequestResponse(int id,
+                                 const std::vector<PermissionStatus>& status) {
+    ASSERT_EQ(status.size(), 1u);
+    resolved_permission_status.push_back(status[0]);
     resolved_permission_request_id.push_back(id);
   }
 
-  void PermissionsRequestResponse(
-      int id,
-      const std::vector<content::PermissionResult>& permission_result) {
-    for (const auto& result : permission_result) {
-      resolved_permission_status.push_back(result.status);
+  void PermissionsRequestResponse(int id,
+                                  const std::vector<PermissionStatus>& status) {
+    resolved_permission_status.insert(resolved_permission_status.end(),
+                                      status.begin(), status.end());
+    for (size_t i = 0; i < status.size(); ++i)
       resolved_permission_request_id.push_back(id);
-    }
   }
 
  protected:
@@ -233,8 +229,8 @@ class AwPermissionManagerTest : public testing::Test {
       content::RenderFrameHost* rfh,
       const GURL& requesting_origin,
       bool user_gesture,
-      base::OnceCallback<void(
-          const std::vector<content::PermissionResult>& status)> callback) {
+      base::OnceCallback<void(const std::vector<PermissionStatus>& status)>
+          callback) {
     CHECK(manager);
     manager->RequestPermissions(
         rfh,

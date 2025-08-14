@@ -40,7 +40,7 @@ using blink::PermissionType;
 using blink::mojom::PermissionStatus;
 
 using RequestPermissionsCallback =
-    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>;
+    base::OnceCallback<void(const std::vector<PermissionStatus>&)>;
 
 namespace android_webview {
 
@@ -177,42 +177,36 @@ class AwPermissionManager::PendingRequest {
         render_process_id(render_process_id),
         render_frame_id(render_frame_id),
         callback(std::move(callback)),
-        results(permissions.size(),
-                content::PermissionResult(
-                    PermissionStatus::DENIED,
-                    content::PermissionStatusSource::UNSPECIFIED)),
+        results(permissions.size(), PermissionStatus::DENIED),
         cancelled_(false) {
-    for (size_t i = 0; i < permissions.size(); ++i) {
+    for (size_t i = 0; i < permissions.size(); ++i)
       permission_index_map_.insert(std::make_pair(permissions[i], i));
-    }
   }
 
   ~PendingRequest() = default;
 
-  void SetPermissionResult(PermissionType type,
-                           content::PermissionResult permission_result) {
+  void SetPermissionStatus(PermissionType type, PermissionStatus status) {
     auto result = permission_index_map_.find(type);
     if (result == permission_index_map_.end()) {
       NOTREACHED();
     }
     DCHECK(!IsCompleted());
-    results[result->second] = permission_result;
+    results[result->second] = status;
     if (base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
-      if (type == PermissionType::MIDI &&
-          permission_result.status == PermissionStatus::GRANTED) {
+      if (type == PermissionType::MIDI && status == PermissionStatus::GRANTED) {
         content::ChildProcessSecurityPolicy::GetInstance()
             ->GrantSendMidiMessage(render_process_id);
       }
     }
     if (type == PermissionType::MIDI_SYSEX &&
-        permission_result.status == PermissionStatus::GRANTED) {
+        status == PermissionStatus::GRANTED) {
       content::ChildProcessSecurityPolicy::GetInstance()
           ->GrantSendMidiSysExMessage(render_process_id);
     }
     resolved_permissions_.insert(type);
   }
 
-  content::PermissionResult GetPermissionResult(PermissionType type) {
+  PermissionStatus GetPermissionStatus(PermissionType type) {
     auto result = permission_index_map_.find(type);
     if (result == permission_index_map_.end()) {
       NOTREACHED();
@@ -242,7 +236,7 @@ class AwPermissionManager::PendingRequest {
   int render_process_id;
   int render_frame_id;
   RequestPermissionsCallback callback;
-  std::vector<content::PermissionResult> results;
+  std::vector<PermissionStatus> results;
 
  private:
   std::map<PermissionType, size_t> permission_index_map_;
@@ -270,14 +264,13 @@ AwPermissionManager::~AwPermissionManager() {
 void AwPermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-        callback) {
+    base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto const& permissions = blink::PermissionDescriptorToPermissionTypes(
       request_description.permissions);
   if (permissions.empty()) {
-    std::move(callback).Run(std::vector<content::PermissionResult>());
+    std::move(callback).Run(std::vector<PermissionStatus>());
     return;
   }
 
@@ -296,9 +289,9 @@ void AwPermissionManager::RequestPermissions(
       if (it.GetCurrentValue()->HasPermissionType(permissions[i]) &&
           it.GetCurrentValue()->requesting_origin == requesting_origin) {
         if (it.GetCurrentValue()->IsCompleted(permissions[i])) {
-          pending_request->SetPermissionResult(
+          pending_request->SetPermissionStatus(
               permissions[i],
-              it.GetCurrentValue()->GetPermissionResult(permissions[i]));
+              it.GetCurrentValue()->GetPermissionStatus(permissions[i]));
         }
         should_delegate_requests[i] = false;
         break;
@@ -322,10 +315,8 @@ void AwPermissionManager::RequestPermissions(
     if (!delegate) {
       DVLOG(0) << "Dropping permissions request for "
                << static_cast<int>(permissions[i]);
-      pending_request_raw->SetPermissionResult(
-          permissions[i], content::PermissionResult(
-                              PermissionStatus::DENIED,
-                              content::PermissionStatusSource::UNSPECIFIED));
+      pending_request_raw->SetPermissionStatus(permissions[i],
+                                               PermissionStatus::DENIED);
       continue;
     }
 
@@ -357,10 +348,8 @@ void AwPermissionManager::RequestPermissions(
         // custom data is represented with the CLIPBOARD_READ_WRITE permission,
         // and that requires an explicit user approval, which is not implemented
         // yet. See crbug.com/1271620
-        pending_request_raw->SetPermissionResult(
-            permissions[i], content::PermissionResult(
-                                PermissionStatus::GRANTED,
-                                content::PermissionStatusSource::UNSPECIFIED));
+        pending_request_raw->SetPermissionStatus(permissions[i],
+                                                 PermissionStatus::GRANTED);
         break;
       case PermissionType::AUDIO_CAPTURE:
       case PermissionType::VIDEO_CAPTURE:
@@ -390,10 +379,8 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::WEB_APP_INSTALLATION:
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
                          << static_cast<int>(permissions[i]);
-        pending_request_raw->SetPermissionResult(
-            permissions[i], content::PermissionResult(
-                                PermissionStatus::DENIED,
-                                content::PermissionStatusSource::UNSPECIFIED));
+        pending_request_raw->SetPermissionStatus(permissions[i],
+                                                 PermissionStatus::DENIED);
         break;
       case PermissionType::STORAGE_ACCESS_GRANT:
       case PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
@@ -405,10 +392,7 @@ void AwPermissionManager::RequestPermissions(
         if (cached_value != saa_cache_->end()) {
           auto is_granted = cached_value->second ? PermissionStatus::GRANTED
                                                  : PermissionStatus::DENIED;
-          pending_request_raw->SetPermissionResult(
-              permissions[i],
-              content::PermissionResult(
-                  is_granted, content::PermissionStatusSource::UNSPECIFIED));
+          pending_request_raw->SetPermissionStatus(permissions[i], is_granted);
           break;
         }
 
@@ -430,25 +414,19 @@ void AwPermissionManager::RequestPermissions(
         // to device motion and device orientation data (and underlying
         // sensors) works in the WebView. SensorProviderImpl::GetSensor()
         // filters requests for other types of sensors.
-        pending_request_raw->SetPermissionResult(
-            permissions[i], content::PermissionResult(
-                                PermissionStatus::GRANTED,
-                                content::PermissionStatusSource::UNSPECIFIED));
+        pending_request_raw->SetPermissionStatus(permissions[i],
+                                                 PermissionStatus::GRANTED);
         break;
       case PermissionType::WAKE_LOCK_SYSTEM:
-        pending_request_raw->SetPermissionResult(
-            permissions[i], content::PermissionResult(
-                                PermissionStatus::DENIED,
-                                content::PermissionStatusSource::UNSPECIFIED));
+        pending_request_raw->SetPermissionStatus(permissions[i],
+                                                 PermissionStatus::DENIED);
         break;
       case PermissionType::LOCAL_NETWORK_ACCESS:
         // PermissionType::LOCAL_NETWORK_ACCESS requests are always granted so
         // that local network requests in WebView work as-is. WebView is
         // currently out-of-scope for Local Network Access restrictions.
-        pending_request_raw->SetPermissionResult(
-            permissions[i], content::PermissionResult(
-                                PermissionStatus::GRANTED,
-                                content::PermissionStatusSource::UNSPECIFIED));
+        pending_request_raw->SetPermissionStatus(permissions[i],
+                                                 PermissionStatus::GRANTED);
         break;
       case PermissionType::NUM:
         NOTREACHED() << "PermissionType::NUM was not expected here.";
@@ -457,17 +435,15 @@ void AwPermissionManager::RequestPermissions(
 
   // If delegate resolve the permission synchronously, all requests could be
   // already resolved here.
-  if (!pending_requests_.Lookup(request_id)) {
+  if (!pending_requests_.Lookup(request_id))
     return;
-  }
 
   // If requests are resolved without calling delegate functions, e.g.
   // PermissionType::MIDI is permitted within the previous for-loop, all
   // requests could be already resolved, but still in the |pending_requests_|
   // without invoking the callback.
   if (pending_request_raw->IsCompleted()) {
-    std::vector<content::PermissionResult> results =
-        pending_request_raw->results;
+    std::vector<PermissionStatus> results = pending_request_raw->results;
     RequestPermissionsCallback completed_callback =
         std::move(pending_request_raw->callback);
     pending_requests_.Remove(request_id);
@@ -516,8 +492,8 @@ void AwPermissionManager::OnRequestResponse(
                                     pending_request->embedding_origin, status);
 
   std::vector<int> complete_request_ids;
-  std::vector<std::pair<RequestPermissionsCallback,
-                        std::vector<content::PermissionResult>>>
+  std::vector<
+      std::pair<RequestPermissionsCallback, std::vector<PermissionStatus>>>
       complete_request_pairs;
   for (PendingRequestsMap::Iterator<PendingRequest> it(
            &manager->pending_requests_);
@@ -527,9 +503,7 @@ void AwPermissionManager::OnRequestResponse(
             pending_request->requesting_origin) {
       continue;
     }
-    it.GetCurrentValue()->SetPermissionResult(
-        permission, content::PermissionResult(
-                        status, content::PermissionStatusSource::UNSPECIFIED));
+    it.GetCurrentValue()->SetPermissionStatus(permission, status);
     if (it.GetCurrentValue()->IsCompleted()) {
       complete_request_ids.push_back(it.GetCurrentKey());
       if (!it.GetCurrentValue()->IsCancelled()) {
@@ -554,7 +528,7 @@ void AwPermissionManager::ResetPermission(PermissionType permission,
 void AwPermissionManager::RequestPermissionsFromCurrentDocument(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
   RequestPermissions(render_frame_host, request_description,
                      std::move(callback));
@@ -801,10 +775,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::NUM:
         NOTREACHED() << "PermissionType::NUM was not expected here.";
     }
-    pending_request->SetPermissionResult(
-        permission, content::PermissionResult(
-                        PermissionStatus::DENIED,
-                        content::PermissionStatusSource::UNSPECIFIED));
+    pending_request->SetPermissionStatus(permission, PermissionStatus::DENIED);
   }
 
   // If there are still active requests, we should not remove request_id here,
