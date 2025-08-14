@@ -107,7 +107,7 @@ bool PerformanceControlsHatsService::MayLaunchPPMSurvey() const {
 
 std::string PerformanceControlsHatsService::GetPPMSurveySegmentName() {
   uint64_t system_ram = memory_mb_for_testing_.value_or(
-      base::SysInfo::AmountOfPhysicalMemory().InMiB());
+      base::SysInfo::AmountOfPhysicalMemoryMB());
   size_t max_memory1 = kPerformanceControlsPPMSurveySegmentMaxMemoryGB1.Get();
   size_t max_memory2 = kPerformanceControlsPPMSurveySegmentMaxMemoryGB2.Get();
   if (max_memory1 == 0 || system_ram <= max_memory1 * 1024) {

@@ -31,43 +31,43 @@
 
 namespace {
 
-base::ByteCount AmountOfMemory(int pages_name) {
+uint64_t AmountOfMemory(int pages_name) {
   long pages = sysconf(pages_name);
   long page_size = sysconf(_SC_PAGESIZE);
   if (pages < 0 || page_size < 0) {
-    return base::ByteCount(0);
+    return 0;
   }
-  return base::ByteCount(page_size) * pages;
+  return static_cast<uint64_t>(pages) * static_cast<uint64_t>(page_size);
 }
 
-base::ByteCount AmountOfPhysicalMemory() {
+uint64_t AmountOfPhysicalMemory() {
   return AmountOfMemory(_SC_PHYS_PAGES);
 }
 using LazyPhysicalMemory =
-    base::internal::LazySysInfoValue<base::ByteCount, AmountOfPhysicalMemory>;
+    base::internal::LazySysInfoValue<uint64_t, AmountOfPhysicalMemory>;
 
 }  // namespace
 
 namespace base {
 
 // static
-ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
+uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   static_assert(std::is_trivially_destructible<LazyPhysicalMemory>::value);
   static LazyPhysicalMemory physical_memory;
   return physical_memory.value();
 }
 
 // static
-ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   SystemMemoryInfo info;
   if (!GetSystemMemoryInfo(&info)) {
-    return ByteCount(0);
+    return 0;
   }
   return AmountOfAvailablePhysicalMemory(info);
 }
 
 // static
-ByteCount SysInfo::AmountOfAvailablePhysicalMemory(
+uint64_t SysInfo::AmountOfAvailablePhysicalMemory(
     const SystemMemoryInfo& info) {
   // See details here:
   // https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=34e431b0ae398fc54ea69ff85ec700722c9da773
@@ -77,7 +77,7 @@ ByteCount SysInfo::AmountOfAvailablePhysicalMemory(
       !info.available.is_zero()
           ? std::max(info.available - info.active_file, ByteCount(0))
           : info.free + info.reclaimable + info.inactive_file;
-  return res;
+  return res.InBytesUnsigned();
 }
 
 // static

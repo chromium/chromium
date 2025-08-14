@@ -1413,7 +1413,7 @@ size_t RenderProcessHost::GetMaxRendererProcessCount() {
 #else
         60;  // In MB
 #endif
-    max_count = base::SysInfo::AmountOfPhysicalMemory().InMiB() / 2;
+    max_count = base::SysInfo::AmountOfPhysicalMemoryMB() / 2;
     max_count /= kEstimatedWebContentsMemoryUsage;
 
     static constexpr size_t kMinRendererProcessCount = 3;
@@ -3177,7 +3177,7 @@ bool RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() {
   // The comparison below is using 1077 rather than 1024 because this helps
   // ensure that devices with exactly 1GB of RAM won't get included because of
   // inaccuracies or off-by-one errors.
-  if (base::SysInfo::AmountOfPhysicalMemory().InMiB() <=
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <=
       features::kAndroidSpareRendererMemoryThreshold.Get()) {
     return false;
   }

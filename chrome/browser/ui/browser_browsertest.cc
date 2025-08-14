@@ -607,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_ThirtyFourTabs) {
 #else
       17;
 #endif
-  if (base::SysInfo::AmountOfPhysicalMemory().InGiB() >= 2) {
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() >= 2048) {
     EXPECT_GE(CountRenderProcessHosts(), kExpectedProcessCount);
   } else {
     EXPECT_LT(CountRenderProcessHosts(), kExpectedProcessCount);

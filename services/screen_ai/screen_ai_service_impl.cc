@@ -165,9 +165,9 @@ void SetCPUInstructionSetCrashKey() {
 // Return a maximum 11 character string with the signature of available and
 // total memory, both in MB and capped to 99999.
 std::string GetMemoryStatusForCrashKey() {
-  int total_memory = base::SysInfo::AmountOfPhysicalMemory().InMiB();
-  int available_memory =
-      base::SysInfo::AmountOfAvailablePhysicalMemory().InMiB();
+  int total_memory = base::SysInfo::AmountOfPhysicalMemoryMB();
+  int available_memory = static_cast<int>(
+      base::SysInfo::AmountOfAvailablePhysicalMemory() / (1024 * 1024));
 
   // Cap the number of digits for crash report.
   total_memory = std::min(total_memory, 99999);

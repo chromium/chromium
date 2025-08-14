@@ -12,7 +12,7 @@
 
 namespace base {
 
-ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
+int64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   int pages, page_size;
   size_t size = sizeof(pages);
   sysctlbyname("vm.stats.vm.v_page_count", &pages, &size, NULL, 0);
@@ -20,7 +20,7 @@ ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
   if (pages == -1 || page_size == -1) {
     NOTREACHED();
   }
-  return ByteCount(page_size) * pages;
+  return static_cast<int64_t>(pages) * page_size;
 }
 
 // static

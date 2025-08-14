@@ -105,7 +105,7 @@ bool DeviceHasEnoughMemoryForPrerender() {
       blink::features::kPrerender2MemoryThresholdParamName,
       kDefaultMemoryThresholdMb);
 
-  return base::SysInfo::AmountOfPhysicalMemory().InMiB() > memory_threshold_mb;
+  return base::SysInfo::AmountOfPhysicalMemoryMB() > memory_threshold_mb;
 }
 
 base::MemoryPressureListener::MemoryPressureLevel

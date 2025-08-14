@@ -299,12 +299,12 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestFieldTrialTest, Simple) {
 namespace {
 bool CheckUseDedicatedProcessesForAllSitesWithAndroidState(
     bool is_under_advanced_protection,
-    base::ByteCount ram) {
+    uint64_t ram_kb) {
   safe_browsing::SetAdvancedProtectionStateForTesting(
       is_under_advanced_protection);
   ChromeContentBrowserClient::DisableAdvancedProtectionCachingForTests();
 
-  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(ram);
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(ram_kb);
   site_isolation::SiteIsolationPolicy::
       SetDisallowMemoryThresholdCachingForTesting(true);
   return content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
@@ -323,10 +323,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
       switches::kDisableSiteIsolationForPolicy));
   EXPECT_EQ(CheckUseDedicatedProcessesForAllSitesWithAndroidState(
                 /*is_under_advanced_protection=*/false,
-                // TODO(crbug.com/429140103): Comments in the original code
-                // suggested that this was in KiB, but it was in fact in MiB.
-                // Needs investigation.
-                /*ram=*/base::MiB(8000)),
+                /*ram_kb=*/8000),
             base::FeatureList::IsEnabled(features::kSitePerProcess));
 #else
   EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
@@ -342,9 +339,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
       command_line->HasSwitch(switches::kDisableSiteIsolationForPolicy));
   EXPECT_TRUE(CheckUseDedicatedProcessesForAllSitesWithAndroidState(
       /*is_under_advanced_protection=*/true,
-      // TODO(crbug.com/429140103): Comments in the original code suggested that
-      // this was in KiB, but it was in fact in MiB. Needs investigation.
-      /*ram=*/base::MiB(8000)));
+      /*ram_kb=*/8000));
 }
 
 IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
@@ -361,9 +356,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
       command_line->HasSwitch(switches::kDisableSiteIsolationForPolicy));
   EXPECT_FALSE(CheckUseDedicatedProcessesForAllSitesWithAndroidState(
       /*is_under_advanced_protection=*/true,
-      // TODO(crbug.com/429140103): Comments in the original code suggested that
-      // this was in KiB, but it was in fact in MiB. Needs investigation.
-      /*ram=*/base::MiB(1000)));
+      /*ram_kb=*/1000));
 }
 #endif
 

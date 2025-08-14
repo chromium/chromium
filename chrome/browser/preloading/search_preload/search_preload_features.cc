@@ -46,7 +46,7 @@ BASE_FEATURE(kDsePreload2OnSuggestNonDefalutMatch,
 
 bool IsDsePreload2Enabled() {
   return base::FeatureList::IsEnabled(kDsePreload2) &&
-         static_cast<size_t>(base::SysInfo::AmountOfPhysicalMemory().InMiB()) >=
+         static_cast<size_t>(base::SysInfo::AmountOfPhysicalMemoryMB()) >=
              kDsePreload2DeviceMemoryThresholdMiB.Get();
 }
 

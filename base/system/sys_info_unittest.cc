@@ -89,7 +89,8 @@ TEST_F(SysInfoTest, NumProcsWithSecurityMitigationEnabled) {
 
 TEST_F(SysInfoTest, AmountOfMem) {
   // We aren't actually testing that it's correct, just that it's sane.
-  EXPECT_GT(SysInfo::AmountOfPhysicalMemory(), ByteCount(0));
+  EXPECT_GT(SysInfo::AmountOfPhysicalMemory(), 0u);
+  EXPECT_GT(SysInfo::AmountOfPhysicalMemoryMB(), 0);
   // The maxmimal amount of virtual memory can be zero which means unlimited.
   EXPECT_GE(SysInfo::AmountOfVirtualMemory(), 0u);
 }
@@ -108,7 +109,8 @@ TEST_F(SysInfoTest, MAYBE_AmountOfAvailablePhysicalMemory) {
   if (!info.available.is_zero()) {
     // If there is MemAvailable from kernel.
     EXPECT_LT(info.available, info.total);
-    const ByteCount amount = SysInfo::AmountOfAvailablePhysicalMemory(info);
+    const ByteCount amount =
+        ByteCount(SysInfo::AmountOfAvailablePhysicalMemory(info));
     // We aren't actually testing that it's correct, just that it's sane.
     // Available memory is |free - reserved + reclaimable (inactive, non-free)|.
     // On some android platforms, reserved is a substantial portion.
@@ -125,7 +127,8 @@ TEST_F(SysInfoTest, MAYBE_AmountOfAvailablePhysicalMemory) {
   }
 
   // There is no MemAvailable. Check the fallback logic.
-  const ByteCount amount = SysInfo::AmountOfAvailablePhysicalMemory(info);
+  const ByteCount amount =
+      ByteCount(SysInfo::AmountOfAvailablePhysicalMemory(info));
   // We aren't actually testing that it's correct, just that it's sane.
   EXPECT_GT(amount, info.free);
   EXPECT_LT(amount, info.total);

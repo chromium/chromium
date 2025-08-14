@@ -48,7 +48,8 @@ namespace {
 // Should be synced with the value in the chromiumos repo:
 // src/platform2/vtpm/backends/attested_virtual_endorsement.cc
 constexpr char kVtpmEkLabel[] = "vtpm-ek";
-constexpr base::ByteCount kBruschettaRequiredMemory = base::GiB(12);
+constexpr uint64_t kBruschettaRequiredMemory =
+    12ULL * 1024 * 1024 * 1024;  // 12 GiB
 
 std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
     base::FilePath boot_disk_path,
@@ -98,15 +99,13 @@ void BruschettaInstallerImpl::Install(std::string vm_name,
                                       std::string config_id) {
   if (!base::FeatureList::IsEnabled(
           ash::features::kDisableBruschettaInstallChecks)) {
-    base::ByteCount physical_memory = base::SysInfo::AmountOfPhysicalMemory();
+    uint64_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
     // Physical memory reporting never lines up with exact GB definitions, allow
     // for some wiggle room.
-    if (physical_memory.InBytes() <
-        kBruschettaRequiredMemory.InBytes() * 0.85) {
+    if (physical_memory < 0.85 * kBruschettaRequiredMemory) {
       Error(BruschettaInstallResult::kNotEnoughMemoryError);
-      LOG(ERROR) << "System memory of " << physical_memory.InBytes()
-                 << " less than required "
-                 << kBruschettaRequiredMemory.InBytes();
+      LOG(ERROR) << "System memory of " << physical_memory
+                 << " less than required " << kBruschettaRequiredMemory;
       return;
     }
     const std::optional<std::string_view> attested_device_id =

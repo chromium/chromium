@@ -41,7 +41,7 @@ namespace {
 
 // Returns the amount of physical memory in GB, rounded to the nearest GB.
 int GetPhysicalMemoryGB() {
-  return base::ClampRound(base::SysInfo::AmountOfPhysicalMemory().InGiBF());
+  return base::ClampRound(base::SysInfo::AmountOfPhysicalMemoryMB() / 1024.0f);
 }
 
 std::string GetOSVersion() {

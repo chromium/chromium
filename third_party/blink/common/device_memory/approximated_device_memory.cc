@@ -18,7 +18,7 @@ void ApproximatedDeviceMemory::Initialize() {
   if (approximated_device_memory_gb_ > 0.0)
     return;
   DCHECK_EQ(0, physical_memory_mb_);
-  physical_memory_mb_ = ::base::SysInfo::AmountOfPhysicalMemory().InMiB();
+  physical_memory_mb_ = ::base::SysInfo::AmountOfPhysicalMemoryMB();
   CalculateAndSetApproximatedDeviceMemory();
 }
 

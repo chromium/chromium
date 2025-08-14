@@ -34,7 +34,7 @@ class NavigationEntryScreenshotManagerTest
   NavigationEntryScreenshotManagerTest()
       : task_environment_(std::make_unique<content::BrowserTaskEnvironment>(
             base::test::TaskEnvironment::MainThreadType::IO)),
-        memory_(base::MiB(GetParam().ram_mb)) {
+        memory_(GetParam().ram_mb) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kBackForwardTransitions,
           {{"percentage-of-ram-to-use", "1"},

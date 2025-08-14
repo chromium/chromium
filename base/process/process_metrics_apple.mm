@@ -254,7 +254,7 @@ size_t GetSystemCommitCharge() {
 }
 
 bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
-  meminfo->total = SysInfo::AmountOfPhysicalMemory();
+  meminfo->total = ByteCount::FromUnsigned(SysInfo::AmountOfPhysicalMemory());
 
   base::apple::ScopedMachSendRight host(mach_host_self());
   vm_statistics64_data_t vm_info;

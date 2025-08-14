@@ -13,20 +13,20 @@
 #include "base/notreached.h"
 #include "base/posix/sysctl.h"
 
-namespace base {
-
 namespace {
 
-ByteCount AmountOfMemory(int pages_name) {
+uint64_t AmountOfMemory(int pages_name) {
   long pages = sysconf(pages_name);
   long page_size = sysconf(_SC_PAGESIZE);
   if (pages < 0 || page_size < 0) {
-    return ByteCount(0);
+    return 0;
   }
-  return ByteCount(page_size) * pages;
+  return static_cast<uint64_t>(pages) * static_cast<uint64_t>(page_size);
 }
 
 }  // namespace
+
+namespace base {
 
 // static
 int SysInfo::NumberOfProcessors() {
@@ -40,12 +40,12 @@ int SysInfo::NumberOfProcessors() {
 }
 
 // static
-ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
+uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   return AmountOfMemory(_SC_PHYS_PAGES);
 }
 
 // static
-ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   // We should add inactive file-backed memory also but there is no such
   // information from OpenBSD unfortunately.
   return AmountOfMemory(_SC_AVPHYS_PAGES);

@@ -2092,12 +2092,11 @@ int BackendImpl::MaxBuffersSize() {
   // then cache the result.
   static const int max_buffers_size = ([]() {
     constexpr uint64_t kMaxMaxBuffersSize = 30 * 1024 * 1024;
-    const base::ByteCount total_memory =
-        base::SysInfo::AmountOfPhysicalMemory();
-    if (total_memory.is_zero()) {
+    const uint64_t total_memory = base::SysInfo::AmountOfPhysicalMemory();
+    if (total_memory == 0u) {
       return int{kMaxMaxBuffersSize};
     }
-    const uint64_t two_percent = total_memory.InBytes() * 2 / 100;
+    const uint64_t two_percent = total_memory * 2 / 100;
     return static_cast<int>(std::min(two_percent, kMaxMaxBuffersSize));
   })();
 

@@ -94,15 +94,15 @@ int64_t GetAmountOfTotalDiskSpaceAndVolumePath(const FilePath& path,
 }  // namespace
 
 // static
-ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
-  return ByteCount::FromUnsigned(zx_system_get_physmem());
+uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
+  return zx_system_get_physmem();
 }
 
 // static
-ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   // TODO(crbug.com/42050649): Implement this when Fuchsia supports it.
   NOTIMPLEMENTED_LOG_ONCE();
-  return ByteCount(0);
+  return 0;
 }
 
 // static

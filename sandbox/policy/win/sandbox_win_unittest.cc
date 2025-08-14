@@ -448,12 +448,12 @@ TEST_F(SandboxWinTest, GeneratedPolicyTestNoSandbox) {
 }
 
 TEST_F(SandboxWinTest, GetJobMemoryLimit) {
-  constexpr base::ByteCount k8GB = base::GiB(8);
+  constexpr uint64_t k8GB = 8192;
 #if defined(ARCH_CPU_64_BITS)
-  constexpr uint64_t kGB = base::GiB(1).InBytesUnsigned();
-  constexpr base::ByteCount k65GB = base::GiB(65);
-  constexpr base::ByteCount k33GB = base::GiB(33);
-  constexpr base::ByteCount k17GB = base::GiB(17);
+  constexpr uint64_t kGB = 1024 * 1024 * 1024;
+  constexpr uint64_t k65GB = 66560;
+  constexpr uint64_t k33GB = 33792;
+  constexpr uint64_t k17GB = 17408;
 
   // Test GPU with physical memory > 64GB.
   {

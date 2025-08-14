@@ -629,7 +629,8 @@ void BackgroundTabLoadingPolicy::LoadNextTab() {
 size_t BackgroundTabLoadingPolicy::GetFreePhysicalMemoryMib() const {
   if (free_memory_mb_for_testing_ != 0)
     return free_memory_mb_for_testing_;
-  return base::SysInfo::AmountOfAvailablePhysicalMemory().InMiB();
+  constexpr uint64_t kMibibytesInBytes = 1 << 20;
+  return base::SysInfo::AmountOfAvailablePhysicalMemory() / kMibibytesInBytes;
 }
 
 bool BackgroundTabLoadingPolicy::ErasePageNodeToLoadData(

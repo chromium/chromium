@@ -28,7 +28,7 @@ bool SearchPrefetchServicePrefetchingIsEnabled() {
     return false;
   }
 
-  return base::SysInfo::AmountOfPhysicalMemory().InMiB() >
+  return base::SysInfo::AmountOfPhysicalMemoryMB() >
          base::GetFieldTrialParamByFeatureAsInt(
              kSearchPrefetchServicePrefetching, "device_memory_threshold_MB",
              3000);

@@ -5,9 +5,9 @@
 #include "sandbox/policy/win/sandbox_win.h"
 
 #include <windows.h>
-#include <winternl.h>
 
 #include <stddef.h>
+#include <winternl.h>
 
 #include <map>
 #include <optional>
@@ -17,7 +17,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -1100,14 +1099,12 @@ std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
     // available on the system.
     //
     // GPU processes are allowed to access up to 64 GB.
-    const base::ByteCount physical_memory =
-        base::SysInfo::AmountOfPhysicalMemory();
-    if (sandbox_type == Sandbox::kGpu && physical_memory > base::GiB(64)) {
+    uint64_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
+    if (sandbox_type == Sandbox::kGpu && physical_memory > 64 * GB) {
       memory_limit = 64 * GB;
-    } else if (sandbox_type == Sandbox::kGpu &&
-               physical_memory > base::GiB(32)) {
+    } else if (sandbox_type == Sandbox::kGpu && physical_memory > 32 * GB) {
       memory_limit = 32 * GB;
-    } else if (physical_memory > base::GiB(16)) {
+    } else if (physical_memory > 16 * GB) {
       memory_limit = 16 * GB;
     } else {
       memory_limit = 8 * GB;

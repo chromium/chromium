@@ -69,11 +69,10 @@ bool ShouldDisableSiteIsolationDueToMemorySlow(
     int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
         features::kSiteIsolationMemoryThresholdsAndroid, param_name,
         default_memory_threshold_mb);
-    return base::SysInfo::AmountOfPhysicalMemory().InMiB() <=
-           memory_threshold_mb;
+    return base::SysInfo::AmountOfPhysicalMemoryMB() <= memory_threshold_mb;
   }
 
-  if (base::SysInfo::AmountOfPhysicalMemory().InMiB() <=
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <=
       default_memory_threshold_mb) {
     return true;
   }
@@ -116,8 +115,7 @@ bool ShouldDisableOriginIsolationDueToMemorySlow() {
         features::kOriginIsolationMemoryThreshold,
         features::kOriginIsolationMemoryThresholdParamName,
         default_memory_threshold_mb);
-    return base::SysInfo::AmountOfPhysicalMemory().InMiB() <=
-           memory_threshold_mb;
+    return base::SysInfo::AmountOfPhysicalMemoryMB() <= memory_threshold_mb;
   }
   return false;
 #endif
@@ -216,8 +214,7 @@ bool SiteIsolationPolicy::IsEnterprisePolicyApplicable() {
   // Using 1077 rather than 1024 because it helps ensure that devices with
   // exactly 1GB of RAM won't get included because of inaccuracies or off-by-one
   // errors.
-  bool have_enough_memory =
-      base::SysInfo::AmountOfPhysicalMemory().InMiB() > 1077;
+  bool have_enough_memory = base::SysInfo::AmountOfPhysicalMemoryMB() > 1077;
   return have_enough_memory;
 #else
   return true;

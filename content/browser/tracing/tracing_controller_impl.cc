@@ -353,8 +353,7 @@ std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
   metadata_dict.Set("cpu-stepping", cpu.stepping());
   metadata_dict.Set("num-cpus", base::SysInfo::NumberOfProcessors());
   metadata_dict.Set("physical-memory",
-                    base::saturated_cast<int>(
-                        base::SysInfo::AmountOfPhysicalMemory().InMiB()));
+                    base::SysInfo::AmountOfPhysicalMemoryMB());
 
   metadata_dict.Set("cpu-brand", cpu.cpu_brand());
 

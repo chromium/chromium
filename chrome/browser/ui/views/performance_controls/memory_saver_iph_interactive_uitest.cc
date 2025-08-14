@@ -68,7 +68,7 @@ class MemorySaverIphUiTest : public InteractiveFeaturePromoTest {
   // Pretend to have 1GB of memory, to ensure the memory saver promo will
   // show.
   base::test::ScopedAmountOfPhysicalMemoryOverride
-      scoped_amount_of_physical_memory_override_{base::GiB(1)};
+      scoped_amount_of_physical_memory_override_{1024};
 };
 
 // Check that the memory saver mode in-product help promo is shown when

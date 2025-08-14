@@ -32,8 +32,9 @@ constexpr base::TimeDelta kMemoryMonitorDelay = base::Seconds(30);
 void UpdateMemoryValues() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  crash_keys::SetCurrentFreeMemoryInKB(
-      base::SysInfo::AmountOfAvailablePhysicalMemory().InKiB());
+  const int free_memory =
+      static_cast<int>(base::SysInfo::AmountOfAvailablePhysicalMemory() / 1024);
+  crash_keys::SetCurrentFreeMemoryInKB(free_memory);
 }
 
 // Invokes `UpdateMemoryValues` and schedules itself to be called after

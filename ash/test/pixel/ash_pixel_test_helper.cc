@@ -9,7 +9,6 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/base_switches.h"
-#include "base/byte_count.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
@@ -53,7 +52,7 @@ AshPixelTestHelper::AshPixelTestHelper(pixel_test::InitParams params)
     // `chromeos::features::IsSystemBlurEnabled()`.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
-    CHECK_EQ(base::SysInfo::AmountOfPhysicalMemory(), base::MiB(512));
+    CHECK_EQ(base::SysInfo::AmountOfPhysicalMemoryMB(), 512);
   }
 }
 

@@ -64,7 +64,7 @@ int GetMinRequiredPhysicalRamMb() {
 
 // static
 bool NavigationTransitionConfig::AreBackForwardTransitionsEnabled() {
-  if (base::SysInfo::AmountOfPhysicalMemory().InMiB() <
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <
       GetMinRequiredPhysicalRamMb()) {
     return false;
   }
@@ -73,8 +73,6 @@ bool NavigationTransitionConfig::AreBackForwardTransitionsEnabled() {
 
 // static
 size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
-  // TODO(crbug.com/429140103): Convert the return type to ByteCount.
-
   // Assume 4 bytes per pixel. This value estimates the max number of bytes of
   // the physical screen's uncompressed bitmap.
   // Assume one pixel for unit tests that don't have or need a screen.
@@ -91,8 +89,7 @@ size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
       display_size_in_bytes * kMaxScreenshotCount.Get();
 
   size_t physical_memory_budget =
-      (base::SysInfo::AmountOfPhysicalMemory().InBytes() *
-       kPercentageOfRamToUse.Get()) /
+      (base::SysInfo::AmountOfPhysicalMemory() * kPercentageOfRamToUse.Get()) /
       100;
   physical_memory_budget =
       std::min(physical_memory_budget, GetMaxCacheSizeInBytes());

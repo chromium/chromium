@@ -14,8 +14,10 @@ namespace android {
 TEST(SysUtils, AmountOfPhysicalMemory) {
   // Check that the RAM size reported by sysconf() matches the one
   // computed by base::SysInfo::AmountOfPhysicalMemory().
-  long sys_ram_size = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE);
-  EXPECT_EQ(sys_ram_size, SysInfo::AmountOfPhysicalMemory().InBytes());
+  size_t sys_ram_size =
+      static_cast<size_t>(sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE));
+  EXPECT_EQ(sys_ram_size,
+            static_cast<size_t>(SysInfo::AmountOfPhysicalMemory()));
 }
 
 }  // namespace android

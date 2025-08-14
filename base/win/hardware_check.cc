@@ -113,9 +113,7 @@ bool HardwareEvaluationResult::IsEligible() const {
 
 HardwareEvaluationResult EvaluateWin11HardwareRequirements() {
   static constexpr int64_t kMinTotalDiskSpace = 64 * 1024 * 1024;
-  // TODO(crbug.com/429140103): This was migrated as-is to 4MiB in ByteCount but
-  // the legacy code potentially intended 4GiB, needs investigation.
-  static constexpr ByteCount kMinTotalPhysicalMemory = MiB(4);
+  static constexpr uint64_t kMinTotalPhysicalMemory = 4 * 1024 * 1024;
 
   static const HardwareEvaluationResult evaluate_win11_upgrade_eligibility =
       [] {

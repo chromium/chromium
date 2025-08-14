@@ -52,11 +52,10 @@ TEST_F(BorealisSurveyHandlerTest, GetSurveyDataReturnsCorrectData) {
       {"appName", "Some Game"},
       {"board", ""},
       {"specs",
-       base::StringPrintf(
-           "%ldGB; %s",
-           (long)(base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() /
-                  (1000 * 1000 * 1000)),
-           base::SysInfo::CPUModelName().c_str())},
+       base::StringPrintf("%ldGB; %s",
+                          (long)(base::SysInfo::AmountOfPhysicalMemory() /
+                                 (1000 * 1000 * 1000)),
+                          base::SysInfo::CPUModelName().c_str())},
       {"monitorsInternal", "0"},
       {"monitorsExternal", "2"},
       {"proton", "None"},

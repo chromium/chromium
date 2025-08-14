@@ -286,7 +286,7 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   //    dominate, but we want to filter them out nonetheless because it's harder
   //    to set up experiment for them.)
   std::string version_code = base::android::apk_info::package_version_code();
-  size_t ram_mb = base::SysInfo::AmountOfPhysicalMemory().InMiB();
+  size_t ram_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
   auto cpu_abi_bitness_support =
       metrics::AndroidMetricsHelper::GetInstance()->cpu_abi_bitness_support();
   bool is_device_of_interest =

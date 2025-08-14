@@ -76,7 +76,7 @@ bool CpuRegexMatches(const std::string& cpu_regex) {
 }
 
 bool HasMemory(uint64_t mem_bytes) {
-  return base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() >= mem_bytes;
+  return base::SysInfo::AmountOfPhysicalMemory() >= mem_bytes;
 }
 
 bool HasSufficientHardware(const std::string& cpu_regex) {

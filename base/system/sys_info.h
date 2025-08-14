@@ -16,7 +16,6 @@
 #include <string_view>
 
 #include "base/base_export.h"
-#include "base/byte_count.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
@@ -75,29 +74,37 @@ class BASE_EXPORT SysInfo {
   // Return the number of bytes of physical memory on the current machine.
   // If low-end device mode is manually enabled via command line flag, this
   // will return the lesser of the actual physical memory, or 512MB.
-  static ByteCount AmountOfPhysicalMemory();
+  static uint64_t AmountOfPhysicalMemory();
 
   // Return the number of bytes of current available physical memory on the
   // machine.
   // (The amount of memory that can be allocated without any significant
   // impact on the system. It can lead to freeing inactive file-backed
   // and/or speculative file-backed memory).
-  static ByteCount AmountOfAvailablePhysicalMemory();
+  static uint64_t AmountOfAvailablePhysicalMemory();
 
   // Return the number of bytes of virtual memory of this process. A return
   // value of zero means that there is no limit on the available virtual
   // memory.
-  // TODO(crbug.com/429140103): Convert the return type to ByteCount.
   static uint64_t AmountOfVirtualMemory();
+
+  // Return the number of megabytes of physical memory on the current machine.
+  static int AmountOfPhysicalMemoryMB() {
+    return static_cast<int>(AmountOfPhysicalMemory() / 1024 / 1024);
+  }
+
+  // Return the number of megabytes of available virtual memory, or zero if it
+  // is unlimited.
+  static int AmountOfVirtualMemoryMB() {
+    return static_cast<int>(AmountOfVirtualMemory() / 1024 / 1024);
+  }
 
   // Return the available disk space in bytes on the volume containing |path|,
   // or -1 on failure.
-  // TODO(crbug.com/429140103): Convert the return type to ByteCount.
   static int64_t AmountOfFreeDiskSpace(const FilePath& path);
 
   // Return the total disk space in bytes on the volume containing |path|, or -1
   // on failure.
-  // TODO(crbug.com/429140103): Convert the return type to ByteCount.
   static int64_t AmountOfTotalDiskSpace(const FilePath& path);
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -359,22 +366,22 @@ class BASE_EXPORT SysInfo {
   FRIEND_TEST_ALL_PREFIXES(debug::SystemMetricsTest, ParseMeminfo);
 
   static int NumberOfEfficientProcessorsImpl();
-  static ByteCount AmountOfPhysicalMemoryImpl();
-  static ByteCount AmountOfAvailablePhysicalMemoryImpl();
+  static uint64_t AmountOfPhysicalMemoryImpl();
+  static uint64_t AmountOfAvailablePhysicalMemoryImpl();
   static bool IsLowEndDeviceImpl();
   static HardwareInfo GetHardwareInfoSync();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_AIX)
-  static ByteCount AmountOfAvailablePhysicalMemory(
+  static uint64_t AmountOfAvailablePhysicalMemory(
       const SystemMemoryInfo& meminfo);
 #endif
 
-  // Sets the amount of physical memory for testing, thus allowing tests to run
-  // irrespective of the host machine's configuration.
-  static std::optional<ByteCount> SetAmountOfPhysicalMemoryForTesting(
-      ByteCount amount_of_memory);
-  static void ClearAmountOfPhysicalMemoryForTesting();
+  // Sets the amount of physical memory in MB for testing, thus allowing tests
+  // to run irrespective of the host machine's configuration.
+  static std::optional<uint64_t> SetAmountOfPhysicalMemoryMbForTesting(
+      uint64_t amount_of_memory_mb);
+  static void ClearAmountOfPhysicalMemoryMbForTesting();
 };
 
 #if BUILDFLAG(IS_POSIX)

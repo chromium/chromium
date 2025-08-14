@@ -136,8 +136,8 @@ StorageManagerConfig StorageManagerImpl::GetStorageManagerConfig() {
 
   free_disk_space = GetMaxDiskSizeRatio() * free_disk_space;
 
-  int64_t buffer_max_size = base::SysInfo::AmountOfPhysicalMemory().InBytes() *
-                            GetMaxBufferSizeRatio();
+  int64_t buffer_max_size =
+      base::SysInfo::AmountOfPhysicalMemory() * GetMaxBufferSizeRatio();
 
   return StorageManagerConfig{
       .buffer_max_bytes = std::max(buffer_max_size, kMinBufferSize),

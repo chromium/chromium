@@ -78,7 +78,7 @@ BASE_FEATURE(kFastFilePathIsParent,
 BASE_FEATURE(kLowEndMemoryExperiment,
              "LowEndMemoryExperiment",
              FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(size_t,
                    kLowMemoryDeviceThresholdMB,
                    &kLowEndMemoryExperiment,
                    "LowMemoryDeviceThresholdMB",

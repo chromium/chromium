@@ -76,7 +76,7 @@ bool MemBackendImpl::Init() {
   if (max_size_)
     return true;
 
-  uint64_t total_memory = base::SysInfo::AmountOfPhysicalMemory().InBytes();
+  uint64_t total_memory = base::SysInfo::AmountOfPhysicalMemory();
 
   if (total_memory == 0) {
     max_size_ = kDefaultInMemoryCacheSize;

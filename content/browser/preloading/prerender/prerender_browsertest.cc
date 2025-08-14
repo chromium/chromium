@@ -7731,8 +7731,8 @@ class PrerenderLowMemoryBrowserTest : public PrerenderBrowserTest {
   PrerenderLowMemoryBrowserTest() {
     // Set the value of memory threshold more than the physical memory.  The
     // test will expect that prerendering does not occur.
-    std::string memory_threshold = base::NumberToString(
-        base::SysInfo::AmountOfPhysicalMemory().InMiB() + 1);
+    std::string memory_threshold =
+        base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() + 1);
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kPrerender2MemoryControls,
           {{blink::features::kPrerender2MemoryThresholdParamName,

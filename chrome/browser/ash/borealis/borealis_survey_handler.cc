@@ -92,11 +92,10 @@ base::flat_map<std::string, std::string> BorealisSurveyHandler::GetSurveyData(
       {"appName", window_title},
       {"board", base::SysInfo::HardwareModelName()},
       {"specs",
-       base::StringPrintf(
-           "%ldGB; %s",
-           (long)(base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() /
-                  (1000 * 1000 * 1000)),
-           base::SysInfo::CPUModelName().c_str())},
+       base::StringPrintf("%ldGB; %s",
+                          (long)(base::SysInfo::AmountOfPhysicalMemory() /
+                                 (1000 * 1000 * 1000)),
+                          base::SysInfo::CPUModelName().c_str())},
       {"monitorsInternal", base::NumberToString(internal_displays)},
       {"monitorsExternal", base::NumberToString(external_displays)},
       {"proton", compat_tool_info.proton},
