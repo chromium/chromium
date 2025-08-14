@@ -305,6 +305,29 @@ IdentityManager::GetWrappedBindingKeyOfRefreshTokenForAccount(
     const CoreAccountId& account_id) const {
   return token_service_->GetWrappedBindingKey(account_id);
 }
+
+std::vector<uint8_t> IdentityManager::GetWrappedBindingKey() const {
+  CHECK(AreRefreshTokensLoaded());
+  // All bound tokens are supposed to use the same key. Having two different
+  // keys should be considered a bug. To be extra safe, we check the primary
+  // account first.
+  if (HasPrimaryAccount(ConsentLevel::kSignin)) {
+    const std::vector<uint8_t> wrapped_binding_key =
+        token_service_->GetWrappedBindingKey(
+            GetPrimaryAccountId(ConsentLevel::kSignin));
+    if (!wrapped_binding_key.empty()) {
+      return wrapped_binding_key;
+    }
+  }
+  for (const CoreAccountId& account_id : token_service_->GetAccounts()) {
+    const std::vector<uint8_t> wrapped_binding_key =
+        token_service_->GetWrappedBindingKey(account_id);
+    if (!wrapped_binding_key.empty()) {
+      return wrapped_binding_key;
+    }
+  }
+  return {};
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 GoogleServiceAuthError IdentityManager::GetErrorStateOfRefreshTokenForAccount(

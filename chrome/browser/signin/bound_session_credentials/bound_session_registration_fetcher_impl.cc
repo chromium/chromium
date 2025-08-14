@@ -33,20 +33,9 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
+
 const char kXSSIPrefix[] = ")]}'";
 
-bound_session_credentials::Credential CreateCookieCredential(
-    const std::string& name,
-    const std::string& domain,
-    const std::string& path) {
-  bound_session_credentials::Credential credential;
-  bound_session_credentials::CookieCredential* cookie_credential =
-      credential.mutable_cookie_credential();
-  cookie_credential->set_name(name);
-  cookie_credential->set_domain(domain);
-  cookie_credential->set_path(path);
-  return credential;
-}
 }  // namespace
 
 BoundSessionRegistrationFetcherImpl::BoundSessionRegistrationFetcherImpl(
@@ -123,26 +112,10 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
     return;
   }
 
-  RegistrationErrorOr<bound_session_credentials::BoundSessionParams>
-      params_or_error = ParseJsonResponse(url_loader_->GetFinalURL(),
-                                          std::move(response_body));
-  if (!params_or_error.has_value()) {
-    RunCallbackAndRecordMetrics(params_or_error);
-    return;
-  }
-
-  bound_session_credentials::BoundSessionParams params =
-      std::move(params_or_error).value();
-  params.set_site(
-      net::SchemefulSite(registration_params_.registration_endpoint())
-          .GetURL()
-          .spec());
-  params.set_wrapped_key(wrapped_key_str_);
-  *params.mutable_creation_time() =
-      bound_session_credentials::TimeToTimestamp(base::Time::Now());
-  params.set_is_wsbeta(registration_params_.is_wsbeta());
-
-  if (!bound_session_credentials::AreParamsValid(params)) {
+  RegistrationErrorOr<bound_session_credentials::BoundSessionParams> params =
+      ParseJsonResponse(std::move(response_body));
+  if (params.has_value() &&
+      !bound_session_credentials::AreParamsValid(*params)) {
     RunCallbackAndRecordMetrics(
         base::unexpected(RegistrationError::kInvalidSessionParams));
     return;
@@ -270,7 +243,6 @@ void BoundSessionRegistrationFetcherImpl::RunCallbackAndRecordMetrics(
 BoundSessionRegistrationFetcherImpl::RegistrationErrorOr<
     bound_session_credentials::BoundSessionParams>
 BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
-    const GURL& request_url,
     std::unique_ptr<std::string> response_body) {
   // JSON responses normally should start with XSSI-protection prefix which
   // should be removed prior to parsing.
@@ -299,22 +271,10 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
     }
   }
 
-  bound_session_credentials::BoundSessionParams params;
-  params.set_session_id(payload->session_id);
-
-  for (const RegisterBoundSessionPayload::Credential& credential :
-       payload->credentials) {
-    *params.add_credentials() = CreateCookieCredential(
-        credential.name, credential.scope.domain, credential.scope.path);
-  }
-
-  // The refresh URL must be a correct, same-site URL.
-  const GURL refresh_endpoint = bound_session_credentials::ResolveEndpointPath(
-      request_url, payload->refresh_url);
-  if (!refresh_endpoint.is_valid()) {
-    return base::unexpected(RegistrationError::kInvalidSessionParams);
-  }
-  params.set_refresh_url(refresh_endpoint.spec());
-
-  return params;
+  return bound_session_credentials::
+      CreateBoundSessionsParamsFromRegistrationPayload(
+          *payload, url_loader_->GetFinalURL(),
+          net::SchemefulSite(registration_params_.registration_endpoint())
+              .GetURL(),
+          wrapped_key_str_, registration_params_.is_wsbeta());
 }

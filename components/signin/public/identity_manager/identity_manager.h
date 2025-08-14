@@ -331,6 +331,14 @@ class IdentityManager : public KeyedService,
   // and (b) the refresh token is bound to a device.
   std::vector<uint8_t> GetWrappedBindingKeyOfRefreshTokenForAccount(
       const CoreAccountId& account_id) const;
+
+  // Returns the wrapped binding key to reuse if any existing account is already
+  // bound. It returns an empty vector if no existing account is bound.
+  //
+  // NOTE: The refresh tokens must be loaded to correctly check the binding
+  // status of the accounts. If the refresh tokens are not loaded, calling this
+  // function results in a crash.
+  std::vector<uint8_t> GetWrappedBindingKey() const;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns the error state of the refresh token associated with |account_id|.

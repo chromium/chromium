@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 
 class GURL;
+struct RegisterBoundSessionPayload;
 
 namespace bound_session_credentials {
 
@@ -39,6 +40,17 @@ bool AreSameSessionParams(const BoundSessionParams& lhs,
 // Returns an invalid `GURL` if the resulting endpoint cannot be used.
 GURL ResolveEndpointPath(const GURL& request_url,
                          std::string_view endpoint_path);
+
+// Creates a `BoundSessionParams` from a `RegisterBoundSessionPayload`. The
+// returned params are NOT guaranteed to be valid. The caller should verify the
+// validity of the returned params (by calling `AreParamsValid`) before using
+// them.
+BoundSessionParams CreateBoundSessionsParamsFromRegistrationPayload(
+    const RegisterBoundSessionPayload& payload,
+    const GURL& request_url,
+    const GURL& site,
+    std::string_view wrapped_key,
+    bool is_wsbeta = false);
 
 }  // namespace bound_session_credentials
 

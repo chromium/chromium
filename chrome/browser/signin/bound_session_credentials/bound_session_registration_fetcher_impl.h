@@ -85,8 +85,7 @@ class BoundSessionRegistrationFetcherImpl
           params_or_error);
 
   RegistrationErrorOr<bound_session_credentials::BoundSessionParams>
-  ParseJsonResponse(const GURL& request_url,
-                    std::unique_ptr<std::string> response_body);
+  ParseJsonResponse(std::unique_ptr<std::string> response_body);
 
   BoundSessionRegistrationFetcherParam registration_params_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;

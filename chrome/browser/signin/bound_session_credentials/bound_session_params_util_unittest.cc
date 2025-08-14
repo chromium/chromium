@@ -4,12 +4,17 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 
+#include "base/test/protobuf_matchers.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
+#include "google_apis/gaia/register_bound_session_payload.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace bound_session_credentials {
+
+using ::testing::UnorderedPointwise;
+
 namespace {
 
 BoundSessionParams CreateBoundSessionParamsWithNoCookies(
@@ -398,6 +403,78 @@ TEST(BoundSessionParamsUtilTest, ResolveEndpointPathAbsoluteOtherScheme) {
 TEST(BoundSessionParamsUtilTest, ResolveEndpointPathInvalidRequestUrl) {
   GURL resolved_url = ResolveEndpointPath(GURL(), "https://google.com/path1");
   EXPECT_FALSE(resolved_url.is_valid());
+}
+
+TEST(CreateBoundSessionsParamsFromRegistrationPayloadTest, Valid) {
+  RegisterBoundSessionPayload payload;
+  payload.session_id = "test_session_id";
+  payload.refresh_url = "/rotate";
+  payload.credentials = {RegisterBoundSessionPayload::Credential{
+                             .name = "test_cookie_name_1",
+                             .scope = {.domain = ".google.com", .path = "/"}},
+                         RegisterBoundSessionPayload::Credential{
+                             .name = "test_cookie_name_2",
+                             .scope = {.domain = ".google.com", .path = "/"}}};
+
+  const BoundSessionParams params =
+      CreateBoundSessionsParamsFromRegistrationPayload(
+          payload, /*request_url=*/GURL("https://example.google.com/request"),
+          /*site=*/GURL("https://google.com/"), /*wrapped_key=*/"secret",
+          /*is_wsbeta=*/true);
+
+  ASSERT_TRUE(AreParamsValid(params));
+  EXPECT_EQ(params.session_id(), "test_session_id");
+  EXPECT_EQ(params.refresh_url(), "https://example.google.com/rotate");
+  EXPECT_EQ(params.wrapped_key(), "secret");
+  EXPECT_EQ(params.is_wsbeta(), true);
+  EXPECT_EQ(params.site(), "https://google.com/");
+  const std::vector<bound_session_credentials::Credential>
+      expected_credentials = {
+          CreateCookieCredential("test_cookie_name_1", ".google.com", "/"),
+          CreateCookieCredential("test_cookie_name_2", ".google.com", "/")};
+  EXPECT_THAT(
+      params.credentials(),
+      UnorderedPointwise(base::test::EqualsProto(), expected_credentials));
+}
+
+TEST(CreateBoundSessionsParamsFromRegistrationPayloadTest, InvalidSite) {
+  RegisterBoundSessionPayload payload;
+  payload.session_id = "test_session_id";
+  payload.refresh_url = "/rotate";
+  payload.credentials = {RegisterBoundSessionPayload::Credential{
+                             .name = "test_cookie_name_1",
+                             .scope = {.domain = ".google.com", .path = "/"}},
+                         RegisterBoundSessionPayload::Credential{
+                             .name = "test_cookie_name_2",
+                             .scope = {.domain = ".google.com", .path = "/"}}};
+
+  const BoundSessionParams params =
+      CreateBoundSessionsParamsFromRegistrationPayload(
+          payload, /*request_url=*/GURL("https://example.google.com/request"),
+          /*site=*/GURL(), /*wrapped_key=*/"secret",
+          /*is_wsbeta=*/true);
+
+  EXPECT_FALSE(AreParamsValid(params));
+}
+
+TEST(CreateBoundSessionsParamsFromRegistrationPayloadTest, InvalidRequestUrl) {
+  RegisterBoundSessionPayload payload;
+  payload.session_id = "test_session_id";
+  payload.refresh_url = "/rotate";
+  payload.credentials = {RegisterBoundSessionPayload::Credential{
+                             .name = "test_cookie_name_1",
+                             .scope = {.domain = ".google.com", .path = "/"}},
+                         RegisterBoundSessionPayload::Credential{
+                             .name = "test_cookie_name_2",
+                             .scope = {.domain = ".google.com", .path = "/"}}};
+
+  const BoundSessionParams params =
+      CreateBoundSessionsParamsFromRegistrationPayload(
+          payload, /*request_url=*/GURL(),
+          /*site=*/GURL("https://google.com/"), /*wrapped_key=*/"secret",
+          /*is_wsbeta=*/true);
+
+  EXPECT_FALSE(AreParamsValid(params));
 }
 
 }  // namespace bound_session_credentials

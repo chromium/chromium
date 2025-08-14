@@ -73,6 +73,8 @@
 namespace signin {
 namespace {
 
+using ::testing::IsEmpty;
+
 // Subclass of FakeOAuth2AccessTokenManager with bespoke behavior.
 class CustomFakeOAuth2AccessTokenManager : public FakeOAuth2AccessTokenManager {
  public:
@@ -1169,6 +1171,66 @@ TEST_F(IdentityManagerTest,
             identity_manager_observer()
                 ->ErrorFromErrorStateOfRefreshTokenUpdatedCallback());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(IdentityManagerTest,
+       GetWrappedBindingKeyReturnsEmptyVectorIfNoAccountIsBound) {
+  // Set a refresh token for the primary account.
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
+      "refresh_token_1");
+  // Add a secondary account and set a refresh token for it.
+  account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id,
+      "refresh_token_2");
+
+  EXPECT_THAT(identity_manager()->GetWrappedBindingKey(), IsEmpty());
+}
+
+TEST_F(IdentityManagerTest,
+       GetWrappedBindingKeyReturnsTheWrappedBindingKeyOfThePrimaryAccount) {
+  const std::vector<uint8_t> primary_account_wrapped_binding_key = {1, 2, 3};
+  // Set a refresh token for the primary account.
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
+      "refresh_token_1", primary_account_wrapped_binding_key);
+  // Add a secondary account and set a refresh token for it.
+  account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
+  // NOTE: This should NOT happen in production as all accounts are supposed to
+  // use the same wrapped binding key.
+  const std::vector<uint8_t> secondary_account_wrapped_binding_key = {4, 5, 6};
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id,
+      "refresh_token_2", secondary_account_wrapped_binding_key);
+
+  EXPECT_EQ(identity_manager()->GetWrappedBindingKey(),
+            primary_account_wrapped_binding_key);
+}
+
+TEST_F(IdentityManagerTest,
+       GetWrappedBindingKeyReturnsTheWrappedBindingKeyOfTheSecondaryAccount) {
+  // Set a refresh token for the primary account.
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
+      "refresh_token_1");
+  // Add a secondary account and set a refresh token for it.
+  account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
+  const std::vector<uint8_t> secondary_account_wrapped_binding_key = {1, 2, 3};
+  SetRefreshTokenForAccount(
+      identity_manager(),
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id,
+      "refresh_token_2", secondary_account_wrapped_binding_key);
+
+  EXPECT_EQ(identity_manager()->GetWrappedBindingKey(),
+            secondary_account_wrapped_binding_key);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(IdentityManagerTest, GetErrorStateOfRefreshTokenForAccount) {
   CoreAccountInfo primary_account_info =
