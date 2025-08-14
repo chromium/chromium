@@ -43,6 +43,7 @@
         <string>IDS_IOS_KEYBOARD_HISTORY_FORWARD</string>
         <string>IDS_IOS_KEYBOARD_SHOW_HISTORY</string>
         <string>IDS_IOS_KEYBOARD_VOICE_SEARCH</string>
+        <string>IDS_IOS_KEYBOARD_SETTINGS</string>
         <string>IDS_IOS_KEYBOARD_SHOW_SETTINGS</string>
         <string>IDS_IOS_KEYBOARD_STOP</string>
         <string>IDS_IOS_KEYBOARD_SHOW_HELP</string>
