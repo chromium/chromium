@@ -26,7 +26,7 @@ const std::set<std::string_view>& TabWorkspaceDomains() {
       "docs.google.com",        "sites.google.com",
       "keep.google.com",        "script.google.com",
       "cloudsearch.google.com", "console.cloud.google.com",
-      "datastudio.google.com",
+      "datastudio.google.com",  "gemini.google.com",
   };
   return kDomains;
 }

@@ -98,7 +98,7 @@ std::vector<ActiveUserTestCase> TestCases() {
           .expected_active_email = "bar@gmail.com",
       },
       ActiveUserTestCase{
-          .url = "https://meet.google.com/?authuser=2",
+          .url = "https://gemini.google.com/?authuser=2",
           .emails = {"foo@gmail.com", "bar@gmail.com"},
           // The index is out of bounds so we can't tell which of the two
           // accounts is active.
@@ -205,7 +205,7 @@ std::vector<ActiveFrameUserTestCase> FrameUserTestCases() {
       },
       // Valid "/u/<N>/" test cases.
       ActiveFrameUserTestCase{
-          .tab_url = "https://docs.google.com/",
+          .tab_url = "https://gemini.google.com/",
           .frame_url = "https://ogs.google.com/u/0/",
           .emails = {"foo@gmail.com", "bar@gmail.com"},
           .expected_active_email = "foo@gmail.com",
@@ -218,7 +218,7 @@ std::vector<ActiveFrameUserTestCase> FrameUserTestCases() {
       },
       // Valid "authuser=<N>"/ test cases.
       ActiveFrameUserTestCase{
-          .tab_url = "https://docs.google.com/",
+          .tab_url = "https://gemini.google.com/",
           .frame_url = "https://ogs.google.com/?authuser=0",
           .emails = {"foo@gmail.com", "bar@gmail.com"},
           .expected_active_email = "foo@gmail.com",
@@ -237,7 +237,7 @@ std::vector<ActiveFrameUserTestCase> FrameUserTestCases() {
           .expected_active_email = "",
       },
       ActiveFrameUserTestCase{
-          .tab_url = "https://docs.google.com/",
+          .tab_url = "https://gemini.google.com/",
           .frame_url = "https://ogs.google.com/abcd/efgh/ijkl/?authuser=foo",
           .emails = {"foo@gmail.com", "bar@gmail.com"},
           .expected_active_email = "",
