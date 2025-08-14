@@ -5,7 +5,7 @@
 module help_bubble.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/webui/resources/js/tracked_element/tracked_element.mojom";
 
 // Contains IPC calls that allow the HelpBubbleFactory system to connect to
 // the HelpBubbleMixin and HelpBubbleElement component.
@@ -106,34 +106,12 @@ interface HelpBubbleHandlerFactory {
 // showing a help bubble or when communicating events back to the handler on the
 // browser side, because HTML ids can be ambiguous within a document with shadow
 // DOMs.
-//
-// TODO(crbug.com/40243115): consider splitting into ElementTrackerHandler and
-// HelpBubbleHandler, with the previous handling show/hide/activated/custom
-// events and the latter handling the help bubble itself.
 interface HelpBubbleHandler {
-  // Indicates that the visibility of the element that the help bubble could be
-  // anchored to has changed.
-  HelpBubbleAnchorVisibilityChanged(string native_identifier,
-                                    bool visible,
-                                    gfx.mojom.RectF rect);
-
-  // Notifies that a specific element tagged as a help bubble anchor has been
-  // activated, which will in turn be propagated through the ui::ElementTracker
-  // system as an EventType::kActivated.
-  //
-  // As with the above methods, the ui::ElementIdentifier will be generated from
-  // `native_identifier`.
-  HelpBubbleAnchorActivated(string native_identifier);
-
-  // Notifies that a custom event has occurred associated with a particular help
-  // bubble anchor, which will in turn be propagated through the
-  // ui::ElementTracker system as an EventType::kCustomEvent.
-  //
-  // As with the above methods, the ui::ElementIdentifier will be generated from
-  // `native_identifier` and the ui::CustomElementEventType will be generated
-  // from `custom_event_name`.
-  HelpBubbleAnchorCustomEvent(string native_identifier,
-                              string custom_event_name);
+  // Binds a TrackedElementHandler receiver used for anchoring help bubbles. The
+  // handler is responsible for element tracking functionality, such as
+  // visibility changes, bounds changes, activation changes, custom events, etc.
+  BindTrackedElementHandler(
+      pending_receiver<tracked_element.mojom.TrackedElementHandler> handler);
 
   // Notifies that a button on the help bubble anchored to `native_identifier`
   // has been pressed and the help bubble is closing as a result. The

@@ -1,0 +1,34 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tracked_element.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Implemented by the browser. The WebUI notifies the browser of changes to
+// tracked elements, such as their visibility and bounds.
+interface TrackedElementHandler {
+  // Indicates that the visibility of the element that the help bubble could be
+  // anchored to has changed.
+  TrackedElementVisibilityChanged(string native_identifier,
+                                  bool visible,
+                                  gfx.mojom.RectF rect);
+
+  // Notifies that a tracked element has been activated, which will in turn be
+  // propagated through the ui::ElementTracker system as an
+  // EventType::kActivated.
+  //
+  // The ui::ElementIdentifier will be generated from `native_identifier`.
+  TrackedElementActivated(string native_identifier);
+
+  // Notifies that a custom event has occurred associated with a particular
+  // tracked element, which will in turn be propagated through the
+  // ui::ElementTracker system as an EventType::kCustomEvent.
+  //
+  // The ui::ElementIdentifier will be generated from `native_identifier` and
+  // the ui::CustomElementEventType will be generated from
+  // `custom_event_name`.
+  TrackedElementCustomEvent(string native_identifier,
+                            string custom_event_name);
+};

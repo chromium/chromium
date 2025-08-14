@@ -17,6 +17,7 @@ mojom("mojo_bindings") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
+    "//ui/webui/resources/js/tracked_element:mojo_bindings",
   ]
 
   webui_module_path = "chrome://resources/cr_components/help_bubble/"

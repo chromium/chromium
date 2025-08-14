@@ -13,6 +13,7 @@ import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/he
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {HelpBubbleProxy} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
 import {HelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
+import type {TrackedElementHandlerInterface, TrackedElementHandlerPendingReceiver} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -108,38 +109,47 @@ customElements.define(
     HelpBubbleMixinTestContainerElement.is,
     HelpBubbleMixinTestContainerElement);
 
-class TestHelpBubbleHandler extends TestBrowserProxy implements
-    HelpBubbleHandlerInterface {
+class TestTrackedElementHandler extends TestBrowserProxy implements
+    TrackedElementHandlerInterface {
   // Records the current visibility of all known elements.
   // Simply looking at the call logs can produce extraneous results, as
   // visible=true may be generated multiple times if an element e.g. changes
   // position on the page.
   visibility: Map<string, boolean> = new Map();
-
   constructor() {
     super([
-      'helpBubbleAnchorVisibilityChanged',
-      'helpBubbleAnchorActivated',
-      'helpBubbleAnchorCustomEvent',
+      'trackedElementVisibilityChanged',
+      'trackedElementActivated',
+      'trackedElementCustomEvent',
+    ]);
+  }
+
+  trackedElementVisibilityChanged(nativeIdentifier: string, visible: boolean) {
+    this.visibility.set(nativeIdentifier, visible);
+    this.methodCalled(
+        'trackedElementVisibilityChanged', nativeIdentifier, visible);
+  }
+
+  trackedElementActivated(nativeIdentifier: string) {
+    this.methodCalled('trackedElementActivated', nativeIdentifier);
+  }
+
+  trackedElementCustomEvent(nativeIdentifier: string, eventName: string) {
+    this.methodCalled('trackedElementCustomEvent', nativeIdentifier, eventName);
+  }
+}
+
+class TestHelpBubbleHandler extends TestBrowserProxy implements
+    HelpBubbleHandlerInterface {
+  constructor() {
+    super([
       'helpBubbleButtonPressed',
       'helpBubbleClosed',
     ]);
   }
 
-  helpBubbleAnchorVisibilityChanged(
-      nativeIdentifier: string, visible: boolean) {
-    this.visibility.set(nativeIdentifier, visible);
-    this.methodCalled(
-        'helpBubbleAnchorVisibilityChanged', nativeIdentifier, visible);
-  }
-
-  helpBubbleAnchorActivated(nativeIdentifier: string) {
-    this.methodCalled('helpBubbleAnchorActivated', nativeIdentifier);
-  }
-
-  helpBubbleAnchorCustomEvent(nativeIdentifier: string, eventName: string) {
-    this.methodCalled(
-        'helpBubbleAnchorCustomEvent', nativeIdentifier, eventName);
+  bindTrackedElementHandler(handler: TrackedElementHandlerPendingReceiver) {
+    this.methodCalled('bindTrackedElementHandler', handler);
   }
 
   helpBubbleButtonPressed(nativeIdentifier: string, button: number) {
@@ -152,6 +162,7 @@ class TestHelpBubbleHandler extends TestBrowserProxy implements
 }
 
 class TestHelpBubbleProxy extends TestBrowserProxy implements HelpBubbleProxy {
+  private testTrackedElementHandler_ = new TestTrackedElementHandler();
   private testHandler_ = new TestHelpBubbleHandler();
   private callbackRouter_: HelpBubbleClientCallbackRouter =
       new HelpBubbleClientCallbackRouter();
@@ -162,6 +173,10 @@ class TestHelpBubbleProxy extends TestBrowserProxy implements HelpBubbleProxy {
 
     this.callbackRouterRemote_ =
         this.callbackRouter_.$.bindNewPipeAndPassRemote();
+  }
+
+  getTrackedElementHandler(): TestTrackedElementHandler {
+    return this.testTrackedElementHandler_;
   }
 
   getHandler(): TestHelpBubbleHandler {
@@ -498,7 +513,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
           [SPAN_NATIVE_ID, true],
           [NESTED_CHILD_NATIVE_ID, true],
         ]),
-        testProxy.getHandler().visibility);
+        testProxy.getTrackedElementHandler().visibility);
   });
 
   test('help bubble mixin sends event on lost visibility', async () => {
@@ -513,7 +528,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
           [SPAN_NATIVE_ID, false],
           [NESTED_CHILD_NATIVE_ID, false],
         ]),
-        testProxy.getHandler().visibility);
+        testProxy.getTrackedElementHandler().visibility);
   });
 
   test('help bubble mixin sends event on element activated', async () => {
@@ -523,10 +538,13 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     container.notifyHelpBubbleAnchorActivated(bulletListBubble.getNativeId());
     container.notifyHelpBubbleAnchorActivated(titleBubble.getNativeId());
     assertEquals(
-        2, testProxy.getHandler().getCallCount('helpBubbleAnchorActivated'));
+        2,
+        testProxy.getTrackedElementHandler().getCallCount(
+            'trackedElementActivated'));
     assertDeepEquals(
         [LIST_NATIVE_ID, TITLE_NATIVE_ID],
-        testProxy.getHandler().getArgs('helpBubbleAnchorActivated'));
+        testProxy.getTrackedElementHandler().getArgs(
+            'trackedElementActivated'));
   });
 
   test('help bubble mixin sends custom events', async () => {
@@ -538,13 +556,16 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     container.notifyHelpBubbleAnchorCustomEvent(
         titleBubble.getNativeId(), EVENT2_NAME);
     assertEquals(
-        2, testProxy.getHandler().getCallCount('helpBubbleAnchorCustomEvent'));
+        2,
+        testProxy.getTrackedElementHandler().getCallCount(
+            'trackedElementCustomEvent'));
     assertDeepEquals(
         [
           [PARAGRAPH_NATIVE_ID, EVENT1_NAME],
           [TITLE_NATIVE_ID, EVENT2_NAME],
         ],
-        testProxy.getHandler().getArgs('helpBubbleAnchorCustomEvent'));
+        testProxy.getTrackedElementHandler().getArgs(
+            'trackedElementCustomEvent'));
   });
 
   test(

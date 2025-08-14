@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
+#include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 
 namespace content {
 class WebContents;
@@ -33,7 +34,9 @@ class HelpBubbleWebUI;
 
 // Base class abstracting away IPC so that handler functionality can be tested
 // entirely with mocks.
-class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
+class HelpBubbleHandlerBase
+    : public help_bubble::mojom::HelpBubbleHandler,
+      public tracked_element::mojom::TrackedElementHandler {
  public:
   HelpBubbleHandlerBase(const HelpBubbleHandlerBase&) = delete;
   HelpBubbleHandlerBase(const std::vector<ui::ElementIdentifier>& identifiers,
@@ -142,17 +145,22 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   void OnWebContentsVisibilityChanged(std::optional<bool> visibility);
 
   // mojom::HelpBubbleHandler:
-  void HelpBubbleAnchorVisibilityChanged(const std::string& identifier_name,
-                                         bool visible,
-                                         const gfx::RectF& rect) final;
-  void HelpBubbleAnchorActivated(const std::string& identifier_name) final;
-  void HelpBubbleAnchorCustomEvent(const std::string& identifier_name,
-                                   const std::string& event_name) final;
   void HelpBubbleButtonPressed(const std::string& identifier_name,
                                uint8_t button) final;
   void HelpBubbleClosed(
       const std::string& identifier_name,
       help_bubble::mojom::HelpBubbleClosedReason reason) final;
+  void BindTrackedElementHandler(
+      mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+          handler) final;
+
+  // tracked_element::mojom::TrackedElementHandler:
+  void TrackedElementVisibilityChanged(const std::string& identifier_name,
+                                       bool visible,
+                                       const gfx::RectF& rect) final;
+  void TrackedElementActivated(const std::string& identifier_name) final;
+  void TrackedElementCustomEvent(const std::string& identifier_name,
+                                 const std::string& event_name) final;
 
   ElementData* GetDataByName(const std::string& identifier_name,
                              ui::ElementIdentifier* found_identifier = nullptr);
@@ -169,6 +177,10 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   std::unique_ptr<VisibilityProvider> visibility_provider_;
   const ui::ElementContext context_;
   std::map<ui::ElementIdentifier, ElementData> element_data_;
+
+  mojo::Receiver<tracked_element::mojom::TrackedElementHandler>
+      tracked_element_handler_receiver_{this};
+
   base::WeakPtrFactory<HelpBubbleHandlerBase> weak_ptr_factory_{this};
 };
 

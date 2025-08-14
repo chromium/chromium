@@ -285,7 +285,7 @@ void HelpBubbleHandlerBase::OnWebContentsVisibilityChanged(
   }
 }
 
-void HelpBubbleHandlerBase::HelpBubbleAnchorVisibilityChanged(
+void HelpBubbleHandlerBase::TrackedElementVisibilityChanged(
     const std::string& identifier_name,
     bool visible,
     const gfx::RectF& rect) {
@@ -335,7 +335,7 @@ void HelpBubbleHandlerBase::HelpBubbleAnchorVisibilityChanged(
   }
 }
 
-void HelpBubbleHandlerBase::HelpBubbleAnchorActivated(
+void HelpBubbleHandlerBase::TrackedElementActivated(
     const std::string& identifier_name) {
   ui::ElementIdentifier id;
   ElementData* const data = GetDataByName(identifier_name, &id);
@@ -344,7 +344,7 @@ void HelpBubbleHandlerBase::HelpBubbleAnchorActivated(
 
   if (!data->element->visible()) {
     ReportBadMessage(
-        base::StringPrintf("HelpBubbleAnchorActivated message received for "
+        base::StringPrintf("TrackedElementActivated message received for "
                            "anchor element \"%s\" but element was not visible.",
                            identifier_name.c_str()));
     return;
@@ -353,7 +353,7 @@ void HelpBubbleHandlerBase::HelpBubbleAnchorActivated(
   data->element->Activate();
 }
 
-void HelpBubbleHandlerBase::HelpBubbleAnchorCustomEvent(
+void HelpBubbleHandlerBase::TrackedElementCustomEvent(
     const std::string& identifier_name,
     const std::string& event_name) {
   ui::ElementIdentifier id;
@@ -363,7 +363,7 @@ void HelpBubbleHandlerBase::HelpBubbleAnchorCustomEvent(
 
   if (!data->element->visible()) {
     ReportBadMessage(
-        base::StringPrintf("HelpBubbleAnchorCustomEvent message received for "
+        base::StringPrintf("TrackedElementCustomEvent message received for "
                            "anchor element \"%s\" but element was not visible.",
                            identifier_name.c_str()));
     return;
@@ -467,6 +467,13 @@ void HelpBubbleHandlerBase::HelpBubbleClosed(
     return;
 
   data->closing = false;
+}
+
+void HelpBubbleHandlerBase::BindTrackedElementHandler(
+    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+        handler) {
+  tracked_element_handler_receiver_.reset();
+  tracked_element_handler_receiver_.Bind(std::move(handler));
 }
 
 bool HelpBubbleHandlerBase::ToggleHelpBubbleFocusForAccessibility(

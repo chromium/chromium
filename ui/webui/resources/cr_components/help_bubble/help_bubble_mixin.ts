@@ -21,6 +21,7 @@
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import type {InsetsF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {TrackedElementHandlerInterface} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -39,6 +40,7 @@ export const HelpBubbleMixin = dedupingMixin(
     Constructor<HelpBubbleMixinInterface> => {
       class HelpBubbleMixin extends superClass implements
           HelpBubbleMixinInterface {
+        private trackedElementHandler_: TrackedElementHandlerInterface;
         private helpBubbleHandler_: HelpBubbleHandlerInterface;
         private helpBubbleCallbackRouter_: HelpBubbleClientCallbackRouter;
         /**
@@ -62,6 +64,8 @@ export const HelpBubbleMixin = dedupingMixin(
         constructor(...args: any[]) {
           super(...args);
 
+          this.trackedElementHandler_ =
+              HelpBubbleProxyImpl.getInstance().getTrackedElementHandler();
           this.helpBubbleHandler_ =
               HelpBubbleProxyImpl.getInstance().getHandler();
           this.helpBubbleCallbackRouter_ =
@@ -387,7 +391,7 @@ export const HelpBubbleMixin = dedupingMixin(
           if (!ctrl || !ctrl.isBubbleShowing()) {
             return false;
           }
-          this.helpBubbleHandler_.helpBubbleAnchorActivated(nativeId);
+          this.trackedElementHandler_.trackedElementActivated(nativeId);
           return true;
         }
 
@@ -406,7 +410,7 @@ export const HelpBubbleMixin = dedupingMixin(
           if (!ctrl || !ctrl.isBubbleShowing()) {
             return false;
           }
-          this.helpBubbleHandler_.helpBubbleAnchorCustomEvent(
+          this.trackedElementHandler_.trackedElementCustomEvent(
               nativeId, customEvent);
           return true;
         }
@@ -427,7 +431,7 @@ export const HelpBubbleMixin = dedupingMixin(
           const bounds: RectF = isVisible ? this.getElementBounds_(target) :
                                             {x: 0, y: 0, width: 0, height: 0};
           if (!ctrl || ctrl.updateAnchorVisibility(isVisible, bounds)) {
-            this.helpBubbleHandler_.helpBubbleAnchorVisibilityChanged(
+            this.trackedElementHandler_.trackedElementVisibilityChanged(
                 nativeId, isVisible, bounds);
           }
         }
@@ -441,7 +445,7 @@ export const HelpBubbleMixin = dedupingMixin(
             if (ctrl.hasAnchor() && ctrl.getAnchorVisibility()) {
               const bounds = this.getElementBounds_(ctrl.getAnchor()!);
               if (ctrl.updateAnchorVisibility(true, bounds)) {
-                this.helpBubbleHandler_.helpBubbleAnchorVisibilityChanged(
+                this.trackedElementHandler_.trackedElementVisibilityChanged(
                     ctrl.getNativeId(), true, bounds);
               }
             }

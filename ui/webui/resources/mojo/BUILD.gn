@@ -47,6 +47,7 @@ mojo_ts_files = [
   "ui/gfx/geometry/mojom/geometry.mojom-webui.ts",
   "ui/gfx/image/mojom/image.mojom-webui.ts",
   "ui/gfx/range/mojom/range.mojom-webui.ts",
+  "ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.ts",
   "url/mojom/origin.mojom-webui.ts",
   "url/mojom/url.mojom-webui.ts",
 ]
@@ -107,6 +108,7 @@ preprocess_if_expr("copy_mojo_ts") {
     "//ui/gfx/geometry/mojom:mojom_ts__generator",
     "//ui/gfx/image/mojom:mojom_ts__generator",
     "//ui/gfx/range/mojom:mojom_ts__generator",
+    "//ui/webui/resources/js/tracked_element:mojo_bindings_ts__generator",
     "//url/mojom:url_mojom_gurl_ts__generator",
     "//url/mojom:url_mojom_origin_ts__generator",
   ]

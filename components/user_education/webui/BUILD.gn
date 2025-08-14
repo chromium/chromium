@@ -32,6 +32,7 @@ source_set("webui") {
     "//ui/views/controls/webview",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     "//ui/webui/resources/js/browser_command:mojo_bindings",
+    "//ui/webui/resources/js/tracked_element:mojo_bindings",
   ]
 }
 
