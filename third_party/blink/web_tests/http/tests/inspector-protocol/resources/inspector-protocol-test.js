@@ -50,6 +50,7 @@ var TestRunner = class {
       'guid',
       'requestId',
       'openerFrameId',
+      'parentFrameId',
       'issueId',
       'initiatingFrameId',
       'pipelineId'

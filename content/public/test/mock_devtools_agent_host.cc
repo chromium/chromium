@@ -59,6 +59,10 @@ std::string MockDevToolsAgentHost::GetOpenerFrameId() {
   return std::string();
 }
 
+std::string MockDevToolsAgentHost::GetParentFrameId() {
+  return std::string();
+}
+
 content::WebContents* MockDevToolsAgentHost::GetWebContents() {
   return nullptr;
 }

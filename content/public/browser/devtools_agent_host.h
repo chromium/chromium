@@ -198,6 +198,10 @@ class CONTENT_EXPORT DevToolsAgentHost
   // opener.
   virtual std::string GetOpenerFrameId() = 0;
 
+  // Returns the DevTools token of this frame's parent, or empty string if
+  // this host is not a frame or is a main frame.
+  virtual std::string GetParentFrameId() = 0;
+
   // Returns web contents instance for this host if any.
   virtual WebContents* GetWebContents() = 0;
 

@@ -797,6 +797,12 @@ std::string RenderFrameDevToolsAgentHost::GetOpenerFrameId() {
                                      : std::string();
 }
 
+std::string RenderFrameDevToolsAgentHost::GetParentFrameId() {
+  auto* parent =
+      frame_tree_node_ ? frame_tree_node_->GetParentOrOuterDocument() : nullptr;
+  return parent ? parent->devtools_frame_token().ToString() : std::string();
+}
+
 bool RenderFrameDevToolsAgentHost::CanAccessOpener() {
   return (frame_tree_node_ && frame_tree_node_->opener());
 }

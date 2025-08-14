@@ -109,6 +109,9 @@ std::unique_ptr<Target::TargetInfo> BuildTargetInfo(
   if (!host->GetOpenerFrameId().empty()) {
     target_info->SetOpenerFrameId(host->GetOpenerFrameId());
   }
+  if (!host->GetParentFrameId().empty()) {
+    target_info->SetParentFrameId(host->GetParentFrameId());
+  }
   if (host->GetBrowserContext()) {
     target_info->SetBrowserContextId(host->GetBrowserContext()->UniqueId());
   }

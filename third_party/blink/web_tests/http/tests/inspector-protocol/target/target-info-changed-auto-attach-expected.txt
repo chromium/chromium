@@ -3,6 +3,7 @@ Tests that Target.targetInfoChanged is dispatched for auto-attached targets.
     attached : true
     browserContextId : <string>
     canAccessOpener : false
+    parentFrameId : <string>
     targetId : <string>
     title : 
     type : iframe
@@ -13,6 +14,7 @@ Tests that Target.targetInfoChanged is dispatched for auto-attached targets.
         attached : true
         browserContextId : <string>
         canAccessOpener : false
+        parentFrameId : <string>
         targetId : <string>
         title : http://devtools.oopif-a.test:8000/inspector-protocol/resources/inspector-protocol-page.html
         type : iframe
@@ -24,6 +26,7 @@ Tests that Target.targetInfoChanged is dispatched for auto-attached targets.
         attached : true
         browserContextId : <string>
         canAccessOpener : false
+        parentFrameId : <string>
         targetId : <string>
         title : http://devtools.oopif-a.test:8000/inspector-protocol/resources/inspector-protocol-page.html?foo
         type : iframe
