@@ -115,7 +115,7 @@ ScriptPromise<WebPrinterAttributes> WebPrinter::fetchAttributes(
   return fetch_attributes_resolver_->Promise();
 }
 
-ScriptPromise<WebPrintJob> WebPrinter::printJob(
+ScriptPromise<WebPrintJob> WebPrinter::submitPrintJob(
     ScriptState* script_state,
     const String& job_name,
     const WebPrintDocumentDescription* document,

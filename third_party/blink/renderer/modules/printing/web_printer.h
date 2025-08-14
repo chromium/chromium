@@ -34,7 +34,7 @@ class MODULES_EXPORT WebPrinter : public ScriptWrappable {
   ScriptPromise<WebPrinterAttributes> fetchAttributes(
       ScriptState* script_state,
       ExceptionState& exception_state);
-  ScriptPromise<WebPrintJob> printJob(
+  ScriptPromise<WebPrintJob> submitPrintJob(
       ScriptState* script_state,
       const String& job_name,
       const WebPrintDocumentDescription* document,
