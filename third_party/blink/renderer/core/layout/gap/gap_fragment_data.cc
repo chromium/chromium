@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/gap_fragment_data.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_fragment_data.h"
 
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -110,6 +110,20 @@ PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
   PhysicalRect physical_rect = converter.ToPhysical(logical_rect);
 
   return physical_rect;
+}
+
+String GapGeometry::ToString(bool verbose) const {
+  String str = String("MainGaps: [");
+  for (const auto& main_gap : main_gaps_) {
+    str = str + main_gap.ToString(verbose) + ", ";
+  }
+  str = str + String("] ");
+  str = str + String("CrossGaps: [");
+  for (const auto& cross_gap : cross_gaps_) {
+    str = str + cross_gap.ToString(verbose) + ", ";
+  }
+  str = str + String("] ");
+  return str;
 }
 
 }  // namespace blink

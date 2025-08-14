@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_FRAGMENT_DATA_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_FRAGMENT_DATA_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_GAP_FRAGMENT_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_GAP_FRAGMENT_DATA_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/gap/main_gap.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
-#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -95,6 +96,36 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   WTF::String IntersectionsToString(GridTrackSizingDirection track_direction,
                                     bool verbose = false) const;
 
+  // TODO(crbug.com/436140061): These methods are being used to implement the
+  // optimized version of GapDecorations. Once the optimized version is
+  // implemented, we can remove all the other unused methods from the old
+  // version.
+  // See third_party/blink/renderer/core/layout/gap/README.md for more
+  // information.
+
+  void SetContentStartOffset(LogicalOffset offset) {
+    content_start_offset_ = offset;
+  }
+  LogicalOffset GetContentStartOffset() const { return content_start_offset_; }
+  void SetContentEndOffset(LogicalOffset offset) {
+    content_end_offset_ = offset;
+  }
+  LogicalOffset GetContentEndOffset() const { return content_end_offset_; }
+
+  void SetMainGaps(Vector<MainGap>&& main_gaps) {
+    main_gaps_ = std::move(main_gaps);
+  }
+
+  void SetCrossGaps(Vector<CrossGap>&& cross_gaps) {
+    cross_gaps_ = std::move(cross_gaps);
+  }
+
+  const Vector<MainGap>& GetMainGaps() const { return main_gaps_; }
+
+  const Vector<CrossGap>& GetCrossGaps() const { return cross_gaps_; }
+
+  blink::String ToString(bool verbose = false) const;
+
  private:
   // TODO(samomekarajr): Potential optimization. This can be a single
   // Vector<GapIntersection> if we exclude intersection points at the edge of
@@ -112,7 +143,21 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   LayoutUnit block_gap_size_;
 
   ContainerType container_type_;
+
+  // TODO(crbug.com/436140061): These properties are being used to implement the
+  // optimized version of GapDecorations. Once the optimized version is
+  // implemented, we can remove all the other unused properties from the old
+  // version.
+  // See third_party/blink/renderer/core/layout/gap/README.md for more
+  // information.
+
+  // These are the offsets of the content where the gaps begin and end.
+  LogicalOffset content_start_offset_ = LogicalOffset();
+  LogicalOffset content_end_offset_ = LogicalOffset();
+
+  Vector<MainGap> main_gaps_;
+  Vector<CrossGap> cross_gaps_;
 };
 
 }  // namespace blink
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_FRAGMENT_DATA_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_GAP_FRAGMENT_DATA_H_
