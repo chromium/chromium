@@ -42,7 +42,7 @@ class AudioManagerCrasUnderTest : public AudioManagerCras {
   AudioManagerCrasUnderTest()
       : AudioManagerCras(std::make_unique<TestAudioThread>(),
                          &fake_audio_log_factory_) {}
-  ~AudioManagerCrasUnderTest() = default;
+  ~AudioManagerCrasUnderTest() override = default;
   void SetCrasUtil(std::unique_ptr<CrasUtil> util) {
     cras_util_ = std::move(util);
   }
@@ -61,7 +61,8 @@ class AudioManagerCrasTest : public testing::Test {
   ~AudioManagerCrasTest() override { audio_manager_->Shutdown(); }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<StrictMock<AudioManagerCrasUnderTest>> audio_manager_ = NULL;
+  std::unique_ptr<StrictMock<AudioManagerCrasUnderTest>> audio_manager_ =
+      nullptr;
 };
 
 TEST_F(AudioManagerCrasTest, HasAudioInputDevices) {

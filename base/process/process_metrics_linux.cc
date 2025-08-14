@@ -1019,8 +1019,8 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
   std::string mali_memory_data;
   if (ReadFileToStringNonBlocking(mali_memory_file, &mali_memory_data)) {
     int64_t mali_size = -1;
-    int num_res =
-        sscanf(mali_memory_data.c_str(), "%" SCNd64 " bytes", &mali_size);
+    int num_res = UNSAFE_TODO(
+        sscanf(mali_memory_data.c_str(), "%" SCNd64 " bytes", &mali_size));
     if (num_res == 1) {
       gpu_meminfo->gpu_memory_size += mali_size;
     }

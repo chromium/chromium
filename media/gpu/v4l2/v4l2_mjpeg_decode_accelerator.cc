@@ -244,7 +244,7 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
   JobRecordDmaBuf(const JobRecordDmaBuf&) = delete;
   JobRecordDmaBuf& operator=(const JobRecordDmaBuf&) = delete;
 
-  ~JobRecordDmaBuf() {
+  ~JobRecordDmaBuf() override {
     if (mapped_addr_) {
       const int ret = munmap(mapped_addr_, size());
       DPCHECK(ret == 0);
@@ -644,16 +644,16 @@ bool V4L2MjpegDecodeAccelerator::CreateInputBuffers() {
       return false;
     }
     for (size_t j = 0; j < buffer.length; ++j) {
-      void* address =
-          device_->Mmap(nullptr, planes[j].length, PROT_READ | PROT_WRITE,
-                        MAP_SHARED, planes[j].m.mem_offset);
+      void* address = device_->Mmap(nullptr, UNSAFE_TODO(planes[j].length),
+                                    PROT_READ | PROT_WRITE, MAP_SHARED,
+                                    UNSAFE_TODO(planes[j].m.mem_offset));
       if (address == MAP_FAILED) {
         VPLOGF(1) << "mmap() failed";
         PostNotifyError(kInvalidTaskId, PLATFORM_FAILURE);
         return false;
       }
-      input_buffer_map_[i].address[j] = address;
-      input_buffer_map_[i].length[j] = planes[j].length;
+      UNSAFE_TODO(input_buffer_map_[i].address[j] = address);
+      UNSAFE_TODO(input_buffer_map_[i].length[j] = planes[j].length);
     }
   }
 
@@ -684,7 +684,8 @@ bool V4L2MjpegDecodeAccelerator::CreateOutputBuffers() {
                                     format.fmt.pix_mp.height);
   output_buffer_num_planes_ = format.fmt.pix_mp.num_planes;
   for (size_t i = 0; i < output_buffer_num_planes_; ++i) {
-    output_strides_[i] = format.fmt.pix_mp.plane_fmt[i].bytesperline;
+    UNSAFE_TODO(output_strides_[i]) =
+        UNSAFE_TODO(format.fmt.pix_mp.plane_fmt[i].bytesperline);
   }
 
   auto output_format = Fourcc::FromV4L2PixFmt(output_buffer_pixelformat_);
@@ -723,23 +724,23 @@ bool V4L2MjpegDecodeAccelerator::CreateOutputBuffers() {
       return false;
     }
     for (size_t j = 0; j < buffer.length; ++j) {
-      if (base::checked_cast<int64_t>(planes[j].length) <
+      if (base::checked_cast<int64_t>(UNSAFE_TODO(planes[j].length)) <
           VideoFrame::PlaneSize(
               output_format->ToVideoPixelFormat(), j,
               gfx::Size(format.fmt.pix_mp.width, format.fmt.pix_mp.height))
               .GetArea()) {
         return false;
       }
-      void* address =
-          device_->Mmap(nullptr, planes[j].length, PROT_READ | PROT_WRITE,
-                        MAP_SHARED, planes[j].m.mem_offset);
+      void* address = device_->Mmap(nullptr, UNSAFE_TODO(planes[j].length),
+                                    PROT_READ | PROT_WRITE, MAP_SHARED,
+                                    UNSAFE_TODO(planes[j].m.mem_offset));
       if (address == MAP_FAILED) {
         VPLOGF(1) << "mmap() failed";
         PostNotifyError(kInvalidTaskId, PLATFORM_FAILURE);
         return false;
       }
-      output_buffer_map_[i].address[j] = address;
-      output_buffer_map_[i].length[j] = planes[j].length;
+      UNSAFE_TODO(output_buffer_map_[i].address[j] = address);
+      UNSAFE_TODO(output_buffer_map_[i].length[j] = planes[j].length);
     }
   }
 
@@ -763,7 +764,7 @@ void V4L2MjpegDecodeAccelerator::DestroyInputBuffers() {
 
   for (const auto& [address, length, at_device] : input_buffer_map_) {
     for (size_t i = 0; i < kMaxInputPlanes; ++i) {
-      device_->Munmap(address[i], length[i]);
+      UNSAFE_TODO(device_->Munmap(address[i], length[i]));
     }
   }
 
@@ -794,7 +795,7 @@ void V4L2MjpegDecodeAccelerator::DestroyOutputBuffers() {
 
   for (const auto& [address, length, at_device] : output_buffer_map_) {
     for (size_t i = 0; i < output_buffer_num_planes_; ++i) {
-      device_->Munmap(address[i], length[i]);
+      UNSAFE_TODO(device_->Munmap(address[i], length[i]));
     }
   }
 
@@ -992,8 +993,8 @@ bool V4L2MjpegDecodeAccelerator::ConvertOutputImage(
   std::array<const uint8_t*, VideoFrame::kMaxPlanes> src_ptrs{};
   std::array<int, VideoFrame::kMaxPlanes> src_strides{};
   for (size_t i = 0; i < output_buffer_num_planes_; i++) {
-    src_ptrs[i] = static_cast<uint8_t*>(output_buffer.address[i]);
-    src_strides[i] = output_strides_[i];
+    src_ptrs[i] = static_cast<uint8_t*>(UNSAFE_TODO(output_buffer.address[i]));
+    src_strides[i] = UNSAFE_TODO(output_strides_[i]);
   }
 
   if (output_buffer_pixelformat_ == V4L2_PIX_FMT_YUV420M) {

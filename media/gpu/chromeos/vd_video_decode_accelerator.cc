@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -114,18 +115,18 @@ scoped_refptr<DecoderBuffer> DecryptBitstreamBuffer(
   }
   // Apply the offset here so we don't need to worry about page alignment in the
   // mapping.
-  data += bitstream_buffer.offset();
+  UNSAFE_TODO(data += bitstream_buffer.offset());
   if (available_size <= cdm_oemcrypto::kSecureBufferHeaderSize ||
-      memcmp(data, cdm_oemcrypto::kSecureBufferTag,
-             cdm_oemcrypto::kSecureBufferTagLen)) {
+      UNSAFE_TODO(memcmp(data, cdm_oemcrypto::kSecureBufferTag,
+                         cdm_oemcrypto::kSecureBufferTagLen))) {
     // This occurs in Intel implementations when we are in a clear portion.
     return bitstream_buffer.ToDecoderBuffer();
   }
   VLOG(2) << "Detected secure buffer format in VDVDA";
   // Read the protobuf size.
   uint32_t proto_size = 0;
-  memcpy(&proto_size, data + cdm_oemcrypto::kSecureBufferTagLen,
-         sizeof(uint32_t));
+  UNSAFE_TODO(memcpy(&proto_size, data + cdm_oemcrypto::kSecureBufferTagLen,
+                     sizeof(uint32_t)));
   if (proto_size > cdm_oemcrypto::kSecureBufferHeaderSize -
                        cdm_oemcrypto::kSecureBufferProtoOffset) {
     DVLOG(2) << "Proto size goes beyond header size";
@@ -133,8 +134,8 @@ scoped_refptr<DecoderBuffer> DecryptBitstreamBuffer(
   }
   // Read the serialized proto.
   std::string serialized_proto(
-      data + cdm_oemcrypto::kSecureBufferProtoOffset,
-      data + cdm_oemcrypto::kSecureBufferProtoOffset + proto_size);
+      UNSAFE_TODO(data + cdm_oemcrypto::kSecureBufferProtoOffset),
+      UNSAFE_TODO(data + cdm_oemcrypto::kSecureBufferProtoOffset + proto_size));
   chromeos::cdm::ArcSecureBufferForChrome buffer_proto;
   if (!buffer_proto.ParseFromString(serialized_proto)) {
     DVLOG(2) << "Failed deserializing secure buffer proto";

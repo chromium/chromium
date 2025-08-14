@@ -32,7 +32,7 @@ struct OpenInputDeviceParams {
   // State shared between devices.
   raw_ptr<CursorDelegateEvdev> cursor;
 #if defined(USE_EVDEV_GESTURES)
-  GesturePropertyProvider* gesture_property_provider;
+  raw_ptr<GesturePropertyProvider> gesture_property_provider;
 #endif
   raw_ptr<SharedPalmDetectionFilterState> shared_palm_state;
 };

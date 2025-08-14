@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
+// TODO(crbug.com/390223051): spanify to fix the errors.
+#pragma allow_unsafe_buffers
 #endif
 
 #ifndef MEDIA_GPU_V4L2_MT21_MT21_UTIL_H_

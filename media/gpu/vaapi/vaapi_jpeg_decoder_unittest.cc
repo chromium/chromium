@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/vaapi/vaapi_jpeg_decoder.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <va/va.h>
@@ -11,8 +13,7 @@
 #include <string>
 #include <vector>
 
-// This has to be included first.
-// See http://code.google.com/p/googletest/issues/detail?id=371
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,7 +25,6 @@
 #include "media/gpu/vaapi/test_utils.h"
 #include "media/gpu/vaapi/vaapi_image_decoder.h"
 #include "media/gpu/vaapi/vaapi_image_decoder_test_common.h"
-#include "media/gpu/vaapi/vaapi_jpeg_decoder.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/parsers/jpeg_parser.h"
@@ -156,12 +156,12 @@ std::vector<unsigned char> GenerateJpegImage(
     for (int x = 0; x < base::checked_cast<int>(stride); x += 4) {
       const bool x_bit = (((x / kCheckerRectSize.width()) & 0x1) == 0);
       const SkColor color = (x_bit != y_bit) ? SK_ColorBLUE : SK_ColorMAGENTA;
-      data[x + 0] = SkColorGetR(color);
-      data[x + 1] = SkColorGetG(color);
-      data[x + 2] = SkColorGetB(color);
-      data[x + 3] = SkColorGetA(color);
+      UNSAFE_TODO(data[x + 0]) = SkColorGetR(color);
+      UNSAFE_TODO(data[x + 1]) = SkColorGetG(color);
+      UNSAFE_TODO(data[x + 2]) = SkColorGetB(color);
+      UNSAFE_TODO(data[x + 3]) = SkColorGetA(color);
     }
-    data += stride;
+    UNSAFE_TODO(data += stride);
   }
 
   // Now, encode it as a JPEG.

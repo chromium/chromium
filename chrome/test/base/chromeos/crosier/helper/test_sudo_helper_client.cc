@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -172,7 +173,8 @@ base::ScopedFD TestSudoHelperClient::ConnectToServer(
 
   struct sockaddr_un addr = {0};
   addr.sun_family = AF_UNIX;
-  strncpy(addr.sun_path, server_path_.c_str(), sizeof(sockaddr_un::sun_path));
+  UNSAFE_TODO(strncpy(addr.sun_path, server_path_.c_str(),
+                      sizeof(sockaddr_un::sun_path)));
 
   socklen_t addr_len =
       offsetof(struct sockaddr_un, sun_path) + server_path_.size();

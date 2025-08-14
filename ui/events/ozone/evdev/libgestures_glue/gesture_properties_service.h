@@ -6,6 +6,7 @@
 #define UI_EVENTS_OZONE_EVDEV_LIBGESTURES_GLUE_GESTURE_PROPERTIES_SERVICE_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_property_provider.h"
@@ -22,6 +23,7 @@ class COMPONENT_EXPORT(EVDEV) GesturePropertiesService
       GesturePropertyProvider* provider,
       mojo::PendingReceiver<ui::ozone::mojom::GesturePropertiesService>
           receiver);
+  ~GesturePropertiesService() override;
 
   void ListDevices(ListDevicesCallback callback) override;
   void ListProperties(int32_t device_id,
@@ -35,7 +37,7 @@ class COMPONENT_EXPORT(EVDEV) GesturePropertiesService
                    SetPropertyCallback callback) override;
 
  private:
-  GesturePropertyProvider* prop_provider_;
+  raw_ptr<GesturePropertyProvider> prop_provider_;
   mojo::Receiver<ui::ozone::mojom::GesturePropertiesService> receiver_;
 };
 

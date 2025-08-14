@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/chromeos_camera/jpeg_encode_accelerator.h"
 
 #include <stddef.h>
@@ -322,11 +327,11 @@ class JpegClient : public JpegEncodeAccelerator::Client {
   // JpegClient doesn't own |test_aligned_images_|.
   // The resolutions of these images are all aligned. HW Accelerator must
   // support them.
-  const std::vector<TestImage*>& test_aligned_images_;
+  const raw_ref<const std::vector<TestImage*>> test_aligned_images_;
 
   // JpegClient doesn't own |test_unaligned_images_|.
   // The resolutions of these images may be unaligned.
-  const std::vector<TestImage*>& test_unaligned_images_;
+  const raw_ref<const std::vector<TestImage*>> test_unaligned_images_;
 
   // A map that stores HW encoding start timestamp for each output buffer id.
   std::map<int, base::TimeTicks> buffer_id_to_start_time_;
@@ -336,7 +341,7 @@ class JpegClient : public JpegEncodeAccelerator::Client {
 
   // Used to notify another thread about the state. JpegClient does not own
   // this.
-  media::test::ClientStateNotification<ClientState>* note_;
+  raw_ptr<media::test::ClientStateNotification<ClientState>> note_;
 
   // EXIF data size for testing.
   size_t exif_size_;
@@ -422,11 +427,11 @@ void JpegClient::VideoFrameReady(int32_t buffer_id, size_t hw_encoded_size) {
       hw_encode_end - buffer_id_to_start_time_[buffer_id];
 
   TestImage* test_image;
-  if (buffer_id < static_cast<int32_t>(test_aligned_images_.size())) {
-    test_image = test_aligned_images_[buffer_id];
+  if (buffer_id < static_cast<int32_t>(test_aligned_images_->size())) {
+    test_image = (*test_aligned_images_)[buffer_id];
   } else {
     test_image =
-        test_unaligned_images_[buffer_id - test_aligned_images_.size()];
+        (*test_unaligned_images_)[buffer_id - test_aligned_images_->size()];
   }
 
   if (hw_out_frame_ && !hw_out_frame_->IsMappable()) {
@@ -558,13 +563,14 @@ void JpegClient::NotifyError(int32_t buffer_id,
 
 TestImage* JpegClient::GetTestImage(int32_t bitstream_buffer_id) {
   DCHECK_LT(static_cast<size_t>(bitstream_buffer_id),
-            test_aligned_images_.size() + test_unaligned_images_.size());
+            test_aligned_images_->size() + test_unaligned_images_->size());
   TestImage* image_file;
-  if (bitstream_buffer_id < static_cast<int32_t>(test_aligned_images_.size())) {
-    image_file = test_aligned_images_[bitstream_buffer_id];
+  if (bitstream_buffer_id <
+      static_cast<int32_t>(test_aligned_images_->size())) {
+    image_file = (*test_aligned_images_)[bitstream_buffer_id];
   } else {
-    image_file = test_unaligned_images_[bitstream_buffer_id -
-                                        test_aligned_images_.size()];
+    image_file = (*test_unaligned_images_)[bitstream_buffer_id -
+                                           test_aligned_images_->size()];
   }
 
   return image_file;
