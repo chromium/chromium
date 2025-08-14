@@ -60,6 +60,16 @@ final class AndroidBaseWindow {
     }
 
     @CalledByNative
+    private void close() {
+        mChromeAndroidTask.close();
+    }
+
+    @CalledByNative
+    private void activate() {
+        mChromeAndroidTask.activate();
+    }
+
+    @CalledByNative
     private void clearNativePtr() {
         mNativeAndroidBaseWindow = 0;
     }

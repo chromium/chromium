@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ui.browser_window;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
@@ -215,6 +217,38 @@ final class ChromeAndroidTaskImpl
             for (var feature : mFeatures) {
                 feature.onTaskBoundsChanged(newBounds);
             }
+        }
+    }
+
+    @Override
+    public void close() {
+        synchronized (mActivityWindowAndroidLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) return;
+            Activity activity = activityWindowAndroid.getActivity().get();
+            if (activity == null) return;
+            activity.finishAndRemoveTask();
+        }
+    }
+
+    @Override
+    public void activate() {
+        synchronized (mActivityWindowAndroidLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) return;
+            Activity activity = activityWindowAndroid.getActivity().get();
+            if (activity == null) return;
+            ActivityManager activityManager =
+                    (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+            for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
+                if (activity.getTaskId() == task.getTaskInfo().id) {
+                    task.moveToFront();
+                    return;
+                }
+            }
+            throw new IllegalStateException("Target task not found");
         }
     }
 

@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
@@ -162,6 +163,54 @@ public class ChromeAndroidTaskIntegrationTest {
         var expectedBounds = activity.getWindowManager().getMaximumWindowMetrics().getBounds();
         assertFalse(actualBounds.isEmpty());
         assertEquals(expectedBounds, actualBounds);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
+    public void close_finishTask() {
+        // Arrange
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+
+        RegularNewTabPageStation ntpStation =
+                webPageStation.openRegularTabAppMenu().openNewWindow();
+        int secondTaskId = ntpStation.getActivity().getTaskId();
+        var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
+        assertNotNull(secondChromeAndroidTask);
+
+        // Act
+        secondChromeAndroidTask.close();
+
+        // Assert
+        assertTrue(ntpStation.getActivity().isFinishing());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
+    public void activate_moveToFront() {
+        // Arrange
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        int firstTaskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
+
+        RegularNewTabPageStation ntpStation =
+                webPageStation.openRegularTabAppMenu().openNewWindow();
+        int secondTaskId = ntpStation.getActivity().getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(firstTaskId);
+        var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
+        assertNotNull(chromeAndroidTask);
+        assertNotNull(secondChromeAndroidTask);
+        assertFalse(chromeAndroidTask.isActive());
+        assertTrue(secondChromeAndroidTask.isActive());
+
+        // Act
+        chromeAndroidTask.activate();
+
+        // Assert
+        CriteriaHelper.pollUiThread(chromeAndroidTask::isActive);
+        assertFalse(secondChromeAndroidTask.isActive());
+        // Cleanup
+        ntpStation.getActivity().finish();
     }
 
     /**

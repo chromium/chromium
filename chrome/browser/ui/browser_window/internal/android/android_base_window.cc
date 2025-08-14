@@ -94,11 +94,13 @@ void AndroidBaseWindow::ShowInactive() {
 }
 
 void AndroidBaseWindow::Close() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_close(AttachCurrentThread(),
+                               java_android_base_window_);
 }
 
 void AndroidBaseWindow::Activate() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_activate(AttachCurrentThread(),
+                                  java_android_base_window_);
 }
 
 void AndroidBaseWindow::Deactivate() {

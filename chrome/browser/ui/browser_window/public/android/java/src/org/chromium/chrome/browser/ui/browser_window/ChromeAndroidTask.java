@@ -127,6 +127,15 @@ public interface ChromeAndroidTask {
     /** Returns current bounds of the window. */
     Rect getBounds();
 
+    /** Closes this {@link ChromeAndroidTask}. */
+    void close();
+
+    /**
+     * Move this {@link ChromeAndroidTask} to the front. This will restore the window from minimized
+     * state if necessary.
+     */
+    void activate();
+
     /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
     List<ChromeAndroidTaskFeature> getAllFeaturesForTesting();
 }
