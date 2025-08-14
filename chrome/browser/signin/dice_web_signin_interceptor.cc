@@ -13,6 +13,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -1145,6 +1146,19 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
     return;
   }
 
+  // If the IdentityManager is still being observerd, this could cause a
+  // potential UAF. `DiceSignedInProfileCreator` ends up moving the account from
+  // this profile to another one, which will cause notifications coming from
+  // the IdentityManager. If this class still listens to the notifications, it
+  // may destroy `state_->dice_signed_in_profile_creator_` in
+  // `DiceWebSigninInterceptor::OnExtendedAccountInfoRemoved()`, which will
+  // cause the account_id (originating from `DiceSignedInProfileCreator`) being
+  // passed around to be in turn destroyed and cause a UAF issue.
+  // TODO(crbug.com/435076172): The issue is potentially already fixed, change
+  // this to a regular `CHECK()` if no crashes are reported.
+  CHECK(!account_info_update_observation_.IsObserving(),
+        base::NotFatalUntil::M144);
+
   DCHECK(state_->interception_bubble_handle_);
   std::u16string profile_name =
       profiles::GetDefaultNameForNewSignedInProfile(account_info);
@@ -1268,6 +1282,19 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
     Reset();
     return;
   }
+
+  // If the IdentityManager is still being observerd, this could cause a
+  // potential UAF. `DiceSignedInProfileCreator` ends up moving the account from
+  // this profile to another one, which will cause notifications coming from
+  // the IdentityManager. If this class still listens to the notifications, it
+  // may destroy `state_->dice_signed_in_profile_creator_` in
+  // `DiceWebSigninInterceptor::OnExtendedAccountInfoRemoved()`, which will
+  // cause the account_id (originating from `DiceSignedInProfileCreator`) being
+  // passed around to be in turn destroyed and cause a UAF issue.
+  // TODO(crbug.com/435076172): The issue is potentially already fixed, change
+  // this to a regular `CHECK()` if no crashes are reported.
+  CHECK(!account_info_update_observation_.IsObserving(),
+        base::NotFatalUntil::M144);
 
   DCHECK(state_->interception_bubble_handle_);
   DCHECK(!state_->dice_signed_in_profile_creator_);
