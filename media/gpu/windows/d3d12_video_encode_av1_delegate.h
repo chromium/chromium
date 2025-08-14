@@ -35,6 +35,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   ~D3D12VideoEncodeAV1Delegate() override;
 
   size_t GetMaxNumOfRefFrames() const override;
+  size_t GetMaxNumOfManualRefBuffers() const override;
 
   EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(
       ID3D12Resource* input_frame,

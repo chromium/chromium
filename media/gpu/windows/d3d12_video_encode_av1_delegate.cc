@@ -478,6 +478,12 @@ size_t D3D12VideoEncodeAV1Delegate::GetMaxNumOfRefFrames() const {
   return max_num_ref_frames_;
 }
 
+size_t D3D12VideoEncodeAV1Delegate::GetMaxNumOfManualRefBuffers() const {
+  // We should have initialized.
+  CHECK_GT(max_num_ref_frames_, 0u);
+  return max_num_ref_frames_;
+}
+
 bool D3D12VideoEncodeAV1Delegate::ReportsAverageQp() const {
   return true;
 }

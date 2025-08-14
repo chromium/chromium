@@ -41,7 +41,14 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   virtual ~D3D12VideoEncodeDelegate();
 
   virtual EncoderStatus Initialize(VideoEncodeAccelerator::Config config);
+  // Returns the maximum number of reference frames that can be used for
+  // referencing. This value is used for the `input_count` parameter of
+  // VideoEncodeAccelerator::Client::RequireBitstreamBuffers().
   virtual size_t GetMaxNumOfRefFrames() const = 0;
+  // Returns the maximum number of buffers that can be used for future
+  // reference. This value is used for the number_of_manual_reference_buffers
+  // field of VideoEncoderInfo.
+  virtual size_t GetMaxNumOfManualRefBuffers() const = 0;
   // Returns whether the delegate supports changing |Bitrate::Mode| using
   // |UpdateRateControl()| during encoding.
   virtual bool SupportsRateControlReconfiguration() const = 0;

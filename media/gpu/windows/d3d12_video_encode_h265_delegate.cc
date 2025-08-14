@@ -193,6 +193,12 @@ size_t D3D12VideoEncodeH265Delegate::GetMaxNumOfRefFrames() const {
   return max_num_ref_frames_;
 }
 
+size_t D3D12VideoEncodeH265Delegate::GetMaxNumOfManualRefBuffers() const {
+  // We should have initialized.
+  CHECK_GT(max_num_ref_frames_, 0u);
+  return max_num_ref_frames_;
+}
+
 bool D3D12VideoEncodeH265Delegate::SupportsRateControlReconfiguration() const {
   return encoder_support_flags_ &
          D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RATE_CONTROL_RECONFIGURATION_AVAILABLE;

@@ -32,6 +32,7 @@ class MockD3D12VideoEncodeDelegate : public D3D12VideoEncodeDelegate {
   ~MockD3D12VideoEncodeDelegate() override = default;
 
   size_t GetMaxNumOfRefFrames() const override { return 8; }
+  size_t GetMaxNumOfManualRefBuffers() const override { return 4; }
   bool SupportsRateControlReconfiguration() const override { return false; }
   EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(
       ID3D12Resource*,

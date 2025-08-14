@@ -3647,7 +3647,7 @@
         "type": "win"
       },
       "vendor_id": "0x8086",
-      "multi_gpu_category": "any",
+      "multi_gpu_category": "active",
       "driver_version": {
         "op": "<",
         "value": "32.0.101.6913"
@@ -3674,6 +3674,7 @@
         "type": "win"
       },
       "vendor_id": "0x10de",
+      "multi_gpu_category": "active",
       "driver_version": {
           "op": "<",
           "value": "32.0.15.7602"
@@ -3736,6 +3737,19 @@
       "multi_gpu_category": "active",
       "features": [
         "disable_d3d12_video_encoder"
+      ]
+    },
+    {
+      "id": 463,
+      "cr_bugs": [],
+      "description": "Intel drivers don't support setting a frame as not referenced in D3D12 H264 encoder",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "active",
+      "features": [
+        "disable_d3d12_h264_encoder_non_reference_frames"
       ]
     }
   ]

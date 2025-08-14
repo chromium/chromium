@@ -68,6 +68,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH265Delegate
   ~D3D12VideoEncodeH265Delegate() override;
 
   size_t GetMaxNumOfRefFrames() const override;
+  size_t GetMaxNumOfManualRefBuffers() const override;
   bool ReportsAverageQp() const override;
 
   bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate) override;

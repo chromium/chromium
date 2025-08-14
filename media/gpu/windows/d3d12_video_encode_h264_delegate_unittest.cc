@@ -182,7 +182,7 @@ class D3D12VideoEncodeH264DelegateTest
         });
 
     encoder_delegate_ =
-        std::make_unique<D3D12VideoEncodeH264Delegate>(video_device3_);
+        std::make_unique<D3D12VideoEncodeH264Delegate>(video_device3_, true);
     encoder_delegate_->SetFactoriesForTesting(
         base::BindRepeating(&CreateVideoEncoderWrapper),
         base::BindRepeating(&CreateVideoProcessorWrapper));

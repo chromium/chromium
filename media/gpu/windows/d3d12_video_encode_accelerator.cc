@@ -61,12 +61,18 @@ constexpr size_t kMinNumFramesInFlight = 4;
 class VideoEncodeDelegateFactory
     : public D3D12VideoEncodeAccelerator::VideoEncodeDelegateFactoryInterface {
  public:
+  VideoEncodeDelegateFactory(
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
+      : gpu_workarounds_(gpu_workarounds) {}
+
   std::unique_ptr<D3D12VideoEncodeDelegate> CreateVideoEncodeDelegate(
       ID3D12VideoDevice3* video_device,
       VideoCodecProfile profile) override {
     switch (VideoCodecProfileToVideoCodec(profile)) {
       case VideoCodec::kH264:
-        return std::make_unique<D3D12VideoEncodeH264Delegate>(video_device);
+        return std::make_unique<D3D12VideoEncodeH264Delegate>(
+            video_device,
+            gpu_workarounds_.disable_d3d12_h264_encoder_non_reference_frames);
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       case VideoCodec::kHEVC:
         return std::make_unique<D3D12VideoEncodeH265Delegate>(video_device);
@@ -83,6 +89,9 @@ class VideoEncodeDelegateFactory
       const std::vector<D3D12_VIDEO_ENCODER_CODEC>& codecs) override {
     return D3D12VideoEncodeDelegate::GetSupportedProfiles(video_device, codecs);
   }
+
+ private:
+  const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
 };
 }  // namespace
 
@@ -286,7 +295,8 @@ D3D12VideoEncodeAccelerator::D3D12VideoEncodeAccelerator(
       child_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       encoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
-      encoder_factory_(std::make_unique<VideoEncodeDelegateFactory>()) {
+      encoder_factory_(
+          std::make_unique<VideoEncodeDelegateFactory>(gpu_workarounds)) {
   DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
   DETACH_FROM_SEQUENCE(encoder_sequence_checker_);
@@ -515,7 +525,7 @@ void D3D12VideoEncodeAccelerator::InitializeTask(const Config& config) {
   encoder_info_.requested_resolution_alignment = 2;
   encoder_info_.apply_alignment_to_all_simulcast_layers = true;
   encoder_info_.number_of_manual_reference_buffers =
-      encoder_->GetMaxNumOfRefFrames();
+      encoder_->GetMaxNumOfManualRefBuffers();
 
   child_task_runner_->PostTask(
       FROM_HERE,
