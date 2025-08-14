@@ -26,6 +26,18 @@ enum class ModelPageTargetType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ModelPageTargetType)
 
+// LINT.IfChange(ComputedTargetResult)
+// These enum values are persisted to logs.  Do not renumber or reuse numeric
+// values.
+enum class ComputedTargetResult {
+  kSuccess = 0,
+  kMissingActorTabData = 1,
+  kMissingAnnotatedPageContent = 2,
+  kTargetNotResolvedInApc = 3,
+  kMaxValue = kTargetNotResolvedInApc,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ComputedTargetResult)
+
 class ActorUiStateManagerInterface;
 
 // This object is not thread safe; it expects to be called from a single thread.

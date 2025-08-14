@@ -81,6 +81,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->
 
+<!-- LINT.IfChange(ComputedTargetResult) -->
+
+<enum name="ComputedTargetResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kMissingActorTabData"/>
+  <int value="2" label="kMissingAnnotatedPageContent"/>
+  <int value="3" label="kTargetNotResolvedInApc"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/event_dispatcher.h:ComputedTargetResult) -->
+
+<!-- LINT.IfChange(GetDomNodeResult) -->
+
+<enum name="GetDomNodeResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kNoApcMainFrameData"/>
+  <int value="2" label="kNodeNotFoundInApc"/>
+  <int value="3" label="kNoGeometry"/>
+  <int value="4" label="kOffScreen"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/dom_node_geometry.h:GetDomNodeResult) -->
+
 <!-- LINT.IfChange(ModelPageTargetType) -->
 
 <enum name="ModelPageTargetType">

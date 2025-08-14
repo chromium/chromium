@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Iframe Content</title>
+  <style>
+    #first, #second {
+      border: 1px solid #ccc;
+      margin: 2px;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <p>This is the content of the iframe.</p>
+  <div id="first" aria-label="div1_label">This is the first div.</div>
+  <div id="second" aria-label="div2_label">This is the second div.</div>
+</body>
+<script>
+  window.addEventListener('load', function() {
+    if (window.parent && window.parent.iframeLoaded) {
+      window.parent.iframeLoaded();
+    }
+  });
+</script>
+</html>

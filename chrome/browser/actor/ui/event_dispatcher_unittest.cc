@@ -33,6 +33,8 @@ using testing::WithArgs;
 
 constexpr std::string_view kModelPageTargetTypeHistogram =
     "Actor.EventDispatcher.ModelPageTargetType";
+constexpr std::string_view kComputedTargetResultHistogram =
+    "Actor.EventDispatcher.ComputedTargetResult";
 
 class EventDispatcherTest : public ::testing::Test {
  protected:
@@ -101,6 +103,8 @@ TEST_F(EventDispatcherTest, SingleMouseMove_DomNode) {
                                 ModelPageTargetType::kDomNode, 1);
   histograms_.ExpectBucketCount(kModelPageTargetTypeHistogram,
                                 ModelPageTargetType::kPoint, 0);
+  histograms_.ExpectBucketCount(kComputedTargetResultHistogram,
+                                ComputedTargetResult::kMissingActorTabData, 1);
 }
 
 TEST_F(EventDispatcherTest, TwoToolRequests) {

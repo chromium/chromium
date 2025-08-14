@@ -22,6 +22,28 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Actor.DomNodeGeometry.GetDomNodeResult"
+    enum="GetDomNodeResult" expires_after="2026-08-11">
+  <owner>kmg@google.com</owner>
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    The result of trying to resolve a DomNode's geometry. Recorded when
+    PageTargets are converted.
+  </summary>
+</histogram>
+
+<histogram name="Actor.EventDispatcher.ComputedTargetResult"
+    enum="ComputedTargetResult" expires_after="2026-08-11">
+  <owner>kmg@google.com</owner>
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    The result of trying to convert a DomNode to a gfx::Point. Recorded when
+    PageTargets are converted.
+  </summary>
+</histogram>
+
 <histogram name="Actor.EventDispatcher.ModelPageTargetType"
     enum="ModelPageTargetType" expires_after="2026-08-11">
   <owner>kmg@google.com</owner>
@@ -29,7 +51,7 @@ chromium-metrics-reviews@google.com.
   <owner>koilos@google.com</owner>
   <summary>
     The type of the PageTarget specified by the model. Recorded when PageTargets
-    are converted.
+    are converted from DomNode to gfx::Point.
   </summary>
 </histogram>
 

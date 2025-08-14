@@ -89,12 +89,24 @@ source_set("event_dispatcher") {
     "//chrome/browser/actor:types",
   ]
   deps = [
+    ":dom_node_geometry",
     ":tool_request_variant",
     ":ui_event_types",
     ":ui_event_utils",
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
     "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("dom_node_geometry") {
+  sources = [
+    "dom_node_geometry.cc",
+    "dom_node_geometry.h",
+  ]
+  deps = [
+    "//chrome/browser/actor:types",
+    "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }
 
@@ -172,11 +184,13 @@ source_set("unit_tests") {
     "actor_overlay_view_controller_unittest.cc",
     "actor_ui_state_manager_unittest.cc",
     "actor_ui_tab_controller_unittest.cc",
+    "dom_node_geometry_unittest.cc",
     "event_dispatcher_unittest.cc",
     "handoff_button_controller_unittest.cc",
     "ui_event_debugstring_unittest.cc",
   ]
   deps = [
+    ":dom_node_geometry",
     ":event_dispatcher",
     ":test_support",
     ":ui",
@@ -210,9 +224,11 @@ source_set("browser_tests") {
   sources = [
     "actor_overlay_browsertest.cc",
     "actor_ui_tab_controller_browsertest.cc",
+    "dom_node_geometry_browsertest.cc",
   ]
 
   deps = [
+    ":dom_node_geometry",
     ":ui",
     ":ui_event_types",
     "//base/test:test_support",
@@ -227,5 +243,6 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/views:view_pixel_diff_test_support",
   ]
 }
