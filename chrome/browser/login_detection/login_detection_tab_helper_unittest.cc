@@ -12,6 +12,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/login_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -41,6 +42,13 @@ class LoginDetectionTabHelperTest : public ChromeRenderViewHostTestHarness {
     VerifyLoginDetectionUkm(type, ukm::builders::LoginDetectionV2::kEntryName);
     VerifyLoginDetectionUkm(
         type, ukm::builders::LoginDetectionV2IdentityProvider::kEntryName);
+
+    if (type == LoginDetectionType::kNoLogin) {
+      return;
+    }
+    histogram_tester_->ExpectUniqueSample(
+        content::kBrowserAssistedLoginTypeHistogram,
+        content::BrowserAssistedLoginType::kNonFedCmOAuth, 1);
   }
 
   void VerifyLoginDetectionUkm(LoginDetectionType type,

@@ -957,6 +957,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.BrowserAssistedLogin.Type"
+    enum="BrowserAssistedLoginType" expires_after="2026-03-02">
+  <owner>yigu@chromium.org</owner>
+  <owner>kenrb@chromium.org</owner>
+  <owner>markusheintz@google.com</owner>
+  <summary>
+    Records the type of logins assisted by the browser. e.g. via passwords,
+    passkeys or federation. Recorded once per user logging into a website. Note:
+    1. Successful logins have different definition based on the credential
+    types. For password, it means a successful password form submission. For
+    Federation and passkeys, the flow is considered successful after the browser
+    returning the login credentials to a website. It's possible that the website
+    requires more steps for login afterwards but that is out of scope for this
+    histogram. 2. Login in this histogram refers to both sign-up and sign-in. 3.
+    Some categories (e.g. password filling, OAuth logins etc.) are based on
+    heuristics so there may be false positves. Logins detected by web APIs (e.g.
+    WebAuthn, FedCM) are deterministic.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.BubbleSuppression.AccountsInStatisticsTable2"
     units="accounts" expires_after="2026-02-01">
   <owner>kazinova@google.com</owner>

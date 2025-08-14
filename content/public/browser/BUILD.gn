@@ -243,6 +243,7 @@ source_set("browser_sources") {
     "legacy_tech_cookie_issue_details.cc",
     "legacy_tech_cookie_issue_details.h",
     "login_delegate.h",
+    "login_metrics.h",
     "manifest_icon_downloader.h",
     "media_capture_devices.h",
     "media_device_id.cc",

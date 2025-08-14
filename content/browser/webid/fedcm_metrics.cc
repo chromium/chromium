@@ -9,6 +9,7 @@
 #include "base/types/pass_key.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
+#include "content/public/browser/login_metrics.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
@@ -330,12 +331,14 @@ void FedCmMetrics::RecordRequestTokenStatus(
   SetUkm(fedcm_builder, status);
   fedcm_builder->SetDidShowUI(did_show_ui);
 
+  bool is_token_request_successful =
+      status == FedCmRequestIdTokenStatus::kSuccessUsingTokenInHttpResponse ||
+      status == FedCmRequestIdTokenStatus::kSuccessUsingIdentityProviderResolve;
+
   for (const auto& provider : requested_providers) {
     ukm::builders::Blink_FedCmIdp* fedcm_idp_builder =
         GetOrCreateFedCmIdpBuilder(provider);
-    if (status == FedCmRequestIdTokenStatus::kSuccessUsingTokenInHttpResponse ||
-        status ==
-            FedCmRequestIdTokenStatus::kSuccessUsingIdentityProviderResolve) {
+    if (is_token_request_successful) {
       CHECK(selected_idp_config_url);
       if (provider == *selected_idp_config_url) {
         SetUkm(fedcm_idp_builder, status);
@@ -363,6 +366,12 @@ void FedCmMetrics::RecordRequestTokenStatus(
   if (has_signin_account.has_value()) {
     base::UmaHistogramBoolean("Blink.FedCm.HasSigninAccount",
                               *has_signin_account);
+  }
+  if (is_token_request_successful) {
+    base::UmaHistogramEnumeration(kBrowserAssistedLoginTypeHistogram,
+                                  rp_mode == RpMode::kPassive
+                                      ? BrowserAssistedLoginType::kFedCmPassive
+                                      : BrowserAssistedLoginType::kFedCmActive);
   }
   base::UmaHistogramBoolean("Blink.FedCm.DidShowUI", did_show_ui);
 

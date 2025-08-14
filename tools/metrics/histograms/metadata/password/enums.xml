@@ -263,6 +263,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Login happened on a secure origin"/>
 </enum>
 
+<!-- LINT.IfChange(BrowserAssistedLoginType) -->
+
+<enum name="BrowserAssistedLoginType">
+  <int value="0" label="FedCM passive mode"/>
+  <int value="1" label="FedCM active mode"/>
+  <int value="2" label="Non-FedCM OAuth login"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/browser/login_metrics.h:BrowserAssistedLoginType) -->
+
 <enum name="CharacterClassPresenceChange">
   <int value="0" label="No change"/>
   <int value="1" label="Character class was absent and is added"/>
