@@ -12,7 +12,7 @@
             unit: 'ms',
             iterationCount: 20,
             tracingCategories: 'IndexedDB',
-            traceEventsToMeasure: ['IndexedDBTransaction::lifetime', 'IDBObjectStore::get', 'IDBObjectStore::put', 'IDBObjectStore::delete', 'IDBFactory::open'],
+            traceEventsToMeasure: ['Transaction::lifetime', 'IDBObjectStore::get', 'IDBObjectStore::put', 'IDBObjectStore::delete', 'IDBFactory::open'],
             path: "resources/mail-client-sync-runner.html"
         };
         PerfTestRunner.measurePageLoadTimeAfterDoneMessage(test);

@@ -11,7 +11,7 @@
       unit: 'ms',
       iterationCount: 20,
       tracingCategories: 'IndexedDB',
-      traceEventsToMeasure: ['IndexedDBTransaction::lifetime', 'IDBObjectStore::delete', 'IDBObjectStore::get', 'IDBObjectStore::put', 'IDBObjectStore::openCursor', 'IDBFactory::open'],
+      traceEventsToMeasure: ['Transaction::lifetime', 'IDBObjectStore::delete', 'IDBObjectStore::get', 'IDBObjectStore::put', 'IDBObjectStore::openCursor', 'IDBFactory::open'],
       path: "resources/idb-load-docs-runner.html"
     }
     PerfTestRunner.measurePageLoadTimeAfterDoneMessage(test);
