@@ -110,7 +110,15 @@ void BatchingMediaLog::AddLogRecordLocked(
           last_duration_changed_event_ = *event;
         } else if (*event_key == "kBufferingStateChanged") {
           // This may fire many times on poor networks; only keep the last.
-          last_buffering_state_event_ = *event;
+          if (event->params.Find("video_buffering_state")) {
+            last_video_buffering_state_ = *event;
+          } else if (event->params.Find("audio_buffering_state")) {
+            last_audio_buffering_state_ = *event;
+          } else if (event->params.Find("pipeline_buffering_state")) {
+            last_pipeline_buffering_state_ = *event;
+          } else {
+            NOTREACHED();
+          }
         } else if (*event_key == "kPlay") {
           last_play_event_ = *event;
         } else if (*event_key == "kPause") {
@@ -225,9 +233,19 @@ void BatchingMediaLog::SendQueuedMediaEvents() {
     last_duration_changed_event_.reset();
   }
 
-  if (last_buffering_state_event_) {
-    queued_media_events_.push_back(*last_buffering_state_event_);
-    last_buffering_state_event_.reset();
+  if (last_video_buffering_state_) {
+    queued_media_events_.push_back(*last_video_buffering_state_);
+    last_video_buffering_state_.reset();
+  }
+
+  if (last_audio_buffering_state_) {
+    queued_media_events_.push_back(*last_audio_buffering_state_);
+    last_audio_buffering_state_.reset();
+  }
+
+  if (last_pipeline_buffering_state_) {
+    queued_media_events_.push_back(*last_pipeline_buffering_state_);
+    last_pipeline_buffering_state_.reset();
   }
 
   if (last_play_event_) {
