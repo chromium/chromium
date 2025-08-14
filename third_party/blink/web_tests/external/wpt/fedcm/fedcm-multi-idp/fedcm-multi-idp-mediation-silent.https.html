@@ -11,8 +11,6 @@
 import {request_options_with_two_idps,
         fedcm_test,
         fedcm_get_and_select_first_account,
-        alt_disconnect_options,
-        disconnect_options,
         fedcm_select_account_promise} from '../support/fedcm-helper.sub.js';
 
 fedcm_test(async t => {
@@ -21,13 +19,6 @@ fedcm_test(async t => {
 }, "Mediation silent fails if there is no returning account.");
 
 fedcm_test(async t => {
-  t.add_cleanup(async () => {
-    try {
-      await IdentityCredential.disconnect(disconnect_options(""));
-    } catch (ex){
-      // Failure is not critical, test state is reset.
-    }
-  });
   // Sign in to the first account.
   await fedcm_get_and_select_first_account(t, request_options_with_two_idps());
 
@@ -36,18 +27,6 @@ fedcm_test(async t => {
 }, "Mediation silent succeeds when there is one returning account.");
 
 fedcm_test(async t => {
-  t.add_cleanup(async() => {
-    try {
-      await IdentityCredential.disconnect(alt_disconnect_options(""));
-    } catch (ex){
-      // Failure is not critical, test state is reset.
-    }
-    try {
-      await IdentityCredential.disconnect(disconnect_options(""));
-    } catch (ex){
-      // Failure is not critical, test state is reset.
-    }
-  });
   // Sign in to the first account.
   await fedcm_get_and_select_first_account(t, request_options_with_two_idps());
 
