@@ -100,9 +100,7 @@ class PowerSaveBlocker::Delegate {
            scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
       : type_(type),
         description_(description),
-        ui_task_runner_(std::move(ui_task_runner)) {
-    bus_ = dbus_thread_linux::GetSharedSessionBus();
-  }
+        ui_task_runner_(std::move(ui_task_runner)) {}
 
   Delegate(const Delegate&) = delete;
   Delegate& operator=(const Delegate&) = delete;
@@ -111,6 +109,7 @@ class PowerSaveBlocker::Delegate {
 
   void Init() {
     DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+    bus_ = dbus_thread_linux::GetSharedSessionBus();
     if (ShouldBlock()) {
       ApplyBlock();
     }
