@@ -42,6 +42,18 @@ GetBrowserWindowInterfacesOrderedByActivation() {
   return CastBrowserWindowPtrValues(browser_window_ptr_values);
 }
 
+void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+    base::FunctionRef<void(BrowserWindowInterface*)> on_browser) {
+  // TODO(crbug.com/438456927): This implementation does not yet account for
+  // addition or removal of instances during iteration. We need a mechanism on
+  // Android that is similar to chrome/browser/ui/browser_list_enumerator.h.
+  std::vector<BrowserWindowInterface*> browsers =
+      GetBrowserWindowInterfacesOrderedByActivation();
+  for (BrowserWindowInterface* browser : browsers) {
+    on_browser(browser);
+  }
+}
+
 BrowserWindowInterface* GetLastActiveBrowserWindowInterfaceWithAnyProfile() {
   std::vector<BrowserWindowInterface*> browser_windows_ordered_by_activation =
       GetBrowserWindowInterfacesOrderedByActivation();
