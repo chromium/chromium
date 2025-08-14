@@ -2991,7 +2991,7 @@ void PdfViewWebPlugin::CreateAgent(
     blink::mojom::AnnotationType type,
     blink::mojom::SelectorPtr selector,
     std::optional<int> search_range_start_node_id) {
-  annotation_agent_ = std::make_unique<PDFAnnotationAgent>(
+  annotation_agent_ = std::make_unique<PdfAnnotationAgent>(
       this, type, std::move(selector), std::move(host_remote),
       std::move(agent_receiver));
 }

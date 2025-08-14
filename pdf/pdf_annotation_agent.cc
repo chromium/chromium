@@ -14,7 +14,7 @@
 
 namespace chrome_pdf {
 
-PDFAnnotationAgent::PDFAnnotationAgent(
+PdfAnnotationAgent::PdfAnnotationAgent(
     Container* container,
     blink::mojom::AnnotationType type,
     blink::mojom::SelectorPtr selector,
@@ -24,7 +24,7 @@ PDFAnnotationAgent::PDFAnnotationAgent(
   agent_host_.Bind(std::move(host_remote));
   receiver_.Bind(std::move(agent_receiver));
   receiver_.set_disconnect_handler(base::BindOnce(
-      &PDFAnnotationAgent::RemoveTextFragments, weak_factory_.GetWeakPtr()));
+      &PdfAnnotationAgent::RemoveTextFragments, weak_factory_.GetWeakPtr()));
 
   auto attachment_result = blink::mojom::AttachmentResult::kSelectorNotMatched;
   if (type == blink::mojom::AnnotationType::kGlic &&
@@ -41,11 +41,11 @@ PDFAnnotationAgent::PDFAnnotationAgent(
                : State::kFailure);
 }
 
-PDFAnnotationAgent::~PDFAnnotationAgent() {
+PdfAnnotationAgent::~PdfAnnotationAgent() {
   RemoveTextFragments();
 }
 
-void PDFAnnotationAgent::ScrollIntoView(bool applies_focus) {
+void PdfAnnotationAgent::ScrollIntoView(bool applies_focus) {
   // The text fragment results can be invalidated between DidFinishAttachment()
   // and ScrollIntoView(). Do not attempt to scroll if the results are
   // invalidated.
@@ -58,7 +58,7 @@ void PDFAnnotationAgent::ScrollIntoView(bool applies_focus) {
   container_->ScrollTextFragmentIntoView();
 }
 
-void PDFAnnotationAgent::RemoveTextFragments() {
+void PdfAnnotationAgent::RemoveTextFragments() {
   if (state_ == State::kFailure || state_ == State::kHighlightDropped) {
     return;
   }
@@ -69,7 +69,7 @@ void PDFAnnotationAgent::RemoveTextFragments() {
   SetState(State::kHighlightDropped);
 }
 
-void PDFAnnotationAgent::SetState(State new_state) {
+void PdfAnnotationAgent::SetState(State new_state) {
   static const base::NoDestructor<base::StateTransitions<State>>
       allowed_transitions(base::StateTransitions<State>(
           {{State::kInitial, {State::kActive, State::kFailure}},

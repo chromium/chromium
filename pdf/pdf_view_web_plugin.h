@@ -102,7 +102,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                                public PdfAccessibilityActionHandler,
                                public PreviewModeClient::Client,
                                public blink::mojom::AnnotationAgentContainer,
-                               public PDFAnnotationAgent::Container {
+                               public PdfAnnotationAgent::Container {
  public:
   // Do not save files larger than 100 MB. This cap should be kept in sync with
   // and is also enforced in chrome/browser/resources/pdf/pdf_viewer.ts.
@@ -466,7 +466,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
       CreateAgentFromSelectionCallback callback) override;
   void RemoveAgentsOfType(blink::mojom::AnnotationType type) override;
 
-  // `PDFAnnotationAgent::Container`:
+  // `PdfAnnotationAgent::Container`:
   bool FindAndHighlightTextFragments(
       base::span<const std::string> text_fragments) override;
   void ScrollTextFragmentIntoView() override;
@@ -1030,7 +1030,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // Used to allow the embedder to scroll-to and highlight a text fragment.
   mojo::Receiver<blink::mojom::AnnotationAgentContainer>
       annotation_agent_container_receiver_{this};
-  std::unique_ptr<PDFAnnotationAgent> annotation_agent_;
+  std::unique_ptr<PdfAnnotationAgent> annotation_agent_;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   enum class SearchifyState {
