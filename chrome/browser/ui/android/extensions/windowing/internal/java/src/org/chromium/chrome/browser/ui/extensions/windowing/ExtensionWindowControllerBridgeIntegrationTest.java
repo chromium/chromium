@@ -8,27 +8,35 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.os.Build;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(value = Batch.PER_CLASS)
 @NullMarked
@@ -48,6 +56,45 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
         // Assert.
         var extensionWindowControllerBridge = getExtensionWindowControllerBridge(taskId);
         assertNotNull(extensionWindowControllerBridge);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    @Restriction(
+            // Test needs "new window" in app menu and the tablet behavior to enter split screen
+            // mode to trigger a window bounds change.
+            DeviceFormFactor.ONLY_TABLET)
+    public void
+            startChromeTabbedActivity_triggerTaskBoundsChange_notifyExtensionWindowController() {
+        // Arrange: launch ChromeTabbedActivity (the first window).
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        int firstTaskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
+        var extensionWindowControllerBridge = getExtensionWindowControllerBridge(firstTaskId);
+        assertNotNull(extensionWindowControllerBridge);
+        extensionWindowControllerBridge.addWindowControllerListObserverForTesting();
+
+        // Act: Open a new window.
+        // On tablets, this will enter split screen mode and trigger a window bounds change for the
+        // first window.
+        RegularNewTabPageStation ntpStation =
+                webPageStation.openRegularTabAppMenu().openNewWindow();
+        int secondTaskId = ntpStation.getActivity().getTaskId();
+        var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
+        assertNotNull(secondChromeAndroidTask);
+        CriteriaHelper.pollUiThread(secondChromeAndroidTask::isActive);
+
+        // Assert.
+        var extensionInternalEvents =
+                extensionWindowControllerBridge.getExtensionInternalEventsForTesting();
+        assertEquals(1, extensionInternalEvents.size());
+        assertEquals(
+                ExtensionInternalWindowEventForTesting.BOUNDS_CHANGED,
+                (int) extensionInternalEvents.get(0));
+
+        // Cleanup.
+        extensionWindowControllerBridge.removeWindowControllerListObserverForTesting();
+        ntpStation.getActivity().finish();
     }
 
     /**
@@ -79,12 +126,16 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
         assertEquals(0, extensionWindowControllerBridge.getNativePtrForTesting());
     }
 
-    private @Nullable ExtensionWindowControllerBridgeImpl getExtensionWindowControllerBridge(
-            int taskId) {
+    private @Nullable ChromeAndroidTask getChromeAndroidTask(int taskId) {
         var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
         assertNotNull(chromeAndroidTaskTracker);
 
-        var chromeAndroidTask = chromeAndroidTaskTracker.get(taskId);
+        return chromeAndroidTaskTracker.get(taskId);
+    }
+
+    private @Nullable ExtensionWindowControllerBridgeImpl getExtensionWindowControllerBridge(
+            int taskId) {
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
         assertNotNull(chromeAndroidTask);
 
         List<ChromeAndroidTaskFeature> features = chromeAndroidTask.getAllFeaturesForTesting();

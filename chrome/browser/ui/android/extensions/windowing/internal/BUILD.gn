@@ -9,7 +9,15 @@ import("//third_party/jni_zero/jni_zero.gni")
 assert(is_desktop_android)
 
 source_set("internal") {
-  sources = [ "extension_window_controller_bridge.cc" ]
+  sources = [
+    "extension_window_controller_bridge.cc",
+
+    # Compiling test support code into production is unusual, but this is a
+    # special case. Please see the class documentation of
+    # WindowControllerListObserverForTesting for reasons.
+    "window_controller_list_observer_for_testing.cc",
+    "window_controller_list_observer_for_testing.h",
+  ]
   deps = [
     ":jni",
     "//base",
@@ -32,13 +40,22 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/ui/android/extensions/windowing:java",
     "//chrome/browser/ui/browser_window:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
-  srcjar_deps = [ ":jni" ]
+  srcjar_deps = [
+    ":java_enum_srcjar",
+    ":jni",
+  ]
 }
 
 generate_jni("jni") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeImpl.java" ]
+}
+
+java_cpp_enum("java_enum_srcjar") {
+  visibility = [ ":*" ]
+  sources = [ "window_controller_list_observer_for_testing.h" ]
 }
 
 source_set("unit_tests") {
@@ -69,8 +86,10 @@ android_library("javatests") {
     "//chrome/browser/ui/android/extensions/windowing:java",
     "//chrome/browser/ui/browser_window:java",
     "//chrome/browser/ui/browser_window/internal:java",
+    "//chrome/test/android:chrome_java_test_support_common",
     "//chrome/test/android:chrome_java_transit",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

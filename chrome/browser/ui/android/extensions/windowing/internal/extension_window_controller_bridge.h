@@ -11,6 +11,8 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 
 class BrowserWindowInterface;
+class WindowControllerListObserverForTesting;
+enum class ExtensionInternalWindowEventForTesting;
 
 // Native class for the Java |ExtensionWindowControllerBridge|.
 //
@@ -36,14 +38,40 @@ class ExtensionWindowControllerBridge final {
   // |ExtensionWindowControllerBridgeImpl.Natives#onTaskBoundsChanged|.
   void OnTaskBoundsChanged(JNIEnv* env);
 
+  // Implements the Java |addWindowControllerListObserverForTesting| method in
+  // |ExtensionWindowControllerBridgeImpl.Natives|.
+  //
+  // This function adds a |WindowControllerListObserverForTesting| to
+  // |extensions::WindowControllerList| so that tests can observe window events
+  // received by extension internals.
+  void AddWindowControllerListObserverForTesting(JNIEnv* env);
+
+  // Implements the Java |removeWindowControllerListObserverForTesting| method
+  // in |ExtensionWindowControllerBridgeImpl.Natives|.
+  //
+  // This function removes the |WindowControllerListObserverForTesting| added
+  // by |AddWindowControllerListObserverForTesting|. Tests should call this
+  // function as part of their cleanup.
+  void RemoveWindowControllerListObserverForTesting(JNIEnv* env);
+
   const extensions::BrowserExtensionWindowController&
   GetExtensionWindowControllerForTesting();
 
  private:
+  friend class WindowControllerListObserverForTesting;
+
+  // Records window events received by |WindowControllerListObserverForTesting|
+  // so that tests can verify the events.
+  void RecordExtensionInternalEventForTesting(
+      ExtensionInternalWindowEventForTesting event);
+
   base::android::ScopedJavaGlobalRef<jobject>
       java_extension_window_controller_bridge_;
 
   extensions::BrowserExtensionWindowController extension_window_controller_;
+
+  raw_ptr<WindowControllerListObserverForTesting>
+      window_controller_list_observer_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_EXTENSIONS_WINDOWING_INTERNAL_EXTENSION_WINDOW_CONTROLLER_BRIDGE_H_
