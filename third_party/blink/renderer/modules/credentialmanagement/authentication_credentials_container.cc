@@ -1314,8 +1314,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
           resolver->GetExecutionContext()) &&
       IsDigitalIdentityCredentialType(*options)) {
-    DiscoverDigitalIdentityCredentialFromExternalSource(resolver, *options,
-                                                        exception_state);
+    DiscoverDigitalIdentityCredentialFromExternalSource(resolver, *options);
     return promise;
   }
 
@@ -1752,8 +1751,7 @@ AuthenticationCredentialsContainer::create(
   if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsCreationEnabled(
           resolver->GetExecutionContext()) &&
       IsDigitalIdentityCredentialType(*options)) {
-    CreateDigitalIdentityCredentialInExternalSource(resolver, *options,
-                                                    exception_state);
+    CreateDigitalIdentityCredentialInExternalSource(resolver, *options);
     return promise;
   }
 

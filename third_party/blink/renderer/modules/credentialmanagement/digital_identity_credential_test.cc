@@ -169,8 +169,7 @@ TEST_F(DigitalIdentityCredentialTest, IdentityDigitalCredentialUseCounter) {
           script_state);
 
   DiscoverDigitalIdentityCredentialFromExternalSource(
-      resolver, *CreateValidGetOptions(context.GetScriptState()),
-      context.GetExceptionState());
+      resolver, *CreateValidGetOptions(context.GetScriptState()));
 
   test::RunPendingTasks();
 
@@ -206,8 +205,8 @@ TEST_F(DigitalIdentityCredentialTest,
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state);
-  CreateDigitalIdentityCredentialInExternalSource(
-      resolver, *CreateValidCreateOptions(), context.GetExceptionState());
+  CreateDigitalIdentityCredentialInExternalSource(resolver,
+                                                  *CreateValidCreateOptions());
 
   test::RunPendingTasks();
 
@@ -258,8 +257,7 @@ TEST_F(DigitalIdentityCredentialTest,
             script_state);
 
     DiscoverDigitalIdentityCredentialFromExternalSource(
-        resolver, *CreateGetOptionsWithRequests(requests),
-        context.GetExceptionState());
+        resolver, *CreateGetOptionsWithRequests(requests));
 
     ScriptPromiseTester tester(script_state, resolver->Promise());
 
@@ -305,8 +303,7 @@ TEST_F(DigitalIdentityCredentialTest,
             script_state);
 
     CreateDigitalIdentityCredentialInExternalSource(
-        resolver, *CreateCreateOptionsWithRequests(requests),
-        context.GetExceptionState());
+        resolver, *CreateCreateOptionsWithRequests(requests));
 
     ScriptPromiseTester tester(script_state, resolver->Promise());
 

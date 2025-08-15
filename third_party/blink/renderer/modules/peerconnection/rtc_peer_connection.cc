@@ -770,8 +770,7 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::createOffer(
     ScriptState* script_state,
     V8RTCSessionDescriptionCallback* success_callback,
     V8RTCPeerConnectionErrorCallback* error_callback,
-    const RTCOfferOptions* options,
-    ExceptionState& exception_state) {
+    const RTCOfferOptions* options) {
   DCHECK(success_callback);
   DCHECK(error_callback);
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -826,8 +825,7 @@ ScriptPromise<RTCSessionDescriptionInit> RTCPeerConnection::createAnswer(
 ScriptPromise<IDLUndefined> RTCPeerConnection::createAnswer(
     ScriptState* script_state,
     V8RTCSessionDescriptionCallback* success_callback,
-    V8RTCPeerConnectionErrorCallback* error_callback,
-    ExceptionState&) {
+    V8RTCPeerConnectionErrorCallback* error_callback) {
   DCHECK(success_callback);
   DCHECK(error_callback);
   ExecutionContext* context = ExecutionContext::From(script_state);

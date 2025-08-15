@@ -122,16 +122,14 @@ class MODULES_EXPORT RTCPeerConnection final
   ScriptPromise<IDLUndefined> createOffer(ScriptState*,
                                           V8RTCSessionDescriptionCallback*,
                                           V8RTCPeerConnectionErrorCallback*,
-                                          const RTCOfferOptions*,
-                                          ExceptionState&);
+                                          const RTCOfferOptions*);
 
   ScriptPromise<RTCSessionDescriptionInit> createAnswer(ScriptState*,
                                                         const RTCAnswerOptions*,
                                                         ExceptionState&);
   ScriptPromise<IDLUndefined> createAnswer(ScriptState*,
                                            V8RTCSessionDescriptionCallback*,
-                                           V8RTCPeerConnectionErrorCallback*,
-                                           ExceptionState&);
+                                           V8RTCPeerConnectionErrorCallback*);
 
   ScriptPromise<IDLUndefined> setLocalDescription(ScriptState*,
                                                   ExceptionState&);

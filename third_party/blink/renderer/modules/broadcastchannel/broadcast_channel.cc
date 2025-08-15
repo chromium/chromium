@@ -50,8 +50,7 @@ GetWorkerThreadSpecificProvider(WorkerGlobalScope& worker_global_scope) {
 
 // static
 BroadcastChannel* BroadcastChannel::Create(ExecutionContext* execution_context,
-                                           const String& name,
-                                           ExceptionState& exception_state) {
+                                           const String& name) {
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
   if (window && window->IsCrossSiteSubframe())
     UseCounter::Count(window, WebFeature::kThirdPartyBroadcastChannel);

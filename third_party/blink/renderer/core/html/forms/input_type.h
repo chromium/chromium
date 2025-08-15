@@ -195,9 +195,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual void SetValueAsDouble(double,
                                 TextFieldEventBehavior,
                                 ExceptionState&) const;
-  virtual void SetValueAsDecimal(const Decimal&,
-                                 TextFieldEventBehavior,
-                                 ExceptionState&) const;
+  virtual void SetValueAsDecimal(const Decimal&, TextFieldEventBehavior) const;
 
   // Functions related to 'checked'
 

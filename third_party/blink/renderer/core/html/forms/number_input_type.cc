@@ -121,9 +121,9 @@ void NumberInputType::SetValueAsDouble(double new_value,
   GetElement().SetValue(SerializeForNumberType(new_value), event_behavior);
 }
 
-void NumberInputType::SetValueAsDecimal(const Decimal& new_value,
-                                        TextFieldEventBehavior event_behavior,
-                                        ExceptionState& exception_state) const {
+void NumberInputType::SetValueAsDecimal(
+    const Decimal& new_value,
+    TextFieldEventBehavior event_behavior) const {
   GetElement().SetValue(SerializeForNumberType(new_value), event_behavior);
 }
 

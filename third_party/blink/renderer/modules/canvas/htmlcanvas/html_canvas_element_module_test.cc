@@ -79,10 +79,9 @@ class HTMLCanvasElementModuleTest : public ::testing::Test,
   Document& GetDocument() const { return *GetWindow()->document(); }
 
   HTMLCanvasElement& canvas_element() const { return *canvas_element_; }
-  OffscreenCanvas* TransferControlToOffscreen(ExceptionState& exception_state) {
+  OffscreenCanvas* TransferControlToOffscreen() {
     return HTMLCanvasElementModule::TransferControlToOffscreenInternal(
-        ToScriptStateForMainWorld(GetWindow()->GetFrame()), canvas_element(),
-        exception_state);
+        ToScriptStateForMainWorld(GetWindow()->GetFrame()), canvas_element());
   }
 
   test::TaskEnvironment task_environment_;
@@ -93,21 +92,17 @@ class HTMLCanvasElementModuleTest : public ::testing::Test,
 
 // Tests if the Canvas Id is associated correctly.
 TEST_F(HTMLCanvasElementModuleTest, TransferControlToOffscreen) {
-  NonThrowableExceptionState exception_state;
-  const OffscreenCanvas* offscreen_canvas =
-      TransferControlToOffscreen(exception_state);
+  const OffscreenCanvas* offscreen_canvas = TransferControlToOffscreen();
   const DOMNodeId canvas_id = offscreen_canvas->PlaceholderCanvasId();
   EXPECT_EQ(canvas_id, canvas_element().GetDomNodeId());
 }
 
 // Test that lang and direction attributes are transferred correctly.
 TEST_F(HTMLCanvasElementModuleTest, TransferLangAndDirectionToOffscreen) {
-  NonThrowableExceptionState exception_state;
   canvas_element_->setAttribute(AtomicString("lang"), "zh-CN");
   canvas_element_->setAttribute(AtomicString("dir"), "rtl");
 
-  OffscreenCanvas* offscreen_canvas =
-      TransferControlToOffscreen(exception_state);
+  OffscreenCanvas* offscreen_canvas = TransferControlToOffscreen();
 
   const LayoutLocale* locale = offscreen_canvas->GetLocale();
   EXPECT_EQ(locale->LocaleString(), AtomicString("zh-CN"));
@@ -120,9 +115,7 @@ TEST_F(HTMLCanvasElementModuleTest, TransferLangAndDirectionToOffscreen) {
 // Test that lang and direction defaults are transferred correctly.
 TEST_F(HTMLCanvasElementModuleTest,
        TransferLangAndDirectionDefaultsToOffscreen) {
-  NonThrowableExceptionState exception_state;
-  OffscreenCanvas* offscreen_canvas =
-      TransferControlToOffscreen(exception_state);
+  OffscreenCanvas* offscreen_canvas = TransferControlToOffscreen();
 
   const LayoutLocale* locale = offscreen_canvas->GetLocale();
   EXPECT_EQ(locale, &LayoutLocale::GetDefault());
@@ -135,11 +128,9 @@ TEST_F(HTMLCanvasElementModuleTest,
 // Test that lang and direction from document are transferred correctly.
 TEST_F(HTMLCanvasElementModuleTest,
        TransferLangAndDirectionDocumentToOffscreen) {
-  NonThrowableExceptionState exception_state;
   GetDocument().documentElement()->setAttribute(AtomicString("lang"), "zh-CN");
   GetDocument().documentElement()->setAttribute(AtomicString("dir"), "rtl");
-  OffscreenCanvas* offscreen_canvas =
-      TransferControlToOffscreen(exception_state);
+  OffscreenCanvas* offscreen_canvas = TransferControlToOffscreen();
 
   const LayoutLocale* locale = offscreen_canvas->GetLocale();
   EXPECT_EQ(locale->LocaleString(), AtomicString("zh-CN"));

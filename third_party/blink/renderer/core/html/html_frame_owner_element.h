@@ -42,7 +42,6 @@
 
 namespace blink {
 
-class ExceptionState;
 class Frame;
 class LayoutEmbeddedContent;
 class LazyLoadFrameObserver;
@@ -72,7 +71,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   virtual const QualifiedName& SubResourceAttributeName() const;
 
-  Document* getSVGDocument(ExceptionState&) const;
+  Document* getSVGDocument() const;
 
   void SetEmbeddedContentView(EmbeddedContentView*);
   EmbeddedContentView* ReleaseEmbeddedContentView();

@@ -86,7 +86,7 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
   double playbackRate(ScriptState* script_state) const;
   void setPlaybackRate(ScriptState* script_state, double playback_rate);
   void play(ExceptionState& exception_state);
-  void pause(ExceptionState& exception_state);
+  void pause();
   void cancel();
 
   // AnimationEffectOwner implementation:

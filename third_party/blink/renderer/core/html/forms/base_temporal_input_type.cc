@@ -82,8 +82,7 @@ void BaseTemporalInputType::SetValueAsDouble(
     double new_value,
     TextFieldEventBehavior event_behavior,
     ExceptionState& exception_state) const {
-  SetValueAsDecimal(Decimal::FromDouble(new_value), event_behavior,
-                    exception_state);
+  SetValueAsDecimal(Decimal::FromDouble(new_value), event_behavior);
 }
 
 bool BaseTemporalInputType::TypeMismatchFor(const String& value) const {

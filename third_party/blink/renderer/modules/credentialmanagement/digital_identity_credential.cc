@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"  // IWYU pragma: keep
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_utils.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/digital_credential.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -159,8 +158,7 @@ bool IsDigitalIdentityCredentialType(const CredentialCreationOptions& options) {
 
 void DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
-    const CredentialRequestOptions& options,
-    ExceptionState& exception_state) {
+    const CredentialRequestOptions& options) {
   CHECK(IsDigitalIdentityCredentialType(options));
   CHECK(RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
       resolver->GetExecutionContext()));
@@ -231,8 +229,7 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
 
 void CreateDigitalIdentityCredentialInExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
-    const CredentialCreationOptions& options,
-    ExceptionState& exception_state) {
+    const CredentialCreationOptions& options) {
   CHECK(IsDigitalIdentityCredentialType(options));
   CHECK(RuntimeEnabledFeatures::WebIdentityDigitalCredentialsCreationEnabled(
       resolver->GetExecutionContext()));

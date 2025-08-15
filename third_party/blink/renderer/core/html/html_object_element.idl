@@ -39,7 +39,7 @@
     [CheckSecurity=ReturnValue] readonly attribute Document? contentDocument;
     // TODO(shanmuga.m): The spec uses the WindowProxy type for this attribute.
     readonly attribute Window? contentWindow;
-    [CheckSecurity=ReturnValue, RaisesException] Document? getSVGDocument();
+    [CheckSecurity=ReturnValue] Document? getSVGDocument();
 
     readonly attribute boolean willValidate;
     readonly attribute ValidityState validity;

@@ -97,8 +97,8 @@ enum RTCPeerConnectionState {
 
     // https://w3c.github.io/webrtc-pc/#legacy-interface-extensions
     // These methods return Promise<undefined> because having Promise-based versions requires that all overloads return Promises.
-    [CallWith=ScriptState, RaisesException] Promise<undefined> createOffer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback, optional RTCOfferOptions options = {});
-    [CallWith=ScriptState, RaisesException] Promise<undefined> createAnswer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback);
+    [CallWith=ScriptState] Promise<undefined> createOffer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback, optional RTCOfferOptions options = {});
+    [CallWith=ScriptState] Promise<undefined> createAnswer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback);
     // TODO(guidou): The failureCallback argument should be non-optional.
     // TODO(crbug.com/841185): |failureCallback| is not nullable in the spec.
     [CallWith=ScriptState] Promise<undefined> setLocalDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);

@@ -284,7 +284,7 @@ TEST_F(WorkletAnimationTest, PausePlay) {
   EXPECT_TRUE(worklet_animation_->Playing());
   EXPECT_TIME_NEAR(0, worklet_animation_->currentTime().value());
   SimulateFrame(10);
-  worklet_animation_->pause(ASSERT_NO_EXCEPTION);
+  worklet_animation_->pause();
   EXPECT_EQ(V8AnimationPlayState::Enum::kPaused,
             worklet_animation_->PlayState());
   EXPECT_FALSE(worklet_animation_->Playing());

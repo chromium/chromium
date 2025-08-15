@@ -57,8 +57,7 @@ OffscreenCanvas* HTMLCanvasElementModule::transferControlToOffscreen(
         "Cannot transfer control from a canvas for more than one time.");
   } else {
     canvas.CreateLayer();
-    offscreen_canvas = TransferControlToOffscreenInternal(script_state, canvas,
-                                                          exception_state);
+    offscreen_canvas = TransferControlToOffscreenInternal(script_state, canvas);
   }
 
   base::UmaHistogramBoolean("Blink.OffscreenCanvas.TransferControlToOffscreen",
@@ -68,8 +67,7 @@ OffscreenCanvas* HTMLCanvasElementModule::transferControlToOffscreen(
 
 OffscreenCanvas* HTMLCanvasElementModule::TransferControlToOffscreenInternal(
     ScriptState* script_state,
-    HTMLCanvasElement& canvas,
-    ExceptionState& exception_state) {
+    HTMLCanvasElement& canvas) {
   OffscreenCanvas* offscreen_canvas =
       OffscreenCanvas::Create(script_state, canvas.width(), canvas.height());
 

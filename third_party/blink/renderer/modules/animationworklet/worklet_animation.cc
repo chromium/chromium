@@ -370,7 +370,7 @@ std::optional<double> WorkletAnimation::startTime() {
   return ToMilliseconds(start_time_.value());
 }
 
-void WorkletAnimation::pause(ExceptionState& exception_state) {
+void WorkletAnimation::pause() {
   DCHECK(IsMainThread());
   if (play_state_ == V8AnimationPlayState::Enum::kPaused) {
     return;

@@ -34,9 +34,9 @@ class MODULES_EXPORT HTMLCanvasElementModule {
                                                      ExceptionState&);
 
  private:
-  static OffscreenCanvas* TransferControlToOffscreenInternal(ScriptState*,
-                                                             HTMLCanvasElement&,
-                                                             ExceptionState&);
+  static OffscreenCanvas* TransferControlToOffscreenInternal(
+      ScriptState*,
+      HTMLCanvasElement&);
 };
 
 }  // namespace blink

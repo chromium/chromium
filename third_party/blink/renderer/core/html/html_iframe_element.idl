@@ -35,7 +35,7 @@
 
     [CheckSecurity=ReturnValue] readonly attribute Document? contentDocument;
     readonly attribute Window? contentWindow;
-    [CheckSecurity=ReturnValue, RaisesException] Document? getSVGDocument();
+    [CheckSecurity=ReturnValue] Document? getSVGDocument();
     [CEReactions, Reflect, ReflectOnly=("","no-referrer","origin","no-referrer-when-downgrade","origin-when-cross-origin","unsafe-url"), ReflectMissing="", ReflectInvalid=""] attribute DOMString referrerPolicy;
     // https://w3c.github.io/webappsec-csp/embedded/#dom-htmliframeelement-csp
     [CEReactions, Reflect] attribute DOMString csp;

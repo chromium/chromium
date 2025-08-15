@@ -31,7 +31,7 @@
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect] attribute DOMString width;
     [CEReactions, Reflect] attribute DOMString height;
-    [CheckSecurity=ReturnValue, RaisesException] Document? getSVGDocument();
+    [CheckSecurity=ReturnValue] Document? getSVGDocument();
 
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLEmbedElement-partial
