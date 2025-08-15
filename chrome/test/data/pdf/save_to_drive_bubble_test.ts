@@ -4,9 +4,9 @@
 
 import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
-import {SaveToDriveState} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {SaveToDriveBubbleRequestType, SaveToDriveState} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {ViewerSaveToDriveBubbleElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 function createBubbleElement(): ViewerSaveToDriveBubbleElement {
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -41,6 +41,17 @@ async function testBubbleState(
   chrome.test.assertEq(!!shadowRoot.querySelector('#retry-button'), !!retry);
   chrome.test.assertEq(
       !!shadowRoot.querySelector('#manage-storage-button'), !!manageStorage);
+}
+
+async function testEventDispatchedFromButtonClick(
+    element: ViewerSaveToDriveBubbleElement, buttonSelector: string,
+    expectedEvent: SaveToDriveBubbleRequestType) {
+  const button =
+      element.shadowRoot.querySelector<HTMLButtonElement>(buttonSelector)!;
+  const eventPromise = eventToPromise('save-to-drive-bubble-action', element);
+  button.click();
+  const e: CustomEvent<SaveToDriveBubbleRequestType> = await eventPromise;
+  chrome.test.assertEq(expectedEvent, e.detail);
 }
 
 const tests = [
@@ -166,6 +177,9 @@ const tests = [
     chrome.test.assertTrue(!!progressBar);
     chrome.test.assertEq(100, progressBar.value);
     chrome.test.assertEq(200, progressBar.max);
+    await testEventDispatchedFromButtonClick(
+        element, '#cancel-upload-button',
+        SaveToDriveBubbleRequestType.CANCEL_UPLOAD);
 
     chrome.test.succeed();
   },
@@ -175,6 +189,9 @@ const tests = [
     await testBubbleState(SaveToDriveState.SUCCESS, element, {
       openInDrive: true,
     });
+    await testEventDispatchedFromButtonClick(
+        element, '#open-in-drive-button',
+        SaveToDriveBubbleRequestType.OPEN_IN_DRIVE);
 
     chrome.test.succeed();
   },
@@ -184,6 +201,8 @@ const tests = [
     await testBubbleState(SaveToDriveState.CONNECTION_ERROR, element, {
       retry: true,
     });
+    await testEventDispatchedFromButtonClick(
+        element, '#retry-button', SaveToDriveBubbleRequestType.RETRY);
 
     chrome.test.succeed();
   },
@@ -193,6 +212,9 @@ const tests = [
     await testBubbleState(SaveToDriveState.STORAGE_FULL_ERROR, element, {
       manageStorage: true,
     });
+    await testEventDispatchedFromButtonClick(
+        element, '#manage-storage-button',
+        SaveToDriveBubbleRequestType.MANAGE_STORAGE);
 
     chrome.test.succeed();
   },
@@ -202,6 +224,8 @@ const tests = [
     await testBubbleState(SaveToDriveState.SESSION_TIMEOUT_ERROR, element, {
       retry: true,
     });
+    await testEventDispatchedFromButtonClick(
+        element, '#retry-button', SaveToDriveBubbleRequestType.RETRY);
 
     chrome.test.succeed();
   },

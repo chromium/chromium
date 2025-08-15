@@ -15,7 +15,7 @@ import {isRTL} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {SaveToDriveState} from '../constants.js';
+import {SaveToDriveBubbleRequestType, SaveToDriveState} from '../constants.js';
 
 import {getCss} from './viewer_save_to_drive_bubble.css.js';
 import {getHtml} from './viewer_save_to_drive_bubble.html.js';
@@ -99,6 +99,28 @@ export class ViewerSaveToDriveBubbleElement extends
 
   protected isSaveToDriveState_(state: SaveToDriveState): boolean {
     return this.state === state;
+  }
+
+  protected onRequestButtonClick_() {
+    let requestType: SaveToDriveBubbleRequestType;
+    switch (this.state) {
+      case SaveToDriveState.UPLOADING:
+        requestType = SaveToDriveBubbleRequestType.CANCEL_UPLOAD;
+        break;
+      case SaveToDriveState.STORAGE_FULL_ERROR:
+        requestType = SaveToDriveBubbleRequestType.MANAGE_STORAGE;
+        break;
+      case SaveToDriveState.SUCCESS:
+        requestType = SaveToDriveBubbleRequestType.OPEN_IN_DRIVE;
+        break;
+      case SaveToDriveState.CONNECTION_ERROR:
+      case SaveToDriveState.SESSION_TIMEOUT_ERROR:
+        requestType = SaveToDriveBubbleRequestType.RETRY;
+        break;
+      default:
+        assertNotReached(`Invalid bubble action: ${this.state}`);
+    }
+    this.fire('save-to-drive-bubble-action', requestType);
   }
 
   protected onCloseClick_() {

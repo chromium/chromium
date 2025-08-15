@@ -21,7 +21,7 @@ export {AnnotationMode} from './constants.js';
 // </if>
 export {Attachment, FittingType, FormFieldFocusType, Point, Rect} from './constants.js';
 // <if expr="enable_pdf_save_to_drive">
-export {SaveToDriveState} from './constants.js';
+export {SaveToDriveBubbleRequestType, SaveToDriveState} from './constants.js';
 // </if>
 export {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">

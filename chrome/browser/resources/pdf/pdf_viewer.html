@@ -138,6 +138,7 @@ ${this.showPropertiesDialog_ ? html`<viewer-properties-dialog
 
 <if expr="enable_pdf_save_to_drive">
 ${this.pdfSaveToDriveEnabled_ ? html`<viewer-save-to-drive-bubble
-    .fileName="${this.fileName_}">
+    .fileName="${this.fileName_}"
+    @save-to-drive-bubble-action="${this.onSaveToDriveBubbleAction_}">
 </viewer-save-to-drive-bubble>` : ''}
 </if>

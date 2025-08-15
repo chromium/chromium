@@ -172,4 +172,11 @@ export enum SaveToDriveState {
   SESSION_TIMEOUT_ERROR = 'session-timeout-error',
   UNKNOWN_ERROR = 'unknown-error',
 }
+
+export enum SaveToDriveBubbleRequestType {
+  CANCEL_UPLOAD = 'cancel-upload',
+  MANAGE_STORAGE = 'manage-storage',
+  OPEN_IN_DRIVE = 'open-in-drive',
+  RETRY = 'retry',
+}
 // </if>

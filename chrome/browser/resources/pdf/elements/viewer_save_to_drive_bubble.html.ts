@@ -35,7 +35,8 @@ export function getHtml(this: ViewerSaveToDriveBubbleElement) {
           <cr-icon-button id="cancel-upload-button"
               iron-icon="pdf:cancel-unfill"
               aria-label="$i18n{saveToDriveDialogCancelUploadButtonLabel}"
-              title="$i18n{saveToDriveDialogCancelUploadButtonLabel}">
+              title="$i18n{saveToDriveDialogCancelUploadButtonLabel}"
+              @click="${this.onRequestButtonClick_}">
           </cr-icon-button>
         ` : ''}
       </div>
@@ -47,20 +48,23 @@ export function getHtml(this: ViewerSaveToDriveBubbleElement) {
           </cr-progress>
         ` : ''}
         ${this.isSaveToDriveState_(SaveToDriveState.STORAGE_FULL_ERROR) ? html`
-          <cr-button id="manage-storage-button">
-              $i18n{saveToDriveDialogManageStorageButtonLabel}
+          <cr-button id="manage-storage-button"
+              @click="${this.onRequestButtonClick_}">
+            $i18n{saveToDriveDialogManageStorageButtonLabel}
           </cr-button>
         ` : ''}
         ${this.isSaveToDriveState_(SaveToDriveState.SUCCESS) ? html`
-          <cr-button id="open-in-drive-button" class="action-button">
-              $i18n{saveToDriveDialogOpenInDriveButtonLabel}
+          <cr-button id="open-in-drive-button" class="action-button"
+              @click="${this.onRequestButtonClick_}">
+            $i18n{saveToDriveDialogOpenInDriveButtonLabel}
           </cr-button>
         ` : ''}
         ${this.isSaveToDriveState_(SaveToDriveState.CONNECTION_ERROR) ||
           this.isSaveToDriveState_(SaveToDriveState.SESSION_TIMEOUT_ERROR) ?
         html`
-          <cr-button id="retry-button" class="action-button">
-              $i18n{saveToDriveDialogRetryButtonLabel}
+          <cr-button id="retry-button" class="action-button"
+              @click="${this.onRequestButtonClick_}">
+            $i18n{saveToDriveDialogRetryButtonLabel}
           </cr-button>
         ` : ''}
       </div>
