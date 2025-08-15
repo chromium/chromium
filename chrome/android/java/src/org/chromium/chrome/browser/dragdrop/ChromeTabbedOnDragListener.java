@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.ClipDescription;
 import android.view.DragEvent;
@@ -18,10 +19,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -45,6 +48,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
     private final WindowAndroid mWindowAndroid;
     private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private @Nullable NativePage mNtpToEnableFakeBox;
 
     /**
      * Drag and Drop listener defines the default behavior {@link ChromeTabbedActivity} receive drag
@@ -80,6 +84,9 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         || !DragDropGlobalState.hasValue()) {
                     return false;
                 }
+                Tab selectedTab = mTabModelSelector.getCurrentTab();
+                assumeNonNull(selectedTab);
+                mNtpToEnableFakeBox = selectedTab.getNativePage();
                 return true;
             case DragEvent.ACTION_DROP:
                 // This is to prevent tab switcher from receiving drops. We might support dropping
@@ -106,6 +113,29 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                 } else {
                     assert clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB);
                     return handleTabDrop(dragEvent, isInDesktopWindow);
+                }
+            case DragEvent.ACTION_DRAG_ENDED:
+                // Re-enable the NTP we disabled at DRAG_STARTED if any.
+                final NewTabPage originallyDisabled =
+                        (mNtpToEnableFakeBox != null
+                                        && mNtpToEnableFakeBox instanceof NewTabPage ntp)
+                                ? ntp
+                                : null;
+                if (originallyDisabled != null) {
+                    originallyDisabled.enableSearchBoxEditText(true);
+                }
+
+                // If the selected tab changed to a different NTP during the drag, re-enable that
+                // too.
+                final Tab curSelectedTab = mTabModelSelector.getCurrentTab();
+                final NewTabPage currentNtp =
+                        (curSelectedTab != null
+                                        && curSelectedTab.getNativePage() instanceof NewTabPage ntp)
+                                ? ntp
+                                : null;
+
+                if (currentNtp != null && currentNtp != originallyDisabled) {
+                    currentNtp.enableSearchBoxEditText(true);
                 }
         }
         return false;

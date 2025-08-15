@@ -319,6 +319,10 @@ public class NewTabPageLayout extends LinearLayout
         // TODO(crbug.com/41487877): Add handler in Magic Stack and dispatcher.
     }
 
+    public void enableSearchBoxEditText(boolean enable) {
+        mFakeSearchBoxEditText.setEnabled(enable);
+    }
+
     /**
      * @return The {@link FeedSurfaceScrollDelegate} for this class.
      */
@@ -337,16 +341,17 @@ public class NewTabPageLayout extends LinearLayout
                 new OnDragListener() {
                     @Override
                     public boolean onDrag(View view, DragEvent dragEvent) {
-                        // Disable search box EditText when browser content is dropped.
-                        if (!MimeTypeUtils.clipDescriptionHasBrowserContent(
-                                dragEvent.getClipDescription())) {
-                            return false;
-                        } else {
-                            if (dragEvent.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-                                view.setEnabled(false);
-                            } else if (dragEvent.getAction() == DragEvent.ACTION_DRAG_ENDED) {
-                                view.setEnabled(true);
-                            }
+                        // Disable search box EditText when browser content is dropped, its
+                        // re-enabled in {@link ChromeTabbedOnDragListener}, since a disabled view
+                        // will stop receiving further drag events. Given the child-first drag event
+                        // dispatch, disabling the TextView at ACTION_DRAG_STARTED is necessary to
+                        // prevent it from registering as a drop target and consuming the
+                        // ACTION_DROP event, thereby ensuring {@link ChromeTabbedOnDragListener}
+                        // receives it.
+                        if (MimeTypeUtils.clipDescriptionHasBrowserContent(
+                                        dragEvent.getClipDescription())
+                                && dragEvent.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+                            enableSearchBoxEditText(false);
                         }
                         return false;
                     }

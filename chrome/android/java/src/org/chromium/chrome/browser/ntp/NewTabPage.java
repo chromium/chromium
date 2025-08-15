@@ -1534,4 +1534,8 @@ public class NewTabPage
     public @Nullable SmoothTransitionDelegate getSmoothTransitionDelegateForTesting() {
         return mSmoothTransitionDelegate;
     }
+
+    public void enableSearchBoxEditText(boolean enable) {
+        mNewTabPageLayout.enableSearchBoxEditText(enable);
+    }
 }

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -32,6 +33,7 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -52,11 +54,13 @@ public class ChromeTabbedOnDragListenerUnitTest {
     @Rule public MockitoRule mMockitoProcessorRule = MockitoJUnit.rule();
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private Tab mTab;
     @Mock private Tab mCurrentTab;
+    @Mock private NewTabPage mOriginalNtp;
+    @Mock private NewTabPage mCurrentNtp;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private DragDropGlobalState mDragDropGlobalState;
-    @Mock private Tab mTab;
     @Mock private TabGroupMetadata mTabGroupMetadata;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplierImpl;
@@ -436,6 +440,41 @@ public class ChromeTabbedOnDragListenerUnitTest {
                                 isGroupDrag,
                                 isMultiTabDrag)));
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnDrag_ActionDragEnded_ReenableSearchBox() {
+        // Setup drag drop global state.
+        setGlobalStateData(/* isGroupDrag= */ false, /* isMultiTabDrag= */ true);
+
+        // Mock current tab is a NTP.
+        when(mCurrentTab.getNativePage()).thenReturn(mOriginalNtp);
+        when(mTab.getNativePage()).thenReturn(mCurrentNtp);
+
+        // Trigger drag start to capture the disabled NTP.
+        mChromeTabbedOnDragListener.onDrag(
+                mCompositorViewHolder,
+                mockDragEvent(
+                        DragEvent.ACTION_DRAG_STARTED,
+                        /* result= */ false,
+                        /* isGroupDrag= */ false,
+                        /* isMultiTabDrag= */ false));
+
+        // Change the selected tab to a different NTP.
+        when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
+
+        // Trigger drag end.
+        mChromeTabbedOnDragListener.onDrag(
+                mCompositorViewHolder,
+                mockDragEvent(
+                        DragEvent.ACTION_DRAG_ENDED,
+                        /* result= */ false,
+                        /* isGroupDrag= */ false,
+                        /* isMultiTabDrag= */ false));
+
+        // Verify NTP search boxes are re-enabled.
+        verify(mOriginalNtp).enableSearchBoxEditText(true);
+        verify(mCurrentNtp).enableSearchBoxEditText(true);
     }
 
     private DragEvent mockDragEvent(
