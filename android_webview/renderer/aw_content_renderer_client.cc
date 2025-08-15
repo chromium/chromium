@@ -200,13 +200,10 @@ void AwContentRendererClient::
     blink::WebRuntimeFeatures::EnableSharedAutofill(true);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewMediaIntegrityApiBlinkExtension)) {
-    // Enable the overall android.webview namespace.
-    blink::WebRuntimeFeatures::EnableBlinkExtensionWebView(true);
-    // Enable the android.webview.getExperimentalMediaIntegrityProvider API.
-    blink::WebRuntimeFeatures::EnableBlinkExtensionWebViewMediaIntegrity(true);
-  }
+  // Enable the overall android.webview namespace.
+  blink::WebRuntimeFeatures::EnableBlinkExtensionWebView(true);
+  // Enable the android.webview.getExperimentalMediaIntegrityProvider API.
+  blink::WebRuntimeFeatures::EnableBlinkExtensionWebViewMediaIntegrity(true);
 }
 
 void AwContentRendererClient::WebViewCreated(

@@ -45,7 +45,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewHyperlinkContextMenu,
     &features::kWebViewInvokeZoomPickerOnGSU,
     &features::kWebViewLazyFetchHandWritingIcon,
-    &features::kWebViewMediaIntegrityApiBlinkExtension,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewMuteAudio,
     &features::kWebViewPrefetchNativeLibrary,

@@ -26,7 +26,6 @@ BASE_DECLARE_FEATURE(kWebViewInvokeZoomPickerOnGSU);
 // defined in //services/network.
 extern const base::FeatureParam<int> kWebViewIpProtectionExclusionCriteria;
 BASE_DECLARE_FEATURE(kWebViewLazyFetchHandWritingIcon);
-BASE_DECLARE_FEATURE(kWebViewMediaIntegrityApiBlinkExtension);
 BASE_DECLARE_FEATURE(kWebViewMixedContentAutoupgrades);
 BASE_DECLARE_FEATURE(kWebViewMuteAudio);
 BASE_DECLARE_FEATURE(kWebViewRenderDocument);
