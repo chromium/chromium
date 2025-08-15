@@ -503,6 +503,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
     return std::make_unique<GraphiteSharedContext>(
         std::move(graphite_context), use_shader_cache_shm_count, is_thread_safe,
+        features::kSkiaGraphiteMaxPendingRecordings.Get(),
         GetBackendFlushCallback());
   }
 

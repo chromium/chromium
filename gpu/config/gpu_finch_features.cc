@@ -388,6 +388,9 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnBackendValidation{
 const base::FeatureParam<bool> kSkiaGraphiteDawnBackendDebugLabels{
     &kSkiaGraphite, "dawn_backend_debug_labels", DCHECK_IS_ON()};
 
+const base::FeatureParam<int> kSkiaGraphiteMaxPendingRecordings{
+    &kSkiaGraphite, "max_pending_recordings", 100};
+
 #if BUILDFLAG(IS_WIN)
 // Whether the we should DumpWithoutCrashing when D3D related errors are detected.
 const base::FeatureParam<bool> kSkiaGraphiteDawnDumpWCOnD3DError{
