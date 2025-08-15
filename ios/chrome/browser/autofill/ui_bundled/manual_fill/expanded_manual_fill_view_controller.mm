@@ -21,8 +21,16 @@ using manual_fill::ManualFillDataType;
 
 namespace {
 
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 // Size of the Chrome logo.
-constexpr CGFloat kChromeLogoSize = 24;
+constexpr CGFloat kChromeLogoSize = 28;
+#endif
+// Size of the Chrome logo when liquid glass is disabled.
+constexpr CGFloat kChromeLogoSizePreLiquidGlass = 24;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+// Size of the close button.
+constexpr CGFloat kCloseButtonSize = 44;
+#endif
 // Size of the close button when liquid glass is disabled.
 constexpr CGFloat kCloseButtonSizePreLiquidGlass = 30;
 // Size of the data type icons representing the different segments
@@ -56,11 +64,6 @@ constexpr CGFloat kSegmentedControlLeadingSpacingWideLayout = 18;
 // the wide layout only.
 constexpr CGFloat kSegmentedControlTrailingSpacingWideLayout = 15;
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-// Size of the close button.
-constexpr CGFloat kCloseButtonSize = 44;
-#endif
-
 // Helper method to get the right segment index depending on the `data_type`.
 int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   switch (data_type) {
@@ -84,6 +87,17 @@ UIColor* GetBackgroundColor() {
 #endif
 
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+}
+
+// Returns the size to use for the Chrome logo.
+CGFloat GetChromeLogoSize() {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    return kChromeLogoSize;
+  }
+#endif
+
+  return kChromeLogoSizePreLiquidGlass;
 }
 
 // Returns the symbol configuration to use for the close button.
@@ -372,11 +386,11 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
 // Creates and configures the Chrome logo.
 - (UIImageView*)createChromeLogo {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  UIImage* image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kChromeLogoSize));
+  UIImage* image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      kMulticolorChromeballSymbol, GetChromeLogoSize()));
 #else
   UIImage* image =
-      CustomSymbolWithPointSize(kChromeProductSymbol, kChromeLogoSize);
+      CustomSymbolWithPointSize(kChromeProductSymbol, GetChromeLogoSize());
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   UIImageView* chromeLogo = [[UIImageView alloc] initWithImage:image];
   chromeLogo.translatesAutoresizingMaskIntoConstraints = NO;
