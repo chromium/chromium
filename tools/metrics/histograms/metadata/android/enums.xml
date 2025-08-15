@@ -1351,6 +1351,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Intent scheme"/>
   <int value="4" label="MDoc scheme"/>
   <int value="5" label="openid4vp"/>
+  <int value="6" label="OpenId4Vci"/>
+  <int value="7" label="Haip"/>
 </enum>
 
 <enum name="NightMode">

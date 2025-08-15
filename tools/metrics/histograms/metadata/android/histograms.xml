@@ -5514,36 +5514,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabNavigationIntercept.Scheme"
-    enum="NavigationInterceptScheme" expires_after="2025-12-28">
+    enum="NavigationInterceptScheme" expires_after="2026-08-14">
   <owner>rbyers@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
   <summary>
     When a navigation is intercepted, the scheme of the URL being intercepted.
-  </summary>
-</histogram>
-
-<histogram name="Android.TabNavigationInterceptResult.ForMdoc"
-    enum="NavigationInterceptResult" expires_after="2025-05-18">
-  <owner>pkotwicz@chromium.org</owner>
-  <owner>rbyers@chromium.org</owner>
-  <summary>
-    The distribution of results when running ExternalNavigationHandler for
-    mdoc:// navigations which are intercepted. This shows how frequently mdoc://
-    navigations trigger a dialog (that the user may potentially cancel to cancel
-    the external app launch.)
-  </summary>
-</histogram>
-
-<histogram name="Android.TabNavigationInterceptResult.ForOpenId4Vp"
-    enum="NavigationInterceptResult" expires_after="2025-09-29">
-  <owner>mamir@chromium.org</owner>
-  <owner>pkotwicz@chromium.org</owner>
-  <owner>rbyers@chromium.org</owner>
-  <summary>
-    The distribution of results when running ExternalNavigationHandler for
-    openid4vp:// navigations which are intercepted. This shows how frequently
-    openid4vp:// navigations trigger a dialog (that the user may potentially
-    cancel to cancel the external app launch.)
   </summary>
 </histogram>
 
@@ -5560,6 +5536,24 @@ chromium-metrics-reviews@google.com.
   <token key="ProtocolType">
     <variant name="ExternalProtocol" summary="external protocol"/>
     <variant name="InternalProtocol" summary="internal protocol"/>
+  </token>
+</histogram>
+
+<histogram name="Android.TabNavigationInterceptResult.For{Scheme}"
+    enum="NavigationInterceptResult" expires_after="2026-08-14">
+  <owner>mamir@chromium.org</owner>
+  <owner>rbyers@chromium.org</owner>
+  <summary>
+    The distribution of results when running ExternalNavigationHandler for
+    {Scheme} navigations which are intercepted. This shows how frequently
+    {Scheme} navigations trigger a dialog (that the user may potentially cancel
+    to cancel the external app launch.)
+  </summary>
+  <token key="Scheme">
+    <variant name="Haip" summary="haip://"/>
+    <variant name="Mdoc" summary="mdoc://"/>
+    <variant name="OpenId4Vci" summary="openid-credential-offer://"/>
+    <variant name="OpenId4Vp" summary="openid4vp://"/>
   </token>
 </histogram>
 

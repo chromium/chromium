@@ -387,6 +387,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kSharedStorageWriteFromSellerScoreAd,
           WebFeature::kSharedStorageWriteFromSellerReportResult,
           WebFeature::kIdentityDigitalCredentials,
+          WebFeature::kIdentityDigitalCredentialsSuccess,
           WebFeature::kIdentityDigitalCredentialsDeepLink,
           WebFeature::kV8FileSystemObserver_Observe_Method,
           WebFeature::kGamepadHapticActuatorType,
