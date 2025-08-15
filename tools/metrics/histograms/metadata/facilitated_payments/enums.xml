@@ -119,6 +119,8 @@ reviewer.
   <int value="13" label="The purchase action could not be invoked"/>
   <int value="14" label="Autofilling payment methods disabled"/>
   <int value="15" label="Merchant is not allowlisted"/>
+  <int value="16" label="Pix code was copied within an iframe"/>
+  <int value="17" label="Pix code was copied in an inactive frame"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixFlowExitedReason) -->

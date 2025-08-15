@@ -401,7 +401,9 @@ INSTANTIATE_TEST_SUITE_P(
                     PixFlowExitedReason::kFopSelectorClosedNotByUser,
                     PixFlowExitedReason::kFopSelectorClosedByUser,
                     PixFlowExitedReason::kAutofillPaymentMethodsDisabled,
-                    PixFlowExitedReason::kMerchantNotAllowlisted));
+                    PixFlowExitedReason::kMerchantNotAllowlisted,
+                    PixFlowExitedReason::kPixCodeInIFrame,
+                    PixFlowExitedReason::kFrameNotActive));
 
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:

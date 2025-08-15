@@ -120,7 +120,11 @@ enum class PixFlowExitedReason {
   kAutofillPaymentMethodsDisabled = 14,
   // Pix code was copied on a merchant website that wasn't allowlisted.
   kMerchantNotAllowlisted = 15,
-  kMaxValue = kMerchantNotAllowlisted
+  // Pix code was copied within an iframe.
+  kPixCodeInIFrame = 16,
+  // Pix code was copied in an inactive frame.
+  kFrameNotActive = 17,
+  kMaxValue = kFrameNotActive
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixFlowExitedReason)
 
