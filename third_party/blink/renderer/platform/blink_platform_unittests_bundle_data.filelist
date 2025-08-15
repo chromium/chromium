@@ -714,6 +714,8 @@ testing/data/happy_dog.avif
 testing/data/icc-v2-gbr.jpg
 testing/data/original-cat-420-629x473.jpg
 testing/data/palatted-color-png-gamma-one-color-profile.png
+testing/data/png-inf-gamma-color-profile-ref.png
+testing/data/png-inf-gamma-color-profile.png
 testing/data/red-full-ranged-8bpc.avif
 testing/data/rgb-jpeg-red.jpg
 testing/data/roboto-a-different-cmap.ttf
