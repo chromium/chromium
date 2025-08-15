@@ -16400,6 +16400,22 @@
             ]
         }
     ],
+    "OfferPinToTaskbarInfoBar": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar"
+                    ]
+                }
+            ]
+        }
+    ],
     "OfferPinToTaskbarWhenSettingDefault": [
         {
             "platforms": [
