@@ -3095,31 +3095,6 @@ inline constexpr char kArcAppInstallEventLoggingEnabled[] =
 inline constexpr char kRemoveUsersRemoteCommand[] =
     "remove_users_remote_command";
 
-// Integer pref used by the metrics::DailyEvent owned by
-// ash::power::auto_screen_brightness::MetricsReporter.
-inline constexpr char kAutoScreenBrightnessMetricsDailySample[] =
-    "auto_screen_brightness.metrics.daily_sample";
-
-// Integer prefs used to back event counts reported by
-// ash::power::auto_screen_brightness::MetricsReporter.
-inline constexpr char kAutoScreenBrightnessMetricsAtlasUserAdjustmentCount[] =
-    "auto_screen_brightness.metrics.atlas_user_adjustment_count";
-inline constexpr char kAutoScreenBrightnessMetricsEveUserAdjustmentCount[] =
-    "auto_screen_brightness.metrics.eve_user_adjustment_count";
-inline constexpr char
-    kAutoScreenBrightnessMetricsNocturneUserAdjustmentCount[] =
-        "auto_screen_brightness.metrics.nocturne_user_adjustment_count";
-inline constexpr char kAutoScreenBrightnessMetricsKohakuUserAdjustmentCount[] =
-    "auto_screen_brightness.metrics.kohaku_user_adjustment_count";
-inline constexpr char kAutoScreenBrightnessMetricsNoAlsUserAdjustmentCount[] =
-    "auto_screen_brightness.metrics.no_als_user_adjustment_count";
-inline constexpr char
-    kAutoScreenBrightnessMetricsSupportedAlsUserAdjustmentCount[] =
-        "auto_screen_brightness.metrics.supported_als_user_adjustment_count";
-inline constexpr char
-    kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount[] =
-        "auto_screen_brightness.metrics.unsupported_als_user_adjustment_count";
-
 // Dictionary pref containing the configuration used to verify Parent Access
 // Code. The data is sent through the ParentAccessCodeConfig policy, which is
 // set for child users only, and kept on the known user storage.

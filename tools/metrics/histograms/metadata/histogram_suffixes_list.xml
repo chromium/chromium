@@ -22,23 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes_list>
 
-<histogram_suffixes name="AdapterDecision" separator="." ordering="prefix,2">
-  <suffix name="BrightnessChange" label=""/>
-  <suffix name="NoBrightnessChange" label=""/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.Brighten.AlsDelta"/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.Brighten.AlsStd"/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.Darken.AlsDelta"/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.Darken.AlsStd"/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.ModelIteration"/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.Unknown.AlsStd"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AdsPageLoadMetricsBytes" separator=".">
   <suffix base="true" name="AdFrames.Aggregate"
       label="Includes resources loaded across all ad frames on a page."/>

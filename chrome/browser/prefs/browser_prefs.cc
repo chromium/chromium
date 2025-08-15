@@ -406,7 +406,6 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
-#include "chrome/browser/ash/power/auto_screen_brightness/metrics_reporter.h"
 #include "chrome/browser/ash/power/power_metrics_reporter.h"
 #include "chrome/browser/ash/preferences/preferences.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
@@ -1111,6 +1110,27 @@ constexpr char kObsoleteAccountStorageNoticeShown[] =
     "password_manager.account_storage_notice_shown";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 08/2025.
+constexpr char kAutoScreenBrightnessMetricsDailySample[] =
+    "auto_screen_brightness.metrics.daily_sample";
+constexpr char kAutoScreenBrightnessMetricsAtlasUserAdjustmentCount[] =
+    "auto_screen_brightness.metrics.atlas_user_adjustment_count";
+constexpr char kAutoScreenBrightnessMetricsEveUserAdjustmentCount[] =
+    "auto_screen_brightness.metrics.eve_user_adjustment_count";
+constexpr char kAutoScreenBrightnessMetricsNocturneUserAdjustmentCount[] =
+    "auto_screen_brightness.metrics.nocturne_user_adjustment_count";
+constexpr char kAutoScreenBrightnessMetricsKohakuUserAdjustmentCount[] =
+    "auto_screen_brightness.metrics.kohaku_user_adjustment_count";
+constexpr char kAutoScreenBrightnessMetricsNoAlsUserAdjustmentCount[] =
+    "auto_screen_brightness.metrics.no_als_user_adjustment_count";
+constexpr char kAutoScreenBrightnessMetricsSupportedAlsUserAdjustmentCount[] =
+    "auto_screen_brightness.metrics.supported_als_user_adjustment_count";
+constexpr char kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount[] =
+    "auto_screen_brightness.metrics.unsupported_als_user_adjustment_count";
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1216,6 +1236,25 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 08/2025.
   registry->RegisterDictionaryPref(kInvalidationClientIDCache);
   registry->RegisterDictionaryPref(kInvalidationTopicsToHandler);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 08/2025.
+  registry->RegisterDictionaryPref(kAutoScreenBrightnessMetricsDailySample);
+  registry->RegisterIntegerPref(
+      kAutoScreenBrightnessMetricsAtlasUserAdjustmentCount, 0);
+  registry->RegisterIntegerPref(
+      kAutoScreenBrightnessMetricsEveUserAdjustmentCount, 0);
+  registry->RegisterIntegerPref(
+      kAutoScreenBrightnessMetricsNocturneUserAdjustmentCount, 0);
+  registry->RegisterIntegerPref(
+      kAutoScreenBrightnessMetricsKohakuUserAdjustmentCount, 0);
+  registry->RegisterIntegerPref(
+      kAutoScreenBrightnessMetricsNoAlsUserAdjustmentCount, 0);
+  registry->RegisterIntegerPref(
+      kAutoScreenBrightnessMetricsSupportedAlsUserAdjustmentCount, 0);
+  registry->RegisterIntegerPref(
+      kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount, 0);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1761,8 +1800,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::NetworkThrottlingObserver::RegisterPrefs(registry);
   ash::PowerMetricsReporter::RegisterLocalStatePrefs(registry);
   ash::platform_keys::KeyPermissionsManagerImpl::RegisterLocalStatePrefs(
-      registry);
-  ash::power::auto_screen_brightness::MetricsReporter::RegisterLocalStatePrefs(
       registry);
   ash::Preferences::RegisterPrefs(registry);
   ash::ResetScreen::RegisterPrefs(registry);
@@ -2494,6 +2531,21 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 08/2025.
   local_state->ClearPref(kInvalidationClientIDCache);
   local_state->ClearPref(kInvalidationTopicsToHandler);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 08/2025.
+  local_state->ClearPref(kAutoScreenBrightnessMetricsDailySample);
+  local_state->ClearPref(kAutoScreenBrightnessMetricsNoAlsUserAdjustmentCount);
+  local_state->ClearPref(
+      kAutoScreenBrightnessMetricsSupportedAlsUserAdjustmentCount);
+  local_state->ClearPref(
+      kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount);
+  local_state->ClearPref(kAutoScreenBrightnessMetricsAtlasUserAdjustmentCount);
+  local_state->ClearPref(kAutoScreenBrightnessMetricsEveUserAdjustmentCount);
+  local_state->ClearPref(
+      kAutoScreenBrightnessMetricsNocturneUserAdjustmentCount);
+  local_state->ClearPref(kAutoScreenBrightnessMetricsKohakuUserAdjustmentCount);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

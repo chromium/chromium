@@ -88,9 +88,6 @@ TEST_F(LightSamplesObserverTest, MissingChannels) {
   // Wait until the mojo connection is reset.
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.DataError",
-      static_cast<int>(DataError::kMojoSamplesObserver), 1);
   EXPECT_FALSE(sensor_device_->HasReceivers());
   EXPECT_EQ(fake_observer_.num_received_ambient_lights(), 0);
 }
@@ -111,9 +108,6 @@ TEST_F(LightSamplesObserverTest, StartReadingTwiceError) {
   // Wait until the mojo connection is reset.
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.DataError",
-      static_cast<int>(DataError::kMojoSamplesObserver), 1);
   EXPECT_FALSE(sensor_device_->HasReceivers());
   EXPECT_EQ(fake_observer_.num_received_ambient_lights(), 0);
 }
