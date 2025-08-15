@@ -7,11 +7,16 @@ package org.chromium.chrome.browser.dom_distiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -26,17 +31,23 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
 public class ReaderModeActionRateLimiterTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private SharedPreferencesManager mPrefs;
     private ReaderModeActionRateLimiter mReaderModeActionRateLimiter;
+
+    private @Mock ReaderModeActionRateLimiter.Observer mObserver;
 
     @Before
     public void setUp() {
         mPrefs = ChromeSharedPreferences.getInstance();
         mReaderModeActionRateLimiter = ReaderModeActionRateLimiter.getInstance();
+        mReaderModeActionRateLimiter.addObserver(mObserver);
     }
 
     @After
     public void tearDown() {
+        mReaderModeActionRateLimiter.removeObserver(mObserver);
         mPrefs.removeKey(ChromePreferenceKeys.READER_MODE_ACTION_SHOW_COUNT);
         mPrefs.removeKey(ChromePreferenceKeys.READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP);
         mPrefs.removeKey(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP);
@@ -99,6 +110,7 @@ public class ReaderModeActionRateLimiterTest {
         assertTrue(
                 mPrefs.readLong(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP)
                         > 0);
+        verify(mObserver).onWillStartSuppression();
     }
 
     @Test

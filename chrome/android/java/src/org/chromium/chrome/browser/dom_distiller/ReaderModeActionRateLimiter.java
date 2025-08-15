@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -28,6 +29,11 @@ public class ReaderModeActionRateLimiter {
     private static final long SUPPRESSION_DURATION_MS = TimeUnit.DAYS.toMillis(3);
 
     @Nullable private static ReaderModeActionRateLimiter sInstance;
+
+    public static interface Observer {
+        /** Called when the ac */
+        void onWillStartSuppression();
+    }
 
     /** No-op implementation for when the feature is off. */
     private static class EmptyLimiter extends ReaderModeActionRateLimiter {
@@ -54,7 +60,19 @@ public class ReaderModeActionRateLimiter {
         return sInstance;
     }
 
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
+
     private ReaderModeActionRateLimiter() {}
+
+    /** Adds an observer */
+    public void addObserver(Observer obs) {
+        mObservers.addObserver(obs);
+    }
+
+    /** Removes an observer */
+    public void removeObserver(Observer obs) {
+        mObservers.removeObserver(obs);
+    }
 
     /**
      * Checks if the reader mode action should be suppressed.
@@ -102,6 +120,11 @@ public class ReaderModeActionRateLimiter {
             prefs.writeLong(
                     ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP,
                     suppressionEnd);
+            if (showCount == SHOW_LIMIT) {
+                for (Observer obs : mObservers) {
+                    obs.onWillStartSuppression();
+                }
+            }
         }
     }
 
