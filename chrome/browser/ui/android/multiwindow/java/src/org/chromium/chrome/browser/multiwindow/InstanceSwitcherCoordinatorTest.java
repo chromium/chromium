@@ -980,6 +980,45 @@ public class InstanceSwitcherCoordinatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testRenameWindow_inactiveInstance() {
+        // Initialize instance list with 2 active instances and 1 inactive instance.
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 2, /* numInactiveInstances= */ 1);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null, // openCallback
+                            null, // closeCallback
+                            null, // renameCallback
+                            null, // newWindowAction
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances));
+                });
+
+        onView(withId(R.id.active_instance_list)).inRoot(isDialog()).check(matches(isDisplayed()));
+
+        // Switch to inactive list.
+        onView(allOf(withText("Inactive (1)"), isDescendantOfA(withId(R.id.tabs))))
+                .perform(click());
+
+        onView(withId(R.id.inactive_instance_list))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        // Check to make sure the more button is not visible.
+        onView(allOf(withId(R.id.more), isDescendantOfA(withId(R.id.inactive_instance_list))))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
     public void testRenameWindowWithEmptyName() throws Exception {
         InstanceInfo[] instances =
                 createPersistedInstances(
@@ -1171,15 +1210,27 @@ public class InstanceSwitcherCoordinatorTest {
 
                                     @Override
                                     public void perform(UiController uiController, View view) {
-                                        View v = view.findViewById(R.id.more);
-                                        v.performClick();
+                                        if (isActiveInstance) {
+                                            View v = view.findViewById(R.id.more);
+                                            v.performClick();
+
+                                        } else {
+                                            View v = view.findViewById(R.id.close_button);
+                                            v.performClick();
+                                        }
                                     }
                                 }));
-        onView(withText(R.string.close))
-                .inRoot(withDecorView(withClassName(containsString("Popup"))))
-                .perform(click());
+
+        if (isActiveInstance) {
+            onView(withText(R.string.close))
+                    .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                    .perform(click());
+        }
+
         onView(withText(R.string.instance_switcher_close_confirm_header))
+                .inRoot(isDialog())
                 .check(matches(isDisplayed()));
+
         onView(withText(R.string.close)).perform(click());
         closeCallbackHelper.waitForCallback(closeCallbackCount);
     }

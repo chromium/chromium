@@ -30,7 +30,7 @@ found in the LICENSE file.
         android:orientation="horizontal"
         android:weightSum="8"
         android:layout_toEndOf="@id/favicon"
-        android:layout_toStartOf="@id/more"
+        android:layout_toStartOf="@+id/buttons_container"
         android:layout_centerVertical="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -76,15 +76,32 @@ found in the LICENSE file.
             app:leading="@dimen/text_size_medium_leading" />
     </LinearLayout>
 
-     <org.chromium.ui.listmenu.ListMenuButton
-        android:id="@+id/more"
-        android:src="@drawable/ic_more_vert_24dp"
-        android:layout_width="@dimen/min_touch_target_size"
-        android:layout_height="@dimen/min_touch_target_size"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="12dp"
+    <FrameLayout
+        android:id="@+id/buttons_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:visibility="visible"
-        app:tint="@color/instance_switcher_item_foreground_color_list" />
+        android:layout_centerVertical="true">
+
+        <ImageView
+            android:id="@+id/close_button"
+            android:visibility="gone"
+            android:src="@drawable/material_ic_close_24dp"
+            android:contentDescription="@string/close"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:scaleType="fitCenter"
+            app:tint="@color/instance_switcher_item_foreground_color_list"/>
+
+        <org.chromium.ui.listmenu.ListMenuButton
+            android:id="@+id/more"
+            android:src="@drawable/ic_more_vert_24dp"
+            android:layout_width="@dimen/min_touch_target_size"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:layout_marginEnd="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="visible"
+            app:tint="@color/instance_switcher_item_foreground_color_list" />
+    </FrameLayout>
 </RelativeLayout>

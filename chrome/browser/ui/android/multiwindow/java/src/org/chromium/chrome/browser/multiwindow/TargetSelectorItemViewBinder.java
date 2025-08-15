@@ -29,7 +29,6 @@ class TargetSelectorItemViewBinder {
             view.findViewById(R.id.title).setSelected(isSelected);
             view.findViewById(R.id.desc).setSelected(isSelected);
             view.findViewById(R.id.last_accessed).setSelected(isSelected);
-            view.findViewById(R.id.more).setSelected(isSelected);
 
             // Show check mark if selected, otherwise fallback to favicon.
             faviconView.setImageDrawable(

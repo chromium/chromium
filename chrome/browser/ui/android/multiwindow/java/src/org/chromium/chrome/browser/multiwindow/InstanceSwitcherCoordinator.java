@@ -431,7 +431,13 @@ public class InstanceSwitcherCoordinator {
                 buildMoreMenu(builder, item);
             }
         } else {
-            buildMoreMenu(builder, item);
+            if (item.taskId != INVALID_TASK_ID) {
+                buildMoreMenu(builder, item);
+            } else {
+                builder.with(
+                        InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER,
+                        (view) -> closeWindow(item));
+            }
             String lastAccessedString =
                     isCurrentWindow
                             ? mContext.getString(R.string.instance_last_accessed_current)
