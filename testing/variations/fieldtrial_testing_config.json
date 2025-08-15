@@ -9388,21 +9388,6 @@
             ]
         }
     ],
-    "EdgeToEdgeDebugging": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "EdgeToEdgeDebugging"
-                    ]
-                }
-            ]
-        }
-    ],
     "EdgeToEdgeEverywhere": [
         {
             "platforms": [

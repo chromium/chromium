@@ -169,8 +169,7 @@ public class BottomControlsMediatorTest {
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         new ObservableSupplierImpl<>(mLayoutManager),
-                        mFullscreenManager,
-                        null);
+                        mFullscreenManager);
         BottomControlsMediator plainMediator =
                 new BottomControlsMediator(
                         mWindowAndroid,
@@ -202,8 +201,7 @@ public class BottomControlsMediatorTest {
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         new ObservableSupplierImpl<>(mLayoutManager),
-                        mFullscreenManager,
-                        null);
+                        mFullscreenManager);
         new BottomControlsMediator(
                 mWindowAndroid,
                 mModel,

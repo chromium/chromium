@@ -56,7 +56,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerCreatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeDebuggingInfoTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeFieldTrialUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/SimpleEdgeToEdgeControllerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/SimpleEdgeToEdgePadAdjusterUnitTest.java",

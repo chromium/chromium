@@ -71,7 +71,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl.SupportedConfigurationSwitch;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.EdgeToEdgeDebuggingInfo;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
@@ -254,7 +253,6 @@ public class EdgeToEdgeControllerTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private LayoutManager mLayoutManager;
     @Mock private FullscreenManager mFullscreenManager;
-    @Mock private EdgeToEdgeDebuggingInfo mEdgeToEdgeDebuggingInfo;
 
     @Implements(EdgeToEdgeControllerFactory.class)
     static class ShadowEdgeToEdgeControllerFactory extends EdgeToEdgeControllerFactory {
@@ -315,8 +313,7 @@ public class EdgeToEdgeControllerTest {
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         mLayoutManagerSupplier,
-                        mFullscreenManager,
-                        mEdgeToEdgeDebuggingInfo);
+                        mFullscreenManager);
         verify(mEdgeToEdgeStateProvider, times(1)).acquireSetDecorFitsSystemWindowToken();
 
         if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
@@ -524,8 +521,7 @@ public class EdgeToEdgeControllerTest {
                                 mEdgeToEdgeManager,
                                 mBrowserControlsStateProvider,
                                 mLayoutManagerSupplier,
-                                mFullscreenManager,
-                                null);
+                                mFullscreenManager);
         assertNotNull(liveController);
         liveController.setIsOptedIntoEdgeToEdgeForTesting(true);
         liveController.setIsDrawingToEdgeForTesting(true);
@@ -1485,7 +1481,6 @@ public class EdgeToEdgeControllerTest {
                 mEdgeToEdgeControllerImpl.getWebContentsObserver();
         assertNotNull(webContentsObserver);
         webContentsObserver.firstContentfulPaintInPrimaryMainFrame(null);
-        verify(mEdgeToEdgeDebuggingInfo).uploadReport();
     }
 
     @Test

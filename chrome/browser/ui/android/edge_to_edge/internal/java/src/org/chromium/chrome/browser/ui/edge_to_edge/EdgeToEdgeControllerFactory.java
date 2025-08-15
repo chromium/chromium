@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.EdgeToEdgeDebuggingInfo;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
@@ -58,8 +57,7 @@ public class EdgeToEdgeControllerFactory {
             EdgeToEdgeManager edgeToEdgeManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
-            FullscreenManager fullscreenManager,
-            EdgeToEdgeDebuggingInfo edgeToEdgeDebuggingInfo) {
+            FullscreenManager fullscreenManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         assert EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity);
         return new EdgeToEdgeControllerImpl(
@@ -70,8 +68,7 @@ public class EdgeToEdgeControllerFactory {
                 edgeToEdgeManager,
                 browserControlsStateProvider,
                 layoutManagerSupplier,
-                fullscreenManager,
-                edgeToEdgeDebuggingInfo);
+                fullscreenManager);
     }
 
     /**
