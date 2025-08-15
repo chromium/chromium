@@ -40,7 +40,6 @@
 namespace memory_pressure {
 
 namespace {
-constexpr uint64_t k1MB = 1024ull * 1024;
 constexpr base::TimeDelta kFirstMeasurementInterval = base::Minutes(1);
 constexpr base::TimeDelta kDefaultMeasurementInterval = base::Seconds(4);
 
@@ -63,31 +62,31 @@ base::TimeDelta MeasurementIntervalFor6GbDevices() {
 // The memory threshold: 738 was selected at around the 99th percentile of
 // the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
 // system memory were 3GB.
-constexpr size_t kMemoryThresholdMBOf3GbDevices = 738;
+constexpr base::ByteCount kMemoryThresholdOf3GbDevices = base::MiB(738);
 
-uint64_t MemoryThresholdParamFor3GbDevices() {
+base::ByteCount MemoryThresholdParamFor3GbDevices() {
   static const base::FeatureParam<int> kMemoryThresholdParam{
       &content::features::kUserLevelMemoryPressureSignalOn3GbDevices,
-      "memory_threshold_mb", kMemoryThresholdMBOf3GbDevices};
-  return base::as_unsigned(kMemoryThresholdParam.Get()) * k1MB;
+      "memory_threshold_mb", kMemoryThresholdOf3GbDevices.InMiB()};
+  return base::MiB(kMemoryThresholdParam.Get());
 }
 
 // The memory threshold: 458 was selected at around the 99th percentile of
 // the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
 // system memory were 4GB.
-constexpr size_t kMemoryThresholdMBOf4GbDevices = 458;
+constexpr base::ByteCount kMemoryThresholdOf4GbDevices = base::MiB(458);
 
-uint64_t MemoryThresholdParamFor4GbDevices() {
-  return kMemoryThresholdMBOf4GbDevices * k1MB;
+base::ByteCount MemoryThresholdParamFor4GbDevices() {
+  return kMemoryThresholdOf4GbDevices;
 }
 
 // The memory threshold: 494 was selected at around the 99th percentile of
 // the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
 // system memory were 6GB.
-constexpr size_t kMemoryThresholdMBOf6GbDevices = 494;
+constexpr base::ByteCount kMemoryThresholdOf6GbDevices = base::MiB(494);
 
-uint64_t MemoryThresholdParamFor6GbDevices() {
-  return kMemoryThresholdMBOf6GbDevices * k1MB;
+base::ByteCount MemoryThresholdParamFor6GbDevices() {
+  return kMemoryThresholdOf6GbDevices;
 }
 
 }  // namespace
@@ -131,7 +130,7 @@ UserLevelMemoryPressureSignalGenerator::
     ~UserLevelMemoryPressureSignalGenerator() = default;
 
 void UserLevelMemoryPressureSignalGenerator::Start(
-    uint64_t memory_threshold,
+    base::ByteCount memory_threshold,
     base::TimeDelta measure_interval,
     base::TimeDelta minimum_interval) {
   memory_threshold_ = memory_threshold;
@@ -142,7 +141,7 @@ void UserLevelMemoryPressureSignalGenerator::Start(
 }
 void UserLevelMemoryPressureSignalGenerator::OnTimerFired() {
   base::TimeDelta interval = measure_interval_;
-  uint64_t total_pmf =
+  base::ByteCount total_pmf =
       GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
 
   if (total_pmf > memory_threshold_) {
@@ -182,20 +181,21 @@ void UserLevelMemoryPressureSignalGenerator::StartReportingTimer() {
 }
 
 void UserLevelMemoryPressureSignalGenerator::OnReportingTimerFired() {
-  uint64_t total_pmf =
+  base::ByteCount total_pmf =
       GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
   ReportBeforeAfterMetrics(total_pmf, "After");
 }
 
 // static
-uint64_t UserLevelMemoryPressureSignalGenerator::
+base::ByteCount UserLevelMemoryPressureSignalGenerator::
     GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers() {
-  uint64_t total_pmf_visible_or_higher_priority_renderers_bytes = 0u;
+  base::ByteCount total_pmf_visible_or_higher_priority_renderers_bytes =
+      base::ByteCount(0u);
 
-  auto add_process_private_footprint = [&](uint64_t& pmf,
+  auto add_process_private_footprint = [&](base::ByteCount& pmf,
                                            const base::Process& process) {
     if (process.IsValid()) {
-      pmf += GetPrivateFootprint(process).value_or(0);
+      pmf += GetPrivateFootprint(process).value_or(base::ByteCount(0));
     }
   };
 
@@ -245,8 +245,8 @@ uint64_t UserLevelMemoryPressureSignalGenerator::
     // provides its private memory footprint for the browser process and
     // the browser process gets the (cached) value via RenderProcessHostImpl.
     total_pmf_visible_or_higher_priority_renderers_bytes +=
-        static_cast<content::RenderProcessHostImpl*>(host)
-            ->GetPrivateMemoryFootprint();
+        base::ByteCount(static_cast<content::RenderProcessHostImpl*>(host)
+                            ->GetPrivateMemoryFootprint());
   }
 
   return total_pmf_visible_or_higher_priority_renderers_bytes;
@@ -290,7 +290,7 @@ void UserLevelMemoryPressureSignalGenerator::NotifyMemoryPressure() {
 
 // static
 void UserLevelMemoryPressureSignalGenerator::ReportBeforeAfterMetrics(
-    uint64_t total_pmf_visible_or_higher_priority_renderers,
+    base::ByteCount total_pmf_visible_or_higher_priority_renderers,
     const char* suffix_name) {
   std::string metric_name_total_pmf_visible_or_higher_priority_renderers =
       base::StringPrintf(
@@ -299,7 +299,7 @@ void UserLevelMemoryPressureSignalGenerator::ReportBeforeAfterMetrics(
           suffix_name);
   base::UmaHistogramMemoryLargeMB(
       metric_name_total_pmf_visible_or_higher_priority_renderers,
-      total_pmf_visible_or_higher_priority_renderers / k1MB);
+      total_pmf_visible_or_higher_priority_renderers);
 }
 
 namespace {
@@ -307,7 +307,7 @@ namespace {
 // TODO(crbug.com/40248151): if this feature is approved, refactor the duplicate
 // code under //third_party/blink/renderer/controller. If not approved,
 // remove the code as soon as possible.
-std::optional<uint64_t> CalculateProcessMemoryFootprint(
+std::optional<base::ByteCount> CalculateProcessMemoryFootprint(
     base::File& statm_file,
     base::File& status_file) {
   // Get total resident and shared sizes from statm file.
@@ -321,35 +321,36 @@ std::optional<uint64_t> CalculateProcessMemoryFootprint(
 
   int n = statm_file.ReadAtCurrentPos(line, sizeof(line) - 1);
   if (n <= 0)
-    return std::optional<size_t>();
+    return std::nullopt;
   line[n] = '\0';
 
   int num_scanned = sscanf(line, "%" SCNu64 " %" SCNu64 " %" SCNu64,
                            &vm_size_pages, &resident_pages, &shared_pages);
   if (num_scanned != 3)
-    return std::optional<size_t>();
+    return std::nullopt;
 
   // Get swap size from status file. The format is: VmSwap :  10 kB.
   n = status_file.ReadAtCurrentPos(line, sizeof(line) - 1);
   if (n <= 0)
-    return std::optional<size_t>();
+    return std::nullopt;
   line[n] = '\0';
 
   char* swap_line = strstr(line, "VmSwap");
   if (!swap_line)
-    return std::optional<size_t>();
+    return std::nullopt;
   num_scanned = sscanf(swap_line, "VmSwap: %" SCNu64 " kB", &swap_footprint);
   if (num_scanned != 1)
-    return std::optional<size_t>();
+    return std::nullopt;
 
   swap_footprint *= 1024;
-  return (resident_pages - shared_pages) * page_size + swap_footprint;
+  return base::ByteCount((resident_pages - shared_pages) * page_size +
+                         swap_footprint);
 }
 
 }  // namespace
 
 // static
-std::optional<uint64_t>
+std::optional<base::ByteCount>
 UserLevelMemoryPressureSignalGenerator::GetPrivateFootprint(
     const base::Process& process) {
   // ScopedAllowBlocking is required to use base::File, but /proc/{pid}/status
@@ -369,7 +370,7 @@ UserLevelMemoryPressureSignalGenerator::GetPrivateFootprint(
       proc_pid_dir.Append("statm"),
       base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
   if (!status_file.IsValid() || !statm_file.IsValid())
-    return std::optional<size_t>();
+    return std::nullopt;
 
   return CalculateProcessMemoryFootprint(statm_file, status_file);
 }
