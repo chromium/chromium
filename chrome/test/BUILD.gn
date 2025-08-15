@@ -6426,7 +6426,6 @@ test("unit_tests") {
     "../browser/page_load_metrics/observers/prefetch_page_load_metrics_observer_unittest.cc",
     "../browser/page_load_metrics/observers/protocol_page_load_metrics_observer_unittest.cc",
     "../browser/page_load_metrics/observers/scheme_page_load_metrics_observer_unittest.cc",
-    "../browser/page_load_metrics/observers/service_worker_page_load_metrics_observer_unittest.cc",
     "../browser/page_load_metrics/observers/signed_exchange_page_load_metrics_observer_unittest.cc",
     "../browser/page_load_metrics/observers/translate_page_load_metrics_observer_unittest.cc",
     "../browser/password_manager/chrome_password_change_service_unittest.cc",

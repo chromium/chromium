@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/service_worker_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/service_worker_page_load_metrics_observer.h"
 
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/page_load_metrics/observers/from_gws_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
-#include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -319,8 +316,9 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ServiceWorkerPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   //  This follows UmaPageLoadMetricsObserver.
-  if (GetDelegate().DidCommit())
+  if (GetDelegate().DidCommit()) {
     RecordTimingHistograms();
+  }
   return STOP_OBSERVING;
 }
 

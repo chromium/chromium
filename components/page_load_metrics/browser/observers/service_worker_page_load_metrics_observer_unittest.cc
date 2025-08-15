@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/service_worker_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/service_worker_page_load_metrics_observer.h"
 
 #include <memory>
 
-#include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
+#include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -25,7 +25,7 @@ const char kDefaultTestUrl[] = "https://example.com/";
 }  // namespace
 
 class ServiceWorkerPageLoadMetricsObserverTest
-    : public page_load_metrics::PageLoadMetricsObserverTestHarness {
+    : public page_load_metrics::PageLoadMetricsObserverContentTestHarness {
  protected:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(

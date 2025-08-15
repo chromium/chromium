@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_SERVICE_WORKER_PAGE_LOAD_METRICS_OBSERVER_H_
-#define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_SERVICE_WORKER_PAGE_LOAD_METRICS_OBSERVER_H_
+#ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_SERVICE_WORKER_PAGE_LOAD_METRICS_OBSERVER_H_
+#define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_SERVICE_WORKER_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -33,7 +33,6 @@ extern const char
     kHistogramServiceWorkerLargestContentfulPaintSkippableFetchHandler[];
 extern const char
     kHistogramServiceWorkerLargestContentfulPaintNonSkippableFetchHandler[];
-
 
 extern const char kHistogramServiceWorkerFirstContentfulPaintDocs[];
 extern const char kHistogramNoServiceWorkerFirstContentfulPaintDocs[];
@@ -90,4 +89,4 @@ class ServiceWorkerPageLoadMetricsObserver
   bool logged_ukm_event_ = false;
 };
 
-#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_SERVICE_WORKER_PAGE_LOAD_METRICS_OBSERVER_H_
+#endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_SERVICE_WORKER_PAGE_LOAD_METRICS_OBSERVER_H_
