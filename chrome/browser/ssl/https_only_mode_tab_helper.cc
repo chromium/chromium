@@ -12,7 +12,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/common/chrome_features.h"
+#include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
@@ -45,7 +45,8 @@ HttpsOnlyModeTabHelper::~HttpsOnlyModeTabHelper() = default;
 void HttpsOnlyModeTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstDialogUi)) {
+  if (base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsFirstDialogUi)) {
     // Close the Ask-before-HTTP dialog if a new navigation begins.
     // TabDialogManager has a parameter to close tab-modal dialogs
     // if a cross-site navigation occurs, but we need to be more
@@ -88,7 +89,8 @@ void HttpsOnlyModeTabHelper::DidFinishNavigation(
   // If dialog UI is enabled and this was a navigation cancelled by the
   // throttle when we would interstitial the navigation, then trigger the
   // dialog UI.
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstDialogUi) &&
+  if (base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsFirstDialogUi) &&
       is_navigation_fallback_ &&
       !navigation_handle->GetURL().SchemeIsCryptographic()) {
     auto* const dialog_controller =

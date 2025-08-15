@@ -41,6 +41,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/security_interstitials/core/features.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_state/content/security_state_tab_helper.h"
@@ -203,7 +204,7 @@ class HttpsUpgradesBrowserTest
             /*disabled_features=*/{
                 features::kHttpsFirstModeV2ForEngagedSites,
                 features::kHttpsFirstModeV2ForTypicallySecureUsers,
-                features::kHttpsFirstDialogUi});
+                security_interstitials::features::kHttpsFirstDialogUi});
         break;
 
       case HttpsUpgradesTestType::kHttpsFirstModeWithSiteEngagement:
@@ -214,7 +215,7 @@ class HttpsUpgradesBrowserTest
             /*disabled_features=*/{
                 features::kHttpsFirstModeV2ForTypicallySecureUsers,
                 features::kHttpsFirstBalancedModeAutoEnable,
-                features::kHttpsFirstDialogUi});
+                security_interstitials::features::kHttpsFirstDialogUi});
         break;
 
       case HttpsUpgradesTestType::
@@ -225,7 +226,7 @@ class HttpsUpgradesBrowserTest
             /*disabled_features=*/{
                 features::kHttpsFirstModeV2ForTypicallySecureUsers,
                 features::kHttpsFirstBalancedMode,
-                features::kHttpsFirstDialogUi});
+                security_interstitials::features::kHttpsFirstDialogUi});
         break;
 
       case HttpsUpgradesTestType::kHttpsFirstModeForTypicallySecureUsers:
@@ -234,9 +235,10 @@ class HttpsUpgradesBrowserTest
             /*enabled_features=*/{features::
                                       kHttpsFirstModeV2ForTypicallySecureUsers,
                                   features::kHttpsFirstBalancedMode},
-            /*disabled_features=*/{features::kHttpsFirstModeV2ForEngagedSites,
-                                   features::kHttpsFirstBalancedModeAutoEnable,
-                                   features::kHttpsFirstDialogUi});
+            /*disabled_features=*/{
+                features::kHttpsFirstModeV2ForEngagedSites,
+                features::kHttpsFirstBalancedModeAutoEnable,
+                security_interstitials::features::kHttpsFirstDialogUi});
         break;
 
       case HttpsUpgradesTestType::kAllAutoHFM:
@@ -246,14 +248,16 @@ class HttpsUpgradesBrowserTest
                                       kHttpsFirstModeV2ForTypicallySecureUsers,
                                   features::kHttpsFirstModeV2ForEngagedSites,
                                   features::kHttpsFirstBalancedMode},
-            /*disabled_features=*/{features::kHttpsFirstBalancedModeAutoEnable,
-                                   features::kHttpsFirstDialogUi});
+            /*disabled_features=*/{
+                features::kHttpsFirstBalancedModeAutoEnable,
+                security_interstitials::features::kHttpsFirstDialogUi});
         break;
 
       case HttpsUpgradesTestType::kHttpsFirstModeIncognito:
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{features::kHttpsFirstModeIncognito},
-            /*disabled_features=*/{features::kHttpsFirstDialogUi});
+            /*disabled_features=*/{
+                security_interstitials::features::kHttpsFirstDialogUi});
         break;
 
       case HttpsUpgradesTestType::kHttpsFirstBalancedMode:
@@ -263,7 +267,7 @@ class HttpsUpgradesBrowserTest
             /*disabled_features=*/{
                 features::kHttpsFirstModeV2ForTypicallySecureUsers,
                 features::kHttpsFirstModeV2ForEngagedSites,
-                features::kHttpsFirstDialogUi});
+                security_interstitials::features::kHttpsFirstDialogUi});
         break;
 
       // Enable HFM, HFM with Site Engagement heuristic, HFM for typically
@@ -280,7 +284,8 @@ class HttpsUpgradesBrowserTest
                 features::kHttpsFirstBalancedMode,
                 features::kHttpsFirstBalancedModeAutoEnable,
             },
-            /*disabled_features=*/{features::kHttpsFirstDialogUi});
+            /*disabled_features=*/{
+                security_interstitials::features::kHttpsFirstDialogUi});
         break;
 
       // Disable HFM, HFM with Site Engagement heuristic, HFM for Typically
@@ -295,7 +300,7 @@ class HttpsUpgradesBrowserTest
                 features::kHttpsFirstModeV2ForTypicallySecureUsers,
                 features::kHttpsFirstBalancedMode,
                 features::kHttpsFirstBalancedModeAutoEnable,
-                features::kHttpsFirstDialogUi});
+                security_interstitials::features::kHttpsFirstDialogUi});
         break;
     }
 
@@ -4102,7 +4107,7 @@ class HttpsUpgradesSecureOriginAllowlistBrowserTest
         {features::kHttpsFirstBalancedModeAutoEnable},
         // TODO(crbug.com/351990829): Update these tests to work with the new
         // native dialog UI, and then re-enable this feature.
-        {features::kHttpsFirstDialogUi});
+        {security_interstitials::features::kHttpsFirstDialogUi});
   }
   ~HttpsUpgradesSecureOriginAllowlistBrowserTest() override = default;
 

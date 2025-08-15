@@ -165,6 +165,7 @@ if (current_toolchain == default_toolchain) {
       "midi.icon",
       "midi_chrome_refresh.icon",
       "midi_off_chrome_refresh.icon",
+      "no_encryption.icon",
       "not_secure_warning.icon",
       "not_secure_warning_chrome_refresh.icon",
       "not_secure_warning_off_chrome_refresh.icon",

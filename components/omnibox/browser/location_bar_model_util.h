@@ -17,7 +17,7 @@ namespace location_bar_model {
 // of the page.
 const gfx::VectorIcon& GetSecurityVectorIcon(
     security_state::SecurityLevel security_level,
-    security_state::MaliciousContentStatus malicious_content_status);
+    security_state::VisibleSecurityState* visible_security_state);
 }  // namespace location_bar_model
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_LOCATION_BAR_MODEL_UTIL_H_
