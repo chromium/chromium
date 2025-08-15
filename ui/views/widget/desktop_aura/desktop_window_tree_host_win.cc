@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
@@ -196,7 +197,15 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
     DWM_SYSTEMBACKDROP_TYPE backdrop = DWMSBT_MAINWINDOW;
     HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_SYSTEMBACKDROP_TYPE,
                                        &backdrop, sizeof(backdrop));
-    CHECK_EQ(hr, S_OK);
+    if (FAILED(hr)) {
+      // If DwmSetWindowAttribute fails, it indicates that there was a problem
+      // setting the system backdrop type. In this state, the backdrop is not
+      // applied, and the worst that can happen is a transparent window appears
+      // while the GPU process is being started.
+      LOG(ERROR) << "Failed to set DWM system backdrop type: "
+                 << logging::SystemErrorCodeToString(
+                        static_cast<logging::SystemErrorCode>(hr));
+    }
   }
 
   UpdateBackdropColorMode();
@@ -1483,12 +1492,13 @@ void DesktopWindowTreeHostWin::UpdateBackdropColorMode() {
       GetWidget()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
   HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
                                      &use_dark_mode, sizeof(use_dark_mode));
-  if FAILED (hr) {
-    // TODO(crbug.com/415385215) DwmSetWindowAttribute can fail in certain
-    // scenarios. Create a dump so that these scenarios can be studied and
-    // prevented.
-    base::debug::Alias(&hr);
-    base::debug::DumpWithoutCrashing();
+  if (FAILED(hr)) {
+    // If DwmSetWindowAttribute fails, it indicates that there was a problem
+    // setting dark mode for the window. In this state, the mode change is not
+    // applied and the backdrop will remain in its previous state.
+    LOG(ERROR) << "Failed to set DWM immersive dark mode: "
+               << logging::SystemErrorCodeToString(
+                      static_cast<logging::SystemErrorCode>(hr));
   }
 }
 
