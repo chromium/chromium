@@ -105,11 +105,6 @@ def _GetBaseVariant(doc, histogram):
   Returns:
      A <variant> node, or None if base="true" is set.
   """
-  if histogram.hasAttribute('base'):
-    is_base = histogram.getAttribute('base').lower() == 'true'
-    histogram.removeAttribute('base')
-    if is_base:
-      return None
   base_variant = doc.createElement('variant')
   base_variant.setAttribute('name', '')
   return base_variant
@@ -118,10 +113,9 @@ def _GetBaseVariant(doc, histogram):
 def _PopulateVariantsWithSuffixes(doc, node, histogram_suffixes):
   """Populates <variant> nodes to |node| from <suffix>.
 
-  This function returns True if none of the suffixes contains 'base' attribute.
   If this function returns false, the caller's histogram node will not be
   updated. This is mainly because base suffix is a much more complicated case
-  and thus it can not be automatically updated at least for now.
+  and thus it is not automatically updated by this script.
 
   Args:
     doc: A Document object which is used to create a new <variant> node.
@@ -136,14 +130,7 @@ def _PopulateVariantsWithSuffixes(doc, node, histogram_suffixes):
   suffixes_owners = _ExtractOwnerNodes(histogram_suffixes)
   suffixes_name = histogram_suffixes.getAttribute('name')
   for suffix in histogram_suffixes.getElementsByTagName('suffix'):
-    # The base suffix is a much more complicated case. It might require manual
-    # effort to migrate them so skip this case for now.
     suffix_name = suffix.getAttribute('name')
-    if suffix.hasAttribute('base'):
-      logging.warning(
-          'suffix: %s in histogram_suffixes %s has base attribute. Please '
-          'manually migrate it.', suffix_name, suffixes_name)
-      return False
     # Suffix name might be empty. In this case, in order not to collide with the
     # base variant, remove the base variant first before populating this.
     if not suffix_name:

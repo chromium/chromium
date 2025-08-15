@@ -25,8 +25,6 @@ def _ConstructHistogram(doc, name, histogram_dict):
     histogram.setAttribute('units', histogram_dict['units'])
   if 'expires_after' in histogram_dict:
     histogram.setAttribute('expires_after', histogram_dict['expires_after'])
-  if histogram_dict.get('base', False):
-    histogram.setAttribute('base', 'true')
   # Populate owner nodes.
   for owner in histogram_dict.get('owners', []):
     owner_node = doc.createElement('owner')

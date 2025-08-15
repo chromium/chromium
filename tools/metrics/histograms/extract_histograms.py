@@ -347,10 +347,6 @@ def _ValidateMilestoneString(milestone_str):
   """Check if |milestone_str| matches 'M*'."""
   return EXPIRY_MILESTONE_RE.match(milestone_str) is not None
 
-def _ProcessBaseHistogramAttribute(node, histogram_entry):
-  if node.hasAttribute('base'):
-    is_base = node.getAttribute('base').lower() == 'true'
-    histogram_entry['base'] = is_base
 
 # The following code represents several concepts as JSON objects
 #
@@ -581,8 +577,6 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
       histogram_entry['tokens'] = tokens
     errors.extend(token_errors)
 
-    _ProcessBaseHistogramAttribute(histogram, histogram_entry)
-
   return histograms, errors
 
 
@@ -717,12 +711,6 @@ def _UpdateHistogramsWithSuffixes(tree, histograms) -> ExtractionErrors:
           continue
         if new_histogram_name != histogram_name:
           new_histogram = copy.deepcopy(histograms[histogram_name])
-          # Do not copy forward base histogram state to suffixed
-          # histograms. Any suffixed histograms that wish to remain base
-          # histograms must explicitly re-declare themselves as base
-          # histograms.
-          if new_histogram.get('base', False):
-            del new_histogram['base']
           histograms[new_histogram_name] = new_histogram
 
         suffix_label = suffix_labels.get(suffix_name, '')
@@ -747,8 +735,6 @@ def _UpdateHistogramsWithSuffixes(tree, histograms) -> ExtractionErrors:
         # inherit it.
         if obsolete_reason:
           histogram_entry['obsolete'] = obsolete_reason
-
-        _ProcessBaseHistogramAttribute(suffix, histogram_entry)
 
   return errors
 

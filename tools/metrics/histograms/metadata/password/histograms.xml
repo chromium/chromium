@@ -4918,7 +4918,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram base="true" name="PasswordProtection.PasswordAlertModeOutcome"
+<histogram name="PasswordProtection.PasswordAlertModeOutcome"
     enum="PasswordProtectionRequestOutcome" expires_after="2026-01-22">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -4955,7 +4955,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram base="true" name="PasswordProtection.RequestOutcome"
+<histogram name="PasswordProtection.RequestOutcome"
     enum="PasswordProtectionRequestOutcome" expires_after="2026-01-06">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
