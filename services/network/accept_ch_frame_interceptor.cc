@@ -101,10 +101,11 @@ net::Error AcceptCHFrameInterceptor::OnConnected(
     return net::OK;
   }
 
-  const bool needs_check = NeedsObserverCheck(url::Origin::Create(url), hints);
-  base::UmaHistogramBoolean("Net.URLLoader.AcceptCH.NeedsObserverCheck",
-                            needs_check);
-  if (!needs_check) {
+  const NeedsObserverCheckReason reason =
+      NeedsObserverCheck(url::Origin::Create(url), hints);
+  base::UmaHistogramEnumeration(
+      "Net.AcceptCHFrameInterceptor.NeedsObserverCheckReason", reason);
+  if (reason == NeedsObserverCheckReason::kNotNeeded) {
     return net::OK;
   }
 
@@ -140,34 +141,40 @@ net::Error AcceptCHFrameInterceptor::OnConnected(
   return net::ERR_IO_PENDING;
 }
 
-bool AcceptCHFrameInterceptor::NeedsObserverCheckForTesting(
+AcceptCHFrameInterceptor::NeedsObserverCheckReason
+AcceptCHFrameInterceptor::NeedsObserverCheckForTesting(
     const url::Origin& origin,
     const std::vector<mojom::WebClientHintsType>& hints) {
   return NeedsObserverCheck(origin, hints);
 }
 
-bool AcceptCHFrameInterceptor::NeedsObserverCheck(
+AcceptCHFrameInterceptor::NeedsObserverCheckReason
+AcceptCHFrameInterceptor::NeedsObserverCheck(
     const url::Origin& origin,
     const std::vector<mojom::WebClientHintsType>& hints) {
   if (!enabled_client_hints_.has_value()) {
-    return true;
+    return NeedsObserverCheckReason::kNoEnabledClientHints;
   }
 
   // For main frames, the origin must match to use the cached hints.
   if (enabled_client_hints_->is_outermost_main_frame &&
       !enabled_client_hints_->origin.IsSameOriginWith(origin)) {
-    return true;
+    return NeedsObserverCheckReason::kMainFrameOriginMismatch;
   }
   // For subframes, the optimization is only allowed if the feature is enabled.
   if (!enabled_client_hints_->is_outermost_main_frame &&
       !features::kAcceptCHOffloadForSubframe.Get()) {
-    return true;
+    return NeedsObserverCheckReason::kSubframeFeatureDisabled;
   }
 
   CHECK(base::FeatureList::IsEnabled(features::kOffloadAcceptCHFrameCheck));
-  return !std::all_of(hints.cbegin(), hints.cend(), [&](const auto& h) {
-    return base::Contains(enabled_client_hints_->hints, h);
-  });
+  if (!std::all_of(hints.cbegin(), hints.cend(), [&](const auto& h) {
+        return base::Contains(enabled_client_hints_->hints, h);
+      })) {
+    return NeedsObserverCheckReason::kHintNotEnabled;
+  }
+
+  return NeedsObserverCheckReason::kNotNeeded;
 }
 
 }  // namespace network

@@ -1171,6 +1171,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.AcceptCHFrameInterceptor.NeedsObserverCheckReason"
+    enum="NeedsObserverCheckReason" expires_after="2026-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The reason why AcceptCHFrameInterceptor::NeedsObserverCheck returns true.
+    Recorded every time NeedsObserverCheck is called. It is recorded just before
+    returning from the function.
+  </summary>
+</histogram>
+
 <histogram name="Net.AlternateProtocolBrokenLocation"
     enum="BrokenAlternateProtocolLocation" expires_after="2024-02-25">
   <owner>dschinazi@chromium.org</owner>

@@ -49,6 +49,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
       std::optional<ResourceRequest::TrustedParams::EnabledClientHints>
           enabled_client_hints);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(NeedsObserverCheckReason)
+  enum class NeedsObserverCheckReason {
+    kNotNeeded = 0,  // The case where it returns false.
+    kNoEnabledClientHints = 1,
+    kMainFrameOriginMismatch = 2,
+    kSubframeFeatureDisabled = 3,
+    kHintNotEnabled = 4,
+    kMaxValue = kHintNotEnabled,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NeedsObserverCheckReason)
+
   AcceptCHFrameInterceptor(const AcceptCHFrameInterceptor&) = delete;
   AcceptCHFrameInterceptor& operator=(const AcceptCHFrameInterceptor&) = delete;
 
@@ -74,7 +87,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
                          const net::HttpRequestHeaders& headers,
                          net::CompletionOnceCallback callback);
 
-  bool NeedsObserverCheckForTesting(
+  NeedsObserverCheckReason NeedsObserverCheckForTesting(
       const url::Origin& origin,
       const std::vector<mojom::WebClientHintsType>& hints);
 
@@ -98,8 +111,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
   // creation time (which is stored in `enabled_client_hints_`) to avoid sending
   // the IPCs if possible. The enabled hints may change after the request
   // creation, and the IPC is still needed for them.
-  bool NeedsObserverCheck(const url::Origin& origin,
-                          const std::vector<mojom::WebClientHintsType>& hints);
+  NeedsObserverCheckReason NeedsObserverCheck(
+      const url::Origin& origin,
+      const std::vector<mojom::WebClientHintsType>& hints);
 
   mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
 

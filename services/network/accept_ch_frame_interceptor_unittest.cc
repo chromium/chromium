@@ -31,8 +31,9 @@ class AcceptCHFrameInterceptorTest : public testing::Test {
     return enabled_client_hints;
   }
 
-  bool NeedsObserverCheck(const url::Origin& origin,
-                          const std::vector<mojom::WebClientHintsType>& hints) {
+  AcceptCHFrameInterceptor::NeedsObserverCheckReason NeedsObserverCheck(
+      const url::Origin& origin,
+      const std::vector<mojom::WebClientHintsType>& hints) {
     CHECK(interceptor_.get());
     return interceptor_->NeedsObserverCheckForTesting(origin, hints);
   }
@@ -48,8 +49,10 @@ class AcceptCHFrameInterceptorTest : public testing::Test {
 TEST_F(AcceptCHFrameInterceptorTest, NeedsObserverCheckNullOpt) {
   const GURL kUrl("https://a.com");
   Initialize(std::nullopt);
-  EXPECT_TRUE(NeedsObserverCheck(url::Origin::Create(kUrl),
-                                 std::vector<mojom::WebClientHintsType>()));
+  EXPECT_EQ(NeedsObserverCheck(url::Origin::Create(kUrl),
+                               std::vector<mojom::WebClientHintsType>()),
+            AcceptCHFrameInterceptor::NeedsObserverCheckReason::
+                kNoEnabledClientHints);
 }
 
 TEST_F(AcceptCHFrameInterceptorTest,
@@ -62,8 +65,9 @@ TEST_F(AcceptCHFrameInterceptorTest,
   };
   Initialize(CreateEnabledClientHints(kOrigin, added_hints));
 
-  EXPECT_FALSE(
-      NeedsObserverCheck(kOrigin, std::vector<mojom::WebClientHintsType>()));
+  EXPECT_EQ(
+      NeedsObserverCheck(kOrigin, std::vector<mojom::WebClientHintsType>()),
+      AcceptCHFrameInterceptor::NeedsObserverCheckReason::kNotNeeded);
 }
 
 TEST_F(AcceptCHFrameInterceptorTest,
@@ -74,7 +78,8 @@ TEST_F(AcceptCHFrameInterceptorTest,
       network::mojom::WebClientHintsType::kUAArch,
   };
   Initialize(CreateEnabledClientHints(kOrigin, test_vector));
-  EXPECT_FALSE(NeedsObserverCheck(kOrigin, test_vector));
+  EXPECT_EQ(NeedsObserverCheck(kOrigin, test_vector),
+            AcceptCHFrameInterceptor::NeedsObserverCheckReason::kNotNeeded);
 }
 
 TEST_F(AcceptCHFrameInterceptorTest,
@@ -86,7 +91,8 @@ TEST_F(AcceptCHFrameInterceptorTest,
       network::mojom::WebClientHintsType::kUAWoW64,
   };
   Initialize(CreateEnabledClientHints(kOrigin, test_vector));
-  EXPECT_FALSE(NeedsObserverCheck(kOrigin, test_vector));
+  EXPECT_EQ(NeedsObserverCheck(kOrigin, test_vector),
+            AcceptCHFrameInterceptor::NeedsObserverCheckReason::kNotNeeded);
 }
 
 TEST_F(AcceptCHFrameInterceptorTest, NeedsObserverCheckAMismatchShouldBeTrue) {
@@ -101,7 +107,9 @@ TEST_F(AcceptCHFrameInterceptorTest, NeedsObserverCheckAMismatchShouldBeTrue) {
   std::vector<mojom::WebClientHintsType> test_vector = {
       network::mojom::WebClientHintsType::kUA,
   };
-  EXPECT_TRUE(NeedsObserverCheck(kOrigin, test_vector));
+  EXPECT_EQ(
+      NeedsObserverCheck(kOrigin, test_vector),
+      AcceptCHFrameInterceptor::NeedsObserverCheckReason::kHintNotEnabled);
 }
 
 TEST_F(AcceptCHFrameInterceptorTest,
@@ -118,7 +126,9 @@ TEST_F(AcceptCHFrameInterceptorTest,
       network::mojom::WebClientHintsType::kUAArch,
       network::mojom::WebClientHintsType::kUA,
   };
-  EXPECT_TRUE(NeedsObserverCheck(kOrigin, test_vector));
+  EXPECT_EQ(
+      NeedsObserverCheck(kOrigin, test_vector),
+      AcceptCHFrameInterceptor::NeedsObserverCheckReason::kHintNotEnabled);
 }
 
 TEST_F(AcceptCHFrameInterceptorTest,
@@ -131,7 +141,9 @@ TEST_F(AcceptCHFrameInterceptorTest,
   Initialize(CreateEnabledClientHints(kOrigin, test_vector));
   const GURL kOther("https://b.com");
   const url::Origin kOtherOrigin(url::Origin::Create(kOther));
-  EXPECT_TRUE(NeedsObserverCheck(kOtherOrigin, test_vector));
+  EXPECT_EQ(NeedsObserverCheck(kOtherOrigin, test_vector),
+            AcceptCHFrameInterceptor::NeedsObserverCheckReason::
+                kMainFrameOriginMismatch);
 }
 
 TEST_F(AcceptCHFrameInterceptorTest,
@@ -143,7 +155,9 @@ TEST_F(AcceptCHFrameInterceptorTest,
   };
   Initialize(CreateEnabledClientHints(kOrigin, test_vector,
                                       /*is_outermost_main_frame=*/false));
-  EXPECT_TRUE(NeedsObserverCheck(kOrigin, test_vector));
+  EXPECT_EQ(NeedsObserverCheck(kOrigin, test_vector),
+            AcceptCHFrameInterceptor::NeedsObserverCheckReason::
+                kSubframeFeatureDisabled);
 }
 
 TEST_F(AcceptCHFrameInterceptorTest,
@@ -161,7 +175,9 @@ TEST_F(AcceptCHFrameInterceptorTest,
                                       /*is_outermost_main_frame=*/false));
   const GURL kOther("https://b.com");
   const url::Origin kOtherOrigin(url::Origin::Create(kOther));
-  EXPECT_TRUE(NeedsObserverCheck(kOtherOrigin, test_vector));
+  EXPECT_EQ(NeedsObserverCheck(kOtherOrigin, test_vector),
+            AcceptCHFrameInterceptor::NeedsObserverCheckReason::
+                kSubframeFeatureDisabled);
 }
 
 TEST_F(AcceptCHFrameInterceptorTest,
@@ -179,7 +195,8 @@ TEST_F(AcceptCHFrameInterceptorTest,
                                       /*is_outermost_main_frame=*/false));
   const GURL kOther("https://b.com");
   const url::Origin kOtherOrigin(url::Origin::Create(kOther));
-  EXPECT_FALSE(NeedsObserverCheck(kOtherOrigin, test_vector));
+  EXPECT_EQ(NeedsObserverCheck(kOtherOrigin, test_vector),
+            AcceptCHFrameInterceptor::NeedsObserverCheckReason::kNotNeeded);
 }
 
 }  // namespace network
