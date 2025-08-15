@@ -131,6 +131,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsInteractiveTest, MAYBE_FeedbackDialog) {
       NavigateWebContents(kHistoryTabId,
                           GURL("chrome://history/?q=A+B+C+D+e+f+g")),
       WaitForElementToRender(kHistoryTabId, kThumbsDownElement),
+      ScrollIntoView(kHistoryTabId, kThumbsDownElement),
       MoveMouseTo(kHistoryTabId, kThumbsDownElement), ClickMouse(),
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
