@@ -63,7 +63,7 @@ class ChoiceScreenData;
 namespace syncer {
 class SyncData;
 struct EntityData;
-}
+}  // namespace syncer
 
 namespace TemplateURLPrepopulateData {
 class Resolver;
@@ -100,7 +100,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
                                  public KeyedService,
                                  public syncer::SyncableService {
  public:
-  using QueryTerms = std::map<std::string, std::string>;
   using TemplateURLVector = TemplateURL::TemplateURLVector;
   using OwnedTemplateURLVector = TemplateURL::OwnedTemplateURLVector;
   using SyncDataMap = std::map<std::string, syncer::SyncData>;

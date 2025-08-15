@@ -135,6 +135,23 @@ struct AiModeEchoMatch : Config<AiModeEchoMatch> {
   // differentiating signal in deduping. Does not apply to `udm=50` in normal
   // URLs. Does not apply to e.g. `udm=49` in the suggest template.
   bool do_not_dedupe_aim_suggestions = true;
+
+  // Navigations that match a site search update the `keyword_search_terms`
+  // table in the history DB. E.g. youtube.com/id/x, google.com/?q=x, or
+  // google.com/?q=x&udm=50. Determining which site search was used and should
+  // be attributed does not consider query params. Navigating to either
+  // google.com/?q=x or google.com/?q=x&udm=50 will each attribute both the
+  // Google and AI mode site searches. When
+  // `do_not_show_historic_aim_suggestions` is enabled, 2 things change:
+  // 1. AI mode navigations don't increment any site search. This ensures the
+  //    user won't see a traditional history search suggestion for an AI mode
+  //    search they've done.
+  // 2. No navigation increments the AI mode site search. This ensures the user
+  //    won't see AI mode history search suggestions for a traditional search
+  //    they've done.
+  // These changes apply to both omnibox and other (e.g. bookmark, web)
+  // navigations.
+  bool do_not_show_historic_aim_suggestions = true;
 };
 
 // A config struct for features related to contextual search in omnibox.
