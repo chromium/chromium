@@ -188,6 +188,8 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   }
   BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
   BWGTabHelper->DeleteBwgSessionInStorage();
+  // Record the new chat metric.
+  RecordBWGNewChatButtonTapped();
 }
 
 #pragma mark - Private

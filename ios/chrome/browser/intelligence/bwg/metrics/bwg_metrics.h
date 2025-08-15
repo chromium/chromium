@@ -167,4 +167,7 @@ void RecordURLOpened();
 // Records entry point metrics with context about whether FRE is shown.
 void RecordBWGEntryPointClick(bwg::EntryPoint entry_point, bool is_fre_flow);
 
+// Records that the user tapped the new chat button in a BWG session.
+void RecordBWGNewChatButtonTapped();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
