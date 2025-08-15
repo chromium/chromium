@@ -323,6 +323,7 @@ void CollaborationControllerDelegateDesktop::OnBrowserClosing(
   // When the current browser is closing, cancel the flow because we can't show
   // any UI on the current browser.
   if (browser_ == browser) {
+    MaybeCloseDialogs();
     browser_ = nullptr;
     ExitFlow();
   }
