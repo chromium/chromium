@@ -100,9 +100,6 @@ class WebNNReceiverImpl;
 //
 // Lifecycle contract:
 // - Owned via scoped_refptr by WebNNReceiverImpl.
-// - `impl_` is a WeakPtr and is guaranteed to remain valid for the lifetime of
-//   WebNNReceiverBinding because the wrapper is destroyed before or with its
-//   parent.
 //
 // This design guarantees:
 // - The mojo::AssociatedReceiver is both created and destroyed on the correct
@@ -120,17 +117,13 @@ class WebNNReceiverBinding final : public base::RefCountedDeleteOnSequence<
       scoped_refptr<base::SequencedTaskRunner> owning_task_runner)
       : base::RefCountedDeleteOnSequence<WebNNReceiverBinding<MojoInterface>>(
             mojo_task_runner),
-        impl_(std::move(impl)),
-        receiver_(impl_.get(),
+        receiver_(impl.get(),
                   std::move(pending_receiver),
                   std::move(mojo_task_runner)) {
     CHECK(owning_task_runner);
-    // Safe to use base::Unretained because `this` is owned by `impl_`,
-    // so it will be destroyed before `impl_` is deleted.
     receiver_.set_disconnect_handler(base::BindPostTask(
         std::move(owning_task_runner),
-        base::BindOnce(&WebNNReceiverBinding<MojoInterface>::OnDisconnect,
-                       base::Unretained(this))));
+        base::BindOnce(&WebNNReceiverImpl<MojoInterface>::OnDisconnect, impl)));
   }
 
   mojo::AssociatedReceiver<MojoInterface>& GetMojoReceiver() {
@@ -142,21 +135,6 @@ class WebNNReceiverBinding final : public base::RefCountedDeleteOnSequence<
       WebNNReceiverBinding<MojoInterface>>;
   friend class base::DeleteHelper<WebNNReceiverBinding<MojoInterface>>;
 
-  // Called when the Mojo pipe is disconnected. Forwards the callback to the
-  // implementation so it can handle cleanup or potentially trigger
-  // self-deletion.
-  //
-  // Note: WebNNReceiverBinding does not own the implementation. This separation
-  // ensures correct sequence-bound cleanup and avoids use-after-free.
-  void OnDisconnect() {
-    if (impl_) {
-      impl_->OnDisconnect();
-    }
-  }
-
-  // WeakPtr to the owning implementation. Valid for the entire lifetime of
-  // WebNNReceiverBinding. See lifecycle contract above.
-  base::WeakPtr<WebNNReceiverImpl<MojoInterface>> impl_;
   mojo::AssociatedReceiver<MojoInterface> receiver_;
 };
 
