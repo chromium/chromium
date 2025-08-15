@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_observer_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
@@ -141,7 +140,6 @@ class CollaborationMessagingObserverBrowserTest
  public:
   CollaborationMessagingObserverBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {tab_groups::kTabGroupSyncServiceDesktopMigration, {}},
         {data_sharing::features::kDataSharingFeature, {}},
     };
     std::vector<base::test::FeatureRef> disabled_features;
@@ -215,7 +213,7 @@ class CollaborationMessagingObserverBrowserTest
   void WaitForTabGroupSyncServiceInitialized() {
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
-            tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
                 browser()->profile()));
     observer->Wait();
   }

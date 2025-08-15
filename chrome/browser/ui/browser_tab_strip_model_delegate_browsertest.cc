@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
 
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -14,6 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -250,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
   EXPECT_EQ(browser()->tab_strip_model()->group_model()->ListTabGroups().size(),
             2u);
 
-  auto* sync_service = tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+  auto* sync_service = tab_groups::TabGroupSyncServiceFactory::GetForProfile(
       browser()->profile());
   EXPECT_NE(sync_service, nullptr);
 
@@ -307,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
   EXPECT_EQ(browser()->tab_strip_model()->group_model()->ListTabGroups().size(),
             2u);
 
-  auto* sync_service = tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+  auto* sync_service = tab_groups::TabGroupSyncServiceFactory::GetForProfile(
       browser()->profile());
   EXPECT_NE(sync_service, nullptr);
 

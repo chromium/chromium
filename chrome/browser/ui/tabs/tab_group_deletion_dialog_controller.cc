@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -73,7 +74,7 @@ DialogText GetDialogText(
     Profile* profile,
     const DeletionDialogController::DialogMetadata& dialog_metadata) {
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
 
   const bool is_sync_enabled =
       tab_group_service &&

@@ -119,12 +119,8 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     delegate = std::make_unique<EmptyTabGroupSyncDelegate>();
   }
 #else
-  if (IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    delegate =
-        std::make_unique<TabGroupSyncDelegateDesktop>(service.get(), profile);
-  } else {
-    delegate = std::make_unique<EmptyTabGroupSyncDelegate>();
-  }
+  delegate =
+      std::make_unique<TabGroupSyncDelegateDesktop>(service.get(), profile);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   service->SetTabGroupSyncDelegate(std::move(delegate));

@@ -2301,10 +2301,6 @@ extern const char kToolbarTabletResizeRefactorDescription[];
 extern const char kDataSharingDebugLogsName[];
 extern const char kDataSharingDebugLogsDescription[];
 
-extern const char kTabGroupSyncServiceDesktopMigrationId[];
-extern const char kTabGroupSyncServiceDesktopMigrationName[];
-extern const char kTabGroupSyncServiceDesktopMigrationDescription[];
-
 extern const char kTabGroupShorcutsId[];
 extern const char kTabGroupShorcutsName[];
 extern const char kTabGroupShorcutsDescription[];

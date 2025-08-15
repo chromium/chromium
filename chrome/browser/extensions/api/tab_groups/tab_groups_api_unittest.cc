@@ -117,7 +117,7 @@ class TabGroupsApiUnitTest : public ExtensionServiceTestBase {
   void WaitForTabGroupSyncServiceInitialized() {
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
-            tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile()));
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
     observer->Wait();
   }
 
@@ -294,7 +294,6 @@ class SharedTabGroupExtensionsTabUtilTest : public TabGroupsApiUnitTest {
   SharedTabGroupExtensionsTabUtilTest() {
     feature_list_.InitWithFeatures(
         {
-            tab_groups::kTabGroupSyncServiceDesktopMigration,
             data_sharing::features::kDataSharingFeature,
         },
         {});
@@ -479,7 +478,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSavedTab) {
   tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
 
   tab_groups::TabGroupSyncService* saved_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(saved_service);
   saved_service->SetIsInitializedForTesting(true);
   saved_service->AddGroup(

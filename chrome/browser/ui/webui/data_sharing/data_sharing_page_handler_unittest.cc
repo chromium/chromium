@@ -66,9 +66,7 @@ class DataSharingPageHandlerUnitTest : public BrowserWithTestWindowTest {
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
+        {data_sharing::features::kDataSharingFeature}, {});
     BrowserWithTestWindowTest::SetUp();
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));

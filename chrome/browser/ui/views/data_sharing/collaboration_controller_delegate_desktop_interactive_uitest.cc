@@ -51,9 +51,7 @@ class CollaborationControllerDelegateDesktopInteractiveUITest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
+        {data_sharing::features::kDataSharingFeature}, {});
     InProcessBrowserTest::SetUp();
   }
 

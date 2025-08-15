@@ -27,6 +27,7 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -399,7 +400,7 @@ void BrowserTabStripController::RecordMetricsOnTabSelectionChange(
   }
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser_view_->GetProfile());
 
   if (!tab_group_service) {

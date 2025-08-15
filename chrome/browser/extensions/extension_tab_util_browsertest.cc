@@ -468,7 +468,6 @@ class SharedTabGroupExtensionsTabUtilTest : public ExtensionTabUtilBrowserTest {
   SharedTabGroupExtensionsTabUtilTest() {
     feature_list_.InitWithFeatures(
         {
-            tab_groups::kTabGroupSyncServiceDesktopMigration,
             data_sharing::features::kDataSharingFeature,
         },
         {});

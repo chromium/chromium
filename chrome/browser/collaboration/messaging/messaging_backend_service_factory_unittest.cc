@@ -21,9 +21,7 @@ class MessagingBackendServiceFactoryTest : public testing::Test {
  protected:
   MessagingBackendServiceFactoryTest() {
     scoped_feature_list_.InitWithFeatureStates(
-        {{data_sharing::features::kDataSharingFeature, true},
-         // Required for desktop platforms.
-         {tab_groups::kTabGroupSyncServiceDesktopMigration, true}});
+        {{data_sharing::features::kDataSharingFeature, true}});
   }
 
   ~MessagingBackendServiceFactoryTest() override = default;

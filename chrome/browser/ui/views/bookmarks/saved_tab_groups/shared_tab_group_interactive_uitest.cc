@@ -67,7 +67,6 @@ class SharedTabGroupInteractiveUiTest
 
   void SetUp() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {tab_groups::kTabGroupSyncServiceDesktopMigration, {}},
         {data_sharing::features::kDataSharingFeature, {}},
     };
     std::vector<base::test::FeatureRef> disabled_features = {

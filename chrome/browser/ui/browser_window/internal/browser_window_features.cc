@@ -23,6 +23,7 @@
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
 #include "chrome/browser/ui/browser.h"
@@ -195,7 +196,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
     if (browser->GetProfile()->IsRegularProfile() &&
         browser->GetTabStripModel()->SupportsTabGroups() &&
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
             browser->GetProfile())) {
       session_service_tab_group_sync_observer_ =
           std::make_unique<tab_groups::SessionServiceTabGroupSyncObserver>(
@@ -411,7 +412,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     if (browser->GetTabStripModel()->SupportsTabGroups() &&
         tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
             browser->GetProfile())) {
       if (browser_view) {
         shared_tab_group_feedback_controller_ =

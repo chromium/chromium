@@ -8,11 +8,11 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
@@ -30,7 +30,7 @@ SharedTabGroupFeedbackController::SharedTabGroupFeedbackController(
     BrowserWindowInterface* browser)
     : browser_(browser),
       tab_group_sync_service_(
-          SavedTabGroupUtils::GetServiceForProfile(browser_->GetProfile())) {
+          TabGroupSyncServiceFactory::GetForProfile(browser_->GetProfile())) {
   CHECK(tab_group_sync_service_);
   tab_group_sync_observer_.Observe(tab_group_sync_service_);
   browser_->GetTabStripModel()->AddObserver(this);

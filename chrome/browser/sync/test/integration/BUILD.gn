@@ -23,7 +23,7 @@ source_set("sync_integration_tests_impl") {
     "//chrome/browser/reading_list",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
-    "//chrome/browser/sync",
+    "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui:ui_features",
     "//chrome/test:browser_tests_runner",

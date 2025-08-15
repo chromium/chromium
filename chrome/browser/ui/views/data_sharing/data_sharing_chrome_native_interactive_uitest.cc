@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -53,9 +52,7 @@ class DataSharingChromeNativeUiTest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
+        {data_sharing::features::kDataSharingFeature}, {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }
@@ -114,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
 
 IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowManageBubble) {
   auto* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::optional<tab_groups::SavedTabGroup> group =
@@ -310,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
 IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
                        CloseBubbleResetProgress) {
   auto* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::optional<tab_groups::SavedTabGroup> group =

@@ -40,6 +40,7 @@ source_set("internal") {
       "//chrome/browser/extensions",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/commerce",

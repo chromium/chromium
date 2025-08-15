@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/comments/comments_side_panel_coordinator.h"
 
 #include "base/functional/callback.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -39,16 +40,16 @@ CommentsSidePanelCoordinator::CommentsSidePanelCoordinator(
     BrowserWindowInterface* browser)
     : browser_(browser),
       tab_group_sync_service_(
-          tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
               browser_->GetProfile())) {
   browser_->GetTabStripModel()->AddObserver(this);
-  tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->GetProfile())
+  tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser_->GetProfile())
       ->AddObserver(this);
 }
 
 CommentsSidePanelCoordinator::~CommentsSidePanelCoordinator() {
   browser_->GetTabStripModel()->RemoveObserver(this);
-  tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->GetProfile())
+  tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser_->GetProfile())
       ->RemoveObserver(this);
 }
 

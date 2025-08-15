@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -2684,7 +2685,7 @@ void TabDragController::MaybePauseTrackingSavedTabGroup() {
           ->browser();
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
 
   if (!tab_group_service ||
       !tab_group_service->GetGroup(drag_data_.group_drag_data_.value().group)) {
@@ -2705,7 +2706,7 @@ void TabDragController::MaybeResumeTrackingSavedTabGroup() {
           ->browser();
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
 
   if (!tab_group_service) {
     return;

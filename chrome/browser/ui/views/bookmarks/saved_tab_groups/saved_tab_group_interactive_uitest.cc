@@ -14,6 +14,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -94,7 +94,9 @@ constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 
 namespace tab_groups {
 
+#if !BUILDFLAG(IS_CHROMEOS)
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class FaviconFetchObserver : public ui::test::ObservationStateObserver<
                                  bool,
@@ -196,26 +198,19 @@ class SavedTabGroupInteractiveTest
     : public SavedTabGroupInteractiveTestBase,
       public ::testing::WithParamInterface<bool> {
  public:
-  SavedTabGroupInteractiveTest() = default;
-  ~SavedTabGroupInteractiveTest() override = default;
-
   void SetUp() override {
-    if (IsMigrationEnabled()) {
+    if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupSyncServiceDesktopMigration,
-           data_sharing::features::kDataSharingFeature},
+          {data_sharing::features::kDataSharingFeature},
           {data_sharing::features::kDataSharingJoinOnly});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration,
-               data_sharing::features::kDataSharingFeature,
+          {}, {data_sharing::features::kDataSharingFeature,
                data_sharing::features::kDataSharingJoinOnly});
     }
 
     SavedTabGroupInteractiveTestBase::SetUp();
   }
-
-  bool IsMigrationEnabled() const { return GetParam(); }
 
   MultiStep HoverTabAt(int index) {
     const char kTabToHover[] = "Tab to hover";
@@ -299,7 +294,8 @@ class SavedTabGroupInteractiveTest
   StepBuilder CreateEmptySavedGroup() {
     return Do([=, this]() {
       TabGroupSyncService* service =
-          SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+              browser()->profile());
       service->AddGroup({u"Test Test",
                          tab_groups::TabGroupColorId::kBlue,
                          {},
@@ -330,18 +326,12 @@ class SavedTabGroupInteractiveTest
                              /*created_before_syncing_tab_groups=*/false,
                              /*creation_time=*/std::nullopt};
 
-      TabGroupSyncService* service =
-          SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
+      TabGroupSyncServiceImpl* service_impl =
+          static_cast<TabGroupSyncServiceImpl*>(
+              tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+                  browser()->profile()));
+      service_impl->GetModel()->AddedFromSync(std::move(group));
 
-      if (IsMigrationEnabled()) {
-        TabGroupSyncServiceImpl* service_impl =
-            static_cast<TabGroupSyncServiceImpl*>(service);
-        service_impl->GetModel()->AddedFromSync(std::move(group));
-      } else {
-        TabGroupSyncServiceProxy* service_proxy =
-            static_cast<TabGroupSyncServiceProxy*>(service);
-        service_proxy->GetModel()->AddedFromSync(std::move(group));
-      }
     });
   }
 
@@ -415,7 +405,8 @@ class SavedTabGroupInteractiveTest
   }
 
   TabGroupSyncService* service() {
-    return SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
+    return tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+        browser()->profile());
   }
 
  private:
@@ -1145,6 +1136,9 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       EnsureNotPresent(STGEverythingMenu::kTabGroup));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/438799035): This test is flaky on chromeos when waiting for
+// the favicon to load. Figure out why amd re-enable.
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        AppMenuTabGroupsShowsCorrectFavicons) {
   RunTestSequence(
@@ -1161,6 +1155,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       // Validate if the menu item view loaded a favicon from the database
       WaitForShow(STGTabsMenuModel::kTab), WaitForTabMenuItemToLoadFavicon());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class TabGroupShortcutsInteractiveTest

@@ -103,9 +103,7 @@ class DataSharingLiveTest : public signin::test::LiveTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
+        {data_sharing::features::kDataSharingFeature}, {});
     constexpr char SYNC_URL[] =
         "https://chrome-sync.sandbox.google.com/chrome-sync/alpha";
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII("sync-url",

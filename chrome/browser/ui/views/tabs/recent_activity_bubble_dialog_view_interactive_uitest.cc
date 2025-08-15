@@ -100,8 +100,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {tab_groups::kTabGroupSyncServiceDesktopMigration,
-         data_sharing::features::kDataSharingFeature,
+        {data_sharing::features::kDataSharingFeature,
          collaboration::features::kCollaborationMessaging},
         {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());

@@ -8,6 +8,50 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
+source_set("factories") {
+  sources = [ "tab_group_sync_service_factory.h" ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//components/keyed_service/content",
+  ]
+}
+
+source_set("factories_impl") {
+  sources = [ "tab_group_sync_service_factory.cc" ]
+  deps = [
+    ":factories",
+    "//base",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/tab_group_sync:utils",
+    "//chrome/common:channel_info",
+    "//components/collaboration/internal:collaboration_finder",
+    "//components/data_sharing/public:features",
+    "//components/keyed_service/content",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/saved_tab_groups/delegate",
+    "//components/saved_tab_groups/internal",
+    "//components/saved_tab_groups/public",
+    "//components/sync",
+    "//components/sync_device_info",
+  ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/tabs/saved_tab_groups" ]
+  } else {
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/tab_group_sync:android",
+    ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
 source_set("utils") {
   sources = [
     "feature_utils.cc",

@@ -12,6 +12,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
@@ -267,7 +268,7 @@ void STGEverythingMenu::PopulateTabGroupSubMenu(views::MenuItemView* parent) {
 void STGEverythingMenu::PopulateMenu(views::MenuItemView* parent) {
   if (!groups_model_) {
     TabGroupSyncService* tab_group_service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
             browser_->profile());
 
     // Only recreate the model if we have to.
@@ -324,7 +325,7 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
         "TabGroups_SavedTabGroups_OpenedFromEverythingMenu_2"));
     const auto group_id = GetTabGroupIdFromCommandId(command_id);
     TabGroupSyncService* tab_group_service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
             browser_->profile());
 
     bool will_open_shared_group = false;

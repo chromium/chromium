@@ -34,6 +34,7 @@ source_set("tab_groups") {
 
   deps = [
     "//chrome/browser/extensions",
+    "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_group",

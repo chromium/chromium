@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -402,7 +403,7 @@ bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
   // listening since the group is in an invalid state. Since Extensions
   // implements it's own bulk move action, pausing must be performed here.
   tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           target_browser->profile());
   std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
       tab_groups_sync_movement_observation;

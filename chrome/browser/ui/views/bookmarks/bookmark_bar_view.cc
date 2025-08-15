@@ -45,6 +45,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
@@ -2287,7 +2288,8 @@ const views::View* BookmarkBarView::GetSavedTabGroupsSeparatorViewForTesting()
 void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
   // Check whether to show the synced, or unsyned version of the promo.
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->profile());
   if (!tab_group_service) {
     return;
   }

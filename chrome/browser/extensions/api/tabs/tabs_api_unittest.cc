@@ -23,9 +23,9 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -123,7 +123,7 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
   }
 
   tab_groups::TabGroupSyncService* sync_service() {
-    return tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
+    return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

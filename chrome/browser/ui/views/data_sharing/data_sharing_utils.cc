@@ -14,6 +14,7 @@
 #include "base/token.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -175,7 +176,7 @@ GURL CreateCloseUrl(
 std::optional<GURL> data_sharing::GenerateWebUIUrl(RequestInfo request_info,
                                                    Profile* profile) {
   tab_groups::TabGroupSyncService* const tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   if (!tab_group_service) {
     return std::nullopt;
   }

@@ -7315,12 +7315,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMBIModeVariations,
                                     "MBIMode")},
 
-    {flag_descriptions::kTabGroupSyncServiceDesktopMigrationId,
-     flag_descriptions::kTabGroupSyncServiceDesktopMigrationName,
-     flag_descriptions::kTabGroupSyncServiceDesktopMigrationDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(tab_groups::kTabGroupSyncServiceDesktopMigration)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {flag_descriptions::kScrollableTabStripFlagId,
      flag_descriptions::kScrollableTabStripName,

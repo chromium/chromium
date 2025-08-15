@@ -51,6 +51,7 @@
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/session_service_utils.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -1104,7 +1105,7 @@ class SessionRestoreImpl : public BrowserListObserver {
                          const tab_groups::LocalTabGroupID& local_id,
                          std::optional<std::string> sync_id) {
     tab_groups::TabGroupSyncService* service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
     if (!service) {
       return;
     }

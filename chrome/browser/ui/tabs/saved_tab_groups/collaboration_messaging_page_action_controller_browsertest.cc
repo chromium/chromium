@@ -64,7 +64,6 @@ class CollaborationMessagingPageActionControllerBrowserTest
  public:
   CollaborationMessagingPageActionControllerBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {tab_groups::kTabGroupSyncServiceDesktopMigration, {}},
         {data_sharing::features::kDataSharingFeature, {}},
         {
             features::kPageActionsMigration,

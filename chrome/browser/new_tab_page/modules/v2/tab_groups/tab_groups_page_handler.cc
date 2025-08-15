@@ -6,8 +6,9 @@
 
 #include "base/i18n/message_formatter.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -97,7 +98,7 @@ TabGroupsPageHandler::TabGroupsPageHandler(
       page_handler_(this, std::move(pending_page_handler)) {
   DCHECK(profile_);
   tab_group_service_ =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_);
   CHECK(tab_group_service_);
 }
 

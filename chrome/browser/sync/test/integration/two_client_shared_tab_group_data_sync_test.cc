@@ -31,9 +31,7 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
  public:
   TwoClientSharedTabGroupDataSyncTest() : SyncTest(TWO_CLIENT) {
     feature_overrides_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
+        {data_sharing::features::kDataSharingFeature}, {});
   }
 
   ~TwoClientSharedTabGroupDataSyncTest() override = default;

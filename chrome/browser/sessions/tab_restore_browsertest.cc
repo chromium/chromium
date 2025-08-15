@@ -26,6 +26,7 @@
 #include "chrome/browser/sessions/tab_loader_tester.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -34,9 +35,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -54,6 +52,7 @@
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -2425,19 +2424,8 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationTabRestoreTest,
   // original one, once the bug is fixed.
 }
 
-class TabRestoreSavedGroupsTest : public TabRestoreTest,
-                                  public ::testing::WithParamInterface<bool> {
+class TabRestoreSavedGroupsTest : public TabRestoreTest {
  public:
-  TabRestoreSavedGroupsTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupSyncServiceDesktopMigration}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration});
-    }
-  }
-
   // Adds |how_many| tabs to the given browser, all navigated to the youtube.com
   // so when they are closed they are logged in TabRestore. Returns the final
   // number of tabs.
@@ -2453,16 +2441,13 @@ class TabRestoreSavedGroupsTest : public TabRestoreTest,
         browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Close a group, then restore it. The group should continue to be saved.
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest, RestoreGroup) {
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest, RestoreGroup) {
   AddTabs(browser(), 2);
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -2499,138 +2484,6 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest, RestoreGroup) {
             gfx::Range(1, 3));
 }
 
-// Close a saved group and restore it. The group should not have updated its
-// color to match the restored entry.
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
-                       RestoreSavedGroupDoesNotUpdateVisualData) {
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    // TODO(crbug.com/366267926): Fix test after migration.
-    GTEST_SKIP()
-        << "This test is not supported with the migration flag enabled";
-  }
-
-  AddTabs(browser(), 2);
-  tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-          browser()->profile());
-  ASSERT_TRUE(service);
-
-  tab_groups::TabGroupId group =
-      browser()->tab_strip_model()->AddToNewGroup({1, 2});
-  TabGroup* const tab_group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(group);
-  CHECK(tab_group);
-
-  std::u16string original_title = u"This is the original title";
-  tab_groups::TabGroupColorId original_color =
-      tab_groups::TabGroupColorId::kRed;
-  tab_groups::TabGroupVisualData og_visual_data(original_title, original_color);
-  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group, og_visual_data);
-
-  std::optional<tab_groups::SavedTabGroup> saved_group =
-      service->GetGroup(group);
-  ASSERT_TRUE(saved_group);
-  base::Uuid saved_group_id = saved_group->saved_guid();
-
-  // Close the group.
-  browser()->tab_strip_model()->CloseAllTabsInGroup(group);
-
-  // Update the visual data of the saved group.
-  std::u16string new_title = u"This is a new title";
-  tab_groups::TabGroupColorId new_color = tab_groups::TabGroupColorId::kCyan;
-  tab_groups::TabGroupVisualData new_visual_data(new_title, new_color);
-
-  tab_groups::SavedTabGroupKeyedService* old_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser()->profile());
-  old_service->model()->UpdatedVisualDataFromSync(saved_group_id,
-                                                  &new_visual_data);
-
-  // Restore it.
-  chrome::RestoreTab(browser());
-
-  // Check that the restored group keeps the new visual data.
-  saved_group = service->GetGroup(saved_group_id);
-  CHECK(saved_group);
-
-  EXPECT_NE(original_title, saved_group->title());
-  EXPECT_NE(original_color, saved_group->color());
-  EXPECT_EQ(new_title, saved_group->title());
-  EXPECT_EQ(new_color, saved_group->color());
-}
-
-// Verify that any tabs that exist in the restored group but not the saved group
-// are not added to the saved group.
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
-                       RestoreSavedGroupDropsUniqueTabs) {
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    // TODO(crbug.com/366267926): Fix test after migration.
-    GTEST_SKIP()
-        << "This test is not supported with the migration flag enabled";
-  }
-
-  tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-          browser()->profile());
-  ASSERT_TRUE(service);
-
-  AddTabs(browser(), 2);
-
-  tab_groups::TabGroupId group =
-      browser()->tab_strip_model()->AddToNewGroup({1, 2});
-  TabGroup* const tab_group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(group);
-  CHECK(tab_group);
-
-  std::u16string original_title = u"This is the original title";
-  tab_groups::TabGroupColorId original_color =
-      tab_groups::TabGroupColorId::kRed;
-  tab_groups::TabGroupVisualData og_visual_data(original_title, original_color);
-  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group, og_visual_data);
-
-  const std::optional<tab_groups::SavedTabGroup> saved_group =
-      service->GetGroup(group);
-  ASSERT_TRUE(saved_group);
-
-  // Store the ids before closing the group.
-  base::Uuid saved_group_id = service->GetGroup(group)->saved_guid();
-  const base::Uuid saved_tab_id_1 =
-      saved_group->saved_tabs()[0].saved_tab_guid();
-  const base::Uuid saved_tab_id_2 =
-      saved_group->saved_tabs()[1].saved_tab_guid();
-
-  // Close the group.
-  browser()->tab_strip_model()->CloseAllTabsInGroup(group);
-
-  // Only update the tabs using the old service. For the new service this is
-  // unsupported while the tabs are closed. In order to do a similar thing, we
-  // will either need to implement functions that use the sync ids, OR manually
-  // simulate sync events using a fake sync server (See
-  // single_client_saved_tab_groups_sync_test.cc).
-  tab_groups::SavedTabGroupTab tab_1(GURL("https://www.1.com"), u"Tab 1",
-                                     saved_group_id, 0, saved_tab_id_1);
-  tab_groups::SavedTabGroupTab tab_2(GURL("https://www.2.com"), u"Tab 2",
-                                     saved_group_id, 0, saved_tab_id_2);
-
-  tab_groups::SavedTabGroupKeyedService* original_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser()->profile());
-  original_service->model()->UpdateTabInGroup(saved_group_id, tab_1,
-                                              /*notify_observers=*/false);
-  original_service->model()->UpdateTabInGroup(saved_group_id, tab_2,
-                                              /*notify_observers=*/false);
-
-  // Restore the group.
-  chrome::RestoreTab(browser());
-
-  const std::optional<tab_groups::SavedTabGroup> restored_saved_group =
-      service->GetGroup(saved_group_id);
-
-  // There should still only be 2 tabs in the saved group.
-  EXPECT_TRUE(restored_saved_group);
-  EXPECT_EQ(2u, restored_saved_group->saved_tabs().size());
-}
-
 // Verify that a restored group which is already open does not open a new group
 // but focuses a tab in the group.
 // TODO(crbug.com/353618704): Re-enable this test
@@ -2641,10 +2494,10 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
 #define MAYBE_RestoreSavedGroupFocusedIfOpenAlready \
   RestoreSavedGroupFocusedIfOpenAlready
 #endif
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
                        MAYBE_RestoreSavedGroupFocusedIfOpenAlready) {
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -2683,15 +2536,9 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
 }
 
 // Verify that when restored tabs in unsaved groups make the group saved.
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest, RestoreTabInUnsavedGroup) {
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    // TODO(crbug.com/366267926): Fix test after migration.
-    GTEST_SKIP()
-        << "This test is not supported with the migration flag enabled";
-  }
-
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest, RestoreTabInUnsavedGroup) {
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -2755,9 +2602,9 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest, RestoreTabInUnsavedGroup) {
 
 // Verify restoring a tab part of a currently open saved group, adds the tab to
 // the saved group.
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest, RestoreTabInSavedGroup) {
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest, RestoreTabInSavedGroup) {
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -2802,11 +2649,11 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest, RestoreTabInSavedGroup) {
 
 // Verify closing all tabs in a group individually, then restoring all of the
 // tabs puts them in the same group.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     TabRestoreSavedGroupsTest,
     ClosingAllTabsInGroupThenRestoringTabsPutsThemInSameGroup) {
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -2868,10 +2715,10 @@ IN_PROC_BROWSER_TEST_P(
 
 // Verify restoring a tab part of a recently restored saved group, adds the tab
 // to the saved group.
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
                        RestoreTabAfterGroupRestored) {
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -2927,9 +2774,9 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
 
 // Verify restoring a tab part of a closed group, opens the entire group and
 // adds the tab to it with its navigation stack.
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest, RestoreTabWhenGroupIsClosed) {
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest, RestoreTabWhenGroupIsClosed) {
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -3005,10 +2852,10 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest, RestoreTabWhenGroupIsClosed) {
 
 // Verify restoring a window with a saved group (that is closed) opens the saved
 // group in the window instead of creating a new group.
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
                        RestoreWindowWithClosedSavedGroup) {
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -3065,10 +2912,10 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
 #define MAYBE_RestoreWindowWithOpenedSavedGroup \
   RestoreWindowWithOpenedSavedGroup
 #endif
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
                        MAYBE_RestoreWindowWithOpenedSavedGroup) {
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -3140,7 +2987,7 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
                  ->visual_data());
 }
 
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
                        PRE_SavedGroupNotDuplicatedAfterRestart) {
   // Enable session service in default mode.
   EnableSessionService();
@@ -3154,13 +3001,13 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
   browser()->tab_strip_model()->AddToNewGroup({0});
 }
 
-IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
                        SavedGroupNotDuplicatedAfterRestart) {
   // Enable session service in default mode.
   EnableSessionService();
 
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -3193,60 +3040,4 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
       group_model->ContainsTabGroup(saved_group.local_group_id().value()));
 }
 
-INSTANTIATE_TEST_SUITE_P(TabRestore,
-                         TabRestoreSavedGroupsTest,
-                         testing::Bool());
-
-class TabRestoreSycnedServiceTest : public TabRestoreTest {
- public:
-  TabRestoreSycnedServiceTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {tab_groups::kTabGroupSyncServiceDesktopMigration}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Closing the last tab in a collapsed group then restoring will place the group
-// back collapsed with its metadata. Exact same test as
-// TabRestoreTest.RestoreCollapsedGroupTab but goes through the sync service
-// path initiated in BrowserLiveTabContext::AddRestoredTab.
-IN_PROC_BROWSER_TEST_F(TabRestoreSycnedServiceTest, RestoreCollapsedGroupTab) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
-
-  const int tab_count = AddFileSchemeTabs(browser(), 1);
-  ASSERT_LE(2, tab_count);
-
-  const int grouped_tab_index = tab_count - 1;
-  tab_groups::TabGroupId group_id =
-      browser()->tab_strip_model()->AddToNewGroup({grouped_tab_index});
-  const tab_groups::TabGroupVisualData visual_data(
-      u"Foo", tab_groups::TabGroupColorId::kCyan, true);
-
-  TabGroup* group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
-  ASSERT_TRUE(group);
-  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group->id(),
-                                                       visual_data);
-
-  CloseTab(grouped_tab_index);
-
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, grouped_tab_index));
-  ASSERT_EQ(tab_count, browser()->tab_strip_model()->count());
-
-  EXPECT_EQ(group_id, browser()
-                          ->tab_strip_model()
-                          ->GetTabGroupForTab(grouped_tab_index)
-                          .value());
-  const tab_groups::TabGroupVisualData* data = browser()
-                                                   ->tab_strip_model()
-                                                   ->group_model()
-                                                   ->GetTabGroup(group_id)
-                                                   ->visual_data();
-  ASSERT_TRUE(data);
-  EXPECT_EQ(data->title(), visual_data.title());
-  EXPECT_EQ(data->color(), visual_data.color());
-  EXPECT_TRUE(data->is_collapsed());
-}
 }  // namespace sessions

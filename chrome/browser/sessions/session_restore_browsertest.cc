@@ -59,6 +59,7 @@
 #include "chrome/browser/sessions/tab_loader_delegate.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -69,8 +70,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -1069,8 +1068,7 @@ std::vector<std::optional<tab_groups::TabGroupId>> GetTabGroups(
 // different code paths. So, create a parametrized test fixture to run each test
 // with and without a command reset. The bool test parameter determines whether
 // to do a command reset when quitting and restoring.
-class SessionRestoreTabGroupsTest : public SessionRestoreTest,
-                                    public testing::WithParamInterface<bool> {
+class SessionRestoreTabGroupsTest : public SessionRestoreTest {
  public:
   SessionRestoreTabGroupsTest() = default;
 
@@ -1079,11 +1077,9 @@ class SessionRestoreTabGroupsTest : public SessionRestoreTest,
 
   Browser* QuitBrowserAndRestore(Browser* browser) {
     // The test parameter determines whether to do a command reset.
-    if (GetParam()) {
-      SessionService* const session_service =
-          SessionServiceFactory::GetForProfile(browser->profile());
-      session_service->ResetFromCurrentBrowsers();
-    }
+    SessionService* const session_service =
+        SessionServiceFactory::GetForProfile(browser->profile());
+    session_service->ResetFromCurrentBrowsers();
 
     return SessionRestoreTest::QuitBrowserAndRestore(browser);
   }
@@ -1094,7 +1090,7 @@ class SessionRestoreTabGroupsTest : public SessionRestoreTest,
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, TabsWithGroups) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTabGroupsTest, TabsWithGroups) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   constexpr int kNumTabs = 6;
@@ -1121,7 +1117,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, TabsWithGroups) {
       CheckTabGrouping(new_browser->tab_strip_model(), group_spec));
 }
 
-IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, GroupMetadataRestored) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTabGroupsTest, GroupMetadataRestored) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   // Open up 4 more tabs, making 5 including the initial tab.
@@ -1173,7 +1169,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, GroupMetadataRestored) {
   EXPECT_EQ(group2_data.is_collapsed(), group2_restored_data->is_collapsed());
 }
 
-IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest,
+IN_PROC_BROWSER_TEST_F(SessionRestoreTabGroupsTest,
                        TabGroupIDsRelabeledOnRestore) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
@@ -1212,7 +1208,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest,
 #else
 #define MAYBE_RecentlyClosedGroup RecentlyClosedGroup
 #endif
-IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, MAYBE_RecentlyClosedGroup) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTabGroupsTest, MAYBE_RecentlyClosedGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   constexpr int kNumTabs = 2;
@@ -1266,10 +1262,6 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, MAYBE_RecentlyClosedGroup) {
       static_cast<sessions::tab_restore::Group*>(new_entries.front().get());
   ASSERT_EQ(new_group_entry->tabs.size(), 2u);
 }
-
-INSTANTIATE_TEST_SUITE_P(WithAndWithoutReset,
-                         SessionRestoreTabGroupsTest,
-                         testing::Values(false, true));
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAfterDelete) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
@@ -3174,52 +3166,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
             0U);
 }
 
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWithTabRemovedFromGroup) {
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    // Cannot simulate sync removal of tab using TabGroupSyncService API. This
-    // causes this test to fail when the migration flag is enabled.
-    // TODO(crbug.com/365152362): Skip for now and reassess if this test is
-    // still necessary.
-    GTEST_SKIP();
-  }
-
-  // Add two more tabs.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  auto tab_group_id = browser()->tab_strip_model()->AddToNewGroup({0, 1, 2});
-
-  auto* saved_tab_group_keyed_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser()->profile());
-  ASSERT_NE(saved_tab_group_keyed_service, nullptr);
-
-  ASSERT_TRUE(saved_tab_group_keyed_service);
-
-  auto* saved_tab_group =
-      saved_tab_group_keyed_service->model()->Get(tab_group_id);
-  ASSERT_TRUE(saved_tab_group);
-  auto saved_group_id = saved_tab_group->saved_guid();
-
-  // This ensures SessionService knows about the savedtabgroup. It shouldn't be
-  // necessary.
-  browser()->tab_strip_model()->ChangeTabGroupVisuals(
-      tab_group_id,
-      tab_groups::TabGroupVisualData(u"x", tab_groups::TabGroupColorId::kGrey));
-
-  QuitBrowserAndRestore(
-      browser(), GURL(), true, base::BindLambdaForTesting([&]() {
-        saved_tab_group_keyed_service->model()->RemoveTabFromGroupLocally(
-            saved_group_id, saved_tab_group->saved_tabs()[0].saved_tab_guid());
-      }));
-}
-
 // This class and tests are to verify reading a file with an error in it results
 // in a restore and logging the error. The file was created from the test
 // TwoTabsSecondSelected with an extra command at the end of the file that does
@@ -4661,24 +4607,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreStaleSessionCookieDeletionTest,
   EXPECT_FALSE(HasCookie(new_browser, "other_page_session_stale_cookie"));
 }
 
-class SavedTabGroupSessionRestoreTest
-    : public SessionRestoreTest,
-      public ::testing::WithParamInterface<bool> {
+class SavedTabGroupSessionRestoreTest : public SessionRestoreTest {
  public:
-  SavedTabGroupSessionRestoreTest() {
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupSyncServiceDesktopMigration}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration});
-    }
-  }
-  SavedTabGroupSessionRestoreTest(const SavedTabGroupSessionRestoreTest&) =
-      delete;
-  SavedTabGroupSessionRestoreTest& operator=(
-      const SavedTabGroupSessionRestoreTest&) = delete;
-
   void WaitForPostedTasks() {
     // Post a dummy task in the current thread and wait for its completion so
     // that any already posted tasks are completed.
@@ -4687,15 +4617,12 @@ class SavedTabGroupSessionRestoreTest
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // This test simulates migrating from V1 of SavedTabGroups to V2. A user may
 // have unsaved groups at the time they update the browser. We must ensure all
 // groups are saved by default correctly. See crbug.com/344016224.
-IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
+IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
                        UnsavedGroupDefaultSavedAfterBrowserRestart) {
   // Add a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -4713,7 +4640,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
 
   // Expect no groups have been saved at this point.
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -4737,7 +4664,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
 // This test simulates creating a default group (using the default group color
 // and no title). Ensure on restart there was no duplicated groups and that the
 // restored group is connected to the saved group.
-IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
+IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
                        NoDuplicatesOfDefaultSavedGroupAfterBrowserRestart) {
   // Add a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -4747,7 +4674,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
 
   // Expect no groups have been saved at this point.
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
 
@@ -4773,7 +4700,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
 
 // This test simulates creating multiple groups with different visual data
 // and ensuring on restart they are restored with the same information.
-IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
+IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
                        MultipleSavedGroupsAfterBrowserRestart) {
   // Add a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -4789,7 +4716,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
 
   // Expect no groups have been saved at this point.
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
   ASSERT_TRUE(service);
   service->SetIsInitializedForTesting(true);
@@ -4846,7 +4773,3 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
   EXPECT_EQ(tab_groups::TabGroupColorId::kBlue,
             local_group2->visual_data()->color());
 }
-
-INSTANTIATE_TEST_SUITE_P(SessionRestore,
-                         SavedTabGroupSessionRestoreTest,
-                         testing::Bool());

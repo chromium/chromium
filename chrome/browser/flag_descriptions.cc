@@ -4030,13 +4030,6 @@ const char kDataSharingDebugLogsDescription[] =
     "Enables the data sharing infrastructure to log and save debug messages "
     "that can be shown in the internals page.";
 
-const char kTabGroupSyncServiceDesktopMigrationId[] =
-    "tab-group-sync-service-desktop-migration";
-const char kTabGroupSyncServiceDesktopMigrationName[] =
-    "Tab Group Sync Service Desktop Migration";
-const char kTabGroupSyncServiceDesktopMigrationDescription[] =
-    "Enables use of the TabGroupSyncService. This is a backend only change.";
-
 const char kTabGroupShorcutsId[] = "tab-group-shortcuts";
 const char kTabGroupShorcutsName[] = "Tab Group Keyboard Shortcuts";
 const char kTabGroupShorcutsDescription[] =

@@ -18,6 +18,7 @@
 #include "chrome/browser/bookmarks/url_and_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats_tab_helper.h"
@@ -336,7 +337,7 @@ void DoOpen(Browser* browser,
     }
 
     tab_groups::TabGroupSyncService* tab_group_sync_service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
             browser->profile());
 
     std::optional<base::Uuid> connected_group_id =
@@ -437,7 +438,7 @@ void DoOpenPromptConfirm(
   }
 
   tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
   std::optional<base::Uuid> connected_group_id =
       GetConnectedTabGroupIdFromBookmarkFolder(tab_group_sync_service,
                                                bookmark_folder_node_id);

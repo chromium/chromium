@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -36,6 +37,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_platform_specific_tab_data.h"
@@ -180,7 +182,7 @@ const std::optional<base::Uuid>
 BrowserLiveTabContext::GetSavedTabGroupIdForGroup(
     const tab_groups::TabGroupId& group) const {
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(&profile_.get());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(&profile_.get());
   CHECK(tab_group_service);
 
   const std::optional<tab_groups::SavedTabGroup> saved_group =
@@ -222,7 +224,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     bool is_restoring_group_or_window,
     sessions::tab_restore::Type original_session_type) {
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(&profile_.get());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(&profile_.get());
   CHECK(tab_group_service);
 
   SessionStorageNamespace* storage_namespace =

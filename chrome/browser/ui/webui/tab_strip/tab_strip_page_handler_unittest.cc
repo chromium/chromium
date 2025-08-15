@@ -15,7 +15,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
@@ -171,7 +170,7 @@ class TabStripPageHandlerTest : public BrowserWithTestWindowTest {
   void WaitForTabGroupSyncServiceInitialized(Profile* profile) {
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
-            tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile));
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile));
     observer->Wait();
   }
 

@@ -18,13 +18,6 @@ const int kDefaultGroupCleanUpTimeInternalInSeconds = 60 * 60;
 constexpr char kGroupCleanUpTimeIntervalInSecondsFinchKey[] =
     "group_clean_up_time_internal_seconds";
 
-// Feature flag specific to Desktop platforms. When enabled, desktop platforms
-// will use the TabGroupSyncService. When disabled, desktop platforms will
-// continue to use SavedTabGroupKeyedService.
-BASE_FEATURE(kTabGroupSyncServiceDesktopMigration,
-             "TabGroupSyncServiceDesktopMigration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature flag for Java controller layer migration to use TabGroupSyncDelegate.
 // Noop when disabled.
 BASE_FEATURE(kTabGroupSyncDelegateAndroid,
@@ -64,11 +57,6 @@ BASE_FEATURE(kEnableOriginatingSavedGroupCleanUp,
 BASE_FEATURE(kLeftClickOpensTabGroupBubble,
              "LeftClickOpensTabGroupBubble",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsTabGroupSyncServiceDesktopMigrationEnabled() {
-  return (base::FeatureList::IsEnabled(kTabGroupSyncServiceDesktopMigration) ||
-          data_sharing::features::IsDataSharingFunctionalityEnabled());
-}
 
 bool IsTabGroupSyncDelegateAndroidEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupSyncDelegateAndroid);

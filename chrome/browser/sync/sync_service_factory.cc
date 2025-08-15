@@ -57,6 +57,7 @@
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/tab_group_sync/feature_utils.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_trial.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
@@ -73,6 +74,7 @@
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/sync/base/command_line_switches.h"
@@ -114,16 +116,6 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#elif BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
@@ -144,7 +136,7 @@ tab_groups::TabGroupSyncService* GetTabGroupSyncService(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   CHECK(service);
   return service;
 #elif BUILDFLAG(IS_ANDROID)
@@ -541,13 +533,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(commerce::ProductSpecificationsServiceFactory::GetInstance());
   DependsOn(ProfilePasswordStoreFactory::GetInstance());
   DependsOn(PowerBookmarkServiceFactory::GetInstance());
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-  DependsOn(tab_groups::SavedTabGroupServiceFactory::GetInstance());
-#elif BUILDFLAG(IS_ANDROID)
-  DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
+
   DependsOn(SecurityEventRecorderFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   DependsOn(SharingMessageBridgeFactory::GetInstance());

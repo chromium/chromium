@@ -9,6 +9,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -167,7 +168,7 @@ bool BookmarkBarController::ShouldShowBookmarkBar() const {
   const bool has_bookmarks = bookmark_model && bookmark_model->HasBookmarks();
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   const bool has_saved_tab_groups =
       tab_group_service && !tab_group_service->GetAllGroups().empty();
 

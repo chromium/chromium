@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -325,7 +327,8 @@ void SavedTabGroupButton::ShowContextMenuForViewImpl(
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
   TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->profile());
 
   const std::optional<SavedTabGroup> saved_group =
       tab_group_service->GetGroup(guid_);

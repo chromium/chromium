@@ -66,7 +66,7 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
                                         public TabGroupSyncService::Observer {
  public:
   TabGroupSyncDelegateBrowserTest() {
-    features_.InitWithFeatures({kTabGroupSyncServiceDesktopMigration}, {});
+    features_.InitWithFeatures({}, {});
 
     dependency_manager_subscription_ =
         BrowserContextDependencyManager::GetInstance()

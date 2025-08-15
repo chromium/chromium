@@ -119,6 +119,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/signin",
+    "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",

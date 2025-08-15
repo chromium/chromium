@@ -34,11 +34,9 @@ bool IsTabGroupSyncEnabled(PrefService* pref_service) {
   // current device but is enabled on one of the remote devices. We will
   // deprecate this after a milestone.
   pref_service->ClearPref(tab_groups::prefs::kSyncableTabGroups);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return true;
-#else
-  return IsTabGroupSyncServiceDesktopMigrationEnabled();
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace tab_groups

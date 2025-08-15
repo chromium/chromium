@@ -14,8 +14,6 @@ BASE_DECLARE_FEATURE(kTabGroupSyncDisableNetworkLayer);
 
 BASE_DECLARE_FEATURE(kTabGroupsSaveV2);
 
-BASE_DECLARE_FEATURE(kTabGroupSyncServiceDesktopMigration);
-
 BASE_DECLARE_FEATURE(kTabGroupSyncDelegateAndroid);
 
 BASE_DECLARE_FEATURE(kRestrictDownloadOnSyncedTabs);
@@ -29,8 +27,6 @@ BASE_DECLARE_FEATURE(kEnableUrlRestriction);
 BASE_DECLARE_FEATURE(kEnableOriginatingSavedGroupCleanUp);
 
 BASE_DECLARE_FEATURE(kLeftClickOpensTabGroupBubble);
-
-extern bool IsTabGroupSyncServiceDesktopMigrationEnabled();
 
 extern bool IsTabGroupSyncDelegateAndroidEnabled();
 

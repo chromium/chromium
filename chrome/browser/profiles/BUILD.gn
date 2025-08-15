@@ -269,6 +269,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/signin",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
+    "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/autofill",

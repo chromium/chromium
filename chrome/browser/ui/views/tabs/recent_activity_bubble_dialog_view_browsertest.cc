@@ -198,8 +198,7 @@ class RecentActivityBubbleDialogViewBrowserTest : public DialogBrowserTest {
  public:
   RecentActivityBubbleDialogViewBrowserTest() {
     features_.InitWithFeatures(
-        {tab_groups::kTabGroupSyncServiceDesktopMigration,
-         data_sharing::features::kDataSharingFeature,
+        {data_sharing::features::kDataSharingFeature,
          collaboration::features::kCollaborationMessaging},
         {});
   }

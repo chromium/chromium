@@ -69,6 +69,7 @@
 #include "chrome/browser/platform_util.h"  // nogncheck
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"                   // nogncheck
 #include "chrome/browser/ui/browser_finder.h"            // nogncheck
 #include "chrome/browser/ui/browser_navigator.h"         // nogncheck
@@ -89,6 +90,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_id.h"  // nogncheck
 #include "content/public/browser/back_forward_cache.h"
@@ -1097,7 +1099,7 @@ bool ExtensionTabUtil::GetSharedStateOfGroup(const tab_groups::TabGroupId& id) {
   }
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
   if (!tab_group_service) {
     return false;
   }
@@ -1562,7 +1564,7 @@ bool ExtensionTabUtil::TabIsInSavedTabGroup(content::WebContents* contents,
   }
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           tab_strip_model->profile());
 
   // If the service failed to start, then there are no saved tab groups.

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -518,7 +519,7 @@ bool TabGroupHeader::ShouldShowHeaderIcon() const {
 
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_slot_controller_->GetBrowser()
-          ? tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          ? tab_groups::TabGroupSyncServiceFactory::GetForProfile(
                 tab_slot_controller_->GetBrowser()->profile())
           : nullptr;
   if (!tab_group_service) {

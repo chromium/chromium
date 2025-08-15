@@ -53,6 +53,7 @@
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
@@ -1200,7 +1201,7 @@ void MoveGroupToNewWindow(Browser* browser, tab_groups::TabGroupId group) {
   }
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
   std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
 
   if (tab_group_service && tab_group_service->GetGroup(group)) {
@@ -1342,7 +1343,7 @@ void MoveGroupToExistingWindow(Browser* source,
   CHECK(source->tab_strip_model()->group_model()->ContainsTabGroup(group));
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(source->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(source->profile());
 
   std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
   if (tab_group_service && tab_group_service->GetGroup(group)) {

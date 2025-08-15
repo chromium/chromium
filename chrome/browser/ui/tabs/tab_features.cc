@@ -32,6 +32,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
@@ -243,7 +244,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab.GetContents());
 
     if (tab_groups::TabGroupSyncService* tab_group_sync_service =
-            tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile)) {
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {
       saved_tab_group_web_contents_listener_ =
           std::make_unique<tab_groups::SavedTabGroupWebContentsListener>(
               tab_group_sync_service, &tab);

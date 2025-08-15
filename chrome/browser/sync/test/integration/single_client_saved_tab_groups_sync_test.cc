@@ -9,7 +9,7 @@
 #include "chrome/browser/sync/test/integration/saved_tab_groups_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -121,7 +121,7 @@ class SingleClientSavedTabGroupsSyncTest : public SyncTest {
   }
 
   TabGroupSyncService* GetService() {
-    return tab_groups::SavedTabGroupUtils::GetServiceForProfile(GetProfile(0));
+    return tab_groups::TabGroupSyncServiceFactory::GetForProfile(GetProfile(0));
   }
 
  private:
@@ -180,19 +180,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
 
   TabGroupSyncService* service = GetService();
 
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    // TabGroupSyncService does not notify observers that an empty group has
-    // been added .
-    EXPECT_TRUE(service->GetGroup(group1.saved_guid()));
-  } else {
-    // Verify the group is added to the model but not the tab.
-    EXPECT_TRUE(
-        tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
-            .Wait());
-
-    EXPECT_TRUE(service->GetGroup(group1.saved_guid()));
-    EXPECT_TRUE(service->GetGroup(group1.saved_guid())->saved_tabs().empty());
-  }
+  // TabGroupSyncService does not notify observers that an empty group has
+  // been added .
+  EXPECT_TRUE(service->GetGroup(group1.saved_guid()));
 }
 
 // Save a tab with no group and validate it is added to the model.

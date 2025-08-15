@@ -86,8 +86,7 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate,
   // across browsers.
   std::unique_ptr<SavedTabGroupModelListener> listener_;
 
-  // Logs a collection of metrics every hour to mirror
-  // SavedTabGroupKeyedService.
+  // Logs a collection of metrics every hour.
   base::RepeatingTimer hourly_metrics_timer_;
 
   base::ScopedObservation<TabGroupSyncService, TabGroupSyncService::Observer>
