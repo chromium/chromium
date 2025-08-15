@@ -70,14 +70,10 @@ std::unique_ptr<KeyedService> SearchEnginePreconnectorKeyedServiceFactory::
   auto search_engine_preconnector =
       std::make_unique<SearchEnginePreconnector>(context);
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Start preconnecting to the search engine. For Android, we start the
-  // preconnect in the `NavigationPredictorBridge` where start / stop is
-  // centrally managed.
+  // Start preconnecting to the search engine.
   if (search_engine_preconnector) {
     search_engine_preconnector->StartPreconnecting(
         /*with_startup_delay=*/true);
   }
-#endif
   return search_engine_preconnector;
 }
