@@ -721,7 +721,12 @@ class MediaCodecBridge {
 
     @CalledByNative
     private boolean isSoftwareCodec() {
-        return MediaCodecUtil.isSoftwareCodec(mMediaCodec.getCodecInfo());
+        try {
+            return MediaCodecUtil.isSoftwareCodec(mMediaCodec.getCodecInfo());
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Cannot get codec info", e);
+            return false;
+        }
     }
 
     @CalledByNative
