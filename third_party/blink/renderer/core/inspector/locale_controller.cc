@@ -33,8 +33,7 @@ void UpdateLocale(const String& locale) {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(
-          WTF::BindRepeating(&UpdateDefaultLocaleInIsolate));
+      ->ForEachMainThreadIsolate(&UpdateDefaultLocaleInIsolate);
   WorkerThread::CallOnAllWorkerThreads(&NotifyLocaleChangeOnWorkerThread,
                                        TaskType::kInternalDefault);
 }

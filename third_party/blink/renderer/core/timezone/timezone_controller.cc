@@ -95,8 +95,7 @@ bool SetIcuTimeZoneAndNotifyV8(const String& timezone_id) {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating(
-          [](v8::Isolate* isolate) { NotifyTimezoneChangeToV8(isolate); }));
+      ->ForEachMainThreadIsolate(&NotifyTimezoneChangeToV8);
   WorkerThread::CallOnAllWorkerThreads(&NotifyTimezoneChangeOnWorkerThread,
                                        TaskType::kInternalDefault);
   DispatchTimeZoneChangeEventToFrames();

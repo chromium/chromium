@@ -155,9 +155,9 @@ void JavaScriptCallStackCollector::CollectJavaScriptCallStack() {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(BindRepeating(
-          &JavaScriptCallStackCollector::InterruptIsolateAndCollectCallStack,
-          Unretained(this)));
+      ->ForEachMainThreadIsolate([this](v8::Isolate* isolate) {
+        InterruptIsolateAndCollectCallStack(isolate);
+      });
 }
 
 }  // namespace blink

@@ -157,9 +157,9 @@ void OomInterventionImpl::TriggerGC() {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(BindRepeating([](v8::Isolate* isolate) {
+      ->ForEachMainThreadIsolate([](v8::Isolate* isolate) {
         isolate->MemoryPressureNotification(v8::MemoryPressureLevel::kCritical);
-      }));
+      });
 }
 
 }  // namespace blink

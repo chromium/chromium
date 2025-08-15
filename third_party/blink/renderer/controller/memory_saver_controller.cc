@@ -58,11 +58,9 @@ void MemorySaverController::SetMemorySaverModeForAllIsolates(
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(BindRepeating(
-          [](bool memory_saver_mode_enabled, v8::Isolate* isolate) {
-            isolate->SetMemorySaverMode(memory_saver_mode_enabled);
-          },
-          memory_saver_mode_enabled));
+      ->ForEachMainThreadIsolate([&](v8::Isolate* isolate) {
+        isolate->SetMemorySaverMode(memory_saver_mode_enabled);
+      });
   WorkerBackingThread::SetMemorySaverModeForWorkerThreadIsolates(
       memory_saver_mode_enabled);
 }

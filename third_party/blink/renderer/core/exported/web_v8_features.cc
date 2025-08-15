@@ -131,11 +131,9 @@ void WebV8Features::SetIsolatePriority(base::Process::Priority priority) {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating(
-          [](v8::Isolate::Priority priority, v8::Isolate* isolate) {
-            isolate->SetPriority(priority);
-          },
-          isolate_priority));
+      ->ForEachMainThreadIsolate([&](v8::Isolate* isolate) {
+        isolate->SetPriority(isolate_priority);
+      });
   WorkerBackingThread::SetWorkerThreadIsolatesPriority(isolate_priority);
 }
 
