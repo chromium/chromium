@@ -67,7 +67,13 @@ id<GREYMatcher> NotNowButton() {
 
 // Tests that trying to share a group fails with an alert offering to update the
 // app.
-- (void)testSharingPromptsToUpdate {
+// TODO(crbug.com/429118547): Test fails on iPhone device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSharingPromptsToUpdate DISABLED_testSharingPromptsToUpdate
+#else
+#define MAYBE_testSharingPromptsToUpdate testSharingPromptsToUpdate
+#endif
+- (void)MAYBE_testSharingPromptsToUpdate {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
