@@ -272,6 +272,13 @@ void ZoomBubbleView::ShowBubble(content::WebContents* web_contents,
   // disappears after a short timeout.
   zoom_bubble_->ShowForReason(reason, /* allow_refocus_alert */ false);
 
+  // This is a temporary fix (https://crbug.com/434615869). For some reason,
+  // `zoom_bubble_` become null after calling ShowForReason. A long term fix
+  // will be to have a clear and defined lifetime for the zoom bubble.
+  if (!zoom_bubble_) {
+    return;
+  }
+
   // Update the "bubble is showing" state before we refresh the icon so that
   // UpdateZoomIconVisibility() sees the correct value bubble state value.
   zoom_bubble_->UpdateZoomBubbleStateAndIconVisibility(
