@@ -610,6 +610,42 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testSingleTabReparentingIntent_PinnedTab() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
+        reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        reparentingIntent.setData(Uri.parse(JUnitTestGURLs.URL_1.getSpec()));
+        IntentHandler.setTabId(reparentingIntent, 101);
+        IntentHandler.setPinnedState(reparentingIntent, true);
+        IntentUtils.addTrustedIntentExtras(reparentingIntent);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(
+                            "A new tab should be created.",
+                            tabModel.getCount(),
+                            Matchers.is(initialTabCount.get() + 1));
+                    // Pinned tabs are added to the start of the tab model.
+                    Tab tab = tabModel.getTabAt(initialTabCount.get() - 1);
+                    Criteria.checkThat(
+                            "The URL of the new tab should be correct.",
+                            tab.getUrl().getSpec(),
+                            Matchers.is(JUnitTestGURLs.URL_1.getSpec()));
+                    Criteria.checkThat(
+                            "The new tab should be pinned.", tab.getIsPinned(), Matchers.is(true));
+                });
+    }
+
+    @Test
+    @MediumTest
     // Intentionally not batched due to recreating activity.
     @RequiresRestart
     @DisabledTest(message = "crbug.com/1187320 This doesn't work with FeedV2 and crbug.com/1096295")

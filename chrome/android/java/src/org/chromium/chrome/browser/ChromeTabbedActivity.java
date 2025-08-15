@@ -1822,6 +1822,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
                         tabIdToBringToFront,
                         intent);
+        if (IntentHandler.getPinnedState(intent)) {
+            getTabModelSelector().getModel(tab.isIncognito()).pinTab(tab.getId());
+        }
         int destTabId = IntentHandler.getDestTabId(intent);
         if (destTabId != Tab.INVALID_TAB_ID) {
             TabGroupUtils.mergeTabsToDest(
@@ -1829,7 +1832,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     destTabId,
                     getTabModelSelector()
                             .getTabGroupModelFilterProvider()
-                            .getCurrentTabGroupModelFilter(),
+                            .getTabGroupModelFilter(tab.isIncognito()),
                     null);
             IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
         }
@@ -1854,7 +1857,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         ArrayList<Integer> tabIds = multiTabMetadata.tabIds;
         ArrayList<String> urls = multiTabMetadata.urls;
         boolean[] isPinned = multiTabMetadata.isPinned;
-        TabModel tabModel = getCurrentTabModel();
+        TabModel tabModel = getTabModelSelector().getModel(multiTabMetadata.isIncognito);
         List<Tab> tabs = new ArrayList<>();
 
         for (int i = 0; i < urls.size(); i++) {
@@ -1877,7 +1880,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     destTabId,
                     getTabModelSelector()
                             .getTabGroupModelFilterProvider()
-                            .getCurrentTabGroupModelFilter(),
+                            .getTabGroupModelFilter(multiTabMetadata.isIncognito),
                     null);
             IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
         }

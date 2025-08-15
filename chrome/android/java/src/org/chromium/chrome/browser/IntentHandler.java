@@ -93,6 +93,9 @@ public class IntentHandler {
     /** Tab ID to use when creating a new Tab. */
     private static final String EXTRA_TAB_ID = "com.android.chrome.tab_id";
 
+    /** The pinned state of the tab to be created. */
+    private static final String EXTRA_PINNED_STATE = "com.android.chrome.pinned_state";
+
     /** The tab id of the parent tab, if any. */
     public static final String EXTRA_PARENT_TAB_ID = "com.android.chrome.parent_tab_id";
 
@@ -1646,6 +1649,19 @@ public class IntentHandler {
     public static int getTabId(@Nullable Intent intent) {
         if (!wasIntentSenderChrome(intent)) return Tab.INVALID_TAB_ID;
         return IntentUtils.safeGetIntExtra(intent, EXTRA_TAB_ID, Tab.INVALID_TAB_ID);
+    }
+
+    /**
+     * Sets the pinned state extra for a given intent. Will only be usable by trusted Chrome
+     * intents.
+     */
+    public static void setPinnedState(Intent intent, boolean isPinned) {
+        intent.putExtra(IntentHandler.EXTRA_PINNED_STATE, isPinned);
+    }
+
+    public static boolean getPinnedState(Intent intent) {
+        if (!wasIntentSenderChrome(intent)) return false;
+        return IntentUtils.safeGetBooleanExtra(intent, IntentHandler.EXTRA_PINNED_STATE, false);
     }
 
     /**

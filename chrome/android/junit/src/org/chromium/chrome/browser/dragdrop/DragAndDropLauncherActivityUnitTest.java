@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
@@ -181,6 +182,7 @@ public class DragAndDropLauncherActivityUnitTest {
     private void testGetTabOrGroupIntent(
             boolean isGroupDrag, boolean isMultiTabDrag, int destWindowId) {
         Tab tab = MockTab.createAndInitialize(1, mProfile);
+        tab.setIsPinned(true);
         ChromeDropDataAndroid dropData;
         if (isGroupDrag) {
             dropData = createTabGroupDropData(/* allowDragToCreateNewInstance= */ true);
@@ -193,6 +195,7 @@ public class DragAndDropLauncherActivityUnitTest {
         Intent intent =
                 DragAndDropLauncherActivity.buildTabOrGroupIntent(
                         dropData, mContext, sourceWindowId, destWindowId);
+        IntentUtils.addTrustedIntentExtras(intent);
         assertEquals(
                 "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
                 DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW,
@@ -264,6 +267,10 @@ public class DragAndDropLauncherActivityUnitTest {
                     "The intent data value should match.",
                     Uri.parse(tab.getUrl().getSpec()),
                     intent.getData());
+            assertEquals(
+                    "The intent data value should match - Is Pinned.",
+                    tab.getIsPinned(),
+                    IntentHandler.getPinnedState(intent));
         }
     }
 

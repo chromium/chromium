@@ -180,6 +180,7 @@ public class DragAndDropLauncherActivity extends Activity {
     static Intent getTabIntent(Intent intent, @Nullable Tab tab) {
         intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.TAB_IN_STRIP);
         intent.putExtra(IntentHandler.EXTRA_DRAGGED_TAB_ID, assumeNonNull(tab).getId());
+        IntentHandler.setPinnedState(intent, tab.getIsPinned());
         intent.setData(Uri.parse(tab.getUrl().getSpec()));
         return intent;
     }
