@@ -132,6 +132,8 @@ source_set("impl") {
     "host/glic_annotation_manager.cc",
     "host/glic_cookie_synchronizer.cc",
     "host/glic_page_handler.cc",
+    "host/page_metadata_manager.cc",
+    "host/page_metadata_manager.h",
     "host/glic_synthetic_trial_manager.cc",
     "host/glic_synthetic_trial_manager.h",
     "host/glic_ui.cc",
