@@ -434,11 +434,14 @@ bool DbusMenu::AboutToShowImpl(int32_t id) {
   if (item == items_.end())
     return false;
 
-  ui::MenuModel* menu = item->second->menu;
-  if (!menu)
-    return false;
+  if (id != 0) {
+    ui::MenuModel* menu = item->second->menu;
+    if (!menu) {
+      return false;
+    }
 
-  menu->MenuWillShow();
+    menu->MenuWillShow();
+  }
 
   return true;
 }
