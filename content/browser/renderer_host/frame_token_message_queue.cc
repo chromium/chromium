@@ -8,6 +8,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 
 namespace content {
 
@@ -35,7 +36,7 @@ void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token,
   // TODO(jonross): we should consider updating LocalSurfaceId to also track
   // frame_token. So that we could properly differentiate between origins of
   // frame. As we cannot enforce ordering between Reset Renderers.
-  if ((frame_token <= last_received_frame_token_) &&
+  if (!viz::FrameTokenGT(frame_token, last_received_frame_token_) &&
       !(last_received_frame_token_reset_ &&
         last_received_frame_token_reset_ != frame_token)) {
     // TODO(crbug.com/431761865): Remove after the bug is fixed.

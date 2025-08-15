@@ -53,21 +53,6 @@ namespace viz {
 
 namespace {
 
-std::string SubmitResultToString(SubmitResult result) {
-  switch (result) {
-    case SubmitResult::COPY_OUTPUT_REQUESTS_NOT_ALLOWED:
-      return "COPY_OUTPUT_REQUESTS_NOT_ALLOWED";
-    case SubmitResult::SIZE_MISMATCH:
-      return "SIZE_MISMATCH";
-    case SubmitResult::SURFACE_ID_DECREASED:
-      return "SURFACE_ID_DECREASED";
-    case SubmitResult::SURFACE_OWNED_BY_ANOTHER_CLIENT:
-      return "SURFACE_OWNED_BY_ANOTHER_CLIENT";
-    default:
-      NOTREACHED();
-  }
-}
-
 #define RETURN_IF_FALSE(expr, error)  \
   do {                                \
     if (!(expr)) {                    \
@@ -1625,8 +1610,9 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
       host_impl_->GetCurrentLocalSurfaceId(), std::move(frame),
       std::move(hit_test_region_list), 0);
   if (result != SubmitResult::ACCEPTED) {
-    HandleBadMojoMessage("MaybeSubmitCompositorFrame",
-                         SubmitResultToString(result));
+    HandleBadMojoMessage(
+        "MaybeSubmitCompositorFrame",
+        CompositorFrameSinkSupport::GetSubmitResultAsString(result));
     return;
   }
 
