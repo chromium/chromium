@@ -82,8 +82,8 @@ CookieControlsIconView::CookieControlsIconView(
                          page_action_icon_delegate,
                          "CookieControls"),
       browser_(browser),
-      bubble_coordinator_(CHECK_DEREF(
-          browser->GetFeatures().cookie_controls_bubble_coordinator())) {
+      bubble_coordinator_(
+          CHECK_DEREF(CookieControlsBubbleCoordinator::From(browser))) {
   CHECK(browser_);
   SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);

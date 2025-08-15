@@ -15,7 +15,12 @@ class WebContents;
 
 namespace {}  // namespace
 
-CookieControlsBubbleCoordinator::CookieControlsBubbleCoordinator() = default;
+DEFINE_USER_DATA(CookieControlsBubbleCoordinator);
+
+CookieControlsBubbleCoordinator::CookieControlsBubbleCoordinator(
+    BrowserWindowInterface* browser_window)
+    : scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
+                                *this) {}
 
 CookieControlsBubbleCoordinator::~CookieControlsBubbleCoordinator() = default;
 
@@ -88,4 +93,10 @@ void CookieControlsBubbleCoordinator::OnViewIsDeleting(
     views::View* observed_view) {
   bubble_view_ = nullptr;
   view_controller_ = nullptr;
+}
+
+// static
+CookieControlsBubbleCoordinator* CookieControlsBubbleCoordinator::From(
+    BrowserWindowInterface* window) {
+  return Get(window->GetUnownedUserDataHost());
 }

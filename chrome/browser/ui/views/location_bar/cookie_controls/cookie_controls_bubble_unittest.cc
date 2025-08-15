@@ -94,17 +94,17 @@ class CookieControlsBubbleCoordinatorTest : public TestWithBrowserView {
         TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()),
         /*is_incognito_profile=*/false);
 
-    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
-
     AddTab(browser(), GURL("http://a.com"));
   }
 
   void TearDown() override {
-    // Clean up the coordinator before the browser is destroyed to avoid
-    // dangling pointers.
-    coordinator_ = nullptr;
+    // Clean up before the browser is destroyed to avoid dangling pointers.
     controller_ = nullptr;
     TestWithBrowserView::TearDown();
+  }
+
+  CookieControlsBubbleCoordinator* coordinator() {
+    return CookieControlsBubbleCoordinator::From(browser());
   }
 
   content_settings::CookieControlsController* controller() {
@@ -115,24 +115,21 @@ class CookieControlsBubbleCoordinatorTest : public TestWithBrowserView {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
- protected:
-  std::unique_ptr<CookieControlsBubbleCoordinator> coordinator_;
-
  private:
   std::unique_ptr<content_settings::CookieControlsController> controller_;
 };
 
 TEST_F(CookieControlsBubbleCoordinatorTest, ShowBubbleTest) {
-  EXPECT_EQ(coordinator_->GetBubble(), nullptr);
-  coordinator_->ShowBubble(browser_view()->toolbar_button_provider(),
-                           web_contents(), controller());
-  EXPECT_NE(coordinator_->GetBubble(), nullptr);
+  EXPECT_EQ(coordinator()->GetBubble(), nullptr);
+  coordinator()->ShowBubble(browser_view()->toolbar_button_provider(),
+                            web_contents(), controller());
+  EXPECT_NE(coordinator()->GetBubble(), nullptr);
 
   views::test::WidgetDestroyedWaiter waiter(
-      coordinator_->GetBubble()->GetWidget());
-  coordinator_->GetBubble()->GetWidget()->Close();
+      coordinator()->GetBubble()->GetWidget());
+  coordinator()->GetBubble()->GetWidget()->Close();
   waiter.Wait();
-  EXPECT_EQ(coordinator_->GetBubble(), nullptr);
+  EXPECT_EQ(coordinator()->GetBubble(), nullptr);
 }
 
 class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
@@ -544,9 +541,13 @@ class CookieControlsBubbleViewImplTest : public TestWithBrowserView {
         TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()),
         /*is_incognito_profile=*/false);
 
-    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
-    coordinator_->ShowBubble(browser_view()->toolbar_button_provider(),
-                             web_contents, controller_.get());
+    // This should really be a unit test and not a fake browser test.
+    coordinator()->ShowBubble(browser_view()->toolbar_button_provider(),
+                              web_contents, controller_.get());
+  }
+
+  CookieControlsBubbleCoordinator* coordinator() {
+    return CookieControlsBubbleCoordinator::From(browser());
   }
 
   void TearDown() override {
@@ -555,19 +556,17 @@ class CookieControlsBubbleViewImplTest : public TestWithBrowserView {
     views::test::WidgetDestroyedWaiter waiter(bubble_view()->GetWidget());
     bubble_view()->GetWidget()->Close();
     waiter.Wait();
-    EXPECT_EQ(coordinator_->GetBubble(), nullptr);
+    EXPECT_EQ(coordinator()->GetBubble(), nullptr);
 
-    coordinator_ = nullptr;
     controller_ = nullptr;
     TestWithBrowserView::TearDown();
   }
 
   CookieControlsBubbleViewImpl* bubble_view() {
-    return coordinator_->GetBubble();
+    return coordinator()->GetBubble();
   }
 
  private:
-  std::unique_ptr<CookieControlsBubbleCoordinator> coordinator_;
   std::unique_ptr<content_settings::CookieControlsController> controller_;
 };
 

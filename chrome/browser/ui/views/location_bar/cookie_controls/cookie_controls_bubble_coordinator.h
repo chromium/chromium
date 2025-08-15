@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_COORDINATOR_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_impl.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/view_observer.h"
 
 class CookieControlsBubbleViewImpl;
@@ -22,9 +26,14 @@ class WebContents;
 
 class CookieControlsBubbleCoordinator : public views::ViewObserver {
  public:
+  DECLARE_USER_DATA(CookieControlsBubbleCoordinator);
+
   ~CookieControlsBubbleCoordinator() override;
 
-  CookieControlsBubbleCoordinator();
+  explicit CookieControlsBubbleCoordinator(
+      BrowserWindowInterface* browser_window);
+
+  static CookieControlsBubbleCoordinator* From(BrowserWindowInterface* window);
 
   // Shows the CookieControlsBubbleView. If the bubble is currently shown it
   // simply returns.
@@ -46,6 +55,9 @@ class CookieControlsBubbleCoordinator : public views::ViewObserver {
 
   std::unique_ptr<CookieControlsBubbleViewController> view_controller_;
   raw_ptr<CookieControlsBubbleViewImpl> bubble_view_ = nullptr;
+
+  ui::ScopedUnownedUserData<CookieControlsBubbleCoordinator>
+      scoped_unowned_user_data_;
 
   // Testing override that's passed to CookieControlsBubbleViewController during
   // construction.

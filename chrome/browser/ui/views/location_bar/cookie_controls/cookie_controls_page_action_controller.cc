@@ -44,7 +44,7 @@ class BubbleDelegateImpl
     auto* const bwi = tab_interface_->GetBrowserWindowInterface();
     CHECK(bwi);
     CookieControlsBubbleCoordinator* const coordinator =
-        bwi->GetFeatures().cookie_controls_bubble_coordinator();
+        CookieControlsBubbleCoordinator::From(bwi);
     CHECK(coordinator);
     return *coordinator;
   }

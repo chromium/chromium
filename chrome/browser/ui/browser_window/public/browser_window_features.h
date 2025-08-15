@@ -325,10 +325,6 @@ class BrowserWindowFeatures {
     return tab_search_toolbar_button_controller_.get();
   }
 
-  CookieControlsBubbleCoordinator* cookie_controls_bubble_coordinator() {
-    return cookie_controls_bubble_coordinator_.get();
-  }
-
   BrowserSyncedWindowDelegate* synced_window_delegate() {
     return synced_window_delegate_.get();
   }
