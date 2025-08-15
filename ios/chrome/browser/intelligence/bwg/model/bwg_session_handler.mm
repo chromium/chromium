@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -66,12 +67,17 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
                        serverID:(NSString*)serverID {
   [self updateSessionWithClientID:clientID serverID:serverID];
   [self setSessionActive:YES clientID:clientID];
+
   // Start session timer.
   _sessionStartTime = base::TimeTicks::Now();
   // Reset first response flag for new session.
   _hasReceivedFirstResponse = NO;
   // Reset first prompt flag for new session.
   _hasSubmittedFirstPrompt = NO;
+
+  if (IsGeminiCrossTabEnabled()) {
+    [self dismissOtherActiveSessionsUsingClientID:clientID];
+  }
 }
 
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
@@ -162,6 +168,25 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
 
   BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
   BWGTabHelper->SetBwgUiShowing(active);
+}
+
+// Sets all BWG sessions inactive other than for the WebState matching
+// `clientID`.
+- (void)dismissOtherActiveSessionsUsingClientID:(NSString*)clientID {
+  // TODO(crbug.com/437338434): Keep track of last known active instance to not
+  // have to iterate over all WebStates.
+  for (int i = 0; i < _webStateList->count(); i++) {
+    web::WebState* webState = _webStateList->GetWebStateAt(i);
+    NSString* webStateUniqueID = base::SysUTF8ToNSString(
+        base::NumberToString(webState->GetUniqueIdentifier().identifier()));
+    if (!webState->IsRealized() ||
+        [webStateUniqueID isEqualToString:clientID]) {
+      continue;
+    }
+
+    BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
+    BWGTabHelper->DeactivateBWGSession();
+  }
 }
 
 @end

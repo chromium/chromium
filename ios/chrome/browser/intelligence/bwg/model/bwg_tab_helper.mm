@@ -86,6 +86,12 @@ bool BwgTabHelper::GetIsBwgSessionActiveInBackground() {
   return is_bwg_session_active_in_background_;
 }
 
+void BwgTabHelper::DeactivateBWGSession() {
+  is_bwg_session_active_in_background_ = false;
+  is_bwg_ui_showing_ = false;
+  cached_snapshot_ = nil;
+}
+
 bool BwgTabHelper::ShouldShowZeroState() {
   std::optional<std::string> last_interaction_url = GetURLOnLastInteraction();
   // Show zero-state if no last interaction URL was found.

@@ -28,6 +28,9 @@ class BwgTabHelper : public web::WebStateObserver,
   // Gets the state of `is_bwg_session_active_in_background_`.
   bool GetIsBwgSessionActiveInBackground();
 
+  // Deactivates the BWG associated to this WebState.
+  void DeactivateBWGSession();
+
   // Whether BWG should show the zero-state input box UI for the current Web
   // State and visible URL.
   bool ShouldShowZeroState();
