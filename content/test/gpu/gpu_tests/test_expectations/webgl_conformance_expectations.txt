@@ -358,26 +358,6 @@ crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.h
 # Skip test that breaks subsequent tests.
 crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 
-# Timeout on fuchsia on astro, likely due to the OOM.
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-00.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-01.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-02.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-03.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-04.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-05.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-06.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-07.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-08.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-09.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-10.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-11.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-12.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-13.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-14.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-15.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-16.html [ Skip ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-17.html [ Skip ]
-
 ###############################
 # Permanent Slow Expectations #
 ###############################
@@ -387,6 +367,11 @@ crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-o
 [ linux debug ] conformance/rendering/multisample-corruption.html [ Slow ]
 [ linux angle-opengl debug nvidia-0x2184 passthrough ] conformance/uniforms/uniform-samplers-test.html [ Slow ]
 crbug.com/401988385 [ chromeos angle-opengles mesa_ge_21.0 passthrough ] conformance/uniforms/uniform-samplers-test.html [ Slow ]
+
+# Fuchsia devices are less performant, these tests are running very close to the
+# edge of the 60s timeout.
+crbug.com/1490427 [ fuchsia web-engine-shell ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+[ fuchsia web-engine-shell ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
 
 ###################
 # Failures/Flakes #
