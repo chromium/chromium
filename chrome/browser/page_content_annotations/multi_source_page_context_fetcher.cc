@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/pdf/browser/pdf_document_helper.h"
@@ -430,8 +431,10 @@ class PageContextFetcher : public content::WebContentsObserver {
     if (eligibility) {
       // TODO(gklassen): Switch this to a shared helper to use the precursor
       // origin if the committed origin is opaque.
+      content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
       const auto url =
-          web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+          optimization_guide::GetURLForFrameMetadata(rfh->GetLastCommittedURL(),
+                                                     rfh->GetLastCommittedOrigin());
       const auto metadata = optimization_guide::GetFrameMetadataFromPageContent(
           *pending_result_->annotated_page_content_result);
       const bool is_eligible = optimization_guide::IsPageContextEligible(
