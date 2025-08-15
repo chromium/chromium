@@ -1378,6 +1378,13 @@ ci.builder(
             "linux-jammy",
             "x86-64",
         ],
+        per_test_modifications = {
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
+                ],
+            ),
+        },
     ),
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
