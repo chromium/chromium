@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FEDCM_MAPPERS_H_
-#define CONTENT_BROWSER_FEDCM_MAPPERS_H_
+#ifndef CONTENT_BROWSER_WEBID_MAPPERS_H_
+#define CONTENT_BROWSER_WEBID_MAPPERS_H_
 
 #include <string>
 #include <vector>
@@ -21,14 +21,16 @@ namespace content {
 
 enum class FedCmLifecycleStateFailureReason;
 
+namespace webid {
+
 // This header file defines functions which convert between FedCM types. It also
 // defines some constants used in some of these conversions.
 
-inline constexpr char kFedCmDefaultFieldName[] = "name";
-inline constexpr char kFedCmDefaultFieldEmail[] = "email";
-inline constexpr char kFedCmDefaultFieldPicture[] = "picture";
-inline constexpr char kFedCmFieldPhoneNumber[] = "tel";
-inline constexpr char kFedCmFieldUsername[] = "username";
+inline constexpr char kDefaultFieldName[] = "name";
+inline constexpr char kDefaultFieldEmail[] = "email";
+inline constexpr char kDefaultFieldPicture[] = "picture";
+inline constexpr char kFieldPhoneNumber[] = "tel";
+inline constexpr char kFieldUsername[] = "username";
 
 // Error codes sent to the metrics endpoint.
 // Enum is part of public FedCM API. Do not renumber error codes.
@@ -110,6 +112,7 @@ CONTENT_EXPORT void ComputeAccountFields(
     const std::vector<IdentityRequestDialogDisclosureField>& rp_fields,
     std::vector<IdentityRequestAccountPtr>& accounts);
 
+}  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FEDCM_MAPPERS_H_
+#endif  // CONTENT_BROWSER_WEBID_MAPPERS_H_

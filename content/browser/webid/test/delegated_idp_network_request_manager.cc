@@ -80,7 +80,7 @@ void DelegatedIdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
 void DelegatedIdpNetworkRequestManager::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
     bool did_show_ui,
-    MetricsEndpointErrorCode error_code) {
+    webid::MetricsEndpointErrorCode error_code) {
   delegate_->SendFailedTokenRequestMetrics(metrics_endpoint_url, did_show_ui,
                                            error_code);
 }

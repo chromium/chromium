@@ -36,12 +36,15 @@ class SimpleURLLoader;
 
 namespace content {
 
+namespace webid {
+enum class MetricsEndpointErrorCode;
+}
+
 using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
 using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
 class IdentityProviderInfo;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHostImpl;
-enum class MetricsEndpointErrorCode;
 
 // Manages network requests and maintains relevant state for interaction with
 // the Identity Provider across a FedCM transaction. Owned by
@@ -314,7 +317,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   virtual void SendFailedTokenRequestMetrics(
       const GURL& metrics_endpoint_url,
       bool did_show_ui,
-      MetricsEndpointErrorCode error_code);
+      webid::MetricsEndpointErrorCode error_code);
 
   // Send logout request to a single target.
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);

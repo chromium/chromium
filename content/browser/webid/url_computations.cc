@@ -10,8 +10,8 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
-#include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/mappers.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
@@ -23,9 +23,9 @@ namespace webid {
 namespace {
 
 bool IsRequestingDefaultPermissions(const std::vector<std::string>& fields) {
-  return base::Contains(fields, kFedCmDefaultFieldName) &&
-         base::Contains(fields, kFedCmDefaultFieldEmail) &&
-         base::Contains(fields, kFedCmDefaultFieldPicture);
+  return base::Contains(fields, webid::kDefaultFieldName) &&
+         base::Contains(fields, webid::kDefaultFieldEmail) &&
+         base::Contains(fields, webid::kDefaultFieldPicture);
 }
 
 }  // namespace
@@ -92,8 +92,8 @@ std::string ComputeUrlEncodedTokenPostData(
   if (fields) {
     fields_to_use = *fields;
   } else {
-    fields_to_use = {kFedCmDefaultFieldName, kFedCmDefaultFieldEmail,
-                     kFedCmDefaultFieldPicture};
+    fields_to_use = {webid::kDefaultFieldName, webid::kDefaultFieldEmail,
+                     webid::kDefaultFieldPicture};
   }
   if (!fields_to_use.empty()) {
     query += "&fields=" +

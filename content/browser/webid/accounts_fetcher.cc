@@ -8,9 +8,9 @@
 
 #include "base/containers/contains.h"
 #include "content/browser/webid/config_fetcher.h"
-#include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/mappers.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"

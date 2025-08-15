@@ -16,9 +16,9 @@
 #include "base/time/time.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
-#include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/mappers.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"
@@ -130,9 +130,9 @@ void FederatedSdJwtHandler::OnDisclosureParsed(
 }
 
 void FederatedSdJwtHandler::OnSdJwtParsed(const sdjwt::Jwt& jwt) {
-  std::vector<std::string> fields = {kFedCmDefaultFieldName,
-                                     kFedCmDefaultFieldEmail,
-                                     kFedCmDefaultFieldPicture};
+  std::vector<std::string> fields = {webid::kDefaultFieldName,
+                                     webid::kDefaultFieldEmail,
+                                     webid::kDefaultFieldPicture};
   if (fields_.has_value()) {
     fields = fields_.value();
   }

@@ -30,11 +30,11 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
-#include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/federated_auth_disconnect_request.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/browser/webid/mappers.h"
 #include "content/browser/webid/request_page_data.h"
 #include "content/browser/webid/url_computations.h"
 #include "content/browser/webid/user_info_request.h"
@@ -319,8 +319,9 @@ void FederatedAuthRequestImpl::RequestToken(
     RenderFrameHostImpl* host_impl =
         static_cast<RenderFrameHostImpl*>(&render_frame_host());
     RecordLifecycleStateFailureReason(
-        LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
-            host_impl->lifecycle_state()));
+        webid::
+            LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
+                host_impl->lifecycle_state()));
     std::move(callback).Run(RequestTokenStatus::kError, std::nullopt, "",
                             /*error=*/nullptr,
                             /*is_auto_selected=*/false);
@@ -400,7 +401,8 @@ void FederatedAuthRequestImpl::RequestToken(
   if (!CanBypassPermissionStatusCheck(rp_mode_, mediation_requirement_)) {
     if (permission_status != FederatedApiPermissionStatus::GRANTED) {
       std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =
-          PermissionStatusToRequestResultAndTokenStatus(permission_status);
+          webid::PermissionStatusToRequestResultAndTokenStatus(
+              permission_status);
       CompleteRequestWithError(resultAndTokenStatus.first,
                                resultAndTokenStatus.second,
                                /*should_delay_callback=*/true);
@@ -464,8 +466,9 @@ void FederatedAuthRequestImpl::RequestToken(
         continue;
       }
 
-      any_idp_has_custom_scopes = any_idp_has_custom_scopes ||
-                                  GetDisclosureFields(idp_ptr->fields).empty();
+      any_idp_has_custom_scopes =
+          any_idp_has_custom_scopes ||
+          webid::GetDisclosureFields(idp_ptr->fields).empty();
       any_idp_has_parameters = any_idp_has_parameters || idp_ptr->params_json;
 
       blink::mojom::RpContext rp_context = idp_get_params_ptr->context;
@@ -1423,7 +1426,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   std::vector<std::string> disclosure_shown_for;
   if (!is_sign_in) {
     disclosure_shown_for =
-        DisclosureFieldsToStringList(idp_info.data->disclosure_fields);
+        webid::DisclosureFieldsToStringList(idp_info.data->disclosure_fields);
   }
 
   CHECK(idp_info.data);
@@ -1500,7 +1503,7 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
   bool has_url = token_error_ && !token_error_->url.is_empty();
   ErrorDialogResult result =
-      DismissReasonToErrorDialogResult(dismiss_reason, has_url);
+      webid::DismissReasonToErrorDialogResult(dismiss_reason, has_url);
   fedcm_metrics_->RecordErrorDialogResult(result, idp_config_url);
 
   CompleteTokenRequest(idp_config_url, status, /*token=*/std::nullopt,
@@ -1761,7 +1764,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
     webid::MaybeAddResponseCodeToConsole(render_frame_host(), kIdAssertionUrl,
                                          status.response_code);
     std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =
-        IdAssertionFetchStatusToRequestResultAndTokenStatus(status);
+        webid::IdAssertionFetchStatusToRequestResultAndTokenStatus(status);
     CompleteRequestWithError(resultAndTokenStatus.first,
                              resultAndTokenStatus.second,
                              should_delay_callback);
@@ -1948,7 +1951,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
       error->url = token_error->url.spec();
     }
     RequestTokenStatus status =
-        FederatedAuthRequestResultToRequestTokenStatus(result);
+        webid::FederatedAuthRequestResultToRequestTokenStatus(result);
     std::move(auth_request_token_callback_)
         .Run(status, selected_idp_config_url, id_token, std::move(error),
              is_auto_selected);

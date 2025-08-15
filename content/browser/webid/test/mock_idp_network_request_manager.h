@@ -66,7 +66,7 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
               (override));
   MOCK_METHOD(void,
               SendFailedTokenRequestMetrics,
-              (const GURL&, bool, MetricsEndpointErrorCode),
+              (const GURL&, bool, webid::MetricsEndpointErrorCode),
               (override));
   MOCK_METHOD(void,
               SendLogout,

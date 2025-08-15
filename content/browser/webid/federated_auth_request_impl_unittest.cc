@@ -5473,7 +5473,7 @@ class IdpNetworkRequestMetricsRecorder : public TestIdpNetworkRequestManager {
   void SendFailedTokenRequestMetrics(
       const GURL& metrics_endpoint_url,
       bool did_show_ui,
-      MetricsEndpointErrorCode error_code) override {
+      webid::MetricsEndpointErrorCode error_code) override {
     metrics_endpoints_notified_failure_.push_back(metrics_endpoint_url);
   }
 

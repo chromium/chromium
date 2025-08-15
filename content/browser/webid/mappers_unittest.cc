@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/fedcm_mappers.h"
+#include "content/browser/webid/mappers.h"
 
 #include <optional>
 #include <string>
@@ -18,6 +18,7 @@ using LoginState = content::IdentityRequestAccount::LoginState;
 using ::testing::ElementsAre;
 
 namespace content {
+namespace webid {
 
 namespace {
 IdentityRequestAccountPtr CreateEmptyAccount() {
@@ -107,4 +108,5 @@ TEST(FedCmMappersTest, ComputeAccountFields) {
   EXPECT_THAT(account->fields, ElementsAre(Field::kName));
 }
 
+}  // namespace webid
 }  // namespace content

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/fedcm_mappers.h"
+#include "content/browser/webid/mappers.h"
 
 #include <string>
 #include <vector>
@@ -23,6 +23,7 @@ using FederatedApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 
 namespace content {
+namespace webid {
 
 std::vector<std::string> DisclosureFieldsToStringList(
     const std::vector<IdentityRequestDialogDisclosureField>& fields) {
@@ -30,19 +31,19 @@ std::vector<std::string> DisclosureFieldsToStringList(
   for (auto field : fields) {
     switch (field) {
       case IdentityRequestDialogDisclosureField::kName:
-        list.push_back(kFedCmDefaultFieldName);
+        list.push_back(kDefaultFieldName);
         break;
       case IdentityRequestDialogDisclosureField::kEmail:
-        list.push_back(kFedCmDefaultFieldEmail);
+        list.push_back(kDefaultFieldEmail);
         break;
       case IdentityRequestDialogDisclosureField::kPicture:
-        list.push_back(kFedCmDefaultFieldPicture);
+        list.push_back(kDefaultFieldPicture);
         break;
       case IdentityRequestDialogDisclosureField::kPhoneNumber:
-        list.push_back(kFedCmFieldPhoneNumber);
+        list.push_back(kFieldPhoneNumber);
         break;
       case IdentityRequestDialogDisclosureField::kUsername:
-        list.push_back(kFedCmFieldUsername);
+        list.push_back(kFieldUsername);
         break;
     }
   }
@@ -313,16 +314,16 @@ std::vector<IdentityRequestDialogDisclosureField> GetDisclosureFields(
 
   std::vector<IdentityRequestDialogDisclosureField> list;
   for (const auto& field : *fields) {
-    if (field == kFedCmDefaultFieldName) {
+    if (field == kDefaultFieldName) {
       list.push_back(IdentityRequestDialogDisclosureField::kName);
-    } else if (field == kFedCmDefaultFieldEmail) {
+    } else if (field == kDefaultFieldEmail) {
       list.push_back(IdentityRequestDialogDisclosureField::kEmail);
-    } else if (field == kFedCmDefaultFieldPicture) {
+    } else if (field == kDefaultFieldPicture) {
       list.push_back(IdentityRequestDialogDisclosureField::kPicture);
-    } else if (webid::IsAlternativeIdentifiersEnabled()) {
-      if (field == kFedCmFieldPhoneNumber) {
+    } else if (IsAlternativeIdentifiersEnabled()) {
+      if (field == kFieldPhoneNumber) {
         list.push_back(IdentityRequestDialogDisclosureField::kPhoneNumber);
-      } else if (field == kFedCmFieldUsername) {
+      } else if (field == kFieldUsername) {
         list.push_back(IdentityRequestDialogDisclosureField::kUsername);
       }
     }
@@ -373,4 +374,5 @@ void ComputeAccountFields(
   }
 }
 
+}  // namespace webid
 }  // namespace content

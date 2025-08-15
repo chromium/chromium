@@ -18,10 +18,10 @@
 #include "base/values.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_provider_info.h"
+#include "content/browser/webid/mappers.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -1253,7 +1253,7 @@ void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
 void IdpNetworkRequestManager::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
     bool did_show_ui,
-    MetricsEndpointErrorCode error_code) {
+    webid::MetricsEndpointErrorCode error_code) {
   std::string url_encoded_post_data = base::StringPrintf(
       "outcome=failure&error_code=%d&did_show_ui=%s",
       static_cast<int>(error_code), base::ToString(did_show_ui));
