@@ -1244,8 +1244,10 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
         << unserialize_count_ << " with update:\n"
         << update.ToString(true).substr(0, 1000);
 #else
-    NOTREACHED() << "Tree must have already a valid root or update must have a "
-                    "valid root.";
+    RecordError(update_state, "Tree or update must have a valid root.",
+                /* is_fatal = */ false);
+    DUMP_WILL_BE_NOTREACHED();
+    return false;
 #endif
   }
   // Accumulates the work that will be required to update the AXTree.
