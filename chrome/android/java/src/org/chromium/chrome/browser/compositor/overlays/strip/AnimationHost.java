@@ -34,17 +34,21 @@ public interface AnimationHost {
     /**
      * Starts a given list of animations.
      *
-     * @param animationList The {@link Animator} list to start.
+     * @param animationList The {@link Animator} list to start. Nullable to allow for listeners to
+     *     correctly resolve, even when no animation will actually run.
      * @param listener The {@link AnimatorListener} for the given animations.
      */
-    void startAnimations(List<Animator> animationList, @Nullable AnimatorListener listener);
+    void startAnimations(
+            @Nullable List<Animator> animationList, @Nullable AnimatorListener listener);
 
     /**
      * Queues a given list of animations. Started and finished if {@link #finishAnimations} is
      * called. Otherwise, started when the next tab strip update occurs.
      *
-     * @param animationList The {@link Animator} list to start.
+     * @param animationList The {@link Animator} list to start. Nullable to allow for listeners to
+     *     correctly resolve, even when no animation will actually run.
      * @param listener The {@link AnimatorListener} for the given animations.
      */
-    void queueAnimations(List<Animator> animationList, @Nullable AnimatorListener listener);
+    void queueAnimations(
+            @Nullable List<Animator> animationList, @Nullable AnimatorListener listener);
 }

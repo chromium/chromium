@@ -2858,7 +2858,6 @@ public class StripLayoutHelper
                             /* animate= */ true,
                             /* deferAnimations= */ true,
                             /* closedTab= */ getTabById(tab.getTabId()));
-            if (tabClosingAnimators == null) return;
         } else {
             tabClosingAnimators.add(
                     CompositorAnimator.ofFloatProperty(
@@ -3406,7 +3405,8 @@ public class StripLayoutHelper
     }
 
     @Override
-    public void startAnimations(List<Animator> animationList, @Nullable AnimatorListener listener) {
+    public void startAnimations(
+            @Nullable List<Animator> animationList, @Nullable AnimatorListener listener) {
         AnimatorSet set = getAnimatorSet(animationList, listener);
         finishAnimations();
         setAndStartRunningAnimator(set);
@@ -3433,7 +3433,8 @@ public class StripLayoutHelper
     }
 
     @Override
-    public void queueAnimations(List<Animator> animationList, @Nullable AnimatorListener listener) {
+    public void queueAnimations(
+            @Nullable List<Animator> animationList, @Nullable AnimatorListener listener) {
         AnimatorSet set = getAnimatorSet(animationList, listener);
         mQueuedAnimators.add(set);
         // The queued animators get started in the next #updateLayout call. Request an update here
@@ -4356,28 +4357,29 @@ public class StripLayoutHelper
             return null;
         }
 
-        // Suppress resizes from tab closures from mouse. If closing the end-most tab, we may need
-        // to partially resize to align the next tab's close button with the cursor (if possible).
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
-                && mPendingMouseTabClosure
-                && mClosingEndMostTabDrawX == null
-                && mClosingEndMostTabWidth == null) {
-            return null;
+        // Suppress resizes from tab closures from mouse. We may still need to animate the closing
+        // tab shrinking, though. If closing the end-most tab, we may need to partially resize to
+        // align the next tab's close button with the cursor (if possible).
+        boolean delayingResizeForMouseClose =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
+                        && mPendingMouseTabClosure
+                        && mClosingEndMostTabDrawX == null
+                        && mClosingEndMostTabWidth == null;
+        if (!delayingResizeForMouseClose) {
+            // 1. Compute the number of live tabs and the available width for them.
+            int numTabs = Math.max(getNumLiveTabs(), 1);
+            float stripWidth = getAvailableTabWidthForResizing();
+
+            // 2. Compute additional width we gain from overlapping the tabs.
+            float overlapWidth = TAB_OVERLAP_WIDTH_DP * (numTabs - 1);
+
+            // 3. Calculate the optimal tab width.
+            float optimalTabWidth = (stripWidth + overlapWidth) / numTabs;
+
+            // 4. Calculate the realistic tab width.
+            mCachedTabWidthSupplier.set(
+                    MathUtils.clamp(optimalTabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP));
         }
-
-        // 1. Compute the number of live tabs and the available width for them.
-        int numTabs = Math.max(getNumLiveTabs(), 1);
-        float stripWidth = getAvailableTabWidthForResizing();
-
-        // 2. Compute additional width we gain from overlapping the tabs.
-        float overlapWidth = TAB_OVERLAP_WIDTH_DP * (numTabs - 1);
-
-        // 3. Calculate the optimal tab width.
-        float optimalTabWidth = (stripWidth + overlapWidth) / numTabs;
-
-        // 4. Calculate the realistic tab width.
-        mCachedTabWidthSupplier.set(
-                MathUtils.clamp(optimalTabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP));
 
         // 5. Prepare animations and propagate width to all tabs.
         ArrayList<Animator> resizeAnimationList = null;
