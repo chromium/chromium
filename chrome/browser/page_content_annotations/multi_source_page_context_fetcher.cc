@@ -349,8 +349,30 @@ class PageContextFetcher : public content::WebContentsObserver {
       return;
     }
 
-    auto* eligibility = optimization_guide::PageContextEligibility::Get();
-    if (pending_result_->annotated_page_content_result && eligibility) {
+    if (!pending_result_->annotated_page_content_result) {
+      std::move(callback_).Run(base::ok(std::move(pending_result_)));
+      return;
+    }
+
+    if (optimization_guide::PageContextEligibility::IsInitialized()) {
+      OnGotPageContextEligibility(
+          optimization_guide::PageContextEligibility::Get());
+      return;
+    }
+
+    // PageContextEligibility::Get may create the underlying singleton, which is
+    // blocking, so we need to run this on a threadpool.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+        base::BindOnce(&optimization_guide::PageContextEligibility::Get),
+        base::BindOnce(&PageContextFetcher::OnGotPageContextEligibility,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnGotPageContextEligibility(
+      const optimization_guide::PageContextEligibility* eligibility) {
+    CHECK(pending_result_->annotated_page_content_result);
+    if (eligibility) {
       // TODO(gklassen): Switch this to a shared helper to use the precursor
       // origin if the committed origin is opaque.
       const auto url =

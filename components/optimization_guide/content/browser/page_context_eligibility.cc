@@ -12,6 +12,23 @@
 
 namespace optimization_guide {
 
+namespace {
+base::Lock& GetIsInitializedLock() {
+  static base::NoDestructor<base::Lock> singleton_initialized_lock;
+  return *singleton_initialized_lock.get();
+}
+
+// Tracks whether the `page_context_eligibility` singleton has been initialized
+// yet. This is tracked separately so that it's possible to get this bool
+// without triggering the initialization (which may block).
+//
+// This variable is protected by the lock returned by `GetIsInitializedLock()`.
+// But since global initializers are banned, that lock must also be a
+// function-scoped (lazily-initialized) static variable, so we cannot use thread
+// annotations to refer to it here.
+bool g_singleton_initialized = false;
+}  // namespace
+
 PageContextEligibility::PageContextEligibility(
     const PageContextEligibilityAPI* api)
     : api_(api) {}
@@ -26,12 +43,21 @@ PageContextEligibility* PageContextEligibility::Get() {
 }
 
 // static
+bool PageContextEligibility::IsInitialized() {
+  base::AutoLock auto_lock(GetIsInitializedLock());
+  return g_singleton_initialized;
+}
+
+// static
 DISABLE_CFI_DLSYM
 std::unique_ptr<PageContextEligibility> PageContextEligibility::Create() {
   // TODO(crbug.com/414828945): Move this creation out of this file if multiple
   // use cases for it in browser.
   static base::NoDestructor<std::unique_ptr<OptimizationGuideLibraryHolder>>
       holder{OptimizationGuideLibraryHolder::Create()};
+
+  base::AutoLock auto_lock(GetIsInitializedLock());
+  g_singleton_initialized = true;
   // Pointer will be null if the library was not created.
   OptimizationGuideLibraryHolder* holder_ptr = holder->get();
   if (!holder_ptr) {

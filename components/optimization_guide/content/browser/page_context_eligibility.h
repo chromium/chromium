@@ -33,6 +33,9 @@ class PageContextEligibility {
   // return null if the underlying library could not be loaded.
   static PageContextEligibility* Get();
 
+  // Returns true if the singleton has been initialized already.
+  static bool IsInitialized();
+
   // Exposes the raw PageContextEligibilityAPI functions defined by the library.
   const PageContextEligibilityAPI& api() const { return *api_; }
 

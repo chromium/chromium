@@ -44,3 +44,9 @@ TEST(PageContextEligibilityTest, GetFrameMetadataFromPageContent) {
   EXPECT_EQ("meta-tag-name", meta_tag_struct.name);
   EXPECT_EQ("meta-tag-content", meta_tag_struct.content);
 }
+
+TEST(PageContextEligibilityTest, IsInitialized) {
+  EXPECT_FALSE(optimization_guide::PageContextEligibility::IsInitialized());
+  optimization_guide::PageContextEligibility::Get();
+  EXPECT_TRUE(optimization_guide::PageContextEligibility::IsInitialized());
+}
