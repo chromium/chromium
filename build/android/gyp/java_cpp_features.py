@@ -17,19 +17,36 @@ import zip_helpers
 
 class FeatureParserDelegate(java_cpp_utils.CppConstantParser.Delegate):
   # Ex. 'BASE_FEATURE(kConstantName, "StringNameOfTheFeature", ...);'
+  # or 'BASE_FEATURE(ConstantName, ...)'
   # would parse as:
   #   ExtractConstantName() -> 'ConstantName'
-  #   ExtractValue() -> '"StringNameOfTheFeature"'
-  FEATURE_RE = re.compile(r'BASE_FEATURE\(k([^,]+),')
-  VALUE_RE = re.compile(r'\s*("(?:\"|[^"])*")\s*,')
+  #   ExtractValue() -> '"StringNameOfTheFeature"' or '"ConstantName"'
+  # For 3-arg macro: BASE_FEATURE(kMyFeature, "MyFeature", ...)
+  _FEATURE_RE_3_ARGS = re.compile(r'BASE_FEATURE\(k([^,]+),')
+  # For 2-arg macro: BASE_FEATURE(MyFeature, ...)
+  _FEATURE_RE_2_ARGS = re.compile(r'BASE_FEATURE\(([^,]+),')
+  _VALUE_RE = re.compile(r'\s*("(?:\\"|[^"])*")\s*,')
 
   def ExtractConstantName(self, line):
-    match = FeatureParserDelegate.FEATURE_RE.match(line)
-    return match.group(1) if match else None
+    match = self._FEATURE_RE_3_ARGS.match(line)
+    if match:
+      return match.group(1)
+    match = self._FEATURE_RE_2_ARGS.match(line)
+    # A 2-arg macro does not have "k" prefix and does not have a string literal
+    # as the second argument.
+    if match and not match.group(1).startswith('k') and not self._VALUE_RE.search(line, pos=match.end()):
+      return match.group(1)
+    return None
 
   def ExtractValue(self, line):
-    match = FeatureParserDelegate.VALUE_RE.search(line)
-    return match.group(1) if match else None
+    match = self._VALUE_RE.search(line)
+    if match:
+      return match.group(1)
+    # If there is no string literal, it must be a 2-arg macro.
+    match = self._FEATURE_RE_2_ARGS.match(line)
+    if match and not match.group(1).startswith('k'):
+      return f'"{match.group(1)}"'
+    return None
 
   def CreateJavaConstant(self, name, value, comments):
     return java_cpp_utils.JavaString(name, value, comments)
