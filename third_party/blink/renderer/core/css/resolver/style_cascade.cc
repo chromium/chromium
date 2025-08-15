@@ -359,14 +359,14 @@ const CSSValue* StyleCascade::Resolve(const CSSPropertyName& name,
 
   DCHECK(resolved);
 
-  // TODO(crbug.com/1185745): Cycles in animations get special handling by our
+  // TODO(crbug.com/40753334): Cycles in animations get special handling by our
   // implementation. This is not per spec, but the correct behavior is not
   // defined at the moment.
   if (resolved->IsCyclicVariableValue()) {
     return nullptr;
   }
 
-  // TODO(crbug.com/1185745): We should probably not return 'unset' for
+  // TODO(crbug.com/40753334): We should probably not return 'unset' for
   // properties where CustomProperty::SupportsGuaranteedInvalid return true.
   if (resolved->IsInvalidVariableValue()) {
     return cssvalue::CSSUnsetValue::Create();

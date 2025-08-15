@@ -68,8 +68,13 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
   const auto& property_specific = To<CSSPropertySpecificKeyframe>(keyframe);
-  const CSSValue& value = *property_specific.Value();
+  const CSSValue* value = property_specific.Value();
   const TreeScope* keyframe_tree_scope = property_specific.GetTreeScope();
+
+  if (!value) {
+    DCHECK(keyframe.IsNeutral());
+    return nullptr;
+  }
 
   // It is only possible to form a cycle if the value points to something else.
   // This is only possible with var(), or with revert-[layer] which may revert
@@ -78,15 +83,15 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
     if (!declaration->VariableDataValue()->NeedsVariableResolution()) {
       return nullptr;
     }
-  } else if (!value.IsRevertValue() && !value.IsRevertLayerValue()) {
+  } else if (!value->IsRevertValue() && !value->IsRevertLayerValue()) {
     return nullptr;
   }
 
   PropertyHandle property = GetProperty();
   bool cycle_detected =
-      !environment.Resolve(property, &value, keyframe_tree_scope);
+      !environment.Resolve(property, value, keyframe_tree_scope);
   conversion_checkers.push_back(MakeGarbageCollected<CycleChecker>(
-      property, value, keyframe_tree_scope, cycle_detected));
+      property, *value, keyframe_tree_scope, cycle_detected));
   return cycle_detected ? CreateCycleDetectedValue() : nullptr;
 }
 
