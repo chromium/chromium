@@ -435,7 +435,7 @@ class SlopBucket::Manager {
 
   // Calls OnMemoryPressure() on the IO thread when there is memory pressure.
   // Only set when SlopBucket is enabled. Only accessed on the IO thread.
-  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
+  std::optional<base::AsyncMemoryPressureListener> memory_pressure_listener_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
