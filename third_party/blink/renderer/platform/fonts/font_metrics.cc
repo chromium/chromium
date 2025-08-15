@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/vdmx_parser.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMetrics.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -72,7 +73,7 @@ void FontMetrics::AscentDescentWithHacks(
   // using FreeType.  With DirectWrite or CoreText, no bytecode hinting is ever
   // done.  This code should be pushed into FreeType (hinted font metrics).
   static const uint32_t kVdmxTag = SkSetFourByteTag('V', 'D', 'M', 'X');
-  int pixel_size = platform_data.size() + 0.5;
+  int pixel_size = ClampTo<int>(platform_data.size() + 0.5);
   // TODO(xiaochengh): How do we support ascent/descent override with VDMX?
   if (!ascent_override && !descent_override && !font.isForceAutoHinting() &&
       (font.getHinting() == SkFontHinting::kFull ||
