@@ -203,8 +203,11 @@ public class CollaborationTestUtils {
 
     /** Returns the local tab group id. */
     public LocalTabGroupId getLocalTabGroupId(ChromeTabbedActivity cta) {
-        return new LocalTabGroupId(
-                cta.getTabModelSelector().getModel(false).getTabAt(0).getTabGroupId());
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return new LocalTabGroupId(
+                            cta.getTabModelSelector().getModel(false).getTabAt(0).getTabGroupId());
+                });
     }
 
     /** Creates a tab group and opens the tab grid dialog. */
