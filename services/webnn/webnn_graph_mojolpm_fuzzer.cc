@@ -35,6 +35,7 @@
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_graph_mojolpm_fuzzer.pb.h"
 #include "services/webnn/webnn_test_environment.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
 namespace {
@@ -90,7 +91,6 @@ class WebnnGraphLPMFuzzer {
 
     webnn::mojom::Device device;
     mojolpm::FromProto(action.device(), device);
-    // TODO(crbug.com/432040141): Fuzz test `CreatePendingConstant`.
     BuildGraph(create_graph.graph_info(), device);
   }
 
@@ -162,6 +162,19 @@ class WebnnGraphLPMFuzzer {
 
     auto graph_info = webnn::mojom::GraphInfo::New();
     mojolpm::FromProto(graph_info_proto, graph_info);
+
+    for (uint32_t id = 0; id < graph_info->operands.size(); ++id) {
+      const auto& operand = graph_info->operands[id];
+      if (operand->kind == webnn::mojom::Operand::Kind::kConstant) {
+        const blink::WebNNPendingConstantToken token;
+        webnn_graph_builder_remote->CreatePendingConstant(
+            token, operand->descriptor.data_type(),
+            GenerateBytes(operand->descriptor.PackedByteLength()));
+        graph_info->constant_operand_ids_to_handles.emplace(
+            webnn::OperandId(id), token);
+      }
+    }
+
     webnn_graph_builder_remote->CreateGraph(std::move(graph_info),
                                             create_graph_future.GetCallback());
     auto create_graph_result = create_graph_future.Take();
