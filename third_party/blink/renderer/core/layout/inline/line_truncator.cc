@@ -32,11 +32,13 @@ bool IsRightMostOffset(const ShapeResult& shape_result, unsigned offset) {
 
 }  // namespace
 
-LineTruncator::LineTruncator(const LineInfo& line_info)
+LineTruncator::LineTruncator(const LineInfo& line_info,
+                             bool is_ellipsis_caused_by_line_clamp)
     : line_style_(&line_info.LineStyle()),
       available_width_(line_info.AvailableWidth() - line_info.TextIndent()),
       line_direction_(line_info.BaseDirection()),
-      use_first_line_style_(line_info.UseFirstLineStyle()) {}
+      use_first_line_style_(line_info.UseFirstLineStyle()),
+      is_ellipsis_caused_by_line_clamp_(is_ellipsis_caused_by_line_clamp) {}
 
 const ComputedStyle& LineTruncator::EllipsisStyle() const {
   // The ellipsis is styled according to the line style.
@@ -48,7 +50,7 @@ const ComputedStyle& LineTruncator::EllipsisStyle() const {
 String LineTruncator::ComputeEllipsisText() const {
   const ComputedStyle& style = EllipsisStyle();
   const TextOverflowData& text_overflow = style.TextOverflow();
-  if (text_overflow.IsString()) {
+  if (text_overflow.IsString() && !is_ellipsis_caused_by_line_clamp_) {
     return text_overflow.StringValue();
   }
   return ellipsis_font_data_ && ellipsis_font_data_->GlyphForCharacter(

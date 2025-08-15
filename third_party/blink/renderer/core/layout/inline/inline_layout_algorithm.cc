@@ -541,10 +541,7 @@ InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info,
   const ConstraintSpace& space = GetConstraintSpace();
   LineClampData line_clamp_data = space.GetLineClampData();
   if (!line_info->IsBlockInInline() && line_clamp_data.IsAtClampPoint()) {
-    if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled()) {
-      return LineClampState::kLineClampEllipsis;
-    }
-    return LineClampState::kTextOverflowEllipsis;
+    return LineClampState::kLineClampEllipsis;
   }
   if (line_clamp_data.ShouldHideForPaint()) {
     return LineClampState::kHide;
@@ -621,9 +618,15 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   //  - If we've reached the line-clamp limit.
   const LineClampState line_clamp_state =
       GetLineClampState(line_info, line_box_metrics.LineHeight());
-  if (line_clamp_state == LineClampState::kTextOverflowEllipsis) [[unlikely]] {
+  if (line_clamp_state == LineClampState::kTextOverflowEllipsis ||
+      (line_clamp_state == LineClampState::kLineClampEllipsis &&
+       !RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled()))
+      [[unlikely]] {
     DCHECK(!line_info->IsBlockInInline());
-    LineTruncator truncator(*line_info);
+    LineTruncator truncator(
+        *line_info,
+        /*is_ellipsis_caused_by_line_clamp=*/line_clamp_state ==
+            LineClampState::kLineClampEllipsis);
     auto* input =
         DynamicTo<HTMLInputElement>(node_.GetLayoutBlockFlow()->GetNode());
     if (input && input->ShouldApplyMiddleEllipsis()) {

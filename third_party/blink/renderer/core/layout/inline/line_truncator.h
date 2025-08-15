@@ -25,7 +25,8 @@ class CORE_EXPORT LineTruncator final {
   STACK_ALLOCATED();
 
  public:
-  explicit LineTruncator(const LineInfo& line_info);
+  explicit LineTruncator(const LineInfo& line_info,
+                         bool is_ellipsis_caused_by_line_clamp = false);
 
   // Truncate |line_box| and place ellipsis. Returns the new inline-size of the
   // |line_box|.
@@ -102,6 +103,7 @@ class CORE_EXPORT LineTruncator final {
   ShapeResultView* ellipsis_shape_result_ = nullptr;
 
   bool use_first_line_style_ = false;
+  bool is_ellipsis_caused_by_line_clamp_ = false;
 };
 
 }  // namespace blink
