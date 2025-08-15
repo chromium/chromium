@@ -2247,7 +2247,7 @@ chromium-metrics-reviews@google.com.
   <int value="1377" label="DefaultDeviceAttributesSetting"/>
   <int value="1378" label="DeviceAttributesBlockedForOrigins"/>
   <int value="1379" label="FloatingSsoSessionCookiesIncluded"/>
-  <int value="1380" label="ServiceWorkerAutoPreload"/>
+  <int value="1380" label="ServiceWorkerAutoPreloadEnabled"/>
   <int value="1381" label="ProtectedContentIdentifiersAllowed"/>
   <int value="1382" label="LegacyCookieScopeEnabled"/>
   <int value="1383" label="LegacyCookieScopeEnabledForDomainList"/>
@@ -2257,6 +2257,7 @@ chromium-metrics-reviews@google.com.
   <int value="1387" label="OriginKeyedProcessesEnabled"/>
   <int value="1388" label="NTPShortcuts"/>
   <int value="1389" label="AutoSignOutEnabled"/>
+  <int value="1390" label="ExtensionInstallCloudPolicyChecksEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

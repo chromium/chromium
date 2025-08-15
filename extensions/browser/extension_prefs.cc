@@ -2275,6 +2275,10 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       UserScriptManager::kUserScriptsToggleMigratedPref.name,
       /*default_value=*/false);
+
+  registry->RegisterBooleanPref(
+      pref_names::kExtensionInstallCloudPolicyChecksEnabled,
+      /*default_value=*/false);
 }
 
 template <class ExtensionIdContainer>

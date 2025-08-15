@@ -3283,6 +3283,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       extensions::pref_names::kExtensionUnpublishedAvailability,
       /*min=*/0, /*max=*/1, /*clamp=*/false));
   handlers->AddHandler(std::make_unique<ExtensionDeveloperModePolicyHandler>());
+  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
+      key::kExtensionInstallCloudPolicyChecksEnabled,
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled,
+      base::Value::Type::BOOLEAN));
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

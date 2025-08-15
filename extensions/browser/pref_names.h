@@ -144,6 +144,10 @@ inline constexpr char kPrefIncognitoContentSettings[] =
 inline constexpr char kGlobalShortcutsUuid[] =
     "extensions.global_shortcuts.uuid";
 
+// Boolean that specifies whether ExtensionInstallCloudPolicyChecks is enabled.
+inline constexpr char kExtensionInstallCloudPolicyChecksEnabled[] =
+    "extensions.install.cloud_policy_checks_enabled";
+
 }  // namespace pref_names
 }  // namespace extensions
 

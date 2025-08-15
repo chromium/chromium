@@ -1388,6 +1388,7 @@ policies:
   1387: OriginKeyedProcessesEnabled
   1388: NTPShortcuts
   1389: AutoSignOutEnabled
+  1390: ExtensionInstallCloudPolicyChecksEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
