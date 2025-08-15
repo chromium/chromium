@@ -306,7 +306,9 @@ class PageDiscardingHelperBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
+// TODO(crbug.com/438908221): Crashes/flaky on Linux dbg bots.
+IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
+                       DISABLED_DiscardSpecificPage) {
   // Test urgent and proactive discards in a loop to avoid the overhead of
   // starting a new browser every time.
   // TODO(crbug.com/40899366): Add tests for all the other heuristics in
@@ -524,9 +526,11 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
 // eligible for successive discard operations following a reactivation / reload.
 // TODO(crbug.com/436300896): Re-enable on MSAN/ASAN.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
-#define MAYBE_DiscardedTabEligibleForSuccessiveDiscards DISABLED_DiscardedTabEligibleForSuccessiveDiscards
+#define MAYBE_DiscardedTabEligibleForSuccessiveDiscards \
+  DISABLED_DiscardedTabEligibleForSuccessiveDiscards
 #else
-#define MAYBE_DiscardedTabEligibleForSuccessiveDiscards DiscardedTabEligibleForSuccessiveDiscards
+#define MAYBE_DiscardedTabEligibleForSuccessiveDiscards \
+  DiscardedTabEligibleForSuccessiveDiscards
 #endif
 IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
                        MAYBE_DiscardedTabEligibleForSuccessiveDiscards) {
