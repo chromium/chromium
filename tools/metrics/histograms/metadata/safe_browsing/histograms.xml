@@ -2184,6 +2184,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.NotificationTelemetry.CSBRR.Size" units="bytes"
+    expires_after="2026-04-27">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the size of a ClientSafeBrowsingReportRequest (CSBRR) in bytes. It
+    is logged when the the NotificationTelemetryService's timer's interval has
+    elapsed for an ESB user and the database of ServiceWorkerBehaviors is
+    non-empty.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.NotificationTelemetry.NetworkResult"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-04-27">
   <owner>psarouthakis@google.com</owner>

@@ -1696,7 +1696,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 37
+// Next tag: 38
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1742,6 +1742,9 @@ message ClientSafeBrowsingReportRequest {
     // Analogous to DANGEROUS_DOWNLOAD_RECOVERY and DANGEROUS_DOWNLOAD_WARNING,
     // but used only for download warnings in Chrome on Android.
     DANGEROUS_DOWNLOAD_WARNING_ANDROID = 29;
+    // This report is triggered periodically if relevant Service Worker behavior
+    // (e.g., making network requests) is available.
+    SERVICE_WORKER_BEHAVIOR = 30;
   }
   // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:ClientSafeBrowsingReportType)
 
@@ -2221,6 +2224,14 @@ message ClientSafeBrowsingReportRequest {
 
   optional UrlRealTimeAndHashRealTimeDiscrepancyInfo
       url_real_time_and_hash_real_time_discrepancy_info = 36;
+
+  message ServiceWorkerBehavior {
+    // The registered scope URL of the service worker.
+    optional string scope_url = 1;
+    // The URLs requested by the service worker during a push event.
+    repeated string requested_urls = 2;
+  }
+  repeated ServiceWorkerBehavior service_worker_behaviors = 37;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).

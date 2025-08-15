@@ -200,6 +200,7 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="URL real-time and hash real-time discrepancy"/>
   <int value="28" label="External app redirect"/>
   <int value="29" label="dangerous download warning (Android)"/>
+  <int value="30" label="Service worker behaviors"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/common/proto/csd.proto:ClientSafeBrowsingReportType) -->

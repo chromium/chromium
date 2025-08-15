@@ -256,6 +256,16 @@ extern const base::FeatureParam<std::string>
 // notifications.
 BASE_DECLARE_FEATURE(kNotificationTelemetry);
 
+// Enable the collection of ServiceWorkerBehaviors via the
+// NotificationTelemetryService.
+BASE_DECLARE_FEATURE(kNotificationTelemetrySwb);
+
+// Determines whether CSBRRs are sent to Safe Browsing.
+extern const base::FeatureParam<bool> kNotificationTelemetrySwbSendReports;
+
+// Specifies the polling interval in minutes.
+extern const base::FeatureParam<int> kNotificationTelemetrySwbPollingInterval;
+
 // Enables HaTS surveys for users encountering red warnings.
 BASE_DECLARE_FEATURE(kRedWarningSurvey);
 

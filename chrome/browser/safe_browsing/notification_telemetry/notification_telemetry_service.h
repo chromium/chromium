@@ -10,7 +10,10 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/safe_browsing/notification_telemetry/notification_telemetry_store.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/browser/service_worker_context_observer.h"
 
@@ -58,7 +61,9 @@ class NotificationTelemetryService
   explicit NotificationTelemetryService(
       Profile* profile,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      scoped_refptr<SafeBrowsingDatabaseManager> database_manager);
+      scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
+      std::unique_ptr<NotificationTelemetryStoreInterface> telemetry_store,
+      scoped_refptr<SafeBrowsingUIManager> ui_manager);
   explicit NotificationTelemetryService(const NotificationTelemetryService&) =
       delete;
   NotificationTelemetryService& operator=(const NotificationTelemetryService&) =
@@ -71,8 +76,19 @@ class NotificationTelemetryService
                             const GURL& scope,
                             const content::ServiceWorkerRegistrationInformation&
                                 service_worker_registration_info) override;
+  void OnPushEventFinished(
+      const GURL& script_url,
+      const std::optional<std::vector<GURL>>& requested_urls) override;
+
+  void OnGetServiceWorkerBehaviors(
+      bool success,
+      std::unique_ptr<std::vector<CSBRR::ServiceWorkerBehavior>> entries);
 
   static int ServiceWorkerInfoCacheSizeForTest();
+
+  NotificationTelemetryStoreInterface* GetTelemetryStoreForTest();
+
+  int GetEmptyDbFoundCountForTest();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NotificationTelemetryServiceTest,
@@ -111,6 +127,16 @@ class NotificationTelemetryService
   // Returns the URL to which telemetry reports are to be sent.
   static GURL GetTelemetryReportUrl();
 
+  // Attempts to upload a CSBRR report.
+  void MaybeUploadReport();
+
+  // Called after the NotificationTelemetryStore has deleted all data because
+  // the user is no longer an ESB user.
+  void OnTelemetryStoreDeleted(bool success);
+
+  // Called after a new ServiceWorkerBehavior has been added to storage.
+  void OnAddServiceWorkerBehavior(bool success);
+
   // Stored service worker info whose size is based on
   // `kNotificationTelemetryServiceWorkerInfoMaxCount`
   std::vector<ServiceWorkerTelemetryInfo> service_worker_infos_;
@@ -125,9 +151,21 @@ class NotificationTelemetryService
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
+  // Responsible for storing the ServiceWorkerBehaviors.
+  std::unique_ptr<NotificationTelemetryStoreInterface> telemetry_store_;
+
+  // Responsible for sending the CSBRRs.
+  scoped_refptr<SafeBrowsingUIManager> ui_manager_;
+
   raw_ptr<Profile> profile_;
 
   raw_ptr<content::ServiceWorkerContext> service_worker_context_ = nullptr;
+
+  // Tracks how many consecutive times an empty database was encountered.
+  int empty_db_found_count_ = 0;
+
+  // Used to periodically attempt to send a report to Safe Browsing.
+  base::RepeatingTimer timer_;
 
   base::WeakPtrFactory<NotificationTelemetryService> weak_factory_{this};
 };

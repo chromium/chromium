@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
@@ -15,6 +16,7 @@
 #include "components/safe_browsing/content/browser/notification_content_detection/notifications_global_cache_list.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_registration_information.h"
@@ -37,6 +39,10 @@ ServiceWorkerTelemetryInfo::ServiceWorkerTelemetryInfo(
 ServiceWorkerTelemetryInfo::~ServiceWorkerTelemetryInfo() = default;
 
 namespace {
+
+// The maximum number of times MaybeUploadReport can encounter an empty database
+// before stopping the timer.
+const int kMaxEmptyDbFoundCount = 2;
 
 // Size of the stored service worker info cache.
 const int kNotificationTelemetryServiceWorkerInfoMaxCount = 20;
@@ -105,9 +111,13 @@ NotificationTelemetryService* NotificationTelemetryService::Get(
 NotificationTelemetryService::NotificationTelemetryService(
     Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    scoped_refptr<SafeBrowsingDatabaseManager> database_manager)
+    scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
+    std::unique_ptr<NotificationTelemetryStoreInterface> telemetry_store,
+    scoped_refptr<SafeBrowsingUIManager> ui_manager)
     : url_loader_factory_(url_loader_factory),
       database_manager_(database_manager),
+      telemetry_store_(std::move(telemetry_store)),
+      ui_manager_(ui_manager),
       profile_(profile) {
   service_worker_context_ =
       profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
@@ -120,6 +130,9 @@ NotificationTelemetryService::NotificationTelemetryService(
   push_messaging_service->SetSubscribeFromWorkerCallback(base::BindRepeating(
       &NotificationTelemetryService::OnNewNotificationServiceWorkerSubscription,
       base::Unretained(this)));
+  if (telemetry_store_ && ui_manager_) {
+    MaybeUploadReport();
+  }
 }
 
 NotificationTelemetryService::~NotificationTelemetryService() {
@@ -172,9 +185,51 @@ void NotificationTelemetryService::OnRegistrationStored(
   }
 }
 
+void NotificationTelemetryService::OnAddServiceWorkerBehavior(bool success) {
+  if (success) {
+    // Since there is now at least one new ServiceWorkerBehavior in storage,
+    // start the timer to send a report.
+    if (!timer_.IsRunning()) {
+      timer_.Start(
+          FROM_HERE,
+          base::Minutes(kNotificationTelemetrySwbPollingInterval.Get()), this,
+          &NotificationTelemetryService::MaybeUploadReport);
+    }
+    empty_db_found_count_ = 0;
+  }
+}
+
+void NotificationTelemetryService::OnPushEventFinished(
+    const GURL& script_url,
+    const std::optional<std::vector<GURL>>& requested_urls) {
+  if (!requested_urls.has_value()) {
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(safe_browsing::kNotificationTelemetrySwb)) {
+    return;
+  }
+  // Store the network request.
+  if (telemetry_store_) {
+    telemetry_store_->AddServiceWorkerBehavior(
+        script_url, requested_urls.value(),
+        base::BindOnce(
+            &NotificationTelemetryService::OnAddServiceWorkerBehavior,
+            weak_factory_.GetWeakPtr()));
+  }
+}
+
 // static
 int NotificationTelemetryService::ServiceWorkerInfoCacheSizeForTest() {
   return kNotificationTelemetryServiceWorkerInfoMaxCount;
+}
+
+NotificationTelemetryStoreInterface*
+NotificationTelemetryService::GetTelemetryStoreForTest() {
+  return telemetry_store_.get();
+}
+
+int NotificationTelemetryService::GetEmptyDbFoundCountForTest() {
+  return empty_db_found_count_;
 }
 
 void NotificationTelemetryService::DatabaseCheckDone(
@@ -285,6 +340,77 @@ void NotificationTelemetryService::UploadComplete(
   RecordHttpResponseOrErrorCode(
       "SafeBrowsing.NotificationTelemetry.NetworkResult",
       url_loader->NetError(), response_code);
+}
+
+void NotificationTelemetryService::OnTelemetryStoreDeleted(bool success) {
+  // If the attempt to delete the store failed, try again once.
+  if (!success) {
+    telemetry_store_->DeleteAll(base::DoNothing());
+  }
+  empty_db_found_count_ = 0;
+}
+
+void NotificationTelemetryService::OnGetServiceWorkerBehaviors(
+    bool success,
+    std::unique_ptr<std::vector<CSBRR::ServiceWorkerBehavior>> entries) {
+  if (!success) {
+    return;
+  }
+  if (!entries || entries->size() == 0) {
+    empty_db_found_count_++;
+    return;
+  }
+  auto report = std::make_unique<CSBRR>();
+  report->set_type(CSBRR::SERVICE_WORKER_BEHAVIOR);
+  base::flat_map<std::string, CSBRR::ServiceWorkerBehavior*> messages;
+  for (const auto& entry : *entries) {
+    if (messages.contains(entry.scope_url())) {
+      messages[entry.scope_url()]->MergeFrom(entry);
+      continue;
+    }
+    CSBRR::ServiceWorkerBehavior* service_worker_behavior =
+        report->add_service_worker_behaviors();
+    service_worker_behavior->CopyFrom(entry);
+    messages.emplace(entry.scope_url(), service_worker_behavior);
+  }
+  std::string serialized_report;
+  if (report->SerializeToString(&serialized_report)) {
+    // Log report size to enable server-side capacity planning.
+    base::UmaHistogramCounts1M("SafeBrowsing.NotificationTelemetry.CSBRR.Size",
+                               serialized_report.size());
+  }
+  if (ui_manager_ && profile_ && kNotificationTelemetrySwbSendReports.Get()) {
+    ui_manager_->SendThreatDetails(profile_, std::move(report));
+  }
+  // Whether we've sent a report or not, clear the database to avoid build up.
+  telemetry_store_->DeleteAll(base::DoNothing());
+}
+
+void NotificationTelemetryService::MaybeUploadReport() {
+  // Account for the case where the user stops being an ESB user.
+  if (!safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
+    timer_.Stop();
+    if (telemetry_store_) {
+      telemetry_store_->DeleteAll(
+          base::BindOnce(&NotificationTelemetryService::OnTelemetryStoreDeleted,
+                         weak_factory_.GetWeakPtr()));
+    }
+    return;
+  }
+
+  // If polling in repeated succession turns up nothing, stop.
+  if (empty_db_found_count_ > kMaxEmptyDbFoundCount) {
+    timer_.Stop();
+    return;
+  }
+  // Now, check the database.
+  if (telemetry_store_) {
+    telemetry_store_->GetServiceWorkerBehaviors(
+        base::BindOnce(
+            &NotificationTelemetryService::OnGetServiceWorkerBehaviors,
+            weak_factory_.GetWeakPtr()),
+        base::DoNothing());
+  }
 }
 
 // static

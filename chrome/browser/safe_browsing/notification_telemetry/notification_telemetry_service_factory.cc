@@ -12,6 +12,7 @@
 #include "chrome/browser/safe_browsing/notification_telemetry/notification_telemetry_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 
 namespace safe_browsing {
@@ -46,28 +47,35 @@ NotificationTelemetryServiceFactory::BuildServiceInstanceForBrowserContext(
 // The ClientIncidentReport proto used to send these reports increases the
 // Android binary size by more than the arm32 threshold.
 #if !BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64))
-  if (!g_browser_process) {
+  if (!g_browser_process || !g_browser_process->safe_browsing_service()) {
     return nullptr;
   }
+
+  Profile* profile = Profile::FromBrowserContext(context);
+  bool isEsb = IsEnhancedProtectionEnabled(*profile->GetPrefs());
 
   if (base::FeatureList::IsEnabled(
           kGlobalCacheListForGatingNotificationProtections)) {
     return std::make_unique<NotificationTelemetryService>(
         Profile::FromBrowserContext(context),
-        g_browser_process->shared_url_loader_factory(), nullptr);
-  } else {
-    // TODO(crbug.com/433543634): Clean up the use of `database_manager` post
-    // GlobalCacheListForGatingNotificationProtections launch.
-    if (!g_browser_process->safe_browsing_service() ||
-        !g_browser_process->safe_browsing_service()->database_manager()) {
-      return nullptr;
-    }
-    return std::make_unique<NotificationTelemetryService>(
-        Profile::FromBrowserContext(context),
-        g_browser_process->shared_url_loader_factory(),
-        g_browser_process->safe_browsing_service()->database_manager());
+        g_browser_process->shared_url_loader_factory(), nullptr,
+        isEsb ? std::make_unique<NotificationTelemetryStore>(profile) : nullptr,
+        isEsb ? g_browser_process->safe_browsing_service()->ui_manager()
+              : nullptr);
   }
 
+  // TODO(crbug.com/433543634): Clean up the use of `database_manager` post
+  // GlobalCacheListForGatingNotificationProtections launch.
+  if (!g_browser_process->safe_browsing_service()->database_manager()) {
+    return nullptr;
+  }
+
+  return std::make_unique<NotificationTelemetryService>(
+      profile, g_browser_process->shared_url_loader_factory(),
+      g_browser_process->safe_browsing_service()->database_manager(),
+      isEsb ? std::make_unique<NotificationTelemetryStore>(profile) : nullptr,
+      isEsb ? g_browser_process->safe_browsing_service()->ui_manager()
+            : nullptr);
 #else
   return nullptr;
 #endif  // !(!BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_ANDROID) &&
