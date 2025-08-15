@@ -1550,8 +1550,7 @@ class RegistrationTokenHelperTest : public testing::Test {
 
 TEST_F(RegistrationTokenHelperTest, CreateSuccess) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
-  base::test::TestFuture<
-      std::optional<RegistrationFetcher::RegistrationTokenResult>>
+  base::test::TestFuture<std::optional<RegistrationFetcher::RegistrationToken>>
       future;
   RegistrationFetcher::CreateTokenAsyncForTesting(
       unexportable_key_service(), "test_challenge",
@@ -1564,8 +1563,7 @@ TEST_F(RegistrationTokenHelperTest, CreateSuccess) {
 
 TEST_F(RegistrationTokenHelperTest, CreateFail) {
   crypto::ScopedNullUnexportableKeyProvider scoped_null_key_provider;
-  base::test::TestFuture<
-      std::optional<RegistrationFetcher::RegistrationTokenResult>>
+  base::test::TestFuture<std::optional<RegistrationFetcher::RegistrationToken>>
       future;
   RegistrationFetcher::CreateTokenAsyncForTesting(
       unexportable_key_service(), "test_challenge",

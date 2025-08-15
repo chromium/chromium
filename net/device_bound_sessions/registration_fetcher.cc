@@ -82,9 +82,8 @@ void OnDataSigned(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     std::string header_and_payload,
-    unexportable_keys::UnexportableKeyId key_id,
-    base::OnceCallback<void(
-        std::optional<RegistrationFetcher::RegistrationTokenResult>)> callback,
+    base::OnceCallback<
+        void(std::optional<RegistrationFetcher::RegistrationToken>)> callback,
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> result) {
   if (!result.has_value()) {
     std::move(callback).Run(std::nullopt);
@@ -95,13 +94,7 @@ void OnDataSigned(
   std::optional<std::string> registration_token =
       AppendSignatureToHeaderAndPayload(header_and_payload, algorithm,
                                         signature);
-  if (!registration_token.has_value()) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  std::move(callback).Run(RegistrationFetcher::RegistrationTokenResult(
-      registration_token.value(), key_id));
+  std::move(callback).Run(std::move(registration_token));
 }
 
 void SignChallengeWithKey(
@@ -112,8 +105,7 @@ void SignChallengeWithKey(
     std::optional<std::string> authorization,
     std::optional<std::string> session_identifier,
     base::OnceCallback<
-        void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
-        callback) {
+        void(std::optional<RegistrationFetcher::RegistrationToken>)> callback) {
   auto expected_algorithm = unexportable_key_service.GetAlgorithm(key_id);
   auto expected_public_key =
       unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
@@ -140,7 +132,7 @@ void SignChallengeWithKey(
       /*max_retries=*/0,
       base::BindOnce(&OnDataSigned, expected_algorithm.value(),
                      std::ref(unexportable_key_service), header_and_payload,
-                     key_id, std::move(callback)));
+                     std::move(callback)));
 }
 
 RegistrationFetcher::FetcherType* g_mock_fetcher = nullptr;
@@ -362,8 +354,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher,
   }
 
   void OnRegistrationTokenCreated(
-      std::optional<RegistrationFetcher::RegistrationTokenResult> result) {
-    if (!result) {
+      std::optional<RegistrationFetcher::RegistrationToken>
+          registration_token) {
+    if (!registration_token) {
       number_of_signing_failures_++;
       if (number_of_signing_failures_ < kMaxSigningFailures) {
         AttemptChallengeSigning();
@@ -377,8 +370,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher,
     }
 
     request_ = CreateBaseRequest();
-    request_->SetExtraRequestHeaderByName(
-        kJwtSessionHeaderName, result->registration_token, /*overwrite*/ true);
+    request_->SetExtraRequestHeaderByName(kJwtSessionHeaderName,
+                                          registration_token.value(),
+                                          /*overwrite*/ true);
     request_->Start();
   }
 
@@ -525,8 +519,7 @@ void RegistrationFetcher::CreateTokenAsyncForTesting(
     std::optional<std::string> authorization,
     std::optional<std::string> session_identifier,
     base::OnceCallback<
-        void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
-        callback) {
+        void(std::optional<RegistrationFetcher::RegistrationToken>)> callback) {
   static constexpr crypto::SignatureVerifier::SignatureAlgorithm
       kSupportedAlgos[] = {crypto::SignatureVerifier::ECDSA_SHA256,
                            crypto::SignatureVerifier::RSA_PKCS1_SHA256};
@@ -538,7 +531,7 @@ void RegistrationFetcher::CreateTokenAsyncForTesting(
              std::optional<std::string>&& authorization,
              std::optional<std::string>&& session_identifier,
              base::OnceCallback<void(
-                 std::optional<RegistrationFetcher::RegistrationTokenResult>)>
+                 std::optional<RegistrationFetcher::RegistrationToken>)>
                  callback,
              unexportable_keys::ServiceErrorOr<
                  unexportable_keys::UnexportableKeyId> key_result) {

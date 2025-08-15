@@ -46,11 +46,7 @@ class NET_EXPORT RegistrationFetcher {
   using FetcherType =
       base::RepeatingCallback<base::expected<SessionParams, SessionError>()>;
 
-  // TODO(kristianm): Add more parameters when the returned JSON is parsed.
-  struct NET_EXPORT RegistrationTokenResult {
-    std::string registration_token;
-    unexportable_keys::UnexportableKeyId key_id;
-  };
+  using RegistrationToken = std::string;
 
   // Creates a fetcher that can be used to do registration or refresh.
   static std::unique_ptr<RegistrationFetcher> CreateFetcher(
@@ -92,9 +88,7 @@ class NET_EXPORT RegistrationFetcher {
       const GURL& registration_url,
       std::optional<std::string> authorization,
       std::optional<std::string> session_identifier,
-      base::OnceCallback<
-          void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
-          callback);
+      base::OnceCallback<void(std::optional<RegistrationToken>)> callback);
 
   static void SetFetcherForTesting(FetcherType* fetcher);
 
