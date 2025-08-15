@@ -1457,12 +1457,12 @@
     {
         "name": "j2objc-annotations",
         "group": "com.google.j2objc",
-        "version": "3.0.0"
+        "version": "3.1"
     },
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.32.0-RC2"
+        "version": "4.32.0"
     },
     {
         "name": "protobuf-lite",

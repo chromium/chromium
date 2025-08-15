@@ -58,7 +58,7 @@ template("define_autorolled_targets") {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
-    jar_path = "autorolled/cipd/libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-3.0.0.jar"
+    jar_path = "autorolled/cipd/libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-3.1.jar"
     output_name = "com_google_j2objc_j2objc_annotations"
     supports_android = true
     enable_bytecode_checks = false
@@ -566,7 +566,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (!defined(android_proto_runtime)) {
       java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
-        jar_path = "autorolled/cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.32.0-RC2.jar"
+        jar_path = "autorolled/cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.32.0.jar"
         output_name = "com_google_protobuf_protobuf_javalite"
         supports_android = true
         requires_android = true
