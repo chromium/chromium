@@ -20,24 +20,25 @@
 ExpandableContainerView::DetailsView::~DetailsView() = default;
 
 ExpandableContainerView::DetailsView::DetailsView(
-    const std::vector<std::u16string>& details) {
+    const std::u16string& details) {
+  auto* layout_provider = ChromeLayoutProvider::Get();
   // Spacing between this and the "Hide Details" link.
-  const int bottom_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
+  const int bottom_padding = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::TLBR(0, 0, bottom_padding, 0),
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RELATED_CONTROL_VERTICAL_SMALL)));
+  const int child_spacing = layout_provider->GetDistanceMetric(
+      DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
 
-  for (const auto& detail : details) {
-    auto detail_label = std::make_unique<views::Label>(
-        detail, views::style::CONTEXT_DIALOG_BODY_TEXT,
-        views::style::STYLE_SECONDARY);
-    detail_label->SetMultiLine(true);
-    detail_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    AddChildView(std::move(detail_label));
-  }
+  SetOrientation(views::BoxLayout::Orientation::kVertical);
+  SetInsideBorderInsets(gfx::Insets::TLBR(0, 0, bottom_padding, 0));
+  SetBetweenChildSpacing(child_spacing);
+
+  AddChildView(views::Builder<views::Label>()
+                   .SetText(details)
+                   .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                   .SetTextStyle(views::style::STYLE_SECONDARY)
+                   .SetMultiLine(true)
+                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                   .Build());
 }
 
 void ExpandableContainerView::DetailsView::SetExpanded(bool expanded) {
@@ -60,7 +61,7 @@ END_METADATA
 // ExpandableContainerView -----------------------------------------------------
 
 ExpandableContainerView::ExpandableContainerView(
-    const std::vector<std::u16string>& details) {
+    const std::u16string& details) {
   DCHECK(!details.empty());
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
