@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -157,7 +158,7 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
   cell.labelSpacing = kLabelSpacing;
   /// Populate cell with information.
   PasswordImportItem* item = _invalidPasswords[identifier.intValue];
-  cell.titleLabel.text = item.url;
+  cell.titleLabel.text = item.url.title;
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   cell.URLLabel.text = item.username;
   cell.URLLabel.numberOfLines = 2;
@@ -167,7 +168,7 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
     [cell.faviconView configureWithAttributes:item.faviconAttributes];
   } else {
     __weak __typeof(self) weakSelf = self;
-    [item loadFaviconWithCompletionHandler:^{
+    [item loadFaviconWithUIUpdateHandler:^{
       [weakSelf updateItemWithIdentifier:identifier];
     }];
   }

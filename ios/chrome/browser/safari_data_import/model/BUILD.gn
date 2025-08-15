@@ -12,7 +12,10 @@ source_set("model") {
   deps = [
     "//base",
     "//components/password_manager/core/browser/import:importer",
+    "//components/url_formatter",
     "//ios/chrome/browser/safari_data_import/public",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//url",
   ]
 }
 
@@ -23,6 +26,7 @@ source_set("unit_tests") {
     ":model",
     "//components/password_manager/core/browser/import:importer",
     "//ios/chrome/browser/safari_data_import/public",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//testing/gtest",
   ]
 }

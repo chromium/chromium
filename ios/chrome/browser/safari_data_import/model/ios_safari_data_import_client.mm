@@ -7,9 +7,13 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/import/import_results.h"
+#import "components/url_formatter/elide_url.h"
+#import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_item.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_item_consumer.h"
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -50,13 +54,26 @@ PasswordImportStatus GetPasswordImportStatusFromImportEntryStatus(
   NOTREACHED();
 }
 
+// URL and its formatted string representation.
+URLWithTitle* GetURLWithTitleForURLString(std::string url_string) {
+  GURL url = url_formatter::FixupURL(url_string, std::string());
+  if (url.is_empty()) {
+    return nil;
+  }
+  NSString* title = base::SysUTF16ToNSString(
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              url));
+  return [[URLWithTitle alloc] initWithURL:url title:title];
+}
+
 // Converts `ImportResults` to a list of `PasswordImportItem`s.
 NSArray<PasswordImportItem*>* GetPasswordImportItemsFromImportResults(
     const ImportResults& results) {
   NSMutableArray* password_items = [NSMutableArray array];
   for (const ImportEntry& entry : results.displayed_entries) {
     PasswordImportItem* item = [[PasswordImportItem alloc]
-        initWithURL:base::SysUTF8ToNSString(entry.url)
+        initWithURL:GetURLWithTitleForURLString(entry.url)
            username:base::SysUTF8ToNSString(entry.username)
            password:base::SysUTF8ToNSString(entry.password)
              status:GetPasswordImportStatusFromImportEntryStatus(entry.status)];

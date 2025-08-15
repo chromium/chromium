@@ -11,6 +11,7 @@
 
 @class FaviconAttributes;
 @protocol PasswordImportItemFaviconDataSource;
+@class URLWithTitle;
 
 /// Matches password_manager::ImportEntry::Status.
 /// Needs to be kept in sync with PasswordManagerImportEntryStatus in
@@ -46,8 +47,9 @@ enum class PasswordImportStatus {
 /// A password item to be imported.
 @interface PasswordImportItem : NSObject
 
-/// The website URL.
-@property(nonatomic, readonly, strong) NSString* url;
+/// URL for the website, with `url.title` being the formatted URL string, scheme
+/// and path omitted.
+@property(nonatomic, readonly, strong) URLWithTitle* url;
 
 /// The username for the password.
 @property(nonatomic, readonly, strong) NSString* username;
@@ -59,26 +61,26 @@ enum class PasswordImportStatus {
 @property(nonatomic, readonly, assign) PasswordImportStatus status;
 
 /// Data source for favicon loading. Should be set before
-/// `-loadFaviconWithCompletionHandler` is invoked.
+/// `-loadFaviconWithUIUpdateHandler` is invoked.
 @property(nonatomic, weak) id<PasswordImportItemFaviconDataSource>
     faviconDataSource;
 
 /// Favicon attributes for the URL. If current value is `nil`, call
-/// `-loadFaviconWithCompletionHandler` and retrieve the value in the completion
+/// `-loadFaviconWithUIUpdateHandler` and retrieve the value in the completion
 /// handler.
 @property(nonatomic, strong) FaviconAttributes* faviconAttributes;
 
 /// Initialization.
-- (instancetype)initWithURL:(NSString*)url
+- (instancetype)initWithURL:(URLWithTitle*)url
                    username:(NSString*)username
                    password:(NSString*)password
                      status:(PasswordImportStatus)status
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-/// Loads the favicon with completion handler on the first call to this method.
-/// Does nothing on subsequent calls.
-- (void)loadFaviconWithCompletionHandler:(ProceduralBlock)handler;
+/// Loads the favicon with a block to update UI on the first call to this
+/// method. Does nothing on subsequent calls.
+- (void)loadFaviconWithUIUpdateHandler:(ProceduralBlock)handler;
 
 @end
 

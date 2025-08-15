@@ -12,9 +12,10 @@
 /// A data source for a password import item's favicon.
 @protocol PasswordImportItemFaviconDataSource
 
-/// Loads `item.faviconAttributes`.
+/// Loads `item.faviconAttributes` with `UIHandler` invoked asynchronously on
+/// the main thread.
 - (BOOL)passwordImportItem:(PasswordImportItem*)item
-    loadFaviconAttributesWithCompletion:(ProceduralBlock)completion;
+    loadFaviconAttributesWithUIHandler:(ProceduralBlock)UIHandler;
 
 @end
 
