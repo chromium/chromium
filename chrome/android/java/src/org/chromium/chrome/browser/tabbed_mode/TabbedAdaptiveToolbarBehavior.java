@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonDataProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -47,7 +47,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final Runnable mRegisterVoiceSearchRunnable;
     private final Supplier<GroupSuggestionsButtonController>
             mGroupSuggestionsButtonControllerSupplier;
-    private final TabGroupModelFilterProvider mTabGroupModelFilterProvider;
+    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public TabbedAdaptiveToolbarBehavior(
@@ -59,7 +59,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             ActivityTabProvider activityTabProvider,
             Runnable registerVoiceSearchRunnable,
             Supplier<GroupSuggestionsButtonController> groupSuggestionsButtonController,
-            TabGroupModelFilterProvider tabGroupModelFilterProvider,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -69,7 +69,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
         mActivityTabProvider = activityTabProvider;
         mRegisterVoiceSearchRunnable = registerVoiceSearchRunnable;
         mGroupSuggestionsButtonControllerSupplier = groupSuggestionsButtonController;
-        mTabGroupModelFilterProvider = tabGroupModelFilterProvider;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
@@ -109,7 +109,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
                             mContext,
                             AppCompatResources.getDrawable(mContext, R.drawable.ic_widgets),
                             mGroupSuggestionsButtonControllerSupplier,
-                            mTabGroupModelFilterProvider);
+                            mTabModelSelectorSupplier);
             controller.addButtonVariant(AdaptiveToolbarButtonVariant.TAB_GROUPING, tabGrouping);
         }
 

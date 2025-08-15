@@ -13,7 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_suggestion.R;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
 
@@ -22,14 +22,14 @@ import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvide
 public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
     private final Supplier<GroupSuggestionsButtonController>
             mGroupSuggestionsButtonControllerSupplier;
-    private final TabGroupModelFilterProvider mTabGroupModelFilterProvider;
+    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
 
     public GroupSuggestionsButtonDataProvider(
             Supplier<@Nullable Tab> activeTabSupplier,
             Context context,
             Drawable buttonDrawable,
             Supplier<GroupSuggestionsButtonController> groupSuggestionsButtonControllerSupplier,
-            TabGroupModelFilterProvider tabGroupModelFilterProvider) {
+            Supplier<TabModelSelector> tabModelSelectorSupplier) {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
@@ -42,7 +42,7 @@ public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
                 AdaptiveToolbarButtonVariant.TAB_GROUPING,
                 /* tooltipTextResId= */ R.string.tab_group_suggestion_action_chip_label);
         mGroupSuggestionsButtonControllerSupplier = groupSuggestionsButtonControllerSupplier;
-        mTabGroupModelFilterProvider = tabGroupModelFilterProvider;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }
 
     @Override
@@ -57,7 +57,9 @@ public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
 
     @Override
     public void onClick(View view) {
-        if (!mActiveTabSupplier.hasValue()) {
+        if (!mActiveTabSupplier.hasValue()
+                || !mGroupSuggestionsButtonControllerSupplier.hasValue()
+                || !mTabModelSelectorSupplier.hasValue()) {
             return;
         }
 
@@ -65,8 +67,10 @@ public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
                 .get()
                 .onButtonClicked(
                         mActiveTabSupplier.get(),
-                        mTabGroupModelFilterProvider.getTabGroupModelFilter(
-                                /* isIncognito= */ false));
+                        mTabModelSelectorSupplier
+                                .get()
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(/* isIncognito= */ false));
         notifyObservers(false);
     }
 }
