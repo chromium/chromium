@@ -288,10 +288,8 @@ bool EncodeTreeHeadSignature(const SignedTreeHead& signed_tree_head,
       !CBB_add_u8(output_cbb.get(), TREE_HASH) ||
       !WriteTimeSinceEpoch(signed_tree_head.timestamp, output_cbb.get()) ||
       !CBB_add_u64(output_cbb.get(), signed_tree_head.tree_size) ||
-      !CBB_add_bytes(
-          output_cbb.get(),
-          reinterpret_cast<const uint8_t*>(signed_tree_head.sha256_root_hash),
-          kSthRootHashLength)) {
+      !CBB_add_bytes(output_cbb.get(), signed_tree_head.sha256_root_hash.data(),
+                     signed_tree_head.sha256_root_hash.size())) {
     return false;
   }
   output->append(reinterpret_cast<const char*>(CBB_data(output_cbb.get())),

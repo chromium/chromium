@@ -4,11 +4,13 @@
 
 #include "net/cert/ct_serialization.h"
 
+#include <array>
 #include <string>
 #include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/merkle_tree_leaf.h"
 #include "net/cert/signed_certificate_timestamp.h"
@@ -265,7 +267,8 @@ TEST_F(CtSerializationTest, EncodesValidSignedTreeHead) {
   ASSERT_EQ(50u, encoded.length());
   std::string expected_buffer(
       "\x0\x1\x0\x0\x1\x45\x3c\x5f\xb8\x35\x0\x0\x0\x0\x0\x0\x0\x15", 18);
-  expected_buffer.append(ct::GetSampleSTHSHA256RootHash());
+  expected_buffer.append(
+      base::as_string_view(ct::GetSampleSTHSHA256RootHash()));
   ASSERT_EQ(expected_buffer, encoded);
 }
 

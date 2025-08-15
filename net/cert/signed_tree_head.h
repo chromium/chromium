@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <string>
 
 #include "base/containers/span.h"
@@ -39,7 +40,7 @@ struct NET_EXPORT SignedTreeHead {
   Version version;
   base::Time timestamp;
   uint64_t tree_size;
-  char sha256_root_hash[kSthRootHashLength];
+  std::array<uint8_t, kSthRootHashLength> sha256_root_hash;
   DigitallySigned signature;
 
   // Added in RFC6962-bis, Appendix A. Needed to identify which log

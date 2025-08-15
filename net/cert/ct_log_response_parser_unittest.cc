@@ -4,6 +4,7 @@
 
 #include "net/cert/ct_log_response_parser.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -32,16 +33,7 @@ TEST(CTLogResponseParserTest, ParsesValidJsonSTH) {
   ASSERT_EQ(SignedTreeHead::V1, tree_head.version);
   ASSERT_EQ(sample_sth.timestamp, tree_head.timestamp);
   ASSERT_EQ(sample_sth.tree_size, tree_head.tree_size);
-
-  // Copy the field from the SignedTreeHead because it's not null terminated
-  // there and ASSERT_STREQ expects null-terminated strings.
-  char actual_hash[kSthRootHashLength + 1];
-  base::as_writable_byte_span(actual_hash)
-      .first(kSthRootHashLength)
-      .copy_from(base::as_byte_span(tree_head.sha256_root_hash));
-  actual_hash[kSthRootHashLength] = '\0';
-  std::string expected_sha256_root_hash = GetSampleSTHSHA256RootHash();
-  ASSERT_STREQ(expected_sha256_root_hash.c_str(), actual_hash);
+  ASSERT_EQ(tree_head.sha256_root_hash, GetSampleSTHSHA256RootHash());
 
   const DigitallySigned& expected_signature(sample_sth.signature);
 
@@ -63,7 +55,7 @@ TEST(CTLogResponseParserTest, FailsToParseMissingFields) {
 
   std::optional<base::Value> missing_root_hash_sth = base::JSONReader::Read(
       CreateSignedTreeHeadJsonString(1 /* tree_size */, 123456u /* timestamp */,
-                                     "", GetSampleSTHTreeHeadSignature()));
+                                     {}, GetSampleSTHTreeHeadSignature()));
   ASSERT_FALSE(FillSignedTreeHead(*missing_root_hash_sth, &tree_head));
 }
 

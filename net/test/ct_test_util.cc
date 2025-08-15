@@ -7,11 +7,12 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
 #include <string_view>
 #include <vector>
 
 #include "base/base64.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -28,7 +29,7 @@ namespace {
 // The following test vectors are from
 // http://code.google.com/p/certificate-transparency
 
-const char kDefaultDerCert[] =
+constexpr char kDefaultDerCert[] =
     "308202ca30820233a003020102020106300d06092a864886f70d01010505003055310b3009"
     "06035504061302474231243022060355040a131b4365727469666963617465205472616e73"
     "706172656e6379204341310e300c0603550408130557616c65733110300e06035504071307"
@@ -50,10 +51,10 @@ const char kDefaultDerCert[] =
     "f667256cd6a1647b5e13203bb8582de7d6696f656d1c60b95f456b7fcf338571908f1c6972"
     "7d24c4fccd249295795814d1dac0e6";
 
-const char kDefaultIssuerKeyHash[] =
+constexpr char kDefaultIssuerKeyHash[] =
     "02adddca08b8bf9861f035940c940156d8350fdff899a6239c6bd77255b8f8fc";
 
-const char kDefaultDerTbsCert[] =
+constexpr char kDefaultDerTbsCert[] =
     "30820233a003020102020107300d06092a864886f70d01010505003055310b300906035504"
     "061302474231243022060355040a131b4365727469666963617465205472616e7370617265"
     "6e6379204341310e300c0603550408130557616c65733110300e0603550407130745727720"
@@ -71,34 +72,34 @@ const char kDefaultDerTbsCert[] =
     "41310e300c0603550408130557616c65733110300e060355040713074572772057656e8201"
     "0030090603551d1304023000";
 
-const char kDefaultExtensions[] = "666f6f626172"; // "foobar"
+constexpr char kDefaultExtensions[] = "666f6f626172";  // "foobar"
 
-const char kTestDigitallySigned[] =
+constexpr char kTestDigitallySigned[] =
     "0403004730450220606e10ae5c2d5a1b0aed49dc4937f48de71a4e9784e9c208dfbfe9ef53"
     "6cf7f2022100beb29c72d7d06d61d06bdb38a069469aa86fe12e18bb7cc45689a2c0187ef5"
     "a5";
 
-const char kTestSignedCertificateTimestamp[] =
+constexpr char kTestSignedCertificateTimestamp[] =
     "00df1c2ec11500945247a96168325ddc5c7959e8f7c6d388fc002e0bbd3f74d7640000013d"
     "db27ded900000403004730450220606e10ae5c2d5a1b0aed49dc4937f48de71a4e9784e9c2"
     "08dfbfe9ef536cf7f2022100beb29c72d7d06d61d06bdb38a069469aa86fe12e18bb7cc456"
     "89a2c0187ef5a5";
 
-const char kEcP256PublicKey[] =
+constexpr char kEcP256PublicKey[] =
     "3059301306072a8648ce3d020106082a8648ce3d0301070342000499783cb14533c0161a5a"
     "b45bf95d08a29cd0ea8dd4c84274e2be59ad15c676960cf0afa1074a57ac644b23479e5b3f"
     "b7b245eb4b420ef370210371a944beaceb";
 
-const char kTestKeyId[] =
+constexpr char kTestKeyId[] =
     "df1c2ec11500945247a96168325ddc5c7959e8f7c6d388fc002e0bbd3f74d764";
 
-const int64_t kTestTimestamp = INT64_C(1396877277237);
+constexpr int64_t kTestTimestamp = INT64_C(1396877277237);
 
-const char kTestSCTSignatureData[] =
+constexpr char kTestSCTSignatureData[] =
     "30450220606e10ae5c2d5a1b0aed49dc4937f48de71a4e9784e9c208dfbfe9ef536cf7f202"
     "2100beb29c72d7d06d61d06bdb38a069469aa86fe12e18bb7cc45689a2c0187ef5a5";
 
-const char kTestSCTPrecertSignatureData[] =
+constexpr char kTestSCTPrecertSignatureData[] =
     "30450220482f6751af35dba65436be1fd6640f3dbf9a41429495924530288fa3e5e23e0602"
     "2100e4edc0db3ac572b1e2f5e8ab6a680653987dcf41027dfeffa105519d89edbf08";
 
@@ -106,7 +107,7 @@ const char kTestSCTPrecertSignatureData[] =
 // http://code.google.com/p/certificate-transparency, does not pertain to any
 // of the test certs here, and is only used to test extracting the extension
 // contents from the response.
-const char kFakeOCSPResponse[] =
+constexpr char kFakeOCSPResponse[] =
     "3082016e0a0100a08201673082016306092b060105050730010104820154308201503081ba"
     "a21604144edfdf5ff9c90ffacfca66e7fbc436bc39ee3fc7180f3230313030313031303630"
     "3030305a30818e30818b3049300906052b0e03021a050004141833a1e6a4f09577cca0e64c"
@@ -116,10 +117,10 @@ const char kFakeOCSPResponse[] =
     "74300d06092a864886f70d0101050500038181003586ffcf0794e64eb643d52a3d570a1c93"
     "836395986a2f792dd4e9c70b05161186c55c1658e0607dc9ec0d0924ac37fb99506c870579"
     "634be1de62ba2fced5f61f3b428f959fcee9bddf6f268c8e14c14fdf3b447786e638a5c8cc"
-    "b610893df17a60e4cff30f4780aeffe0086ef19910f0d9cd7414bc93d1945686f88ad0a3c3"
-    ;
+    "b610893df17a60e4cff30f4780aeffe0086ef19910f0d9cd7414bc93d1945686f88ad0a3c"
+    "3";
 
-const char kFakeOCSPResponseCert[] =
+constexpr char kFakeOCSPResponseCert[] =
     "3082022930820192a003020102021001aef99bdee0bb58c6f2b816bc3ae02f300d06092a86"
     "4886f70d01010505003015311330110603550403130a54657374696e67204341301e170d31"
     "30303130313036303030305a170d3332313230313036303030305a30373112301006035504"
@@ -137,7 +138,7 @@ const char kFakeOCSPResponseCert[] =
     "83203425fd706b4fc5e797002af3d88151be5901eef56ec30aacdfc404be1bd35865ff1943"
     "2516";
 
-const char kFakeOCSPResponseIssuerCert[] =
+constexpr char kFakeOCSPResponseIssuerCert[] =
     "308201d13082013aa003020102020101300d06092a864886f70d0101050500301531133011"
     "0603550403130a54657374696e67204341301e170d3130303130313036303030305a170d33"
     "32313230313036303030305a3015311330110603550403130a54657374696e672043413081"
@@ -152,16 +153,18 @@ const char kFakeOCSPResponseIssuerCert[] =
     "3ea1e11df2ccb357a5fed5220f9c6239e8946b9b7517707631d51ab996833d58a022cff5a6"
     "2169ac9258ec110efee78da9ab4a641e3b3c9ee5e8bd291460";
 
-const char kFakeOCSPExtensionValue[] = "74657374";  // "test"
+constexpr char kFakeOCSPExtensionValue[] = "74657374";  // "test"
 
 // For the sample STH
-const char kSampleSTHSHA256RootHash[] =
-    "726467216167397babca293dca398e4ce6b621b18b9bc42f30c900d1f92ac1e4";
-const char kSampleSTHTreeHeadSignature[] =
+constexpr std::array<uint8_t, kSthRootHashLength> kSampleSTHSHA256RootHash = {
+    0x72, 0x64, 0x67, 0x21, 0x61, 0x67, 0x39, 0x7b, 0xab, 0xca, 0x29,
+    0x3d, 0xca, 0x39, 0x8e, 0x4c, 0xe6, 0xb6, 0x21, 0xb1, 0x8b, 0x9b,
+    0xc4, 0x2f, 0x30, 0xc9, 0x00, 0xd1, 0xf9, 0x2a, 0xc1, 0xe4};
+constexpr char kSampleSTHTreeHeadSignature[] =
     "0403004730450220365a91a2a88f2b9332f41d8959fa7086da7e6d634b7b089bc9da066426"
     "6c7a20022100e38464f3c0fd066257b982074f7ac87655e0c8f714768a050b4be9a7b441cb"
     "d3";
-size_t kSampleSTHTreeSize = 21u;
+constexpr size_t kSampleSTHTreeSize = 21u;
 
 }  // namespace
 
@@ -270,9 +273,7 @@ bool GetSampleSignedTreeHead(SignedTreeHead* sth) {
   sth->version = SignedTreeHead::V1;
   sth->timestamp = base::Time::UnixEpoch() + base::Milliseconds(kTestTimestamp);
   sth->tree_size = kSampleSTHTreeSize;
-  std::string sha256_root_hash = GetSampleSTHSHA256RootHash();
-  UNSAFE_TODO(memcpy(sth->sha256_root_hash, sha256_root_hash.c_str(),
-                     kSthRootHashLength));
+  sth->sha256_root_hash = GetSampleSTHSHA256RootHash();
   sth->log_id = GetTestPublicKeyId();
 
   return GetSampleSTHTreeHeadDecodedSignature(&(sth->signature));
@@ -283,10 +284,11 @@ bool GetSampleEmptySignedTreeHead(SignedTreeHead* sth) {
   sth->timestamp =
       base::Time::UnixEpoch() + base::Milliseconds(INT64_C(1450443594920));
   sth->tree_size = 0;
-  std::string empty_root_hash = HexDecode(
-      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-  UNSAFE_TODO(memcpy(sth->sha256_root_hash, empty_root_hash.c_str(),
-                     kSthRootHashLength));
+  const std::array<uint8_t, kSthRootHashLength> kEmptySTHSHA256RootHash = {
+      {0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14, 0x9a, 0xfb, 0xf4,
+       0xc8, 0x99, 0x6f, 0xb9, 0x24, 0x27, 0xae, 0x41, 0xe4, 0x64, 0x9b,
+       0x93, 0x4c, 0xa4, 0x95, 0x99, 0x1b, 0x78, 0x52, 0xb8, 0x55}};
+  sth->sha256_root_hash = kEmptySTHSHA256RootHash;
   sth->log_id = GetTestPublicKeyId();
 
   std::string tree_head_signature = HexDecode(
@@ -302,7 +304,7 @@ bool GetBadEmptySignedTreeHead(SignedTreeHead* sth) {
   sth->timestamp =
       base::Time::UnixEpoch() + base::Milliseconds(INT64_C(1450870952897));
   sth->tree_size = 0;
-  UNSAFE_TODO(memset(sth->sha256_root_hash, 'f', kSthRootHashLength));
+  sth->sha256_root_hash.fill('f');
   sth->log_id = GetTestPublicKeyId();
 
   std::string tree_head_signature = HexDecode(
@@ -313,8 +315,8 @@ bool GetBadEmptySignedTreeHead(SignedTreeHead* sth) {
   return DecodeDigitallySigned(&sp, &(sth->signature)) && sp.empty();
 }
 
-std::string GetSampleSTHSHA256RootHash() {
-  return HexDecode(kSampleSTHSHA256RootHash);
+const std::array<uint8_t, kSthRootHashLength>& GetSampleSTHSHA256RootHash() {
+  return kSampleSTHSHA256RootHash;
 }
 
 std::string GetSampleSTHTreeHeadSignature() {
@@ -333,10 +335,11 @@ std::string GetSampleSTHAsJson() {
                                         GetSampleSTHTreeHeadSignature());
 }
 
-std::string CreateSignedTreeHeadJsonString(size_t tree_size,
-                                           int64_t timestamp,
-                                           std::string sha256_root_hash,
-                                           std::string tree_head_signature) {
+std::string CreateSignedTreeHeadJsonString(
+    size_t tree_size,
+    int64_t timestamp,
+    base::span<const uint8_t> sha256_root_hash,
+    std::string_view tree_head_signature) {
   std::string sth_json =
       std::string("{\"tree_size\":") + base::NumberToString(tree_size) +
       std::string(",\"timestamp\":") + base::NumberToString(timestamp);
