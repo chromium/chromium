@@ -13,16 +13,8 @@ import("//build/toolchain/gcc_toolchain.gni")
 # environment. For example, cxx is a relative path picked up on $PATH in the
 # chroot. But in Simple Chrome, cxx is a system-absolute path.
 template("cros_toolchain") {
-  if (lacros_use_chromium_toolchain) {
-    clang_toolchain(target_name) {
-      forward_variables_from(invoker, "*")
-    }
-  } else {
-    clang_toolchain(target_name) {
-      forward_variables_from(invoker, "*")
-
-      toolchain_args.clang_use_chrome_plugins = false
-    }
+  clang_toolchain(target_name) {
+    forward_variables_from(invoker, "*")
   }
 }
 
