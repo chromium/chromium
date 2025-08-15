@@ -76,7 +76,11 @@ as the mojo broker for user processes.
 Linux only has one single host process (i.e. network process), and it acts as
 the mojo broker for user processes.
 
-## Build Targets
+## Sanity Checks
+
+Always do the following after making edits.
+
+### Build Targets
 
 Always build relevant targets after making edits. Typical targets could be:
 
@@ -88,3 +92,15 @@ Always build relevant targets after making edits. Typical targets could be:
 *   `remoting_me2me_host` - the Me2Me host binary.
 *   `remoting_native_messaging_host` - Native Messaging host for Me2Me.
 *   `remote_assistance_host` - Native Messaging host for It2Me.
+
+### Dependencies
+
+Always run `gn check` after making edits to validate target dependencies.
+Sometimes you may need to create new build targets to break circular
+dependencies. For example, targets like //remoting/host:common are huge and
+likely to cause problems. Prefer adding `deps` as opposed to `public_deps` when
+possible.
+
+### Formatting
+
+Always run `git cl format` after making edits.
