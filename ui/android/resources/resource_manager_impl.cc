@@ -13,6 +13,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -22,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "cc/resources/ui_resource_manager.h"
+#include "components/viz/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -254,7 +256,10 @@ void ResourceManagerImpl::AssertResourceExists(JNIEnv* env,
                                                jint res_type,
                                                jint res_id) {
   if (resources_[res_type].find(res_id) == resources_[res_type].end()) {
-    base::debug::DumpWithoutCrashing();
+    if (base::FeatureList::IsEnabled(
+            features::kAndroidDumpForBadCompositedUiState)) {
+      base::debug::DumpWithoutCrashing();
+    }
   }
 }
 

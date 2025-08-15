@@ -48,6 +48,14 @@ BASE_FEATURE(kAndroidBcivBottomControls,
              "AndroidBcivBottomControls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If this flag is enabled, a DumpWithoutCrashing() is captured when a bad
+// state is detected when moving the composited UI. For example, this could
+// mean scrolling without a resource, or OffsetTagValues trying to position
+// the UI outside of their valid constraints.
+BASE_FEATURE(kAndroidDumpForBadCompositedUiState,
+             "AndroidDumpForBadCompositedUiState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kBackdropFilterMirrorEdgeMode,
