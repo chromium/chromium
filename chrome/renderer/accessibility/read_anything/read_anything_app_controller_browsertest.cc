@@ -2054,51 +2054,6 @@ TEST_F(ReadAnythingAppControllerTest, RequestImageData) {
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
-TEST_F(ReadAnythingAppControllerTest, RequestImageData_UsesRootTree) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kReadAnythingImagesViaAlgorithm,
-       features::kReadAnythingReadAloud},
-      {});
-  std::u16string child_text = u"Click here to learn more! ";
-  static constexpr ui::AXNodeID kId = 3;
-  ui::AXNodeData text_node = test::TextNode(kId, child_text);
-  ui::AXNodeData child_node;
-  child_node.id = 333;
-  ui::AXNodeData child_root;
-  ui::AXTreeID child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  ui::AXTreeUpdate child_update;
-  test::SetUpdateTreeID(&child_update, child_tree_id);
-  static constexpr ui::AXNodeID child_root_id = 150;
-  child_root.id = child_root_id;
-  child_root.child_ids = {kId};
-  child_update.root_id = child_root.id;
-  child_update.nodes = {std::move(child_root), std::move(text_node)};
-  child_node.AddChildTreeId(child_tree_id);
-  ui::AXTreeID parent_tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  ui::AXTreeUpdate parent_update;
-  test::SetUpdateTreeID(&parent_update, parent_tree_id);
-  ui::AXNodeData root;
-  root.id = 1;
-  root.child_ids = {child_node.id};
-  child_update.tree_data.parent_tree_id = parent_tree_id;
-  parent_update.root_id = root.id;
-  parent_update.nodes = {std::move(root), std::move(child_node)};
-  controller().OnActiveAXTreeIDChanged(parent_tree_id, ukm::kInvalidSourceId,
-                                       false);
-  AccessibilityEventReceived({std::move(parent_update)});
-  controller().OnAXTreeDistilled(parent_tree_id, {});
-  AccessibilityEventReceived({std::move(child_update)});
-
-  EXPECT_CALL(page_handler_,
-              OnImageDataRequested(parent_tree_id, child_root_id))
-      .Times(1);
-
-  controller().RequestImageData(child_root_id);
-
-  page_handler_.FlushForTesting();
-}
-
 TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
   ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update;

@@ -7018,9 +7018,10 @@ int WebContentsImpl::DownloadImageFromAxNode(const ui::AXTreeID tree_id,
                         tree_id.ToString() + "," + base::ToString(node_id));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const int download_id = GetNextDownloadId();
-  // Always use the main frame when downloading via A11y ids.
-  RenderFrameHostImpl* main_frame = GetPrimaryMainFrame();
-  if (!main_frame->IsRenderFrameLive()) {
+
+  RenderFrameHostImpl* target_frame =
+      RenderFrameHostImpl::FromAXTreeID(tree_id);
+  if (!target_frame || !target_frame->IsRenderFrameLive()) {
     // If the renderer process is dead (i.e. crash, or memory pressure on
     // Android), the downloader service will be invalid. Pre-Mojo, this would
     // hang the callback indefinitely since the IPC would be dropped. Now,
@@ -7030,19 +7031,21 @@ int WebContentsImpl::DownloadImageFromAxNode(const ui::AXTreeID tree_id,
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&WebContentsImpl::OnDidDownloadImage,
-                       weak_factory_.GetWeakPtr(), main_frame->GetWeakPtr(),
+                       weak_factory_.GetWeakPtr(),
+                       target_frame ? target_frame->GetWeakPtr() : nullptr,
                        std::move(callback), download_id, GURL(), 400,
                        std::vector<SkBitmap>(), std::vector<gfx::Size>()));
     return download_id;
   }
-  CHECK_EQ(main_frame->GetAXTreeID(), tree_id);
-  main_frame->GetMojoImageDownloader()->DownloadImageFromAxNode(
+  CHECK_EQ(target_frame->GetAXTreeID(), tree_id);
+  target_frame->GetMojoImageDownloader()->DownloadImageFromAxNode(
       node_id, preferred_size, max_bitmap_size, bypass_cache,
       base::BindOnce(&WebContentsImpl::OnDidDownloadImage,
-                     weak_factory_.GetWeakPtr(), main_frame->GetWeakPtr(),
+                     weak_factory_.GetWeakPtr(), target_frame->GetWeakPtr(),
                      std::move(callback), download_id, GURL()));
   return download_id;
 }
+
 int WebContentsImpl::DownloadImage(
     const GURL& url,
     bool is_favicon,

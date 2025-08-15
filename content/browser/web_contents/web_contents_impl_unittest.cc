@@ -3547,6 +3547,47 @@ TEST_F(WebContentsImplTest, BadDownloadImageFromAXNodeId) {
   run_loop.Run();
 }
 
+TEST_F(WebContentsImplTest, DownloadImageFromAxNodeInSubframe) {
+  const GURL main_url("https://a.com");
+  const GURL child_url("https://b.com");
+
+  // Navigate the main frame.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), main_url);
+  RenderFrameHostImpl* main_rfh = contents()->GetPrimaryMainFrame();
+  // Create and navigate a child frame.
+  RenderFrameHostImpl* child_rfh = static_cast<RenderFrameHostImpl*>(
+      RenderFrameHostTester::For(main_rfh)->AppendChild("iframe"));
+  child_rfh = static_cast<RenderFrameHostImpl*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(child_url, child_rfh));
+
+  ASSERT_NE(main_rfh->GetAXTreeID(), child_rfh->GetAXTreeID());
+  FakeImageDownloader fake_downloader;
+  fake_downloader.Init(child_rfh->GetRemoteInterfaces());
+
+  constexpr int kAxNodeId = 42;
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorBLUE);
+  fake_downloader.SetFakeResponseData(kAxNodeId, {bitmap}, {gfx::Size(10, 10)});
+
+  base::test::TestFuture<int, int, const GURL&, const std::vector<SkBitmap>&,
+                         const std::vector<gfx::Size>&>
+      future;
+  contents()->DownloadImageFromAxNode(
+      child_rfh->GetAXTreeID(), kAxNodeId, /*preferred_size=*/gfx::Size(),
+      /*max_bitmap_size=*/0, /*bypass_cache=*/false, future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(0, std::get<1>(future.Get()));
+
+  // Check that we received the correct bitmap from the fake downloader.
+  const auto& bitmaps = std::get<3>(future.Get());
+  ASSERT_EQ(1u, bitmaps.size());
+  EXPECT_EQ(10, bitmaps[0].width());
+  EXPECT_EQ(10, bitmaps[0].height());
+  EXPECT_EQ(SK_ColorBLUE, bitmaps[0].getColor(5, 5));
+}
+
 // Test that the WebContentsObserver is notified when a fetch keepalive request
 // is created in a given RenderFrameHost.
 TEST_F(WebContentsImplTest, OnKeepAliveRequestCreated) {
