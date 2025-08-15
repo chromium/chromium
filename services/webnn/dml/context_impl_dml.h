@@ -74,11 +74,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
         WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
         CreateGraphImplCallback callback) = 0;
 
-    virtual void CreateTensorImpl(
-        base::WeakPtr<WebNNContextImpl> context,
+    virtual base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+    CreateTensorImpl(
+        ContextImplDml* context,
         mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-        mojom::TensorInfoPtr tensor_info,
-        CreateTensorImplCallback callback) = 0;
+        mojom::TensorInfoPtr tensor_info) = 0;
   };
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
@@ -93,16 +93,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
       base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
       CreateGraphImplCallback callback) override;
 
-  void CreateTensorImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::TensorInfoPtr tensor_info,
-      CreateTensorImplCallback callback) override;
+  base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorImpl(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+                   mojom::TensorInfoPtr tensor_info) override;
 
-  void CreateTensorFromMailboxImpl(
+  base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorFromMailboxImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      gpu::Mailbox mailbox,
-      CreateTensorImplCallback callback) override;
+      gpu::Mailbox mailbox) override;
 
   // Begins recording commands needed for context operations.
   // If recording failed, calling this function will recreate the recorder to

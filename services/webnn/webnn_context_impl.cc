@@ -154,10 +154,29 @@ void WebNNContextImpl::CreateTensor(
 
   mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
-  CreateTensorImpl(std::move(receiver), std::move(tensor_info),
-                   base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl,
-                                  AsWeakPtr(), std::move(callback),
-                                  std::move(remote), std::move(tensor_data)));
+
+  auto result = CreateTensorImpl(std::move(receiver), std::move(tensor_info));
+  if (!result.has_value()) {
+    std::move(callback).Run(
+        mojom::CreateTensorResult::NewError(std::move(result.error())));
+    return;
+  }
+
+  // Write the specified values into the tensor. If `tensor_data` is empty,
+  // the tensor should be left initialized to zero. The `tensor_data` size
+  // should of been already validated in CreateTensor().
+  if (tensor_data.size() > 0) {
+    result.value()->WriteTensorImpl(std::move(tensor_data));
+  }
+
+  auto success = mojom::CreateTensorSuccess::New(std::move(remote),
+                                                 result.value()->handle());
+  std::move(callback).Run(
+      mojom::CreateTensorResult::NewSuccess(std::move(success)));
+
+  // Associates a `WebNNTensor` instance with this context so the WebNN service
+  // can access the implementation.
+  tensor_impls_.emplace(*std::move(result));
 }
 
 void WebNNContextImpl::WaitSyncToken(const gpu::SyncToken& fence) {
@@ -220,40 +239,33 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   scheduler_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &WebNNContextImpl::CreateTensorFromMailboxImpl, AsWeakPtr(),
-          std::move(receiver), std::move(tensor_info), std::move(mailbox),
-          base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl,
-                         AsWeakPtr(), std::move(callback), std::move(remote),
-                         mojo_base::BigBuffer())));
+          [](base::WeakPtr<WebNNContextImpl> self,
+             mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+             mojom::TensorInfoPtr tensor_info, const gpu::Mailbox& mailbox,
+             CreateTensorCallback callback,
+             mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote) {
+            if (!self) {
+              return;
+            }
+            auto result = self->CreateTensorFromMailboxImpl(
+                std::move(receiver), std::move(tensor_info), mailbox);
+            if (!result.has_value()) {
+              std::move(callback).Run(mojom::CreateTensorResult::NewError(
+                  std::move(result.error())));
+              return;
+            }
+
+            auto success = mojom::CreateTensorSuccess::New(
+                std::move(remote), result.value()->handle());
+            std::move(callback).Run(
+                mojom::CreateTensorResult::NewSuccess(std::move(success)));
+            self->tensor_impls_.emplace(*std::move(result));
+          },
+          AsWeakPtr(), std::move(receiver), std::move(tensor_info), mailbox,
+          std::move(callback), std::move(remote)));
 }
 
-void WebNNContextImpl::DidCreateWebNNTensorImpl(
-    mojom::WebNNContext::CreateTensorCallback callback,
-    mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
-    mojo_base::BigBuffer tensor_data,
-    base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr> result) {
-  if (!result.has_value()) {
-    std::move(callback).Run(
-        mojom::CreateTensorResult::NewError(std::move(result.error())));
-    return;
-  }
 
-  // Write the specified values into the tensor. If `tensor_data` is empty,
-  // the tensor should be left initialized to zero. The `tensor_data` size
-  // should of been already validated in CreateTensor().
-  if (tensor_data.size() > 0) {
-    result.value()->WriteTensorImpl(std::move(tensor_data));
-  }
-
-  auto success = mojom::CreateTensorSuccess::New(std::move(remote),
-                                                 result.value()->handle());
-  std::move(callback).Run(
-      mojom::CreateTensorResult::NewSuccess(std::move(success)));
-
-  // Associates a `WebNNTensor` instance with this context so the WebNN service
-  // can access the implementation.
-  tensor_impls_.emplace(*std::move(result));
-}
 
 void WebNNContextImpl::RemoveWebNNTensorImpl(
     const blink::WebNNTensorToken& handle) {

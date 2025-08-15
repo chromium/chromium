@@ -51,9 +51,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
-  using CreateTensorImplCallback = base::OnceCallback<void(
-      base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>)>;
-
   WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                    WebNNContextProviderImpl* context_provider,
                    ContextProperties properties,
@@ -159,26 +156,19 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   // This method will be called by `CreateTensor()` after the tensor info is
   // validated. A backend subclass should implement this method to create and
-  // initialize a platform specific tensor asynchronously.
-  virtual void CreateTensorImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::TensorInfoPtr tensor_info,
-      CreateTensorImplCallback callback) = 0;
+  // initialize a platform specific tensor.
+  virtual base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorImpl(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+                   mojom::TensorInfoPtr tensor_info) = 0;
 
   // Similar to `CreateTensorImpl()`, but creates a tensor from a shared image
   // for WebGPU interop. Backend subclasses should implement this to
   // asynchronously create a platform-specific tensor from a shared image.
-  virtual void CreateTensorFromMailboxImpl(
+  virtual base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorFromMailboxImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      gpu::Mailbox mailbox,
-      CreateTensorImplCallback callback) = 0;
-
-  void DidCreateWebNNTensorImpl(
-      CreateTensorCallback callback,
-      mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
-      mojo_base::BigBuffer tensor_data,
-      base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr> result);
+      gpu::Mailbox mailbox) = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

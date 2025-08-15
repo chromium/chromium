@@ -285,16 +285,15 @@ void ContextImplOrt::CreateGraphImpl(
       std::move(constant_tensor_operands), this, std::move(callback));
 }
 
-void ContextImplOrt::CreateTensorImpl(
+base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+ContextImplOrt::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    mojom::TensorInfoPtr tensor_info,
-    CreateTensorImplCallback callback) {
+    mojom::TensorInfoPtr tensor_info) {
   // TODO(crbug.com/332350952): Implement constant tensors for ORT backend.
   if (tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
-    std::move(callback).Run(base::unexpected(
+    return base::unexpected(
         mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                          "Creation of constant tensors is not supported.")));
-    return;
+                          "Creation of constant tensors is not supported."));
   }
 
   auto buffer_content =
@@ -302,19 +301,19 @@ void ContextImplOrt::CreateTensorImpl(
   auto buffer_state =
       base::MakeRefCounted<QueueableResourceState<BufferContentOrt>>(
           std::move(buffer_content));
-  std::move(callback).Run(base::MakeRefCounted<TensorImplOrt>(
-      std::move(receiver), AsWeakPtr(), std::move(tensor_info),
-      std::move(buffer_state)));
+  return base::MakeRefCounted<TensorImplOrt>(std::move(receiver), AsWeakPtr(),
+                                             std::move(tensor_info),
+                                             std::move(buffer_state));
 }
 
-void ContextImplOrt::CreateTensorFromMailboxImpl(
+base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+ContextImplOrt::CreateTensorFromMailboxImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
-    gpu::Mailbox mailbox,
-    CreateTensorImplCallback callback) {
-  std::move(callback).Run(
-      base::unexpected(mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                                         "WebGPU Interop is not supported.")));
+    gpu::Mailbox mailbox) {
+  return base::unexpected(
+      mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                        "WebGPU Interop is not supported."));
 }
 
 }  // namespace webnn::ort

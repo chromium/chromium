@@ -106,13 +106,12 @@ class FakeWebNNBackend final : public ContextImplDml::BackendForTesting {
         std::move(compute_resource_info)));
   }
 
-  void CreateTensorImpl(
-      base::WeakPtr<WebNNContextImpl> context,
-      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::TensorInfoPtr tensor_info,
-      WebNNContextImpl::CreateTensorImplCallback callback) override {
-    std::move(callback).Run(base::MakeRefCounted<FakeWebNNTensorImpl>(
-        std::move(receiver), std::move(context), std::move(tensor_info)));
+  base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorImpl(ContextImplDml* context,
+                   mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+                   mojom::TensorInfoPtr tensor_info) override {
+    return base::MakeRefCounted<FakeWebNNTensorImpl>(
+        std::move(receiver), context->AsWeakPtr(), std::move(tensor_info));
   }
 };
 

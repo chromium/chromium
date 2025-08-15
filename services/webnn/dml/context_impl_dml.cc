@@ -42,13 +42,6 @@ namespace {
 
 ContextImplDml::BackendForTesting* g_backend_for_testing = nullptr;
 
-void HandleTensorCreationFailure(
-    const std::string& error_message,
-    WebNNContextImpl::CreateTensorImplCallback callback) {
-  std::move(callback).Run(base::unexpected(
-      CreateError(mojom::Error::Code::kUnknownError, error_message)));
-}
-
 }  // namespace
 
 // The context properties follow the supported feature level on the platform.
@@ -632,15 +625,13 @@ void ContextImplDml::CreateGraphImpl(
           gpu::DISABLE_DML_META_COMMANDS_FOR_GPU));
 }
 
-void ContextImplDml::CreateTensorImpl(
+base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+ContextImplDml::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    mojom::TensorInfoPtr tensor_info,
-    CreateTensorImplCallback callback) {
+    mojom::TensorInfoPtr tensor_info) {
   if (g_backend_for_testing) {
-    g_backend_for_testing->CreateTensorImpl(AsWeakPtr(), std::move(receiver),
-                                            std::move(tensor_info),
-                                            std::move(callback));
-    return;
+    return g_backend_for_testing->CreateTensorImpl(this, std::move(receiver),
+                                                   std::move(tensor_info));
   }
 
   // DML requires resources to be in multiple of 4 bytes.
@@ -649,9 +640,8 @@ void ContextImplDml::CreateTensorImpl(
   if (std::numeric_limits<uint64_t>::max() - kDMLBufferAlignment <
       static_cast<uint64_t>(tensor_info->descriptor.PackedByteLength())) {
     LOG(ERROR) << "[WebNN] Tensor is too large to create.";
-    HandleTensorCreationFailure("Failed to create tensor.",
-                                std::move(callback));
-    return;
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create tensor."));
   }
 
   const uint64_t aligned_buffer_byte_size = base::bits::AlignUp(
@@ -694,26 +684,25 @@ void ContextImplDml::CreateTensorImpl(
   }
 
   if (FAILED(hr)) {
-    HandleTensorCreationFailure("Failed to create tensor.",
-                                std::move(callback));
     HandleContextLostOrCrash("Failed to create the external buffer.", hr);
-    return;
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create tensor."));
   }
 
   // The receiver bound to WebNNTensorImpl.
   //
   // Safe to use ContextImplDml* because this context owns the buffer
   // being connected and that context cannot destruct before the buffer.
-  std::move(callback).Run(base::MakeRefCounted<TensorImplDml>(
-      std::move(receiver), std::move(buffer), AsWeakPtr(),
-      std::move(tensor_info)));
+  return base::MakeRefCounted<TensorImplDml>(std::move(receiver),
+                                             std::move(buffer), AsWeakPtr(),
+                                             std::move(tensor_info));
 }
 
-void ContextImplDml::CreateTensorFromMailboxImpl(
+base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+ContextImplDml::CreateTensorFromMailboxImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
-    gpu::Mailbox mailbox,
-    CreateTensorImplCallback callback) {
+    gpu::Mailbox mailbox) {
   gpu::SharedImageManager* shared_image_manager =
       context_provider()->shared_image_manager();
   CHECK(shared_image_manager);
@@ -724,9 +713,8 @@ void ContextImplDml::CreateTensorFromMailboxImpl(
           mailbox,
           context_provider()->shared_context_state()->memory_type_tracker());
   if (!representation) {
-    HandleTensorCreationFailure("Failed to create tensor.",
-                                std::move(callback));
-    return;
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create tensor."));
   }
 
   // Validate D3D12 buffer size matches TensorInfo.
@@ -737,14 +725,13 @@ void ContextImplDml::CreateTensorFromMailboxImpl(
           static_cast<uint64_t>(tensor_info->descriptor.PackedByteLength()),
           4ull)) {
     LOG(ERROR) << "[WebNN] Tensor size mismatched for mailbox.";
-    HandleTensorCreationFailure("Failed to create tensor.",
-                                std::move(callback));
-    return;
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create tensor."));
   }
 
-  std::move(callback).Run(base::MakeRefCounted<TensorImplDml>(
+  return base::MakeRefCounted<TensorImplDml>(
       std::move(receiver), std::move(representation), AsWeakPtr(),
-      std::move(tensor_info)));
+      std::move(tensor_info));
 }
 
 void ContextImplDml::ReadTensor(
