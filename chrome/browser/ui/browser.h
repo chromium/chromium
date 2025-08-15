@@ -1435,6 +1435,9 @@ class Browser : public TabStripModelObserver,
   // Tracks whether a modal UI is showing.
   bool showing_call_to_action_ = false;
 
+  // Tracks whether the browser object is fully initialized.
+  bool is_initialized_ = false;
+
   ui::UnownedUserDataHost unowned_user_data_host_;
 
   // The following factory is used for chrome update coalescing.

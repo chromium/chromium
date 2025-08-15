@@ -695,6 +695,10 @@ Browser::Browser(const CreateParams& params)
   // is initialized.
   features_->InitPostWindowConstruction(this);
 
+  // All initialization is complete; after this point, the browser should be on
+  // the browser list until it is marked for destruction.
+  is_initialized_ = true;
+
   BrowserList::AddBrowser(this);
 }
 
@@ -3791,6 +3795,7 @@ bool Browser::SupportsWindowFeatureImpl(WindowFeature feature,
 bool Browser::IsBrowserClosing() const {
   BrowserList* browser_list = BrowserList::GetInstance();
   const bool removed_from_browserlist =
+      is_initialized_ &&
       std::ranges::find_if(*browser_list, [this](Browser* browser) {
         return browser == this;
       }) == browser_list->end();
