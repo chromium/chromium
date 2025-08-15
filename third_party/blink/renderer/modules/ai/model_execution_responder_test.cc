@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -66,20 +67,26 @@ TEST(CreateModelExecutionResponder, Simple) {
   base::RunLoop complete_runloop;
   base::RunLoop overflow_runloop;
   auto pending_remote = CreateModelExecutionResponder(
-      script_state, /*signal=*/nullptr, resolver,
+      script_state, /*signal=*/nullptr,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
       /*complete_callback=*/
       blink::BindOnce(
           [](uint64_t expected_tokens, base::RunLoop* runloop,
+             ScriptPromiseResolver<IDLString>* resolver, const String& response,
              mojom::blink::ModelExecutionContextInfoPtr context_info) {
             EXPECT_TRUE(context_info);
             EXPECT_EQ(context_info->current_tokens, expected_tokens);
+            ResolvePromiseOnCompletion(resolver, response,
+                                       std::move(context_info));
             runloop->Quit();
           },
-          kTestTokenNumber, blink::Unretained(&complete_runloop)),
+          kTestTokenNumber, blink::Unretained(&complete_runloop),
+          WrapPersistent(resolver)),
       /*overflow_callback=*/overflow_runloop.QuitClosure(),
-      /*resolve_override_callback=*/base::NullCallback());
+      base::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
+      base::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver), nullptr,
+                     WrapPersistent(script_state)));
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
@@ -112,12 +119,14 @@ TEST(CreateModelExecutionResponder, ErrorPermissionDenied) {
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   auto promise = resolver->Promise();
   auto pending_remote = CreateModelExecutionResponder(
-      script_state, /*signal=*/nullptr, resolver,
+      script_state, /*signal=*/nullptr,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      /*complete_callback=*/base::DoNothing(),
+      base::BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
       /*overflow_callback=*/base::DoNothing(),
-      /*resolve_override_callback=*/base::NullCallback());
+      base::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
+      base::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver), nullptr,
+                     WrapPersistent(script_state)));
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
@@ -150,12 +159,15 @@ TEST(CreateModelExecutionResponder, AbortWithoutResponse) {
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   auto promise = resolver->Promise();
   auto pending_remote = CreateModelExecutionResponder(
-      script_state, controller->signal(), resolver,
+      script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      /*complete_callback=*/base::DoNothing(),
+      base::BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
       /*overflow_callback=*/base::DoNothing(),
-      /*resolve_override_callback=*/base::NullCallback());
+      base::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
+      base::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver),
+                     WrapPersistent(controller->signal()),
+                     WrapPersistent(script_state)));
 
   controller->abort(scope.GetScriptState());
 
@@ -187,12 +199,15 @@ TEST(CreateModelExecutionResponder, AbortAfterResponse) {
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   auto promise = resolver->Promise();
   auto pending_remote = CreateModelExecutionResponder(
-      script_state, controller->signal(), resolver,
+      script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      /*complete_callback=*/base::DoNothing(),
+      base::BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
       /*overflow_callback=*/base::DoNothing(),
-      /*resolve_override_callback=*/base::NullCallback());
+      base::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
+      base::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver),
+                     WrapPersistent(controller->signal()),
+                     WrapPersistent(script_state)));
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));

@@ -629,11 +629,15 @@ ScriptPromise<IDLString> LanguageModel::prompt(
   // Use WrapPersistent() to make sure LanguageModel is not garbage collected
   // during the response.
   auto pending_remote = CreateModelExecutionResponder(
-      script_state, options->getSignalOr(nullptr), resolver, task_runner_,
+      script_state, options->getSignalOr(nullptr), task_runner_,
       AIMetrics::AISessionType::kLanguageModel,
-      BindOnce(&LanguageModel::OnResponseComplete, WrapPersistent(this)),
+      BindOnce(&LanguageModel::ResolvePromiseOnComplete, WrapPersistent(this),
+               WrapPersistent(resolver)),
       BindRepeating(&LanguageModel::OnQuotaOverflow, WrapPersistent(this)),
-      /*resolve_override_callback=*/base::NullCallback());
+      BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
+      BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver),
+               WrapPersistent(options->getSignalOr(nullptr)),
+               WrapPersistent(script_state)));
 
   String json_schema = GetSchemaForInput(*processed_constraint, options);
   ConvertPromptInputsToMojo(
@@ -904,6 +908,14 @@ void LanguageModel::destroy(ScriptState* script_state,
     language_model_remote_->Destroy();
     language_model_remote_.reset();
   }
+}
+
+void LanguageModel::ResolvePromiseOnComplete(
+    ScriptPromiseResolver<IDLString>* resolver,
+    const String& response,
+    mojom::blink::ModelExecutionContextInfoPtr context_info) {
+  resolver->Resolve(response);
+  OnResponseComplete(std::move(context_info));
 }
 
 void LanguageModel::OnResponseComplete(

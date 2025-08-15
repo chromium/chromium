@@ -106,6 +106,10 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
  private:
+  void ResolvePromiseOnComplete(
+      ScriptPromiseResolver<IDLString>* resolver,
+      const String& response,
+      mojom::blink::ModelExecutionContextInfoPtr context_info);
   void OnResponseComplete(
       mojom::blink::ModelExecutionContextInfoPtr context_info);
   void OnQuotaOverflow();

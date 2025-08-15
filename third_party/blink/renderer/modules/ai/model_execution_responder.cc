@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -39,20 +38,21 @@ class Responder final : public GarbageCollected<Responder>,
  public:
   Responder(ScriptState* script_state,
             AbortSignal* signal,
-            ScriptPromiseResolver<IDLString>* resolver,
             AIMetrics::AISessionType session_type,
-            base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
+            base::OnceCallback<void(const String&,
+                                    mojom::blink::ModelExecutionContextInfoPtr)>
                 complete_callback,
             base::RepeatingClosure overflow_callback,
-            base::OnceCallback<void(const String&)> resolve_override_callback)
+            base::OnceCallback<void(DOMException* exception)> error_callback,
+            base::OnceCallback<void()> abort_callback)
       : script_state_(script_state),
-        resolver_(resolver),
         receiver_(this, ExecutionContext::From(script_state)),
         abort_signal_(signal),
         session_type_(session_type),
         complete_callback_(std::move(complete_callback)),
         overflow_callback_(overflow_callback),
-        resolve_override_callback_(std::move(resolve_override_callback)) {
+        error_callback_(std::move(error_callback)),
+        abort_callback_(std::move(abort_callback)) {
     SetContextLifecycleNotifier(ExecutionContext::From(script_state));
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
@@ -67,13 +67,10 @@ class Responder final : public GarbageCollected<Responder>,
   void Trace(Visitor* visitor) const override {
     ContextLifecycleObserver::Trace(visitor);
     visitor->Trace(script_state_);
-    visitor->Trace(resolver_);
     visitor->Trace(receiver_);
     visitor->Trace(abort_signal_);
     visitor->Trace(abort_handle_);
   }
-
-  ScriptPromise<IDLString> GetPromise() { return resolver_->Promise(); }
 
   mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
   BindNewPipeAndPassRemote(
@@ -96,14 +93,8 @@ class Responder final : public GarbageCollected<Responder>,
         mojom::blink::ModelStreamingResponseStatus::kComplete);
     response_callback_count_++;
 
-    if (!resolve_override_callback_.is_null()) {
-      std::move(resolve_override_callback_).Run(response_);
-    } else {
-      resolver_->Resolve(response_);
-    }
-
-    if (context_info && complete_callback_) {
-      std::move(complete_callback_).Run(std::move(context_info));
+    if (complete_callback_) {
+      std::move(complete_callback_).Run(response_, std::move(context_info));
     }
     RecordResponseMetrics();
     Cleanup();
@@ -113,8 +104,9 @@ class Responder final : public GarbageCollected<Responder>,
                mojom::blink::QuotaErrorInfoPtr quota_error_info) override {
     RecordResponseStatusMetrics(status);
     response_callback_count_++;
-    resolver_->Reject(ConvertModelStreamingResponseErrorToDOMException(
-        status, std::move(quota_error_info)));
+    std::move(error_callback_)
+        .Run(ConvertModelStreamingResponseErrorToDOMException(
+            status, std::move(quota_error_info)));
     RecordResponseMetrics();
     Cleanup();
   }
@@ -130,10 +122,7 @@ class Responder final : public GarbageCollected<Responder>,
 
  private:
   void OnAborted() {
-    if (!resolver_) {
-      return;
-    }
-    resolver_->Reject(abort_signal_->reason(script_state_));
+    std::move(abort_callback_).Run();
     Cleanup();
   }
 
@@ -153,7 +142,6 @@ class Responder final : public GarbageCollected<Responder>,
   }
 
   void Cleanup() {
-    resolver_ = nullptr;
     receiver_.reset();
     keep_alive_.Clear();
     if (abort_handle_) {
@@ -163,7 +151,6 @@ class Responder final : public GarbageCollected<Responder>,
   }
 
   Member<ScriptState> script_state_;
-  Member<ScriptPromiseResolver<IDLString>> resolver_;
   String response_;
   int response_callback_count_ = 0;
   HeapMojoReceiver<blink::mojom::blink::ModelStreamingResponder, Responder>
@@ -174,14 +161,15 @@ class Responder final : public GarbageCollected<Responder>,
   const AIMetrics::AISessionType session_type_;
   // The callback invoked after the complete model response was received.
   base::OnceCallback<void(
+      const String&,
       mojom::blink::ModelExecutionContextInfoPtr context_info)>
       complete_callback_;
   // A callback invoked anytime the model's token quota is exceeded.
   base::RepeatingClosure overflow_callback_;
-  // An optional callback to override default promise resolving behavior.
-  // If unspecified, `resolver_` is resolved once `response_` is complete.
-  // When specified, this callback is invoked instead of resolving `resolver_`.
-  base::OnceCallback<void(const String&)> resolve_override_callback_;
+  // Callback invoked on model error.
+  base::OnceCallback<void(DOMException*)> error_callback_;
+  // Callback invoked on AbortSignal abort.
+  base::OnceCallback<void()> abort_callback_;
 };
 
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
@@ -348,17 +336,17 @@ mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
 CreateModelExecutionResponder(
     ScriptState* script_state,
     AbortSignal* signal,
-    ScriptPromiseResolver<IDLString>* resolver,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
-    base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
+    base::OnceCallback<void(const String&,
+                            mojom::blink::ModelExecutionContextInfoPtr)>
         complete_callback,
     base::RepeatingClosure overflow_callback,
-    base::OnceCallback<void(const String&)> resolve_override_callback) {
+    base::OnceCallback<void(DOMException*)> error_callback,
+    base::OnceCallback<void()> abort_callback) {
   Responder* responder = MakeGarbageCollected<Responder>(
-      script_state, signal, resolver, session_type,
-      std::move(complete_callback), overflow_callback,
-      std::move(resolve_override_callback));
+      script_state, signal, session_type, std::move(complete_callback),
+      overflow_callback, std::move(error_callback), std::move(abort_callback));
   return responder->BindNewPipeAndPassRemote(task_runner);
 }
 
@@ -392,6 +380,28 @@ ReadableStream* CreateEmptyReadableStream(
   ReadableStream* readable_stream = streaming_responder->CreateReadableStream();
   streaming_responder->OnCompletion(/*context_info=*/nullptr);
   return readable_stream;
+}
+
+void ResolvePromiseOnCompletion(
+    ScriptPromiseResolver<IDLString>* resolver,
+    const String& response,
+    mojom::blink::ModelExecutionContextInfoPtr context_info) {
+  resolver->Resolve(response);
+}
+
+void RejectPromiseOnAbort(ScriptPromiseResolver<IDLString>* resolver,
+                          AbortSignal* signal,
+                          ScriptState* script_state) {
+  if (signal) {
+    resolver->Reject(signal->reason(script_state));
+  } else {
+    RejectPromiseWithInternalError(resolver);
+  }
+}
+
+void RejectPromiseOnError(ScriptPromiseResolver<IDLString>* resolver,
+                          DOMException* exception) {
+  resolver->Reject(exception);
 }
 
 }  // namespace blink

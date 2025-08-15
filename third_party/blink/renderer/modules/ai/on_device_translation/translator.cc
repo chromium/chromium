@@ -205,11 +205,14 @@ ScriptPromise<IDLString> Translator::translate(
 
   // Pass persistent refs to keep this instance alive during the response.
   auto pending_remote = CreateModelExecutionResponder(
-      script_state, composite_signal, resolver, task_runner_,
+      script_state, composite_signal, task_runner_,
       AIMetrics::AISessionType::kTranslator,
-      /*complete_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
+      WTF::BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
       /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
-      /*resolve_override_callback=*/base::NullCallback());
+      WTF::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
+      WTF::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver),
+                    WrapPersistent(composite_signal),
+                    WrapPersistent(script_state)));
 
   // TODO(crbug.com/335374928): implement the error handling for the translation
   // service crash.

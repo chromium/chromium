@@ -49,8 +49,17 @@ Proofreader::Proofreader(
     : ExecutionContextClient(ExecutionContext::From(script_state)),
       remote_(GetExecutionContext()),
       options_(std::move(options)),
+      destruction_abort_controller_(AbortController::Create(script_state)),
+      create_abort_signal_(options_->getSignalOr(nullptr)),
       task_runner_(std::move(task_runner)) {
   remote_.Bind(std::move(pending_remote), task_runner_);
+
+  if (create_abort_signal_) {
+    CHECK(!create_abort_signal_->aborted());
+    create_abort_handle_ = create_abort_signal_->AddAlgorithm(WTF::BindOnce(
+        &Proofreader::OnCreateAbortSignalAborted, WrapWeakPersistent(this),
+        WrapWeakPersistent(script_state)));
+  }
 }
 
 void Proofreader::Trace(Visitor* visitor) const {
@@ -58,6 +67,9 @@ void Proofreader::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(remote_);
   visitor->Trace(options_);
+  visitor->Trace(destruction_abort_controller_);
+  visitor->Trace(create_abort_signal_);
+  visitor->Trace(create_abort_handle_);
 }
 
 ScriptPromise<V8Availability> Proofreader::availability(
@@ -117,15 +129,14 @@ ScriptPromise<Proofreader> Proofreader::create(
     return ScriptPromise<Proofreader>();
   }
 
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<Proofreader>>(script_state);
   auto promise = resolver->Promise();
-
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    resolver->Reject(signal->reason(script_state));
-    return promise;
-  }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
@@ -146,11 +157,19 @@ ScriptPromise<Proofreader> Proofreader::create(
 ScriptPromise<ProofreadResult> Proofreader::proofread(
     ScriptState* script_state,
     const String& input,
+    const ProofreaderProofreadOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return ScriptPromise<ProofreadResult>();
   }
+
+  CHECK(options);
+  AbortSignal* composite_signal = CreateCompositeSignal(script_state, options);
+  if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
+    return EmptyPromise();
+  }
+
   if (!remote_) {
     ThrowSessionDestroyedException(exception_state);
     return ScriptPromise<ProofreadResult>();
@@ -165,13 +184,6 @@ ScriptPromise<ProofreadResult> Proofreader::proofread(
       script_state);
   auto promise = resolver->Promise();
 
-  // Abort if receiving abort signal.
-  AbortSignal* signal = options_->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    resolver->Reject(signal->reason(script_state));
-    return promise;
-  }
-
   String trimmed_input = input.StripWhiteSpace();
   if (trimmed_input.empty()) {
     auto* proofread_result = MakeGarbageCollected<ProofreadResult>();
@@ -183,13 +195,18 @@ ScriptPromise<ProofreadResult> Proofreader::proofread(
   // Step 1: Prompt the model to proofread and return fully corrected text.
   // Pass persistent refs to keep this instance alive during the response.
   auto pending_remote = CreateModelExecutionResponder(
-      script_state, signal, /*resolver=*/nullptr, task_runner_,
+      script_state, composite_signal, task_runner_,
       AIMetrics::AISessionType::kProofreader,
-      /*complete_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
-      /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
-      /*resolve_override_callback=*/
+
       BindOnce(&Proofreader::OnProofreadComplete, WrapPersistent(this),
-               WrapPersistent(resolver)));
+               WrapPersistent(resolver), WrapPersistent(script_state),
+               WrapPersistent(composite_signal), input),
+      /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
+      BindOnce(&Proofreader::OnProofreadError, WrapPersistent(this),
+               WrapPersistent(resolver)),
+      BindOnce(&Proofreader::OnProofreadAbort, WrapPersistent(this),
+               WrapPersistent(resolver), WrapPersistent(composite_signal),
+               WrapPersistent(script_state)));
   remote_->Proofread(input, std::move(pending_remote));
 
   return promise;
@@ -203,10 +220,44 @@ void Proofreader::destroy(ScriptState* script_state,
   }
 
   remote_.reset();
+  destruction_abort_controller_->abort(script_state);
+  DestroyImpl();
 }
 
-// TODO(crbug.com424659255): Consolidate this with the one from
-// AIWritingAssistanceBase.
+// TODO(crbug.com424659255): Consolidate with AIWritingAssistanceBase.
+
+void Proofreader::DestroyImpl() {
+  remote_.reset();
+
+  if (create_abort_handle_) {
+    create_abort_signal_->RemoveAlgorithm(create_abort_handle_);
+    create_abort_handle_ = nullptr;
+  }
+}
+
+void Proofreader::OnCreateAbortSignalAborted(ScriptState* script_state) {
+  if (script_state) {
+    destruction_abort_controller_->abort(
+        script_state, create_abort_signal_->reason(script_state));
+  }
+  DestroyImpl();
+}
+
+AbortSignal* Proofreader::CreateCompositeSignal(
+    ScriptState* script_state,
+    const ProofreaderProofreadOptions* options) {
+  HeapVector<Member<AbortSignal>> signals;
+
+  signals.push_back(destruction_abort_controller_->signal());
+
+  CHECK(options);
+  if (options->hasSignal()) {
+    signals.push_back(options->signal());
+  }
+
+  return MakeGarbageCollected<AbortSignal>(script_state, signals);
+}
+
 bool Proofreader::ValidateAndCanonicalizeOptionLanguages(
     v8::Isolate* isolate,
     ProofreaderCreateCoreOptions* options) {
@@ -233,11 +284,32 @@ bool Proofreader::ValidateAndCanonicalizeOptionLanguages(
 
 void Proofreader::OnProofreadComplete(
     ScriptPromiseResolver<ProofreadResult>* resolver,
-    const String& corrected_input) {
+    ScriptState* script_state,
+    AbortSignal* signal,
+    const String& input,
+    const String& corrected_input,
+    mojom::blink::ModelExecutionContextInfoPtr context_info) {
   DCHECK(resolver);
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
+    return;
+  }
   auto* proofread_result = MakeGarbageCollected<ProofreadResult>();
   proofread_result->setCorrectedInput(corrected_input);
   resolver->Resolve(std::move(proofread_result));
+}
+
+void Proofreader::OnProofreadError(
+    ScriptPromiseResolver<ProofreadResult>* resolver,
+    DOMException* exception) {
+  resolver->Reject(exception);
+}
+
+void Proofreader::OnProofreadAbort(
+    ScriptPromiseResolver<ProofreadResult>* resolver,
+    AbortSignal* signal,
+    ScriptState* script_state) {
+  resolver->Reject(signal->reason(script_state));
 }
 
 }  // namespace blink

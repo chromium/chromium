@@ -29,6 +29,10 @@ dictionary ProofreaderCreateOptions : ProofreaderCreateCoreOptions {
   CreateMonitorCallback monitor;
 };
 
+dictionary ProofreaderProofreadOptions {
+  AbortSignal signal;
+};
+
 dictionary ProofreadResult {
   DOMString correctedInput;
   sequence<ProofreadCorrection> corrections;
@@ -70,7 +74,8 @@ interface Proofreader {
     RaisesException
   ]
   Promise<ProofreadResult> proofread(
-    DOMString input
+    DOMString input,
+    optional ProofreaderProofreadOptions options = {}
   );
 
   [

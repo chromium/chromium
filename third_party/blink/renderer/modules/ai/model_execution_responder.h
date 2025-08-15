@@ -43,26 +43,45 @@ CreateModelExecutionStreamingResponder(
     base::RepeatingClosure overflow_callback);
 
 // Creates a ModelStreamingResponder that handles the streaming output of the
-// model execution. The responder resolves `resolver` with the complete result,
-// unless `resolve_override_callback` is specified.
+// model execution. Callbacks are run on completion, error, or abort.
 MODULES_EXPORT
 mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
 CreateModelExecutionResponder(
     ScriptState* script_state,
     AbortSignal* signal,
-    ScriptPromiseResolver<IDLString>* resolver,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
-    base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
+    base::OnceCallback<void(const String&,
+                            mojom::blink::ModelExecutionContextInfoPtr)>
         complete_callback,
     base::RepeatingClosure overflow_callback,
-    base::OnceCallback<void(const String&)> resolve_override_callback);
+    base::OnceCallback<void(DOMException*)> error_callback,
+    base::OnceCallback<void()> abort_callback);
 
 // Creates a closed ReadableStream without any chunk.
 MODULES_EXPORT
 ReadableStream* CreateEmptyReadableStream(
     ScriptState* script_state,
     AIMetrics::AISessionType session_type);
+
+// Resolves API execution promise directly with the full response on model
+// execution completion.
+MODULES_EXPORT
+void ResolvePromiseOnCompletion(
+    ScriptPromiseResolver<IDLString>* resolver,
+    const String& response,
+    mojom::blink::ModelExecutionContextInfoPtr context_info);
+
+// Rejects API execution promise when model execution is aborted.
+MODULES_EXPORT
+void RejectPromiseOnAbort(ScriptPromiseResolver<IDLString>* resolver,
+                          AbortSignal* signal,
+                          ScriptState* script_state);
+
+// Rejects API execution promise on error during model execution.
+MODULES_EXPORT
+void RejectPromiseOnError(ScriptPromiseResolver<IDLString>* resolver,
+                          DOMException* exception);
 
 }  // namespace blink
 
