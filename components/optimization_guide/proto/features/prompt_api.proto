@@ -6,8 +6,9 @@ edition = "2023";
 
 package optimization_guide.proto;
 
-import "components/optimization_guide/proto/features/media.proto";
 import "components/optimization_guide/proto/on_device_model_execution_config.proto";
+
+import "components/optimization_guide/proto/features/media.proto";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
