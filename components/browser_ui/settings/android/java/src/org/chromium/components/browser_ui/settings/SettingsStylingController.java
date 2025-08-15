@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.build.annotations.NullMarked;
@@ -69,15 +70,35 @@ public class SettingsStylingController {
     }
 
     private ArrayList<Preference> getVisiblePreferences() {
-        if (mPreferenceScreen == null) return new ArrayList<>();
         ArrayList<Preference> visiblePreferences = new ArrayList<>();
+        if (mPreferenceScreen == null) return visiblePreferences;
+
         for (int i = 0; i < mPreferenceScreen.getPreferenceCount(); i++) {
             Preference preference = mPreferenceScreen.getPreference(i);
             if (preference.isVisible()) {
-                visiblePreferences.add(preference);
+                addVisiblePreferences(preference, visiblePreferences);
             }
         }
         return visiblePreferences;
+    }
+
+    /**
+     * Recursively adds all visible preferences.
+     *
+     * @param preference The preference to start from.
+     * @param visiblePreferences The list to add visible preferences to.
+     */
+    private void addVisiblePreferences(
+            Preference preference, ArrayList<Preference> visiblePreferences) {
+        visiblePreferences.add(preference);
+        if (preference instanceof PreferenceGroup preferenceGroup) {
+            for (int i = 0; i < preferenceGroup.getPreferenceCount(); i++) {
+                Preference nestedPreference = preferenceGroup.getPreference(i);
+                if (nestedPreference.isVisible()) {
+                    addVisiblePreferences(nestedPreference, visiblePreferences);
+                }
+            }
+        }
     }
 
     /**
