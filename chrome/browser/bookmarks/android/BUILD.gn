@@ -39,7 +39,10 @@ source_set("impl") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/values/dimens.xml" ]
+  sources = [
+    "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
+  ]
 }
 
 android_library("java") {

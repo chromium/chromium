@@ -10,6 +10,7 @@ import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocus;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.app.Activity;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
@@ -115,12 +117,19 @@ public class BookmarkBarCoordinator
         itemsContainer.getRecycledViewPool().setMaxRecycledViews(BookmarkBarUtils.ViewType.ITEM, 0);
         itemsContainer.setItemViewCacheSize(0);
 
+        Supplier<Pair<Integer, Integer>> controlsHeightSupplier =
+                () ->
+                        new Pair<>(
+                                mBrowserControlsStateProvider.getTopControlsHeight(),
+                                mBrowserControlsStateProvider.getBottomControlsHeight());
+
         // Bind view/model for bookmark bar and instantiate mediator.
         final var model = new PropertyModel.Builder(BookmarkBarProperties.ALL_KEYS).build();
         mMediator =
                 new BookmarkBarMediator(
                         activity,
                         allBookmarksButtonModel,
+                        controlsHeightSupplier,
                         itemsModel,
                         mBookmarkBarItemsLayoutManager.getItemsOverflowSupplier(),
                         model,
@@ -250,6 +259,9 @@ public class BookmarkBarCoordinator
         // we want to hide the Android widgets (which are controlled by the Mediator). We do not
         // also set the sceneLayer visibility here because we want that to be what is shown.
         mMediator.setVisibility(mBrowserControlsStateProvider.getTopControlOffset() == 0);
+        mMediator.onBrowserControlsChanged(
+                mBrowserControlsStateProvider.getTopControlsHeight(),
+                mBrowserControlsStateProvider.getBottomControlsHeight());
     }
 
     @Override
@@ -260,6 +272,8 @@ public class BookmarkBarCoordinator
         // when calculating top margin in order to bottom align the bookmark bar relative to other
         // top browser controls.
         mMediator.setTopMargin(topControlsHeight - getTopControlHeight());
+        mMediator.onBrowserControlsChanged(
+                topControlsHeight, mBrowserControlsStateProvider.getBottomControlsHeight());
     }
 
     // Private methods:

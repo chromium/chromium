@@ -7,5 +7,8 @@ found in the LICENSE file.
 -->
 
 <resources>
-  <dimen name="bookmark_bar_popup_elevation">2dp</dimen>
+  <dimen name="bookmarks_bar_popup_elevation">2dp</dimen>
+  <dimen name="bookmarks_bar_popup_max_width">400dp</dimen>
+  <dimen name="bookmarks_bar_popup_margin">48dp</dimen>
+  <dimen name="bookmarks_bar_popup_min_height">182dp</dimen>
 </resources>

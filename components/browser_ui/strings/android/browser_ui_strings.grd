@@ -732,7 +732,10 @@
       <message name="IDS_BLUETOOTH_NOTIFICATION_CONTENT_TEXT_INCOGNITO" desc="The notification will display this text for the user to return to the Incognito tab which has created the notification.">
         Tap to return to the site
       </message>
-
+      <!-- Bookmarks -->
+      <message name="IDS_BOOKMARKS_BAR_EMPTY_MESSAGE" desc="Message shown in a popup menu when a bookmarks bar folder is opened and contains no bookmarks." translateable="false">
+        No bookmarks
+      </message>
       <!-- USB -->
       <message name="IDS_CONNECTED_TO_USB_DEVICE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a website is connected to a USB device.">
         Connected to a USB device
