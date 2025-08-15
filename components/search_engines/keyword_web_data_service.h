@@ -66,6 +66,11 @@ struct WDKeywordsResult {
 
 class WebDataServiceConsumer;
 
+// KeywordWebDataService is a specialization of WebDataServiceBase that manages
+// the keywords table. It is responsible for persisting search engine data to
+// the web database and is used by the TemplateURLService to load and save
+// search engine information. All database operations are performed on a
+// background thread.
 class KeywordWebDataService : public WebDataServiceBase {
  public:
   // Instantiate this to turn on batch mode on the provided |service|

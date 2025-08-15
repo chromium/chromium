@@ -632,9 +632,19 @@ class TemplateURLRef {
 
 // TemplateURL ----------------------------------------------------------------
 
-// A TemplateURL represents a single "search engine", defined primarily as a
-// subset of the Open Search Description Document
-// (http://www.opensearch.org/Specifications/OpenSearch) plus some extensions.
+// A TemplateURL represents a single "search engine". It can hold two sets of
+// data: a "local" value and an "account" value. The local value is stored on
+// the device and is not synced. The account value is synced.
+//
+// When a user is signed in, a TemplateURL can have both local and account
+// values. The `data()` method provides a merged view of these two values, with
+// the more recent one taking precedence. When a search engine is modified, the
+// change is written to both the local and account values (dual-write). This
+// ensures that the change is both synced to the user's account and persists on
+// the device after sign-out.
+//
+// Upon sign-out, the account values are cleared, leaving only the local values.
+//
 // One TemplateURL contains several TemplateURLRefs, which correspond to various
 // different capabilities (e.g. doing searches or getting suggestions), as well
 // as a TemplateURLData containing other details like the name, keyword, etc.
