@@ -2187,11 +2187,6 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
         body.append(node)
         return func_def
 
-    body.extend([
-        make_check_argument_length(cg_context),
-        EmptyNode(),
-    ])
-
     if "PutForwards" in ext_attrs:
         body.append(make_steps_of_put_forwards(cg_context))
         return func_def
