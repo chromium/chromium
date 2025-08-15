@@ -10,11 +10,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/paint_preview/browser/paint_preview_base_service_test_factory.h"
 #include "components/paint_preview/browser/paint_preview_file_mixin.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
+#include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "content/public/browser/render_process_host.h"
@@ -22,10 +24,14 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace paint_preview {
+
+using testing::Optional;
+using testing::Property;
 
 namespace {
 
@@ -56,22 +62,13 @@ std::unique_ptr<KeyedService> BuildServiceWithRejectionPolicy(
 
 base::FilePath CreateDir(scoped_refptr<FileManager> manager,
                          const DirectoryKey& key) {
-  base::FilePath out;
-  base::RunLoop loop;
+  base::test::TestFuture<std::optional<base::FilePath>> future;
   manager->GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FileManager::CreateOrGetDirectory, manager, key, false),
-      base::BindOnce(
-          [](base::OnceClosure quit, base::FilePath* out,
-             const std::optional<base::FilePath>& path) {
-            EXPECT_TRUE(path.has_value());
-            EXPECT_FALSE(path->empty());
-            *out = path.value();
-            std::move(quit).Run();
-          },
-          loop.QuitClosure(), &out));
-  loop.Run();
-  return out;
+      future.GetCallback());
+  EXPECT_THAT(future.Get(), Optional(Property(&base::FilePath::empty, false)));
+  return future.Take().value();
 }
 
 }  // namespace
@@ -115,6 +112,17 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
     // Ignore GUID and File as this is internal information not known by the
     // Keyed Service API.
     EXPECT_EQ(input_params->clip_rect, expected_params_->clip_rect);
+    if (input_params->is_main_frame) {
+      EXPECT_EQ(input_params->clip_x_coord_override,
+                expected_params_->clip_x_coord_override);
+      EXPECT_EQ(input_params->clip_y_coord_override,
+                expected_params_->clip_y_coord_override);
+    } else {
+      EXPECT_EQ(input_params->clip_x_coord_override,
+                mojom::ClipCoordOverride::kNone);
+      EXPECT_EQ(input_params->clip_y_coord_override,
+                mojom::ClipCoordOverride::kNone);
+    }
     EXPECT_EQ(input_params->is_main_frame, expected_params_->is_main_frame);
   }
 
@@ -176,6 +184,8 @@ class PaintPreviewBaseServiceTest
       base::FilePath* root_dir,
       RecordingPersistence persistence,
       gfx::Rect clip_rect,
+      mojom::ClipCoordOverride clip_x_coord_override,
+      mojom::ClipCoordOverride clip_y_coord_override,
       bool capture_links,
       size_t max_per_capture_size,
       uint64_t max_decoded_image_size_bytes) {
@@ -184,6 +194,8 @@ class PaintPreviewBaseServiceTest
     capture_params.root_dir = root_dir;
     capture_params.persistence = persistence;
     capture_params.clip_rect = clip_rect;
+    capture_params.clip_x_coord_override = clip_x_coord_override;
+    capture_params.clip_y_coord_override = clip_y_coord_override;
     capture_params.capture_links = capture_links;
     capture_params.max_per_capture_size = max_per_capture_size;
     capture_params.max_decoded_image_size_bytes = max_decoded_image_size_bytes;
@@ -199,6 +211,9 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
   MockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
   params->clip_rect = gfx::Rect(0, 0, 0, 0);
+  params->clip_x_coord_override =
+      mojom::ClipCoordOverride::kCenterOnScrollOffset;
+  params->clip_y_coord_override = mojom::ClipCoordOverride::kScrollOffset;
   params->is_main_frame = true;
   params->max_capture_size = 50;
   params->max_decoded_image_size_bytes = 1000;
@@ -219,8 +234,10 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
 
   base::RunLoop loop;
   service->CapturePaintPreview(
-      CreateCaptureParams(web_contents(), &path, GetParam(),
-                          gfx::Rect(0, 0, 0, 0), true, 50, 1000),
+      CreateCaptureParams(
+          web_contents(), &path, GetParam(), gfx::Rect(0, 0, 0, 0),
+          mojom::ClipCoordOverride::kCenterOnScrollOffset,
+          mojom::ClipCoordOverride::kScrollOffset, true, 50, 1000),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              PaintPreviewBaseService::CaptureStatus expected_status,
@@ -270,6 +287,9 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureFailed) {
   MockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
   params->clip_rect = gfx::Rect(0, 0, 0, 0);
+  params->clip_x_coord_override =
+      mojom::ClipCoordOverride::kCenterOnScrollOffset;
+  params->clip_y_coord_override = mojom::ClipCoordOverride::kScrollOffset;
   params->is_main_frame = true;
   params->max_capture_size = 0;
   recorder.SetExpectedParams(std::move(params));
@@ -287,7 +307,9 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureFailed) {
   base::RunLoop loop;
   service->CapturePaintPreview(
       CreateCaptureParams(web_contents(), &path, GetParam(),
-                          gfx::Rect(0, 0, 0, 0), true, 0,
+                          gfx::Rect(0, 0, 0, 0),
+                          mojom::ClipCoordOverride::kCenterOnScrollOffset,
+                          mojom::ClipCoordOverride::kScrollOffset, true, 0,
                           std::numeric_limits<uint64_t>::max()),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
@@ -307,6 +329,9 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureDisallowed) {
   MockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
   params->clip_rect = gfx::Rect(0, 0, 0, 0);
+  params->clip_x_coord_override =
+      mojom::ClipCoordOverride::kCenterOnScrollOffset;
+  params->clip_y_coord_override = mojom::ClipCoordOverride::kScrollOffset;
   params->is_main_frame = true;
   params->max_capture_size = 0;
   recorder.SetExpectedParams(std::move(params));
@@ -324,7 +349,9 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureDisallowed) {
   base::RunLoop loop;
   service->CapturePaintPreview(
       CreateCaptureParams(web_contents(), &path, GetParam(),
-                          gfx::Rect(0, 0, 0, 0), true, 0,
+                          gfx::Rect(0, 0, 0, 0),
+                          mojom::ClipCoordOverride::kCenterOnScrollOffset,
+                          mojom::ClipCoordOverride::kScrollOffset, true, 0,
                           std::numeric_limits<uint64_t>::max()),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
