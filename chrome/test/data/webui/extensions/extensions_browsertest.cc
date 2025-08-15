@@ -258,6 +258,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, CanUploadAsAccountExtension) {
   RunTestCase("CanUploadAsAccountExtension");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, ShowErrorAsWarningsButtonLabel) {
+  RunTestCase("ShowErrorAsWarningsButtonLabel");
+}
+
 class CrExtensionsDetailViewTest : public ExtensionsBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {

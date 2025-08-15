@@ -157,6 +157,9 @@
   <message name="IDS_EXTENSIONS_ITEM_ERRORS" desc="The label of the button to bring the user to the page showing an extension's errors.">
     Errors
   </message>
+  <message name="IDS_EXTENSIONS_ITEM_WARNINGS" desc="The label of the button to bring the user to the page showing an extension's warnings.">
+    Warnings
+  </message>
   <message name="IDS_EXTENSIONS_ITEM_HOST_PERMISSIONS_HEADING" desc="The heading above the details of which websites an extension is allowed to run on.">
     Allow this extension to read and change all your data on websites you visit:
   </message>

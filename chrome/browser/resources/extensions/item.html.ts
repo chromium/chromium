@@ -147,9 +147,13 @@ export function getHtml(this: ItemElement) {
         $i18n{remove}
       </cr-button>
       ${this.shouldShowErrorsButton_() ? html`
-        <cr-button id="errors-button" @click="${this.onErrorsClick_}"
+        <cr-button id="errors-button"
+            class="${this.showErrorsAsWarningsButtonLabel_()
+            ? 'warning' : 'error'}"
+            @click="${this.onErrorsClick_}"
             aria-describedby="a11yAssociation">
-          $i18n{itemErrors}
+          ${this.showErrorsAsWarningsButtonLabel_()
+          ? '$i18n{itemWarnings}' : '$i18n{itemErrors}'}
         </cr-button>` : ''}
     </div>
     ${this.showAccountUploadButton_() ? html`
