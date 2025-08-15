@@ -187,8 +187,7 @@ void WebNNContextImpl::WaitSyncToken(const gpu::SyncToken& fence) {
       gpu::Scheduler::Task(sequence_id_, std::move(nop_task), {fence}));
 }
 
-void WebNNContextImpl::GenVerifiedSyncToken(
-    GenVerifiedSyncTokenCallback callback) {
+gpu::SyncToken WebNNContextImpl::GenVerifiedSyncToken() {
   gpu::SyncToken verified_release(
       gpu::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE, command_buffer_id_,
       ++last_sync_token_release_id_);
@@ -204,7 +203,7 @@ void WebNNContextImpl::GenVerifiedSyncToken(
   // interface which requires verification. The release token was verified by
   // returning it to the renderer only after ScheduleTask was called.
   verified_release.SetVerifyFlush();
-  std::move(callback).Run(verified_release);
+  return verified_release;
 }
 
 void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,

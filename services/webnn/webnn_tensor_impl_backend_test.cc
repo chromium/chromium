@@ -437,6 +437,7 @@ TEST_F(WebNNTensorImplBackendTest, CreateContextImplManyTest) {
 TEST_F(WebNNTensorImplBackendTest, ContextImplSyncToken) {
   BadMessageTestHelper bad_message_helper;
 
+  blink::WebNNContextToken webnn_context_handle;
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
   base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
       context_result = CreateWebNNContext();
@@ -446,34 +447,27 @@ TEST_F(WebNNTensorImplBackendTest, ContextImplSyncToken) {
   } else {
     webnn_context_remote =
         std::move(context_result.value().webnn_context_remote);
+    webnn_context_handle =
+        std::move(context_result.value().webnn_context_handle);
   }
 
-  gpu::SyncToken last_sync_token_fence;
-  {
-    base::test::TestFuture<const gpu::SyncToken&> gen_sync_token_future;
-    webnn_context_remote->GenVerifiedSyncToken(
-        gen_sync_token_future.GetCallback());
-    last_sync_token_fence = gen_sync_token_future.Take();
-  }
+  base::optional_ref<WebNNContextImpl> context_impl =
+      webnn_test_environment_.context_provider()->GetWebNNContextImplForTesting(
+          webnn_context_handle);
 
+  gpu::SyncToken last_sync_token_fence = context_impl->GenVerifiedSyncToken();
   EXPECT_EQ(last_sync_token_fence.release_count(), 1u);
 
   // Tell WebNN IPC to flush itself by waiting on its own SyncToken it had
   // previously generated.
-  webnn_context_remote->WaitSyncToken(last_sync_token_fence);
+  context_impl->WaitSyncToken(last_sync_token_fence);
 
-  {
-    base::test::TestFuture<const gpu::SyncToken&> gen_sync_token_future;
-    webnn_context_remote->GenVerifiedSyncToken(
-        gen_sync_token_future.GetCallback());
-    last_sync_token_fence = gen_sync_token_future.Take();
-  }
-
+  last_sync_token_fence = context_impl->GenVerifiedSyncToken();
   EXPECT_EQ(last_sync_token_fence.release_count(), 2u);
 
   // Waiting on the same SyncToken should nop.
-  webnn_context_remote->WaitSyncToken(last_sync_token_fence);
-  webnn_context_remote->WaitSyncToken(last_sync_token_fence);
+  context_impl->WaitSyncToken(last_sync_token_fence);
+  context_impl->WaitSyncToken(last_sync_token_fence);
 
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
 }

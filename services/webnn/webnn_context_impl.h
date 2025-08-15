@@ -137,6 +137,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     return scheduler_task_runner_;
   }
 
+  // Waits for the given SyncToken to release before executing WebNN operations.
+  void WaitSyncToken(const gpu::SyncToken& fence);
+
+  // Generates a verified SyncToken that will be released once pending WebNN
+  // operations complete execution.
+  gpu::SyncToken GenVerifiedSyncToken();
+
  protected:
   void OnConnectionError();
 
@@ -147,8 +154,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void CreateTensor(mojom::TensorInfoPtr tensor_info,
                     mojo_base::BigBuffer tensor_data,
                     CreateTensorCallback callback) override;
-  void WaitSyncToken(const gpu::SyncToken& fence) override;
-  void GenVerifiedSyncToken(GenVerifiedSyncTokenCallback callback) override;
   void CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
                                const gpu::Mailbox& mailbox,
                                const gpu::SyncToken& fence,

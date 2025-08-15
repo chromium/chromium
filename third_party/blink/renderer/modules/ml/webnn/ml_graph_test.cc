@@ -429,6 +429,14 @@ class FakeWebNNTensor : public blink_mojom::WebNNTensor {
     base::span(buffer_).copy_prefix_from(src_buffer);
   }
 
+  void ExportTensor(ExportTensorCallback callback) override {
+    NOTIMPLEMENTED();
+  }
+
+  void ImportTensor(const gpu::SyncToken& sync_token_fence) override {
+    NOTIMPLEMENTED();
+  }
+
   void OnConnectionError() {
     helper_->DisconnectAndDestroyWebNNTensorImpl(handle());
   }
@@ -517,13 +525,6 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
         blink_mojom::CreateTensorResult::NewSuccess(std::move(success)));
   }
 
-  void GenVerifiedSyncToken(GenVerifiedSyncTokenCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
-  void WaitSyncToken(const gpu::SyncToken& sync_token_fence) override {
-    NOTIMPLEMENTED();
-  }
   void CreateTensorFromMailbox(blink_mojom::TensorInfoPtr tensor_info,
                                const ::gpu::Mailbox& mailbox,
                                const gpu::SyncToken& fence,

@@ -49,8 +49,18 @@ void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
   }
 
   // Call ReadTensorImpl() implemented by a backend.
-  PostTaskToOwningTaskRunner(base::BindOnce(&WebNNTensorImpl::ReadTensorImpl,
-                                            this, std::move(callback)));
+  PostTaskToOwningTaskRunner(base::BindOnce(
+      [](WebNNTensorImpl* self, ReadTensorCallback callback,
+         mojo::ReportBadMessageCallback bad_message_cb) {
+        if (self->is_exported()) {
+          LOG(ERROR) << "[WebNN] Invalid to read tensor when exported.";
+          std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+          return;
+        }
+        self->ReadTensorImpl(std::move(callback));
+      },
+      base::RetainedRef(this), std::move(callback),
+      GetMojoReceiver().GetBadMessageCallback()));
 }
 
 void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
@@ -66,8 +76,79 @@ void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
   }
 
   // Call WriteTensorImpl() implemented by a backend.
-  PostTaskToOwningTaskRunner(base::BindOnce(&WebNNTensorImpl::WriteTensorImpl,
-                                            this, std::move(src_buffer)));
+  PostTaskToOwningTaskRunner(base::BindOnce(
+      [](WebNNTensorImpl* self, mojo_base::BigBuffer src_buffer,
+         mojo::ReportBadMessageCallback bad_message_cb) {
+        if (self->is_exported()) {
+          LOG(ERROR) << "[WebNN] Invalid to write tensor when exported.";
+          std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+          return;
+        }
+        self->WriteTensorImpl(std::move(src_buffer));
+      },
+      base::RetainedRef(this), std::move(src_buffer),
+      GetMojoReceiver().GetBadMessageCallback()));
+}
+
+void WebNNTensorImpl::ImportTensor(const gpu::SyncToken& fence) {
+  if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  // Defer the next task until the fence is released, after prior scheduled
+  // tasks run.
+  context_->WaitSyncToken(fence);
+
+  PostTaskToOwningTaskRunner(base::BindOnce(
+      [](WebNNTensorImpl* self, mojo::ReportBadMessageCallback bad_message_cb) {
+        if (!self->is_exported()) {
+          LOG(ERROR) << "[WebNN] ImportTensor called without the tensor being "
+                        "exported.";
+          std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+          return;
+        }
+
+        CHECK(self->representation_)
+            << "Tensor must have a representation to import.";
+
+        self->representation_access_ =
+            self->representation_->BeginScopedAccess();
+      },
+      base::RetainedRef(this), GetMojoReceiver().GetBadMessageCallback()));
+}
+
+void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
+  if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  PostTaskToOwningTaskRunner(base::BindOnce(
+      [](WebNNTensorImpl* self, WebNNContextImpl* context,
+         ExportTensorCallback callback,
+         mojo::ReportBadMessageCallback bad_message_cb) {
+        if (self->is_exported()) {
+          LOG(ERROR)
+              << "[WebNN] ExportTensor called on already exported tensor.";
+          std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+          return;
+        }
+
+        CHECK(self->representation_)
+            << "Tensor must have a representation to export.";
+
+        // End WebNN access which makes the tensor be exported.
+        self->representation_access_.reset();
+
+        // Output a fence which must be waited to ensure WebNN has completed
+        // execution.
+        std::move(callback).Run(context->GenVerifiedSyncToken());
+      },
+      // Safe to use base::Unretained because this context owns the sequence
+      // used by the task runner to run this task.
+      base::RetainedRef(this), base::Unretained(context_.get()),
+      std::move(callback), GetMojoReceiver().GetBadMessageCallback()));
 }
 
 void WebNNTensorImpl::OnDisconnect() {
