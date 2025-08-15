@@ -13,10 +13,10 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -33,11 +33,17 @@
 @end
 
 @implementation BWGMediator {
-  // Browser instance.
-  raw_ptr<Browser> _browser;
+  // The current web state list.
+  raw_ptr<WebStateList> _webStateList;
 
   // Pref service to check if user flows were previously triggered.
   raw_ptr<PrefService> _prefService;
+
+  // The profile-scoped BWG service.
+  raw_ptr<BwgService> _BWGService;
+
+  // The browser-scoped BWG browser agent.
+  raw_ptr<BwgBrowserAgent> _BWGBrowserAgent;
 
   // The PageContext wrapper used to provide context about a page.
   PageContextWrapper* _pageContextWrapper;
@@ -50,13 +56,17 @@
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
-                            browser:(Browser*)browser
-                 baseViewController:(UIViewController*)baseViewController {
+                       webStateList:(WebStateList*)webStateList
+                 baseViewController:(UIViewController*)baseViewController
+                         BWGService:(BwgService*)BWGService
+                    BWGBrowserAgent:(BwgBrowserAgent*)BWGBrowserAgent {
   self = [super init];
   if (self) {
-    _browser = browser;
     _prefService = prefService;
+    _webStateList = webStateList;
     _baseViewController = baseViewController;
+    _BWGService = BWGService;
+    _BWGBrowserAgent = BWGBrowserAgent;
   }
   return self;
 }
@@ -110,8 +120,7 @@
 - (void)openNewTabWithURL:(const GURL&)URL {
   [self FREWillBeBackgrounded];
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [HandlerForProtocol(_browser->GetCommandDispatcher(), ApplicationCommands)
-      openURLInNewTab:command];
+  [self.applicationHandler openURLInNewTab:command];
 }
 
 #pragma mark - Private
@@ -128,18 +137,12 @@
   base::OnceCallback<void(PageContextWrapperCallbackResponse)>
       page_context_completion_callback =
           base::BindOnce(^void(PageContextWrapperCallbackResponse response) {
-            BWGMediator* strongSelf = weakSelf;
-            if (!strongSelf) {
-              return;
-            }
-
-            [strongSelf openBWGOverlayForPage:std::move(response)];
-            strongSelf->_pageContextWrapper = nil;
+            [weakSelf openBWGOverlayForPage:std::move(response)];
           });
 
   // Collect the PageContext and execute the callback once it's ready.
   _pageContextWrapper = [[PageContextWrapper alloc]
-        initWithWebState:_browser->GetWebStateList()->GetActiveWebState()
+        initWithWebState:_webStateList->GetActiveWebState()
       completionCallback:std::move(page_context_completion_callback)];
   [_pageContextWrapper setShouldGetAnnotatedPageContent:YES];
   [_pageContextWrapper setShouldGetSnapshot:YES];
@@ -149,16 +152,24 @@
 // Opens the BWG overlay with a given PageContextWrapperCallbackResponse.
 - (void)openBWGOverlayForPage:
     (PageContextWrapperCallbackResponse)pageContextWrapperResponse {
-  BwgBrowserAgent* BWGBrowserAgent = BwgBrowserAgent::FromBrowser(_browser);
-  BWGBrowserAgent->PresentBwgOverlay(self.baseViewController,
-                                     std::move(pageContextWrapperResponse));
+  _pageContextWrapper = nil;
+
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+
+  // The active web state may no longer be eligible for Gemini by the time this
+  // is called. If this is the case, the overlay should not be presented.
+  if (!activeWebState ||
+      !_BWGService->IsBwgAvailableForWebState(activeWebState)) {
+    return;
+  }
+
+  _BWGBrowserAgent->PresentBwgOverlay(self.baseViewController,
+                                      std::move(pageContextWrapperResponse));
 
   base::UmaHistogramTimes(
       _didPresentBWGFRE ? kStartupTimeWithFREHistogram
                         : kStartupTimeNoFREHistogram,
       base::TimeTicks::Now() - _BWGOverlayPreparationStartTime);
-
-  // TODO(crbug.com/419064727): Dismiss bwg promo/consent.
 }
 
 // Notifies the currently active WebState's BWG tab helper that the FRE will be
@@ -175,8 +186,7 @@
 
 // Returns the currently active WebState's BWG tab helper.
 - (BwgTabHelper*)activeWebStateBWGTabHelper {
-  web::WebState* activeWebState =
-      _browser->GetWebStateList()->GetActiveWebState();
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
   if (!activeWebState) {
     return nil;
   }

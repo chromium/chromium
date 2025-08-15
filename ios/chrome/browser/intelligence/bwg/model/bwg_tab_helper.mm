@@ -6,6 +6,7 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "base/values.h"
 #import "components/google/core/common/google_util.h"
 #import "components/prefs/pref_service.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -187,7 +189,7 @@ void BwgTabHelper::PageLoaded(
   bool floaty_shown = profile->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent);
   bool bwg_promo_shown =
       profile->GetPrefs()->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
-  if (!floaty_shown && !bwg_promo_shown) {
+  if (!IsFirstRunRecent(base::Days(1)) && !floaty_shown && !bwg_promo_shown) {
     [bwg_commands_handler_ showBWGPromoIfPageIsEligible];
   }
 }

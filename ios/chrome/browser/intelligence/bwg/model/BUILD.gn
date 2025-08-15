@@ -68,6 +68,7 @@ source_set("tab_helper") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/snapshots/model",
     "//ios/web/public",
