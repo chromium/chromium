@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -161,13 +160,13 @@ class BlobDataHandleTest : public testing::Test {
         Vector<uint8_t> received_bytes;
         mojo::Remote<mojom::blink::BytesProvider> actual_data(
             std::move(actual->get_bytes()->data));
-        actual_data->RequestAsReply(WTF::BindOnce(
+        actual_data->RequestAsReply(blink::BindOnce(
             [](base::RepeatingClosure quit_closure, Vector<uint8_t>* bytes_out,
                const Vector<uint8_t>& bytes) {
               *bytes_out = bytes;
               quit_closure.Run();
             },
-            loop.QuitClosure(), WTF::Unretained(&received_bytes)));
+            loop.QuitClosure(), blink::Unretained(&received_bytes)));
         loop.Run();
         if (expected->get_bytes()->embedded_data)
           EXPECT_EQ(expected->get_bytes()->embedded_data, received_bytes);
@@ -189,13 +188,13 @@ class BlobDataHandleTest : public testing::Test {
         String received_uuid;
         mojo::Remote<mojom::blink::Blob> blob(
             std::move(actual->get_blob()->blob));
-        blob->GetInternalUUID(base::BindOnce(
+        blob->GetInternalUUID(blink::BindOnce(
             [](base::RepeatingClosure quit_closure, String* uuid_out,
                const String& uuid) {
               *uuid_out = uuid;
               quit_closure.Run();
             },
-            loop.QuitClosure(), &received_uuid));
+            loop.QuitClosure(), blink::Unretained(&received_uuid)));
         loop.Run();
         EXPECT_EQ(expected_elements[i].blob_uuid, received_uuid);
       }
