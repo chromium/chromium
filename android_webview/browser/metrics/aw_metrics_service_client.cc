@@ -64,7 +64,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/browser_jni_headers/AndroidMetricsServiceClient_jni.h"
 #include "android_webview/browser_jni_headers/AwMetricsServiceClient_jni.h"
 
 namespace android_webview {
@@ -591,8 +590,7 @@ InstallerPackageType AwMetricsServiceClient::GetInstallerPackageType() {
   // Check with Java side, to see if it's OK to log the package name for this
   // type of app (see Java side for the specific requirements).
   JNIEnv* env = base::android::AttachCurrentThread();
-  int type =
-      metrics::Java_AndroidMetricsServiceClient_getInstallerPackageType(env);
+  int type = Java_AwMetricsServiceClient_getInstallerPackageType(env);
   return static_cast<InstallerPackageType>(type);
 }
 
@@ -614,7 +612,7 @@ std::string AwMetricsServiceClient::GetAppPackageNameIfLoggable() {
 std::string AwMetricsServiceClient::GetAppPackageName() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> j_app_name =
-      metrics::Java_AndroidMetricsServiceClient_getAppPackageName(env);
+      Java_AwMetricsServiceClient_getAppPackageName(env);
   if (j_app_name) {
     return base::android::ConvertJavaStringToUTF8(env, j_app_name);
   }
