@@ -9716,3 +9716,4 @@ crbug.com/435121429 external/wpt/web-animations/timing-model/animations/setting-
 # Gardener 2025-08-15
 crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/getCharacteristics/blocklisted-characteristics.https.window.js [ Failure Pass ]
 crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.js [ Failure Pass ]
+crbug.com/439012788 [ Linux Debug ] wpt_internal/html/canvas/drawElement/allow-readback/html-images-ignored.https.sub.html [ Failure Pass ]
