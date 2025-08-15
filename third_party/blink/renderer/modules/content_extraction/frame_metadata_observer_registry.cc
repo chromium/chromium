@@ -123,9 +123,9 @@ FrameMetadataObserverRegistry::FrameMetadataObserverRegistry(
       receiver_set_(this, frame.DomWindow()),
       paid_content_metadata_observers_(frame.DomWindow()),
       metatags_observers_(frame.DomWindow()) {
-  // TODO(gklassen): Update with comment to document why this disconnect
-  //                 handler is necessary. We might need to update the
-  //                 .mojom file as well to add more documentation.
+  // Observer endpoints are explicitly closed when the other side is no
+  // longer interested, so clean up the meta tags requested by that
+  // observer at disconnect time.
   metatags_observers_.set_disconnect_handler(
       blink::BindRepeating(&FrameMetadataObserverRegistry::DisconnectHandler,
                            WrapWeakPersistent(this)));
