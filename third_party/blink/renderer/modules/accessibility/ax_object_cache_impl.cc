@@ -6745,27 +6745,27 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
     return;
   }
 
+  // Maximum number of attempts to try to find a next object on the line. Used
+  // to
+  // detect unlikely (but theoretically possible), loops.
+  constexpr int kMaxInlineCursorNextObjectCalls = 250000;
+  int runs = 0;
+
   do {
     InlineCursor line_cursor = cursor;
+    runs++;
+
+    if (runs >= kMaxInlineCursorNextObjectCalls) [[unlikely]] {
+      break;
+    }
 
     // Moves to first LayoutObject that a11y cares about.
     line_cursor.MoveToNextInlineLeaf();
 
-    // Maximum number of attempts to try to find a next object on the line. Used
-    // to
-    // detect unlikely (but theoretically possible), loops.
-    constexpr int kMaxInlineCursorNextObjectCalls = 250000;
-    int runs = 0;
     while (line_cursor) {
       runs++;
 
       if (runs >= kMaxInlineCursorNextObjectCalls) [[unlikely]] {
-        // TODO(crbug.com/378761505): Move DUMP_WILL_BE_NOTREACHED() to CHECK().
-        DUMP_WILL_BE_NOTREACHED()
-            << "Did not find an end to the processing of next / previous on "
-               "line candidates for "
-            << layout_object << "(" << Get(layout_object) << ") after " << runs
-            << " runs.";
         break;
       }
       auto* line_object = line_cursor.Current().GetLayoutObject();
@@ -6778,15 +6778,6 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
           line_cursor ? line_cursor.Current().GetLayoutObject() : nullptr;
 
       if (line_object == next_line_object) [[unlikely]] {
-        // TODO(crbug.com/378761505): Move DUMP_WILL_BE_NOTREACHED() to
-        // CHECK().
-        DUMP_WILL_BE_NOTREACHED()
-            << "InlineCursor says it moved to the next inline leaf object "
-               "for a different LayyoutObject, but returned value is the "
-               "same as previous inline leaf."
-            << "same object was: " << line_object << "(" << Get(line_object)
-            << ") while processing " << layout_object << " after " << runs
-            << " runs.";
         break;
       }
       if (next_line_object) {
