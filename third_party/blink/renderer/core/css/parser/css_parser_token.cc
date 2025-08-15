@@ -6,6 +6,8 @@
 
 #include <limits.h>
 
+#include <string_view>
+
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -228,8 +230,8 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
         // This wasn't parsed as an integer, so when we serialize it back,
         // it cannot be an integer. Otherwise, we would round-trip e.g.
         // “2.0” to “2”, which could make an invalid value suddenly valid.
-        if (UNSAFE_TODO(strchr(str, '.')) == nullptr &&
-            UNSAFE_TODO(strchr(str, 'e')) == nullptr) {
+        if (std::string_view(str).find('.') == std::string_view::npos &&
+            std::string_view(str).find('e') == std::string_view::npos) {
           builder.Append(".0");
         }
         return;
