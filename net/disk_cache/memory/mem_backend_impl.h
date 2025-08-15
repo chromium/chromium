@@ -156,7 +156,7 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   raw_ptr<net::NetLog> net_log_;
   base::OnceClosure post_cleanup_callback_;
 
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::AsyncMemoryPressureListener memory_pressure_listener_;
 
   base::WeakPtrFactory<MemBackendImpl> weak_factory_{this};
 };
