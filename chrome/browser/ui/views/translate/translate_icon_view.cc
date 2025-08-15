@@ -61,7 +61,7 @@ TranslateIconView::~TranslateIconView() = default;
 
 views::BubbleDialogDelegate* TranslateIconView::GetBubble() const {
   TranslateBubbleController* translate_bubble_controller =
-      browser_->GetFeatures().translate_bubble_controller();
+      TranslateBubbleController::From(browser_);
 
   return translate_bubble_controller
              ? translate_bubble_controller->GetTranslateBubble()
@@ -71,7 +71,7 @@ views::BubbleDialogDelegate* TranslateIconView::GetBubble() const {
 views::BubbleDialogDelegate* TranslateIconView::GetPartialTranslateBubble()
     const {
   TranslateBubbleController* translate_bubble_controller =
-      browser_->GetFeatures().translate_bubble_controller();
+      TranslateBubbleController::From(browser_);
 
   return translate_bubble_controller
              ? translate_bubble_controller->GetPartialTranslateBubble()
@@ -148,7 +148,7 @@ void TranslateIconView::UpdateImpl() {
   SetVisible(show_page_action && enabled);
 
   if (!enabled) {
-    browser_->GetFeatures().translate_bubble_controller()->CloseBubble();
+    TranslateBubbleController::From(browser_)->CloseBubble();
   }
 }
 

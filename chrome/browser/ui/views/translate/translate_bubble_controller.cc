@@ -49,11 +49,22 @@ actions::ActionItem* GetTranslateActionItem(
 
 }  // namespace
 
+DEFINE_USER_DATA(TranslateBubbleController);
+
 TranslateBubbleController::TranslateBubbleController(
+    BrowserWindowInterface* browser_window,
     actions::ActionItem* root_action_item)
-    : action_item_(GetTranslateActionItem(root_action_item)) {}
+    : action_item_(GetTranslateActionItem(root_action_item)),
+      scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
+                                *this) {}
 
 TranslateBubbleController::~TranslateBubbleController() = default;
+
+// static
+TranslateBubbleController* TranslateBubbleController::From(
+    BrowserWindowInterface* window) {
+  return Get(window->GetUnownedUserDataHost());
+}
 
 views::Widget* TranslateBubbleController::ShowTranslateBubble(
     content::WebContents* web_contents,

@@ -1947,8 +1947,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // Update all the UI bits.
   UpdateTitleBar();
 
-  CHECK_DEREF(browser_->GetFeatures().translate_bubble_controller())
-      .CloseBubble();
+  CHECK_DEREF(TranslateBubbleController::From(browser_.get())).CloseBubble();
 
   // This is only done once when the app is first opened so that there is only
   // one subscriber per web contents.
@@ -3337,7 +3336,7 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
   if (views::Button::AsButton(anchor_view)) {
     translate_icon = views::Button::AsButton(anchor_view);
   }
-  CHECK_DEREF(browser_->GetFeatures().translate_bubble_controller())
+  CHECK_DEREF(TranslateBubbleController::From(browser_.get()))
       .ShowTranslateBubble(web_contents, anchor_view, translate_icon, step,
                            source_language, target_language, error_type,
                            is_user_gesture ? TranslateBubbleView::USER_GESTURE
@@ -3359,7 +3358,7 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
   views::Button* translate_icon =
       toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
 
-  CHECK_DEREF(browser_->GetFeatures().translate_bubble_controller())
+  CHECK_DEREF(TranslateBubbleController::From(browser_.get()))
       .StartPartialTranslate(
           GetActiveWebContents(),
           toolbar_button_provider()->GetAnchorView(kActionShowTranslate),

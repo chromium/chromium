@@ -10,18 +10,24 @@
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 // Controls both TranslateBubbleView and PartialTranslateBubbleView shown for
 // a given browser. This controller ensures only one of the two are shown at
 // a time, and is responsible for creating/hiding the bubbles.
 class TranslateBubbleController : public PartialTranslateBubbleModel::Observer {
  public:
+  DECLARE_USER_DATA(TranslateBubbleController);
+
   // `root_action_item` is used to retrieve the correct Translate ActionItem.
-  explicit TranslateBubbleController(actions::ActionItem* root_action_item);
+  TranslateBubbleController(BrowserWindowInterface* browser_window,
+                            actions::ActionItem* root_action_item);
   ~TranslateBubbleController() override;
   TranslateBubbleController(const TranslateBubbleController&) = delete;
   TranslateBubbleController& operator=(const TranslateBubbleController&) =
       delete;
+
+  static TranslateBubbleController* From(BrowserWindowInterface* window);
 
   // Shows the Full Page Translate bubble. Returns the newly created bubble's
   // Widget or nullptr in cases when the bubble already exists or when the
@@ -117,6 +123,9 @@ class TranslateBubbleController : public PartialTranslateBubbleModel::Observer {
   // The bubbles use this to appropriately configure its "IsBubbleShowing"
   // property.
   const raw_ptr<actions::ActionItem> action_item_;
+
+  ui::ScopedUnownedUserData<TranslateBubbleController>
+      scoped_unowned_user_data_;
 
   base::WeakPtrFactory<TranslateBubbleController> weak_ptr_factory_{this};
 };
