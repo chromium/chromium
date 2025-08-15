@@ -64,8 +64,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -248,9 +246,6 @@ class BookmarkManagerMediator
                                     currentId, mCurrentPowerFilter));
                     setSearchTextAndUpdateButtonVisibility("");
                     clearSearchBoxFocus();
-                    if (!mIsExitingSearch) {
-                        maybeAutoFocusSearchBox();
-                    }
                 }
             };
 
@@ -402,7 +397,6 @@ class BookmarkManagerMediator
     private @Nullable BatchUploadCardCoordinator mBatchUploadCardCoordinator;
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
-    private boolean mIsExitingSearch;
     private @Nullable String mInitialUrl;
     private boolean mFaviconsNeedRefresh;
     private @Nullable BasicNativePage mNativePage;
@@ -569,7 +563,6 @@ class BookmarkManagerMediator
 
     void onAttachedToWindow() {
         mBookmarkUndoController.setEnabled(true);
-        maybeAutoFocusSearchBox();
     }
 
     void onDetachedFromWindow() {
@@ -826,9 +819,7 @@ class BookmarkManagerMediator
 
         // Set the state back to the folder that was previously being viewed. Listeners will be
         // notified of the change and the list of bookmarks will be updated.
-        mIsExitingSearch = true;
         setState(mStateStack.pop());
-        mIsExitingSearch = false;
     }
 
     // PartnerBookmarksReader.FaviconUpdateObserver implementation.
@@ -1645,10 +1636,7 @@ class BookmarkManagerMediator
         PropertyModel searchModel = assumeNonNull(getSearchBoxPropertyModel());
         searchModel.set(BookmarkSearchBoxRowProperties.HAS_FOCUS, hasFocus);
         if (hasFocus) {
-            // On phones, tapping the search box switches to a dedicated search UI. On tablets, the
-            // search box is part of the folder view and doesn't switch modes.
-            if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                    && getCurrentUiMode() == BookmarkUiMode.FOLDER) {
+            if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
                 setState(BookmarkUiState.createSearchState(""));
             }
         } else {
@@ -1671,33 +1659,7 @@ class BookmarkManagerMediator
 
     private void onSearchChange(@Nullable String searchText) {
         searchText = searchText == null ? "" : searchText;
-        // On tablets, the search box is an in-place filter. When the search text is cleared,
-        // the list should revert to the current folder's contents. On phones, search is a
-        // distinct UI mode.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
-            if (TextUtils.isEmpty(searchText)) {
-                refresh();
-            } else {
-                setBookmarks(
-                        mBookmarkQueryHandler.buildBookmarkListForSearch(
-                                searchText, mCurrentPowerFilter));
-            }
-        } else {
-            setState(BookmarkUiState.createSearchState(searchText));
-        }
-    }
-
-    /** The search box only focused on LFF device with a hardware keyboard attached. */
-    private void maybeAutoFocusSearchBox() {
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                && DeviceInput.supportsKeyboard()) {
-            mRecyclerView.post(
-                    () -> {
-                        // The search box might not be in the model list yet, so guard this call.
-                        if (getCurrentSearchBoxIndex() < 0) return;
-                        setSearchBoxFocusAndHideKeyboardIfNeeded(true);
-                    });
-        }
+        setState(BookmarkUiState.createSearchState(searchText));
     }
 
     private @Nullable String getCurrentSearchText() {
