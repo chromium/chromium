@@ -130,6 +130,33 @@ const char kHistogramIncognitoSuffix[] = ".Incognito";
 const char kHistogramPrerenderHostReused[] =
     HISTOGRAM_PREFIX "Prerender.HostReused";
 
+// ServiceWorker related histograms.
+const char kHistogramServiceWorkerParseStartSearch[] =
+    "PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart.search";
+const char kHistogramServiceWorkerFirstContentfulPaintSearch[] =
+    "PageLoad.Clients.ServiceWorker2.PaintTiming."
+    "NavigationToFirstContentfulPaint.search";
+const char kHistogramServiceWorkerParseStartToFirstContentfulPaintSearch[] =
+    "PageLoad.Clients.ServiceWorker2.PaintTiming."
+    "ParseStartToFirstContentfulPaint.search";
+const char kHistogramServiceWorkerDomContentLoadedSearch[] =
+    "PageLoad.Clients.ServiceWorker2.DocumentTiming."
+    "NavigationToDOMContentLoadedEventFired.search";
+const char kHistogramServiceWorkerLoadSearch[] =
+    "PageLoad.Clients.ServiceWorker2.DocumentTiming.NavigationToLoadEventFired."
+    "search";
+const char kHistogramNoServiceWorkerFirstContentfulPaintSearch[] =
+    "PageLoad.Clients.NoServiceWorker2.PaintTiming."
+    "NavigationToFirstContentfulPaint.search";
+const char kHistogramNoServiceWorkerParseStartToFirstContentfulPaintSearch[] =
+    "PageLoad.Clients.NoServiceWorker2.PaintTiming."
+    "ParseStartToFirstContentfulPaint.search";
+const char kHistogramNoServiceWorkerDomContentLoadedSearch[] =
+    "PageLoad.Clients.NoServiceWorker2.DocumentTiming."
+    "NavigationToDOMContentLoadedEventFired.search";
+const char kHistogramNoServiceWorkerLoadSearch[] =
+    "PageLoad.Clients.NoServiceWorker2.DocumentTiming."
+    "NavigationToLoadEventFired.search";
 }  // namespace internal
 
 namespace {
@@ -264,8 +291,63 @@ void GWSPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     return;
   }
   CHECK(!is_prerendered_);
+
+  if (page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramServiceWorkerFirstContentfulPaintSearch,
+        timing.paint_timing->first_contentful_paint.value());
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramServiceWorkerParseStartToFirstContentfulPaintSearch,
+        timing.paint_timing->first_contentful_paint.value() -
+            timing.parse_timing->parse_start.value());
+  } else {
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramNoServiceWorkerFirstContentfulPaintSearch,
+        timing.paint_timing->first_contentful_paint.value());
+    PAGE_LOAD_HISTOGRAM(
+        internal::
+            kHistogramNoServiceWorkerParseStartToFirstContentfulPaintSearch,
+        timing.paint_timing->first_contentful_paint.value() -
+            timing.parse_timing->parse_start.value());
+  }
+
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSFirstContentfulPaint,
                       timing.paint_timing->first_contentful_paint.value());
+}
+
+void GWSPageLoadMetricsObserver::OnDomContentLoadedEventStart(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.document_timing->dom_content_loaded_event_start,
+          GetDelegate())) {
+    return;
+  }
+
+  if (page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramServiceWorkerDomContentLoadedSearch,
+        timing.document_timing->dom_content_loaded_event_start.value());
+  } else {
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramNoServiceWorkerDomContentLoadedSearch,
+        timing.document_timing->dom_content_loaded_event_start.value());
+  }
+}
+
+void GWSPageLoadMetricsObserver::OnLoadEventStart(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.document_timing->load_event_start, GetDelegate())) {
+    return;
+  }
+
+  if (page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerLoadSearch,
+                        timing.document_timing->load_event_start.value());
+  } else {
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramNoServiceWorkerLoadSearch,
+                        timing.document_timing->load_event_start.value());
+  }
 }
 
 void GWSPageLoadMetricsObserver::OnParseStart(
@@ -277,6 +359,10 @@ void GWSPageLoadMetricsObserver::OnParseStart(
   CHECK(!is_prerendered_);
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSParseStart,
                       timing.parse_timing->parse_start.value());
+  if (page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerParseStartSearch,
+                        timing.parse_timing->parse_start.value());
+  }
 }
 
 void GWSPageLoadMetricsObserver::OnConnectStart(

@@ -33,18 +33,7 @@ extern const char
     kHistogramServiceWorkerLargestContentfulPaintSkippableFetchHandler[];
 extern const char
     kHistogramServiceWorkerLargestContentfulPaintNonSkippableFetchHandler[];
-extern const char kHistogramServiceWorkerParseStartSearch[];
-extern const char kHistogramServiceWorkerFirstContentfulPaintSearch[];
-extern const char
-    kHistogramServiceWorkerParseStartToFirstContentfulPaintSearch[];
-extern const char kHistogramServiceWorkerDomContentLoadedSearch[];
-extern const char kHistogramServiceWorkerLoadSearch[];
 
-extern const char kHistogramNoServiceWorkerFirstContentfulPaintSearch[];
-extern const char
-    kHistogramNoServiceWorkerParseStartToFirstContentfulPaintSearch[];
-extern const char kHistogramNoServiceWorkerDomContentLoadedSearch[];
-extern const char kHistogramNoServiceWorkerLoadSearch[];
 
 extern const char kHistogramServiceWorkerFirstContentfulPaintDocs[];
 extern const char kHistogramNoServiceWorkerFirstContentfulPaintDocs[];
