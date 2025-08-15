@@ -1906,7 +1906,9 @@ chromium-metrics-reviews@google.com.
     This records the network result of a {RefreshOrRegistration} request for a
     Device Bound Session
     (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is logged
-    when {RefreshOrRegistration} network response processing starts.
+    when {RefreshOrRegistration} network response processing finishes. If a
+    network error occurs at any point while reading the response body, that is
+    logged instead of the HTTP status code.
   </summary>
   <token key="RefreshOrRegistration">
     <variant name="Refresh" summary="refresh"/>

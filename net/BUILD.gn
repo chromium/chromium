@@ -1275,6 +1275,8 @@ component("net") {
       "device_bound_sessions/session_store_impl.h",
       "device_bound_sessions/unexportable_key_service_factory.cc",
       "device_bound_sessions/unexportable_key_service_factory.h",
+      "device_bound_sessions/url_fetcher.cc",
+      "device_bound_sessions/url_fetcher.h",
     ]
 
     deps += [

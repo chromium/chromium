@@ -436,7 +436,7 @@ Refer to README.md for content description and update process.
  <item id="focus_sounds_configuration" added_in_milestone="127" content_hash_code="02bcde5b" os_list="chromeos" file_path="ash/system/focus_mode/sounds/soundscape/soundscapes_downloader.cc" />
  <item id="device_image_downloader" added_in_milestone="127" content_hash_code="04c18c2c" os_list="chromeos" file_path="ash/system/input_device_settings/device_image_downloader.cc" />
  <item id="glanceables_icon_downloader" added_in_milestone="127" content_hash_code="0704f787" os_list="chromeos" file_path="ash/birch/birch_item.cc" />
- <item id="dbsc_registration" added_in_milestone="127" content_hash_code="03c42469" os_list="windows,linux" file_path="net/device_bound_sessions/registration_fetcher.cc" />
+ <item id="dbsc_registration" added_in_milestone="127" content_hash_code="03c42469" os_list="windows,linux" file_path="net/device_bound_sessions/url_fetcher.cc" />
  <item id="google_calendar_page_handler" added_in_milestone="127" content_hash_code="00ab702c" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.cc" />
  <item id="nearby_connections_wifi_direct" added_in_milestone="127" content_hash_code="00cec3a0" os_list="chromeos" file_path="chrome/services/sharing/nearby/platform/wifi_direct_socket.cc" />
  <item id="chrome_commerce_comparable_products" added_in_milestone="127" content_hash_code="07478997" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/compare/cluster_server_proxy.cc" />

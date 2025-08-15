@@ -12,15 +12,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
-#include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_json_utils.h"
+#include "net/device_bound_sessions/url_fetcher.h"
 #include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "url/origin.h"
 
@@ -30,40 +29,6 @@ namespace {
 
 constexpr char kSessionIdHeaderName[] = "Sec-Session-Id";
 constexpr char kJwtSessionHeaderName[] = "Sec-Session-Response";
-constexpr net::NetworkTrafficAnnotationTag kRegistrationTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("dbsc_registration", R"(
-        semantics {
-          sender: "Device Bound Session Credentials API"
-          description:
-            "Device Bound Session Credentials (DBSC) let a server create a "
-            "session with the local device. For more info see "
-            "https://github.com/WICG/dbsc."
-          trigger:
-            "Server sending a response with a Sec-Session-Registration header."
-          data: "A signed JWT with the new key created for this session."
-          destination: WEBSITE
-          last_reviewed: "2024-04-10"
-          user_data {
-            type: ACCESS_TOKEN
-          }
-          internal {
-            contacts {
-              email: "kristianm@chromium.org"
-            }
-            contacts {
-              email: "chrome-counter-abuse-alerts@google.com"
-            }
-          }
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting: "There is no separate setting for this feature, but it will "
-            "follow the cookie settings."
-          policy_exception_justification: "Not implemented."
-        })");
-
-constexpr int kBufferSize = 4096;
 
 // New session registration doesn't block the user and can be done with a delay.
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
@@ -137,96 +102,8 @@ void SignChallengeWithKey(
 
 RegistrationFetcher::FetcherType* g_mock_fetcher = nullptr;
 
-class RegistrationFetcherImpl : public RegistrationFetcher,
-                                URLRequest::Delegate {
+class RegistrationFetcherImpl : public RegistrationFetcher {
  public:
-  // URLRequest::Delegate
-
-  // TODO(crbug.com/438783632): Look into if OnAuthRequired might need to be
-  // customized for DBSC
-
-  // TODO(crbug.com/438783633): Think about what to do for DBSC with
-  // OnCertificateRequested, leaning towards not supporting it but not sure.
-
-  // Always cancel requests on SSL errors, this is the default implementation
-  // of OnSSLCertificateError.
-
-  // This is always called unless the request is deleted before it is called.
-  void OnResponseStarted(URLRequest* request, int net_error) override {
-    HttpResponseHeaders* headers = request->response_headers();
-    const int response_code = headers ? headers->response_code() : 0;
-    const char* histogram_name =
-        IsForRefreshRequest()
-            ? "Net.DeviceBoundSessions.Refresh.Network.Result"
-            : "Net.DeviceBoundSessions.Registration.Network.Result";
-    RecordHttpResponseOrErrorCode(histogram_name, net_error, response_code);
-
-    if (net_error != OK) {
-      OnResponseCompleted(
-          /*error_on_no_data=*/SessionError::ErrorType::kNetError);
-      // *this is deleted here
-      return;
-    }
-
-    if (response_code == 401) {
-      auto challenge_params =
-          device_bound_sessions::SessionChallengeParam::CreateIfValid(
-              fetcher_endpoint_, headers);
-      OnChallengeNeeded(std::move(challenge_params));
-      // *this is preserved here.
-      return;
-    }
-
-    if (response_code < 200) {
-      OnResponseCompleted(
-          /*error_on_no_data=*/SessionError::ErrorType::kPersistentHttpError);
-      // *this is deleted here
-      return;
-    } else if (response_code == 407) {
-      // Proxy errors are treated as network errors
-      OnResponseCompleted(
-          /*error_on_no_data=*/SessionError::ErrorType::kNetError);
-      // *this is deleted here
-      return;
-    } else if (300 <= response_code && response_code < 500) {
-      OnResponseCompleted(
-          /*error_on_no_data=*/SessionError::ErrorType::kPersistentHttpError);
-      // *this is deleted here
-      return;
-    } else if (response_code >= 500) {
-      OnResponseCompleted(
-          /*error_on_no_data=*/SessionError::ErrorType::kTransientHttpError);
-      // *this is deleted here
-      return;
-    }
-
-    // Initiate the first read.
-    int bytes_read = request->Read(buf_.get(), kBufferSize);
-    if (bytes_read >= 0) {
-      OnReadCompleted(request, bytes_read);
-    } else if (bytes_read != ERR_IO_PENDING) {
-      OnResponseCompleted(
-          /*error_on_no_data=*/SessionError::ErrorType::kNetError);
-      // *this is deleted here
-    }
-  }
-
-  void OnReadCompleted(URLRequest* request, int bytes_read) override {
-    data_received_.append(buf_->data(), bytes_read);
-    while (bytes_read > 0) {
-      bytes_read = request->Read(buf_.get(), kBufferSize);
-      if (bytes_read > 0) {
-        data_received_.append(buf_->data(), bytes_read);
-      }
-    }
-
-    if (bytes_read != ERR_IO_PENDING) {
-      OnResponseCompleted(
-          /*error_on_no_data=*/SessionError::ErrorType::kNetError);
-      // *this is deleted here
-    }
-  }
-
   RegistrationFetcherImpl(
       const GURL& fetcher_endpoint,
       std::optional<std::string> session_identifier,
@@ -241,8 +118,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher,
         context_(context),
         isolation_info_(isolation_info),
         net_log_source_(std::move(net_log_source)),
-        original_request_initiator_(original_request_initiator),
-        buf_(base::MakeRefCounted<IOBufferWithSize>(kBufferSize)) {}
+        original_request_initiator_(original_request_initiator) {}
 
   ~RegistrationFetcherImpl() override {}
 
@@ -283,8 +159,14 @@ class RegistrationFetcherImpl : public RegistrationFetcher,
     // `RegistrationRequestParam` constructors guarantee `session_identifier_`
     // is set when `challenge_` is missing.
     CHECK(IsForRefreshRequest());
-    request_ = CreateBaseRequest();
-    request_->Start();
+
+    url_fetcher_ = std::make_unique<URLFetcher>(context_, fetcher_endpoint_,
+                                                net_log_source_);
+    ConfigureRequest(url_fetcher_->request());
+    // `this` owns `url_fetcher_`, so it's safe to use
+    // `base::Unretained`
+    url_fetcher_->Start(base::BindOnce(
+        &RegistrationFetcherImpl::OnRequestComplete, base::Unretained(this)));
   }
 
   base::WeakPtr<RegistrationFetcherImpl> GetWeakPtr() {
@@ -369,33 +251,32 @@ class RegistrationFetcherImpl : public RegistrationFetcher,
       }
     }
 
-    request_ = CreateBaseRequest();
-    request_->SetExtraRequestHeaderByName(kJwtSessionHeaderName,
-                                          registration_token.value(),
-                                          /*overwrite*/ true);
-    request_->Start();
+    url_fetcher_ = std::make_unique<URLFetcher>(context_, fetcher_endpoint_,
+                                                net_log_source_);
+    ConfigureRequest(url_fetcher_->request());
+    url_fetcher_->request().SetExtraRequestHeaderByName(
+        kJwtSessionHeaderName, registration_token.value(), /*overwrite*/ true);
+
+    // `this` owns `url_fetcher_`, so it's safe to use
+    // `base::Unretained`
+    url_fetcher_->Start(base::BindOnce(
+        &RegistrationFetcherImpl::OnRequestComplete, base::Unretained(this)));
   }
 
-  std::unique_ptr<net::URLRequest> CreateBaseRequest() {
+  void ConfigureRequest(URLRequest& request) {
     CHECK(IsSecure(fetcher_endpoint_));
+    request.set_method("POST");
+    request.SetLoadFlags(LOAD_DISABLE_CACHE);
+    request.set_allow_credentials(true);
 
-    std::unique_ptr<net::URLRequest> request = context_->CreateRequest(
-        fetcher_endpoint_, IDLE, this, kRegistrationTrafficAnnotation,
-        /*is_for_websockets=*/false, net_log_source_);
-    request->set_method("POST");
-    request->SetLoadFlags(LOAD_DISABLE_CACHE);
-    request->set_allow_credentials(true);
-
-    request->set_site_for_cookies(isolation_info_.site_for_cookies());
-    request->set_initiator(original_request_initiator_);
-    request->set_isolation_info(isolation_info_);
+    request.set_site_for_cookies(isolation_info_.site_for_cookies());
+    request.set_initiator(original_request_initiator_);
+    request.set_isolation_info(isolation_info_);
 
     if (IsForRefreshRequest()) {
-      request->SetExtraRequestHeaderByName(
+      request.SetExtraRequestHeaderByName(
           kSessionIdHeaderName, *session_identifier_, /*overwrite*/ true);
     }
-
-    return request;
   }
 
   void OnChallengeNeeded(
@@ -413,16 +294,58 @@ class RegistrationFetcherImpl : public RegistrationFetcher,
     StartFetch(challenge, std::nullopt);
   }
 
-  void OnResponseCompleted(SessionError::ErrorType error_on_no_data) {
-    if (data_received_.empty()) {
-      RunCallback(base::unexpected(SessionError{error_on_no_data}));
-      // `this` may be deleted.
+  void OnRequestComplete() {
+    HttpResponseHeaders* headers = url_fetcher_->request().response_headers();
+    const int response_code = headers ? headers->response_code() : 0;
+    const char* histogram_name =
+        IsForRefreshRequest()
+            ? "Net.DeviceBoundSessions.Refresh.Network.Result"
+            : "Net.DeviceBoundSessions.Registration.Network.Result";
+    RecordHttpResponseOrErrorCode(histogram_name, url_fetcher_->net_error(),
+                                  response_code);
+
+    if (url_fetcher_->net_error() != OK) {
+      RunCallback(
+          base::unexpected(SessionError{SessionError::ErrorType::kNetError}));
+      // *this is deleted here.
       return;
     }
 
-    RunCallback(ParseSessionInstructionJson(
-        request_->url(), *key_id_, session_identifier_, data_received_));
-    // `this` may be deleted.
+    if (response_code == 401) {
+      auto challenge_params =
+          device_bound_sessions::SessionChallengeParam::CreateIfValid(
+              fetcher_endpoint_, headers);
+      OnChallengeNeeded(std::move(challenge_params));
+      // *this is preserved here.
+      return;
+    }
+
+    if (response_code < 200) {
+      RunCallback(base::unexpected(
+          SessionError{SessionError::ErrorType::kPersistentHttpError}));
+      // *this is deleted here
+      return;
+    } else if (response_code == 407) {
+      // Proxy errors are treated as network errors
+      RunCallback(
+          base::unexpected(SessionError{SessionError::ErrorType::kNetError}));
+      // *this is deleted here
+      return;
+    } else if (300 <= response_code && response_code < 500) {
+      RunCallback(base::unexpected(
+          SessionError{SessionError::ErrorType::kPersistentHttpError}));
+      // *this is deleted here
+      return;
+    } else if (response_code >= 500) {
+      RunCallback(base::unexpected(
+          SessionError{SessionError::ErrorType::kTransientHttpError}));
+      // *this is deleted here
+      return;
+    }
+
+    RunCallback(ParseSessionInstructionJson(url_fetcher_->request().url(),
+                                            *key_id_, session_identifier_,
+                                            url_fetcher_->data_received()));
   }
 
   void RunCallback(
@@ -433,13 +356,13 @@ class RegistrationFetcherImpl : public RegistrationFetcher,
 
   void AddNetLogResult(
       const base::expected<SessionParams, SessionError>& params_or_error) {
-    if (!request_) {
+    if (!url_fetcher_) {
       return;
     }
     NetLogEventType result_event_type =
         IsForRefreshRequest() ? NetLogEventType::DBSC_REFRESH_RESULT
                               : NetLogEventType::DBSC_REGISTRATION_RESULT;
-    request_->net_log().AddEvent(result_event_type, [&]() {
+    url_fetcher_->request().net_log().AddEvent(result_event_type, [&]() {
       std::string result;
       if (params_or_error.has_value()) {
         result = IsForRefreshRequest() ? "refreshed" : "registered";
@@ -478,10 +401,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher,
   // or not it was successful.
   RegistrationFetcher::RegistrationCompleteCallback callback_;
 
-  // Created to fetch data
-  std::unique_ptr<URLRequest> request_;
-  scoped_refptr<IOBuffer> buf_;
-  std::string data_received_;
+  std::unique_ptr<URLFetcher> url_fetcher_;
 
   std::optional<std::string> current_challenge_;
   std::optional<std::string> current_authorization_;
