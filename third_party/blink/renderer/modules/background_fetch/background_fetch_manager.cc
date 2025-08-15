@@ -230,7 +230,7 @@ ScriptPromise<BackgroundFetchRegistration> BackgroundFetchManager::fetch(
         MakeGarbageCollected<BackgroundFetchIconLoader>();
     loaders_.push_back(loader);
     loader->Start(bridge_.Get(), execution_context, options->icons(),
-                  resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                  resolver->WrapCallbackInScriptScope(BindOnce(
                       &BackgroundFetchManager::DidLoadIcons,
                       WrapPersistent(this), id, std::move(fetch_api_requests),
                       std::move(options_ptr), WrapWeakPersistent(loader))));
@@ -258,7 +258,7 @@ void BackgroundFetchManager::DidLoadIcons(
   ukm_data->ideal_to_chosen_icon_size = ideal_to_chosen_icon_size;
   bridge_->Fetch(id, std::move(requests), std::move(options), icon,
                  std::move(ukm_data),
-                 resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                 resolver->WrapCallbackInScriptScope(BindOnce(
                      &BackgroundFetchManager::DidFetch, WrapPersistent(this))));
 }
 
@@ -344,10 +344,9 @@ BackgroundFetchManager::get(ScriptState* script_state,
     return promise;
   }
 
-  bridge_->GetRegistration(
-      id,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &BackgroundFetchManager::DidGetRegistration, WrapPersistent(this))));
+  bridge_->GetRegistration(id, resolver->WrapCallbackInScriptScope(BindOnce(
+                                   &BackgroundFetchManager::DidGetRegistration,
+                                   WrapPersistent(this))));
 
   return promise;
 }
@@ -482,7 +481,7 @@ ScriptPromise<IDLArray<IDLString>> BackgroundFetchManager::getIds(
   if (!registration_->active()) {
     resolver->Resolve(Vector<String>());
   } else {
-    bridge_->GetDeveloperIds(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+    bridge_->GetDeveloperIds(resolver->WrapCallbackInScriptScope(BindOnce(
         &BackgroundFetchManager::DidGetDeveloperIds, WrapPersistent(this))));
   }
 

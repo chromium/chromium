@@ -146,9 +146,8 @@ ScriptPromise<IDLBoolean> BackgroundFetchRegistration::abort(
   DCHECK(registration_);
   DCHECK(registration_service_);
 
-  registration_service_->Abort(
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &BackgroundFetchRegistration::DidAbort, WrapPersistent(this))));
+  registration_service_->Abort(resolver->WrapCallbackInScriptScope(
+      BindOnce(&BackgroundFetchRegistration::DidAbort, WrapPersistent(this))));
 
   return promise;
 }
@@ -235,8 +234,8 @@ void BackgroundFetchRegistration::MatchImpl(
   DCHECK(registration_service_);
   registration_service_->MatchRequests(
       std::move(request_to_match), std::move(cache_query_options), match_all,
-      WTF::BindOnce(&BackgroundFetchRegistration::DidGetMatchingRequests,
-                    WrapPersistent(this), WrapPersistent(resolver), match_all));
+      BindOnce(&BackgroundFetchRegistration::DidGetMatchingRequests,
+               WrapPersistent(this), WrapPersistent(resolver), match_all));
 }
 
 void BackgroundFetchRegistration::DidGetMatchingRequests(

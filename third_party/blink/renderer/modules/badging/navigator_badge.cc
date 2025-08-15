@@ -133,7 +133,7 @@ ScriptPromise<IDLUndefined> NavigatorBadge::SetAppBadgeHelper(
             kBadgeSetWithoutNotificationPermissionInAppWindow;
       }
     }
-    NotificationManager::From(context)->GetPermissionStatusAsync(WTF::BindOnce(
+    NotificationManager::From(context)->GetPermissionStatusAsync(BindOnce(
         [](mojom::blink::WebFeature feature, UseCounter* counter,
            mojom::blink::PermissionStatus status) {
           if (status != mojom::blink::PermissionStatus::GRANTED) {

@@ -236,48 +236,48 @@ void ModulesInitializer::Initialize() {
 
 void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   if (frame.IsMainFrame()) {
-    frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+    frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
         &DocumentMetadataServer::BindReceiver, WrapWeakPersistent(&frame)));
   }
   if (frame.IsLocalRoot()) {
-    frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+    frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
         &AIPageContentAgent::BindReceiver, WrapWeakPersistent(&frame)));
   }
-  frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddAssociatedInterface(BindRepeating(
       &WebLaunchServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));
 
-  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &InstallationServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));
   // TODO(dominickn): This interface should be document-scoped rather than
   // frame-scoped, as the resulting banner event is dispatched to
   // frame()->document().
-  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &AppBannerController::BindReceiver, WrapWeakPersistent(&frame)));
-  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &TextSuggestionBackendImpl::Bind, WrapWeakPersistent(&frame)));
 #if BUILDFLAG(IS_ANDROID)
-  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &RemoteObjectGatewayFactoryImpl::Bind, WrapWeakPersistent(&frame)));
 #endif  // BUILDFLAG(IS_ANDROID)
 
   frame.GetInterfaceRegistry()->AddInterface(
-      WTF::BindRepeating(&PeerConnectionTracker::BindToFrame,
-                         WrapCrossThreadWeakPersistent(&frame)));
+      BindRepeating(&PeerConnectionTracker::BindToFrame,
+                    WrapCrossThreadWeakPersistent(&frame)));
 
   if (base::FeatureList::IsEnabled(kBlinkEnableInnerTextAgent)) {
-    frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+    frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
         &InnerTextAgent::BindReceiver, WrapWeakPersistent(&frame)));
   }
 
   if (base::FeatureList::IsEnabled(kBlinkEnableInnerHtmlAgent)) {
-    frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+    frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
         &InnerHtmlAgent::BindReceiver, WrapWeakPersistent(&frame)));
   }
 
   if (base::FeatureList::IsEnabled(features::kFrameMetadataObserver)) {
     frame.GetInterfaceRegistry()->AddInterface(
-        WTF::BindRepeating(&FrameMetadataObserverRegistry::BindReceiver,
-                           WrapWeakPersistent(&frame)));
+        BindRepeating(&FrameMetadataObserverRegistry::BindReceiver,
+                      WrapWeakPersistent(&frame)));
   }
 }
 

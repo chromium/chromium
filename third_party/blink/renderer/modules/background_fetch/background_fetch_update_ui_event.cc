@@ -89,9 +89,9 @@ ScriptPromise<IDLUndefined> BackgroundFetchUpdateUIEvent::updateUI(
     DCHECK(loader_);
     loader_->Start(BackgroundFetchBridge::From(service_worker_registration_),
                    ExecutionContext::From(script_state), ui_options->icons(),
-                   resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-                       &BackgroundFetchUpdateUIEvent::DidGetIcon,
-                       WrapPersistent(this), ui_options->title())));
+                   resolver->WrapCallbackInScriptScope(
+                       BindOnce(&BackgroundFetchUpdateUIEvent::DidGetIcon,
+                                WrapPersistent(this), ui_options->title())));
   }
 
   return promise;
@@ -104,7 +104,7 @@ void BackgroundFetchUpdateUIEvent::DidGetIcon(
     int64_t ideal_to_chosen_icon_size) {
   registration()->UpdateUI(
       title, icon,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &BackgroundFetchUpdateUIEvent::DidUpdateUI, WrapPersistent(this))));
 }
 

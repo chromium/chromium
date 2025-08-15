@@ -60,7 +60,7 @@ ScriptPromise<IDLUndefined> SyncManager::registerFunction(
   background_sync_service_->Register(
       std::move(sync_registration), registration_->RegistrationId(),
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&SyncManager::RegisterCallback, WrapPersistent(this))));
+          BindOnce(&SyncManager::RegisterCallback, WrapPersistent(this))));
 
   return promise;
 }
@@ -83,7 +83,7 @@ ScriptPromise<IDLSequence<IDLString>> SyncManager::getTags(
   background_sync_service_->GetRegistrations(
       registration_->RegistrationId(),
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&SyncManager::GetRegistrationsCallback)));
+          BindOnce(&SyncManager::GetRegistrationsCallback)));
 
   return promise;
 }
@@ -140,7 +140,7 @@ void SyncManager::RegisterCallback(
 void SyncManager::GetRegistrationsCallback(
     ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
     mojom::blink::BackgroundSyncError error,
-    WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations) {
+    Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations) {
   DCHECK(resolver);
   // TODO(iclelland): Determine the correct error message to return in each case
   switch (error) {

@@ -184,8 +184,8 @@ ScriptPromise<IDLUndefined> AdditionalWindowingControls::maximize(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   return MaybePromptWindowManagementPermission(
       &window, resolver,
-      WTF::BindOnce(&OnMaximizePermissionRequestComplete,
-                    WrapPersistent(resolver), WrapPersistent(&window)));
+      BindOnce(&OnMaximizePermissionRequestComplete, WrapPersistent(resolver),
+               WrapPersistent(&window)));
 }
 
 // static
@@ -201,8 +201,8 @@ ScriptPromise<IDLUndefined> AdditionalWindowingControls::minimize(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   return MaybePromptWindowManagementPermission(
       &window, resolver,
-      WTF::BindOnce(&OnMinimizePermissionRequestComplete,
-                    WrapPersistent(resolver), WrapPersistent(&window)));
+      BindOnce(&OnMinimizePermissionRequestComplete, WrapPersistent(resolver),
+               WrapPersistent(&window)));
 }
 
 // static
@@ -218,8 +218,8 @@ ScriptPromise<IDLUndefined> AdditionalWindowingControls::restore(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   return MaybePromptWindowManagementPermission(
       &window, resolver,
-      WTF::BindOnce(&OnRestorePermissionRequestComplete,
-                    WrapPersistent(resolver), WrapPersistent(&window)));
+      BindOnce(&OnRestorePermissionRequestComplete, WrapPersistent(resolver),
+               WrapPersistent(&window)));
 }
 
 // static
@@ -236,9 +236,8 @@ ScriptPromise<IDLUndefined> AdditionalWindowingControls::setResizable(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   return MaybePromptWindowManagementPermission(
       &window, resolver,
-      WTF::BindOnce(&OnSetResizablePermissionRequestComplete,
-                    WrapPersistent(resolver), WrapPersistent(&window),
-                    resizable));
+      BindOnce(&OnSetResizablePermissionRequestComplete,
+               WrapPersistent(resolver), WrapPersistent(&window), resizable));
 }
 
 }  // namespace blink
