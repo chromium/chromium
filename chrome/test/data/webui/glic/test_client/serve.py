@@ -53,15 +53,20 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
         super().do_GET()
 
+    def _read_apc_from_request(self):
+        """Reads and deserializes AnnotatedPageContent from the request."""
+        content_length = int(self.headers['Content-Length'])
+        serialized_apc = self.rfile.read(content_length)
+        import common_quality_data_pb2
+        apc = common_quality_data_pb2.AnnotatedPageContent()
+        apc.ParseFromString(serialized=serialized_apc)
+        return apc
+
     def _parse_apc(self):
         """Deserializes AnnotatedPageContent from the request payload and
            converts it to JSON (which is sent as a response)."""
         try:
-            content_length = int(self.headers['Content-Length'])
-            serialized_apc = self.rfile.read(content_length)
-            import common_quality_data_pb2
-            apc = common_quality_data_pb2.AnnotatedPageContent()
-            apc.ParseFromString(serialized=serialized_apc)
+            apc = self._read_apc_from_request()
             result = json_format.MessageToJson(apc)
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
@@ -74,18 +79,13 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         """Deserializes AnnotatedPageContent from the request payload and
            converts it to TEXTPROTO (which is sent as a response)."""
         try:
-            # TODO: gklassen - refactor into a common function.
-            content_length = int(self.headers['Content-Length'])
-            serialized_apc = self.rfile.read(content_length)
-            import common_quality_data_pb2
-            apc = common_quality_data_pb2.AnnotatedPageContent()
-            apc.ParseFromString(serialized=serialized_apc)
+            apc = self._read_apc_from_request()
             result = text_format.MessageToString(apc)
             self.send_response(200)
             self.send_header('Content-type', 'text/plain')
             self.end_headers()
             self.wfile.write(result.encode())
-        except text_format.ParseError:
+        except DecodeError:
             self.send_error(400, 'proto could not be parsed')
 
     def do_POST(self):
