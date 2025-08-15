@@ -1008,6 +1008,13 @@ inline constexpr char kChromeRootStoreSettingsHelpCenterURL[] =
     "https://support.google.com/chrome?p=root_store";
 #endif
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+// TODO(crbug.com/436926181): Make sure the URL is not a dead link.
+// "Learn more" URL for how to save PDF to Google Drive from the PDF viewer.
+inline constexpr char kPdfViewerSaveToDriveHelpCenterURL[] =
+    "https://support.google.com/drive?p=save_from_chrome";
+#endif
+
 // Please do not append entries here. See the comments at the top of the file.
 
 }  // namespace chrome

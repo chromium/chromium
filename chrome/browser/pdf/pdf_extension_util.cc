@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -123,6 +124,24 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
       {"saveToDriveDialogCancelUploadButtonLabel",
        IDS_SAVE_TO_DRIVE_DIALOG_CANCEL_UPLOAD_BUTTON_LABEL},
+      {"saveToDriveDialogConnectionErrorMessage",
+       IDS_SAVE_TO_DRIVE_DIALOG_CONNECTION_ERROR_MESSAGE},
+      {"saveToDriveDialogErrorTitle", IDS_SAVE_TO_DRIVE_DIALOG_ERROR_TITLE},
+      {"saveToDriveDialogManageStorageButtonLabel",
+       IDS_SAVE_TO_DRIVE_DIALOG_MANAGE_STORAGE_BUTTON_LABEL},
+      {"saveToDriveDialogOpenInDriveButtonLabel",
+       IDS_SAVE_TO_DRIVE_DIALOG_OPEN_IN_DRIVE_BUTTON_LABEL},
+      {"saveToDriveDialogRetryButtonLabel",
+       IDS_SAVE_TO_DRIVE_DIALOG_RETRY_BUTTON_LABEL},
+      {"saveToDriveDialogSessionTimeoutErrorMessage",
+       IDS_SAVE_TO_DRIVE_DIALOG_SESSION_TIMEOUT_ERROR_MESSAGE},
+      {"saveToDriveDialogStorageFullErrorMessage",
+       IDS_SAVE_TO_DRIVE_DIALOG_STORAGE_FULL_ERROR_MESSAGE},
+      {"saveToDriveDialogSuccessMessage",
+       IDS_SAVE_TO_DRIVE_DIALOG_SUCCESS_MESSAGE},
+      {"saveToDriveDialogSuccessTitle", IDS_SAVE_TO_DRIVE_DIALOG_SUCCESS_TITLE},
+      {"saveToDriveDialogUnknownErrorMessage",
+       IDS_SAVE_TO_DRIVE_DIALOG_UNKNOWN_ERROR_MESSAGE},
       {"saveToDriveDialogUploadingTitle",
        IDS_SAVE_TO_DRIVE_DIALOG_UPLOADING_TITLE},
       {"tooltipSaveToDrive", IDS_PDF_TOOLTIP_SAVE_TO_DRIVE},
@@ -332,6 +351,8 @@ void AddAdditionalData(content::BrowserContext* context,
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   dict->Set("pdfSaveToDrive", base::FeatureList::IsEnabled(
                                   chrome_pdf::features::kPdfSaveToDrive));
+  dict->Set("pdfSaveToDriveHelpCenterURL",
+            chrome::kPdfViewerSaveToDriveHelpCenterURL);
 #endif
 }
 

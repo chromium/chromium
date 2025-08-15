@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {isRTL} from 'chrome://resources/js/util.js';
@@ -96,8 +97,8 @@ export class ViewerSaveToDriveBubbleElement extends
     this.eventTracker_.add(window, 'resize', this.positionDialog_.bind(this));
   }
 
-  protected isUploading_(): boolean {
-    return this.state === SaveToDriveState.UPLOADING;
+  protected isSaveToDriveState_(state: SaveToDriveState): boolean {
+    return this.state === state;
   }
 
   protected onCloseClick_() {
@@ -117,26 +118,19 @@ export class ViewerSaveToDriveBubbleElement extends
   }
 
   private onStateChanged_() {
+    this.updateDescription_();
+    this.updateDialogTitle_();
+    // TODO(crbug.com/427451594): Replace the `fileMetadata_` switch statement
+    // below with translated strings from the browser process.
     switch (this.state) {
       case SaveToDriveState.UPLOADING:
-        this.dialogTitle_ = this.i18n('saveToDriveDialogUploadingTitle');
-        this.description_ = window.trustedTypes!.emptyHTML;
-        // TODO(crbug.com/427451594): Use a translated fileMetadata string.
         this.fileMetadata_ = '304/503 KB · 4 seconds left';
         break;
-      // TODO(crbug.com/427451594): Set the strings for the following states.
       case SaveToDriveState.SUCCESS:
-      case SaveToDriveState.CONNECTION_ERROR:
-      case SaveToDriveState.STORAGE_FULL_ERROR:
-      case SaveToDriveState.SESSION_TIMEOUT_ERROR:
-      case SaveToDriveState.UNKNOWN_ERROR:
-        this.dialogTitle_ = `Save to Drive ${String(this.state)}`;
-        this.description_ = sanitizeInnerHtml(
-            `A string that contains a <a>link</a> ${String(this.state)}`);
-        this.fileMetadata_ =
-            `304/503 KB · 4 seconds left (${String(this.state)})`;
+        this.fileMetadata_ = '503 KB · Done';
         break;
       default:
+        this.fileMetadata_ = '';
         break;
     }
   }
@@ -166,6 +160,71 @@ export class ViewerSaveToDriveBubbleElement extends
     } else {
       this.$.dialog.style.top =
           `${this.anchor_.offsetTop + this.anchor_.offsetHeight}px`;
+    }
+  }
+
+  private updateDescription_() {
+    switch (this.state) {
+      case SaveToDriveState.UNINITIALIZED:
+      case SaveToDriveState.UPLOADING:
+        this.description_ = window.trustedTypes!.emptyHTML;
+        break;
+      case SaveToDriveState.SUCCESS:
+        // TODO(crbug.com/427451594): Replace `PLACEHOLDER` with the folder name
+        // we get from the server.
+        this.description_ =
+            this.i18nAdvanced('saveToDriveDialogSuccessMessage', {
+              tags: ['b'],
+              substitutions: [
+                'PLACEHOLDER',
+              ],
+            });
+        break;
+      case SaveToDriveState.CONNECTION_ERROR:
+        this.description_ =
+            this.i18nAdvanced('saveToDriveDialogConnectionErrorMessage');
+        break;
+      case SaveToDriveState.STORAGE_FULL_ERROR:
+        this.description_ =
+            this.i18nAdvanced('saveToDriveDialogStorageFullErrorMessage');
+        break;
+      case SaveToDriveState.SESSION_TIMEOUT_ERROR:
+        this.description_ =
+            this.i18nAdvanced('saveToDriveDialogSessionTimeoutErrorMessage');
+        break;
+      case SaveToDriveState.UNKNOWN_ERROR:
+        this.description_ =
+            this.i18nAdvanced('saveToDriveDialogUnknownErrorMessage', {
+              tags: ['a'],
+              substitutions: [
+                this.i18n('pdfSaveToDriveHelpCenterURL'),
+              ],
+            });
+        break;
+      default:
+        assertNotReached(`Invalid state for description: ${this.state}`);
+    }
+  }
+
+  private updateDialogTitle_() {
+    switch (this.state) {
+      case SaveToDriveState.UNINITIALIZED:
+        this.dialogTitle_ = this.state;
+        break;
+      case SaveToDriveState.UPLOADING:
+        this.dialogTitle_ = this.i18n('saveToDriveDialogUploadingTitle');
+        break;
+      case SaveToDriveState.SUCCESS:
+        this.dialogTitle_ = this.i18n('saveToDriveDialogSuccessTitle');
+        break;
+      case SaveToDriveState.CONNECTION_ERROR:
+      case SaveToDriveState.STORAGE_FULL_ERROR:
+      case SaveToDriveState.SESSION_TIMEOUT_ERROR:
+      case SaveToDriveState.UNKNOWN_ERROR:
+        this.dialogTitle_ = this.i18n('saveToDriveDialogErrorTitle');
+        break;
+      default:
+        assertNotReached(`Invalid state for dialog title: ${this.state}`);
     }
   }
 }

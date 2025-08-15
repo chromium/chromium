@@ -110,6 +110,12 @@ cr-progress {
   --cr-progress-container-color: var(--cr-fallback-color-neutral-outline);
 }
 
+#footer:has(cr-button) {
+  display: flex;
+  flex-direction: row-reverse;
+  padding-top: 8px;
+}
+
 #footer:empty {
   padding-top: 12px;
 }
