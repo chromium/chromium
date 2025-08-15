@@ -441,11 +441,6 @@ blink::mojom::FetchAPIRequestPtr CreateRequest(
 blink::mojom::FetchAPIResponsePtr CreateResponse(
     const proto::CacheMetadata& metadata,
     const std::u16string& cache_name) {
-  // We no longer support Responses with only a single URL entry.  This field
-  // was deprecated in M57.
-  if (metadata.response().has_url())
-    return nullptr;
-
   std::vector<GURL> url_list;
   url_list.reserve(metadata.response().url_list_size());
   for (int i = 0; i < metadata.response().url_list_size(); ++i)
