@@ -73,6 +73,12 @@ extern const char kFirstPromptSubmissionMethodHistogram[];
 // UMA histogram key for IOS.Gemini.Prompt.ContextAttachment.
 extern const char kPromptContextAttachmentHistogram[];
 
+// UMA histogram key for IOS.Gemini.Response.Latency.WithContext.
+extern const char kResponseLatencyWithContextHistogram[];
+
+// UMA histogram key for IOS.Gemini.Response.Latency.WithoutContext.
+extern const char kResponseLatencyWithoutContextHistogram[];
+
 // Records the duration of a Gemini session.
 void RecordBWGSessionTime(base::TimeDelta session_duration);
 
@@ -110,5 +116,8 @@ void RecordFREConsentLinkClick();
 
 // Records prompt context attachment metrics.
 void RecordPromptContextAttachment(bool has_page_context);
+
+// Records the latency from prompt submission to response received.
+void RecordResponseLatency(base::TimeDelta latency, bool had_page_context);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
