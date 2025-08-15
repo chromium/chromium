@@ -239,6 +239,12 @@ void GWSPageLoadMetricsObserver::DidActivatePrerenderedPage(
   // We record the prerender host reuse status.
   base::UmaHistogramBoolean(internal::kHistogramPrerenderHostReused,
                             navigation_handle->IsPrerenderHostReused());
+  if (IsIncognitoProfile()) {
+    auto histogram_name = base::StrCat({internal::kHistogramPrerenderHostReused,
+                                        internal::kHistogramIncognitoSuffix});
+    base::UmaHistogramBoolean(histogram_name,
+                              navigation_handle->IsPrerenderHostReused());
+  }
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy

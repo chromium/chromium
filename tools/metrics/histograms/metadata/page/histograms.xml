@@ -1549,15 +1549,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.GoogleSearch.Prerender.HostReused"
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Prerender.HostReused{IncognitoSuffix}"
     enum="Boolean" expires_after="2026-01-11">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    Whether the prerendering navigation is reusing a prerender host or not. This
-    is recorded once, when a prerendered page is activated for Google search
-    page loads.
+    Whether the prerendering navigation is reusing a prerender host or not for
+    {IncognitoSuffix}. This is recorded once, when a prerendered page is
+    activated for Google search page loads.
   </summary>
+  <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
 </histogram>
 
 <histogram
