@@ -494,16 +494,6 @@ class OmniboxEditModel {
       size_t line,
       omnibox::mojom::NavigationPredictor navigation_predictor);
 
-  // These sentinel values are used to prevent the omnibox view from doing the
-  // usual bookkeeping when it loses or gains focus. This is necessary because
-  // when focus is transferred to the AIM button, we want to still consider the
-  // omnibox view to have focus for purposes of keeping the popup open and
-  // tracking the `OmniboxPopupSelection`.
-  bool FocusIsGoingToAimButton() const;
-  void SetFocusIsGoingToAimButton(bool value);
-  bool FocusIsReturningFromAimButton() const;
-  void SetFocusIsReturningFromAimButton(bool value);
-
   // This calls `OpenMatch` directly for the few remaining `OmniboxEditModel`
   // test cases that require explicit control over match content. For new
   // tests, and for non-test code, use `OpenSelection`.
@@ -844,9 +834,6 @@ class OmniboxEditModel {
   // suggestion whose tab switch button was focused, so that we may compare
   // if equal.
   GURL old_focused_url_;
-
-  bool focus_is_going_to_aim_button_ = false;
-  bool focus_is_returning_from_aim_button_ = false;
 
   base::WeakPtrFactory<OmniboxEditModel> weak_factory_{this};
 };

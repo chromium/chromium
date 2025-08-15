@@ -45,6 +45,7 @@ class TestOmniboxView : public OmniboxView {
   void UpdatePopup() override {}
   void SetFocus(bool is_user_initiated) override {}
   void RequestViewFocus() override {}
+  void RequestAimButtonFocus() override {}
   void ApplyCaretVisibility() override {}
   void OnTemporaryTextMaybeChanged(const std::u16string& display_text,
                                    const AutocompleteMatch& match,

@@ -110,7 +110,7 @@ bool AiModePageActionIconView::OnKeyPressed(const ui::KeyEvent& event) {
       // Notify the omnibox that focus is returning from the AI mode button,
       // return focus to the omnibox view and then trigger the action that would
       // have occurred if the omnibox view had retained focus.
-      omnibox_view->model()->SetFocusIsReturningFromAimButton(true);
+      omnibox_view->set_focus_is_returning_from_aim_button(true);
       omnibox_view->RequestViewFocus();
       omnibox_view->model()->OnTabPressed(event.IsShiftDown());
       return true;

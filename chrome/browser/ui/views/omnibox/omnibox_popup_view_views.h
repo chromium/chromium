@@ -64,7 +64,6 @@ class OmniboxPopupViewViews : public views::View,
   void InvalidateLine(size_t line) override;
   void OnSelectionChanged(OmniboxPopupSelection old_selection,
                           OmniboxPopupSelection new_selection) override;
-  void RequestAimButtonFocus() override;
   void UpdatePopupAppearance() override;
   void ProvideButtonFocusHint(size_t line) override;
   void OnMatchIconUpdated(size_t match_index) override;
