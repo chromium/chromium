@@ -9140,6 +9140,7 @@ from previous Chrome versions.
   <int value="-1835844760" label="ArcVmBalloonPolicy:disabled"/>
   <int value="-1835608319" label="EnableHeuristicPalmDetectionFilter:disabled"/>
   <int value="-1835592983" label="WebAppEnableLaunchHandler:disabled"/>
+  <int value="-1835389562" label="AndroidTipsNotifications:disabled"/>
   <int value="-1834967404" label="DesktopCaptureLacrosV2:enabled"/>
   <int value="-1834841895" label="CrostiniWebUIUpgrader:enabled"/>
   <int value="-1834521056"
@@ -15562,6 +15563,7 @@ from previous Chrome versions.
   <int value="506015849" label="OmniboxFuzzyUrlSuggestions:disabled"/>
   <int value="506153966" label="WebAppSyncGeneratedIconUpdateFix:disabled"/>
   <int value="507206806" label="OmniboxExpandedLayout:enabled"/>
+  <int value="507847553" label="AndroidTipsNotifications:enabled"/>
   <int value="508272289" label="SharedHighlightingAmp:disabled"/>
   <int value="510066229"
       label="AutofillEnforceMinRequiredFieldsForQuery:enabled"/>

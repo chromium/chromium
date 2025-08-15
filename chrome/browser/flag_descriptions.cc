@@ -4783,6 +4783,10 @@ const char kAndroidThemeResourceProviderName[] =
 const char kAndroidThemeResourceProviderDescription[] =
     "Enables the Android theme resource provider.";
 
+const char kAndroidTipsNotificationsName[] = "Android Tips Notifications";
+const char kAndroidTipsNotificationsDescription[] =
+    "Enable tips notifications for supported features on Android.";
+
 const char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
 const char kAnimatedImageDragShadowDescription[] =

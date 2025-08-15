@@ -10983,6 +10983,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kAndroidTabHighlightingVariations,
                                     "AndroidTabHighlightingVariations")},
 
+    {"android-tips-notifications",
+     flag_descriptions::kAndroidTipsNotificationsName,
+     flag_descriptions::kAndroidTipsNotificationsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidTipsNotifications)},
+
     {"swap-new-tab-and-new-tab-in-group-android",
      flag_descriptions::kSwapNewTabAndNewTabInGroupAndroidName,
      flag_descriptions::kSwapNewTabAndNewTabInGroupAndroidDescription,

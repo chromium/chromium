@@ -238,6 +238,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidTabSkipSaveTabsKillswitch,
     &kAndroidThemeModule,
     &kAndroidThemeResourceProvider,
+    &kAndroidTipsNotifications,
     &kAndroidToolbarScrollAblation,
     &kAndroidUseAdminsForEnterpriseInfo,
     &kAndroidWindowPopupLargeScreen,
@@ -692,6 +693,10 @@ BASE_FEATURE(kAndroidThemeModule,
 
 BASE_FEATURE(kAndroidThemeResourceProvider,
              "AndroidThemeResourceProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidTipsNotifications,
+             "AndroidTipsNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidToolbarScrollAblation,

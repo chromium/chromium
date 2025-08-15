@@ -390,6 +390,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-tips-notifications",
+    "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 144
+  },
+  {
     "name": "android-use-correct-display-work-area",
     "owners": [
       "renkens@google.com",
