@@ -25532,15 +25532,41 @@
                         "UserVisibleProcessPriority"
                     ],
                     "disable_features": [
-                        "RestrictThreadPoolInBackground",
-                        "SetIsolatesPriority"
+                        "IsolatesPriorityBestEffortWhenHidden",
+                        "IsolatesPriorityUseProcessPriority",
+                        "RestrictThreadPoolInBackground"
                     ]
                 },
                 {
-                    "name": "RendererSettings",
+                    "name": "IsolatesPriority",
+                    "enable_features": [
+                        "IsolatesPriorityBestEffortWhenHidden",
+                        "IsolatesPriorityUseProcessPriority",
+                        "UnimportantFramesPriority"
+                    ],
+                    "disable_features": [
+                        "RestrictThreadPoolInBackground",
+                        "UserVisibleProcessPriority"
+                    ]
+                },
+                {
+                    "name": "RestrictThreadPoolInBackground",
                     "enable_features": [
                         "RestrictThreadPoolInBackground",
-                        "SetIsolatesPriority",
+                        "UnimportantFramesPriority"
+                    ],
+                    "disable_features": [
+                        "IsolatesPriorityBestEffortWhenHidden",
+                        "IsolatesPriorityUseProcessPriority",
+                        "UserVisibleProcessPriority"
+                    ]
+                },
+                {
+                    "name": "AllRendererSettings",
+                    "enable_features": [
+                        "IsolatesPriorityBestEffortWhenHidden",
+                        "IsolatesPriorityUseProcessPriority",
+                        "RestrictThreadPoolInBackground",
                         "UnimportantFramesPriority"
                     ],
                     "disable_features": [
@@ -25550,8 +25576,9 @@
                 {
                     "name": "All",
                     "enable_features": [
+                        "IsolatesPriorityBestEffortWhenHidden",
+                        "IsolatesPriorityUseProcessPriority",
                         "RestrictThreadPoolInBackground",
-                        "SetIsolatesPriority",
                         "UnimportantFramesPriority",
                         "UserVisibleProcessPriority"
                     ]
