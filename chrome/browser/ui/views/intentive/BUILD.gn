@@ -1,0 +1,10 @@
+source_set("intentive_views") {
+  sources = [ "intentive_chat_overlay.cc", "intentive_chat_overlay.h" ]
+  deps = [
+    "//base",
+    "//chrome/common/intentive:intentive_common",
+    "//content/public/browser",
+    "//ui/views",
+  ]
+  visibility = [ "//chrome/*" ]
+}

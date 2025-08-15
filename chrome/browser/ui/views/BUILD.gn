@@ -56,6 +56,9 @@ component("views") {
       "//chromeos/ash/experiences/arc/intent_helper",
     ]
   }
+
+  deps += [ "//chrome/browser/ui/views/intentive:intentive_views" ]
+
 }
 
 source_set("test_support") {
