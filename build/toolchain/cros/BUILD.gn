@@ -8,18 +8,8 @@ import("//build/toolchain/cros/cros_config.gni")
 import("//build/toolchain/cros_toolchain.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 
-# This is mostly identical to gcc_toolchain, but handles relativizing toolchain
-# paths. This is needed for CrOS since these paths often change based on the
-# environment. For example, cxx is a relative path picked up on $PATH in the
-# chroot. But in Simple Chrome, cxx is a system-absolute path.
-template("cros_toolchain") {
-  clang_toolchain(target_name) {
-    forward_variables_from(invoker, "*")
-  }
-}
-
 # This is the normal toolchain for most targets.
-cros_toolchain("target") {
+clang_toolchain("target") {
   toolchain_args = {
     current_cpu = target_cpu
     current_os = "chromeos"
@@ -32,7 +22,7 @@ cros_toolchain("target") {
   extra_ldflags = cros_target_extra_ldflags
 }
 
-cros_toolchain("host") {
+clang_toolchain("host") {
   toolchain_args = {
     current_cpu = host_cpu
     current_os = "linux"
@@ -45,7 +35,7 @@ cros_toolchain("host") {
   extra_ldflags = cros_host_extra_ldflags
 }
 
-cros_toolchain("v8_snapshot") {
+clang_toolchain("v8_snapshot") {
   toolchain_args = {
     if (target_cpu == "x86" || target_cpu == "arm" || target_cpu == "mipsel") {
       current_cpu = "x86"
