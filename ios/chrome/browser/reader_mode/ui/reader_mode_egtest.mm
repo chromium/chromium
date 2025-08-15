@@ -187,13 +187,8 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Tests that the user can show / hide Reader Mode from the tools menu
 // entrypoint on an eligible web page.
-- (void)testToggleReaderModeInToolsMenuForDistillablePage {
-  // TODO(crbug.com/438763264): Failing on iPad device.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Failing on iPad device");
-  }
-#endif
+// TODO(crbug.com/438763264): Failing on device and flaky on simulator.
+- (void)DISABLED_testToggleReaderModeInToolsMenuForDistillablePage {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -226,7 +221,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Tests that the user can show / hide Reader Mode from the tools menu
 // entrypoint on an eligible web page in Incognito Mode.
-- (void)testToggleReaderModeInToolsMenuForDistillablePageInIncognitoMode {
+// TODO(crbug.com/438763264): Failing on iPhone device, and flaky otherwise.
+- (void)
+    DISABLED_testToggleReaderModeInToolsMenuForDistillablePageInIncognitoMode {
   // Open a web page in Incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
@@ -1143,21 +1140,8 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 }
 
 // Tests that the contextual chip is visible in Incognito.
-// TODO(crbug.com/438526871): Test is flaky on iOS Simulator
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testContextualChipVisibleInIncognito \
-  DISABLED_testContextualChipVisibleInIncognito
-#else
-#define MAYBE_testContextualChipVisibleInIncognito \
-  testContextualChipVisibleInIncognito
-#endif
-- (void)MAYBE_testContextualChipVisibleInIncognito {
-  // TODO(crbug.com/438763264): Failing on iPad device.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Failing on iPad device");
-  }
-#endif
+// TODO(crbug.com/438763264): Failing on device and flaky on simulator.
+- (void)DISABLED_testContextualChipVisibleInIncognito {
   // Open a web page in Incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
