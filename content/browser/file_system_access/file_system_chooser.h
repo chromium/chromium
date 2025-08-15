@@ -83,9 +83,11 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
     ScopedObjects& operator=(ScopedObjects&&);
     ScopedObjects(const ScopedObjects&) = delete;
     ScopedObjects& operator=(const ScopedObjects&) = delete;
-    explicit ScopedObjects(base::ScopedClosureRunner&& fullscreen_block);
+    ScopedObjects(base::ScopedClosureRunner&& fullscreen_block,
+                  base::ScopedClosureRunner&& pip_tucker);
 
     base::ScopedClosureRunner fullscreen_block;
+    base::ScopedClosureRunner pip_tucker;
   };
 
   static void CreateAndShow(WebContents* web_contents,

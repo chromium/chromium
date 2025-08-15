@@ -125,6 +125,7 @@ class CommandLine;
 class FilePath;
 class Location;
 class SequencedTaskRunner;
+class ScopedClosureRunner;
 }  // namespace base
 
 namespace blink {
@@ -2518,6 +2519,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::unique_ptr<VideoOverlayWindow>
   CreateWindowForVideoPictureInPicture(
       VideoPictureInPictureWindowController* controller);
+
+  // Creates a scoper that will tuck picture-in-picture windows for the lifetime
+  // of the scoper.
+  virtual base::ScopedClosureRunner MaybeGetScopedPictureInPictureTucker(
+      WebContents* web_contents);
 
   // Returns information related to auto picture in picture. The auto picture in
   // picture reason is recorded in metrics.

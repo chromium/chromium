@@ -25,6 +25,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/character_encoding.h"
 #include "base/memory/raw_ptr.h"
@@ -115,6 +116,8 @@
 #include "chrome/browser/performance_manager/public/chrome_browser_main_extra_parts_performance_manager.h"
 #include "chrome/browser/performance_manager/public/chrome_content_browser_client_performance_manager_part.h"
 #include "chrome/browser/performance_monitor/chrome_browser_main_extra_parts_performance_monitor.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/picture_in_picture/scoped_tuck_picture_in_picture.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -6941,6 +6944,22 @@ ChromeContentBrowserClient::CreateWindowForVideoPictureInPicture(
   // chrome/browser/ui/views code either from here or from other code in
   // chrome/browser.
   return content::VideoOverlayWindow::Create(controller);
+}
+
+base::ScopedClosureRunner
+ChromeContentBrowserClient::MaybeGetScopedPictureInPictureTucker(
+    content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (PictureInPictureWindowManager::GetInstance()
+          ->ShouldFileDialogTuckPictureInPicture(web_contents)) {
+    // Make the `ScopedTuckPictureInPicture` share the same lifecycle as the
+    // `ScopedClosureRunner`.
+    auto tucker = std::make_unique<ScopedTuckPictureInPicture>();
+    return base::ScopedClosureRunner(
+        base::DoNothingWithBoundArgs(std::move(tucker)));
+  }
+#endif
+  return base::ScopedClosureRunner();
 }
 
 media::PictureInPictureEventsInfo::AutoPipInfo

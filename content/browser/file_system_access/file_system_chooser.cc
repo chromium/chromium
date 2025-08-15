@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
@@ -287,8 +288,10 @@ FileSystemChooser::ScopedObjects& FileSystemChooser::ScopedObjects::operator=(
     ScopedObjects&&) = default;
 
 FileSystemChooser::ScopedObjects::ScopedObjects(
-    base::ScopedClosureRunner&& fullscreen_block)
-    : fullscreen_block(std::move(fullscreen_block)) {}
+    base::ScopedClosureRunner&& fullscreen_block,
+    base::ScopedClosureRunner&& pip_tucker)
+    : fullscreen_block(std::move(fullscreen_block)),
+      pip_tucker(std::move(pip_tucker)) {}
 
 // static
 void FileSystemChooser::CreateAndShow(

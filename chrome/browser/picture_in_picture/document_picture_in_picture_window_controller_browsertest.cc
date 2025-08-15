@@ -49,6 +49,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -70,6 +71,8 @@
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view_observer.h"
@@ -979,4 +982,107 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   EXPECT_EQ(base::UTF8ToUTF16(window_page_title),
             browser_view->GetAccessibleTabLabel(
                 browser()->tab_strip_model()->active_index()));
+}
+
+// A dialog that checks if the picture-in-picture window is force-tucked
+// when the dialog is shown, and then immediately cancels itself.
+class TuckingTestSelectFileDialog : public ui::SelectFileDialog {
+ public:
+  TuckingTestSelectFileDialog(Listener* listener,
+                              std::unique_ptr<ui::SelectFilePolicy> policy,
+                              bool* was_tucked)
+      : ui::SelectFileDialog(listener, std::move(policy)),
+        was_tucked_(was_tucked) {}
+
+ private:
+  ~TuckingTestSelectFileDialog() override = default;
+
+  // ui::SelectFileDialog overrides
+  void SelectFileImpl(Type type,
+                      const std::u16string& title,
+                      const base::FilePath& default_path,
+                      const FileTypeInfo* file_types,
+                      int file_type_index,
+                      const base::FilePath::StringType& default_extension,
+                      gfx::NativeWindow owning_window,
+                      const GURL* caller) override {
+    *was_tucked_ = PictureInPictureWindowManager::GetInstance()
+                       ->IsPictureInPictureForceTucked();
+    listener_->FileSelectionCanceled();
+  }
+
+  bool IsRunning(gfx::NativeWindow owning_window) const override {
+    return true;
+  }
+  void ListenerDestroyed() override {}
+  bool HasMultipleFileTypeChoicesImpl() override { return false; }
+
+  raw_ptr<bool> was_tucked_;
+  base::WeakPtrFactory<TuckingTestSelectFileDialog> weak_factory_{this};
+};
+
+class TuckingTestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
+ public:
+  explicit TuckingTestSelectFileDialogFactory(bool* was_tucked)
+      : was_tucked_(was_tucked) {}
+  ~TuckingTestSelectFileDialogFactory() override = default;
+
+  ui::SelectFileDialog* Create(
+      ui::SelectFileDialog::Listener* listener,
+      std::unique_ptr<ui::SelectFilePolicy> policy) override {
+    return new TuckingTestSelectFileDialog(listener, std::move(policy),
+                                           was_tucked_);
+  }
+
+ private:
+  raw_ptr<bool> was_tucked_;
+};
+
+class DocumentPictureInPictureWindowControllerTuckingBrowserTest
+    : public DocumentPictureInPictureWindowControllerBrowserTest {
+ public:
+  DocumentPictureInPictureWindowControllerTuckingBrowserTest() = default;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {blink::features::kDocumentPictureInPictureAPI,
+         blink::features::kDocumentPictureInPicturePreferInitialPlacement,
+         media::kFileDialogsTuckPictureInPicture},
+        {});
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test when the file picker is opened, the pip window is tucked.
+IN_PROC_BROWSER_TEST_F(
+    DocumentPictureInPictureWindowControllerTuckingBrowserTest,
+    TuckOnOpenFilePicker) {
+  LoadTabAndEnterPictureInPicture(browser());
+  // Initially it was not tucked
+  EXPECT_FALSE(PictureInPictureWindowManager::GetInstance()
+                   ->IsPictureInPictureForceTucked());
+
+  // `was_tucked_during_picker` will be updated if the window is tucked while
+  // the file picker dialog is open.
+  bool was_tucked_during_picker = false;
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TuckingTestSelectFileDialogFactory>(
+          &was_tucked_during_picker));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto result = EvalJs(web_contents, "window.showOpenFilePicker();");
+  EXPECT_TRUE(result.ExtractError().find("aborted") != std::string::npos)
+      << result;
+
+  ui::SelectFileDialog::SetFactory(nullptr);
+
+  // The pip window should be tucked once, and now it's back to non-tucked
+  // state.
+  EXPECT_TRUE(was_tucked_during_picker);
+  EXPECT_FALSE(PictureInPictureWindowManager::GetInstance()
+                   ->IsPictureInPictureForceTucked());
 }
