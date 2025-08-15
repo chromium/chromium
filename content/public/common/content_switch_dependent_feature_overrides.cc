@@ -101,14 +101,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
        std::cref(net::features::kThirdPartyStoragePartitioning),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
-      // Overrides for --isolation-by-default.
-      {switches::kIsolationByDefault,
-       std::cref(features::kEmbeddingRequiresOptIn),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-      {switches::kIsolationByDefault,
-       std::cref(network::features::kCrossOriginOpenerPolicyByDefault),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-
       // Overrides for headless
       {::switches::kHeadless, std::cref(blink::features::kPaintHolding),
        base::FeatureList::OVERRIDE_DISABLE_FEATURE},

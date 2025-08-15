@@ -12974,7 +12974,6 @@ from previous Chrome versions.
   <int value="-428111342" label="FilesInlineSyncStatus:enabled"/>
   <int value="-428064763" label="CCTNestedSecurityIcon:enabled"/>
   <int value="-427835676" label="FullscreenInsetsApiMigration:enabled"/>
-  <int value="-427163069" label="isolation-by-default"/>
   <int value="-427087289"
       label="EnterpriseSecurityEventReportingOnAndroid:disabled"/>
   <int value="-426815606" label="HomepageTile:enabled"/>
