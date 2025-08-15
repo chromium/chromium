@@ -13262,21 +13262,6 @@
             ]
         }
     ],
-    "IOSKeyboardAccessoryUpgradeForIPad": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSKeyboardAccessoryUpgradeForIPad"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSLensFetchSrp": [
         {
             "platforms": [
