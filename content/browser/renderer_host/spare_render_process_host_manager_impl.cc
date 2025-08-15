@@ -203,9 +203,8 @@ bool IsCurrentlyUnderMemoryPressure() {
 // Returns the number of spare hosts that should be created. Ensures the field
 // trial is not activated on excluded machines.
 size_t GetSpareRPHCount() {
-  static int64_t available_ram = base::SysInfo::AmountOfPhysicalMemoryMB();
   // Exclude machines with less than 4gigs of ram.
-  if (available_ram < 4 * 1024) {
+  if (base::SysInfo::AmountOfPhysicalMemory() < base::GiB(4)) {
     return 1u;
   }
   return features::kMultipleSpareRPHsCount.Get();

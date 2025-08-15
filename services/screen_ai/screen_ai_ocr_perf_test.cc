@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
@@ -170,8 +171,7 @@ class OcrTestEnvironment : public ::testing::Environment {
   void Benchmark(const std::string& metrics_name,
                  base::RepeatingClosure target_ops) {
     // Records the available memory before library initialization.
-    int base_mem = static_cast<int>(
-        (base::SysInfo::AmountOfAvailablePhysicalMemory() / (1024 * 1024)));
+    int64_t base_mem = base::SysInfo::AmountOfAvailablePhysicalMemory().InMiB();
     InitOcr();
 
     base::LapTimer lap_timer(kWarmUpIterationCount, base::Seconds(10), 1);
@@ -182,11 +182,10 @@ class OcrTestEnvironment : public ::testing::Environment {
 
     // Records the memory difference after `PerformOcr()`.
     // TODO(crbug.com/415902702): Considers to put memory into a separate test.
-    int mem_diff =
-        base_mem -
-        static_cast<int>(base::SysInfo::AmountOfAvailablePhysicalMemory() /
-                         (1024 * 1024));
-    perf_values_.Set(metrics_name + "_mem", mem_diff);
+    int64_t mem_diff =
+        base_mem - base::SysInfo::AmountOfAvailablePhysicalMemory().InMiB();
+    perf_values_.Set(metrics_name + "_mem",
+                     base::saturated_cast<int>(mem_diff));
     LOG(INFO) << "Perf: " << metrics_name << "_mem => " << mem_diff << " mb";
 
     int avg_duration = lap_timer.TimePerLap().InMilliseconds();

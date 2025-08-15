@@ -47,8 +47,9 @@ bool IsChromeUsedInScenario(Scenario scenario) {
 // based on ChromeOS stable 7 day aggregation ending May 20th 2024 from
 // Memory.Experimental.AvailableMemoryPercent 10 percentile.
 bool IsLowMemory() {
-  auto available_bytes = base::SysInfo::AmountOfAvailablePhysicalMemory();
-  auto total_bytes = base::SysInfo::AmountOfPhysicalMemory();
+  auto available_bytes =
+      base::SysInfo::AmountOfAvailablePhysicalMemory().InBytes();
+  auto total_bytes = base::SysInfo::AmountOfPhysicalMemory().InBytes();
   return (available_bytes * 1000 / total_bytes) < 57;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

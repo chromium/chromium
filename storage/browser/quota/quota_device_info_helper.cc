@@ -18,7 +18,7 @@ int64_t QuotaDeviceInfoHelper::AmountOfTotalDiskSpace(
 }
 
 uint64_t QuotaDeviceInfoHelper::AmountOfPhysicalMemory() const {
-  return base::SysInfo::AmountOfPhysicalMemory();
+  return base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned();
 }
 
 }  // namespace storage

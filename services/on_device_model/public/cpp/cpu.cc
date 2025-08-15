@@ -42,7 +42,8 @@ bool IsCpuCapable() {
   }
   return base::FeatureList::IsEnabled(features::kOnDeviceModelCpuBackend) &&
          (Is64BitProcessor() || !kRequire64BitProcessor.Get()) &&
-         base::SysInfo::AmountOfPhysicalMemoryMB() >= kRAMThreshold.Get() &&
+         base::SysInfo::AmountOfPhysicalMemory().InMiB() >=
+             kRAMThreshold.Get() &&
          base::SysInfo::NumberOfProcessors() >= kProcessorThreshold.Get();
 }
 

@@ -13,6 +13,7 @@
 #include <memory>
 #include <numeric>
 
+#include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/small_map.h"
@@ -81,9 +82,10 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
     bool disk_enabled,
     std::optional<uint64_t> optional_memory_size_for_testing) {
   int64_t disk_size = 0ull;
-  uint64_t memory_size = optional_memory_size_for_testing
-                             ? optional_memory_size_for_testing.value()
-                             : base::SysInfo::AmountOfPhysicalMemory();
+  uint64_t memory_size =
+      optional_memory_size_for_testing
+          ? optional_memory_size_for_testing.value()
+          : base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned();
   if (disk_enabled && CreateBlobDirectory(storage_dir) == base::File::FILE_OK)
     disk_size = base::SysInfo::AmountOfTotalDiskSpace(storage_dir);
 
@@ -93,8 +95,7 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
   if (memory_size > 0) {
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && \
     defined(ARCH_CPU_64_BITS)
-    constexpr size_t kTwoGigabytes = 2ull * 1024 * 1024 * 1024;
-    limits.max_blob_in_memory_space = kTwoGigabytes;
+    limits.max_blob_in_memory_space = base::GiB(2).InBytesUnsigned();
 #elif BUILDFLAG(IS_ANDROID)
     limits.max_blob_in_memory_space = static_cast<size_t>(memory_size / 100);
 #else

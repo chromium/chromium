@@ -7,6 +7,7 @@
 
 #include "cc/tiles/image_decode_cache_utils.h"
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -35,22 +36,22 @@ bool ImageDecodeCacheUtils::ShouldEvictCaches(
 // static
 size_t ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
     bool for_renderer) {
-  size_t decoded_image_working_set_budget_bytes = 128 * 1024 * 1024;
+  base::ByteCount decoded_image_working_set_budget = base::MiB(128);
 #if !BUILDFLAG(IS_ANDROID)
   if (for_renderer) {
     const bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
     // If there's over 4GB of RAM, increase the working set size to 256MB for
     // both gpu and software.
-    const int kImageDecodeMemoryThresholdMB = 4 * 1024;
+    constexpr base::ByteCount kImageDecodeMemoryThreshold = base::GiB(4);
     if (using_low_memory_policy) {
-      decoded_image_working_set_budget_bytes = 32 * 1024 * 1024;
-    } else if (base::SysInfo::AmountOfPhysicalMemoryMB() >=
-               kImageDecodeMemoryThresholdMB) {
-      decoded_image_working_set_budget_bytes = 256 * 1024 * 1024;
+      decoded_image_working_set_budget = base::MiB(32);
+    } else if (base::SysInfo::AmountOfPhysicalMemory() >=
+               kImageDecodeMemoryThreshold) {
+      decoded_image_working_set_budget = base::MiB(256);
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-  return decoded_image_working_set_budget_bytes;
+  return decoded_image_working_set_budget.InBytesUnsigned();
 }
 
 }  // namespace cc

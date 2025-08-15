@@ -24,7 +24,7 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kLowEndMemoryExperiment);
 
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kLowMemoryDeviceThresholdMB);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kLowMemoryDeviceThresholdMB);
 
 // PPM: Poor performance moment.
 //

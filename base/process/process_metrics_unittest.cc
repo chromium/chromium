@@ -442,12 +442,12 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
   EXPECT_EQ(meminfo.shmem.InKiB(), 140204);
   EXPECT_EQ(meminfo.slab.InKiB(), 54212);
 #endif
-  EXPECT_EQ(355725u,
-            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
+  EXPECT_EQ(355725,
+            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo).InKiB());
   // Simulate as if there is no MemAvailable.
   meminfo.available = ByteCount(0);
   EXPECT_EQ(374448u,
-            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
+            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo).InKiB());
   meminfo = {};
   EXPECT_TRUE(ParseProcMeminfo(valid_input2, &meminfo));
   EXPECT_EQ(meminfo.total.InKiB(), 255908);
@@ -459,7 +459,7 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
   EXPECT_EQ(meminfo.swap_free.InKiB(), 524200);
   EXPECT_EQ(meminfo.dirty.InKiB(), 4);
   EXPECT_EQ(69936u,
-            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
+            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo).InKiB());
 
   // output from a system with a large page cache, to catch arithmetic errors
   // that incorrectly assume free + buffers + cached <= total. (Copied from

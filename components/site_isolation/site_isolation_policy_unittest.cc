@@ -199,7 +199,7 @@ class OriginIsolationForJsOptExceptionsLowMemoryTest
     // will always be false. This is needed to run the test on Android.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kSitePerProcess);
-    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemory().InMiB());
     OriginIsolationForJsOptExceptionsTest::SetUp();
   }
 };
@@ -649,7 +649,7 @@ class OriginIsolationMemoryThresholdBrowserTest
     // will always be false. This is needed to run the test on Android.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kSitePerProcess);
-    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemory().InMiB());
     BaseSiteIsolationTest::SetUp();
   }
 
@@ -802,7 +802,7 @@ class SitePerProcessMemoryThresholdBrowserTest
     // available in the testing environment.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
-    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemory().InMiB());
 
     // On Android official builds, we expect to isolate an additional set of
     // built-in origins.
@@ -1023,7 +1023,7 @@ class PasswordSiteIsolationFieldTrialTest : public BaseSiteIsolationTest {
     // available in the testing environment.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
-    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemory().InMiB());
     BaseSiteIsolationTest::SetUp();
   }
 
@@ -1254,7 +1254,7 @@ class StrictOriginIsolationFieldTrialTest : public BaseSiteIsolationTest {
     // available in the testing environment.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
-    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemory().InMiB());
     BaseSiteIsolationTest::SetUp();
   }
 
@@ -1383,7 +1383,7 @@ class BuiltInIsolatedOriginsTest : public SiteIsolationPolicyTest {
     // Simulate a 512MB device.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
-    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemory().InMiB());
     SiteIsolationPolicyTest::SetUp();
   }
 };
@@ -1512,7 +1512,7 @@ class OptInOriginIsolationPolicyTest : public BaseSiteIsolationTest {
     // Simulate a 512MB device.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
-    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemory().InMiB());
     // Turn off strict site isolation.  This simulates what would happen on
     // Android.
     SetEnableStrictSiteIsolation(false);

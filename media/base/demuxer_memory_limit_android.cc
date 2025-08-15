@@ -25,7 +25,7 @@ size_t SelectLimit(size_t default_limit,
   // Use very low limit on 512MiB Android Go devices only.
   if (base::android::android_info::sdk_int() >=
           base::android::android_info::SDK_VERSION_OREO &&
-      base::SysInfo::AmountOfPhysicalMemoryMB() <= 512) {
+      base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512) {
     return very_low_limit;
   }
   return low_limit;

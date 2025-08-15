@@ -1023,7 +1023,7 @@ void CollectDevicePerfInfo(DevicePerfInfo* device_perf_info,
                            bool in_browser_process) {
   DCHECK(device_perf_info);
   device_perf_info->total_physical_memory_mb =
-      static_cast<uint32_t>(base::SysInfo::AmountOfPhysicalMemoryMB());
+      static_cast<uint32_t>(base::SysInfo::AmountOfPhysicalMemory().InMiB());
   if (!in_browser_process)
     device_perf_info->total_disk_space_mb = EstimateAmountOfTotalDiskSpaceMB();
   device_perf_info->hardware_concurrency =

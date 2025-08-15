@@ -61,7 +61,7 @@ class ChromeSiteIsolationPolicyTest : public testing::Test {
     // available in the testing environment.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
-    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemory().InMiB());
 
     mode_feature_.InitWithFeatures(
         {features::kSitePerProcess, features::kOriginKeyedProcessesByDefault},

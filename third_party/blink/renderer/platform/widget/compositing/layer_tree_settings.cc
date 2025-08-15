@@ -177,7 +177,7 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::SysInfo::IsLowEndDevice() ||
-      base::SysInfo::AmountOfPhysicalMemoryMB() < 2000) {
+      base::SysInfo::AmountOfPhysicalMemory().InMiB() < 2000) {
     actual.bytes_limit_when_visible = 96 * 1024 * 1024;
   } else {
     actual.bytes_limit_when_visible = 256 * 1024 * 1024;
@@ -206,7 +206,7 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   // consume too much of the system memory. Still keep the minimum to the
   // default of 512MB.
   size_t default_memory_mb = GetDefaultMemoryMB();
-  size_t memory_cap_mb = base::SysInfo::AmountOfPhysicalMemoryMB() / 4;
+  size_t memory_cap_mb = base::SysInfo::AmountOfPhysicalMemory().InMiB() / 4;
   if (mb_limit_when_visible > memory_cap_mb) {
     mb_limit_when_visible = memory_cap_mb;
   } else if (mb_limit_when_visible < default_memory_mb) {
@@ -535,7 +535,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     // TODO(crbug.com/398868042): Instead of Graphite/Vulkan feature checks, add
     // appropriate shared image capability and check for its support.
     if (!cmd.HasSwitch(switches::kDisableRGBA4444Textures) &&
-        base::SysInfo::AmountOfPhysicalMemoryMB() <= 512 &&
+        base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512 &&
         !::features::IsUsingVulkan() &&
         !::features::IsSkiaGraphiteEnabled(
             base::CommandLine::ForCurrentProcess())) {
