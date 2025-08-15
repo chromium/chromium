@@ -266,6 +266,9 @@ PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
 // https://docs.google.com/document/d/1TSbtp5I5Bc1pbAKrrEHfmZlAwgeh6AlgAH7GbDMNPRQ/edit?disco=AAABe5h90jQ
 std::optional<uint32_t> GetCategoryIdFromUrl(const GURL& url);
 
+// Returns true if the page is controlled by a service worker.
+bool IsServiceWorkerControlled(const PageLoadMetricsObserverDelegate& delegate);
+
 }  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_UTIL_H_
