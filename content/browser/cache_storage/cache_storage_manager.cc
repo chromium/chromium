@@ -406,9 +406,11 @@ CacheStorageHandle CacheStorageManager::OpenCacheStorage(
   // object is needed.  This ensures we create the listener on the correct
   // thread.
   if (!memory_pressure_listener_) {
-    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-        FROM_HERE, base::BindRepeating(&CacheStorageManager::OnMemoryPressure,
-                                       base::Unretained(this)));
+    memory_pressure_listener_ =
+        std::make_unique<base::AsyncMemoryPressureListener>(
+            FROM_HERE,
+            base::BindRepeating(&CacheStorageManager::OnMemoryPressure,
+                                base::Unretained(this)));
   }
 
   CacheStorageMap::const_iterator it =
