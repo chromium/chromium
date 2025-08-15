@@ -6,10 +6,11 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -49,15 +50,12 @@ TextFieldContextualInfo GetTextFieldContextualInfo() {
 }
 
 std::optional<GURL> GetUrlForTextFieldOnAshChrome() {
-  Browser* browser = chrome::FindLastActive();
-  // Ash chrome will return true for browser->window()->IsActive() if the
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetLastUsedBrowser();
+  // Ash chrome will return true for browser->IsActive() if the
   // user is currently typing in an ash browser tab.
-  if (browser && browser->window() && browser->window()->IsActive() &&
-      browser->tab_strip_model() &&
-      browser->tab_strip_model()->GetActiveWebContents()) {
-    return browser->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetLastCommittedURL();
+  if (browser && browser->IsActive() && browser->GetActiveWebContents()) {
+    return browser->GetActiveWebContents()->GetLastCommittedURL();
   }
 
   return std::nullopt;

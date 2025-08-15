@@ -193,6 +193,7 @@ static_library("input_method") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/input_method/japanese",
     "//chrome/browser/ash/lobster",
