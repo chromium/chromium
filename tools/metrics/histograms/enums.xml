@@ -12725,6 +12725,7 @@ from previous Chrome versions.
   <int value="-526288768"
       label="ReadAnythingReadAloudAutomaticWordHighlighting:enabled"/>
   <int value="-526236814" label="WebAssemblyTiering:enabled"/>
+  <int value="-524878465" label="RobustWindowManagementExperimental:enabled"/>
   <int value="-523224129" label="PwaRestoreUi:disabled"/>
   <int value="-523155003" label="PhoneHubCameraRoll:disabled"/>
   <int value="-523030434" label="EnableBackgroundBlur:enabled"/>
@@ -16092,6 +16093,7 @@ from previous Chrome versions.
   <int value="705601070" label="PickerCloud:disabled"/>
   <int value="705712478" label="EnablePalmOnToolTypePalm:disabled"/>
   <int value="705713283" label="EasyUnlockPromotions:disabled"/>
+  <int value="705863093" label="RobustWindowManagementExperimental:disabled"/>
   <int value="705946076"
       label="ContextMenuPerformanceInfoAndRemoteHintFetching:disabled"/>
   <int value="706280254" label="StoragePressureEvent:enabled"/>

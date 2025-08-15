@@ -3629,6 +3629,14 @@ const char kRobustWindowManagementDescription[] =
     "experiencing predictable and reliable window behavior similar to desktop "
     "browsers.";
 
+const char kRobustWindowManagementExperimentalName[] =
+    "Robust window management experimental";
+const char kRobustWindowManagementExperimentalDescription[] =
+    "Enables more experimental features for robust window managements. This "
+    "enables users to effortlessly manage multiple tasks with reliable window "
+    "switching and restoration, ensuring they never lose their work or "
+    "context.";
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 const char kRootScrollbarFollowsTheme[] = "Make scrollbar follow theme";
 const char kRootScrollbarFollowsThemeDescription[] =

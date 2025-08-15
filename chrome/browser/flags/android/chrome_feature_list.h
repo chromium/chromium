@@ -227,6 +227,7 @@ BASE_DECLARE_FEATURE(kReloadTabUiResourcesIfChanged);
 BASE_DECLARE_FEATURE(kRemoveTabFocusOnShowingAndSelect);
 BASE_DECLARE_FEATURE(kRightEdgeGoesForwardGestureNav);
 BASE_DECLARE_FEATURE(kRobustWindowManagement);
+BASE_DECLARE_FEATURE(kRobustWindowManagementExperimental);
 BASE_DECLARE_FEATURE(kSearchInCCT);
 BASE_DECLARE_FEATURE(kSearchInCCTAlternateTapHandling);
 BASE_DECLARE_FEATURE(kSearchInCCTIfEnabledByEmbedder);

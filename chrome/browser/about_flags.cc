@@ -12527,6 +12527,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"robust-window-management", flag_descriptions::kRobustWindowManagementName,
      flag_descriptions::kRobustWindowManagementDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kRobustWindowManagement)},
+
+    {"robust-window-management-experimental",
+     flag_descriptions::kRobustWindowManagementExperimentalName,
+     flag_descriptions::kRobustWindowManagementExperimentalDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kRobustWindowManagementExperimental)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

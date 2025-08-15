@@ -2058,6 +2058,9 @@ extern const char kReplaceSyncPromosWithSignInPromosDescription[];
 extern const char kRobustWindowManagementName[];
 extern const char kRobustWindowManagementDescription[];
 
+extern const char kRobustWindowManagementExperimentalName[];
+extern const char kRobustWindowManagementExperimentalDescription[];
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 extern const char kRootScrollbarFollowsTheme[];
 extern const char kRootScrollbarFollowsThemeDescription[];
