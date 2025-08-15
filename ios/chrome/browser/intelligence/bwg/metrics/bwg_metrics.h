@@ -132,4 +132,7 @@ void RecordSessionPromptCount(int prompt_count);
 // Records if a first prompt was sent in a BWG session.
 void RecordSessionFirstPrompt(bool had_first_prompt);
 
+// Records that the user clicked a URL in a BWG session.
+void RecordURLOpened();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_

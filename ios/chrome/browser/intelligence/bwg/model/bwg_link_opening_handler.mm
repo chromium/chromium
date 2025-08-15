@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "url/gurl.h"
@@ -29,6 +30,7 @@
       UrlLoadParams::InNewTab(GURL(base::SysNSStringToUTF8(URL)));
   params.append_to = OpenPosition::kCurrentTab;
   _URLLoadingAgent->Load(params);
+  RecordURLOpened();
 }
 
 @end
