@@ -373,7 +373,8 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, GlicPage) {
   RunTest("settings/glic_page_test.js", "runMochaSuite('GlicPage Default')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpage) {
+// TODO(crbug.com/438908216): Flaky on at least Linux dbg.
+IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_GlicSubpage) {
   RunTest("settings/glic_subpage_test.js",
           "runMochaSuite('GlicSubpage Default')");
 }
@@ -894,8 +895,9 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// TODO(crbug.com/438908216): Flaky on at least Linux dbg.
 IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
-                       DeleteBrowsingDataDialog) {
+                       DISABLED_DeleteBrowsingDataDialog) {
   RunTest("settings/clear_browsing_data_dialog_v2_test.js",
           "runMochaSuite('DeleteBrowsingDataDialog')");
 }
