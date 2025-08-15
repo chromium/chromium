@@ -220,6 +220,12 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
       break;
     case IDC_CLOSE:
       switch (cur_state_) {
+        case States::STATE_CHECKING_FOR_UPDATE:
+        case States::STATE_WAITING_TO_DOWNLOAD:
+        case States::STATE_DOWNLOADING:
+        case States::STATE_WAITING_TO_INSTALL:
+        case States::STATE_INSTALLING:
+        case States::STATE_PAUSED:
         case States::STATE_COMPLETE_SUCCESS:
         case States::STATE_COMPLETE_ERROR:
           return CompleteWnd::OnClickedButton(notify_code, id, wnd_ctl,
@@ -227,8 +233,6 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
         default:
           NOTREACHED();
       }
-    default:
-      NOTREACHED();
   }
 
   handled = true;
