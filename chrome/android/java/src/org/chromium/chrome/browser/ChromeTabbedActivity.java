@@ -3624,14 +3624,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private static boolean getExtraPreferNewFromIntent(Intent intent) {
-        // Default to creating a new instance when FLAG_ACTIVITY_MULTIPLE_TASK is set. This is
-        // required to fulfill new window creation requests initiated for MAIN intents from the OS.
-        int flags = intent.getFlags();
-        boolean preferNew =
-                Intent.ACTION_MAIN.equals(intent.getAction())
-                        && (flags & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0
-                        && (flags & Intent.FLAG_ACTIVITY_NEW_TASK) != 0;
-        return IntentUtils.safeGetBooleanExtra(intent, IntentHandler.EXTRA_PREFER_NEW, preferNew);
+        return IntentUtils.safeGetBooleanExtra(intent, IntentHandler.EXTRA_PREFER_NEW, false);
     }
 
     @Override
