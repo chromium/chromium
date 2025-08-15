@@ -408,6 +408,14 @@ export function assertEquals(
   }
 }
 
+export function assertNotEquals(
+    a: ComparableValue, b: ComparableValue, message?: string) {
+  if (a === b) {
+    throw new ApiTestError(
+        `assertNotEquals failed: '${a}' === '${b}'. ${message ?? ''}`);
+  }
+}
+
 export function checkDefined<T>(v: T|undefined, message?: string): T {
   if (v === undefined) {
     throw new ApiTestError(
