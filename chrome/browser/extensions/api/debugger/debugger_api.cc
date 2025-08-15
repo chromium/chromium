@@ -29,16 +29,14 @@
 #include "base/strings/string_view_util.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
-#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
-#include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -55,7 +53,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -66,6 +64,16 @@
 #include "pdf/buildflags.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
+#include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
+#include "chrome/browser/ui/browser.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/common/pdf_util.h"
@@ -243,12 +251,14 @@ bool ExtensionMayAttachToRenderFrameHost(
   render_frame_host->ForEachRenderFrameHostWithAction(
       [&page_url, &extension, extension_profile, error,
        &result](content::RenderFrameHost* render_frame_host) {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
         // If |render_frame_host| is attached to an inner MimeHandlerViewGuest
         // skip it. This is done to fix crbug.com/1293856 because an extension
         // cannot inspect another extension.
         if (MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host)) {
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #if BUILDFLAG(ENABLE_PDF)
         // The PDF extension frame would normally prevent all other frames in
@@ -471,6 +481,8 @@ bool ExtensionDevToolsClientHost::Attach() {
     return false;
   }
 
+// TODO(crbug.com/405218860): Port infobars to desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // We allow policy-installed extensions to circumvent the normal
   // infobar warning. See crbug.com/693621.
   const bool suppress_infobar =
@@ -484,6 +496,7 @@ bool ExtensionDevToolsClientHost::Attach() {
         base::BindOnce(&ExtensionDevToolsClientHost::InfoBarDestroyed,
                        base::Unretained(this)));
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (extension_service_worker_id_) {
     ProcessManager* process_manager = ProcessManager::Get(profile_);
@@ -926,7 +939,9 @@ const char kTargetFaviconUrlField[] = "faviconUrl";
 const char kTargetTabIdField[] = "tabId";
 const char kTargetExtensionIdField[] = "extensionId";
 const char kTargetTypePage[] = "page";
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 const char kTargetTypeBackgroundPage[] = "background_page";
+#endif
 const char kTargetTypeWorker[] = "worker";
 const char kTargetTypeOther[] = "other";
 
@@ -948,9 +963,12 @@ base::Value::Dict SerializeTarget(scoped_refptr<DevToolsAgentHost> host) {
       dictionary.Set(kTargetExtensionIdField, host->GetURL().host());
     }
     target_type = kTargetTypePage;
+// TODO(crbug.com/405218860): Support background pages on desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   } else if (type == ChromeDevToolsManagerDelegate::kTypeBackgroundPage) {
     dictionary.Set(kTargetExtensionIdField, host->GetURL().host());
     target_type = kTargetTypeBackgroundPage;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   } else if (type == DevToolsAgentHost::kTypeServiceWorker ||
              type == DevToolsAgentHost::kTypeSharedWorker) {
     target_type = kTargetTypeWorker;

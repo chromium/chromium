@@ -4,16 +4,22 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("debugger") {
   sources = [
     "debugger_api.cc",
     "debugger_api.h",
-    "extension_dev_tools_infobar_delegate.cc",
-    "extension_dev_tools_infobar_delegate.h",
   ]
+
+  # TODO(crbug.com/405218860): Port infobars to desktop Android.
+  if (enable_extensions) {
+    sources += [
+      "extension_dev_tools_infobar_delegate.cc",
+      "extension_dev_tools_infobar_delegate.h",
+    ]
+  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 

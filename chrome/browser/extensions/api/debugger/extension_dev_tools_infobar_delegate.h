@@ -13,7 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+// TODO(crbug.com/405218860): Port infobars to desktop Android.
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
 class GlobalConfirmInfoBar;
 
