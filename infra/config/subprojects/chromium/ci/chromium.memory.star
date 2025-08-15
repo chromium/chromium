@@ -1339,7 +1339,7 @@ ci.builder(
                 # These are very slow on the ASAN trybot for some reason.
                 # crbug.com/1257927
                 swarming = targets.swarming(
-                    shards = 60,
+                    shards = 80,
                 ),
             ),
             "components_unittests": targets.mixin(
