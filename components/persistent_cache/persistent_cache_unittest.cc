@@ -168,9 +168,15 @@ TEST_P(PersistentCacheTest, MetadataIsRetrievable) {
   auto cache = OpenCache();
   cache->Insert(kKey, base::byte_span_from_cstring("1"), metadata);
 
+  int64_t seconds_since_epoch =
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000;
   auto entry = cache->Find(kKey);
   EXPECT_EQ(entry->GetMetadata().input_signature, metadata.input_signature);
-  EXPECT_NE(entry->GetMetadata().write_timestamp, 0);
+
+  EXPECT_GE(entry->GetMetadata().write_timestamp, seconds_since_epoch);
+  // The test is supposed to time out before it takes this long to insert a
+  // value.
+  EXPECT_LE(entry->GetMetadata().write_timestamp, seconds_since_epoch + 30);
 }
 
 TEST_P(PersistentCacheTest, OverwritingChangesMetadata) {

@@ -132,7 +132,7 @@ void SqliteBackendImpl::Insert(std::string_view key,
   sql::Statement stm(db_.GetCachedStatement(
       SQL_FROM_HERE,
       "REPLACE INTO entries (key, content, input_signature, write_timestamp) "
-      "VALUES (?, ?, ?, CURRENT_TIMESTAMP)"));
+      "VALUES (?, ?, ?, strftime(\'%s\', \'now\'))"));
 
   stm.BindString(0, key);
   stm.BindBlob(1, content);
