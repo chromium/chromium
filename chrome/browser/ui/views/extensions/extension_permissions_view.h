@@ -33,4 +33,9 @@ class ExtensionPermissionsView : public views::View {
                const std::u16string& permission_details);
 };
 
+BEGIN_VIEW_BUILDER(/* no export */, ExtensionPermissionsView, views::View)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, ExtensionPermissionsView)
+
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_PERMISSIONS_VIEW_H_

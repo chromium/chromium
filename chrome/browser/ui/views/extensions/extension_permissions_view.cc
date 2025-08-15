@@ -27,12 +27,16 @@ ExtensionPermissionsView::ExtensionPermissionsView(
 void ExtensionPermissionsView::AddItem(
     const std::u16string& permission_text,
     const std::u16string& permission_details) {
-  auto permission_label = std::make_unique<views::Label>(
-      permission_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY);
-  permission_label->SetMultiLine(true);
-  permission_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  auto permission_label =
+      views::Builder<views::Label>()
+          .SetText(permission_text)
+          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+          .SetTextStyle(views::style::STYLE_SECONDARY)
+          .SetMultiLine(true)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .Build();
   AddChildView(std::move(permission_label));
+
   if (!permission_details.empty()) {
     // If we have more details to provide, show them in collapsed form.
     std::vector<std::u16string> details_container;
