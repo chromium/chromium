@@ -8,6 +8,7 @@
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -20,7 +21,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -108,13 +109,15 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
       return;
     }
     if (bytes_read == 0) {
-      std::string hash_str(hash_->GetHashLength(), 0);
-      hash_->Finish(std::data(hash_str), hash_str.size());
-      std::move(callback_).Run(base::File::FILE_OK, hash_str, file_size_);
+      std::string result(crypto::hash::kSha256Size, 0);
+      hash_.Finish(base::as_writable_byte_span(result));
+      std::move(callback_).Run(base::File::FILE_OK, result, file_size_);
       return;
     }
 
-    hash_->Update(buffer_->data(), bytes_read);
+    // checked_cast<size_t> is safe here: bytes_read < 0 and bytes_read == 0 are
+    // both handled above by code paths that return.
+    hash_.Update(buffer_->span().first(base::checked_cast<size_t>(bytes_read)));
     ReadMore();
   }
 
@@ -127,8 +130,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
   const scoped_refptr<net::IOBufferWithSize> buffer_{
       base::MakeRefCounted<net::IOBufferWithSize>(8 * 1024)};
 
-  const std::unique_ptr<crypto::SecureHash> hash_{
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256)};
+  crypto::hash::Hasher hash_{crypto::hash::kSha256};
 
   std::unique_ptr<storage::FileStreamReader> reader_
       GUARDED_BY_CONTEXT(sequence_checker_);
