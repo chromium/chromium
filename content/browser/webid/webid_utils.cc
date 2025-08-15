@@ -11,8 +11,8 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/webid/fedcm_metrics.h"
-#include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/request_page_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
@@ -440,8 +440,8 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
       requester_origin, embedder_origin, url::Origin::Create(provider_url));
 }
 
-FederatedAuthRequestPageData* GetPageData(Page& page) {
-  return FederatedAuthRequestPageData::GetOrCreateForPage(page);
+RequestPageData* GetPageData(Page& page) {
+  return RequestPageData::GetOrCreateForPage(page);
 }
 
 FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,

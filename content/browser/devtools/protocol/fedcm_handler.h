@@ -16,8 +16,10 @@
 
 namespace content {
 class DevToolsAgentHostImpl;
+namespace webid {
+class RequestPageData;
+}
 class FederatedAuthRequestImpl;
-class FederatedAuthRequestPageData;
 class FederatedIdentityApiPermissionContextDelegate;
 class IdentityProviderData;
 class IdentityRequestAccount;
@@ -79,7 +81,7 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
 
   url::Origin GetEmbeddingOrigin();
 
-  FederatedAuthRequestPageData* GetPageData();
+  webid::RequestPageData* GetPageData();
   FederatedAuthRequestImpl* GetFederatedAuthRequest();
   const std::vector<IdentityProviderDataPtr>* GetIdentityProviderData(
       FederatedAuthRequestImpl* auth_request);

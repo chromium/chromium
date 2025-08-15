@@ -7,14 +7,14 @@
 #include <optional>
 
 #include "content/browser/webid/federated_auth_request_impl.h"
-#include "content/browser/webid/federated_auth_request_page_data.h"
+#include "content/browser/webid/request_page_data.h"
 
 namespace content {
 
 // static
 FederatedAuthAutofillSource* FederatedAuthAutofillSource::FromPage(
     content::Page& page) {
-  auto* request = FederatedAuthRequestPageData::GetOrCreateForPage(page)
+  auto* request = webid::RequestPageData::GetOrCreateForPage(page)
                       ->PendingWebIdentityRequest();
 
   if (!request || request->GetMediationRequirement() !=

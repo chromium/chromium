@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REQUEST_PAGE_DATA_H_
-#define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REQUEST_PAGE_DATA_H_
+#ifndef CONTENT_BROWSER_WEBID_REQUEST_PAGE_DATA_H_
+#define CONTENT_BROWSER_WEBID_REQUEST_PAGE_DATA_H_
 
 #include <memory>
 
@@ -14,10 +14,11 @@
 namespace content {
 class FederatedAuthRequestImpl;
 
-class CONTENT_EXPORT FederatedAuthRequestPageData
-    : public PageUserData<FederatedAuthRequestPageData> {
+namespace webid {
+
+class CONTENT_EXPORT RequestPageData : public PageUserData<RequestPageData> {
  public:
-  ~FederatedAuthRequestPageData() override;
+  ~RequestPageData() override;
 
   // The currently pending web identity request, if any.
   // Used to ensure that we do not allow two separate calls on the same page.
@@ -38,9 +39,9 @@ class CONTENT_EXPORT FederatedAuthRequestPageData
       const GURL& idp_url);
 
  private:
-  explicit FederatedAuthRequestPageData(Page& page);
+  explicit RequestPageData(Page& page);
 
-  friend class PageUserData<FederatedAuthRequestPageData>;
+  friend class PageUserData<RequestPageData>;
   PAGE_USER_DATA_KEY_DECL();
 
   // Non-null when there is some Web Identity API request currently pending.
@@ -53,6 +54,7 @@ class CONTENT_EXPORT FederatedAuthRequestPageData
   base::flat_map<GURL, base::TimeTicks> user_info_accounts_response_time_;
 };
 
+}  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REQUEST_PAGE_DATA_H_
+#endif  // CONTENT_BROWSER_WEBID_REQUEST_PAGE_DATA_H_

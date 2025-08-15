@@ -32,10 +32,10 @@
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/federated_auth_disconnect_request.h"
-#include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/browser/webid/request_page_data.h"
 #include "content/browser/webid/url_computations.h"
 #include "content/browser/webid/user_info_request.h"
 #include "content/browser/webid/webid_utils.h"
@@ -725,8 +725,9 @@ void FederatedAuthRequestImpl::OnIdpSigninStatusReceived(
 }
 
 bool FederatedAuthRequestImpl::HasPendingRequest() const {
-  bool has_pending_request = webid::GetPageData(render_frame_host().GetPage())
-                                 ->PendingWebIdentityRequest() != nullptr;
+  webid::RequestPageData* page_data =
+      webid::GetPageData(render_frame_host().GetPage());
+  bool has_pending_request = page_data->PendingWebIdentityRequest() != nullptr;
   DCHECK(has_pending_request || !auth_request_token_callback_);
   return has_pending_request;
 }

@@ -10,7 +10,7 @@
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
-#include "content/browser/webid/federated_auth_request_page_data.h"
+#include "content/browser/webid/request_page_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
@@ -343,16 +343,16 @@ url::Origin FedCmHandler::GetEmbeddingOrigin() {
   return frame_host_->GetMainFrame()->GetLastCommittedOrigin();
 }
 
-FederatedAuthRequestPageData* FedCmHandler::GetPageData() {
+webid::RequestPageData* FedCmHandler::GetPageData() {
   if (!frame_host_) {
     return nullptr;
   }
   Page& page = frame_host_->GetPage();
-  return PageUserData<FederatedAuthRequestPageData>::GetOrCreateForPage(page);
+  return PageUserData<webid::RequestPageData>::GetOrCreateForPage(page);
 }
 
 FederatedAuthRequestImpl* FedCmHandler::GetFederatedAuthRequest() {
-  FederatedAuthRequestPageData* page_data = GetPageData();
+  webid::RequestPageData* page_data = GetPageData();
   if (!page_data) {
     return nullptr;
   }

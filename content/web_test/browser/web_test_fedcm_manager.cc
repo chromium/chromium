@@ -8,7 +8,7 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
-#include "content/browser/webid/federated_auth_request_page_data.h"
+#include "content/browser/webid/request_page_data.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 
 namespace content {
@@ -177,8 +177,8 @@ FederatedAuthRequestImpl* WebTestFedCmManager::GetAuthRequestImpl() {
   if (!render_frame_host_) {
     return nullptr;
   }
-  FederatedAuthRequestPageData* page_data =
-      PageUserData<FederatedAuthRequestPageData>::GetForPage(
+  webid::RequestPageData* page_data =
+      PageUserData<webid::RequestPageData>::GetForPage(
           render_frame_host_->GetPage());
   if (!page_data) {
     return nullptr;

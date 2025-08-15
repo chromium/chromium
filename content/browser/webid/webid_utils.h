@@ -29,10 +29,11 @@ enum class FedCmRequesterFrameType;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 enum class IdpSigninStatus;
-class FederatedAuthRequestPageData;
 class RenderFrameHost;
 
 namespace webid {
+
+class RequestPageData;
 
 // Returns true if `origin` is same site with `render_frame_host` and
 // all its ancestors. Also returns true if there are no ancestors or
@@ -104,7 +105,7 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
     FederatedIdentityPermissionContextDelegate* sharing_permission_delegate,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
 
-FederatedAuthRequestPageData* GetPageData(Page& page);
+RequestPageData* GetPageData(Page& page);
 
 // Returns the frame type of the requester.
 FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
