@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/path_service.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/common/chrome_paths.h"
@@ -84,8 +83,7 @@ void UserImageFileSelector::SelectFile(
 }
 
 gfx::NativeWindow UserImageFileSelector::GetBrowserWindow() {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
-  return browser ? browser->window()->GetNativeWindow() : gfx::NativeWindow();
+  return web_ui_->GetWebContents()->GetTopLevelNativeWindow();
 }
 
 void UserImageFileSelector::FileSelected(const ui::SelectedFileInfo& file,
