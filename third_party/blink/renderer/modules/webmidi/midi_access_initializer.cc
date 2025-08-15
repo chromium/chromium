@@ -103,13 +103,14 @@ void MIDIAccessInitializer::DidStartSession(Result result) {
           port_descriptors_, resolver_->GetExecutionContext()));
       return;
     case Result::NOT_SUPPORTED:
-      resolver_->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError));
+      resolver_->RejectWithDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "An unexpected error occurred while initializing the Web MIDI API");
       return;
     case Result::INITIALIZATION_ERROR:
-      resolver_->Reject(MakeGarbageCollected<DOMException>(
+      resolver_->RejectWithDOMException(
           DOMExceptionCode::kInvalidStateError,
-          "Platform dependent initialization failed."));
+          "Platform dependent initialization failed.");
       return;
   }
 }
@@ -135,8 +136,9 @@ void MIDIAccessInitializer::OnPermissionsUpdated(
   if (status == mojom::blink::PermissionStatus::GRANTED) {
     StartSession();
   } else {
-    resolver_->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError));
+    resolver_->RejectWithDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Permission to use Web MIDI API was not granted.");
   }
 }
 
@@ -146,8 +148,9 @@ void MIDIAccessInitializer::OnPermissionUpdated(
   if (status == mojom::blink::PermissionStatus::GRANTED) {
     StartSession();
   } else {
-    resolver_->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError));
+    resolver_->RejectWithDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Permission to use Web MIDI API was not granted.");
   }
 }
 
