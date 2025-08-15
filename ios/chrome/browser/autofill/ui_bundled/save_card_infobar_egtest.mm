@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -168,6 +169,10 @@ id<GREYMatcher> BottomSheetCardDescriptionMatcher() {
 
   return grey_allOf(grey_accessibilityID(kSaveCardLabel),
                     grey_accessibilityLabel(cardDescriptionLabel), nil);
+}
+
+id<GREYMatcher> CVCTextField() {
+  return grey_accessibilityID(kSaveCardModalCVCTextFieldIdentifier);
 }
 
 // Simulates typing text on the keyboard and avoid having the first character
@@ -458,6 +463,35 @@ void FillAndSubmitXframeCreditCardForm() {
   [ChromeTestCase removeAnyOpenMenusAndInfoBars];
   GREYAssertTrue([AutofillAppInterface waitForEvents],
                  @"Strike not added on infobar dismissed");
+}
+
+- (void)triggerCreditCardSaveModal {
+  [self fillAndSubmitFormWithID:kFillFullFormId
+               paymentsResponse:kResponseGetUploadDetailsSuccess
+                      errorCode:net::HTTP_OK
+                   forLocalSave:NO];
+  GREYAssertTrue(
+      [self
+          waitForUIElementToAppearWithMatcher:UploadBottomSheetTitleMatcher()],
+      @"Save card bottom sheet failed to appear on the first attempt.");
+  [self dismissUploadSaveCardBottomSheetWithoutAccepting];
+
+  // Trigger the infobar banner.
+  [self fillAndSubmitFormWithID:kFillFullFormId
+               paymentsResponse:kResponseGetUploadDetailsSuccess
+                      errorCode:net::HTTP_OK
+                   forLocalSave:NO];
+  GREYAssertTrue(
+      [self waitForUIElementToAppearWithMatcher:UploadBannerLabelsMatcher()],
+      @"Save card infobar failed to show on the second attempt.");
+
+  // Tap the banner's save button to open the modal.
+  [[EarlGrey selectElementWithMatcher:UploadBannerSaveButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Ensure the modal is visible by asserting its save button is present.
+  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
+      assertWithMatcher:grey_enabled()];
 }
 
 #pragma mark - Tests
@@ -1333,6 +1367,78 @@ void FillAndSubmitXframeCreditCardForm() {
   // Ensure credit card is saved locally.
   GREYAssertEqual(1U, [AutofillAppInterface localCreditCount],
                   @"Credit card should have been saved.");
+}
+
+// Tests CVC validation with short invalid input in the credit card upload save
+// modal.
+- (void)testUpstreamCVCValidation_WithShortInvalidInput {
+  // Action: Trigger the upstream save modal to be displayed.
+  [self triggerCreditCardSaveModal];
+
+  // The modal is now visible. The save button should initially be enabled
+  // because the pre-filled CVC is valid.
+  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
+      assertWithMatcher:grey_enabled()];
+
+  [[EarlGrey selectElementWithMatcher:CVCTextField()]
+      performAction:grey_replaceText(@"12")];
+
+  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
+      assertWithMatcher:grey_not(grey_enabled())];
+}
+
+// Tests CVC validation with long invalid input in the credit card upload save
+// modal.
+- (void)testUpstreamCVCValidation_WithLongInvalidInput {
+  // Trigger the upstream save modal to be displayed.
+  [self triggerCreditCardSaveModal];
+
+  // The modal is now visible. The save button should initially be enabled
+  // because the pre-filled CVC is valid.
+  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
+      assertWithMatcher:grey_enabled()];
+
+  [[EarlGrey selectElementWithMatcher:CVCTextField()]
+      performAction:grey_replaceText(@"12345")];
+
+  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
+      assertWithMatcher:grey_not(grey_enabled())];
+}
+
+// Tests CVC validation with non-digit invalid input in the credit card upload
+// save modal.
+- (void)testUpstreamCVCValidation_WithNonDigitInput {
+  // Trigger the upstream save modal to be displayed.
+  [self triggerCreditCardSaveModal];
+
+  // The modal is now visible. The save button should initially be enabled
+  // because the pre-filled CVC is valid.
+  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
+      assertWithMatcher:grey_enabled()];
+
+  [[EarlGrey selectElementWithMatcher:CVCTextField()]
+      performAction:grey_replaceText(@"a")];
+
+  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
+      assertWithMatcher:grey_not(grey_enabled())];
+}
+
+// Tests CVC validation with 4 digits valid input in the credit card upload save
+// modal.
+- (void)testUpstreamCVCValidation_WithValidInput {
+  // Trigger the upstream save modal to be displayed.
+  [self triggerCreditCardSaveModal];
+
+  // The modal is now visible. The save button should initially be enabled
+  // because the pre-filled CVC is valid.
+  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
+      assertWithMatcher:grey_enabled()];
+
+  [[EarlGrey selectElementWithMatcher:CVCTextField()]
+      performAction:grey_replaceText(@"1234")];
+
+  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
+      assertWithMatcher:grey_enabled()];
 }
 
 @end

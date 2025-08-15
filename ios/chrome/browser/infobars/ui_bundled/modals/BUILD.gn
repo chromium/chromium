@@ -55,6 +55,8 @@ source_set("public") {
     "infobar_address_profile_modal_constants.mm",
     "infobar_modal_constants.h",
     "infobar_modal_constants.mm",
+    "infobar_save_card_modal_constants.h",
+    "infobar_save_card_modal_constants.mm",
     "infobar_translate_modal_constants.h",
     "infobar_translate_modal_constants.mm",
   ]

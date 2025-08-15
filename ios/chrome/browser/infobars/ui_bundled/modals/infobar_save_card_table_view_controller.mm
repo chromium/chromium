@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/save_card_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_delegate.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -346,6 +347,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [editCell.textField addTarget:self
                              action:@selector(cvcDidChange:)
                    forControlEvents:UIControlEventEditingChanged];
+      editCell.textField.accessibilityIdentifier =
+          kSaveCardModalCVCTextFieldIdentifier;
       editCell.selectionStyle = UITableViewCellSelectionStyleNone;
       editCell.textField.delegate = self;
       break;
@@ -521,6 +524,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)cvcDidChange:(UITextField*)textField {
   self.cardCvcItem.textFieldValue = textField.text;
+  [self.cardCvcItem setHasValidText:[self isCVCValid:textField.text]];
+  [self reconfigureCellsForItems:@[ self.cardCvcItem ]];
+  [self updateSaveCardButtonState];
 }
 
 - (void)dismissInfobarModal {
@@ -593,6 +599,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return NO;
   }
 
+  if (self.cardCvcItem && ![self isCVCValid:self.cardCvcItem.textFieldValue]) {
+    return NO;
+  }
+
   return YES;
 }
 
@@ -637,6 +647,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   return [self currentYearIntValue] <= [expirationYearNumber intValue];
+}
+
+// YES if `cvc` is valid.
+- (BOOL)isCVCValid:(NSString*)cvc {
+  if (!cvc || cvc.length == 0) {
+    return YES;
+  }
+  // Check that the CVC is 3 or 4 digits.
+  if (cvc.length < 3 || cvc.length > 4) {
+    return NO;
+  }
+  // Check that the CVC contains only digits.
+  NSCharacterSet* nonDigitCharacterSet =
+      [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+  return
+      [cvc rangeOfCharacterFromSet:nonDigitCharacterSet].location == NSNotFound;
 }
 
 // The current month int value.
