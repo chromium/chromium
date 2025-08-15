@@ -1052,20 +1052,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.FlexPageFlipFlakes" units="flakes"
-    expires_after="2025-12-14">
+<histogram name="Platform.FlexPageFlipFlakes2" units="flakes"
+    expires_after="2025-12-06">
   <owner>andrebraga@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
     Due to using legacy page flips and having little-to-no overlap promotion
-    support, Flex tends to reach the 3 page flip flake threshold. This is an
-    experiment to find a better threshold for Flex devices.
+    support, Flex tends to reach the 3 page flip flake threshold. This is a
+    metric for finding a better threshold for Flex devices.
 
     This metric is only recorded on ChromeOS Flex devices. It is recorded once
     per page flip flake. There will be overcounting: a device that flakes 3
     times in a row will also emit a metric for &quot;1 flake&quot; and &quot;2
     flakes,&quot; but we are more concerned with finding the upper limit of
     flakes rather than specific counts.
+
+    This histogram replaced `Platform.FlexPageFlipFlakes` as the metric was only
+    emitted if we reached the threshold and never before.
   </summary>
 </histogram>
 

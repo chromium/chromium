@@ -9,7 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/containers/ring_buffer.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 
 namespace ui {
@@ -48,13 +48,13 @@ void PageFlipWatchdog::CrashOnFailedPlaneAssignment() {
     last_page_flip_status = page_flip_status;
   }
 
+  // Metric to find good threshold for Flex device.
+  // TODO(crbug.com/371609830): finalize this threshold.
+  if (ash::switches::IsRevenBranding()) {
+    base::UmaHistogramCounts100("Platform.FlexPageFlipFlakes2", flakes);
+  }
+
   if (flakes >= plane_assignment_flake_threshold) {
-    // Experiment to find good threshold for Flex device.
-    // TODO(crbug.com/371609830): finalize this threshold
-    // upon experiment completion.
-    if (ash::switches::IsRevenBranding()) {
-      UMA_HISTOGRAM_EXACT_LINEAR("Platform.FlexPageFlipFlakes", flakes, 11);
-    }
     LOG(FATAL) << "Plane assignment has flaked " << flakes
                << " times, but the threshold is "
                << plane_assignment_flake_threshold
