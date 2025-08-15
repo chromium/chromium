@@ -39,6 +39,9 @@ const char kBWGSessionTimeHistogram[] = "IOS.Gemini.Session.Time";
 const char kFirstPromptSubmissionMethodHistogram[] =
     "IOS.Gemini.FirstPrompt.SubmissionMethod";
 
+const char kPromptContextAttachmentHistogram[] =
+    "IOS.Gemini.Prompt.ContextAttachment";
+
 void RecordFREPromoAction(IOSGeminiFREAction action) {
   switch (action) {
     case IOSGeminiFREAction::kAccept:
@@ -125,4 +128,9 @@ void RecordFREConsentDismiss() {
 void RecordFREConsentLinkClick() {
   base::RecordAction(
       base::UserMetricsAction("MobileGeminiFREConsentLinkClick"));
+}
+
+void RecordPromptContextAttachment(bool has_page_context) {
+  base::UmaHistogramBoolean(kPromptContextAttachmentHistogram,
+                            has_page_context);
 }

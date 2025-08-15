@@ -2116,6 +2116,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Prompt.ContextAttachment" enum="Boolean"
+    expires_after="2026-07-21">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records whether prompts sent to Gemini include page context.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.Session.Time" units="ms" expires_after="2026-07-21">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>

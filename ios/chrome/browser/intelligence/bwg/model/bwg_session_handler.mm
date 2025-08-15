@@ -117,6 +117,8 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
         ConvertBWGInputTypeToHistogramEnum(inputType);
     RecordFirstPromptSubmission(method);
   }
+  // Track context attachment for all prompts.
+  RecordPromptContextAttachment(pageContextAttached);
 }
 
 // Called when a new chat button is tapped.
