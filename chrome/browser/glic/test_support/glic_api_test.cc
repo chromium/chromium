@@ -35,4 +35,33 @@ void WebUIStateListener::WaitForWebUiState(mojom::WebUiState state) {
       << state << ". State =" << host_->GetPrimaryWebUiState();
 }
 
+CurrentViewListener::CurrentViewListener(Host* host) : host_(host) {
+  host_->AddObserver(this);
+  views_.push_back(host_->GetPrimaryCurrentView());
+}
+
+CurrentViewListener::~CurrentViewListener() {
+  host_->RemoveObserver(this);
+}
+
+void CurrentViewListener::OnViewChanged(mojom::CurrentView view) {
+  views_.push_back(view);
+}
+
+// Returns if `state` has been seen. Consumes all observed states up to the
+// point where this state is seen.
+void CurrentViewListener::WaitForCurrentView(mojom::CurrentView view) {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    while (!views_.empty()) {
+      if (views_.front() != view) {
+        views_.pop_front();
+        continue;
+      }
+      return true;
+    }
+    return false;
+  })) << "Timed out waiting for WebUI state "
+      << view << ". State =" << host_->GetPrimaryCurrentView();
+}
+
 }  // namespace glic

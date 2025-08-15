@@ -64,6 +64,24 @@ class WebUIStateListener : public Host::Observer {
   std::deque<mojom::WebUiState> states_;
 };
 
+// Observes the state of the WebUI hosted in the glic window.
+class CurrentViewListener : public Host::Observer {
+ public:
+  explicit CurrentViewListener(Host* host);
+
+  ~CurrentViewListener() override;
+
+  void OnViewChanged(mojom::CurrentView view) override;
+
+  // Returns if `state` has been seen. Consumes all observed states up to the
+  // point where this state is seen.
+  void WaitForCurrentView(mojom::CurrentView view);
+
+ private:
+  raw_ptr<Host> host_;
+  std::deque<mojom::CurrentView> views_;
+};
+
 template <typename T>
   requires std::is_base_of<test::InteractiveGlicTestT<InteractiveBrowserTest>,
                            T>::value

@@ -42,6 +42,7 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/events/test/event_generator.h"
 #include "url/gurl.h"
@@ -257,6 +258,20 @@ class InteractiveGlicTestT : public T {
       case GlicWindowMode::kDetached:
         return Api::Do(
             [this] { window_controller().ShowDetachedForTesting(); });
+    }
+  }
+
+  // Toggles Glic through a specific InvocationSource.
+  auto ToggleGlicWindowFromSource(GlicWindowMode window_mode,
+                                  ui::ElementIdentifier element_id,
+                                  mojom::InvocationSource invocation_source) {
+    switch (window_mode) {
+      case GlicWindowMode::kAttached:
+        return Api::PressButton(element_id);
+      case GlicWindowMode::kDetached:
+        return Api::Do([this, invocation_source] {
+          window_controller().Toggle(browser(), false, invocation_source);
+        });
     }
   }
 
