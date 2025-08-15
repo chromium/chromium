@@ -1815,12 +1815,24 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             });
             return true;
         }
-        processUrlViewIntent(
-                loadUrlParams,
-                tabOpenType,
-                IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
-                tabIdToBringToFront,
-                intent);
+        Tab tab =
+                processUrlViewIntent(
+                        loadUrlParams,
+                        tabOpenType,
+                        IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
+                        tabIdToBringToFront,
+                        intent);
+        int destTabId = IntentHandler.getDestTabId(intent);
+        if (destTabId != Tab.INVALID_TAB_ID) {
+            TabGroupUtils.mergeTabsToDest(
+                    Collections.singletonList(tab),
+                    destTabId,
+                    getTabModelSelector()
+                            .getTabGroupModelFilterProvider()
+                            .getCurrentTabGroupModelFilter(),
+                    null);
+            IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
+        }
         return true;
     }
 
@@ -1843,6 +1855,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         ArrayList<String> urls = multiTabMetadata.urls;
         boolean[] isPinned = multiTabMetadata.isPinned;
         TabModel tabModel = getCurrentTabModel();
+        List<Tab> tabs = new ArrayList<>();
 
         for (int i = 0; i < urls.size(); i++) {
             int tabId = tabIds.get(i);
@@ -1855,6 +1868,18 @@ public class ChromeTabbedActivity extends ChromeActivity {
             if (isPinned[i]) {
                 tabModel.pinTab(tab.getId());
             }
+            tabs.add(tab);
+        }
+        int destTabId = IntentHandler.getDestTabId(intent);
+        if (destTabId != Tab.INVALID_TAB_ID) {
+            TabGroupUtils.mergeTabsToDest(
+                    tabs,
+                    destTabId,
+                    getTabModelSelector()
+                            .getTabGroupModelFilterProvider()
+                            .getCurrentTabGroupModelFilter(),
+                    null);
+            IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
         }
         IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA);
         return true;

@@ -52,6 +52,8 @@ import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.InstanceInfo;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -86,6 +88,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Instrumentation tests for ChromeTabbedActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -1081,6 +1084,107 @@ public class ChromeTabbedActivityTest {
                             "Tab count should not change for mismatched lists",
                             tabModel.getCount(),
                             Matchers.is(initialTabCount.get()));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMoveTabsToOtherWindowAndMerge() {
+        // 1. Launch a second ChromeTabbedActivity.
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.setClass(mActivity, ChromeTabbedActivity.class);
+
+        final ChromeTabbedActivity activity2 =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () -> mActivity.getApplicationContext().startActivity(intent));
+
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+
+        // 2. Create two tabs in the first activity.
+        Tab tab1 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getTabCreator(false)
+                                    .createNewTab(
+                                            new LoadUrlParams(JUnitTestGURLs.URL_1),
+                                            TabLaunchType.FROM_CHROME_UI,
+                                            null);
+                        });
+        Tab tab2 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getTabCreator(false)
+                                    .createNewTab(
+                                            new LoadUrlParams(JUnitTestGURLs.URL_2),
+                                            TabLaunchType.FROM_CHROME_UI,
+                                            null);
+                        });
+
+        // 3. Get MultiInstanceManager for activity1 and InstanceInfo for activity2.
+        MultiInstanceManager mim1 = mActivity.getMultiInstanceMangerForTesting();
+
+        final AtomicReference<InstanceInfo> instanceInfo2Ref = new AtomicReference<>();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    List<InstanceInfo> instanceInfos = mim1.getInstanceInfo();
+                    for (InstanceInfo info : instanceInfos) {
+                        if (info.taskId == activity2.getTaskId()) {
+                            instanceInfo2Ref.set(info);
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                "Could not find InstanceInfo for activity2");
+        InstanceInfo instanceInfo2 = instanceInfo2Ref.get();
+
+        // 4. Move tab1 to activity2.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mim1.moveTabsToWindow(instanceInfo2, List.of(tab1), -1);
+                });
+
+        // 5. Verify tab1 is in activity2.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel2 = activity2.getCurrentTabModel();
+                    Criteria.checkThat(tabModel2.getCount(), Matchers.is(2)); // 1 blank + tab1
+                    Criteria.checkThat(tabModel2.getTabById(tab1.getId()), Matchers.notNullValue());
+                });
+
+        // 6. Move tab2 to activity2 and merge with tab1.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mim1.moveTabsToWindowAndMergeToDest(instanceInfo2, List.of(tab2), tab1.getId());
+                });
+
+        // 7. Verify tab2 is in activity2 and merged with tab1.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel2 = activity2.getCurrentTabModel();
+                    Criteria.checkThat(
+                            tabModel2.getCount(), Matchers.is(3)); // 1 blank + tab1 + tab2
+                    Tab movedTab2 = tabModel2.getTabById(tab2.getId());
+                    Criteria.checkThat(movedTab2, Matchers.notNullValue());
+
+                    TabGroupModelFilter filter2 =
+                            (TabGroupModelFilter)
+                                    activity2
+                                            .getTabModelSelector()
+                                            .getTabGroupModelFilterProvider()
+                                            .getTabGroupModelFilter(false);
+                    List<Tab> relatedTabs = filter2.getRelatedTabList(tab1.getId());
+                    Criteria.checkThat(relatedTabs.size(), Matchers.is(2));
+                    Criteria.checkThat(
+                            relatedTabs,
+                            Matchers.hasItems(tabModel2.getTabById(tab1.getId()), movedTab2));
                 });
     }
 }

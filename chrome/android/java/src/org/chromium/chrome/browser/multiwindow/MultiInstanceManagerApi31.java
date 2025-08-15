@@ -282,6 +282,22 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
+    public void moveTabsToWindowAndMergeToDest(InstanceInfo info, List<Tab> tabs, int destTabId) {
+        Activity targetActivity = getActivityById(info.instanceId);
+        if (BuildConfig.ENABLE_ASSERTS){
+            for (Tab tab : tabs) {
+                assert tab.getTabGroupId() == null : "Tab should not be part of a group.";
+            }
+        }
+        if (targetActivity != null) {
+            reparentTabsToRunningActivityAndMergeToDest(
+                    (ChromeTabbedActivity) targetActivity, tabs, destTabId);
+        } else {
+            assert false : "Target activity is null";
+        }
+    }
+
+    @Override
     public void moveTabGroupToWindow(
             InstanceInfo info, TabGroupMetadata tabGroupMetadata, int startIndex) {
         Activity targetActivity = getActivityById(info.instanceId);
@@ -331,6 +347,18 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             ChromeTabbedActivity targetActivity, List<Tab> tabs, int tabAtIndex) {
         Intent intent = createIntentForGeneralReparenting(targetActivity, tabAtIndex);
         setupIntentForTabsReparenting(tabs, intent, null);
+
+        targetActivity.onNewIntent(intent);
+        bringTaskForeground(targetActivity.getTaskId());
+    }
+
+    @VisibleForTesting
+    void reparentTabsToRunningActivityAndMergeToDest(
+            ChromeTabbedActivity targetActivity, List<Tab> tabs, int destTabId) {
+        Intent intent =
+                createIntentForGeneralReparenting(targetActivity, TabList.INVALID_TAB_INDEX);
+        setupIntentForTabsReparenting(tabs, intent, null);
+        IntentHandler.setDestTabId(intent, destTabId);
 
         targetActivity.onNewIntent(intent);
         bringTaskForeground(targetActivity.getTaskId());

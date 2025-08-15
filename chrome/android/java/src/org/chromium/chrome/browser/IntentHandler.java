@@ -282,6 +282,9 @@ public class IntentHandler {
     public static final String EXTRA_MULTI_TAB_REPARENTING_METADATA =
             "org.chromium.chrome.browser.multi_tab_reparenting_metadata";
 
+    /** The id of the tab in the destination tab group to merge the reparented tabs to. */
+    public static final String EXTRA_DEST_TAB_ID = "org.chromium.chrome.browser.dest_tab_id";
+
     /** Used to measure the duration of the tab group drag drop reparenting process. */
     public static final String EXTRA_REPARENT_START_TIME =
             "org.chromium.chrome.browser.reparent_start_time";
@@ -1497,16 +1500,6 @@ public class IntentHandler {
     }
 
     /**
-     * Sets the The {@link MultiTabMetadata} for multi tab drag drop to transfer tab data between
-     * windows.
-     *
-     * @param intent The Intent to be set.
-     */
-    public static void setMultiTabMetadata(Intent intent, MultiTabMetadata multiTabMetadata) {
-        intent.putExtra(EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabMetadata.toBundle());
-    }
-
-    /**
      * @param intent An Intent to be checked.
      * @return The {@link TabGroupMetadata} for tab group drag drop to transfer tab group data
      *     between windows.
@@ -1525,6 +1518,29 @@ public class IntentHandler {
         Bundle bundle =
                 IntentUtils.safeGetBundleExtra(intent, EXTRA_MULTI_TAB_REPARENTING_METADATA);
         return MultiTabMetadata.maybeCreateFromBundle(bundle);
+    }
+
+    /**
+     * Sets the The {@link MultiTabMetadata} for multi tab drag drop to transfer tab data between
+     * windows.
+     *
+     * @param intent The Intent to be set.
+     */
+    public static void setMultiTabMetadata(Intent intent, MultiTabMetadata multiTabMetadata) {
+        intent.putExtra(EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabMetadata.toBundle());
+    }
+
+    /**
+     * Sets the destination tab id for multi tab drag drop to transfer tab data between windows.
+     *
+     * @param intent The Intent to be set.
+     */
+    public static void setDestTabId(Intent intent, int destTabId) {
+        intent.putExtra(EXTRA_DEST_TAB_ID, destTabId);
+    }
+
+    public static int getDestTabId(Intent intent) {
+        return IntentUtils.safeGetIntExtra(intent, EXTRA_DEST_TAB_ID, Tab.INVALID_TAB_ID);
     }
 
     /**

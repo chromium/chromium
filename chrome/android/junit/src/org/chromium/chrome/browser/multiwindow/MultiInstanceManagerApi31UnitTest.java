@@ -39,7 +39,6 @@ import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
-import org.chromium.build.annotations.Nullable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -68,6 +67,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -1490,6 +1490,24 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(true));
         verify(mMultiInstanceManager, times(0))
                 .reparentTabGroupToRunningActivity(any(), eq(mTabGroupMetadata), eq(0));
+    }
+
+    @Test
+    public void testMoveTabsToWindowAndMergeToDest_success() {
+        setupTwoInstances();
+        List<Tab> tabs = List.of(mTab1, mTab2);
+        when(mTab1.getTabGroupId()).thenReturn(null);
+        when(mTab2.getTabGroupId()).thenReturn(null);
+        // Action
+        InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
+        mMultiInstanceManager.moveTabsToWindowAndMergeToDest(info, tabs, /* destTabId= */ 3);
+
+        // Verify reparentTabsToRunningActivityAndMergeToDest is called once.
+        verify(mMultiInstanceManager, times(1))
+                .reparentTabsToRunningActivityAndMergeToDest(any(), eq(tabs), eq(3));
+        verify(mMultiInstanceManager, times(0))
+                .moveAndReparentTabsToNewWindow(
+                        eq(tabs), eq(INVALID_WINDOW_ID), eq(false), eq(true), eq(true));
     }
 
     @Test
