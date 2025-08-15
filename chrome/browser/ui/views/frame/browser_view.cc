@@ -2797,7 +2797,7 @@ void BrowserView::FocusInactivePopupForAccessibility() {
       glic::GlicWindowController& window_controller =
           service->window_controller();
       if (window_controller.attached_browser() == browser_.get()) {
-        window_controller.GetGlicWidget()->Activate();
+        window_controller.FocusIfOpen();
         return;
       }
     }
