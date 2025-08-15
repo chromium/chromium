@@ -67,7 +67,7 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
 
   void OnDataPipeReadable(MojoResult result);
 
-  int cache_entry_offset_ = 0;
+  uint64_t cache_entry_offset_ = 0;
   ScopedWritableEntry entry_;
 
   int disk_cache_body_index_ = 0;

@@ -1473,6 +1473,7 @@ test("content_browsertests") {
     "../browser/btm/btm_page_visit_observer_browsertest.cc",
     "../browser/btm/btm_short_visit_observer_browsertest.cc",
     "../browser/btm/btm_test_utils_browsertest.cc",
+    "../browser/cache_storage/cache_storage_blob_browsertest.cc",
     "../browser/child_process_launcher_browsertest.cc",
     "../browser/child_process_security_policy_browsertest.cc",
     "../browser/closewatcher/close_listener_host_browsertest.cc",

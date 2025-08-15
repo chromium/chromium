@@ -86,7 +86,7 @@ class CacheStorageCacheEntryHandler {
              int bytes_to_read,
              base::OnceCallback<void(int)> callback);
 
-    int GetSize(CacheStorageCache::EntryIndex disk_cache_index) const;
+    int64_t GetSize(CacheStorageCache::EntryIndex disk_cache_index) const;
 
     void Invalidate();
 
