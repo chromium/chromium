@@ -103,7 +103,8 @@ import java.util.List;
 @EnableFeatures({ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END})
 @DisableFeatures({
     ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-    ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
+    ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS
 })
 public class CompositorViewHolderUnitTest {
     // Since these tests don't depend on the heights being pixels, we can use these as dpi directly.
