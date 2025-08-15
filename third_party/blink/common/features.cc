@@ -1784,7 +1784,12 @@ BASE_FEATURE(kLowLatencyWebGLImageChromium,
 
 BASE_FEATURE(kLowPriorityAsyncScriptExecution,
              "LowPriorityAsyncScriptExecution",
+// TODO(crbug/429069717): Fix the high power consumption on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
 );
 
 BASE_FEATURE_PARAM(base::TimeDelta,

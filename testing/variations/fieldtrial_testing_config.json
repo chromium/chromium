@@ -15072,7 +15072,7 @@
         {
             "platforms": [
                 "android",
-                "chromeos",
+                "android_webview",
                 "linux",
                 "mac",
                 "windows"
