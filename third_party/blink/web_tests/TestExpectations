@@ -9686,3 +9686,7 @@ crbug.com/436534724 external/wpt/resource-timing/tentative/document-initiated.ht
 
 # Gardener 2025-08-07
 crbug.com/435121429 external/wpt/web-animations/timing-model/animations/setting-the-start-time-of-an-animation.html [ Failure Pass ]
+
+# Gardener 2025-08-15
+crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/getCharacteristics/blocklisted-characteristics.https.window.js [ Failure Pass ]
+crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.js [ Failure Pass ]
