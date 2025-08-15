@@ -536,21 +536,11 @@ BASE_FEATURE_ENUM_PARAM(DelayAsyncScriptDelayType,
                         DelayAsyncScriptDelayType::kFinishedParsing,
                         &delay_async_script_execution_delay_types);
 
-const base::FeatureParam<DelayAsyncScriptTarget>::Option
-    delay_async_script_target_types[] = {
-        {DelayAsyncScriptTarget::kAll, "all"},
-        {DelayAsyncScriptTarget::kCrossSiteOnly, "cross_site_only"},
-        {DelayAsyncScriptTarget::kCrossSiteWithAllowList,
-         "cross_site_with_allow_list"},
-        {DelayAsyncScriptTarget::kCrossSiteWithAllowListReportOnly,
-         "cross_site_with_allow_list_report_only"},
-};
-BASE_FEATURE_ENUM_PARAM(DelayAsyncScriptTarget,
-                        kDelayAsyncScriptTargetParam,
-                        &kDelayAsyncScriptExecution,
-                        "delay_async_exec_target_site",
-                        DelayAsyncScriptTarget::kAll,
-                        &delay_async_script_target_types);
+BASE_FEATURE_PARAM(bool,
+                   kDelayAsyncScriptExecutionCrossSiteOnlyParam,
+                   &kDelayAsyncScriptExecution,
+                   "cross_site_only",
+                   false);
 
 // kDelayAsyncScriptExecution will delay executing async script at max
 // |delay_async_exec_delay_limit|.

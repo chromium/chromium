@@ -292,19 +292,9 @@ enum class DelayAsyncScriptDelayType {
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     DelayAsyncScriptDelayType,
     kDelayAsyncScriptExecutionDelayParam);
-enum class DelayAsyncScriptTarget {
-  kAll,
-  kCrossSiteOnly,
-  // Unlike other options (that are more like scheduling changes within the
-  // spec),  kCrossSiteWithAllowList and kCrossSiteWithAllowListReportOnly are
-  // used only for the ForceInOrder intervention.
-  // TODO(crbug.com/40231912): Remove these values when the ForceInOrder
-  // experiment is cleaned up.
-  kCrossSiteWithAllowList,
-  kCrossSiteWithAllowListReportOnly,
-};
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(DelayAsyncScriptTarget,
-                                               kDelayAsyncScriptTargetParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kDelayAsyncScriptExecutionCrossSiteOnlyParam);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kDelayAsyncScriptExecutionDelayLimitParam);

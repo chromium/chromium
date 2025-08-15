@@ -345,6 +345,15 @@ bool IsEligibleForDelay(const Resource& resource,
     return false;
   }
 
+  static const bool delay_async_script_execution_cross_site_only =
+      features::kDelayAsyncScriptExecutionCrossSiteOnlyParam.Get();
+  if (delay_async_script_execution_cross_site_only) {
+    // Cross-site scripts only.
+    if (IsSameSite(resource.Url(), element_document)) {
+      return false;
+    }
+  }
+
   // We don't delay async scripts that have matched a resource in the preload
   // cache, because we're using <link rel=preload> as a signal that the script
   // is higher-than-usual priority, and therefore should be executed earlier
@@ -425,24 +434,7 @@ bool IsEligibleForDelay(const Resource& resource,
       break;
   }
 
-  const features::DelayAsyncScriptTarget delay_async_script_target =
-      features::kDelayAsyncScriptTargetParam.Get();
-  switch (delay_async_script_target) {
-    case features::DelayAsyncScriptTarget::kAll:
-      return true;
-    case features::DelayAsyncScriptTarget::kCrossSiteOnly:
-      return !IsSameSite(resource.Url(), element_document);
-    case features::DelayAsyncScriptTarget::kCrossSiteWithAllowList:
-    case features::DelayAsyncScriptTarget::kCrossSiteWithAllowListReportOnly:
-      if (IsSameSite(resource.Url(), element_document)) {
-        return false;
-      }
-      DEFINE_STATIC_LOCAL(
-          UrlMatcher, url_matcher,
-          (UrlMatcher(GetFieldTrialParamByFeatureAsString(
-              features::kDelayAsyncScriptExecution, "delay_async_exec_allow_list", ""))));
-      return url_matcher.Match(resource.Url());
-  }
+  return true;
 }
 
 ScriptRunner::DelayReasons DetermineDelayReasonsToWait(
@@ -1096,21 +1088,6 @@ PendingScript* ScriptLoader::PrepareScript(
       // <spec step="31.3.2">Append el to scripts.</spec>
 
       {
-        // [Intervention, DelayAsyncScriptExecution, crbug.com/1340837]
-        // If the target is kCrossSiteWithAllowList or
-        // kCrossSiteWithAllowListReportOnly, record the metrics and override
-        // is_eligible_for_delay to be always false when
-        // kCrossSiteWithAllowListReportOnly.
-        if (is_eligible_for_delay &&
-            script_scheduling_type == ScriptSchedulingType::kAsync) {
-          const features::DelayAsyncScriptTarget delay_async_script_target =
-              features::kDelayAsyncScriptTargetParam.Get();
-          if (delay_async_script_target ==
-              features::DelayAsyncScriptTarget::
-                  kCrossSiteWithAllowListReportOnly) {
-            is_eligible_for_delay = false;
-          }
-        }
         // TODO(hiroshige): Here the context document is used as "node document"
         // while Step 14 uses |elementDocument| as "node document". Fix this.
         ScriptRunner* script_runner =
