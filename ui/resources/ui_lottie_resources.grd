@@ -27,6 +27,7 @@
         <structure type="lottie" name="IDR_AURA_CURSOR_ZOOM_IN_LOTTIE" file="vector/common/pointers/zoom_in.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_ZOOM_OUT_LOTTIE" file="vector/common/pointers/zoom_out.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_LOTTIE" file="vector/common/pointers/sb_horizontal_double_arrow.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_LOTTIE" file="vector/common/pointers/sb_vertical_double_arrow.json" compress="gzip" />
       </if>
     </structures>
   </release>
