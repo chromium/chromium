@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
@@ -44,10 +46,12 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/test_event_router_observer.h"
 #include "extensions/browser/test_image_loader.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/actions/actions.h"
@@ -2287,6 +2291,142 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   EXPECT_FALSE(global_registry()->active_entry().has_value());
 }
 
+class ExtensionOnOpenedEventSidePanelBrowserTest
+    : public ExtensionSidePanelBrowserTest {
+ protected:
+  const Extension* CreateOnOpenedTestExtension(
+      const std::string& message_to_send = "\"panel_opened\"") {
+    test_dirs_.emplace_back();
+    TestExtensionDir& test_dir = test_dirs_.back();
+
+    test_dir.WriteFile(FILE_PATH_LITERAL("panel.html"), "<html></html>");
+    test_dir.WriteFile(FILE_PATH_LITERAL("manifest.json"), R"({
+      "name": "Side Panel onOpened Test",
+      "version": "1.0", "manifest_version": 3,
+      "permissions": ["sidePanel"],
+      "background": { "service_worker": "background.js" }
+    })");
+    test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                       base::StringPrintf(R"(
+      chrome.sidePanel.onOpened.addListener((openInfo) => {
+        chrome.test.sendMessage(%s);
+      });
+      chrome.test.sendMessage("ready");
+    )",
+                                          message_to_send.c_str()));
+
+    ExtensionTestMessageListener ready_listener("ready");
+    const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+    if (!extension || !ready_listener.WaitUntilSatisfied()) {
+      return nullptr;
+    }
+    return extension;
+  }
+
+ private:
+  std::vector<TestExtensionDir> test_dirs_;
+};
+
+// Tests that onOpened fires when the panel is opened for the first time.
+IN_PROC_BROWSER_TEST_F(ExtensionOnOpenedEventSidePanelBrowserTest,
+                       OnOpened_FiresOnShow) {
+  const Extension* extension = CreateOnOpenedTestExtension();
+  ASSERT_TRUE(extension);
+
+  // Set up a listener for the message from the extension's onOpened event.
+  ExtensionTestMessageListener opened_listener("panel_opened");
+
+  // Enable the panel and show it.
+  RunSetOptions(*extension, GetCurrentTabId(), "panel.html", /*enabled=*/true);
+  side_panel_coordinator()->Show(GetKey(extension->id()));
+
+  // Assert that the onOpened event fired and our listener received the message.
+  EXPECT_TRUE(opened_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+}
+
+// Tests that onOpened is NOT fired when switching back to a tab where the panel
+// was already open.
+IN_PROC_BROWSER_TEST_F(ExtensionOnOpenedEventSidePanelBrowserTest,
+                       OnOpened_NotFiredOnTabSwitch) {
+  const Extension* extension = CreateOnOpenedTestExtension();
+  ASSERT_TRUE(extension);
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+
+  // Set up a listener for the message from the onOpened event.
+  ExtensionTestMessageListener opened_listener("panel_opened");
+
+  // Show the panel on the first tab.
+  RunSetOptions(*extension, GetCurrentTabId(), "panel.html", /*enabled=*/true);
+  side_panel_coordinator()->Show(extension_key);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Verify the onOpened event fired for this initial opening.
+  ASSERT_TRUE(opened_listener.WaitUntilSatisfied());
+
+  // Open a new tab, which hides the panel.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Set up a new observer to capture events from this point forward.
+  TestEventRouterObserver observer(EventRouter::Get(profile()));
+
+  // Switch back to the first tab. The panel should reopen.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Verify that the onOpened event key is NOT in the dispatched events.
+  EXPECT_EQ(0, observer.dispatched_events().count(
+                   api::side_panel::OnOpened::kEventName));
+}
+
+// Tests that the sidePanel.onOpened event fires with the correct event payload.
+IN_PROC_BROWSER_TEST_F(ExtensionOnOpenedEventSidePanelBrowserTest,
+                       OnOpened_FiresWithCorrectEventPayload) {
+  // Create an extension that sends the event payload as a JSON string when the
+  // onOpened event fires.
+  const Extension* extension = CreateOnOpenedTestExtension(
+      /*message_to_send=*/"JSON.stringify(openInfo)");
+  ASSERT_TRUE(extension);
+
+  // Listen for the message from the extension.
+  ExtensionTestMessageListener opened_listener;
+
+  // Enable and show the side panel.
+  RunSetOptions(*extension, GetCurrentTabId(), "panel.html", /*enabled=*/true);
+  side_panel_coordinator()->Show(GetKey(extension->id()));
+
+  // Wait for the onOpened event to fire and send its message.
+  ASSERT_TRUE(opened_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Parse the JSON string received from the extension.
+  std::optional<base::Value> value =
+      base::JSONReader::Read(opened_listener.message());
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_dict());
+  const base::Value::Dict& open_info = value->GetDict();
+
+  // Verify that the `tabId` from the event payload matches where the panel was
+  // opened.
+  std::optional<int> tab_id_from_event = open_info.FindInt("tabId");
+  ASSERT_TRUE(tab_id_from_event.has_value());
+  EXPECT_EQ(GetCurrentTabId(), tab_id_from_event.value());
+
+  // Verify that the `windowId` from the event payload matches where the panel
+  // was opened.
+  std::optional<int> window_id_from_event = open_info.FindInt("windowId");
+  ASSERT_TRUE(window_id_from_event.has_value());
+  EXPECT_EQ(GetCurrentWindowId(), window_id_from_event.value());
+
+  // Verify that the `path` from the event payload matches the path set for the
+  // panel.
+  const std::string* path_from_event = open_info.FindString("path");
+  ASSERT_TRUE(path_from_event);
+  EXPECT_EQ("/panel.html", *path_from_event);
+}
 // TODO(crbug.com/40243760): Add a test here which requires a browser in
 // ExtensionViewHost for both global and contextual extension entries. One
 // example of this is having a link in the page that the user can open in a new
