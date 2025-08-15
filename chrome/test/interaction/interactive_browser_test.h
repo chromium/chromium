@@ -268,6 +268,12 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       ui::ElementIdentifier webcontents_id,
       const DeepQuery& where);
 
+  // Similar to EnsureNotPresent, but succeeds if the element is either not
+  // present, or present and not visible.
+  [[nodiscard]] static StepBuilder EnsureNotVisible(
+      ui::ElementIdentifier webcontents_id,
+      const DeepQuery& where);
+
   // How to execute JavaScript when calling ExecuteJs() and ExecuteJsAt().
   enum class ExecuteJsMode {
     // Ensures that the code sent to the renderer completes without error before

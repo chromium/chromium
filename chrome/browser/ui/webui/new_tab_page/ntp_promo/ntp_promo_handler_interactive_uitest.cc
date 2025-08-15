@@ -154,10 +154,7 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
         break;
       case Eligibility::kCompleted:
         steps += WaitForActionIcon("ntp-promo:completed");
-        steps += CheckJsResultAt(
-            kNtpElementId, GetActionButtonPath(),
-            "el => el && el.checkVisibility({visibilityProperty: true})",
-            false);
+        steps += EnsureNotVisible(kNtpElementId, GetActionButtonPath());
         break;
       case Eligibility::kIneligible:
         NOTREACHED();

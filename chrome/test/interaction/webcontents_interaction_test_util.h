@@ -358,7 +358,7 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
   // Returns true if there is an element at `query`, false otherwise. If
   // `not_found` is not null, it will receive the value of the element not
   // found, or an empty string if the function returns true.
-  bool Exists(const DeepQuery& query, std::string* not_found = nullptr);
+  bool Exists(const DeepQuery& query, std::string* not_found = nullptr) const;
 
   // Evaluates `function` on the element returned by finding the element at
   // `where`; throw an error if `where` doesn't exist or capture with a second

@@ -775,12 +775,16 @@ void WebContentsInteractionTestUtil::SendEventOnStateChange(
 }
 
 bool WebContentsInteractionTestUtil::Exists(const DeepQuery& query,
-                                            std::string* not_found) {
+                                            std::string* not_found) const {
   const std::string full_query =
       CreateDeepQuery(query, GetExistsQuery("err.selector", "''"));
-  const std::string result = Evaluate(full_query).GetString();
-  if (not_found)
+  // Const cast is safe as the query cannot modify the WebContents.
+  const std::string result = const_cast<WebContentsInteractionTestUtil*>(this)
+                                 ->Evaluate(full_query)
+                                 .GetString();
+  if (not_found) {
     *not_found = result;
+  }
   return result.empty();
 }
 

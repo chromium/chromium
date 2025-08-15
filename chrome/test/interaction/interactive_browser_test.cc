@@ -48,6 +48,25 @@
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/views_delegate.h"
 
+namespace {
+
+// Checks that an element is visible in a non-empty region of the viewport.
+// Perhaps look into using checkVisibility() in the future, but this approach
+// seems most robust.
+constexpr char kElementVisibilityQuery[] =
+    R"(
+  function(el) {
+    const rect = el.getBoundingClientRect();
+    const left = Math.max(0, rect.x);
+    const top = Math.max(0, rect.y);
+    const right = Math.min(rect.x + rect.width, window.innerWidth);
+    const bottom = Math.min(rect.y + rect.height, window.innerHeight);
+    return right > left && bottom > top;
+  }
+)";
+
+}  // namespace
+
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(InteractiveBrowserTestApi,
                                        kDefaultWaitForJsResultEvent);
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(InteractiveBrowserTestApi,
@@ -591,6 +610,19 @@ InteractiveBrowserTestApi::EnsureNotPresent(
   return builder;
 }
 
+ui::InteractionSequence::StepBuilder
+InteractiveBrowserTestApi::EnsureNotVisible(
+    ui::ElementIdentifier webcontents_id,
+    const DeepQuery& where) {
+  return IfElement(
+      webcontents_id,
+      [where](const ui::TrackedElement* el) {
+        return el->AsA<TrackedElementWebContents>()->owner()->Exists(where);
+      },
+      Then(CheckJsResultAt(webcontents_id, where, kElementVisibilityQuery,
+                           false)));
+}
+
 // static
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJs(
     ui::ElementIdentifier webcontents_id,
@@ -746,21 +778,10 @@ InteractiveBrowserTestApi::WaitForElementVisible(
     ui::ElementIdentifier web_contents,
     const DeepQuery& where) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWaitforElementVisibleCompleteEvent);
-  const std::string function =
-      R"(
-        function(el) {
-          const rect = el.getBoundingClientRect();
-          const left = Math.max(0, rect.x);
-          const top = Math.max(0, rect.y);
-          const right = Math.min(rect.x + rect.width, window.innerWidth);
-          const bottom = Math.min(rect.y + rect.height, window.innerHeight);
-          return right > left && bottom > top;
-        }
-      )";
 
   StateChange change;
   change.event = kWaitforElementVisibleCompleteEvent;
-  change.test_function = function;
+  change.test_function = kElementVisibilityQuery;
   change.type = StateChange::Type::kExistsAndConditionTrue;
   change.where = where;
 

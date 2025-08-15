@@ -129,6 +129,7 @@ Verbs fall into a number of different categories:
   [Browser].
     - `EnsurePresent()`
     - `EnsureNotPresent()`
+    - `EnsureNotVisible()` [Interactive] (DOM elements only)
 - **Action** verbs simulate input to specific UI elements. You can often specify
   the type of input you want to simulate (keyboard, mouse, etc.) but you don't
   have to. Some of these (`ActivateSurface()`, `SendAccelerator()`) may flake in

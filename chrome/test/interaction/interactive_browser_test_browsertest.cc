@@ -125,6 +125,35 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
                       EnsureNotPresent(kWebContentsId, DeepQuery{"#select"})));
 }
 
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, EnsureNotVisible) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      // Element that is set to display: none.
+      ExecuteJsAt(kWebContentsId, DeepQuery{"#select"},
+                  "el => el.style.display = 'none'"),
+      EnsureNotVisible(kWebContentsId, DeepQuery({"#select"})),
+      // Element that has zero size.
+      ExecuteJsAt(kWebContentsId, DeepQuery{"p"},
+                  "el => { el.style.width = '0'; el.style.height = '0'; }"),
+      EnsureNotVisible(kWebContentsId, DeepQuery({"p"})),
+      // Element that is not present at all.
+      EnsureNotVisible(kWebContentsId, DeepQuery{"#doesNotExist"}));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       EnsureNotVisible_Fails) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequence(InstrumentTab(kWebContentsId),
+                      NavigateWebContents(kWebContentsId, url),
+                      EnsureNotVisible(kWebContentsId, DeepQuery{"#select"})));
+}
+
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, EnsurePresent_Fails) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   private_test_impl().set_aborted_callback_for_testing(aborted.Get());
