@@ -2,11 +2,11 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='log' interesting name='Atomic illegal' live_region_type=1
 ++android.widget.EditText clickable editable_text interesting hint='Autocomplete illegal'
 ++android.view.View role_description='log' interesting name='Busy illegal' live_region_type=1
-++android.view.View role_description='tree item' checkable clickable collection_item interesting name='Checked illegal' checked=1
+++android.view.View role_description='tree item' checkable clickable collection_item interesting content_description='Checked illegal' checked=1
 ++android.view.View interesting name='Current illegal' state_description='current item'
 ++android.view.View disabled interesting name='Disabled illegal'
-++android.view.View role_description='tree item' clickable collection_item expanded interesting name='Expanded illegal' expanded_state=3
-++android.widget.Button role_description='button' clickable interesting name='Haspopup illegal'
+++android.view.View role_description='tree item' clickable collection_item expanded interesting content_description='Expanded illegal' expanded_state=3
+++android.widget.Button role_description='button' clickable interesting content_description='Haspopup illegal'
 ++android.view.View content_invalid interesting name='Invalid illegal'
 ++android.view.View role_description='log' interesting name='Live illegal'
 ++android.app.Dialog role_description='dialog' interesting name='Modal illegal'
@@ -18,6 +18,6 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='log' interesting name='Relevant illegal' live_region_type=1
 ++android.widget.EditText clickable editable_text required interesting hint='Required illegal'
 ++android.view.View role_description='tree' collection hierarchical multiselectable interesting state_description='multiselectable, 1 of 1 selected.' item_count=1 row_count=1 selection_mode=2
-++++android.view.View role_description='tree item' clickable collection_item selected name='Selected illegal'
+++++android.view.View role_description='tree item' clickable collection_item selected content_description='Selected illegal'
 ++android.widget.GridView role_description='table' collection
-++++android.view.View role_description='column header' collection_item interesting table_header name='Sort illegal' row_span=1 column_span=1
+++++android.view.View role_description='column header' collection_item interesting table_header content_description='Sort illegal' row_span=1 column_span=1

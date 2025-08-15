@@ -2523,50 +2523,52 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
     return name_to_cache_.value();
   }
 
-  ax::mojom::NameFrom name_from = GetNameFrom();
-  const bool is_from_attribute_or_css =
-      name_from == ax::mojom::NameFrom::kAttribute ||
-      name_from == ax::mojom::NameFrom::kCssAltText;
-
-  // 1. If the accessible name comes from the node's content (e.g., inner text)
-  //    and not a specific attribute (like aria-label), it's considered part of
-  //    the main text.
-  // TODO(accessibility): Revisit the logic of mapping attributes to text. For
-  // example, relatedElement's name may not be appropriate for the text property
-  // and needs to be fixed.
-  if (!is_from_attribute_or_css) {
-    name_to_cache_ = AndroidNameTo::kText;
-    return name_to_cache_.value();
-  }
-
-  // Handle kCssAltText as a special case.
-  if (name_from == ax::mojom::NameFrom::kCssAltText) {
-    name_to_cache_ = AndroidNameTo::kContentDescription;
-    return name_to_cache_.value();
-  }
-
-  // 2. If the node gets its name from a container's title (e.g., a <figure>
-  //    with a <figcaption>), the name is considered a title, not regular text.
-  if (ui::IsContainerOnAndroid(GetRole())) {
-    name_to_cache_ = AndroidNameTo::kContainerTitle;
-    return name_to_cache_.value();
-  }
-
-  // 3. The following checks depend on a feature flag. If it's disabled, we
-  //    revert to the default behavior of mapping to the text property.
-  if (!base::FeatureList::IsEnabled(
-          features::kAccessibilityPopulateSupplementalDescriptionApi)) {
-    name_to_cache_ = AndroidNameTo::kText;
-    return name_to_cache_.value();
-  }
-
-  // 4. At this point, the name is from an attribute (like aria-label), so we
-  //    need to decide whether it should be a content description or a
-  //    supplemental one.
-  if (ui::SupportsNamingWithChildContent(GetRole())) {
-    name_to_cache_ = AndroidNameTo::kContentDescription;
-  } else {
-    name_to_cache_ = AndroidNameTo::kSupplementalDescription;
+  switch (GetNameFrom()) {
+    case ax::mojom::NameFrom::kAttribute:
+      if (ui::IsContainerOnAndroid(GetRole())) {
+        name_to_cache_ = AndroidNameTo::kContainerTitle;
+      } else if (ui::SupportsNamingWithChildContent(GetRole())) {
+        // TODO(crbug.com/438478760): Revisit kNameFromAttribute mapping to
+        // contentDescription logic.
+        // TODO(crbug.com/438477684): Nodes with role images that have a name
+        // coming from kAttribute should also be setting
+        // `AndroidNameTo::kContentDescription`.
+        name_to_cache_ = AndroidNameTo::kContentDescription;
+      } else if (base::FeatureList::IsEnabled(
+                     features::
+                         kAccessibilityPopulateSupplementalDescriptionApi)) {
+        name_to_cache_ = AndroidNameTo::kSupplementalDescription;
+      } else {
+        // TODO(accessibility): remove this path once we roll out supplemental
+        // descriptions.
+        name_to_cache_ = AndroidNameTo::kText;
+      }
+      break;
+    case ax::mojom::NameFrom::kCssAltText:
+      name_to_cache_ = AndroidNameTo::kContentDescription;
+      break;
+    case ax::mojom::NameFrom::kNone:
+    case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
+    case ax::mojom::NameFrom::kCaption:
+    case ax::mojom::NameFrom::kContents:
+    case ax::mojom::NameFrom::kPlaceholder:
+    case ax::mojom::NameFrom::kRelatedElement:
+    case ax::mojom::NameFrom::kProhibited:
+    case ax::mojom::NameFrom::kProhibitedAndRedundant:
+    case ax::mojom::NameFrom::kTitle:
+    case ax::mojom::NameFrom::kValue:
+    case ax::mojom::NameFrom::kPopoverTarget:
+    case ax::mojom::NameFrom::kInterestFor:
+      // If the accessible name comes from the node's content (e.g., inner
+      // text)
+      //    and not a specific attribute (like aria-label), it's considered
+      //    part of the main text.
+      // TODO(accessibility): Revisit the logic of mapping attributes to text.
+      // For example, relatedElement's name may not be appropriate for the text
+      // property and needs to be fixed. For now, let them fall through the
+      // default case and return to map to the text property.
+      name_to_cache_ = AndroidNameTo::kText;
+      break;
   }
   return name_to_cache_.value();
 }
