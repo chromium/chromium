@@ -209,9 +209,9 @@ void IconImage::LoadImageForScaleAsync(float scale) {
     const ImageLoader::ImageRepresentation::ResizeCondition resize_condition =
         keep_original_size_ ? ImageLoader::ImageRepresentation::NEVER_RESIZE
                             : ImageLoader::ImageRepresentation::ALWAYS_RESIZE;
-    info_list.push_back(ImageLoader::ImageRepresentation(
+    info_list.emplace_back(
         resource, resize_condition,
-        gfx::Size(resource_size_in_pixel, resource_size_in_pixel), scale));
+        gfx::Size(resource_size_in_pixel, resource_size_in_pixel), scale);
 
     extensions::ImageLoader* loader =
         extensions::ImageLoader::Get(browser_context_);
