@@ -67,6 +67,9 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
         user_provided_card_save_and_fill_details) {
   switch (user_decision) {
     case CardSaveAndFillDialogUserDecision::kAccepted: {
+      if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
+        strike_database->ClearStrikes();
+      }
       CreditCard card_save_candidate;
       PopulateCreditCardInfo(card_save_candidate,
                              user_provided_card_save_and_fill_details);
@@ -91,7 +94,9 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
       break;
     }
     case CardSaveAndFillDialogUserDecision::kDeclined:
-      GetSaveAndFillStrikeDatabase()->AddStrike();
+      if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
+        strike_database->AddStrike();
+      }
       break;
   }
   fill_card_callback_.Reset();
@@ -229,6 +234,9 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
   switch (user_decision) {
     case CardSaveAndFillDialogUserDecision::kAccepted:
       upload_save_and_fill_dialog_accepted_ = true;
+      if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
+        strike_database->ClearStrikes();
+      }
       PopulateCreditCardInfo(upload_details_.card,
                              user_provided_card_save_and_fill_details);
       if (fill_card_callback_) {
@@ -241,7 +249,9 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
       }
       break;
     case CardSaveAndFillDialogUserDecision::kDeclined:
-      GetSaveAndFillStrikeDatabase()->AddStrike();
+      if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
+        strike_database->AddStrike();
+      }
       break;
   }
 

@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
@@ -206,6 +207,14 @@ TEST_F(SaveAndFillManagerImplTest, OfferLocalSaveAndFill_ShowsLocalDialog) {
 }
 
 TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Accepted) {
+  // Disable StrikeDB check so it will not block feature prompt.
+  base::test::ScopedFeatureList feature_list(
+      features::kDisableAutofillStrikeSystem);
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+  // Add an existing strike.
+  save_and_fill_strike_database.AddStrike();
+  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
+
   EXPECT_CALL(
       *payments_autofill_client_,
       ShowCreditCardLocalSaveAndFillDialog(
@@ -247,6 +256,9 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Accepted) {
             card_to_fill.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(ASCIIToUTF16(test::NextYear()),
             card_to_fill.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+
+  // Make sure that all strikes are cleared upon user acceptance.
+  EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());
 }
 
 TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Declined) {
@@ -580,6 +592,14 @@ TEST_F(SaveAndFillManagerImplTest,
 }
 
 TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
+  // Disable StrikeDB check so it will not block feature prompt.
+  base::test::ScopedFeatureList feature_list(
+      features::kDisableAutofillStrikeSystem);
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+  // Add an existing strike.
+  save_and_fill_strike_database.AddStrike();
+  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
+
   save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
       true);
   SetUpGetDetailsForCreateCardResponse(
@@ -620,6 +640,9 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
   EXPECT_EQ(ASCIIToUTF16(test::NextYear()),
             card_to_fill.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
   EXPECT_EQ(u"456", card_to_fill.cvc());
+
+  // Make sure that all strikes are cleared upon user acceptance.
+  EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());
 }
 
 TEST_F(SaveAndFillManagerImplTest, CardUploadFeedback_UploadSucceeded) {
