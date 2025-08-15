@@ -1964,6 +1964,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SyntheticResponse.IsHeaderStored" enum="Boolean"
+    expires_after="2025-08-31">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records whether the response headers are successfully stored to the memory.
+
+    This is recorded in navigation, when the browser receives the response from
+    the network, and there is no stored header locally yet for the synthetic
+    response.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SyntheticResponse.ReloadReason"
     enum="SyntheticResponseReloadReason" expires_after="2025-08-31">
   <owner>sisidovski@chromium.org</owner>

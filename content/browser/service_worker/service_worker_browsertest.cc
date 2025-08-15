@@ -7810,6 +7810,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
       static_cast<int>(ServiceWorkerMetrics::SyntheticResponseEligibility::
                            kNotEligibleByNoHeaderStored),
       1);
+  histogram_tester().ExpectBucketCount(
+      "ServiceWorker.SyntheticResponse.IsHeaderStored", true, 1);
 
   // The second navigation. The browser should have stored the response header
   // from the previous navigation, and receive the response header locally.
