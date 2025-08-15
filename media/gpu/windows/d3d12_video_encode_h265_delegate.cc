@@ -454,7 +454,9 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
         pic_params_.PictureOrderCountNumber, update_buffer.value(), false);
   }
 
-  svc_layers_->PostEncode(0);
+  if (svc_layers_) {
+    svc_layers_->PostEncode(0);
+  }
 
   metadata_.key_frame = is_keyframe;
   metadata_.qp = qp;

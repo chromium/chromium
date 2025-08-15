@@ -169,6 +169,18 @@ D3D12VideoEncodeDelegateTestBase::CreateResource(
   return input_frame;
 }
 
+void D3D12VideoEncodeDelegateTestBase::EnableFeature(
+    const base::Feature& feature) {
+  scoped_feature_list_.emplace();
+  scoped_feature_list_->InitAndEnableFeature(feature);
+}
+
+void D3D12VideoEncodeDelegateTestBase::DisableFeature(
+    const base::Feature& feature) {
+  scoped_feature_list_.emplace();
+  scoped_feature_list_->InitAndDisableFeature(feature);
+}
+
 class D3D12VideoEncodeDelegateTest : public D3D12VideoEncodeDelegateTestBase {
  protected:
   void SetUp() override {

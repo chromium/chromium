@@ -268,11 +268,14 @@ size_t D3D12VideoEncodeH264Delegate::GetMaxNumOfRefFrames() const {
 
 size_t D3D12VideoEncodeH264Delegate::GetMaxNumOfManualRefBuffers() const {
   // We should have initialized.
-  CHECK_GT(max_num_ref_frames_, 0u);
+  CHECK_GT(max_num_ref_frames_, 1u);
+
+  // Same as L1Tx modes, we must reserve 1 DPB slot internally for handling
+  // frame_num gap.
   if (disable_non_reference_frames_) {
-    return max_num_ref_frames_ - 1;
+    return max_num_ref_frames_ - 2;
   }
-  return max_num_ref_frames_;
+  return max_num_ref_frames_ - 1;
 }
 
 bool D3D12VideoEncodeH264Delegate::SupportsRateControlReconfiguration() const {
@@ -582,7 +585,9 @@ D3D12VideoEncodeH264Delegate::EncodeImpl(
   }
 
   reference_frame_manager_.ProcessMemoryManagementControlOperation(pic_params_);
-  svc_layers_->PostEncode(0);
+  if (svc_layers_) {
+    svc_layers_->PostEncode(0);
+  }
 
   metadata_.key_frame = is_keyframe;
   metadata_.qp = qp;
@@ -623,6 +628,13 @@ EncoderStatus D3D12VideoEncodeH264Delegate::InitializeVideoEncoder(
       ++max_num_ref_frames_;
     }
 
+    // For H.264, when decoder selects to decode "base-layer" frames, there may
+    // be frame_num gaps during decoding. Although during encoding we use long
+    // references only, we must signal 1 extra DPB slot besides those used by
+    // LTRPs, to allow the sliding window picture marking for the non-existing
+    // reference pictures.
+    ++max_num_ref_frames_;
+
     if (picture_control_support_h264.MaxDPBCapacity < max_num_ref_frames_) {
       return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
               base::StringPrintf(
@@ -631,6 +643,12 @@ EncoderStatus D3D12VideoEncodeH264Delegate::InitializeVideoEncoder(
                   max_num_ref_frames_)};
     }
   } else {
+    if (picture_control_support_h264.MaxDPBCapacity < 2) {
+      return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
+              base::StringPrintf("D3D12VideoEncoder require DPB size >=2 to "
+                                 "support manual reference control, got %u",
+                                 picture_control_support_h264.MaxDPBCapacity)};
+    }
     max_num_ref_frames_ = picture_control_support_h264.MaxDPBCapacity;
   }
 
@@ -904,7 +922,7 @@ H264SPS D3D12VideoEncodeH264Delegate::ToSPS() const {
   sps.log2_max_pic_order_cnt_lsb_minus4 =
       gop_structure_.log2_max_pic_order_cnt_lsb_minus4;
   sps.max_num_ref_frames = max_num_ref_frames_;
-  sps.gaps_in_frame_num_value_allowed_flag = svc_layers_.has_value();
+  sps.gaps_in_frame_num_value_allowed_flag = true;
   constexpr int kMbSize = 16;
   sps.pic_width_in_mbs_minus1 = (input_size_.Width + kMbSize - 1) / kMbSize - 1;
   sps.pic_height_in_map_units_minus1 =
