@@ -13,6 +13,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_util.h"
@@ -131,6 +132,7 @@ class WKContentRuleListProviderTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<WKContentRuleListProvider> provider_;
   std::set<WKContentRuleListProvider::RuleListKey> tracked_keys_;
 };
@@ -145,6 +147,35 @@ TEST_F(WKContentRuleListProviderTest, CreationAndRemoval) {
   // 2. Remove the list.
   EXPECT_TRUE(RemoveRuleListSync(key));
   EXPECT_TRUE(CheckStoreForRuleListSync(key, /*expect_found=*/false));
+}
+
+// Tests UMA logging for successful creation and removal.
+TEST_F(WKContentRuleListProviderTest, UMA_CreationAndRemovalSuccess) {
+  const std::string key = "uma_test_key";
+  ASSERT_TRUE(UpdateRuleListSync(key, kValidTestRuleListJson));
+
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.ContentRuleListProvider.Compile.Success." + key, true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "IOS.ContentRuleListProvider.Compile.Time." + key, 1);
+
+  ASSERT_TRUE(RemoveRuleListSync(key));
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.ContentRuleListProvider.Remove.Success." + key, true, 1);
+}
+
+// Tests UMA logging for a failed compilation.
+TEST_F(WKContentRuleListProviderTest, UMA_CreationFailure) {
+  const std::string key = "uma_test_key";
+  TestFuture<NSError*> future;
+  provider_->UpdateRuleList(key, kInvalidTestRuleListJson,
+                            future.GetCallback());
+  ASSERT_NE(nil, future.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.ContentRuleListProvider.Compile.Success." + key, false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "IOS.ContentRuleListProvider.Compile.Time." + key, 0);
 }
 
 // Tests that an existing list can be successfully updated.
@@ -197,7 +228,7 @@ TEST_F(WKContentRuleListProviderTest, UpdateFailureDoesNotAffectExistingLists) {
 
 // Tests that the JSON from CreateLocalBlockingJsonRuleList compiles.
 TEST_F(WKContentRuleListProviderTest, StaticBlockLocalListCompiles) {
-  const std::string key = "static_block_key";
+  const std::string key = "BlockLocalResources";
   std::string rules =
       base::SysNSStringToUTF8(CreateLocalBlockingJsonRuleList());
   EXPECT_TRUE(UpdateRuleListSync(key, rules));
@@ -206,7 +237,7 @@ TEST_F(WKContentRuleListProviderTest, StaticBlockLocalListCompiles) {
 
 // Tests that the JSON from CreateMixedContentAutoUpgradeJsonRuleList compiles.
 TEST_F(WKContentRuleListProviderTest, StaticMixedContentListCompiles) {
-  const std::string key = "static_mixed_content_key";
+  const std::string key = "MixedContentUpgrade";
   std::string rules =
       base::SysNSStringToUTF8(CreateMixedContentAutoUpgradeJsonRuleList());
   EXPECT_TRUE(UpdateRuleListSync(key, rules));

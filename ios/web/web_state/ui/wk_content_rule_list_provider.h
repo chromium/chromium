@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 
 @class NSError;
 @class WKContentRuleList;
@@ -71,6 +72,7 @@ class WKContentRuleListProvider {
   // WKContentRuleListStore.
   void OnRuleListCompiled(RuleListKey key,
                           OperationCallback callback,
+                          base::TimeTicks start_time,
                           WKContentRuleList* rule_list,
                           NSError* error);
 

@@ -33,7 +33,7 @@ class ScriptBlockingRuleApplierService
   // The unique identifier for the script blocking rule list managed by this
   // service. This key is passed to the ContentRuleListManager used by this
   // service, which is associated with a profile.
-  static constexpr char kScriptBlockingRuleListKey[] = "script_blocking_rules";
+  static constexpr char kScriptBlockingRuleListKey[] = "ScriptBlockingRules";
 
   ScriptBlockingRuleApplierService(
       web::ContentRuleListManager& content_rule_list_manager,

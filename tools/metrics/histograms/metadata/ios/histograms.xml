@@ -43,6 +43,12 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h:ContextualPanelItemType) -->
 
+<variants name="IOSContentRuleListProviderRuleListKeyVariant">
+  <variant name="BlockLocalResources"/>
+  <variant name="MixedContentUpgrade"/>
+  <variant name="ScriptBlockingRules"/>
+</variants>
+
 <variants name="IOSSaveToDriveQueryTypeVariant">
   <variant name="CreateFolder"
       summary="Recorded once when a query to create a Drive folder returns a
@@ -465,15 +471,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.ContentRuleListProviderUpdateSuccess"
-    enum="BooleanSuccess" expires_after="2020-12-31">
-  <owner>rkgibson@google.com</owner>
-  <owner>gambard@chromium.org</owner>
+<histogram name="IOS.ContentRuleListProvider.Compile.Success.{RuleListKey}"
+    enum="BooleanSuccess" expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
-    When the content rule list provider updates its lists, this can succeed or
-    fail. Failure occurs when the rule lists are updated again before the first
-    update finishes.
+    Records the success of compiling a WKContentRuleList. {RuleListKey} is the
+    unique identifier for the list being compiled.
   </summary>
+  <token key="RuleListKey"
+      variants="IOSContentRuleListProviderRuleListKeyVariant"/>
+</histogram>
+
+<histogram name="IOS.ContentRuleListProvider.Compile.Time.{RuleListKey}"
+    units="ms" expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the time taken to compile a WKContentRuleList. {RuleListKey} is the
+    unique identifier for the list being compiled.
+  </summary>
+  <token key="RuleListKey"
+      variants="IOSContentRuleListProviderRuleListKeyVariant"/>
+</histogram>
+
+<histogram name="IOS.ContentRuleListProvider.Remove.Success.{RuleListKey}"
+    enum="BooleanSuccess" expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the success of removing a WKContentRuleList. {RuleListKey} is the
+    unique identifier for the list being removed.
+  </summary>
+  <token key="RuleListKey"
+      variants="IOSContentRuleListProviderRuleListKeyVariant"/>
 </histogram>
 
 <histogram name="IOS.ContextMenu.ImagePreviewDisplayed" enum="BooleanSuccess"

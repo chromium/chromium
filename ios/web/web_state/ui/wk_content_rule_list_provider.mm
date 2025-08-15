@@ -9,9 +9,11 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 
 namespace web {
 
@@ -43,9 +45,10 @@ void WKContentRuleListProvider::UpdateRuleList(RuleListKey key,
   NSString* rules = base::SysUTF8ToNSString(json_rules);
 
   void (^completion_handler)(WKContentRuleList*, NSError*) =
-      base::CallbackToBlock(base::BindOnce(
-          &WKContentRuleListProvider::OnRuleListCompiled,
-          weak_ptr_factory_.GetWeakPtr(), key, std::move(callback)));
+      base::CallbackToBlock(
+          base::BindOnce(&WKContentRuleListProvider::OnRuleListCompiled,
+                         weak_ptr_factory_.GetWeakPtr(), key,
+                         std::move(callback), base::TimeTicks::Now()));
 
   [WKContentRuleListStore.defaultStore
       compileContentRuleListForIdentifier:identifier
@@ -97,8 +100,10 @@ void WKContentRuleListProvider::SetIdleCallbackForTesting(
 
 void WKContentRuleListProvider::OnRuleListCompiled(RuleListKey key,
                                                    OperationCallback callback,
+                                                   base::TimeTicks start_time,
                                                    WKContentRuleList* rule_list,
                                                    NSError* error) {
+  const base::TimeDelta duration = base::TimeTicks::Now() - start_time;
   // This case is not expected. WebKit should return either a list or an
   // error.
   if (!rule_list && !error) {
@@ -111,7 +116,13 @@ void WKContentRuleListProvider::OnRuleListCompiled(RuleListKey key,
                }];
   }
 
+  base::UmaHistogramBoolean(
+      "IOS.ContentRuleListProvider.Compile.Success." + key, error == nil);
+
   if (!error) {
+    base::UmaHistogramTimes("IOS.ContentRuleListProvider.Compile.Time." + key,
+                            duration);
+
     // If a list for this key already exists, it's an update. Remove the
     // old one from the controller before adding the new one.
     auto it = compiled_lists_.find(key);
@@ -140,6 +151,10 @@ void WKContentRuleListProvider::OnRuleListRemoved(RuleListKey key,
                 error.code == WKErrorContentRuleListStoreLookUpFailed)) {
     error = nil;
   }
+
+  base::UmaHistogramBoolean("IOS.ContentRuleListProvider.Remove.Success." + key,
+                            error == nil);
+
   // Only remove from the internal map on success.
   if (!error) {
     compiled_lists_.erase(key);

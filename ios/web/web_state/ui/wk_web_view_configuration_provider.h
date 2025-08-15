@@ -29,10 +29,8 @@ class BrowserState;
 class WKContentRuleListProvider;
 
 // Keys for the static content rule lists managed by this provider.
-inline constexpr char kBlockLocalResourcesRuleListKey[] =
-    "block_local_resources";
-inline constexpr char kMixedContentUpgradeRuleListKey[] =
-    "mixed_content_upgrade";
+inline constexpr char kBlockLocalResourcesRuleListKey[] = "BlockLocalResources";
+inline constexpr char kMixedContentUpgradeRuleListKey[] = "MixedContentUpgrade";
 
 // A provider class associated with a single web::BrowserState object. Manages
 // the lifetime and performs setup of WKWebViewConfiguration and instances. Not
