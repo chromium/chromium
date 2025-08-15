@@ -43,5 +43,5 @@
 
     attribute EventHandler onresize;
     attribute EventHandler onscroll;
-    [RuntimeEnabled=VisualViewportOnScrollEnd] attribute EventHandler onscrollend;
+    attribute EventHandler onscrollend;
 };
