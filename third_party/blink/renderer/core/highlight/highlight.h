@@ -55,7 +55,7 @@ class CORE_EXPORT Highlight : public EventTarget, public HighlightSetIterable {
    public:
     explicit IterationSource(const Highlight& highlight);
 
-    bool FetchNextItem(ScriptState*, AbstractRange*&, ExceptionState&) override;
+    bool FetchNextItem(ScriptState*, AbstractRange*&) override;
 
     void Trace(blink::Visitor*) const override;
 
@@ -73,8 +73,7 @@ class CORE_EXPORT Highlight : public EventTarget, public HighlightSetIterable {
 
  private:
   HighlightSetIterable::IterationSource* CreateIterationSource(
-      ScriptState*,
-      ExceptionState&) override;
+      ScriptState*) override;
 
   HeapLinkedHashSet<Member<AbstractRange>> highlight_ranges_;
   int32_t priority_ = 0;

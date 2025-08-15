@@ -73,8 +73,7 @@ class MapIterationSource final
 
   bool FetchNextItem(ScriptState* script_state,
                      V8BufferSource*& key,
-                     V8MediaKeyStatus& value,
-                     ExceptionState&) override {
+                     V8MediaKeyStatus& value) override {
     // This simply advances an index and returns the next value if any,
     // so if the iterated object is mutated values may be skipped.
     if (current_ >= map_->size())
@@ -149,8 +148,7 @@ V8UnionMediaKeyStatusOrUndefined* MediaKeyStatusMap::get(
 }
 
 MediaKeyStatusMap::IterationSource* MediaKeyStatusMap::CreateIterationSource(
-    ScriptState*,
-    ExceptionState&) {
+    ScriptState*) {
   return MakeGarbageCollected<MapIterationSource>(this);
 }
 

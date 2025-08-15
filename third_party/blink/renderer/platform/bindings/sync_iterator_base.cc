@@ -6,9 +6,8 @@
 
 namespace blink::bindings {
 
-v8::Local<v8::Object> SyncIteratorBase::next(ScriptState* script_state,
-                                             ExceptionState& exception_state) {
-  return iteration_source_->Next(script_state, kind_, exception_state);
+v8::Local<v8::Object> SyncIteratorBase::next(ScriptState* script_state) {
+  return iteration_source_->Next(script_state, kind_);
 }
 
 void SyncIteratorBase::Trace(Visitor* visitor) const {

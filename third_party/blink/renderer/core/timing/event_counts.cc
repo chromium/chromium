@@ -19,8 +19,7 @@ class EventCountsIterationSource final
 
   bool FetchNextItem(ScriptState* script_state,
                      String& map_key,
-                     uint64_t& map_value,
-                     ExceptionState&) override {
+                     uint64_t& map_value) override {
     if (iterator_ == map_->Map().end())
       return false;
     map_key = iterator_->key;
@@ -95,14 +94,13 @@ EventCounts::EventCounts() {
 }
 
 PairSyncIterable<EventCounts>::IterationSource*
-EventCounts::CreateIterationSource(ScriptState*, ExceptionState&) {
+EventCounts::CreateIterationSource(ScriptState*) {
   return MakeGarbageCollected<EventCountsIterationSource>(*this);
 }
 
 bool EventCounts::GetMapEntry(ScriptState*,
                               const String& key,
-                              uint64_t& value,
-                              ExceptionState&) {
+                              uint64_t& value) {
   auto it = event_count_map_.find(AtomicString(key));
   if (it == event_count_map_.end())
     return false;

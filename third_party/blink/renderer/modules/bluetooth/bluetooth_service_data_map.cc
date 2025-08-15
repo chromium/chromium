@@ -18,8 +18,7 @@ class BluetoothServiceDataMapIterationSource final
 
   bool FetchNextItem(ScriptState* script_state,
                      String& map_key,
-                     NotShared<DOMDataView>& map_value,
-                     ExceptionState&) override {
+                     NotShared<DOMDataView>& map_value) override {
     if (iterator_ == map_->Map().end())
       return false;
     map_key = iterator_->key;
@@ -47,14 +46,13 @@ BluetoothServiceDataMap::BluetoothServiceDataMap(
 BluetoothServiceDataMap::~BluetoothServiceDataMap() {}
 
 PairSyncIterable<BluetoothServiceDataMap>::IterationSource*
-BluetoothServiceDataMap::CreateIterationSource(ScriptState*, ExceptionState&) {
+BluetoothServiceDataMap::CreateIterationSource(ScriptState*) {
   return MakeGarbageCollected<BluetoothServiceDataMapIterationSource>(*this);
 }
 
 bool BluetoothServiceDataMap::GetMapEntry(ScriptState*,
                                           const String& key,
-                                          NotShared<DOMDataView>& value,
-                                          ExceptionState&) {
+                                          NotShared<DOMDataView>& value) {
   auto it = parameter_map_.find(key);
   if (it == parameter_map_.end())
     return false;

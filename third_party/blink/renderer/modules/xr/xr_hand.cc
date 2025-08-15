@@ -25,8 +25,7 @@ class XRHandIterationSource final
 
   bool FetchNextItem(ScriptState*,
                      V8XRHandJoint& key,
-                     XRJointSpace*& value,
-                     ExceptionState&) override {
+                     XRJointSpace*& value) override {
     if (index_ >= V8XRHandJoint::kEnumSize)
       return false;
 
@@ -106,8 +105,7 @@ void XRHand::updateFromHandTrackingData(
 }
 
 XRHand::IterationSource* XRHand::CreateIterationSource(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+    ScriptState* script_state) {
   return MakeGarbageCollected<XRHandIterationSource>(joints_, this);
 }
 

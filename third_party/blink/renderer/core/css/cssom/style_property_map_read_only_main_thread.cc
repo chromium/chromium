@@ -32,8 +32,7 @@ class StylePropertyMapIterationSource final
 
   bool FetchNextItem(ScriptState*,
                      String& key,
-                     CSSStyleValueVector& value,
-                     ExceptionState&) override {
+                     CSSStyleValueVector& value) override {
     if (index_ >= values_.size()) {
       return false;
     }
@@ -133,8 +132,7 @@ bool StylePropertyMapReadOnlyMainThread::has(
 
 StylePropertyMapReadOnlyMainThread::IterationSource*
 StylePropertyMapReadOnlyMainThread::CreateIterationSource(
-    ScriptState* script_state,
-    ExceptionState&) {
+    ScriptState* script_state) {
   HeapVector<StylePropertyMapReadOnlyMainThread::StylePropertyMapEntry> result;
 
   ForEachProperty([&result](const CSSPropertyName& name,

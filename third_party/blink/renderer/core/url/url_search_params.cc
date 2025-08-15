@@ -27,10 +27,7 @@ class URLSearchParamsIterationSource final
   explicit URLSearchParamsIterationSource(URLSearchParams* params)
       : params_(params), current_(0) {}
 
-  bool FetchNextItem(ScriptState*,
-                     String& key,
-                     String& value,
-                     ExceptionState&) override {
+  bool FetchNextItem(ScriptState*, String& key, String& value) override {
     if (current_ >= params_->Params().size())
       return false;
 
@@ -331,7 +328,7 @@ scoped_refptr<EncodedFormData> URLSearchParams::ToEncodedFormData() const {
 }
 
 PairSyncIterable<URLSearchParams>::IterationSource*
-URLSearchParams::CreateIterationSource(ScriptState*, ExceptionState&) {
+URLSearchParams::CreateIterationSource(ScriptState*) {
   return MakeGarbageCollected<URLSearchParamsIterationSource>(this);
 }
 

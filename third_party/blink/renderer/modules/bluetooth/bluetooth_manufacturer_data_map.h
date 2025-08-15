@@ -39,11 +39,10 @@ class BluetoothManufacturerDataMap final
 
  private:
   PairSyncIterable<BluetoothManufacturerDataMap>::IterationSource*
-  CreateIterationSource(ScriptState*, ExceptionState&) override;
+  CreateIterationSource(ScriptState*) override;
   bool GetMapEntry(ScriptState*,
                    const uint16_t& key,
-                   NotShared<DOMDataView>& value,
-                   ExceptionState&) override;
+                   NotShared<DOMDataView>& value) override;
 
   MapType parameter_map_;
 };

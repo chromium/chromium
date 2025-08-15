@@ -21,8 +21,7 @@ class AudioParamMapIterationSource final
 
   bool FetchNextItem(ScriptState* scrip_state,
                      String& key,
-                     AudioParam*& audio_param,
-                     ExceptionState&) override {
+                     AudioParam*& audio_param) override {
     if (current_index_ >= parameter_names_.size()) {
       return false;
     }
@@ -48,14 +47,13 @@ AudioParamMap::AudioParamMap(
     : parameter_map_(parameter_map) {}
 
 PairSyncIterable<AudioParamMap>::IterationSource*
-AudioParamMap::CreateIterationSource(ScriptState*, ExceptionState&) {
+AudioParamMap::CreateIterationSource(ScriptState*) {
   return MakeGarbageCollected<AudioParamMapIterationSource>(parameter_map_);
 }
 
 bool AudioParamMap::GetMapEntry(ScriptState*,
                                 const String& key,
-                                AudioParam*& value,
-                                ExceptionState&) {
+                                AudioParam*& value) {
   auto it = parameter_map_.find(key);
   if (it == parameter_map_.end())
     return false;

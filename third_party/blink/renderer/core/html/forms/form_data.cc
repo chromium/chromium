@@ -57,8 +57,7 @@ class FormDataIterationSource final
 
   bool FetchNextItem(ScriptState* script_state,
                      String& name,
-                     V8FormDataEntryValue*& value,
-                     ExceptionState& exception_state) override {
+                     V8FormDataEntryValue*& value) override {
     if (current_ >= form_data_->size())
       return false;
 
@@ -352,8 +351,7 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
 }
 
 PairSyncIterable<FormData>::IterationSource* FormData::CreateIterationSource(
-    ScriptState*,
-    ExceptionState&) {
+    ScriptState*) {
   return MakeGarbageCollected<FormDataIterationSource>(this);
 }
 

@@ -14,8 +14,7 @@ class KeyboardLayoutMapIterationSource final
 
   bool FetchNextItem(ScriptState* script_state,
                      String& map_key,
-                     String& map_value,
-                     ExceptionState&) override {
+                     String& map_value) override {
     if (iterator_ == map_->Map().end())
       return false;
     map_key = iterator_->key;
@@ -39,14 +38,13 @@ KeyboardLayoutMap::KeyboardLayoutMap(const HashMap<String, String>& map)
     : layout_map_(map) {}
 
 PairSyncIterable<KeyboardLayoutMap>::IterationSource*
-KeyboardLayoutMap::CreateIterationSource(ScriptState*, ExceptionState&) {
+KeyboardLayoutMap::CreateIterationSource(ScriptState*) {
   return MakeGarbageCollected<KeyboardLayoutMapIterationSource>(*this);
 }
 
 bool KeyboardLayoutMap::GetMapEntry(ScriptState*,
                                     const String& key,
-                                    String& value,
-                                    ExceptionState&) {
+                                    String& value) {
   auto it = layout_map_.find(key);
   if (it == layout_map_.end())
     return false;

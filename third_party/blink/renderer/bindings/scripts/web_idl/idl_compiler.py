@@ -277,7 +277,6 @@ class IdlCompiler(object):
                     extended_attributes=ExtendedAttributesMutable([
                         ExtendedAttribute(key="CallWith",
                                           values="ScriptState"),
-                        ExtendedAttribute(key="RaisesException"),
                     ]),
                     component=component))
 

@@ -18,8 +18,7 @@ class FontFeatureValuesMapIterationSource final
 
   bool FetchNextItem(ScriptState* script_state,
                      String& map_key,
-                     Vector<uint32_t>& map_value,
-                     ExceptionState&) override {
+                     Vector<uint32_t>& map_value) override {
     if (!aliases_) {
       return false;
     }
@@ -49,15 +48,14 @@ uint32_t CSSFontFeatureValuesMap::size() const {
 }
 
 PairSyncIterable<CSSFontFeatureValuesMap>::IterationSource*
-CSSFontFeatureValuesMap::CreateIterationSource(ScriptState*, ExceptionState&) {
+CSSFontFeatureValuesMap::CreateIterationSource(ScriptState*) {
   return MakeGarbageCollected<FontFeatureValuesMapIterationSource>(*this,
                                                                    aliases_);
 }
 
 bool CSSFontFeatureValuesMap::GetMapEntry(ScriptState*,
                                           const String& key,
-                                          Vector<uint32_t>& value,
-                                          ExceptionState&) {
+                                          Vector<uint32_t>& value) {
   auto it = aliases_->find(AtomicString(key));
   if (it == aliases_->end()) {
     return false;

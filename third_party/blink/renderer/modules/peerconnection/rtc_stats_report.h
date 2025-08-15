@@ -29,18 +29,8 @@ class RTCStatsReport final : public ScriptWrappable,
 
   // Maplike<String, v8::Local<v8::Value>>
   PairSyncIterable<RTCStatsReport>::IterationSource* CreateIterationSource(
-      ScriptState*,
-      ExceptionState&) override;
-  bool GetMapEntry(ScriptState*,
-                   const String& key,
-                   ScriptObject&,
-                   ExceptionState&) override;
-
- private:
-  bool GetMapEntryIdl(ScriptState*,
-                      const String& key,
-                      ScriptObject&,
-                      ExceptionState&);
+      ScriptState*) override;
+  bool GetMapEntry(ScriptState*, const String& key, ScriptObject&) override;
 
   std::unique_ptr<RTCStatsReportPlatform> report_;
 };

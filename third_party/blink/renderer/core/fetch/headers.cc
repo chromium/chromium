@@ -28,8 +28,7 @@ void Headers::HeadersIterationSource::ResetHeaderList() {
 
 bool Headers::HeadersIterationSource::FetchNextItem(ScriptState* script_state,
                                                     String& key,
-                                                    String& value,
-                                                    ExceptionState& exception) {
+                                                    String& value) {
   // This simply advances an index and returns the next value if any;
   if (current_ >= headers_list_.size())
     return false;
@@ -376,8 +375,7 @@ void Headers::Trace(Visitor* visitor) const {
 }
 
 PairSyncIterable<Headers>::IterationSource* Headers::CreateIterationSource(
-    ScriptState*,
-    ExceptionState&) {
+    ScriptState*) {
   auto* iter = MakeGarbageCollected<HeadersIterationSource>(this);
   iterators_.insert(iter);
   return iter;

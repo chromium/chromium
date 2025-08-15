@@ -643,15 +643,13 @@ class RTCStatsReportIterationSource final
 
   bool FetchNextItem(ScriptState* script_state,
                      String& key,
-                     ScriptObject& object,
-                     ExceptionState& exception_state) override {
-    return FetchNextItemIdl(script_state, key, object, exception_state);
+                     ScriptObject& object) override {
+    return FetchNextItemIdl(script_state, key, object);
   }
 
   bool FetchNextItemIdl(ScriptState* script_state,
                         String& key,
-                        ScriptObject& object,
-                        ExceptionState& exception_state) {
+                        ScriptObject& object) {
     const bool expose_hardware_caps =
         ExposeHardwareCapabilityStats(script_state);
     const webrtc::RTCStats* rtc_stats = report_->NextStats();
@@ -686,15 +684,14 @@ uint32_t RTCStatsReport::size() const {
 }
 
 PairSyncIterable<RTCStatsReport>::IterationSource*
-RTCStatsReport::CreateIterationSource(ScriptState*, ExceptionState&) {
+RTCStatsReport::CreateIterationSource(ScriptState*) {
   return MakeGarbageCollected<RTCStatsReportIterationSource>(
       report_->CopyHandle());
 }
 
-bool RTCStatsReport::GetMapEntryIdl(ScriptState* script_state,
-                                    const String& key,
-                                    ScriptObject& object,
-                                    ExceptionState&) {
+bool RTCStatsReport::GetMapEntry(ScriptState* script_state,
+                                 const String& key,
+                                 ScriptObject& object) {
   const webrtc::RTCStats* stats = report_->stats_report().Get(key.Utf8());
   if (!stats) {
     return false;
@@ -707,13 +704,6 @@ bool RTCStatsReport::GetMapEntryIdl(ScriptState* script_state,
   }
   object = ScriptObject::From(script_state, v8_stats);
   return true;
-}
-
-bool RTCStatsReport::GetMapEntry(ScriptState* script_state,
-                                 const String& key,
-                                 ScriptObject& object,
-                                 ExceptionState& exception_state) {
-  return GetMapEntryIdl(script_state, key, object, exception_state);
 }
 
 }  // namespace blink

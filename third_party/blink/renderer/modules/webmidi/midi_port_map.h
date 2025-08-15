@@ -35,15 +35,14 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<InterfaceType> {
       const typename Entries::ValueType>;
 
   typename PairSyncIterable<InterfaceType>::IterationSource*
-  CreateIterationSource(ScriptState*, ExceptionState&) override {
+  CreateIterationSource(ScriptState*) override {
     return MakeGarbageCollected<MapIterationSource>(
         this, entries_.CheckedBegin(), entries_.CheckedEnd());
   }
 
   bool GetMapEntry(ScriptState*,
                    const String& key,
-                   ValueType*& value,
-                   ExceptionState&) override {
+                   ValueType*& value) override {
     // FIXME: This function is not O(1). Perhaps it's OK because in typical
     // cases not so many ports are connected.
     for (const auto& p : entries_) {
@@ -67,8 +66,7 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<InterfaceType> {
 
     bool FetchNextItem(ScriptState* script_state,
                        String& key,
-                       ValueType*& value,
-                       ExceptionState&) override {
+                       ValueType*& value) override {
       if (iterator_ == end_)
         return false;
       key = (*iterator_)->id();

@@ -20,9 +20,7 @@ class CustomStateIterationSource : public CustomStateSet::IterationSource {
     CustomStateSet::IterationSource::Trace(visitor);
   }
 
-  bool FetchNextItem(ScriptState*,
-                     String& out_value,
-                     ExceptionState&) override {
+  bool FetchNextItem(ScriptState*, String& out_value) override {
     if (index_ >= states_->list_.size())
       return false;
     out_value = states_->list_[index_++];
@@ -91,8 +89,7 @@ bool CustomStateSet::Has(const String& value) const {
 }
 
 CustomStateSet::IterationSource* CustomStateSet::CreateIterationSource(
-    ScriptState*,
-    ExceptionState&) {
+    ScriptState*) {
   auto* iterator = MakeGarbageCollected<CustomStateIterationSource>(*this);
   iterators_.insert(iterator);
   return iterator;

@@ -112,8 +112,7 @@ class CORE_EXPORT FormData final : public ScriptWrappable,
 
  private:
   void SetEntry(const Entry*);
-  IterationSource* CreateIterationSource(ScriptState*,
-                                         ExceptionState&) override;
+  IterationSource* CreateIterationSource(ScriptState*) override;
 
   TextEncoding encoding_;
   // Entry pointers in entries_ never be nullptr.

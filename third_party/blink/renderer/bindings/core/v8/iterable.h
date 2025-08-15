@@ -59,14 +59,10 @@ template <typename IDLKeyType,
 class PairSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
  public:
   v8::Local<v8::Object> Next(ScriptState* script_state,
-                             SyncIteratorBase::Kind kind,
-                             ExceptionState& exception_state) override {
+                             SyncIteratorBase::Kind kind) override {
     IDLTypeDefaultConstructible<KeyType> key;
     IDLTypeDefaultConstructible<ValueType> value;
-    if (!FetchNextItem(script_state, key.content, value.content,
-                       exception_state)) {
-      if (exception_state.HadException())
-        return {};
+    if (!FetchNextItem(script_state, key.content, value.content)) {
       return ESCreateIterResultObject(
           script_state, true, v8::Undefined(script_state->GetIsolate()));
     }
@@ -108,9 +104,9 @@ class PairSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
     v8::Local<v8::Value> v8_value;
 
     while (true) {
-      if (!FetchNextItem(script_state, key.content, value.content,
-                         exception_state))
+      if (!FetchNextItem(script_state, key.content, value.content)) {
         return;
+      }
 
       v8_key = ToV8Traits<IDLKeyType>::ToV8(script_state, key.content);
       v8_value = ToV8Traits<IDLValueType>::ToV8(script_state, value.content);
@@ -129,20 +125,16 @@ class PairSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
  private:
   virtual bool FetchNextItem(ScriptState* script_state,
                              KeyType& key,
-                             ValueType& value,
-                             ExceptionState& exception_state) = 0;
+                             ValueType& value) = 0;
 };
 
 template <typename IDLValueType, typename ValueType>
 class ValueSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
  public:
   v8::Local<v8::Object> Next(ScriptState* script_state,
-                             SyncIteratorBase::Kind kind,
-                             ExceptionState& exception_state) override {
+                             SyncIteratorBase::Kind kind) override {
     IDLTypeDefaultConstructible<ValueType> value;
-    if (!FetchNextItem(script_state, value.content, exception_state)) {
-      if (exception_state.HadException())
-        return {};
+    if (!FetchNextItem(script_state, value.content)) {
       return ESCreateIterResultObject(
           script_state, true, v8::Undefined(script_state->GetIsolate()));
     }
@@ -174,8 +166,9 @@ class ValueSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
     v8::Local<v8::Value> v8_value;
 
     while (true) {
-      if (!FetchNextItem(script_state, value.content, exception_state))
+      if (!FetchNextItem(script_state, value.content)) {
         return;
+      }
 
       v8_value = ToV8Traits<IDLValueType>::ToV8(script_state, value.content);
       ScriptValue script_value(script_state->GetIsolate(), v8_value);
@@ -190,9 +183,7 @@ class ValueSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
   }
 
  private:
-  virtual bool FetchNextItem(ScriptState* script_state,
-                             ValueType& value,
-                             ExceptionState& exception_state) = 0;
+  virtual bool FetchNextItem(ScriptState* script_state, ValueType& value) = 0;
 };
 
 }  // namespace bindings
@@ -223,30 +214,24 @@ class PairSyncIterable {
   PairSyncIterable(const PairSyncIterable&) = delete;
   PairSyncIterable& operator=(const PairSyncIterable&) = delete;
 
-  SyncIteratorType* keysForBinding(ScriptState* script_state,
-                                   ExceptionState& exception_state) {
-    IterationSource* source =
-        CreateIterationSource(script_state, exception_state);
+  SyncIteratorType* keysForBinding(ScriptState* script_state) {
+    IterationSource* source = CreateIterationSource(script_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<SyncIteratorType>(source,
                                                   SyncIteratorType::Kind::kKey);
   }
 
-  SyncIteratorType* valuesForBinding(ScriptState* script_state,
-                                     ExceptionState& exception_state) {
-    IterationSource* source =
-        CreateIterationSource(script_state, exception_state);
+  SyncIteratorType* valuesForBinding(ScriptState* script_state) {
+    IterationSource* source = CreateIterationSource(script_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<SyncIteratorType>(
         source, SyncIteratorType::Kind::kValue);
   }
 
-  SyncIteratorType* entriesForBinding(ScriptState* script_state,
-                                      ExceptionState& exception_state) {
-    IterationSource* source =
-        CreateIterationSource(script_state, exception_state);
+  SyncIteratorType* entriesForBinding(ScriptState* script_state) {
+    IterationSource* source = CreateIterationSource(script_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<SyncIteratorType>(
@@ -258,8 +243,7 @@ class PairSyncIterable {
                          V8ForEachIteratorCallback* callback,
                          const ScriptValue& this_arg,
                          ExceptionState& exception_state) {
-    IterationSource* source =
-        CreateIterationSource(script_state, exception_state);
+    IterationSource* source = CreateIterationSource(script_state);
     if (!source)
       return;
     source->ForEach(script_state, this_value, callback, this_arg,
@@ -267,9 +251,7 @@ class PairSyncIterable {
   }
 
  private:
-  virtual IterationSource* CreateIterationSource(
-      ScriptState* script_state,
-      ExceptionState& exception_state) = 0;
+  virtual IterationSource* CreateIterationSource(ScriptState* script_state) = 0;
 };
 
 template <typename IDLInterface>
@@ -296,30 +278,24 @@ class ValueSyncIterable {
   ValueSyncIterable(const ValueSyncIterable&) = delete;
   ValueSyncIterable& operator=(const ValueSyncIterable&) = delete;
 
-  SyncIteratorType* keysForBinding(ScriptState* script_state,
-                                   ExceptionState& exception_state) {
-    IterationSource* source =
-        CreateIterationSource(script_state, exception_state);
+  SyncIteratorType* keysForBinding(ScriptState* script_state) {
+    IterationSource* source = CreateIterationSource(script_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<SyncIteratorType>(source,
                                                   SyncIteratorType::Kind::kKey);
   }
 
-  SyncIteratorType* valuesForBinding(ScriptState* script_state,
-                                     ExceptionState& exception_state) {
-    IterationSource* source =
-        CreateIterationSource(script_state, exception_state);
+  SyncIteratorType* valuesForBinding(ScriptState* script_state) {
+    IterationSource* source = CreateIterationSource(script_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<SyncIteratorType>(
         source, SyncIteratorType::Kind::kValue);
   }
 
-  SyncIteratorType* entriesForBinding(ScriptState* script_state,
-                                      ExceptionState& exception_state) {
-    IterationSource* source =
-        CreateIterationSource(script_state, exception_state);
+  SyncIteratorType* entriesForBinding(ScriptState* script_state) {
+    IterationSource* source = CreateIterationSource(script_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<SyncIteratorType>(
@@ -331,8 +307,7 @@ class ValueSyncIterable {
                          V8ForEachIteratorCallback* callback,
                          const ScriptValue& this_arg,
                          ExceptionState& exception_state) {
-    IterationSource* source =
-        CreateIterationSource(script_state, exception_state);
+    IterationSource* source = CreateIterationSource(script_state);
     if (!source)
       return;
     source->ForEach(script_state, this_value, callback, this_arg,
@@ -340,9 +315,7 @@ class ValueSyncIterable {
   }
 
  private:
-  virtual IterationSource* CreateIterationSource(
-      ScriptState* script_state,
-      ExceptionState& exception_state) = 0;
+  virtual IterationSource* CreateIterationSource(ScriptState* script_state) = 0;
 };
 
 // Unpacks `sync_iteration_result`, stores 'value' and 'done' properties in
