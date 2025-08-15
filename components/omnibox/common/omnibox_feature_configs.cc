@@ -231,7 +231,7 @@ Toolbelt::Toolbelt() {
   enabled = base::FeatureList::IsEnabled(kOmniboxToolbelt);
   keep_toolbelt_after_input =
       base::FeatureParam<bool>(&kOmniboxToolbelt, "KeepToolbeltAfterInput",
-                               enabled)
+                               false)
           .Get();
   keep_toolbelt_in_keyword_mode =
       base::FeatureParam<bool>(&kOmniboxToolbelt, "KeepToolbeltInKeywordMode",
@@ -252,11 +252,11 @@ Toolbelt::Toolbelt() {
           .Get();
   show_ai_mode_action_on_non_ntp =
       base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowAiModeActionOnNonNtp",
-                               enabled)
+                               false)
           .Get();
   show_ai_mode_action_on_ntp =
       base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowAiModeActionOnNtp",
-                               enabled)
+                               false)
           .Get();
   show_history_action_on_non_ntp =
       base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowHistoryActionOnNonNtp",
