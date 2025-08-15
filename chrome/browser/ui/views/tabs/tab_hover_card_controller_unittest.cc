@@ -132,7 +132,7 @@ TEST_F(TabHoverCardControllerTest, DisableMemoryUsageForTab) {
   Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
   TabRendererData data;
   auto tab_resource_usage = base::MakeRefCounted<TabResourceUsage>();
-  tab_resource_usage->SetMemoryUsageInBytes(100);
+  tab_resource_usage->SetMemoryUsage(base::ByteCount(100));
   data.tab_resource_usage = std::move(tab_resource_usage);
   target_tab->SetData(std::move(data));
   controller->target_tab_ = target_tab;

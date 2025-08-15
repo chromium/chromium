@@ -52,10 +52,10 @@ constexpr int kTickStrokeWidth = 2;
 constexpr int kBucketCount = 4;
 constexpr double kBucketWidthDegrees = 180 / kBucketCount;
 
-constexpr int64_t kMemorySaverChartPmf25PercentileBytes = 62 * 1024 * 1024;
-constexpr int64_t kMemorySaverChartPmf50PercentileBytes = 112 * 1024 * 1024;
-constexpr int64_t kMemorySaverChartPmf75PercentileBytes = 197 * 1024 * 1024;
-constexpr int64_t kMemorySaverChartPmf99PercentileBytes = 800 * 1024 * 1024;
+constexpr base::ByteCount kMemorySaverChartPmf25Percentile = base::MiB(62);
+constexpr base::ByteCount kMemorySaverChartPmf50Percentile = base::MiB(112);
+constexpr base::ByteCount kMemorySaverChartPmf75Percentile = base::MiB(197);
+constexpr base::ByteCount kMemorySaverChartPmf99Percentile = base::MiB(800);
 
 // Enum to represent memory savings quartiles.
 enum MemorySavingsQuartile {
@@ -80,14 +80,14 @@ constexpr auto kQuartilesLabels =
 // Returns which of the four quartiles of memory savings this number falls into.
 // The lowest memory usage quartile (0-24th percentile) returns 0 and the
 // highest quartile (75-99 percentile) returns 3.
-int GetMemorySavingsQuartile(const int64_t memory_savings_bytes) {
-  if (memory_savings_bytes < kMemorySaverChartPmf25PercentileBytes) {
+int GetMemorySavingsQuartile(base::ByteCount memory_savings) {
+  if (memory_savings < kMemorySaverChartPmf25Percentile) {
     return MemorySavingsQuartile::kLow;
-  } else if (memory_savings_bytes < kMemorySaverChartPmf50PercentileBytes) {
+  } else if (memory_savings < kMemorySaverChartPmf50Percentile) {
     return MemorySavingsQuartile::kMedium;
-  } else if (memory_savings_bytes < kMemorySaverChartPmf75PercentileBytes) {
+  } else if (memory_savings < kMemorySaverChartPmf75Percentile) {
     return MemorySavingsQuartile::kHigh;
-  } else if (memory_savings_bytes < kMemorySaverChartPmf99PercentileBytes) {
+  } else if (memory_savings < kMemorySaverChartPmf99Percentile) {
     return MemorySavingsQuartile::kVeryHigh;
   } else {
     return MemorySavingsQuartile::kHuge;
@@ -98,8 +98,8 @@ class GaugeView : public views::FlexLayoutView {
   METADATA_HEADER(GaugeView, views::FlexLayoutView)
 
  public:
-  explicit GaugeView(const int64_t memory_savings_bytes)
-      : memory_savings_bytes_(memory_savings_bytes) {
+  explicit GaugeView(base::ByteCount memory_savings)
+      : memory_savings_(memory_savings) {
     SetOrientation(views::LayoutOrientation::kVertical);
     SetMainAxisAlignment(views::LayoutAlignment::kEnd);
     SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
@@ -122,10 +122,9 @@ class GaugeView : public views::FlexLayoutView {
     // Map the memory savings to which of the 4 buckets it falls into and then
     // draw an arc to the middle of the corresponding bucket. This is why the
     // 0.5 parts of the multipliers are needed.
-    const int memory_angle =
-        std::min((GetMemorySavingsQuartile(memory_savings_bytes_) + 0.5) *
-                     kBucketWidthDegrees,
-                 180.0);
+    const int memory_angle = std::min(
+        (GetMemorySavingsQuartile(memory_savings_) + 0.5) * kBucketWidthDegrees,
+        180.0);
 
     DrawArc(canvas, center, memory_angle,
             GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent));
@@ -139,7 +138,7 @@ class GaugeView : public views::FlexLayoutView {
   }
 
  private:
-  const int64_t memory_savings_bytes_;
+  const base::ByteCount memory_savings_;
 
   // Draws an arc starting at the far left, with the specified center point and
   // angle (in degrees).
@@ -192,7 +191,7 @@ END_METADATA
 }  // namespace
 
 MemorySaverResourceView::MemorySaverResourceView(
-    const int64_t memory_savings_bytes) {
+    base::ByteCount memory_savings_bytes) {
   SetOrientation(views::LayoutOrientation::kVertical);
 
   auto* gauge_view =

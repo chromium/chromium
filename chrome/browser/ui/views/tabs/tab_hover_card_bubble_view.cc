@@ -585,9 +585,8 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   const bool show_discard_status =
       !show_collaboration_messaging && tab_data.should_show_discard_status;
   const base::ByteCount tab_memory_usage =
-      base::ByteCount(tab_data.tab_resource_usage
-                          ? tab_data.tab_resource_usage->memory_usage_in_bytes()
-                          : 0);
+      tab_data.tab_resource_usage ? tab_data.tab_resource_usage->memory_usage()
+                                  : base::ByteCount(0);
   const bool is_high_memory_usage =
       tab_data.tab_resource_usage
           ? tab_data.tab_resource_usage->is_high_memory_usage()

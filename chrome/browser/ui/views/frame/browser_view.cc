@@ -4106,16 +4106,16 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
           ui::FormatBytes(tab_data.discarded_memory_savings));
     }
   } else if (tab_data.tab_resource_usage &&
-             tab_data.tab_resource_usage->memory_usage_in_bytes() > 0) {
-    const uint64_t memory_used =
-        tab_data.tab_resource_usage->memory_usage_in_bytes();
+             tab_data.tab_resource_usage->memory_usage().is_positive()) {
+    const base::ByteCount memory_used =
+        tab_data.tab_resource_usage->memory_usage();
     const bool is_high_memory_usage =
         tab_data.tab_resource_usage->is_high_memory_usage();
     if (is_high_memory_usage || is_for_tab) {
       const int message_id = is_high_memory_usage ? IDS_TAB_AX_HIGH_MEMORY_USAGE
                                                   : IDS_TAB_AX_MEMORY_USAGE;
-      title = l10n_util::GetStringFUTF16(
-          message_id, title, ui::FormatBytes(base::ByteCount(memory_used)));
+      title = l10n_util::GetStringFUTF16(message_id, title,
+                                         ui::FormatBytes(memory_used));
     }
   } else if (tab_data.collaboration_messaging &&
              tab_data.collaboration_messaging->HasMessage()) {

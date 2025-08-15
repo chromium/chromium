@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 
+#include "base/byte_count.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_collector.h"
 
-void TabResourceUsage::SetMemoryUsageInBytes(uint64_t memory_usage_bytes) {
-  memory_usage_bytes_ = memory_usage_bytes;
-  is_high_memory_usage_ = memory_usage_bytes_ > kHighMemoryUsageThresholdBytes;
+void TabResourceUsage::SetMemoryUsage(base::ByteCount memory_usage) {
+  memory_usage_ = memory_usage;
+  is_high_memory_usage_ = memory_usage_ > kHighMemoryUsageThreshold;
 }
 
 TabResourceUsageTabHelper::~TabResourceUsageTabHelper() = default;
@@ -20,16 +21,15 @@ TabResourceUsageTabHelper::TabResourceUsageTabHelper(tabs::TabInterface& tab)
 void TabResourceUsageTabHelper::PrimaryPageChanged(content::Page&) {
   // Reset memory usage count when we navigate to another site since the
   // memory usage reported will be outdated.
-  resource_usage_->SetMemoryUsageInBytes(0);
+  resource_usage_->SetMemoryUsage(base::ByteCount(0));
 }
 
-uint64_t TabResourceUsageTabHelper::GetMemoryUsageInBytes() {
-  return resource_usage_->memory_usage_in_bytes();
+base::ByteCount TabResourceUsageTabHelper::GetMemoryUsage() {
+  return resource_usage_->memory_usage();
 }
 
-void TabResourceUsageTabHelper::SetMemoryUsageInBytes(
-    uint64_t memory_usage_bytes) {
-  resource_usage_->SetMemoryUsageInBytes(memory_usage_bytes);
+void TabResourceUsageTabHelper::SetMemoryUsage(base::ByteCount memory_usage) {
+  resource_usage_->SetMemoryUsage(memory_usage);
 }
 
 scoped_refptr<const TabResourceUsage>

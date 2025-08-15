@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "base/byte_count.h"
 #include "base/check_is_test.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,8 +85,8 @@ MemorySaverChipTabHelper::MemorySaverChipTabHelper(tabs::TabInterface& tab)
 
 bool MemorySaverChipTabHelper::ComputeShouldHighlightMemorySavings() {
   bool const savings_over_threshold =
-      memory_saver::GetDiscardedMemorySavingsInBytes(web_contents()) >
-      kExpandedMemorySaverChipThresholdBytes;
+      memory_saver::GetDiscardedMemorySavings(web_contents()) >
+      kExpandedMemorySaverChipThreshold;
 
   base::Time const last_expanded_timestamp =
       pref_service_->GetTime(prefs::kLastMemorySaverChipExpandedTimestamp);
@@ -173,8 +174,8 @@ void MemorySaverChipTabHelper::UpdatePageActionState() {
       break;
 
     case memory_saver::ChipState::EXPANDED_WITH_SAVINGS:
-      const int64_t bytes_saved =
-          memory_saver::GetDiscardedMemorySavingsInBytes(web_contents());
+      const base::ByteCount bytes_saved =
+          memory_saver::GetDiscardedMemorySavings(web_contents());
       controller->ShowMemorySavedChip(bytes_saved);
       break;
   }

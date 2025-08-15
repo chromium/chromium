@@ -411,7 +411,7 @@ class MemorySaverChipInteractiveTest
   }
 
   // Sets discard usage on the active tab for deterministic UI testing.
-  auto SetTabPreDiscardMemoryUsageKb(size_t index, int64_t usage_kb) {
+  auto SetTabPreDiscardMemoryUsage(size_t index, base::ByteCount usage) {
     return Do(base::BindLambdaForTesting([=, this]() {
       content::WebContents* web_contents =
           browser()->tab_strip_model()->GetWebContentsAt(index);
@@ -419,7 +419,7 @@ class MemorySaverChipInteractiveTest
           performance_manager::user_tuning::UserPerformanceTuningManager::
               PreDiscardResourceUsage::FromWebContents(web_contents);
       pre_discard_resource_usage->UpdateDiscardInfo(
-          usage_kb, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+          usage.InKiB(), ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
     }));
   }
 
@@ -615,8 +615,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
       NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       DiscardAndReloadTab(0, kFirstTabContents),
-      SetTabPreDiscardMemoryUsageKb(0, kMemoryUsage.InKiB()),
-      PressPageActionButton(),
+      SetTabPreDiscardMemoryUsage(0, kMemoryUsage), PressPageActionButton(),
       WaitForShow(MemorySaverResourceView::
                       kMemorySaverResourceViewMemorySavingsElementId),
       CheckView(MemorySaverResourceView::
@@ -739,7 +738,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
       NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       ForceRefreshMemoryMetrics(), DiscardAndReloadTab(0, kFirstTabContents),
-      SetTabPreDiscardMemoryUsageKb(0, 135 * 1024), PressPageActionButton(),
+      SetTabPreDiscardMemoryUsage(0, base::MiB(135)), PressPageActionButton(),
       WaitForShow(
           MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId),
       Screenshot(MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId,

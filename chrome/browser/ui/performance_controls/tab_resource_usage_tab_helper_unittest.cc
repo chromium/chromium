@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 
+#include "base/byte_count.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -15,7 +16,7 @@
 #include "url/gurl.h"
 
 namespace {
-constexpr uint64_t kTestMemoryUsageBytes = 100000;
+constexpr base::ByteCount kTestMemoryUsage = base::ByteCount(100000);
 }  // namespace
 
 class TabResourceUsageTabHelperUiTest : public testing::Test {
@@ -47,16 +48,15 @@ class TabResourceUsageTabHelperUiTest : public testing::Test {
 
 // Return memory usage that was set on the tab helper.
 TEST_F(TabResourceUsageTabHelperUiTest, ReturnsMemoryUsageInBytes) {
-  helper_->SetMemoryUsageInBytes(kTestMemoryUsageBytes);
-  EXPECT_EQ(helper_->GetMemoryUsageInBytes(), kTestMemoryUsageBytes);
+  helper_->SetMemoryUsage(kTestMemoryUsage);
+  EXPECT_EQ(helper_->GetMemoryUsage(), kTestMemoryUsage);
 }
 
 // Correctly reports whether memory usage is high after memory usage is set.
 TEST_F(TabResourceUsageTabHelperUiTest, HighMemoryUsage) {
-  uint64_t const high_memory_usage_threshold =
-      TabResourceUsage::kHighMemoryUsageThresholdBytes;
-  helper_->SetMemoryUsageInBytes(high_memory_usage_threshold);
+  helper_->SetMemoryUsage(TabResourceUsage::kHighMemoryUsageThreshold);
   EXPECT_FALSE(helper_->resource_usage()->is_high_memory_usage());
-  helper_->SetMemoryUsageInBytes(high_memory_usage_threshold + 1);
+  helper_->SetMemoryUsage(TabResourceUsage::kHighMemoryUsageThreshold +
+                          base::ByteCount(1));
   EXPECT_TRUE(helper_->resource_usage()->is_high_memory_usage());
 }

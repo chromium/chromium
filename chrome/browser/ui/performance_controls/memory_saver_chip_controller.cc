@@ -51,10 +51,11 @@ void MemorySaverChipController::ShowEducationChip() {
   RecordMemorySaverChipState(MemorySaverChipState::kExpandedEducation);
 }
 
-void MemorySaverChipController::ShowMemorySavedChip(int64_t bytes_saved) {
+void MemorySaverChipController::ShowMemorySavedChip(
+    base::ByteCount bytes_saved) {
   page_action_controller_->Show(kActionShowMemorySaverChip);
   page_action_controller_->ShowSuggestionChip(kActionShowMemorySaverChip);
-  std::u16string savings_string = ui::FormatBytes(base::ByteCount(bytes_saved));
+  std::u16string savings_string = ui::FormatBytes(bytes_saved);
   // TODO(crbug.com/376283619): Cover IDS_MEMORY_SAVER_CHIP_WITH_SAVINGS_ACCNAME
   auto chip_text = l10n_util::GetStringFUTF16(
       IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL, {savings_string});

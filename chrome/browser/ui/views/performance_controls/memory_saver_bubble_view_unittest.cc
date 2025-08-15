@@ -48,14 +48,13 @@ constexpr base::ByteCount kMemorySavings = base::MiB(100);
 
 class MemorySaverBubbleViewTest
     : public MemorySaverUnitTestMixin<TestWithBrowserView>,
-      public testing::WithParamInterface<std::tuple<int, int>> {
+      public testing::WithParamInterface<std::tuple<base::ByteCount, int>> {
  public:
   // MemorySaverUnitTestMixin:
   void SetUp() override {
     MemorySaverUnitTestMixin::SetUp();
 
-    AddNewTab(kMemorySavings.InKiB(),
-              ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+    AddNewTab(kMemorySavings, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
     SetMemorySaverModeEnabled(true);
   }
@@ -131,8 +130,7 @@ TEST_F(MemorySaverBubbleViewTest, ShouldRenderDomainInDialogSubtitle) {
 
 TEST_F(MemorySaverBubbleViewTest,
        ShowDialogWithoutExcludeSiteButtonInGuestMode) {
-  AddNewTab(kMemorySavings.InKiB(),
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  AddNewTab(kMemorySavings, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
   TestingProfile* const testprofile = browser()->profile()->AsTestingProfile();
   EXPECT_TRUE(testprofile);
@@ -150,8 +148,7 @@ TEST_F(MemorySaverBubbleViewTest,
 
 TEST_F(MemorySaverBubbleViewTest,
        ShouldCollapseChipAfterNavigatingTabsWithDialogOpen) {
-  AddNewTab(kMemorySavings.InKiB(),
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  AddNewTab(kMemorySavings, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -226,9 +223,11 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     MemorySaverBubbleViewTest,
     ::testing::Values(
-        std::tuple{50 * 1024, IDS_MEMORY_SAVER_DIALOG_SMALL_SAVINGS_LABEL},
-        std::tuple{100 * 1024, IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL},
-        std::tuple{150 * 1024, IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL},
-        std::tuple{600 * 1024, IDS_MEMORY_SAVER_DIALOG_LARGE_SAVINGS_LABEL},
-        std::tuple{900 * 1024,
+        std::tuple{base::MiB(50), IDS_MEMORY_SAVER_DIALOG_SMALL_SAVINGS_LABEL},
+        std::tuple{base::MiB(100),
+                   IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL},
+        std::tuple{base::MiB(150),
+                   IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL},
+        std::tuple{base::MiB(600), IDS_MEMORY_SAVER_DIALOG_LARGE_SAVINGS_LABEL},
+        std::tuple{base::MiB(900),
                    IDS_MEMORY_SAVER_DIALOG_VERY_LARGE_SAVINGS_LABEL}));

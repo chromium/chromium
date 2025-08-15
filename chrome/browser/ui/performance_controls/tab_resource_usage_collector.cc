@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_collector.h"
 
+#include "base/byte_count.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
@@ -85,8 +86,8 @@ void TabResourceUsageCollector::OnResourceUsageUpdated(
                 tabs::TabInterface::MaybeGetFromContents(web_contents)) {
           if (auto* const helper =
                   tab->GetTabFeatures()->resource_usage_helper()) {
-            helper->SetMemoryUsageInBytes(memory_result->private_footprint_kb *
-                                          1024);
+            helper->SetMemoryUsage(
+                base::KiB(memory_result->private_footprint_kb));
             did_resource_update = true;
           }
         }

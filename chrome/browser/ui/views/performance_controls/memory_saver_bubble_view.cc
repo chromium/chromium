@@ -48,8 +48,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MemorySaverBubbleView,
 
 namespace {
 // The lower limit of memory usage that we would display to the user in bytes.
-// This value is the equivalent of 10MB.
-constexpr int64_t kMemoryUsageThresholdInBytes = 10 * 1024 * 1024;
+constexpr base::ByteCount kMemoryUsageThreshold = base::MiB(10);
 
 void AddBubbleBodyText(
     ui::DialogModel::Builder* dialog_model_builder,
@@ -113,8 +112,8 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
                        .SetLabel(l10n_util::GetStringUTF16(IDS_OK))
                        .SetId(kMemorySaverDialogOkButton));
 
-  const uint64_t memory_savings =
-      memory_saver::GetDiscardedMemorySavingsInBytes(web_contents);
+  const base::ByteCount memory_savings =
+      memory_saver::GetDiscardedMemorySavings(web_contents);
 
   ui::DialogModelLabel::TextReplacement memory_savings_text =
       ui::DialogModelLabel::CreatePlainText(
@@ -123,7 +122,7 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   Profile* const profile = browser->profile();
   const bool is_guest = profile->IsGuestSession();
 
-  if (memory_savings > kMemoryUsageThresholdInBytes) {
+  if (memory_savings > kMemoryUsageThreshold) {
     dialog_model_builder.AddCustomField(
         std::make_unique<views::BubbleDialogModelHost::CustomView>(
             std::make_unique<MemorySaverResourceView>(memory_savings),

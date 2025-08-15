@@ -148,8 +148,8 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
        discard_reason.value() == mojom::LifecycleUnitDiscardReason::SUGGESTED);
 
   if (contents->WasDiscarded()) {
-    data.discarded_memory_savings = base::ByteCount(
-        memory_saver::GetDiscardedMemorySavingsInBytes(contents));
+    data.discarded_memory_savings =
+        base::ByteCount(memory_saver::GetDiscardedMemorySavings(contents));
   }
 
   if (const auto* const resource_tab_helper =
