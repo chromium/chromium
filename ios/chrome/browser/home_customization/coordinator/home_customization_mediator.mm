@@ -293,16 +293,17 @@
         initWithCollectionImage:image];
   }
 
-  std::optional<UserUploadedBackground> currentUserUploadedBackground =
+  std::optional<HomeUserUploadedBackground> currentUserUploadedBackground =
       _backgroundService->GetCurrentUserUploadedBackground();
 
   if (currentUserUploadedBackground) {
     NSString* imagePath =
-        base::SysUTF8ToNSString(currentUserUploadedBackground->first);
+        base::SysUTF8ToNSString(currentUserUploadedBackground->image_path);
 
     return [[BackgroundCustomizationConfigurationItem alloc]
         initWithUserUploadedImagePath:imagePath
-                   framingCoordinates:currentUserUploadedBackground->second];
+                   framingCoordinates:currentUserUploadedBackground->
+                                      framing_coordinates];
   }
 
   std::optional<sync_pb::UserColorTheme> currentColorTheme =

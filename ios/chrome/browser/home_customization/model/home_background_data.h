@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_FRAMING_COORDINATES_H_
-#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_FRAMING_COORDINATES_H_
+#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_DATA_H_
+#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_DATA_H_
+
 #include <optional>
 
 #include "base/values.h"
+#import "components/sync/protocol/theme_types.pb.h"
 
 // C++ representation of framing coordinates for background images.
 // This struct is persisted to disk via prefs. When adding new fields,
@@ -39,4 +41,18 @@ struct FramingCoordinates {
   bool operator!=(const FramingCoordinates& other) const;
 };
 
-#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_FRAMING_COORDINATES_H_
+// This struct is persisted to disk via prefs. When adding new fields,
+// ensure backward compatibility by providing defaults in FromDict().
+struct HomeUserUploadedBackground {
+  std::string image_path;
+  FramingCoordinates framing_coordinates;
+
+  // Creates HomeUserUploadedBackground from a base::Value::Dict.
+  static std::optional<HomeUserUploadedBackground> FromDict(
+      const base::Value::Dict& dict);
+
+  // Converts to base::Value::Dict for serialization.
+  base::Value::Dict ToDict() const;
+};
+
+#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_DATA_H_

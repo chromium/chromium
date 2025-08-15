@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
-#import "ios/chrome/browser/home_customization/model/framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer_bridge.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
@@ -403,11 +402,11 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   CustomUITraitAccessor* traitAccessor = [[CustomUITraitAccessor alloc]
       initWithMutableTraits:self.consumer.traitOverrides];
 
-  std::optional<std::pair<std::string, FramingCoordinates>> userUploaded =
+  std::optional<HomeUserUploadedBackground> userUploaded =
       _backgroundCustomizationService->GetCurrentUserUploadedBackground();
   if (userUploaded) {
-    [self handleUserUploadedBackground:userUploaded->first
-                    framingCoordinates:userUploaded->second];
+    [self handleUserUploadedBackground:userUploaded->image_path
+                    framingCoordinates:userUploaded->framing_coordinates];
     [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
     return;
   }

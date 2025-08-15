@@ -6,7 +6,7 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/home_customization/model/framing_coordinates.h"
+#import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
 #import "url/gurl.h"
 

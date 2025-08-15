@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/home_customization/model/framing_coordinates.h"
-
-#include "base/logging.h"
+#import "ios/chrome/browser/home_customization/model/home_background_data.h"
 
 namespace {
 // Keys for dictionary serialization
@@ -12,6 +10,9 @@ const char kXKey[] = "x";
 const char kYKey[] = "y";
 const char kWidthKey[] = "width";
 const char kHeightKey[] = "height";
+
+const char kFramingCoordinatesKey[] = "framing_data";
+const char kImagePathKey[] = "image_path";
 }  // namespace
 
 FramingCoordinates::FramingCoordinates(double x_val,
@@ -50,4 +51,29 @@ bool FramingCoordinates::operator==(const FramingCoordinates& other) const {
 
 bool FramingCoordinates::operator!=(const FramingCoordinates& other) const {
   return !(*this == other);
+}
+
+std::optional<HomeUserUploadedBackground> HomeUserUploadedBackground::FromDict(
+    const base::Value::Dict& dict) {
+  const std::string* image_path = dict.FindString(kImagePathKey);
+  const base::Value::Dict* framing_coordinates_dict =
+      dict.FindDict(kFramingCoordinatesKey);
+  if (!framing_coordinates_dict) {
+    return std::nullopt;
+  }
+  std::optional<FramingCoordinates> framing_coordinates =
+      FramingCoordinates::FromDict(*framing_coordinates_dict);
+
+  if (!image_path || !framing_coordinates) {
+    return std::nullopt;
+  }
+
+  return HomeUserUploadedBackground(*image_path, *framing_coordinates);
+}
+
+base::Value::Dict HomeUserUploadedBackground::ToDict() const {
+  base::Value::Dict dict;
+  dict.Set(kImagePathKey, image_path);
+  dict.Set(kFramingCoordinatesKey, framing_coordinates.ToDict());
+  return dict;
 }

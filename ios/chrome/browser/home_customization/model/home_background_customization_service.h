@@ -14,15 +14,13 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/sync/protocol/theme_specifics_ios.pb.h"
 #import "components/sync/protocol/theme_types.pb.h"
-#import "ios/chrome/browser/home_customization/model/framing_coordinates.h"
+#import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "third_party/skia/include/core/SkColor.h"
 
 class GURL;
 class HomeBackgroundCustomizationServiceObserver;
 class PrefRegistrySimple;
 class PrefService;
-
-typedef std::pair<std::string, FramingCoordinates> UserUploadedBackground;
 
 // Service for allowing customization of the Home surface background.
 class HomeBackgroundCustomizationService : public KeyedService {
@@ -46,7 +44,7 @@ class HomeBackgroundCustomizationService : public KeyedService {
   std::optional<sync_pb::UserColorTheme> GetCurrentColorTheme();
 
   // Gets the current user-uploaded background data, if there is one.
-  std::optional<UserUploadedBackground> GetCurrentUserUploadedBackground();
+  std::optional<HomeUserUploadedBackground> GetCurrentUserUploadedBackground();
 
   /// Sets the background to the given parameters. This represents a background
   /// image url from the NtpBackgroundService.
@@ -107,6 +105,8 @@ class HomeBackgroundCustomizationService : public KeyedService {
   void LoadCurrentTheme();
 
   sync_pb::ThemeSpecificsIos current_theme_;
+
+  std::optional<HomeUserUploadedBackground> current_user_uploaded_background_;
 
   // The PrefService associated with the Profile.
   raw_ptr<PrefService> pref_service_;

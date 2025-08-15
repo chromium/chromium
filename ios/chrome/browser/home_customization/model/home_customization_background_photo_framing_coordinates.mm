@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "base/values.h"
-#import "ios/chrome/browser/home_customization/model/framing_coordinates.h"
+#import "ios/chrome/browser/home_customization/model/home_background_data.h"
 
 namespace {
 // Keys for Value serialization.
