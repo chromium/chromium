@@ -85,15 +85,12 @@ class TestListenerBase : public IPC::Listener {
   ~TestListenerBase() override = default;
   void OnChannelError() override { RunQuitClosure(); }
 
-  void set_sender(IPC::Sender* sender) { sender_ = sender; }
-  IPC::Sender* sender() const { return sender_; }
   void RunQuitClosure() {
     if (quit_closure_)
       std::move(quit_closure_).Run();
   }
 
  private:
-  raw_ptr<IPC::Sender> sender_ = nullptr;
   base::OnceClosure quit_closure_;
 };
 
