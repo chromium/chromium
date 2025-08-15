@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/task/sequenced_task_runner.h"
@@ -18,6 +19,31 @@
 #include "base/tracing_buildflags.h"
 
 namespace base {
+
+namespace {
+
+// Controls whether or no MemoryPressureListeners are notified synchronously or,
+// in the disabled state, asynchronously. This is only suitable for a listener
+// that only lives on the main thread.
+BASE_FEATURE(MakeMemoryPressureListenerSync, base::FEATURE_DISABLED_BY_DEFAULT);
+
+std::variant<SyncMemoryPressureListener, AsyncMemoryPressureListener>
+CreateMemoryPressureListenerImpl(
+    const Location& creation_location,
+    MemoryPressureListener::MemoryPressureCallback memory_pressure_callback) {
+  using ListenerVariant =
+      std::variant<SyncMemoryPressureListener, AsyncMemoryPressureListener>;
+  if (FeatureList::IsEnabled(kMakeMemoryPressureListenerSync)) {
+    return ListenerVariant(std::in_place_type<SyncMemoryPressureListener>,
+                           std::move(memory_pressure_callback));
+  } else {
+    return ListenerVariant(std::in_place_type<AsyncMemoryPressureListener>,
+                           creation_location,
+                           std::move(memory_pressure_callback));
+  }
+}
+
+}  // namespace
 
 // SyncMemoryPressureListener --------------------------------------------------
 
@@ -37,13 +63,13 @@ void SyncMemoryPressureListener::Notify(
   memory_pressure_callback_.Run(memory_pressure_level);
 }
 
-// MemoryPressureListener::MainThread ------------------------------------------
+// AsyncMemoryPressureListener::MainThread -------------------------------------
 
-class MemoryPressureListener::MainThread {
+class AsyncMemoryPressureListener::MainThread {
  public:
   MainThread() { DETACH_FROM_THREAD(thread_checker_); }
 
-  void Init(WeakPtr<MemoryPressureListener> parent,
+  void Init(WeakPtr<AsyncMemoryPressureListener> parent,
             scoped_refptr<SequencedTaskRunner> listener_task_runner) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     listener_task_runner_ = std::move(listener_task_runner);
@@ -56,8 +82,8 @@ class MemoryPressureListener::MainThread {
   void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     listener_task_runner_->PostTask(
-        FROM_HERE, BindOnce(&MemoryPressureListener::Notify, parent_,
-                            memory_pressure_level));
+        FROM_HERE, base::BindOnce(&AsyncMemoryPressureListener::Notify, parent_,
+                                  memory_pressure_level));
   }
 
   // The task runner on which the listener lives.
@@ -65,7 +91,8 @@ class MemoryPressureListener::MainThread {
       GUARDED_BY_CONTEXT(thread_checker_);
 
   // A pointer to the listener that lives on `listener_task_runner_`.
-  WeakPtr<MemoryPressureListener> parent_ GUARDED_BY_CONTEXT(thread_checker_);
+  WeakPtr<AsyncMemoryPressureListener> parent_
+      GUARDED_BY_CONTEXT(thread_checker_);
 
   // The actual sync listener that lives on the main thread.
   std::optional<SyncMemoryPressureListener> listener_
@@ -74,10 +101,10 @@ class MemoryPressureListener::MainThread {
   THREAD_CHECKER(thread_checker_);
 };
 
-// MemoryPressureListener ------------------------------------------------------
+// AsyncMemoryPressureListener -------------------------------------------------
 
-MemoryPressureListener::MemoryPressureListener(
-    const Location& creation_location,
+AsyncMemoryPressureListener::AsyncMemoryPressureListener(
+    const base::Location& creation_location,
     MemoryPressureCallback memory_pressure_callback)
     : memory_pressure_callback_(std::move(memory_pressure_callback)),
       creation_location_(creation_location) {
@@ -95,22 +122,23 @@ MemoryPressureListener::MemoryPressureListener(
   }
 }
 
-MemoryPressureListener::~MemoryPressureListener() {
+AsyncMemoryPressureListener::~AsyncMemoryPressureListener() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (main_thread_) {
     // To ensure |main_thread_| is deleted on the correct thread, we transfer
-    // ownership to a no-op task. The object is deleted with the task, even if
-    // it's cancelled before it can run.
+    // ownership to a no-op task. The object is deleted with the task, even
+    // if it's cancelled before it can run.
     main_thread_task_runner_->PostTask(
         FROM_HERE, BindOnce([](std::unique_ptr<MainThread> main_thread) {},
                             std::move(main_thread_)));
   }
 }
 
-void MemoryPressureListener::Notify(MemoryPressureLevel memory_pressure_level) {
+void AsyncMemoryPressureListener::Notify(
+    MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT(
-      "base", "MemoryPressureListener::Notify",
+      "base", "AsyncMemoryPressureListener::Notify",
       [&](perfetto::EventContext ctx) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -118,10 +146,22 @@ void MemoryPressureListener::Notify(MemoryPressureLevel memory_pressure_level) {
         data->set_level(
             trace_event::MemoryPressureLevelToTraceEnum(memory_pressure_level));
         data->set_creation_location_iid(
-            trace_event::InternedSourceLocation::Get(&ctx, creation_location_));
+            base::trace_event::InternedSourceLocation::Get(&ctx,
+                                                           creation_location_));
       });
   memory_pressure_callback_.Run(memory_pressure_level);
 }
+
+// MemoryPressureListener ------------------------------------------------------
+
+MemoryPressureListener::MemoryPressureListener(
+    const Location& creation_location,
+    MemoryPressureCallback memory_pressure_callback)
+    : listener_(CreateMemoryPressureListenerImpl(
+          creation_location,
+          std::move(memory_pressure_callback))) {}
+
+MemoryPressureListener::~MemoryPressureListener() = default;
 
 // static
 void MemoryPressureListener::NotifyMemoryPressure(

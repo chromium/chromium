@@ -11,6 +11,7 @@
 #define BASE_MEMORY_MEMORY_PRESSURE_LISTENER_H_
 
 #include <memory>
+#include <variant>
 
 #include "base/base_export.h"
 #include "base/functional/callback.h"
@@ -55,9 +56,10 @@ class SingleThreadTaskRunner;
 //
 //    // Stop listening.
 //    listener.reset();
-//
 
-// Synchronous version of MemoryPressureListener. Must live on the main thread.
+// Used for listeners that live on the main thread and must be called
+// synchronously. Prefer using MemoryPressureListener as this will eventually be
+// removed.
 class BASE_EXPORT SyncMemoryPressureListener {
  public:
   using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
@@ -80,6 +82,47 @@ class BASE_EXPORT SyncMemoryPressureListener {
   THREAD_CHECKER(thread_checker_);
 };
 
+// Used for listeners that can exists on sequences other than the main thread
+// and don't need to be called synchronously.
+class BASE_EXPORT AsyncMemoryPressureListener {
+ public:
+  using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
+
+  AsyncMemoryPressureListener(const base::Location& creation_location,
+                              MemoryPressureCallback memory_pressure_callback);
+
+  AsyncMemoryPressureListener(const AsyncMemoryPressureListener&) = delete;
+  AsyncMemoryPressureListener& operator=(const AsyncMemoryPressureListener&) =
+      delete;
+
+  ~AsyncMemoryPressureListener();
+
+ private:
+  class MainThread;
+
+  void Notify(MemoryPressureLevel memory_pressure_level);
+
+  MemoryPressureCallback memory_pressure_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Handle to the main thread's task runner. This is cached because it might no
+  // longer be registered at the time this instance is destroyed.
+  scoped_refptr<SingleThreadTaskRunner> main_thread_task_runner_;
+
+  // Parts of this class that lives on the main thread.
+  std::unique_ptr<MainThread> main_thread_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  const base::Location creation_location_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  WeakPtrFactory<AsyncMemoryPressureListener> weak_ptr_factory_{this};
+};
+
+// Used for listeners that live on the main thread. Can be call synchronously or
+// asynchronously.
+// Note: In the future, this will be always called synchronously.
 class BASE_EXPORT MemoryPressureListener {
  public:
   // MemoryPressureLevel used to be defined here instead of in
@@ -119,26 +162,8 @@ class BASE_EXPORT MemoryPressureListener {
       MemoryPressureLevel memory_pressure_level);
 
  private:
-  class MainThread;
-
-  void Notify(MemoryPressureLevel memory_pressure_level);
-
-  const MemoryPressureCallback memory_pressure_callback_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Handle to the main thread's task runner. This is cached because it might no
-  // longer be registered at the time this instance is destroyed.
-  scoped_refptr<SingleThreadTaskRunner> main_thread_task_runner_;
-
-  // Parts of this class that lives on the main thread.
-  std::unique_ptr<MainThread> main_thread_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  const Location creation_location_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  WeakPtrFactory<MemoryPressureListener> weak_ptr_factory_{this};
+  std::variant<SyncMemoryPressureListener, AsyncMemoryPressureListener>
+      listener_;
 };
 
 }  // namespace base
