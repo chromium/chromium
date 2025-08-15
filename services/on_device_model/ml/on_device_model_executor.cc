@@ -345,8 +345,10 @@ BackendImpl::CanCreate() {
     return base::unexpected(
         on_device_model::ServiceDisconnectReason::kFailedToLoadLibrary);
   }
+  ml::DeviceInfo device_info =
+      ml::QueryDeviceInfo(chrome_ml_->api(), /*log_histogram=*/false);
   if (!on_device_model::IsCpuCapable() &&
-      ml::IsGpuBlocked(chrome_ml_->api(), /*log_histogram=*/false)) {
+      device_info.gpu_blocked_reason != GpuBlockedReason::kNotBlocked) {
     return base::unexpected(
         on_device_model::ServiceDisconnectReason::kGpuBlocked);
   }
@@ -396,9 +398,10 @@ void BackendImpl::LoadTextSafetyModel(
       .WithArgs(std::move(params), std::move(model));
 }
 
-on_device_model::mojom::DevicePerformanceInfoPtr
-BackendImpl::GetDevicePerformanceInfo() {
-  return ml::GetDevicePerformanceInfo(*chrome_ml_);
+std::pair<on_device_model::mojom::DevicePerformanceInfoPtr,
+          on_device_model::mojom::DeviceInfoPtr>
+BackendImpl::GetDeviceAndPerformanceInfo() {
+  return ml::GetDeviceAndPerformanceInfo(*chrome_ml_);
 }
 
 SessionImpl::SessionImpl(const ChromeML& chrome_ml,
@@ -675,8 +678,10 @@ DISABLE_CFI_DLSYM
 LoadModelResult OnDeviceModelExecutor::Init(
     on_device_model::mojom::LoadModelParamsPtr params,
     base::OnceClosure on_complete) {
+  ml::DeviceInfo device_info =
+      ml::QueryDeviceInfo(chrome_ml_->api(), /*log_histogram=*/false);
   if (params->backend_type == ml::ModelBackendType::kGpuBackend &&
-      ml::IsGpuBlocked(chrome_ml_->api(), /*log_histogram=*/false)) {
+      device_info.gpu_blocked_reason != GpuBlockedReason::kNotBlocked) {
     return LoadModelResult::kGpuBlocked;
   }
   on_device_model::ModelAssets assets = std::move(params->assets);

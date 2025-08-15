@@ -104,8 +104,8 @@ void OnDeviceModelService::GetCapabilities(ModelFile model_file,
   std::move(callback).Run(backend_->GetCapabilities(std::move(model_file)));
 }
 
-void OnDeviceModelService::GetDevicePerformanceInfo(
-    GetDevicePerformanceInfoCallback callback) {
+void OnDeviceModelService::GetDeviceAndPerformanceInfo(
+    GetDeviceAndPerformanceInfoCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, we explicitly allowlist only Chromebook Plus devices,
   // so skip the benchmark and return a fixed performance profile.
@@ -115,7 +115,8 @@ void OnDeviceModelService::GetDevicePerformanceInfo(
       on_device_model::mojom::PerformanceClass::kHigh;
   // Chromebook+ devices have 8GB RAM+, so half of that can be VRAM.
   perf_info->vram_mb = 4096;
-  std::move(callback).Run(std::move(perf_info));
+  auto device_info = on_device_model::mojom::DeviceInfo::New();
+  std::move(callback).Run(std::move(perf_info), std::move(device_info));
 #else
   // This is expected to take awhile in some cases, so run on a background
   // thread to avoid blocking the main thread.
@@ -124,21 +125,29 @@ void OnDeviceModelService::GetDevicePerformanceInfo(
       base::BindOnce(
           [](OnDeviceModelService* service) {
             if (!service) {
-              return on_device_model::mojom::DevicePerformanceInfo::New();
+              return std::make_pair(
+                  on_device_model::mojom::DevicePerformanceInfo::New(),
+                  on_device_model::mojom::DeviceInfo::New());
             }
             base::ElapsedTimer timer;
-            on_device_model::mojom::DevicePerformanceInfoPtr perf_info =
-                service->backend_->GetDevicePerformanceInfo();
+            auto info_pair = service->backend_->GetDeviceAndPerformanceInfo();
             base::UmaHistogramTimes("OnDeviceModel.BenchmarkDuration",
                                     timer.Elapsed());
-            return perf_info;
+            return info_pair;
           },
           // WeakPtr won't work here because they're not thread-safe.
           // Raw pointers are ok because OnDeviceModelService will always live
           // as long as the ODML process does, so if this code is running the
           // service must be alive.
           base::Unretained(this)),
-      std::move(callback));
+      base::BindOnce(
+          [](GetDeviceAndPerformanceInfoCallback callback,
+             std::pair<on_device_model::mojom::DevicePerformanceInfoPtr,
+                       on_device_model::mojom::DeviceInfoPtr> info_pair) {
+            std::move(callback).Run(std::move(info_pair.first),
+                                    std::move(info_pair.second));
+          },
+          std::move(callback)));
 #endif
 }
 

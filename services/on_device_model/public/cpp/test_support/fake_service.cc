@@ -495,12 +495,15 @@ void FakeOnDeviceModelService::LoadTextSafetyModel(
   ts_holder_.Reset(std::move(params), std::move(model));
 }
 
-void FakeOnDeviceModelService::GetDevicePerformanceInfo(
-    GetDevicePerformanceInfoCallback callback) {
-  auto result = mojom::DevicePerformanceInfo::New();
-  result->performance_class = settings_->performance_class;
+void FakeOnDeviceModelService::GetDeviceAndPerformanceInfo(
+    GetDeviceAndPerformanceInfoCallback callback) {
+  auto performance_info = mojom::DevicePerformanceInfo::New();
+  performance_info->performance_class = settings_->performance_class;
+  auto device_info = mojom::DeviceInfo::New();
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)),
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(performance_info),
+                     std::move(device_info)),
       settings_->estimated_performance_delay);
 }
 

@@ -11,13 +11,31 @@
 
 namespace ml {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GpuBlockedReason {
+  kGpuConfigError = 0,
+  kBlocklisted = 1,
+  kBlocklistedForCpuAdapter = 2,
+  kNotBlocked = 3,
+  kMaxValue = kNotBlocked,
+};
+
+struct DeviceInfo {
+  GpuBlockedReason gpu_blocked_reason = GpuBlockedReason::kGpuConfigError;
+  int32_t vendor_id = 0;
+  int32_t device_id = 0;
+  std::string driver_version;
+  bool supports_fp16 = false;
+};
+
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 BASE_DECLARE_FEATURE(kOnDeviceModelAllowGpuForTesting);
 
-// Checks if the GPU is on the blocklist. If `log_histogram` is true a histogram
+// Returns GPU device info. If `log_histogram` is true a histogram
 // will be logged with the result of the check.
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-bool IsGpuBlocked(const ChromeMLAPI& api, bool log_histogram);
+DeviceInfo QueryDeviceInfo(const ChromeMLAPI& api, bool log_histogram);
 
 }  // namespace ml
 

@@ -58,8 +58,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) BackendImpl final
       on_device_model::mojom::TextSafetyModelParamsPtr params,
       mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model)
       override;
-  on_device_model::mojom::DevicePerformanceInfoPtr GetDevicePerformanceInfo()
-      override;
+  std::pair<on_device_model::mojom::DevicePerformanceInfoPtr,
+            on_device_model::mojom::DeviceInfoPtr>
+  GetDeviceAndPerformanceInfo() override;
 
  private:
   const raw_ptr<const ml::ChromeML> chrome_ml_;

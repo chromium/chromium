@@ -166,12 +166,21 @@ OnDeviceModelPerformanceClass PerformanceClassFromPref(
 void UpdatePerformanceClassPref(
     PrefService* local_state,
     OnDeviceModelPerformanceClass performance_class) {
+  // TODO(crbug.com/437807121): Check performance info before setting prefs.
   local_state->SetInteger(
       model_execution::prefs::localstate::kOnDevicePerformanceClass,
       base::to_underlying(performance_class));
   local_state->SetString(
       model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
       version_info::GetVersionNumber());
+}
+
+void UpdateDeviceInfoPrefs(PrefService* local_state,
+                           uint32_t vendor_id,
+                           uint32_t device_id,
+                           std::string driver_version,
+                           bool supports_fp16) {
+  // TODO(crbug.com/437807121): Implement prefs for device info.
 }
 
 PerformanceClassifier::PerformanceClassifier(
@@ -215,16 +224,11 @@ void PerformanceClassifier::EnsurePerformanceClassAvailable(
   CHECK(features::CanLaunchOnDeviceModelService());
 
   performance_class_state_ = PerformanceClassState::kComputing;
-  service_client_->Get()->GetDevicePerformanceInfo(
-      base::BindOnce([](on_device_model::mojom::DevicePerformanceInfoPtr info) {
-        return info->performance_class;
-      })
-          .Then(base::BindOnce(&ConvertToOnDeviceModelPerformanceClass)
-                    .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                        base::BindOnce(
-                            &PerformanceClassifier::PerformanceClassEvaluated,
-                            weak_ptr_factory_.GetWeakPtr()),
-                        OnDeviceModelPerformanceClass::kServiceCrash))));
+  service_client_->Get()->GetDeviceAndPerformanceInfo(
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&PerformanceClassifier::OnDeviceAndPerformanceInfo,
+                         weak_ptr_factory_.GetWeakPtr()),
+          nullptr, nullptr));
 }
 
 bool PerformanceClassifier::ListenForPerformanceClassAvailable(
@@ -309,12 +313,27 @@ PerformanceClassifier::GetPossibleOnDeviceCapabilities() const {
   return capabilities;
 }
 
-void PerformanceClassifier::PerformanceClassEvaluated(
-    OnDeviceModelPerformanceClass perf_class) {
-  base::UmaHistogramEnumeration(
-      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
-      perf_class);
-  UpdatePerformanceClassPref(local_state_, perf_class);
+void PerformanceClassifier::OnDeviceAndPerformanceInfo(
+    on_device_model::mojom::DevicePerformanceInfoPtr perf_info,
+    on_device_model::mojom::DeviceInfoPtr device_info) {
+  if (!perf_info || !device_info) {
+    // Must be a DefaultInvoke due to service crash
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+        OnDeviceModelPerformanceClass::kServiceCrash);
+    UpdatePerformanceClassPref(local_state_,
+                               OnDeviceModelPerformanceClass::kServiceCrash);
+  } else {
+    OnDeviceModelPerformanceClass performance_class =
+        ConvertToOnDeviceModelPerformanceClass(perf_info->performance_class);
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+        performance_class);
+    UpdatePerformanceClassPref(local_state_, performance_class);
+    UpdateDeviceInfoPrefs(local_state_, device_info->vendor_id,
+                          device_info->device_id, device_info->driver_version,
+                          device_info->supports_fp16);
+  }
   performance_class_state_ = PerformanceClassState::kComplete;
   performance_class_callbacks_.Notify();
 }

@@ -252,12 +252,13 @@ void PageHandler::OnModelLoaded(
                      on_device_model::mojom::LoadModelResult::kSuccess));
 }
 
-void PageHandler::GetDevicePerformanceInfo(
-    GetDevicePerformanceInfoCallback callback) {
-  GetService().GetDevicePerformanceInfo(
+void PageHandler::GetDeviceAndPerformanceInfo(
+    GetDeviceAndPerformanceInfoCallback callback) {
+  GetService().GetDeviceAndPerformanceInfo(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(callback),
-          on_device_model::mojom::DevicePerformanceInfo::New()));
+          on_device_model::mojom::DevicePerformanceInfo::New(),
+          on_device_model::mojom::DeviceInfo::New()));
 }
 
 void PageHandler::GetDefaultModelPath(GetDefaultModelPathCallback callback) {
@@ -289,9 +290,10 @@ void PageHandler::OnLogMessageAdded(
 
 void PageHandler::OnReceivedPerformanceInfoForPageData(
     PageHandler::GetPageDataCallback callback,
-    on_device_model::mojom::DevicePerformanceInfoPtr performance_info) {
+    on_device_model::mojom::DevicePerformanceInfoPtr perf_info,
+    on_device_model::mojom::DeviceInfoPtr device_info) {
   auto data = mojom::PageData::New();
-  data->performance_info = std::move(performance_info);
+  data->performance_info = std::move(perf_info);
 
   auto* component_manager =
       optimization_guide_keyed_service_->GetComponentManager();
@@ -364,7 +366,7 @@ void PageHandler::OnReceivedPerformanceInfoForPageData(
 }
 
 void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
-  GetDevicePerformanceInfo(
+  GetDeviceAndPerformanceInfo(
       base::BindOnce(&PageHandler::OnReceivedPerformanceInfoForPageData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

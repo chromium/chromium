@@ -21,10 +21,11 @@ uint64_t GetLowRamThresholdMb();
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 uint64_t GetHighRamThresholdMb();
 
-// Returns the performance info of the device based on a small benchmark.
+// Returns the device info and performance info as a pair.
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-on_device_model::mojom::DevicePerformanceInfoPtr GetDevicePerformanceInfo(
-    const ChromeML& chrome_ml);
+std::pair<on_device_model::mojom::DevicePerformanceInfoPtr,
+          on_device_model::mojom::DeviceInfoPtr>
+GetDeviceAndPerformanceInfo(const ChromeML& chrome_ml);
 
 }  // namespace ml
 

@@ -187,7 +187,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
 
   private async getPerformanceClass_() {
     this.performanceClassText_ = getPerformanceClassText(
-        (await this.proxy_.handler.getDevicePerformanceInfo())
+        (await this.proxy_.handler.getDeviceAndPerformanceInfo())
             .performanceInfo.performanceClass);
   }
 

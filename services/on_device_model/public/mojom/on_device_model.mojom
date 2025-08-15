@@ -389,3 +389,15 @@ struct DevicePerformanceInfo {
   // Detected VRAM for the device, in MiB.
   uint64 vram_mb;
 };
+
+struct DeviceInfo {
+  // Numeric vendor id for the GPU.
+  int32 vendor_id;
+  // Numeric device id for the GPU.
+  int32 device_id;
+  // GPU adapter description string
+  // (e.g., "NVIDIA GeForce RTX 3080"), including driver version
+  string driver_version;
+  // Whether the device supports FP16 operations.
+  bool supports_fp16;
+};

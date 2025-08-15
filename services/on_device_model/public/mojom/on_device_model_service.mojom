@@ -148,8 +148,10 @@ interface OnDeviceModelService {
   LoadTextSafetyModel(
       TextSafetyModelParams params, pending_receiver<TextSafetyModel> model);
 
-  // Returns performance benchmark results for the device.
-  GetDevicePerformanceInfo() => (DevicePerformanceInfo perf_info);
+  // Returns performance benchmark results for the device as well as
+  // its info (vendor id, device id, driver version, fp16 support).
+  GetDeviceAndPerformanceInfo() =>
+      (DevicePerformanceInfo performanceInfo, DeviceInfo device_info);
 };
 
 // A service which allows loading platform trusted models which are stored

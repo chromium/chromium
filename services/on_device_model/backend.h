@@ -38,8 +38,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) Backend {
       mojom::TextSafetyModelParamsPtr params,
       mojo::PendingReceiver<mojom::TextSafetyModel> model) = 0;
 
-  // Gets the performance information for this device.
-  virtual mojom::DevicePerformanceInfoPtr GetDevicePerformanceInfo() = 0;
+  // Gets the device and performance information for this device.
+  virtual std::pair<mojom::DevicePerformanceInfoPtr, mojom::DeviceInfoPtr>
+  GetDeviceAndPerformanceInfo() = 0;
 };
 
 }  // namespace on_device_model

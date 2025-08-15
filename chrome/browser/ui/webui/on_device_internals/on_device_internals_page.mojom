@@ -100,9 +100,11 @@ interface PageHandler {
                     pending_receiver<on_device_model.mojom.OnDeviceModel> model) =>
       (on_device_model.mojom.LoadModelResult result);
 
-  // Returns the performance class based on benchmarks run on the device.
-  GetDevicePerformanceInfo() =>
-      (on_device_model.mojom.DevicePerformanceInfo performance_info);
+  // Returns the performance class based on benchmarks run on the device as
+  // well as its info (vendor id, device id, driver version, and fp16 support).
+  GetDeviceAndPerformanceInfo() =>
+      (on_device_model.mojom.DevicePerformanceInfo performance_info,
+       on_device_model.mojom.DeviceInfo device_info);
 
   // Returns the path of the default model.
   GetDefaultModelPath() => (mojo_base.mojom.FilePath? model_path);

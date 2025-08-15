@@ -60,8 +60,8 @@ class PageHandler : public mojom::PageHandler,
       const base::FilePath& model_path,
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadPlatformModelCallback callback) override;
-  void GetDevicePerformanceInfo(
-      GetDevicePerformanceInfoCallback callback) override;
+  void GetDeviceAndPerformanceInfo(
+      GetDeviceAndPerformanceInfoCallback callback) override;
   void GetDefaultModelPath(GetDefaultModelPathCallback callback) override;
   void GetPageData(GetPageDataCallback callback) override;
   void SetFeatureRecentlyUsedState(int feature_key,
@@ -81,13 +81,15 @@ class PageHandler : public mojom::PageHandler,
   // populates a `PageData` to be returned via `callback`.
   void OnReceivedPerformanceInfoForPageData(
       GetPageDataCallback callback,
-      on_device_model::mojom::DevicePerformanceInfoPtr performance_info);
+      on_device_model::mojom::DevicePerformanceInfoPtr perf_info,
+      on_device_model::mojom::DeviceInfoPtr device_info);
 
   mojo::Receiver<mojom::PageHandler> receiver_;
   mojo::Remote<mojom::Page> page_;
 
   mojo::Remote<Service> service_;
-  on_device_model::mojom::DevicePerformanceInfoPtr performance_info_;
+  on_device_model::mojom::DevicePerformanceInfoPtr perf_info_;
+  on_device_model::mojom::DeviceInfoPtr device_info_;
 
 #if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
   mojo::Remote<PlatformService> platform_service_;

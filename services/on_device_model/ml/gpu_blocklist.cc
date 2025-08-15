@@ -7,6 +7,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -29,30 +30,18 @@ const base::FeatureParam<std::string> kGpuBlockList{
     "8086:*:*25.20.100.*|8086:*:*26.20.100.*|8086:*:*27.20.100.*|"
     "8086:*:*30.0.101.3111*|8086:*:*31.0.101.4826*|8086:*:*31.0.101.4672*"};
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class GpuBlockedReason {
-  kGpuConfigError = 0,
-  kBlocklisted = 1,
-  kBlocklistedForCpuAdapter = 2,
-  kNotBlocked = 3,
-  kMaxValue = kNotBlocked,
-};
-
 void LogGpuBlocked(GpuBlockedReason reason) {
   base::UmaHistogramEnumeration("OnDeviceModel.GpuBlockedReason", reason);
 }
 
 DISABLE_CFI_DLSYM
-GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
+DeviceInfo QueryDeviceInfoInternal(const ChromeMLAPI& api) {
+  DeviceInfo query_device_info;
   if (base::FeatureList::IsEnabled(kOnDeviceModelAllowGpuForTesting)) {
-    return GpuBlockedReason::kNotBlocked;
+    query_device_info.gpu_blocked_reason = GpuBlockedReason::kNotBlocked;
+    query_device_info.supports_fp16 = true;
+    return query_device_info;
   }
-
-  struct QueryData {
-    bool blocklisted;
-    bool is_blocklisted_cpu_adapter;
-  };
 
   static crash_reporter::CrashKeyString<256> blocklist_key(
       "ChromeML-blocklist");
@@ -74,7 +63,8 @@ GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
     device = &gpu_info.active_gpu();
   }
   if (device->IsSoftwareRenderer()) {
-    return GpuBlockedReason::kBlocklisted;
+    query_device_info.gpu_blocked_reason = GpuBlockedReason::kBlocklisted;
+    return query_device_info;
   }
   if (device) {
     WGPUAdapterInfo adapter_info = {
@@ -90,49 +80,48 @@ GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
                 .ignores = kIgnoreReasons,
             })
             .blocked) {
-      return GpuBlockedReason::kBlocklisted;
+      query_device_info.gpu_blocked_reason = GpuBlockedReason::kBlocklisted;
+      return query_device_info;
     }
   }
 
-  QueryData query_data;
   if (!api.QueryGPUAdapter(
           [](WGPUAdapter cAdapter, void* data) {
             wgpu::Adapter adapter(cAdapter);
-            auto* query_data = static_cast<QueryData*>(data);
-
+            auto* device_info = static_cast<DeviceInfo*>(data);
+            device_info->supports_fp16 =
+                adapter.HasFeature(wgpu::FeatureName::ShaderF16);
             wgpu::AdapterInfo info;
             adapter.GetInfo(&info);
+            device_info->vendor_id = info.vendorID;
+            device_info->device_id = info.deviceID;
+            device_info->driver_version = info.description;
             static crash_reporter::CrashKeyString<32> device_key(
                 "ChromeML-device");
             device_key.Set(base::NumberToString(info.vendorID) + ":" +
                            base::NumberToString(info.deviceID));
-
-            query_data->blocklisted =
-                gpu::IsWebGPUAdapterBlocklisted(
+            if (gpu::IsWebGPUAdapterBlocklisted(
                     adapter,
                     {
                         .blocklist_string = kGpuBlockList.Get(),
                         .ignores = kIgnoreReasons,
                     })
-                    .blocked;
-            if (query_data->blocklisted) {
-              query_data->is_blocklisted_cpu_adapter =
-                  info.adapterType == wgpu::AdapterType::CPU;
+                    .blocked) {
+              device_info->gpu_blocked_reason = GpuBlockedReason::kBlocklisted;
+            }
+            if (device_info->gpu_blocked_reason ==
+                    GpuBlockedReason::kBlocklisted &&
+                info.adapterType == wgpu::AdapterType::CPU) {
+              device_info->gpu_blocked_reason =
+                  GpuBlockedReason::kBlocklistedForCpuAdapter;
             }
           },
-          &query_data)) {
+          &query_device_info)) {
     LOG(ERROR) << "Unable to get gpu adapter";
-    return GpuBlockedReason::kGpuConfigError;
+    return query_device_info;
   }
-
-  if (query_data.blocklisted) {
-    LOG(ERROR) << "WebGPU blocked on this device";
-    if (query_data.is_blocklisted_cpu_adapter) {
-      return GpuBlockedReason::kBlocklistedForCpuAdapter;
-    }
-    return GpuBlockedReason::kBlocklisted;
-  }
-  return GpuBlockedReason::kNotBlocked;
+  query_device_info.gpu_blocked_reason = GpuBlockedReason::kNotBlocked;
+  return query_device_info;
 }
 
 }  // namespace
@@ -142,16 +131,15 @@ BASE_FEATURE(kOnDeviceModelAllowGpuForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-bool IsGpuBlocked(const ChromeMLAPI& api, bool log_histogram) {
-  // Cache the blocked reason to avoid recomputing.
-  static std::optional<GpuBlockedReason> reason;
-  if (!reason) {
-    reason = IsGpuBlockedInternal(api);
+DeviceInfo QueryDeviceInfo(const ChromeMLAPI& api, bool log_histogram) {
+  static base::NoDestructor<DeviceInfo> cache;
+  if (cache->gpu_blocked_reason == GpuBlockedReason::kGpuConfigError) {
+    *cache = QueryDeviceInfoInternal(api);
   }
   if (log_histogram) {
-    LogGpuBlocked(*reason);
+    LogGpuBlocked(cache->gpu_blocked_reason);
   }
-  return *reason != GpuBlockedReason::kNotBlocked;
+  return *cache;
 }
 
 }  // namespace ml
