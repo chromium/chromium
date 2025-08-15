@@ -76,13 +76,17 @@ def read_config():
       help=("directory with code_generator.py and C++ encoding / binding "
           "libraries, relative to the root of the source tree."))
     cmdline_parser.add_argument("--depfile", type=unicode, required=False)
+    cmdline_parser.add_argument("--stamp", type=unicode, required=False)
     arg_options = cmdline_parser.parse_args()
     jinja_dir = arg_options.jinja_dir
     output_base = arg_options.output_base
     config_file = arg_options.config
     config_base = os.path.dirname(config_file)
     config_values = arg_options.config_value
+    if bool(arg_options.depfile) != bool(arg_options.stamp):
+      raise Exception("--depfile requires --stamp and vice versa")
     depfile = arg_options.depfile
+    stamp = arg_options.stamp
     inspector_protocol_dir = arg_options.inspector_protocol_dir.lstrip('/')
   except Exception:
     # Work with python 2 and 3 http://docs.python.org/py3k/howto/pyporting.html
@@ -125,7 +129,7 @@ def read_config():
       if len(parts) == 2:
         defaults["." + parts[0]] = parts[1]
     return (jinja_dir, config_file, init_defaults(config_partial, "", defaults),
-            depfile)
+            depfile, stamp)
   except Exception:
     # Work with python 2 and 3 http://docs.python.org/py3k/howto/pyporting.html
     exc = sys.exc_info()[1]
@@ -363,6 +367,7 @@ class Protocol(object):
   def __init__(self, config):
     self.config = config
     self.json_api = {"domains": []}
+    self.source_set = set()
     self.imported_domains = []
     self.exported_domains = []
     self.generate_domains = self.read_protocol_file(config.protocol.path)
@@ -384,7 +389,8 @@ class Protocol(object):
 
   def read_protocol_file(self, file_name):
     input_file = open(file_name, "r")
-    parsed_json = pdl.loads(input_file.read(), file_name)
+    parsed_json = pdl.loads(input_file.read(), file_name, False,
+                            self.source_set)
     input_file.close()
     version = '%s.%s' % (parsed_json["version"]["major"],
                          parsed_json["version"]["minor"])
@@ -603,9 +609,10 @@ class Protocol(object):
 
 
 def main():
-  jinja_dir, config_file, config, deps_filename = read_config()
+  jinja_dir, config_file, config, deps_filename, stamp_filename = read_config()
 
   protocol = Protocol(config)
+  source_set = protocol.source_set
 
   if not config.exported and len(protocol.exported_domains):
     sys.stderr.write(("Domains [%s] are exported, but config is missing export "
@@ -637,7 +644,7 @@ def main():
   imported_template = jinja_env.get_template("templates/Imported_h.template")
 
   outputs = dict()
-  deps = dict()
+  deps = set()
 
   for domain in protocol.json_api["domains"]:
     class_name = domain["domain"]
@@ -651,38 +658,27 @@ def main():
       "format_domain_include": functools.partial(format_domain_include, config),
     }
 
-    domain_inputs = []
-    domain_outputs = []
     if domain["domain"] in protocol.generate_domains:
       output_h = os.path.join(config.protocol.output, to_file_name(
           config, file_name + ".h"))
       outputs[output_h] = h_template.render(template_context)
+      source_set.add(h_template.filename)
       output_cpp = os.path.join(config.protocol.output, to_file_name(
           config, file_name + ".cpp"))
       outputs[output_cpp] = cpp_template.render(template_context)
-      domain_outputs.extend([output_h, output_cpp])
-      domain_inputs.extend([h_template.filename, cpp_template.filename])
+      source_set.add(cpp_template.filename)
       if domain["domain"] in protocol.exported_domains:
         output_export_h = os.path.join(config.exported.output, to_file_name(
             config, file_name + ".h"))
         outputs[output_export_h] = exported_template.render(
                 template_context)
-        domain_outputs.append(output_export_h)
-        domain_inputs.append(exported_template.filename)
+        source_set.add(exported_template.filename)
     if domain["domain"] in protocol.imported_domains:
       output_import_h = os.path.join(config.protocol.output, to_file_name(
           config, file_name + ".h"))
       outputs[output_import_h] = imported_template.render(
               template_context)
-      domain_outputs.append(output_import_h)
-      domain_inputs.append(imported_template.filename)
-
-    # If generated from a json file, domains might not have
-    # any other input dependencies.
-    if "source" in domain:
-      domain_inputs.append(domain["source"])
-    for output in domain_outputs:
-      deps.setdefault(output, []).extend(domain_inputs)
+      source_set.add(imported_template.filename)
 
   if config.lib:
     template_context = {
@@ -725,6 +721,7 @@ def main():
         inputs.append(os.path.join(lib_templates_dir, template_file))
         template = jinja_env.get_template("lib/" + template_file)
         parts.append(template.render(template_context))
+        source_set.add(template.filename)
       outputs[file_name] = "\n\n".join(parts)
 
     generate_lib_file(os.path.join(config.lib.output, to_file_name(
@@ -747,6 +744,9 @@ def main():
   if up_to_date:
     sys.exit()
 
+  if stamp_filename:
+    with open(stamp_filename, "w"):
+      pass
   for file_name, content in outputs.items():
     # Remove output file first to account for potential case changes.
     try:
@@ -758,9 +758,10 @@ def main():
     out_file.close()
 
   if deps_filename:
+    assert stamp_filename
     with open(deps_filename, "w") as deps_file:
-      for dependent, dependencies_list in deps.items():
-        deps_file.write("%s: %s\n" % (dependent, " ".join(dependencies_list)))
+      deps_file.write("%s: %s\n" % (
+        stamp_filename, " ".join(source_set)))
 
 
 if __name__ == "__main__":
