@@ -195,7 +195,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   bool expired_entry_deletion_task_queued_ = false;
 
   bool cleanup_task_disabled_for_testing_ = false;
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
 
   base::WeakPtrFactory<SharedDictionaryManagerOnDisk> weak_factory_{this};
 };

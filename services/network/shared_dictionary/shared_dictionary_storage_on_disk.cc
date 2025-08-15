@@ -94,10 +94,11 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
       isolation_key_(isolation_key),
       on_deleted_closure_runner_(std::move(on_deleted_closure_runner)),
       dictionary_cache_(dictionary_cache) {
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
-      base::BindRepeating(&SharedDictionaryStorageOnDisk::OnMemoryPressure,
-                          weak_factory_.GetWeakPtr()));
+  memory_pressure_listener_ =
+      std::make_unique<base::AsyncMemoryPressureListener>(
+          FROM_HERE,
+          base::BindRepeating(&SharedDictionaryStorageOnDisk::OnMemoryPressure,
+                              weak_factory_.GetWeakPtr()));
   manager_->metadata_store().GetDictionaries(
       isolation_key_,
       base::BindOnce(
