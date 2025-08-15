@@ -96,18 +96,21 @@ class LegacyOutputAdapter:
         'prepare skylab tests.': logging.DEBUG,
         'update invocation instructions': logging.DEBUG,
     }
-    # Setup logger for printing to the same line
-    logger = logging.getLogger('single_line_logger')
-    handler = logging.StreamHandler(sys.stdout)
-    handler.terminator = ''
-    logger.addHandler(handler)
-    logger.propagate = False
+    # Setup logger for printing to the same line if we're in a terminal
+    self._single_line_logger = None
+    self._terminal_columns = -1
+    if sys.stdout.isatty() and sys.stderr.isatty():
+      logger = logging.getLogger('single_line_logger')
+      handler = logging.StreamHandler(sys.stdout)
+      handler.terminator = ''
+      logger.addHandler(handler)
+      logger.propagate = False
+      self._single_line_logger = logger
+      self._terminal_columns, _ = os.get_terminal_size()
 
     self._last_line = ''
     self._last_line_teriminal_lines = 0
     self._current_log_level = logging.DEBUG
-    self._single_line_logger = logger
-    self._terminal_columns, _ = os.get_terminal_size()
     self._current_step_name = ''
     self._dot_count = 0
 
@@ -161,7 +164,7 @@ class LegacyOutputAdapter:
       self._PrintCurrentStepName(logging.INFO)
       return
     matches = self._ninja_status_re.match(line)
-    if matches:
+    if self._single_line_logger and matches:
       # Remove the last line which might be multiple on the terminal
       self._single_line_logger.log(self._current_log_level, '\33[2K')
       if self._last_line_teriminal_lines > 1:
@@ -170,7 +173,7 @@ class LegacyOutputAdapter:
       self._single_line_logger.log(self._current_log_level, '\r' + line)
       self._single_line_logger.handlers[0].flush()
       return
-    if self._last_line.startswith('['):
+    if self._single_line_logger and self._last_line.startswith('['):
       basic_logger.log(self._current_log_level, '')
     self._StdoutProcessLine(line)
 
@@ -179,6 +182,9 @@ class LegacyOutputAdapter:
       self._PrintCurrentStepName(logging.INFO)
     matches = self._collect_wait_re.match(line)
     if matches:
+      if not self._single_line_logger:
+        basic_logger.log(self._current_log_level, line)
+        return
       task_ids = json.loads(matches[2])['task_id']
       self._dot_count = (self._dot_count % 5) + 1
       self._single_line_logger.log(
@@ -186,7 +192,7 @@ class LegacyOutputAdapter:
           f'\33[2K\rStill waiting on: {len(task_ids)} shard(s)' +
           '.' * self._dot_count)
       return
-    if line == self.STEP_CLOSED_TEXT:
+    if line == self.STEP_CLOSED_TEXT and self._single_line_logger:
       self._single_line_logger.log(self._current_log_level,
                                    '\33[2K\rStill waiting on: 0 shard(s)...')
       basic_logger.log(self._current_log_level, '')

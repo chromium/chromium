@@ -45,7 +45,17 @@ class LegacyOutputAdapterTests(unittest.TestCase):
     patch_terminal_size = mock.patch('os.get_terminal_size')
     mock_terminal_size = patch_terminal_size.start()
     mock_terminal_size.return_value = (128, 1)
+
+    patch_stdout_isatty = mock.patch('sys.stdout.isatty')
+    mock_stdout_isatty = patch_stdout_isatty.start()
+    mock_stdout_isatty.return_value = True
+    patch_stderr_isatty = mock.patch('sys.stderr.isatty')
+    mock_stderr_isatty = patch_stderr_isatty.start()
+    mock_stderr_isatty.return_value = True
+
     self.addCleanup(patch_terminal_size.stop)
+    self.addCleanup(patch_stdout_isatty.stop)
+    self.addCleanup(patch_stderr_isatty.stop)
 
   def testNoRecipeEngineOutput(self):
     adapter = output_adapter.LegacyOutputAdapter()
