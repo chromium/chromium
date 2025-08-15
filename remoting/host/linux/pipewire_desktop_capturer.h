@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
@@ -26,22 +27,18 @@ namespace remoting {
 
 // DesktopCapturer implementation that allows capturing a single screen via the
 // provided PipewireCaptureStream.
-class PipewireDesktopCapturer : public DesktopCapturer {
+class PipewireDesktopCapturer : public DesktopCapturer,
+                                public webrtc::DesktopCapturer::Callback {
  public:
-  PipewireDesktopCapturer();
+  static constexpr bool kSupportsFrameCallbacks = true;
+
+  explicit PipewireDesktopCapturer(base::WeakPtr<PipewireCaptureStream> stream);
   PipewireDesktopCapturer(const PipewireDesktopCapturer&) = delete;
   PipewireDesktopCapturer& operator=(const PipewireDesktopCapturer&) = delete;
   ~PipewireDesktopCapturer() override;
 
-  // Returns a callback to initialize PipewireDesktopCapturer. The callback must
-  // be called exactly once on the sequence where this object was constructed.
-  // The `base::WeakPtr<PipewireCaptureStream>` also must be (or will be) bound
-  // to the creating sequence. Calls of DesktopCapturer APIs will be handled
-  // after the callback is called.
-  base::OnceCallback<void(base::WeakPtr<PipewireCaptureStream>)>
-  GetInitCallback();
-
-  // DesktopCapturer interface. Methods will be called on the capture sequence.
+  // DesktopCapturer interface.
+  // These methods can be called on any sequence.
   bool SupportsFrameCallbacks() override;
   void Start(Callback* callback) override;
   void CaptureFrame() override;
@@ -55,9 +52,20 @@ class PipewireDesktopCapturer : public DesktopCapturer {
   bool SelectSource(SourceId id) override;
 
  private:
-  class Core;
+  // webrtc::DesktopCapturer::Callback implementation.
+  void OnFrameCaptureStart() override;
+  void OnCaptureResult(Result result,
+                       std::unique_ptr<webrtc::DesktopFrame> frame) override;
 
-  scoped_refptr<Core> core_;
+  base::WeakPtr<PipewireCaptureStream> stream_;
+
+  // Per the webrtc::DesktopCapturer interface, callback is required to remain
+  // valid until this is destroyed.
+  raw_ptr<Callback> callback_ = nullptr;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<PipewireDesktopCapturer> weak_factory_{this};
 };
 
 }  // namespace remoting

@@ -32,6 +32,7 @@
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/curtain_mode.h"
+#include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/desktop_display_info_loader.h"
 #include "remoting/host/desktop_display_info_monitor.h"
@@ -136,18 +137,20 @@ GnomeInteractionStrategy::CreateDesktopResizer() {
 std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(
     webrtc::ScreenId id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto capturer = std::make_unique<PipewireDesktopCapturer>();
+  auto proxy = std::make_unique<DesktopCapturerProxy>(
+      base::SequencedTaskRunner::GetCurrentDefault());
+  proxy->set_supports_frame_callbacks(
+      PipewireDesktopCapturer::kSupportsFrameCallbacks);
   base::WeakPtr<PipewireCaptureStream> stream =
       capture_stream_manager_.GetStream(id);
-  auto init_cb = capturer->GetInitCallback();
   if (stream) {
-    std::move(init_cb).Run(stream);
+    proxy->set_capturer(std::make_unique<PipewireDesktopCapturer>(stream));
   } else {
     HOST_LOG << "Video capturer for screen ID " << id
              << " will be initialized after the stream is ready.";
-    pending_desktop_capturer_inits_[id] = std::move(init_cb);
+    pending_desktop_capturer_proxies_[id] = proxy->GetWeakPtr();
   }
-  return capturer;
+  return proxy;
 }
 
 std::unique_ptr<webrtc::MouseCursorMonitor>
@@ -365,12 +368,14 @@ void GnomeInteractionStrategy::OnPipewireCaptureStreamAdded(
   if (!stream) {
     return;
   }
-  auto it = pending_desktop_capturer_inits_.find(stream->screen_id());
-  if (it == pending_desktop_capturer_inits_.end()) {
+  auto it = pending_desktop_capturer_proxies_.find(stream->screen_id());
+  if (it == pending_desktop_capturer_proxies_.end()) {
     return;
   }
-  std::move(it->second).Run(stream);
-  pending_desktop_capturer_inits_.erase(it);
+  if (it->second) {
+    it->second->set_capturer(std::make_unique<PipewireDesktopCapturer>(stream));
+  }
+  pending_desktop_capturer_proxies_.erase(it);
 }
 
 GnomeInteractionStrategyFactory::GnomeInteractionStrategyFactory(

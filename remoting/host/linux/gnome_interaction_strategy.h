@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "remoting/host/base/loggable.h"
+#include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_interaction_strategy.h"
 #include "remoting/host/linux/ei_sender_session.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
@@ -106,9 +107,8 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy,
   // Map to allow capturers pending initialization to be initialized after the
   // corresponding pipewire stream is created, which may happen before or after
   // the capturer is created.
-  base::flat_map<webrtc::ScreenId,
-                 base::OnceCallback<void(base::WeakPtr<PipewireCaptureStream>)>>
-      pending_desktop_capturer_inits_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_map<webrtc::ScreenId, base::WeakPtr<DesktopCapturerProxy>>
+      pending_desktop_capturer_proxies_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
