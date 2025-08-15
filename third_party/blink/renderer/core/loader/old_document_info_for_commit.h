@@ -35,6 +35,8 @@ struct OldDocumentInfoForCommit : GarbageCollected<OldDocumentInfoForCommit> {
   base::TimeDelta frame_scheduler_unreported_task_time;
   // Whether the previous LocalFrame is the focused frame or not.
   bool was_focused_frame = false;
+  // The overlay color used by the previous LocalFrame, if it has an overlay.
+  std::optional<SkColor> overlay_color;
 };
 
 // Owns the OldDocumentInfoForCommit and exposes it through `info_`

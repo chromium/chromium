@@ -9654,8 +9654,7 @@ TEST_F(WebFrameSwapTest, AdHighlightEarlyApply) {
 
   // Assert that the local frame does not have any overlay color since it is not
   // in the frame tree yet.
-  ASSERT_EQ(local_frame->GetFrame()->GetFrameOverlayColorForTesting(),
-            std::nullopt);
+  ASSERT_EQ(local_frame->GetFrame()->GetFrameOverlayColor(), std::nullopt);
 
   WebDocument doc_before_navigation = local_frame->GetDocument();
 
@@ -9667,7 +9666,7 @@ TEST_F(WebFrameSwapTest, AdHighlightEarlyApply) {
 
   ASSERT_FALSE(local_frame->IsProvisional());
   ASSERT_NE(doc_before_navigation, local_frame->GetDocument());
-  ASSERT_EQ(local_frame->GetFrame()->GetFrameOverlayColorForTesting(),
+  ASSERT_EQ(local_frame->GetFrame()->GetFrameOverlayColor(),
             SkColorSetARGB(128, 255, 0, 0));
 }
 

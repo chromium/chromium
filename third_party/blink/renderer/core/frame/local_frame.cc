@@ -2758,10 +2758,11 @@ void LocalFrame::UpdateAdHighlight() {
 
   // TODO(bokan): Fenced frames may need some work to propagate the ad
   // highlighting setting to the inner tree.
-  if (IsAdRoot() && GetPage()->GetSettings().GetHighlightAds())
-    SetSubframeColorOverlay(SkColorSetARGB(128, 255, 0, 0));
-  else
-    SetSubframeColorOverlay(SK_ColorTRANSPARENT);
+  if (IsAdRoot() && GetPage()->GetSettings().GetHighlightAds()) {
+    SetFrameColorOverlay(SkColorSetARGB(128, 255, 0, 0));
+  } else {
+    SetFrameColorOverlay(SK_ColorTRANSPARENT);
+  }
 }
 
 void LocalFrame::PauseSubresourceLoading(
@@ -2925,7 +2926,7 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
  public:
   explicit FrameColorOverlay(LocalFrame* frame, SkColor color)
       : color_(color), frame_(frame) {}
-  SkColor GetColorForTesting() const { return color_; }
+  SkColor GetColor() const { return color_; }
 
  private:
   void PaintFrameOverlay(const FrameOverlay& frame_overlay,
@@ -2971,21 +2972,11 @@ struct DowncastTraits<FrameColorOverlay> {
   }
 };
 
-std::optional<SkColor> LocalFrame::GetFrameOverlayColorForTesting() const {
+std::optional<SkColor> LocalFrame::GetFrameOverlayColor() const {
   if (!frame_color_overlay_)
     return std::nullopt;
   return DynamicTo<FrameColorOverlay>(frame_color_overlay_->GetDelegate())
-      ->GetColorForTesting();
-}
-
-void LocalFrame::SetMainFrameColorOverlay(SkColor color) {
-  DCHECK(IsMainFrame() && !IsInFencedFrameTree());
-  SetFrameColorOverlay(color);
-}
-
-void LocalFrame::SetSubframeColorOverlay(SkColor color) {
-  DCHECK(!IsMainFrame() || IsInFencedFrameTree());
-  SetFrameColorOverlay(color);
+      ->GetColor();
 }
 
 void LocalFrame::SetFrameColorOverlay(SkColor color) {

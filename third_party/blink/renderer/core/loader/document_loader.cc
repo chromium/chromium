@@ -2974,10 +2974,17 @@ void DocumentLoader::CommitNavigation() {
     frame_->GetLocalFrameHostRemote()
         .HadStickyUserActivationBeforeNavigationChanged(had_sticky_activation_);
   }
-  bool was_focused_frame = old_document_info_for_commit &&
-                           old_document_info_for_commit->was_focused_frame;
-  if (was_focused_frame) {
-    frame_->GetPage()->GetFocusController().SetFocusedFrame(frame_);
+
+  if (old_document_info_for_commit) {
+    bool was_focused_frame = old_document_info_for_commit->was_focused_frame;
+    if (was_focused_frame) {
+      frame_->GetPage()->GetFocusController().SetFocusedFrame(frame_);
+    }
+
+    if (old_document_info_for_commit->overlay_color.has_value()) {
+      frame_->SetFrameColorOverlay(
+          old_document_info_for_commit->overlay_color.value());
+    }
   }
 
   bool should_clear_window_name =
