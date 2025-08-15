@@ -814,6 +814,10 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
       CHECK(tab);
       content::WebContents* web_contents = tab->GetContents();
 
+      if (!web_contents) {
+        continue;
+      }
+
 #if BUILDFLAG(IS_ANDROID)
       Profile* tab_profile =
           Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -821,10 +825,6 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
         continue;
       }
 #endif
-
-      if (!web_contents) {
-        continue;
-      }
 
       if (!MatchesBool(params->query_info.highlighted, tab->IsSelected())) {
         continue;
