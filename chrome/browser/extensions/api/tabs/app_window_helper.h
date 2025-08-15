@@ -46,8 +46,8 @@ class AppWindowHelper : public AppWindowRegistry::Observer {
 
   ActiveWindowChangedCallback active_window_changed_callback_;
 
+  // Map of AppWindows. The key is the unique SessionId from the AppWindow.
   using AppWindowMap = std::map<int, std::unique_ptr<AppWindowController>>;
-  // Map of application windows, the key to the session of the app window.
   AppWindowMap app_windows_;
 
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>

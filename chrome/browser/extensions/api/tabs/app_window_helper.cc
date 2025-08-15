@@ -26,34 +26,31 @@ AppWindowHelper::AppWindowHelper(Profile* profile,
 AppWindowHelper::~AppWindowHelper() = default;
 
 void AppWindowHelper::OnAppWindowAdded(AppWindow* app_window) {
-  // TODO(devlin): Why this check? This only observes the AppWindowRegistry
-  // associated with the profile, so I'd expect this to always be true?
-  // Ditto for the checks below.
-  if (!profile_->IsSameOrParent(
-          Profile::FromBrowserContext(app_window->browser_context()))) {
-    return;
-  }
+  // We only observe the AppWindowRegistry for our associated Profile, so this
+  // should always match.
+  CHECK(profile_->IsSameOrParent(
+      Profile::FromBrowserContext(app_window->browser_context())));
 
   AddAppWindow(app_window);
 }
 
 void AppWindowHelper::OnAppWindowRemoved(AppWindow* app_window) {
-  if (!profile_->IsSameOrParent(
-          Profile::FromBrowserContext(app_window->browser_context()))) {
-    return;
-  }
+  // We only observe the AppWindowRegistry for our associated Profile, so this
+  // should always match.
+  CHECK(profile_->IsSameOrParent(
+      Profile::FromBrowserContext(app_window->browser_context())));
 
   app_windows_.erase(app_window->session_id().id());
 }
 
 void AppWindowHelper::OnAppWindowActivated(AppWindow* app_window) {
-  // TODO(devlin): Can this ever not be found? We create a new `app_windows_`
-  // entry for each AppWindow, so there should always be one....
   AppWindowMap::const_iterator iter =
       app_windows_.find(app_window->session_id().id());
-  AppWindowController* controller =
-      iter != app_windows_.end() ? iter->second.get() : nullptr;
-  active_window_changed_callback_.Run(controller);
+  // We create a new entry in `app_windows_` for every AppWindow when it's
+  // created, so there should always be an entry.
+  CHECK(iter != app_windows_.end());
+
+  active_window_changed_callback_.Run(iter->second.get());
 }
 
 void AppWindowHelper::AddAppWindow(AppWindow* app_window) {
