@@ -52,6 +52,7 @@ import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetControll
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -192,6 +193,19 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         mSnackbarManagerSupplier.set(new SnackbarManager(this, getContentView(), null));
 
         mIntentRequestTracker = IntentRequestTracker.createFromActivity(this);
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            int backgroundColor = SemanticColorUtils.getSettingsBackgroundColor(this);
+            findViewById(R.id.content).setBackgroundColor(backgroundColor);
+            findViewById(R.id.app_bar_layout).setBackgroundColor(backgroundColor);
+        }
+    }
+
+    @Override
+    public void applyThemeOverlays() {
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            applySingleThemeOverlay(R.style.ThemeOverlay_Chromium_Settings_Containment);
+        }
+        super.applyThemeOverlays();
     }
 
     @Override

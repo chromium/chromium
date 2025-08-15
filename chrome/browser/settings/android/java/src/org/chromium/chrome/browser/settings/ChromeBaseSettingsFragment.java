@@ -25,7 +25,6 @@ import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsItemBackgroundDecoration;
 import org.chromium.components.browser_ui.settings.SettingsStylingController;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.Objects;
 
@@ -76,7 +75,6 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
         super.onViewCreated(view, savedInstanceState);
 
         if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            view.setBackgroundColor(SemanticColorUtils.getColorSurfaceContainerHigh(getContext()));
             updateBackgrounds(getListView());
         }
     }

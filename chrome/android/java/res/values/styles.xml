@@ -94,6 +94,12 @@ found in the LICENSE file.
     </style>
     <style name="Theme.Chromium.Settings" parent="Base.Theme.Chromium.Settings" />
 
+    <style
+        name="ThemeOverlay.Chromium.Settings.Containment" parent="">
+        <item name="android:navigationBarColor">@macro/settings_bg_color</item>
+        <item name="android:statusBarColor">@macro/settings_bg_color</item>
+    </style>
+
     <style name="Theme.Chromium.Settings.ManageSpace">
         <!-- With ActionBar -->
         <item name="windowActionBar">true</item>

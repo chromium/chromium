@@ -130,6 +130,11 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorSecondaryContainer, context);
     }
 
+    /** Returns the semantic color value that corresponds to settings_bg_color. */
+    public static @ColorInt int getSettingsBackgroundColor(Context context) {
+        return resolve(R.attr.colorSurfaceContainerHigh, context);
+    }
+
     /** Returns the surface color value of the conceptual toolbar_background_primary. */
     public static @ColorInt int getToolbarBackgroundPrimary(Context context) {
         return getDefaultBgColor(context);
