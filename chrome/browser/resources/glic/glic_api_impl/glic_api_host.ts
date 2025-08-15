@@ -15,6 +15,7 @@ import {AlphaType} from '//resources/mojo/skia/public/mojom/image_info.mojom-web
 import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
+import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata.mojom-webui.js';
 import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
 import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskState as ActorTaskStateMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabContext as TabContextMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientHandlerInterface, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../glic.mojom-webui.js';
@@ -259,6 +260,14 @@ class WebClientImpl implements WebClientInterface {
       return;
     }
     this.sender.requestNoResponse('glicWebClientRequestViewChange', {request});
+  }
+
+  notifyPageMetadataChanged(tabId: number, metadata: PageMetadataMojo|null):
+      void {
+    this.sender.requestNoResponse('glicWebClientPageMetadataChanged', {
+      tabId: tabIdToClient(tabId),
+      pageMetadata: pageMetadataToClient(metadata),
+    });
   }
 }
 
@@ -952,6 +961,14 @@ class HostMessageHandler implements HostMessageHandlerInterface {
             `glicBrowserOnViewChanged: invalid currentView: ${_exhaustive}`);
     }
   }
+
+  glicBrowserSubscribeToPageMetadata(request: {
+    tabId: string,
+    names: string[],
+  }): Promise<{success: boolean}> {
+    return this.handler.subscribeToPageMetadata(
+        tabIdFromClient(request.tabId), request.names);
+  }
 }
 
 /**
@@ -1466,6 +1483,17 @@ function panelStateToClient(panelState: PanelStateMojo): PanelState {
   return {
     kind: panelState.kind as number,
     windowId: optionalWindowIdToClient(panelState.windowId),
+  };
+}
+
+function pageMetadataToClient(metadata: PageMetadataMojo|
+                              null): PageMetadata|null {
+  if (!metadata) {
+    return null;
+  }
+  return {
+    frameMetadata: metadata.frameMetadata.map(
+        m => replaceProperties(m, {url: urlToClient(m.url)})),
   };
 }
 

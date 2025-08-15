@@ -646,6 +646,27 @@ export declare interface GlicBrowserHost {
    * state of the web client, such as toggle controls.
    */
   onViewChanged?(notification: ViewChangedNotification): void;
+
+  /**
+   * Returns an observable that emits when PageMetadata for the given tab
+   * changes. Only meta tags which are direct children of the head element and
+   * match one of the names provided in the names parameter will be
+   * monitored.
+   *
+   * If the tabId is invalid, the observable will complete immediately and not
+   * emit, even if the tabId becomes valid later.
+   *
+   * @throws {Error} if the names parameter is empty.
+   *
+   * Only one observable per tabId is supported. If a second observable is
+   * requested for the same tabId, the first observable will be returned, and
+   * therefore the names parameter is ignored in this case.
+   *
+   *
+   * When the tab is destroyed, the observable will complete.
+   */
+  getPageMetadata?
+      (tabId: string, names: string[]): ObservableValue<PageMetadata>|undefined;
 }
 /** Fields of interest from the system settings page. */
 export type OsPermissionType = 'media'|'geolocation';

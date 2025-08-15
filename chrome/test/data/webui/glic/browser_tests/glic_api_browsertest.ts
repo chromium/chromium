@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {HostCapability, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PanelOpeningData, ScrollToError, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertRejects, assertTrue, checkDefined, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 
@@ -1217,6 +1217,223 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.getModelQualityClientId);
     const clientId = await this.host.getModelQualityClientId();
     assertDefined(clientId);
+  }
+
+/**
+   * A basic test to verify that `getPageMetadata` correctly retrieves metadata
+   * for a given tab.
+   */
+  async testGetPageMetadata() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    const metadataObservable = this.host.getPageMetadata(tabId, ['author']);
+    assertDefined(metadataObservable);
+    const metadataSequence = observeSequence(metadataObservable);
+
+    const metadata: PageMetadata = await metadataSequence.next();
+
+    assertEquals(1, metadata.frameMetadata.length);
+    const authorTag =
+        metadata.frameMetadata[0]!.metaTags.find(tag => tag.name === 'author');
+    assertDefined(authorTag);
+    assertEquals('George', authorTag.content);
+  }
+
+  /**
+   * Ensures that subscribing to metadata for an invalid `tabId` does not
+   * result in any emissions.
+   */
+  async testGetPageMetadataInvalidTabId() {
+    assertDefined(this.host.getPageMetadata);
+
+    const metadataObservable =
+        this.host.getPageMetadata('invalid-tab-id', ['author']);
+    assertDefined(metadataObservable);
+    const metadataSequence = observeSequence(metadataObservable);
+
+    // The observable should not emit any more values.
+    // Wait a bit to ensure that any spurious updates would have been received.
+    await sleep(500);
+    // TODO(gklassen): update this to assert that the observable is completed
+    // once observeSequence is updated to handle complete.
+    assertTrue(metadataSequence.isEmpty());
+  }
+
+  /**
+   * Confirms that calling `getPageMetadata` with an empty array of meta tag
+   * names throws an error, as expected.
+   */
+  async testGetPageMetadataEmptyNames() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    try {
+      this.host.getPageMetadata(tabId, []);
+      assertTrue(false, 'Should have thrown an error');
+    } catch (e) {
+      assertEquals('names must not be empty', (e as Error).message);
+    }
+  }
+
+  /**
+   * Verifies that subsequent calls to `getPageMetadata` for the same `tabId`
+   * return the same `ObservableValue` instance, ignoring the new `names`
+   * parameter.
+   */
+  async testGetPageMetadataMultipleSubscriptions() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    const metadataObservable1 = this.host.getPageMetadata(tabId, ['author']);
+    assertDefined(metadataObservable1);
+
+    const metadataObservable2 =
+        this.host.getPageMetadata(tabId, ['description']);
+    assertDefined(metadataObservable2);
+
+    assertTrue(metadataObservable1 === metadataObservable2);
+
+    const metadataSequence = observeSequence(metadataObservable1);
+    const metadata: PageMetadata = await metadataSequence.next();
+    assertDefined(metadata);
+    assertEquals(1, metadata.frameMetadata.length);
+    assertEquals(1, metadata.frameMetadata[0]!.metaTags.length);
+    // Should be 'author', not 'description'.
+    assertEquals('author', metadata.frameMetadata[0]!.metaTags[0]!.name);
+  }
+
+  /**
+   * Tests that the `ObservableValue` returned by `getPageMetadata` emits new
+   * values when the page's metadata changes. This test uses corresponding
+   * C++ changes to modify the metadata.
+   */
+  async testGetPageMetadataUpdates() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    const metadataObservable = this.host.getPageMetadata(tabId, ['author']);
+    assertDefined(metadataObservable);
+    const metadataSequence = observeSequence(metadataObservable);
+
+    let metadata: PageMetadata = await metadataSequence.next();
+    assertDefined(metadata);
+    assertEquals(1, metadata.frameMetadata.length);
+    let authorTag =
+        metadata.frameMetadata[0]!.metaTags.find(tag => tag.name === 'author');
+    assertDefined(authorTag);
+    assertEquals('George', authorTag.content);
+
+    // C++ side will change the meta tag.
+    await this.advanceToNextStep();
+
+    metadata = await metadataSequence.next();
+    assertDefined(metadata);
+    assertEquals(1, metadata.frameMetadata.length);
+    authorTag =
+        metadata.frameMetadata[0]!.metaTags.find(tag => tag.name === 'author');
+    assertDefined(authorTag);
+    assertEquals('Ruth', authorTag.content);
+  }
+
+  /**
+   * Checks that the `ObservableValue` stops emitting updates after the
+   * associated tab is closed.
+   */
+  async testGetPageMetadataTabDestroyed() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    const metadataObservable = this.host.getPageMetadata(tabId, ['author']);
+    assertDefined(metadataObservable);
+    const metadataSequence = observeSequence(metadataObservable);
+
+    const metadata: PageMetadata = await metadataSequence.next();
+    assertDefined(metadata);
+    assertEquals(1, metadata.frameMetadata[0]!.metaTags.length);
+
+    // Close the tab.
+    await this.advanceToNextStep();
+
+    // The observable should not emit any more values.
+    // Wait a bit to ensure that any spurious updates would have been received.
+    await sleep(500);
+    // TODO(gklassen): update this to assert that the observable is completed
+    // once observeSequence is updated to handle complete.
+    assertTrue(metadataSequence.isEmpty());
+  }
+
+  /**
+   * Verifies that metadata updates are still received after a tab's
+   * WebContents has been discarded and recreated.
+   */
+  async testGetPageMetadataWebContentsChanged() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.createTab);
+
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    const metadataObservable = this.host.getPageMetadata(tabId, ['author']);
+    assertDefined(metadataObservable);
+    const metadataSequence = observeSequence(metadataObservable);
+
+    let metadata: PageMetadata = await metadataSequence.next();
+    assertDefined(metadata);
+    assertEquals(1, metadata.frameMetadata.length);
+    let authorTag =
+        metadata.frameMetadata[0]!.metaTags.find(tag => tag.name === 'author');
+    assertDefined(authorTag);
+    assertEquals('George', authorTag.content);
+
+    // Keep the browser alive by opening another tab.
+    await this.host.createTab(location.href, {openInBackground: true});
+
+    // C++ side will discard and reload the tab, then change the meta tag.
+    await this.advanceToNextStep();
+
+    // After a WebContents change, we might get intermediate updates (e.g.,
+    // empty metadata) before the final, updated value. We loop until we see
+    // the expected content.
+    while (true) {
+      metadata = await metadataSequence.next();
+      authorTag = metadata.frameMetadata?.[0]?.metaTags?.find(
+          tag => tag.name === 'author');
+      if (authorTag?.content === 'Ruth') {
+        break;
+      }
+      console.info(
+          `Ignoring intermediate metadata: ${JSON.stringify(metadata)}`);
+    }
+
+    assertDefined(metadata);
+    assertEquals(1, metadata.frameMetadata.length);
+    authorTag =
+        metadata.frameMetadata[0]!.metaTags.find(tag => tag.name === 'author');
+    assertDefined(authorTag);
+    assertEquals('Ruth', authorTag.content);
   }
 
   private async closePanelAndWaitUntilInactive() {

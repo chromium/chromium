@@ -54,6 +54,8 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/permissions/system/mock_platform_handle.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -170,8 +172,7 @@ class GlicApiTestWithOneTab : public GlicApiTest {
 
   std::string GetDocumentIdForTab(ui::ElementIdentifier tab_id) {
     ui::TrackedElement* const element =
-        ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
-            tab_id);
+        ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(tab_id);
     CHECK(element);
     content::RenderFrameHost* rfh = AsInstrumentedWebContents(element)
                                         ->web_contents()
@@ -1663,8 +1664,100 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
   }
 }
 
-// TODO(crbug.com/438164226): Add API tests for the OnViewChanged updates and
+// TODO(crbug.com/422442409): Add API tests for the OnViewChanged updates and
 // client interactions.
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetPageMetadata) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetPageMetadataInvalidTabId) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetPageMetadataEmptyNames) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testGetPageMetadataMultipleSubscriptions) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetPageMetadataUpdates) {
+  // Runs the JS test until the first `advanceToNextStep()`.
+  ExecuteJsTest();
+
+  // The JS test is now paused. We can now modify the page.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Change the content of the 'author' meta tag from "George" to "Ruth".
+  const char* script =
+      "document.querySelector('meta[name=\"author\"]').setAttribute('content', "
+      "'Ruth')";
+  ASSERT_TRUE(content::ExecJs(web_contents, script));
+
+  // Continue the JS test to verify the metadata update.
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetPageMetadataTabDestroyed) {
+  // Runs the JS test until the first `advanceToNextStep()`.
+  ExecuteJsTest();
+
+  // The JS test is now paused.
+  content::WebContents* web_contents_to_close =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // Add a new tab to keep the browser alive before closing the active tab.
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->GetIndexOfWebContents(
+          web_contents_to_close),
+      CLOSE_NONE);
+
+  // Continue the JS test to verify the observable is completed.
+  ContinueJsTest();
+}
+
+// TODO(gklassen): Re-enable this test once I figure out how to doscard the tab
+// while preserving the test harness.
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       DISABLED_testGetPageMetadataWebContentsChanged) {
+  // Runs the JS test until the first `advanceToNextStep()`.
+  ExecuteJsTest();
+
+  // The JS test is now paused.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Discard the tab. This will destroy the WebContents.
+  resource_coordinator::TabLifecycleUnitExternal::FromWebContents(web_contents)
+      ->DiscardTab(::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+  // Wait for the tab to be discarded.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return web_contents->WasDiscarded(); }));
+
+  // Select the tab to reload it. This will create a new WebContents.
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->active_index());
+  content::WebContents* new_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(new_web_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(new_web_contents));
+
+  // Change the content of the 'author' meta tag from "George" to "Ruth".
+  const char* script =
+      "document.querySelector('meta[name=\"author\"]').setAttribute('content', "
+      "'Ruth')";
+  ASSERT_TRUE(content::ExecJs(new_web_contents, script));
+
+  // Continue the JS test to verify the metadata update.
+  ContinueJsTest();
+}
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,

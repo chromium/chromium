@@ -343,6 +343,16 @@ export declare interface HostRequestTypes {
       notification: ViewChangedNotification,
     },
   };
+
+  glicBrowserSubscribeToPageMetadata: {
+    request: {
+      tabId: string,
+      names: string[],
+    },
+    response: {
+      success: boolean,
+    },
+  };
 }
 
 // Types of requests to the GlicWebClient.
@@ -451,6 +461,12 @@ export declare interface WebClientRequestTypes {
       state: ActorTaskState,
     },
   };
+  glicWebClientPageMetadataChanged: {
+    request: {
+      tabId: string,
+      pageMetadata: PageMetadata|null,
+    },
+  };
 }
 
 
@@ -526,6 +542,7 @@ type HostRequestEnumNamesType = {
     CreateTask: 0,
     PerformActions: 0,
     OnViewChanged: 0,
+    SubscribeToPageMetadata: 0,
   };
   return apiRequestTypes;
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)

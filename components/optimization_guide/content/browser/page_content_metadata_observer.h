@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_METADATA_OBSERVER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -26,38 +27,33 @@ namespace optimization_guide {
 // A class that is responsible for observing metadata for all frames in a
 // WebContents. For each remote frame, it will register a MetaTagsObserver to
 // receive metadata from the frame.
-class PageContentMetadataObserver
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<PageContentMetadataObserver> {
+//
+// This class currently only supports a single observer and set of names. Each
+// consumer should create a separate instance of this class to observe metadata
+// for a set of meta tags.
+class PageContentMetadataObserver : public content::WebContentsObserver {
  public:
-  ~PageContentMetadataObserver() override;
+  using OnPageMetadataChangedCallback =
+      base::RepeatingCallback<void(const blink::mojom::PageMetadata&)>;
 
+  PageContentMetadataObserver(content::WebContents* web_contents,
+                              const std::vector<std::string>& names,
+                              OnPageMetadataChangedCallback callback);
+  ~PageContentMetadataObserver() override;
   PageContentMetadataObserver(const PageContentMetadataObserver&) = delete;
   PageContentMetadataObserver& operator=(const PageContentMetadataObserver&) =
       delete;
 
-  using OnMetaTagsChangedCallback =
-      base::RepeatingCallback<void(content::RenderFrameHost*,
-                                   const blink::mojom::PageMetadata&)>;
-  void SetOnMetaTagsChangedCallback(OnMetaTagsChangedCallback callback) {
-    on_meta_tags_changed_callback_ = std::move(callback);
-  }
-
+ private:
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  void PrimaryPageChanged(content::Page& page) override;
-  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
 
- private:
-  friend class content::WebContentsUserData<PageContentMetadataObserver>;
+  void OnMetaTagsChangedForFrame(
+      content::RenderFrameHost* render_frame_host,
+      std::vector<blink::mojom::MetaTagPtr> meta_tags);
 
-  PageContentMetadataObserver(content::WebContents* web_contents,
-                              const std::vector<std::string>& names);
-
-  void OnMetaTagsChangedForFrame(content::RenderFrameHost* render_frame_host,
-                                 std::vector<blink::mojom::MetaTagPtr>
-                                     meta_tags);
+  void UpdateFrameObservers();
 
   // The implementation of MetaTagsObserver that will be registered with each
   // frame.
@@ -71,24 +67,27 @@ class PageContentMetadataObserver
 
     // blink::mojom::MetaTagsObserver:
     void OnMetaTagsChanged(
-        std::vector<blink::mojom::MetaTagPtr> meta_tags) override;
+        std::vector<::blink::mojom::MetaTagPtr> meta_tags) override;
     raw_ptr<PageContentMetadataObserver> owner_;
     raw_ptr<content::RenderFrameHost> render_frame_host_;
     mojo::Receiver<blink::mojom::MetaTagsObserver> receiver_;
   };
 
+  struct FrameData {
+    explicit FrameData(std::unique_ptr<FrameMetaTagsObserver> observer);
+    ~FrameData();
+    FrameData(FrameData&&);
+    FrameData& operator=(FrameData&&);
+
+    std::unique_ptr<FrameMetaTagsObserver> observer;
+    blink::mojom::FrameMetadataPtr metadata;
+  };
+
   const std::vector<std::string> names_;
 
-  base::flat_map<content::RenderFrameHost*,
-                 std::unique_ptr<FrameMetaTagsObserver>>
-      frame_meta_tags_observers_;
+  base::flat_map<content::RenderFrameHost*, FrameData> frame_data_;
 
-  std::map<content::RenderFrameHost*, blink::mojom::FrameMetadataPtr>
-      frame_metadata_cache_;
-
-  OnMetaTagsChangedCallback on_meta_tags_changed_callback_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  OnPageMetadataChangedCallback callback_;
 };
 
 }  // namespace optimization_guide

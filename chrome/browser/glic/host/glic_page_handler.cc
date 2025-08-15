@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -59,15 +60,20 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/feedback_uploader.h"
 #include "components/metrics/metrics_service.h"
+#include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -76,6 +82,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "pdf/buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -641,6 +648,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(
           mojom::HostCapability::kResetSizeAndLocationOnOpen);
     }
+    state->enable_get_page_metadata =
+        base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver);
 
     std::move(callback).Run(std::move(state));
   }
@@ -1250,6 +1259,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         cached_focused_tab_data_ = nullptr;
       }
     }
+
+    for (auto& [tab_id, metadata] : tab_id_to_cached_page_metadata_) {
+      NotifyPageMetadataChanged(tab_id, std::move(metadata));
+    }
+    tab_id_to_cached_page_metadata_.clear();
   }
 
   // BrowserIsOpenCalculator implementation.
@@ -1336,6 +1350,100 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyPinnedTabsChanged(std::move(tab_data));
   }
 
+  void SubscribeToPageMetadata(
+      int32_t tab_id,
+      const std::vector<std::string>& names,
+      SubscribeToPageMetadataCallback callback) override {
+    // TODO(gklassen): Move logic specific to page metadata into a separate
+    // class.
+    // TODO(gklassen): Modify cache implementation to just keep a list of tabs
+    // that need updates and ask the associated PageContentMetadata observer to
+    // send updates.
+
+    // Erase any existing subscription for this tab.
+    tab_id_to_page_metadata_subscriptions_.erase(tab_id);
+    tab_id_to_cached_page_metadata_.erase(tab_id);
+
+    if (names.empty()) {
+      // An empty name list is an unsubscription. We've already erased the
+      // old subscription, so we're done.
+      std::move(callback).Run(true);
+      return;
+    }
+
+    tabs::TabHandle tab_handle(tab_id);
+    auto* tab = tab_handle.Get();
+    if (!tab) {
+      std::move(callback).Run(false);
+      return;
+    }
+    content::WebContents* web_contents = tab->GetContents();
+    if (!web_contents || web_contents->IsBeingDestroyed()) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    auto on_page_metadata_changed = base::BindRepeating(
+        [](GlicWebClientHandler* handler, int32_t tab_id,
+           const blink::mojom::PageMetadata& metadata) {
+          handler->NotifyPageMetadataChanged(tab_id, metadata.Clone());
+        },
+        base::Unretained(this), tab_id);
+
+    auto observer =
+        std::make_unique<optimization_guide::PageContentMetadataObserver>(
+            web_contents, names, std::move(on_page_metadata_changed));
+
+    auto will_detach_subscription = tab->RegisterWillDetach(base::BindRepeating(
+        &GlicWebClientHandler::OnTabWillDetach, base::Unretained(this)));
+
+    auto will_discard_contents_subscription = tab->RegisterWillDiscardContents(
+        base::BindRepeating(&GlicWebClientHandler::OnTabWillDiscardContents,
+                            base::Unretained(this)));
+
+    tab_id_to_page_metadata_subscriptions_.emplace(
+        tab_id,
+        PageMetadataSubscription{std::move(observer),
+                                 std::move(will_detach_subscription),
+                                 std::move(will_discard_contents_subscription),
+                                 names});
+
+    std::move(callback).Run(true);
+  }
+
+  void OnTabWillDiscardContents(tabs::TabInterface* tab,
+                                content::WebContents* old_contents,
+                                content::WebContents* new_contents) {
+    const int32_t tab_id = tab->GetHandle().raw_value();
+    tab_id_to_cached_page_metadata_.erase(tab_id);
+    auto it = tab_id_to_page_metadata_subscriptions_.find(tab_id);
+    if (it == tab_id_to_page_metadata_subscriptions_.end()) {
+      return;
+    }
+
+    auto& subscription = it->second;
+    if (!new_contents || new_contents->IsBeingDestroyed()) {
+      // The observer is tied to the old web contents and will be destroyed.
+      // Since there's no new web contents, we can't create a new observer.
+      // The subscription will be removed by OnTabWillDetach.
+      subscription.observer.reset();
+      return;
+    }
+
+    auto on_page_metadata_changed = base::BindRepeating(
+        [](GlicWebClientHandler* handler, int32_t tab_id,
+           const blink::mojom::PageMetadata& metadata) {
+          handler->NotifyPageMetadataChanged(tab_id, metadata.Clone());
+        },
+        base::Unretained(this), tab_id);
+
+    auto observer =
+        std::make_unique<optimization_guide::PageContentMetadataObserver>(
+            new_contents, subscription.names,
+            std::move(on_page_metadata_changed));
+    subscription.observer = std::move(observer);
+  }
+
   void OnPinnedTabDataChanged(const glic::mojom::TabData* tab_data) {
     if (!tab_data) {
       return;
@@ -1360,7 +1468,29 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                                                    std::move(options));
   }
 
+  void NotifyPageMetadataChanged(int tab_id,
+                                 blink::mojom::PageMetadataPtr page_metadata) {
+    if (ShouldDoApiActivationGating() && page_metadata) {
+      // If the panel is not active, cache the metadata to be sent later.
+      // A null metadata indicates completion and should be sent immediately.
+      tab_id_to_cached_page_metadata_[tab_id] = std::move(page_metadata);
+    } else {
+      web_client_->NotifyPageMetadataChanged(tab_id, std::move(page_metadata));
+    }
+  }
+
  private:
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason) {
+    if (reason != tabs::TabInterface::DetachReason::kDelete) {
+      return;
+    }
+    const int32_t tab_id = tab->GetHandle().raw_value();
+    NotifyPageMetadataChanged(tab_id, nullptr);
+    tab_id_to_page_metadata_subscriptions_.erase(tab_id);
+    tab_id_to_cached_page_metadata_.erase(tab_id);
+  }
+
   void Uninstall() {
     SetAudioDucking(false, base::DoNothing());
     // TODO(b/409332639): centralize access indicator resetting in a single
@@ -1494,6 +1624,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       system_permission_settings_observation_;
   JournalHandler journal_handler_;
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
+
+  struct PageMetadataSubscription {
+    std::unique_ptr<optimization_guide::PageContentMetadataObserver> observer;
+    base::CallbackListSubscription will_detach_subscription;
+    base::CallbackListSubscription will_discard_contents_subscription;
+    std::vector<std::string> names;
+  };
+
+  absl::flat_hash_map<int32_t, PageMetadataSubscription>
+      tab_id_to_page_metadata_subscriptions_;
+  absl::flat_hash_map<int32_t, blink::mojom::PageMetadataPtr>
+      tab_id_to_cached_page_metadata_;
 };
 
 GlicPageHandler::GlicPageHandler(

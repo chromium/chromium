@@ -18,19 +18,20 @@ namespace optimization_guide {
 
 PageContentMetadataObserver::PageContentMetadataObserver(
     content::WebContents* web_contents,
-    const std::vector<std::string>& names)
+    const std::vector<std::string>& names,
+    OnPageMetadataChangedCallback callback)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<PageContentMetadataObserver>(*web_contents),
-      names_(names) {
-  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      [this](content::RenderFrameHost* rfh) { RenderFrameCreated(rfh); });
+      names_(names),
+      callback_(std::move(callback)) {
+  DCHECK(!names_.empty());
+  UpdateFrameObservers();
 }
 
 PageContentMetadataObserver::~PageContentMetadataObserver() = default;
 
 void PageContentMetadataObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  if (frame_meta_tags_observers_.contains(render_frame_host)) {
+  if (frame_data_.contains(render_frame_host)) {
     return;
   }
 
@@ -48,59 +49,96 @@ void PageContentMetadataObserver::RenderFrameCreated(
   // The renderer will use this remote to call the browser.
   registry->AddMetaTagsObserver(names_, std::move(observer_remote));
 
-  auto new_observer = std::make_unique<FrameMetaTagsObserver>(
-      this, render_frame_host, std::move(observer_receiver));
-  frame_meta_tags_observers_[render_frame_host] = std::move(new_observer);
+  frame_data_.try_emplace(
+      render_frame_host,
+      std::make_unique<FrameMetaTagsObserver>(this, render_frame_host,
+                                              std::move(observer_receiver)));
 }
 
 void PageContentMetadataObserver::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  frame_meta_tags_observers_.erase(render_frame_host);
-  frame_metadata_cache_.erase(render_frame_host);
+  // A frame was removed, so we should notify the observer that the page
+  // metadata has changed if it had metadata.
+  auto it = frame_data_.find(render_frame_host);
+  if (it == frame_data_.end()) {
+    return;
+  }
+
+  bool had_metadata = !!it->second.metadata;
+  frame_data_.erase(it);
+
+  if (web_contents()->IsBeingDestroyed()) {
+    // No need to notify of changes if the web contents is going away.
+    return;
+  }
+
+  if (had_metadata) {
+    OnMetaTagsChangedForFrame(nullptr, {});
+  }
 }
 
-void PageContentMetadataObserver::DOMContentLoaded(
-    content::RenderFrameHost* render_frame_host) {
-  // This is needed for frames that are not live when the observer is created.
-  RenderFrameCreated(render_frame_host);
-}
-
-void PageContentMetadataObserver::PrimaryPageChanged(content::Page& page) {
-  frame_metadata_cache_.clear();
+void PageContentMetadataObserver::UpdateFrameObservers() {
+  web_contents()->ForEachRenderFrameHost([this](content::RenderFrameHost* rfh) {
+    if (rfh->IsRenderFrameLive()) {
+      // RenderFrameCreated has the logic to create the observer and add it
+      // to the map if it doesn't exist.
+      RenderFrameCreated(rfh);
+    }
+  });
 }
 
 void PageContentMetadataObserver::OnMetaTagsChangedForFrame(
     content::RenderFrameHost* render_frame_host,
     std::vector<blink::mojom::MetaTagPtr> meta_tags) {
-  if (meta_tags.empty()) {
-    frame_metadata_cache_.erase(render_frame_host);
-  } else {
-    auto frame_metadata = blink::mojom::FrameMetadata::New();
-    frame_metadata->url = GetURLForFrameMetadata(
-        render_frame_host->GetLastCommittedURL(),
-        render_frame_host->GetLastCommittedOrigin());
-    frame_metadata->meta_tags = std::move(meta_tags);
-    frame_metadata_cache_[render_frame_host] = std::move(frame_metadata);
-  }
-
-  if (!on_meta_tags_changed_callback_) {
-    return;
-  }
-
-  auto page_metadata = blink::mojom::PageMetadata::New();
-
-  for (const auto& [rfh, frame_metadata] : frame_metadata_cache_) {
-    if (!rfh->GetParent()) {
-      // The metadata for the main frame should be the first entry.
-      page_metadata->frame_metadata.insert(
-          page_metadata->frame_metadata.begin(), frame_metadata.Clone());
-    } else {
-      page_metadata->frame_metadata.push_back(frame_metadata.Clone());
+  if (render_frame_host) {
+    auto it = frame_data_.find(render_frame_host);
+    if (it != frame_data_.end()) {
+      if (meta_tags.empty()) {
+        it->second.metadata.reset();
+      } else {
+        auto frame_metadata = blink::mojom::FrameMetadata::New();
+        frame_metadata->url = GetURLForFrameMetadata(
+            render_frame_host->GetLastCommittedURL(),
+            render_frame_host->GetLastCommittedOrigin());
+        frame_metadata->meta_tags = std::move(meta_tags);
+        it->second.metadata = std::move(frame_metadata);
+      }
     }
   }
 
-  on_meta_tags_changed_callback_.Run(render_frame_host, *page_metadata);
+  // The callback should always be valid, as it is a required parameter for
+  // creation.
+  DCHECK(callback_);
+
+  auto page_metadata = blink::mojom::PageMetadata::New();
+
+  for (const auto& [rfh, data] : frame_data_) {
+    if (!data.metadata) {
+      continue;
+    }
+
+    if (!rfh->GetParent()) {
+      // The metadata for the main frame should be the first entry.
+      page_metadata->frame_metadata.insert(
+          page_metadata->frame_metadata.begin(), data.metadata.Clone());
+    } else {
+      page_metadata->frame_metadata.push_back(data.metadata.Clone());
+    }
+  }
+
+  callback_.Run(*page_metadata);
 }
+
+PageContentMetadataObserver::FrameData::FrameData(
+    std::unique_ptr<FrameMetaTagsObserver> observer)
+    : observer(std::move(observer)) {}
+
+PageContentMetadataObserver::FrameData::~FrameData() = default;
+
+PageContentMetadataObserver::FrameData::FrameData(FrameData&&) = default;
+
+PageContentMetadataObserver::FrameData&
+PageContentMetadataObserver::FrameData::operator=(FrameData&&) = default;
 
 PageContentMetadataObserver::FrameMetaTagsObserver::FrameMetaTagsObserver(
     PageContentMetadataObserver* owner,
@@ -114,10 +152,8 @@ PageContentMetadataObserver::FrameMetaTagsObserver::~FrameMetaTagsObserver() =
     default;
 
 void PageContentMetadataObserver::FrameMetaTagsObserver::OnMetaTagsChanged(
-    std::vector<blink::mojom::MetaTagPtr> meta_tags) {
+    std::vector<::blink::mojom::MetaTagPtr> meta_tags) {
   owner_->OnMetaTagsChangedForFrame(render_frame_host_, std::move(meta_tags));
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentMetadataObserver);
 
 }  // namespace optimization_guide

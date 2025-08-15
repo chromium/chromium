@@ -124,6 +124,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SetWindowDraggableAreas"/>
     <variant name="ShowProfilePicker"/>
     <variant name="StopActorTask"/>
+    <variant name="SubscribeToPageMetadata"/>
     <variant name="SubscribeToPinCandidates"/>
     <variant name="UnpinAllTabs"/>
     <variant name="UnpinTabs"/>

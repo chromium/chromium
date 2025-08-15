@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js';
 
@@ -194,6 +194,23 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
       payload: {taskId: number, state: ActorTaskState}): void {
     this.host.setActorTaskState(payload.taskId, payload.state);
   }
+
+  glicWebClientPageMetadataChanged(
+      payload: {tabId: string, pageMetadata: PageMetadata|null}): void {
+    const observable = this.host.pageMetadataObservers.get(payload.tabId);
+    if (!observable) {
+      return;
+    }
+
+    if (payload.pageMetadata) {
+      observable.assignAndSignal(payload.pageMetadata);
+    } else {
+      if (!observable.isStopped()) {
+        observable.complete();
+      }
+      this.host.pageMetadataObservers.delete(payload.tabId);
+    }
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -234,6 +251,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private actorTaskState =
       new Map<number, ObservableValueImpl<ActorTaskState>>();
   readonly viewChangeRequestsSubject = new Subject<ViewChangeRequest>();
+  pageMetadataObservers: Map<string, ObservableValueImpl<PageMetadata>> =
+      new Map();
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
     // TODO(harringtond): Ideally, we could ensure we only process requests from
@@ -340,6 +359,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableGetContextActor) {
       this.getContextForActorFromTab = undefined;
     }
+
+    if (!state.enableGetPageMetadata) {
+      this.getPageMetadata = undefined;
+    }
+
   }
 
   webClientInitialized(
@@ -741,6 +765,36 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   onViewChanged(notification: ViewChangedNotification) {
     this.sender.requestNoResponse('glicBrowserOnViewChanged', {notification});
+  }
+
+  getPageMetadata?
+      (tabId: string, names: string[]): ObservableValueImpl<PageMetadata> {
+    if (this.pageMetadataObservers.has(tabId)) {
+      // Currently, we assume that names do not change and keep only
+      // one observer per tabId.
+      return this.pageMetadataObservers.get(tabId)!;
+    }
+
+    if (names.length === 0) {
+      throw Error('names must not be empty');
+    }
+
+    const observableValue = ObservableValueImpl.withNoValue<PageMetadata>(
+        async (isActive: boolean) => {
+          // If the client subscribes to an Observable with an invalid tabId,
+          // it will emit nothing, even if the tab later becomes valid.
+          const {success} = await this.sender.requestWithResponse(
+              'glicBrowserSubscribeToPageMetadata',
+              {tabId, names: isActive ? names : []});
+          if (!success) {
+            if (!observableValue.isStopped()) {
+              observableValue.complete();
+            }
+            this.pageMetadataObservers.delete(tabId);
+          }
+        });
+    this.pageMetadataObservers.set(tabId, observableValue);
+    return observableValue;
   }
 }
 

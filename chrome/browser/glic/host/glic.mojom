@@ -262,6 +262,8 @@ struct WebClientInitialState {
   bool enable_get_context_actor;
   // The list of capabilities of the host.
   array<HostCapability> host_capabilities;
+  // Whether get page metadata is enabled.
+  bool enable_get_page_metadata;
 };
 
 // Options for getting tab context.
@@ -746,6 +748,12 @@ interface WebClientHandler {
   // used to trigger updates to browser UI which shows the current state of the
   // web client, such as toggle controls.
   OnViewChanged(ViewChangedNotification notification);
+
+  // Subscribe to be notified when meta tags change.  Sends the current state on
+  // first call, and then notifies when the state changes. Call with an empty
+  // names array to stop receiving notifications.
+  SubscribeToPageMetadata(int32 tab_id, array<string> names)
+      => (bool success);
 };
 
 // Data sent from the browser to the web client with panel opening information.
@@ -949,6 +957,10 @@ interface WebClient {
   //
   // The web client should update its view to match the requested change.
   RequestViewChange(ViewChangeRequest request);
+
+  // Informs the client that the metadata tags have changed.
+  // Contents from meta tags are passed unsanitized from the renderer.
+  NotifyPageMetadataChanged(int32 tab_id, blink.mojom.PageMetadata? metadata);
 };
 
 // Information extracted from a tab.
