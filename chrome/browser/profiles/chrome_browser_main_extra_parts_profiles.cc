@@ -14,6 +14,7 @@
 #include "chrome/browser/accessibility/page_colors_factory.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
@@ -671,6 +672,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   AffiliationServiceFactory::GetInstance();
   AiDataKeyedServiceFactory::GetInstance();
+  AimEligibilityServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
   AndroidSmsOtpBackendFactory::GetInstance();
 #endif

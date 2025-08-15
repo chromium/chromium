@@ -138,6 +138,10 @@ class MockAutocompleteProviderClient
     return mock_tab_group_sync_service_.get();
   }
 
+  AimEligibilityService* GetAimEligibilityService() const override {
+    return nullptr;
+  }
+
   MOCK_CONST_METHOD0(GetAcceptLanguages, std::string());
   MOCK_CONST_METHOD0(GetEmbedderRepresentationOfAboutScheme, std::string());
   MOCK_METHOD0(GetBuiltinURLs, std::vector<std::u16string>());
@@ -158,6 +162,7 @@ class MockAutocompleteProviderClient
   MOCK_CONST_METHOD1(GetLensSuggestInputsWhenReady,
                      base::CallbackListSubscription(
                          LensOverlaySuggestInputsCallback callback));
+  MOCK_METHOD(bool, IsAimEligible, (), (const));
 
   MOCK_METHOD6(
       Classify,

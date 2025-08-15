@@ -41,7 +41,6 @@
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
-#include "components/search/search.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -147,15 +146,13 @@ struct EligibleMatchesAndActions {
 
     // - Restricted to when `kAiModeOmniboxEntryPoint` is disabled
     // - Restricted to DSE google
-    // - Restricted to locale EN
+    // - Restricted to country US
+    // - Restricted to locale en-US
     // - Restricted to when `kAIModeSettings` policy is enabled
     toolbelt_ai_mode =
         toolbelt &&
         !base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint) &&
-        search::DefaultSearchProviderIsGoogle(
-            client->GetTemplateURLService()) &&
-        l10n_util::GetLanguage(client->GetApplicationLocale()) == "en" &&
-        omnibox::IsAimAllowedByPolicy(client->GetPrefs()) &&
+        client->IsAimEligible() &&
         ToolbeltActionEligible(
             input, client, toolbelt_config.show_ai_mode_action_on_non_ntp,
             toolbelt_config.show_ai_mode_action_on_ntp,

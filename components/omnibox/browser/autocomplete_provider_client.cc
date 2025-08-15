@@ -61,6 +61,10 @@ bool AutocompleteProviderClient::in_background_state() const {
   return false;
 }
 
+bool AutocompleteProviderClient::IsAimEligible() const {
+  return false;
+}
+
 base::WeakPtr<AutocompleteProviderClient>
 AutocompleteProviderClient::GetWeakPtr() {
   return nullptr;

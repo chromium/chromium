@@ -1928,6 +1928,7 @@ static_library("browser") {
     "//chrome/browser/ai",
     "//chrome/browser/ai:impl",
     "//chrome/browser/autocomplete",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/autofill",
     "//chrome/browser/background",
     "//chrome/browser/background:impl",

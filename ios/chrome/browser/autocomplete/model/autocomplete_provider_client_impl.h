@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/autocomplete/model/tab_matcher_impl.h"
 
 class AutocompleteScoringModelService;
+class AimEligibilityService;
 class OnDeviceTailModelService;
 class ProfileIOS;
 struct ProviderStateService;
@@ -75,6 +76,9 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   ProviderStateService* GetProviderStateService() const override;
   base::CallbackListSubscription GetLensSuggestInputsWhenReady(
       LensOverlaySuggestInputsCallback callback) const override;
+  AimEligibilityService* GetAimEligibilityService() const override;
+  tab_groups::TabGroupSyncService* GetTabGroupSyncService() const override;
+
   std::string GetAcceptLanguages() const override;
   std::string GetEmbedderRepresentationOfAboutScheme() const override;
   std::vector<std::u16string> GetBuiltinURLs() override;
@@ -82,7 +86,6 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   component_updater::ComponentUpdateService* GetComponentUpdateService()
       override;
   signin::IdentityManager* GetIdentityManager() const override;
-  tab_groups::TabGroupSyncService* GetTabGroupSyncService() const override;
   bool IsOffTheRecord() const override;
   bool IsIncognitoProfile() const override;
   bool IsGuestSession() const override;
@@ -113,10 +116,9 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   void CloseIncognitoWindows() override {}
   void PromptPageTranslation() override {}
   void OpenLensOverlay(bool show) override {}
-  void IssueContextualSearchRequest(
-      const GURL& destination_url,
-      AutocompleteMatchType::Type match_type,
-      bool is_zero_prefix_suggestion) override {}
+  void IssueContextualSearchRequest(const GURL& destination_url,
+                                    AutocompleteMatchType::Type match_type,
+                                    bool is_zero_prefix_suggestion) override {}
 
  private:
   raw_ptr<ProfileIOS> profile_;

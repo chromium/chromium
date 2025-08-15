@@ -205,6 +205,16 @@ AutocompleteProviderClientImpl::GetLensSuggestInputsWhenReady(
       << "GetLensSuggestInputsWhenReady is not implemented by default.";
 }
 
+tab_groups::TabGroupSyncService*
+AutocompleteProviderClientImpl::GetTabGroupSyncService() const {
+  return nullptr;
+}
+
+AimEligibilityService*
+AutocompleteProviderClientImpl::GetAimEligibilityService() const {
+  return nullptr;
+}
+
 std::string AutocompleteProviderClientImpl::GetAcceptLanguages() const {
   return profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages);
 }
@@ -240,11 +250,6 @@ AutocompleteProviderClientImpl::GetComponentUpdateService() {
 signin::IdentityManager* AutocompleteProviderClientImpl::GetIdentityManager()
     const {
   return IdentityManagerFactory::GetForProfile(profile_);
-}
-
-tab_groups::TabGroupSyncService*
-AutocompleteProviderClientImpl::GetTabGroupSyncService() const {
-  return nullptr;
 }
 
 bool AutocompleteProviderClientImpl::IsOffTheRecord() const {

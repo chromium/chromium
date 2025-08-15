@@ -13,3 +13,25 @@ source_set("autocomplete") {
     "//components/omnibox/browser:location_bar",
   ]
 }
+
+source_set("aim_eligibility_service") {
+  sources = [
+    "aim_eligibility_service.cc",
+    "aim_eligibility_service.h",
+    "aim_eligibility_service_factory.cc",
+    "aim_eligibility_service_factory.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//components/keyed_service/core",
+    "//components/omnibox/browser",
+    "//components/prefs",
+    "//components/search",
+    "//components/search_engines",
+    "//components/variations/service",
+    "//content/public/browser",
+  ]
+}

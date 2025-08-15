@@ -289,27 +289,34 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
   for (TemplateURL* turl : turls) {
     if (turl->starter_pack_id() > 0 &&
         turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
-      // Don't add the expanded set of starter pack engines unless the feature
-      // is enabled.
-      if ((turl->starter_pack_id() == template_url_starter_pack_data::kGemini &&
-           !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
-          (turl->starter_pack_id() == template_url_starter_pack_data::kPage &&
-           !omnibox_feature_configs::ContextualSearch::Get()
-                .starter_pack_page)) {
+      // Skip @gemini if feature disabled.
+      if (turl->starter_pack_id() == template_url_starter_pack_data::kGemini &&
+          !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) {
+        continue;
+      }
+      // Skip @page if feature disabled.
+      if (turl->starter_pack_id() == template_url_starter_pack_data::kPage &&
+          !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page) {
+        continue;
+      }
+      // Skip @aimode if feature disabled.
+      if (turl->starter_pack_id() == template_url_starter_pack_data::kAiMode &&
+          (!omnibox_feature_configs::Toolbelt::Get().enabled ||
+           !client_->IsAimEligible())) {
         continue;
       }
       // The history starter pack engine is disabled in incognito mode.
-      if (client_->IsOffTheRecord() &&
-          turl->starter_pack_id() == template_url_starter_pack_data::kHistory) {
+      if (turl->starter_pack_id() == template_url_starter_pack_data::kHistory &&
+          client_->IsOffTheRecord()) {
         continue;
       }
       AddStarterPackMatch(*turl, input);
-      // Don't add enterprise search aggregator engines in incognito mode.
     } else if (turl->featured_by_policy() &&
                IsEnterpriseSearchAggregatorTemplateURLEnabled(
                    *turl, client_->IsOffTheRecord()) &&
                turl->is_active() == TemplateURLData::ActiveStatus::kTrue &&
                enterprise_count < kMaxEnterpriseSuggestions) {
+      // Don't add enterprise search aggregator engines in incognito mode.
       AddFeaturedEnterpriseSearchMatch(*turl, input);
       enterprise_count++;
     }

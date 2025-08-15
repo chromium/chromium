@@ -26,11 +26,12 @@ class Profile;
 class TabMatcher;
 class AutocompleteScoringModelService;
 class OnDeviceTailModelService;
+class AimEligibilityService;
 
 namespace content {
 class StoragePartition;
 class WebContents;
-}
+}  // namespace content
 
 namespace unified_consent {
 class UrlKeyedDataCollectionConsentHelper;
@@ -95,6 +96,8 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
   ProviderStateService* GetProviderStateService() const override;
   tab_groups::TabGroupSyncService* GetTabGroupSyncService() const override;
+  AimEligibilityService* GetAimEligibilityService() const override;
+
   bool IsOffTheRecord() const override;
   bool IsIncognitoProfile() const override;
   bool IsGuestSession() const override;
@@ -127,6 +130,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   std::optional<bool> IsPagePaywalled() const override;
   base::CallbackListSubscription GetLensSuggestInputsWhenReady(
       LensOverlaySuggestInputsCallback callback) const override;
+  bool IsAimEligible() const override;
   base::WeakPtr<AutocompleteProviderClient> GetWeakPtr() override;
 
   // OmniboxAction::Client:
@@ -137,10 +141,9 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   void PromptPageTranslation() override;
   bool OpenJourneys(const std::string& query) override;
   void OpenLensOverlay(bool show) override;
-  void IssueContextualSearchRequest(
-      const GURL& destination_url,
-      AutocompleteMatchType::Type match_type,
-      bool is_zero_prefix_suggestion) override;
+  void IssueContextualSearchRequest(const GURL& destination_url,
+                                    AutocompleteMatchType::Type match_type,
+                                    bool is_zero_prefix_suggestion) override;
 
   // For testing.
   void set_storage_partition(content::StoragePartition* storage_partition) {
