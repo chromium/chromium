@@ -10,8 +10,10 @@
 // A protocol for providing a logo vendor object used in Home customization.
 @protocol HomeCustomizationSearchEngineLogoMediatorProvider
 
-// Provides the logo vendor object.
-- (SearchEngineLogoMediator*)provideSearchEngineLogoMediator;
+// Returns a SearchEngineLogoMediator for the given key.
+// May return a cached instance or create a new one as needed.
+- (SearchEngineLogoMediator*)provideSearchEngineLogoMediatorForKey:
+    (NSString*)key;
 
 @end
 

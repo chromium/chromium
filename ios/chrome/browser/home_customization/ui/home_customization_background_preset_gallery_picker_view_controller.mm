@@ -394,7 +394,8 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
   SearchEngineLogoMediator* searchEngineLogoMediator =
-      [self.searchEngineLogoMediatorProvider provideSearchEngineLogoMediator];
+      [self.searchEngineLogoMediatorProvider
+          provideSearchEngineLogoMediatorForKey:itemIdentifier];
 
   [cell configureWithBackgroundOption:backgroundConfiguration
              searchEngineLogoMediator:searchEngineLogoMediator

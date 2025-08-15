@@ -9,6 +9,7 @@
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_mutator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -39,8 +40,6 @@ const CGFloat kCenterStackSpacing = 4.0;
     UIScrollViewDelegate> {
   // The original image to be framed.
   UIImage* _originalImage;
-  // Mediator in charge of displaying Google logo/doodle.
-  SearchEngineLogoMediator* _searchEngineLogoMediator;
   // Image view displaying the image.
   UIImageView* _imageView;
   // Bottom section container.
@@ -55,15 +54,11 @@ const CGFloat kCenterStackSpacing = 4.0;
 
 #pragma mark - Initialization
 
-- (instancetype)initWithImage:(UIImage*)image
-     searchEngineLogoMediator:
-         (SearchEngineLogoMediator*)searchEngineLogoMediator {
+- (instancetype)initWithImage:(UIImage*)image {
   CHECK(image);
-  CHECK(searchEngineLogoMediator);
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _originalImage = image;
-    _searchEngineLogoMediator = searchEngineLogoMediator;
     // Set fullscreen presentation.
     self.modalPresentationStyle = UIModalPresentationOverFullScreen;
   }
@@ -156,19 +151,21 @@ const CGFloat kCenterStackSpacing = 4.0;
   [self.view addSubview:topSection];
 
   // Add logo vendor view.
-  if (_searchEngineLogoMediator) {
-    // Get logo view and configure it.
-    UIView* logoView = _searchEngineLogoMediator.view;
-    logoView.translatesAutoresizingMaskIntoConstraints = NO;
-    _searchEngineLogoMediator.usesMonochromeLogo = YES;
-    logoView.tintColor = [UIColor colorNamed:kSolidWhiteColor];
-    [topSection addArrangedSubview:logoView];
+  // Get logo view and configure it.
+  SearchEngineLogoMediator* searchEngineLogoMediator =
+      [self.searchEngineLogoMediatorProvider
+          provideSearchEngineLogoMediatorForKey:@"kUserUploaded"];
+  UIView* logoView = searchEngineLogoMediator.view;
+  logoView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    [NSLayoutConstraint activateConstraints:@[
-      [logoView.widthAnchor constraintEqualToConstant:kLogoContainerWidth],
-      [logoView.heightAnchor constraintEqualToConstant:kLogoContainerHeight]
-    ]];
-  }
+  searchEngineLogoMediator.usesMonochromeLogo = YES;
+  logoView.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+  [topSection addArrangedSubview:logoView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [logoView.widthAnchor constraintEqualToConstant:kLogoContainerWidth],
+    [logoView.heightAnchor constraintEqualToConstant:kLogoContainerHeight]
+  ]];
 
   // Omnibox view.
   UIView* omniboxView = [[UIView alloc] init];

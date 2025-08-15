@@ -49,6 +49,13 @@ CGFloat const kSheetCornerRadius = 30;
   // Displays the background picker action sheet.
   HomeCustomizationBackgroundPickerActionSheetCoordinator*
       _backgroundPickerActionSheetCoordinator;
+
+  // Holds strong references to all active SearchEngineLogoMediator instances.
+  // This ensures that each mediator remains alive long enough to complete its
+  // asynchronous fetch callbacks, preventing mediators from being deallocated
+  // before their configuration requests return.
+  NSMutableDictionary<NSString*, SearchEngineLogoMediator*>*
+      _activeSearchEngineLogoMediator;
 }
 
 // The main page of the customization menu.
@@ -83,6 +90,7 @@ CGFloat const kSheetCornerRadius = 30;
 - (void)start {
   image_fetcher::ImageFetcherService* imageFetcherService =
       ImageFetcherServiceFactory::GetForProfile(self.profile);
+  _activeSearchEngineLogoMediator = [NSMutableDictionary dictionary];
 
   _mediator = [[HomeCustomizationMediator alloc]
                      initWithPrefService:self.profile->GetPrefs()
@@ -283,32 +291,42 @@ CGFloat const kSheetCornerRadius = 30;
       [[HomeCustomizationBackgroundPickerActionSheetCoordinator alloc]
           initWithBaseViewController:self.mainViewController
                              browser:self.browser];
+  _backgroundPickerActionSheetCoordinator.searchEngineLogoMediatorProvider =
+      self;
 
   [_backgroundPickerActionSheetCoordinator start];
 }
 
 #pragma mark - HomeCustomizationSearchEngineLogoMediator
 
-- (SearchEngineLogoMediator*)provideSearchEngineLogoMediator {
-  ProfileIOS* profile = self.browser->GetProfile();
-  web::WebState* webState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForProfile(profile);
-  GoogleLogoService* logoService =
-      GoogleLogoServiceFactory::GetForProfile(profile);
-  UrlLoadingBrowserAgent* URLLoadingBrowserAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  scoped_refptr<network::SharedURLLoaderFactory> sharedURLLoaderFactory =
-      profile->GetSharedURLLoaderFactory();
-  BOOL offTheRecord = profile->IsOffTheRecord();
-  return
-      [[SearchEngineLogoMediator alloc] initWithWebState:webState
-                                      templateURLService:templateURLService
-                                             logoService:logoService
-                                  URLLoadingBrowserAgent:URLLoadingBrowserAgent
-                                  sharedURLLoaderFactory:sharedURLLoaderFactory
-                                            offTheRecord:offTheRecord];
+- (SearchEngineLogoMediator*)provideSearchEngineLogoMediatorForKey:
+    (NSString*)key {
+  SearchEngineLogoMediator* searchEngineLogoMediator =
+      _activeSearchEngineLogoMediator[key];
+  if (!searchEngineLogoMediator) {
+    ProfileIOS* profile = self.browser->GetProfile();
+    web::WebState* webState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    TemplateURLService* templateURLService =
+        ios::TemplateURLServiceFactory::GetForProfile(profile);
+    GoogleLogoService* logoService =
+        GoogleLogoServiceFactory::GetForProfile(profile);
+    UrlLoadingBrowserAgent* URLLoadingBrowserAgent =
+        UrlLoadingBrowserAgent::FromBrowser(self.browser);
+    scoped_refptr<network::SharedURLLoaderFactory> sharedURLLoaderFactory =
+        profile->GetSharedURLLoaderFactory();
+    BOOL offTheRecord = profile->IsOffTheRecord();
+    searchEngineLogoMediator = [[SearchEngineLogoMediator alloc]
+              initWithWebState:webState
+            templateURLService:templateURLService
+                   logoService:logoService
+        URLLoadingBrowserAgent:URLLoadingBrowserAgent
+        sharedURLLoaderFactory:sharedURLLoaderFactory
+                  offTheRecord:offTheRecord];
+    _activeSearchEngineLogoMediator[key] = searchEngineLogoMediator;
+  }
+
+  return searchEngineLogoMediator;
 }
 
 #pragma mark - HomeCustomizationColorPaletteProvider

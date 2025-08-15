@@ -8,8 +8,8 @@
 #import <UIKit/UIKit.h>
 
 @protocol HomeCustomizationBackgroundPhotoFramingMutator;
+@protocol HomeCustomizationSearchEngineLogoMediatorProvider;
 @class HomeCustomizationImageFramingViewController;
-@class SearchEngineLogoMediator;
 
 // Protocol for handling framing results.
 @protocol HomeCustomizationImageFramingViewControllerDelegate <NSObject>
@@ -31,12 +31,13 @@
 @property(nonatomic, weak) id<HomeCustomizationBackgroundPhotoFramingMutator>
     mutator;
 
-// Initialize with an image to frame and a logo vendor for displaying the Google
-// logo.
-- (instancetype)initWithImage:(UIImage*)image
-     searchEngineLogoMediator:
-         (SearchEngineLogoMediator*)searchEngineLogoMediator
-    NS_DESIGNATED_INITIALIZER;
+// A provider responsible for supplying a logo vendor object.
+// TODO(crbug.com/436228514): Need to remove this property.
+@property(nonatomic, weak) id<HomeCustomizationSearchEngineLogoMediatorProvider>
+    searchEngineLogoMediatorProvider;
+
+// Initialize with an image to frame.
+- (instancetype)initWithImage:(UIImage*)image NS_DESIGNATED_INITIALIZER;
 
 // Unavailable initializers.
 - (instancetype)init NS_UNAVAILABLE;

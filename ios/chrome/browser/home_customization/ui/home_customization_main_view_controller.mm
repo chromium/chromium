@@ -385,7 +385,8 @@
           backgroundConfiguration);
 
   SearchEngineLogoMediator* searchEngineLogoMediator =
-      [self.searchEngineLogoMediatorProvider provideSearchEngineLogoMediator];
+      [self.searchEngineLogoMediatorProvider
+          provideSearchEngineLogoMediatorForKey:itemIdentifier];
   NewTabPageColorPalette* colorPalette = [self.colorPaletteProvider
       provideColorPaletteFromSeedColor:backgroundConfiguration.backgroundColor
                           colorVariant:configurationItem.colorVariant];
