@@ -45,18 +45,22 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   // WebView.
   virtual void UpdateState(const ActorOverlayState& state, bool is_visible);
 
-  // Detaches the overlay's WebView from its current window controller and
-  // reclaims its ownership. Called by ActorUiTabController when the tab is
-  // about to detach from a window. This is important when tab's that are being
-  // actuated, move between different windows.
-  virtual void NullifyWebView();
-
   // mojom::ActorOverlayPageHandler
   // Notifies the ActorUiTabController that the user's hovering status over the
   // overlay has changed. Called by the ActorOverlay WebUI (renderer-side).
   void OnHoverStatusChanged(bool is_hovering) override;
 
  private:
+  // Tab subscriptions:
+  // Called when the tab is detached.
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+
+  // Detaches the overlay's WebView from its current window controller and
+  // reclaims its ownership. Called when the tab is about to detach from a
+  // window. This is important when tab's that are being actuated, move between
+  // different windows.
+  void NullifyWebView();
   // Creates a new WebView instance for the overlay. Called by UpdateState when
   // the overlay needs to be shown for the first time for this tab. It also
   // attaches the WebView to the window controller.
@@ -93,6 +97,9 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   // and SetWindowController are called by the Tab Controller after tab detach
   // and insert events are received.
   std::unique_ptr<views::WebView> managed_overlay_web_view_;
+
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   mojo::Receiver<mojom::ActorOverlayPageHandler> receiver_{this};
   const raw_ref<tabs::TabInterface> tab_interface_;

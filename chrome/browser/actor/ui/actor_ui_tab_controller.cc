@@ -64,10 +64,6 @@ ActorUiTabController::ActorUiTabController(
 ActorUiTabController::~ActorUiTabController() = default;
 
 void ActorUiTabController::RegisterTabSubscriptions() {
-  if (features::kGlicActorUiOverlay.Get()) {
-    tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
-        &ActorUiTabController::OnTabWillDetach, weak_factory_.GetWeakPtr())));
-  }
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&ActorUiTabController::OnTabActiveStatusChanged,
                           weak_factory_.GetWeakPtr(), /*is_activated=*/true)));
@@ -107,13 +103,6 @@ void ActorUiTabController::OnTabActiveStatusChanged(bool tab_active_status,
   current_tab_active_status_ = tab_active_status;
   MaybeUpdateState(
       base::BindOnce(&LogAndIgnoreCallbackError, "OnTabActiveStatusChanged"));
-}
-
-void ActorUiTabController::OnTabWillDetach(TabInterface* tab,
-                                           TabInterface::DetachReason reason) {
-  if (features::kGlicActorUiOverlay.Get()) {
-    actor_overlay_view_controller_->NullifyWebView();
-  }
 }
 
 bool ActorUiTabController::ShouldShowActorTabIndicator() {

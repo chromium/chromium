@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
@@ -15,9 +16,17 @@
 
 namespace actor::ui {
 
+using tabs::TabInterface;
+
 ActorOverlayViewController::ActorOverlayViewController(
-    tabs::TabInterface& tab_interface)
-    : tab_interface_(tab_interface) {}
+    TabInterface& tab_interface)
+    : tab_interface_(tab_interface) {
+  if (features::kGlicActorUiOverlay.Get()) {
+    tab_subscriptions_.push_back(tab_interface_->RegisterWillDetach(
+        base::BindRepeating(&ActorOverlayViewController::OnTabWillDetach,
+                            base::Unretained(this))));
+  }
+}
 
 ActorOverlayViewController::~ActorOverlayViewController() = default;
 
@@ -156,6 +165,12 @@ void ActorOverlayViewController::HideWebView() {
   // Re-enable mouse and keyboard events to the underlying web contents by
   // resetting the ScopedIgnoreInputEvents object.
   scoped_ignore_input_events_.reset();
+}
+
+void ActorOverlayViewController::OnTabWillDetach(
+    TabInterface* tab,
+    TabInterface::DetachReason reason) {
+  NullifyWebView();
 }
 
 }  // namespace actor::ui

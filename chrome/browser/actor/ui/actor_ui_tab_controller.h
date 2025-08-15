@@ -77,10 +77,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // Computes whether the Handoff Button is visible based on the current state.
   bool ComputeHandoffButtonVisibility();
 
-  // Tab subscriptions:
-  // Called when the tab is detached.
-  void OnTabWillDetach(tabs::TabInterface* tab,
-                       tabs::TabInterface::DetachReason reason);
   // Called when the tab is inserted.
   void OnTabDidInsert(tabs::TabInterface* tab);
 
