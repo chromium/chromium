@@ -70,13 +70,13 @@
 }
 
 - (void)stop {
-  __weak __typeof(self) weakSelf = self;
+  id<SafariDataImportUIHandler> UIHandler = self.UIHandler;
   SafariDataImportEntryPointMediator* mediator = _mediator;
   [_viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:^{
                            [mediator disconnect];
-                           [weakSelf.UIHandler safariDataImportDidDismiss];
+                           [UIHandler safariDataImportDidDismiss];
                          }];
   _viewController = nil;
   [_exportCoordinator stop];
