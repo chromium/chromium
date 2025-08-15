@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"
-
 #include <string>
 
 #include "base/check.h"
@@ -11,9 +9,11 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
+#include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"
 
 namespace device {
 
@@ -40,13 +40,8 @@ class PowerSaveBlocker::Delegate {
  public:
   Delegate(mojom::WakeLockType type,
            mojom::WakeLockReason reason,
-           const std::string& description,
-           scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
-      : type_(type),
-        reason_(reason),
-        description_(description),
-        block_id_(0),
-        ui_task_runner_(ui_task_runner) {}
+           const std::string& description)
+      : type_(type), reason_(reason), description_(description), block_id_(0) {}
 
   Delegate(const Delegate&) = delete;
   const Delegate& operator=(const Delegate&) = delete;
@@ -54,7 +49,7 @@ class PowerSaveBlocker::Delegate {
   ~Delegate() = default;
 
   void ApplyBlock() {
-    DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!chromeos::PowerPolicyController::IsInitialized()) {
       return;
     }
@@ -79,7 +74,7 @@ class PowerSaveBlocker::Delegate {
   }
 
   void RemoveBlock() {
-    DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!chromeos::PowerPolicyController::IsInitialized()) {
       return;
     }
@@ -95,7 +90,7 @@ class PowerSaveBlocker::Delegate {
   // ID corresponding to the block request in PowerPolicyController.
   int block_id_;
 
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 PowerSaveBlocker::PowerSaveBlocker(
@@ -103,7 +98,7 @@ PowerSaveBlocker::PowerSaveBlocker(
     mojom::WakeLockReason reason,
     const std::string& description,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
-    : delegate_(ui_task_runner, type, reason, description, ui_task_runner) {
+    : delegate_(ui_task_runner, type, reason, description) {
   delegate_.AsyncCall(&Delegate::ApplyBlock);
 }
 

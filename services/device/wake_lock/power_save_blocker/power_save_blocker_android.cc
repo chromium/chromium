@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/android/view_android.h"
@@ -23,7 +24,7 @@ using base::android::ScopedJavaLocalRef;
 
 class PowerSaveBlocker::Delegate {
  public:
-  explicit Delegate(scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+  Delegate();
 
   Delegate(const Delegate&) = delete;
   Delegate& operator=(const Delegate&) = delete;
@@ -36,20 +37,19 @@ class PowerSaveBlocker::Delegate {
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_power_save_blocker_;
 
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   size_t block_count_ = 0;
 };
 
-PowerSaveBlocker::Delegate::Delegate(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
-    : ui_task_runner_(ui_task_runner) {
+PowerSaveBlocker::Delegate::Delegate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   JNIEnv* env = AttachCurrentThread();
   java_power_save_blocker_.Reset(Java_PowerSaveBlocker_create(env));
 }
 
 PowerSaveBlocker::Delegate::~Delegate() {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedJavaLocalRef<jobject> obj(java_power_save_blocker_);
   for (size_t i = 0; i < block_count_; ++i) {
@@ -59,7 +59,7 @@ PowerSaveBlocker::Delegate::~Delegate() {
 
 void PowerSaveBlocker::Delegate::ApplyBlock(
     ScopedJavaGlobalRef<jobject> container_view) {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedJavaLocalRef<jobject> obj(java_power_save_blocker_);
   if (container_view.is_null()) {
@@ -75,7 +75,7 @@ PowerSaveBlocker::PowerSaveBlocker(
     mojom::WakeLockReason reason,
     const std::string& description,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
-    : delegate_(ui_task_runner, ui_task_runner) {
+    : delegate_(ui_task_runner) {
   // Don't support PreventAppSuspension.
 }
 
