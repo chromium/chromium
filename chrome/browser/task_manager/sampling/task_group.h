@@ -12,6 +12,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
@@ -103,24 +104,28 @@ class TaskGroup {
   }
   base::Time start_time() const { return start_time_; }
   base::TimeDelta cpu_time() const { return cpu_time_; }
-  void set_footprint_bytes(int64_t footprint) { memory_footprint_ = footprint; }
-  int64_t footprint_bytes() const { return memory_footprint_; }
+  void set_footprint(base::ByteCount footprint) {
+    memory_footprint_ = footprint;
+  }
+  base::ByteCount footprint_bytes() const { return memory_footprint_; }
 #if BUILDFLAG(IS_CHROMEOS)
-  int64_t swapped_bytes() const { return swapped_mem_bytes_; }
-  void set_swapped_bytes(int64_t swapped_bytes) {
-    swapped_mem_bytes_ = swapped_bytes;
+  base::ByteCount swapped_bytes() const { return swapped_mem_; }
+  void set_swapped_bytes(base::ByteCount swapped_bytes) {
+    swapped_mem_ = swapped_bytes;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  int64_t gpu_memory() const { return gpu_memory_; }
-  void set_gpu_memory(int64_t gpu_mem_bytes) { gpu_memory_ = gpu_mem_bytes; }
+  base::ByteCount gpu_memory() const { return gpu_memory_; }
+  void set_gpu_memory(base::ByteCount gpu_mem_bytes) {
+    gpu_memory_ = gpu_mem_bytes;
+  }
   bool gpu_memory_has_duplicates() const { return gpu_memory_has_duplicates_; }
   void set_gpu_memory_has_duplicates(bool has_duplicates) {
     gpu_memory_has_duplicates_ = has_duplicates;
   }
-  int64_t per_process_network_usage_rate() const {
+  base::ByteCount per_process_network_usage_rate() const {
     return per_process_network_usage_rate_;
   }
-  int64_t cumulative_per_process_network_usage() const {
+  base::ByteCount cumulative_per_process_network_usage() const {
     return cumulative_per_process_network_usage_;
   }
   bool is_backgrounded() const { return is_backgrounded_; }
@@ -156,7 +161,7 @@ class TaskGroup {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
   void OnCpuRefreshDone(double cpu_usage);
-  void OnSwappedMemRefreshDone(int64_t swapped_mem_bytes);
+  void OnSwappedMemRefreshDone(base::ByteCount swapped_mem_bytes);
   void OnProcessPriorityDone(base::Process::Priority priority);
   void OnIdleWakeupsRefreshDone(int idle_wakeups_per_second);
 
@@ -184,7 +189,7 @@ class TaskGroup {
   scoped_refptr<SharedSampler> shared_sampler_;
 #if BUILDFLAG(IS_CHROMEOS)
   // Shared sampler that retrieves memory footprint for all ARC processes.
-  raw_ptr<ArcSharedSampler> arc_shared_sampler_;           // Not owned
+  raw_ptr<ArcSharedSampler> arc_shared_sampler_ = nullptr;  // Not owned
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Lists the Tasks in this TaskGroup.
@@ -197,35 +202,37 @@ class TaskGroup {
   int64_t current_on_bg_done_flags_;
 
   // The per process resources usages.
-  double platform_independent_cpu_usage_;
+  double platform_independent_cpu_usage_ =
+      std::numeric_limits<double>::quiet_NaN();
   base::Time start_time_;     // Only calculated On Windows now.
   base::TimeDelta cpu_time_;  // Only calculated On Windows now.
-  int64_t swapped_mem_bytes_;
-  int64_t memory_footprint_;
-  int64_t gpu_memory_;
+  base::ByteCount swapped_mem_ = base::ByteCount(-1);
+  base::ByteCount memory_footprint_ = base::ByteCount(-1);
+  base::ByteCount gpu_memory_ = base::ByteCount(-1);
+
   // The network usage in bytes per second as the sum of all network usages of
   // the individual tasks sharing the same process.
-  int64_t per_process_network_usage_rate_;
+  base::ByteCount per_process_network_usage_rate_ = base::ByteCount(-1);
 
   // A continuously updating sum of all bytes that have been downloaded and
   // uploaded by all tasks in this process.
-  int64_t cumulative_per_process_network_usage_;
+  base::ByteCount cumulative_per_process_network_usage_ = base::ByteCount(0);
 
 #if BUILDFLAG(IS_WIN)
   // Windows GDI and USER Handles.
-  int64_t gdi_current_handles_;
-  int64_t gdi_peak_handles_;
-  int64_t user_current_handles_;
-  int64_t user_peak_handles_;
-  int64_t hard_faults_per_second_;
+  int64_t gdi_current_handles_ = -1;
+  int64_t gdi_peak_handles_ = -1;
+  int64_t user_current_handles_ = -1;
+  int64_t user_peak_handles_ = -1;
+  int64_t hard_faults_per_second_ = -1;
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   // The number of file descriptors currently open by the process.
-  int open_fd_count_;
+  int open_fd_count_ = -1;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-  int idle_wakeups_per_second_;
-  bool gpu_memory_has_duplicates_;
-  bool is_backgrounded_;
+  int idle_wakeups_per_second_ = -1;
+  bool gpu_memory_has_duplicates_ = false;
+  bool is_backgrounded_ = false;
 
   // Always keep this the last member of this class so that it's the first to be
   // destroyed.

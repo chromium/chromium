@@ -4,6 +4,7 @@
 
 #include "chrome/browser/task_manager/task_manager_interface.h"
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -46,8 +47,8 @@ TaskManagerInterface* TaskManagerInterface::GetTaskManager() {
 // static
 void TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
     content::GlobalRenderFrameHostId render_frame_host_id,
-    int64_t recv_bytes,
-    int64_t sent_bytes) {
+    base::ByteCount recv_bytes,
+    base::ByteCount sent_bytes) {
   // Don't create a task manager if it hasn't already been created.
   if (TaskManagerImpl::IsCreated()) {
     TaskManagerImpl::GetInstance()->UpdateAccumulatedStatsNetworkForRoute(

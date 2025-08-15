@@ -133,7 +133,7 @@ TEST_F(ChildProcessTaskTest, TestAll) {
   ASSERT_EQ(task, provider.GetTaskOfUrlRequest(unique_id.GetUnsafeValue(), 0));
   ASSERT_EQ(task, provider.GetTaskOfUrlRequest(unique_id.GetUnsafeValue(), 1));
 
-  const int64_t bytes_read = 1024;
+  const base::ByteCount bytes_read = base::KiB(1);
   task->OnNetworkBytesRead(bytes_read);
   task->Refresh(base::Seconds(1), REFRESH_TYPE_NETWORK_USAGE);
 

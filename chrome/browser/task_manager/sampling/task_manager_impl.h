@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -52,10 +53,10 @@ class TaskManagerImpl : public TaskManagerInterface,
   double GetPlatformIndependentCPUUsage(TaskId task_id) const override;
   base::Time GetStartTime(TaskId task_id) const override;
   base::TimeDelta GetCpuTime(TaskId task_id) const override;
-  int64_t GetMemoryFootprintUsage(TaskId task_id) const override;
-  int64_t GetSwappedMemoryUsage(TaskId task_id) const override;
-  int64_t GetGpuMemoryUsage(TaskId task_id,
-                            bool* has_duplicates) const override;
+  base::ByteCount GetMemoryFootprintUsage(TaskId task_id) const override;
+  base::ByteCount GetSwappedMemoryUsage(TaskId task_id) const override;
+  base::ByteCount GetGpuMemoryUsage(TaskId task_id,
+                                    bool* has_duplicates) const override;
   int GetIdleWakeupsPerSecond(TaskId task_id) const override;
   int GetHardFaultsPerSecond(TaskId task_id) const override;
   void GetGDIHandles(TaskId task_id,
@@ -79,14 +80,15 @@ class TaskManagerImpl : public TaskManagerInterface,
   void GetTerminationStatus(TaskId task_id,
                             base::TerminationStatus* out_status,
                             int* out_error_code) const override;
-  int64_t GetNetworkUsage(TaskId task_id) const override;
-  int64_t GetCumulativeNetworkUsage(TaskId task_id) const override;
-  int64_t GetProcessTotalNetworkUsage(TaskId task_id) const override;
-  int64_t GetCumulativeProcessTotalNetworkUsage(TaskId task_id) const override;
-  int64_t GetSqliteMemoryUsed(TaskId task_id) const override;
+  base::ByteCount GetNetworkUsage(TaskId task_id) const override;
+  base::ByteCount GetCumulativeNetworkUsage(TaskId task_id) const override;
+  base::ByteCount GetProcessTotalNetworkUsage(TaskId task_id) const override;
+  base::ByteCount GetCumulativeProcessTotalNetworkUsage(
+      TaskId task_id) const override;
+  base::ByteCount GetSqliteMemoryUsed(TaskId task_id) const override;
   bool GetV8Memory(TaskId task_id,
-                   int64_t* allocated,
-                   int64_t* used) const override;
+                   base::ByteCount* allocated,
+                   base::ByteCount* used) const override;
   bool GetWebCacheStats(TaskId task_id,
                         blink::WebCacheResourceTypeStats* stats) const override;
   int GetKeepaliveCount(TaskId task_id) const override;
@@ -108,8 +110,8 @@ class TaskManagerImpl : public TaskManagerInterface,
 
   void UpdateAccumulatedStatsNetworkForRoute(
       content::GlobalRenderFrameHostId render_frame_host_id,
-      int64_t recv_bytes,
-      int64_t sent_bytes);
+      base::ByteCount recv_bytes,
+      base::ByteCount sent_bytes);
 
   bool is_running() const { return is_running_; }
 
@@ -189,11 +191,11 @@ class TaskManagerImpl : public TaskManagerInterface,
 
   // This will be set to true while there are observers and the task manager is
   // running.
-  bool is_running_;
+  bool is_running_ = false;
 
   // This is set to true while waiting for a global memory dump from
   // memory_instrumentation.
-  bool waiting_for_memory_dump_;
+  bool waiting_for_memory_dump_ = false;
 
   base::WeakPtrFactory<TaskManagerImpl> weak_ptr_factory_{this};
 };

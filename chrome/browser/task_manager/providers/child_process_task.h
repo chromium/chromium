@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/common/buildflags.h"
 
@@ -61,8 +62,8 @@ class ChildProcessTask : public Task {
   Type GetType() const override;
   SubType GetSubType() const override;
   int GetChildProcessUniqueID() const override;
-  int64_t GetV8MemoryAllocated() const override;
-  int64_t GetV8MemoryUsed() const override;
+  base::ByteCount GetV8MemoryAllocated() const override;
+  base::ByteCount GetV8MemoryUsed() const override;
 
  private:
   static gfx::ImageSkia* s_icon_;
@@ -72,8 +73,8 @@ class ChildProcessTask : public Task {
   std::unique_ptr<ProcessResourceUsage> process_resources_sampler_;
 
   // The allocated and used V8 memory (in bytes).
-  int64_t v8_memory_allocated_;
-  int64_t v8_memory_used_;
+  base::ByteCount v8_memory_allocated_ = base::ByteCount(-1);
+  base::ByteCount v8_memory_used_ = base::ByteCount(-1);
 
   // The unique ID of the child process. It is not the PID of the process.
   // See |content::ChildProcessData::id|.

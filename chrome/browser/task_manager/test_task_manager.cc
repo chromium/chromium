@@ -39,17 +39,17 @@ base::TimeDelta TestTaskManager::GetCpuTime(TaskId task_id) const {
   return base::TimeDelta();
 }
 
-int64_t TestTaskManager::GetMemoryFootprintUsage(TaskId task_id) const {
-  return -1;
+base::ByteCount TestTaskManager::GetMemoryFootprintUsage(TaskId task_id) const {
+  return base::ByteCount(-1);
 }
 
-int64_t TestTaskManager::GetSwappedMemoryUsage(TaskId task_id) const {
-  return -1;
+base::ByteCount TestTaskManager::GetSwappedMemoryUsage(TaskId task_id) const {
+  return base::ByteCount(-1);
 }
 
-int64_t TestTaskManager::GetGpuMemoryUsage(TaskId task_id,
-                                           bool* has_duplicates) const {
-  return -1;
+base::ByteCount TestTaskManager::GetGpuMemoryUsage(TaskId task_id,
+                                                   bool* has_duplicates) const {
+  return base::ByteCount(-1);
 }
 
 int TestTaskManager::GetIdleWakeupsPerSecond(TaskId task_id) const {
@@ -127,30 +127,32 @@ void TestTaskManager::GetTerminationStatus(TaskId task_id,
   *out_error_code = 0;
 }
 
-int64_t TestTaskManager::GetNetworkUsage(TaskId task_id) const {
-  return 0;
+base::ByteCount TestTaskManager::GetNetworkUsage(TaskId task_id) const {
+  return base::ByteCount(0);
 }
 
-int64_t TestTaskManager::GetProcessTotalNetworkUsage(TaskId task_id) const {
-  return -1;
-}
-
-int64_t TestTaskManager::GetCumulativeNetworkUsage(TaskId task_id) const {
-  return 0;
-}
-
-int64_t TestTaskManager::GetCumulativeProcessTotalNetworkUsage(
+base::ByteCount TestTaskManager::GetProcessTotalNetworkUsage(
     TaskId task_id) const {
-  return 0;
+  return base::ByteCount(-1);
 }
 
-int64_t TestTaskManager::GetSqliteMemoryUsed(TaskId task_id) const {
-  return -1;
+base::ByteCount TestTaskManager::GetCumulativeNetworkUsage(
+    TaskId task_id) const {
+  return base::ByteCount(0);
+}
+
+base::ByteCount TestTaskManager::GetCumulativeProcessTotalNetworkUsage(
+    TaskId task_id) const {
+  return base::ByteCount(0);
+}
+
+base::ByteCount TestTaskManager::GetSqliteMemoryUsed(TaskId task_id) const {
+  return base::ByteCount(-1);
 }
 
 bool TestTaskManager::GetV8Memory(TaskId task_id,
-                                  int64_t* allocated,
-                                  int64_t* used) const {
+                                  base::ByteCount* allocated,
+                                  base::ByteCount* used) const {
   return false;
 }
 

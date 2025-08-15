@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -130,8 +131,6 @@ ChildProcessTask::ChildProcessTask(const content::ChildProcessData& data,
            FetchIcon(IDR_PLUGINS_FAVICON, &s_icon_),
            data.GetProcess().Handle()),
       process_resources_sampler_(CreateProcessResourcesSampler(data.id)),
-      v8_memory_allocated_(-1),
-      v8_memory_used_(-1),
       unique_child_process_id_(data.id),
       process_type_(data.process_type),
       process_subtype_(subtype),
@@ -155,10 +154,10 @@ void ChildProcessTask::Refresh(const base::TimeDelta& update_interval,
   // potentially having valid values).
   process_resources_sampler_->Refresh(base::DoNothing());
 
-  v8_memory_allocated_ = base::saturated_cast<int64_t>(
-      process_resources_sampler_->GetV8MemoryAllocated());
-  v8_memory_used_ = base::saturated_cast<int64_t>(
-      process_resources_sampler_->GetV8MemoryUsed());
+  v8_memory_allocated_ =
+      base::ByteCount(process_resources_sampler_->GetV8MemoryAllocated());
+  v8_memory_used_ =
+      base::ByteCount(process_resources_sampler_->GetV8MemoryUsed());
 }
 
 Task::Type ChildProcessTask::GetType() const {
@@ -201,11 +200,11 @@ int ChildProcessTask::GetChildProcessUniqueID() const {
   return unique_child_process_id_;
 }
 
-int64_t ChildProcessTask::GetV8MemoryAllocated() const {
+base::ByteCount ChildProcessTask::GetV8MemoryAllocated() const {
   return v8_memory_allocated_;
 }
 
-int64_t ChildProcessTask::GetV8MemoryUsed() const {
+base::ByteCount ChildProcessTask::GetV8MemoryUsed() const {
   return v8_memory_used_;
 }
 

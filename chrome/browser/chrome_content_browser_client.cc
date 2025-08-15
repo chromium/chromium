@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/byte_count.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -7249,7 +7250,8 @@ void ChromeContentBrowserClient::OnNetworkServiceDataUseUpdate(
     int64_t recv_bytes,
     int64_t sent_bytes) {
   task_manager::TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
-      render_frame_host_id, recv_bytes, sent_bytes);
+      render_frame_host_id, base::ByteCount(recv_bytes),
+      base::ByteCount(sent_bytes));
 }
 
 base::FilePath

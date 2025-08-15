@@ -39,12 +39,6 @@ Task::Task(const std::u16string& title,
            base::ProcessHandle handle,
            base::ProcessId process_id)
     : task_id_(g_last_id++),
-      last_refresh_cumulative_bytes_sent_(0),
-      last_refresh_cumulative_bytes_read_(0),
-      cumulative_bytes_sent_(0),
-      cumulative_bytes_read_(0),
-      network_sent_rate_(0),
-      network_read_rate_(0),
       title_(title),
       icon_(icon ? *icon : gfx::ImageSkia()),
       process_handle_(handle),
@@ -88,15 +82,15 @@ void Task::Refresh(const base::TimeDelta& update_interval,
       update_interval == base::TimeDelta())
     return;
 
-  int64_t current_cycle_read_byte_count =
+  base::ByteCount current_cycle_read_byte_count =
       cumulative_bytes_read_ - last_refresh_cumulative_bytes_read_;
-  network_read_rate_ = base::ClampRound<int64_t>(current_cycle_read_byte_count /
-                                                 update_interval.InSecondsF());
+  network_read_rate_ = base::ByteCount(base::ClampRound<int64_t>(
+      current_cycle_read_byte_count.InBytesF() / update_interval.InSecondsF()));
 
-  int64_t current_cycle_sent_byte_count =
+  base::ByteCount current_cycle_sent_byte_count =
       cumulative_bytes_sent_ - last_refresh_cumulative_bytes_sent_;
-  network_sent_rate_ = base::ClampRound<int64_t>(current_cycle_sent_byte_count /
-                                                 update_interval.InSecondsF());
+  network_sent_rate_ = base::ByteCount(base::ClampRound<int64_t>(
+      current_cycle_sent_byte_count.InBytesF() / update_interval.InSecondsF()));
 
   last_refresh_cumulative_bytes_read_ = cumulative_bytes_read_;
   last_refresh_cumulative_bytes_sent_ = cumulative_bytes_sent_;
@@ -120,11 +114,11 @@ void Task::UpdateProcessInfo(base::ProcessHandle handle,
   observer->TaskAdded(this);
 }
 
-void Task::OnNetworkBytesRead(int64_t bytes_read) {
+void Task::OnNetworkBytesRead(base::ByteCount bytes_read) {
   cumulative_bytes_read_ += bytes_read;
 }
 
-void Task::OnNetworkBytesSent(int64_t bytes_sent) {
+void Task::OnNetworkBytesSent(base::ByteCount bytes_sent) {
   cumulative_bytes_sent_ += bytes_sent;
 }
 
@@ -158,19 +152,19 @@ base::WeakPtr<Task> Task::GetParentTask() const {
 }
 
 bool Task::ReportsSqliteMemory() const {
-  return GetSqliteMemoryUsed() != -1;
+  return !GetSqliteMemoryUsed().is_negative();
 }
 
-int64_t Task::GetSqliteMemoryUsed() const {
-  return -1;
+base::ByteCount Task::GetSqliteMemoryUsed() const {
+  return base::ByteCount(-1);
 }
 
-int64_t Task::GetV8MemoryAllocated() const {
-  return -1;
+base::ByteCount Task::GetV8MemoryAllocated() const {
+  return base::ByteCount(-1);
 }
 
-int64_t Task::GetV8MemoryUsed() const {
-  return -1;
+base::ByteCount Task::GetV8MemoryUsed() const {
+  return base::ByteCount(-1);
 }
 
 bool Task::ReportsWebCacheStats() const {
@@ -189,11 +183,11 @@ bool Task::IsRunningInVM() const {
   return false;
 }
 
-int64_t Task::GetNetworkUsageRate() const {
+base::ByteCount Task::GetNetworkUsageRate() const {
   return network_sent_rate_ + network_read_rate_;
 }
 
-int64_t Task::GetCumulativeNetworkUsage() const {
+base::ByteCount Task::GetCumulativeNetworkUsage() const {
   return cumulative_bytes_sent_ + cumulative_bytes_read_;
 }
 

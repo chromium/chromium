@@ -38,8 +38,9 @@ JNI_TaskManagerServiceBridge_GetTitle(JNIEnv* env, TaskId task_id) {
 static jlong JNI_TaskManagerServiceBridge_GetMemoryFootprintUsage(
     JNIEnv* env,
     TaskId task_id) {
-  return TaskManagerInterface::GetTaskManager()->GetMemoryFootprintUsage(
-      task_id);
+  return TaskManagerInterface::GetTaskManager()
+      ->GetMemoryFootprintUsage(task_id)
+      .InBytes();
 }
 
 static jdouble JNI_TaskManagerServiceBridge_GetPlatformIndependentCpuUsage(
@@ -51,7 +52,9 @@ static jdouble JNI_TaskManagerServiceBridge_GetPlatformIndependentCpuUsage(
 
 static jlong JNI_TaskManagerServiceBridge_GetNetworkUsage(JNIEnv* env,
                                                           TaskId task_id) {
-  return TaskManagerInterface::GetTaskManager()->GetNetworkUsage(task_id);
+  return TaskManagerInterface::GetTaskManager()
+      ->GetNetworkUsage(task_id)
+      .InBytes();
 }
 
 static jlong JNI_TaskManagerServiceBridge_GetProcessId(JNIEnv* env,
@@ -62,8 +65,9 @@ static jlong JNI_TaskManagerServiceBridge_GetProcessId(JNIEnv* env,
 static jni_zero::ScopedJavaLocalRef<jobject>
 JNI_TaskManagerServiceBridge_GetGpuMemoryUsage(JNIEnv* env, TaskId task_id) {
   bool has_duplicates;
-  jlong bytes = TaskManagerInterface::GetTaskManager()->GetGpuMemoryUsage(
-      task_id, &has_duplicates);
+  jlong bytes = TaskManagerInterface::GetTaskManager()
+                    ->GetGpuMemoryUsage(task_id, &has_duplicates)
+                    .InBytes();
   return Java_GpuMemoryUsage_Constructor(env, bytes, has_duplicates);
 }
 
