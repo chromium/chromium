@@ -22,7 +22,8 @@ pdf_use_partition_alloc_override = use_partition_alloc
 pdf_use_skia_override = true
 
 # Define a custom font manager target to avoid using Freetype.
-pdf_skia_font_manager_target_override = "//pdf:pdf_skia_font_manager"
+# Temporarily unset due to https://crbug.com/438906414
+pdf_skia_font_manager_target_override = ""
 
 # Disallow PDFium Fontations support.
 # TODO(crbug.com/pdfium/2107): Enable this.
