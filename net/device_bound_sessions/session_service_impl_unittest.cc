@@ -682,11 +682,12 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
   // Set up the fetcher for a successful refresh, but with invalid
   // parameters (e.g. doesn't specify any bound credentials).
   ScopedTestRegistrationFetcher scoped_test_fetcher(base::BindRepeating([]() {
-    return base::expected<SessionParams, SessionError>(
-        SessionParams(kSessionId, GURL(), "", SessionParams::Scope(),
-                      std::vector<SessionParams::Credential>(),
-                      unexportable_keys::UnexportableKeyId(),
-                      /*allowed_refresh_initiators=*/{}));
+    return base::expected<std::unique_ptr<Session>, SessionError>(
+        Session::CreateIfValid(
+            SessionParams(kSessionId, GURL(), "", SessionParams::Scope(),
+                          std::vector<SessionParams::Credential>(),
+                          unexportable_keys::UnexportableKeyId(),
+                          /*allowed_refresh_initiators=*/{})));
   }));
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),

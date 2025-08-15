@@ -134,12 +134,12 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void OnRegistrationComplete(
       OnAccessCallback on_access_callback,
       RegistrationFetcher* fetcher,
-      base::expected<SessionParams, SessionError> params_or_error);
+      base::expected<std::unique_ptr<Session>, SessionError> session_or_error);
   void OnRefreshRequestCompletion(
       OnAccessCallback on_access_callback,
       SessionKey session_key,
       RegistrationFetcher* fetcher,
-      base::expected<SessionParams, SessionError> params_or_error);
+      base::expected<std::unique_ptr<Session>, SessionError> session_or_error);
 
   void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
   void UnblockDeferredRequests(const SessionKey& session_key,
@@ -174,14 +174,14 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   SessionError::ErrorType OnRegistrationCompleteInternal(
       OnAccessCallback on_access_callback,
       RegistrationFetcher* fetcher,
-      base::expected<SessionParams, SessionError> params_or_error);
+      base::expected<std::unique_ptr<Session>, SessionError> session_or_error);
 
   // Helper function encapsulating the processing of refresh
   SessionError::ErrorType OnRefreshRequestCompletionInternal(
       OnAccessCallback on_access_callback,
       const SessionKey& session_key,
       RegistrationFetcher* fetcher,
-      base::expected<SessionParams, SessionError> params_or_error);
+      base::expected<std::unique_ptr<Session>, SessionError> session_or_error);
 
   // Callback after unwrapping a session key. `on_access_callback` is
   // used to notify the browser that this request led to usage of a

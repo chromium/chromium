@@ -15,8 +15,8 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_error.h"
-#include "net/device_bound_sessions/session_params.h"
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log_source.h"
 #include "url/gurl.h"
@@ -36,15 +36,17 @@ class RegistrationRequestParam;
 // This class creates a new unexportable key, creates a registration JWT and
 // signs it with the new key, and makes the network request to the DBSC
 // registration endpoint with this signed JWT to get the registration
-// instructions. It is also used for calling the refresh endpoint.
+// instructions. It is also used for calling the refresh endpoint. It delegates
+// most of the validation to `Session::CreateIfValid`, and returns a full
+// `Session` or an error.
 class NET_EXPORT RegistrationFetcher {
  public:
-  using RegistrationCompleteCallback =
-      base::OnceCallback<void(RegistrationFetcher*,
-                              base::expected<SessionParams, SessionError>)>;
+  using RegistrationCompleteCallback = base::OnceCallback<void(
+      RegistrationFetcher*,
+      base::expected<std::unique_ptr<Session>, SessionError>)>;
 
-  using FetcherType =
-      base::RepeatingCallback<base::expected<SessionParams, SessionError>()>;
+  using FetcherType = base::RepeatingCallback<
+      base::expected<std::unique_ptr<Session>, SessionError>()>;
 
   using RegistrationToken = std::string;
 

@@ -343,19 +343,28 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
-    RunCallback(ParseSessionInstructionJson(url_fetcher_->request().url(),
-                                            *key_id_, session_identifier_,
-                                            url_fetcher_->data_received()));
+    base::expected<SessionParams, SessionError> params_or_error =
+        ParseSessionInstructionJson(url_fetcher_->request().url(), *key_id_,
+                                    session_identifier_,
+                                    url_fetcher_->data_received());
+    if (!params_or_error.has_value()) {
+      RunCallback(base::unexpected(std::move(params_or_error).error()));
+      // *this is deleted here.
+      return;
+    }
+
+    RunCallback(Session::CreateIfValid(params_or_error.value()));
+    // *this is deleted here.
   }
 
   void RunCallback(
-      base::expected<SessionParams, SessionError> params_or_error) {
+      base::expected<std::unique_ptr<Session>, SessionError> params_or_error) {
     AddNetLogResult(params_or_error);
     std::move(callback_).Run(this, std::move(params_or_error));
   }
 
-  void AddNetLogResult(
-      const base::expected<SessionParams, SessionError>& params_or_error) {
+  void AddNetLogResult(const base::expected<std::unique_ptr<Session>,
+                                            SessionError>& session_or_error) {
     if (!url_fetcher_) {
       return;
     }
@@ -364,11 +373,11 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
                               : NetLogEventType::DBSC_REGISTRATION_RESULT;
     url_fetcher_->request().net_log().AddEvent(result_event_type, [&]() {
       std::string result;
-      if (params_or_error.has_value()) {
+      if (session_or_error.has_value()) {
         result = IsForRefreshRequest() ? "refreshed" : "registered";
       } else {
-        const SessionError& error = params_or_error.error();
-        if (error.IsFatal()) {
+        const SessionError& error = session_or_error.error();
+        if (error.GetDeletionReason().has_value()) {
           result = "session_ended";
         } else {
           result = "failed_continue";

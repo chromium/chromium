@@ -184,9 +184,9 @@ void SessionServiceImpl::OnLoadSessionsComplete(
 void SessionServiceImpl::OnRegistrationComplete(
     OnAccessCallback on_access_callback,
     RegistrationFetcher* fetcher,
-    base::expected<SessionParams, SessionError> params_or_error) {
+    base::expected<std::unique_ptr<Session>, SessionError> session_or_error) {
   SessionError::ErrorType result = OnRegistrationCompleteInternal(
-      std::move(on_access_callback), fetcher, std::move(params_or_error));
+      std::move(on_access_callback), fetcher, std::move(session_or_error));
   base::UmaHistogramEnumeration("Net.DeviceBoundSessions.RegistrationResult",
                                 result);
 }
@@ -330,10 +330,10 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
     OnAccessCallback on_access_callback,
     SessionKey session_key,
     RegistrationFetcher* fetcher,
-    base::expected<SessionParams, SessionError> params_or_error) {
+    base::expected<std::unique_ptr<Session>, SessionError> session_or_error) {
   SessionError::ErrorType result = OnRefreshRequestCompletionInternal(
       std::move(on_access_callback), session_key, fetcher,
-      std::move(params_or_error));
+      std::move(session_or_error));
 
   Session* session = GetSession(session_key);
   if (session) {
@@ -534,28 +534,21 @@ void SessionServiceImpl::RemoveObserver(net::SchemefulSite site,
 SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
     OnAccessCallback on_access_callback,
     RegistrationFetcher* fetcher,
-    base::expected<SessionParams, SessionError> params_or_error) {
+    base::expected<std::unique_ptr<Session>, SessionError> session_or_error) {
   RemoveFetcher(fetcher);
 
-  if (!params_or_error.has_value()) {
+  if (!session_or_error.has_value()) {
     // We failed to create a new session, so there's nothing to clean
     // up.
-    return params_or_error.error().type;
-  }
-
-  const SessionParams& params = *params_or_error;
-  const SchemefulSite site(url::Origin::Create(GURL(params.fetcher_url)));
-
-  auto session_or_error = Session::CreateIfValid(std::move(params));
-  if (!session_or_error.has_value()) {
-    // The attempt to create a valid session failed. Since this specific
-    // registration request did not add a session, no cleanup is needed.
     return session_or_error.error().type;
   }
+
+  const Session& session = **session_or_error;
+  const SchemefulSite site(session.origin());
+
   CHECK(*session_or_error);
   NotifySessionAccess(on_access_callback, SessionAccess::AccessType::kCreation,
-                      SessionKey{site, (*session_or_error)->id()},
-                      **session_or_error);
+                      SessionKey{site, session.id()}, session);
   AddSession(site, std::move(*session_or_error));
   return SessionError::ErrorType::kSuccess;
 }
@@ -564,7 +557,7 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     OnAccessCallback on_access_callback,
     const SessionKey& session_key,
     RegistrationFetcher* fetcher,
-    base::expected<SessionParams, SessionError> params_or_error) {
+    base::expected<std::unique_ptr<Session>, SessionError> session_or_error) {
   RemoveFetcher(fetcher);
 
   // If refresh succeeded:
@@ -573,22 +566,12 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
   //
   // Note that we notified `on_access_callback` about `session_key.id` already,
   // so we only need to notify the callback about other sessions.
-  if (params_or_error.has_value()) {
-    auto session_or_error = Session::CreateIfValid(*params_or_error);
-    if (!session_or_error.has_value()) {
-      // New parameters are invalid, terminate the session.
-      DeleteSessionAndNotify(DeletionReason::kInvalidSessionParams, session_key,
-                             on_access_callback);
-      UnblockDeferredRequests(session_key, RefreshResult::kFatalError);
-      return session_or_error.error().type;
-    }
-
+  if (session_or_error.has_value()) {
     std::unique_ptr<Session> new_session = std::move(*session_or_error);
     CHECK(new_session);
     CHECK_EQ(new_session->id(), session_key.id);
 
-    SchemefulSite new_site(
-        url::Origin::Create(GURL(params_or_error->fetcher_url)));
+    SchemefulSite new_site(new_session->origin());
     if (new_session->id() != session_key.id) {
       NotifySessionAccess(
           on_access_callback, SessionAccess::AccessType::kCreation,
@@ -597,20 +580,21 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     AddSession(new_site, std::move(new_session));
     // The session has been refreshed, restart the request.
     UnblockDeferredRequests(session_key, RefreshResult::kRefreshed);
-  } else if (const SessionError& error = params_or_error.error();
-             error.IsFatal()) {
-    DeleteSessionAndNotify(DeletionReason::kRefreshFatalError, session_key,
-                           on_access_callback);
+  } else if (std::optional<DeletionReason> deletion_reason =
+                 session_or_error.error().GetDeletionReason();
+             deletion_reason.has_value()) {
+    DeleteSessionAndNotify(*deletion_reason, session_key, on_access_callback);
     UnblockDeferredRequests(session_key, RefreshResult::kFatalError);
   } else {
     // Transient error, unblock the request without cookies.
-    UnblockDeferredRequests(session_key, error.IsServerError()
-                                             ? RefreshResult::kServerError
-                                             : RefreshResult::kUnreachable);
+    UnblockDeferredRequests(session_key,
+                            session_or_error.error().IsServerError()
+                                ? RefreshResult::kServerError
+                                : RefreshResult::kUnreachable);
   }
 
-  return params_or_error.has_value() ? SessionError::ErrorType::kSuccess
-                                     : params_or_error.error().type;
+  return session_or_error.has_value() ? SessionError::ErrorType::kSuccess
+                                      : session_or_error.error().type;
 }
 
 void SessionServiceImpl::OnSessionKeyRestored(
