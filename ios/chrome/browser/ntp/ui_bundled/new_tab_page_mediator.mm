@@ -400,11 +400,15 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 }
 
 - (void)updateBackground {
+  CustomUITraitAccessor* traitAccessor = [[CustomUITraitAccessor alloc]
+      initWithMutableTraits:self.consumer.traitOverrides];
+
   std::optional<std::pair<std::string, FramingCoordinates>> userUploaded =
       _backgroundCustomizationService->GetCurrentUserUploadedBackground();
   if (userUploaded) {
     [self handleUserUploadedBackground:userUploaded->first
                     framingCoordinates:userUploaded->second];
+    [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
     return;
   }
 
@@ -413,9 +417,6 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 
   std::optional<sync_pb::UserColorTheme> colorTheme =
       _backgroundCustomizationService->GetCurrentColorTheme();
-
-  CustomUITraitAccessor* traitAccessor = [[CustomUITraitAccessor alloc]
-      initWithMutableTraits:self.consumer.traitOverrides];
 
   if (colorTheme && colorTheme->color()) {
     // Sets the New Tab Page trait to a color palette generated from the current
