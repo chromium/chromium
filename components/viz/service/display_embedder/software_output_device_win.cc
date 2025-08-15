@@ -19,6 +19,7 @@
 #include "services/viz/privileged/mojom/compositing/layered_window_updater.mojom.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_win.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/gdi_util.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/win/hwnd_util.h"
@@ -160,13 +161,17 @@ void SoftwareOutputDeviceWinProxy::EndPaintDelegated(
       &SoftwareOutputDeviceWinProxy::DrawAck, base::Unretained(this)));
   waiting_on_draw_ack_ = true;
 
-  TRACE_EVENT_ASYNC_BEGIN0("viz", "SoftwareOutputDeviceWinProxy::Draw", this);
+  TRACE_EVENT_BEGIN("viz", "SoftwareOutputDeviceWinProxy::Draw",
+                    perfetto::Track::FromPointer(this));
 }
 
 void SoftwareOutputDeviceWinProxy::DrawAck() {
   DCHECK(waiting_on_draw_ack_);
 
-  TRACE_EVENT_ASYNC_END0("viz", "SoftwareOutputDeviceWinProxy::Draw", this);
+  TRACE_EVENT_END(
+      "viz",
+      /* SoftwareOutputDeviceWinProxy::Draw */ perfetto::Track::FromPointer(
+          this));
 
   waiting_on_draw_ack_ = false;
 

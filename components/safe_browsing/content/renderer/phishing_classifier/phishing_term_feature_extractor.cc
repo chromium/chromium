@@ -25,6 +25,7 @@
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/murmurhash3_util.h"
 #include "crypto/sha2.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace safe_browsing {
 
@@ -112,8 +113,8 @@ void PhishingTermFeatureExtractor::ExtractFeatures(
   // extraction so that we can start in a known state.
   CancelPendingExtraction();
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("safe_browsing", "ExtractTermFeatures",
-                                    this);
+  TRACE_EVENT_BEGIN("safe_browsing", "ExtractTermFeatures",
+                    perfetto::Track::FromPointer(this));
 
   page_text_ = page_text;
   features_ = features;
@@ -249,7 +250,8 @@ void PhishingTermFeatureExtractor::RunCallback(bool success) {
   DCHECK(state_.get());
 
   DCHECK(!done_callback_.is_null());
-  TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "ExtractTermFeatures", this);
+  TRACE_EVENT_END("safe_browsing", /* ExtractTermFeatures */
+                  perfetto::Track::FromPointer(this));
   std::move(done_callback_).Run(success);
   Clear();
 }

@@ -30,6 +30,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/request_destination.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using security_interstitials::UnsafeResource;
 
@@ -179,8 +180,8 @@ SafeBrowsingUrlCheckerImpl::~SafeBrowsingUrlCheckerImpl() {
 
   if (state_ == STATE_CHECKING_URL) {
     const GURL& url = urls_[next_index_].url;
-    TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
-                                    TRACE_ID_LOCAL(this), "url", url.spec());
+    TRACE_EVENT_END("safe_browsing", /* CheckUrl */
+                    perfetto::Track::FromPointer(this), "url", url.spec());
   }
 }
 
@@ -275,8 +276,8 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
   DCHECK(threat_source.has_value() || threat_type == SB_THREAT_TYPE_SAFE);
 
   RecordCheckUrlTimeout(timed_out);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
-                                  TRACE_ID_LOCAL(this), "url", url.spec());
+  TRACE_EVENT_END("safe_browsing", /* CheckUrl */
+                  perfetto::Track::FromPointer(this), "url", url.spec());
 
   const bool is_prefetch = (load_flags_ & net::LOAD_PREFETCH);
   base::UmaHistogramBoolean("SafeBrowsing.CheckUrl.IsDocumentCheckPrefetch",
@@ -395,8 +396,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
     SBThreatType threat_type = CheckWebUIUrls(url);
     if (threat_type != SBThreatType::SB_THREAT_TYPE_SAFE) {
       state_ = STATE_CHECKING_URL;
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-          "safe_browsing", "CheckUrl", TRACE_ID_LOCAL(this), "url", url.spec());
+      TRACE_EVENT_BEGIN("safe_browsing", "CheckUrl",
+                        perfetto::Track::FromPointer(this), "url", url.spec());
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
@@ -411,16 +412,16 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
       break;
     }
 
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("safe_browsing", "CheckUrl",
-                                      TRACE_ID_LOCAL(this), "url", url.spec());
+    TRACE_EVENT_BEGIN("safe_browsing", "CheckUrl",
+                      perfetto::Track::FromPointer(this), "url", url.spec());
     KickOffLookupMechanismResult result = KickOffLookupMechanism(url);
 
     if (result.start_check_result.is_safe_synchronously) {
       lookup_mechanism_runner_.reset();
       RecordCheckUrlTimeout(/*timed_out=*/false);
 
-      TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
-                                      TRACE_ID_LOCAL(this), "url", url.spec());
+      TRACE_EVENT_END("safe_browsing", /* CheckUrl */
+                      perfetto::Track::FromPointer(this), "url", url.spec());
 
       if (!RunNextCallbackAndMaybeDeleteSelf(
               /*proceed=*/true,

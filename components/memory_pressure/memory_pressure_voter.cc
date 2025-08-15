@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace memory_pressure {
 
@@ -94,13 +95,12 @@ void MemoryPressureVoteAggregator::OnVote(
   // Note that we record this event every time we receive a new vote to ensure
   // that the begin event doesn't get dropped during long pressure sessions.
   if (old_pressure_level ==
-      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("base", "MemoryPressure::CriticalPressure",
-                                    this);
-  } else if (old_pressure_level ==
-             MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("base", "MemoryPressure::ModeratePressure",
-                                    this);
+          MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL ||
+      old_pressure_level ==
+          MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    // End MemoryPressure::CriticalPressure/MemoryPressure::ModeratePressure
+    // event.
+    TRACE_EVENT_END("base", perfetto::Track::FromPointer(this));
   }
 
   current_pressure_level_ = EvaluateVotes();
@@ -108,12 +108,12 @@ void MemoryPressureVoteAggregator::OnVote(
   // Start an asynchronous tracing event to record this pressure session.
   if (current_pressure_level_ ==
       MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("base",
-                                      "MemoryPressure::CriticalPressure", this);
+    TRACE_EVENT_BEGIN("base", "MemoryPressure::CriticalPressure",
+                      perfetto::Track::FromPointer(this));
   } else if (current_pressure_level_ ==
              MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("base",
-                                      "MemoryPressure::ModeratePressure", this);
+    TRACE_EVENT_BEGIN("base", "MemoryPressure::ModeratePressure",
+                      perfetto::Track::FromPointer(this));
   }
 
   if (old_pressure_level != current_pressure_level_) {

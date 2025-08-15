@@ -66,6 +66,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/download/internal/common/android/download_collection_bridge.h"
@@ -1592,10 +1593,9 @@ void DownloadItemImpl::Init(bool active,
       GetDangerType(), GetReceivedBytes(), HasUserGesture());
 
   if (active) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-        "download", "DownloadItemActive",
-        TRACE_ID_WITH_SCOPE("DownloadItemActive", download_id_),
-        "download_item", std::move(active_data));
+    TRACE_EVENT_BEGIN("download", "DownloadItemActive",
+                      perfetto::NamedTrack("DownloadItemActive", download_id_),
+                      "download_item", std::move(active_data));
     ukm_download_id_ = ukm::NoURLSourceId();
   } else {
     TRACE_EVENT_INSTANT1("download", "DownloadItemActive",
@@ -2485,16 +2485,15 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
 
   // Termination
   if (is_done && !was_done)
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "download", "DownloadItemActive",
-        TRACE_ID_WITH_SCOPE("DownloadItemActive", download_id_));
+    TRACE_EVENT_END("download",
+                    perfetto::NamedTrack("DownloadItemActive", download_id_));
 
   // Resumption
   if (was_done && !is_done) {
     std::string file_name(GetTargetFilePath().BaseName().AsUTF8Unsafe());
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+    TRACE_EVENT_BEGIN(
         "download", "DownloadItemActive",
-        TRACE_ID_WITH_SCOPE("DownloadItemActive", download_id_),
+        perfetto::NamedTrack("DownloadItemActive", download_id_),
         "download_item",
         std::make_unique<DownloadItemActivatedData>(
             TYPE_ACTIVE_DOWNLOAD, GetId(), GetOriginalUrl(), GetURL(),

@@ -70,6 +70,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "skia/buildflags.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLAssembleInterface.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLInterface.h"
@@ -389,12 +390,11 @@ void GpuServiceImpl::UpdateGPUInfo() {
   UMA_HISTOGRAM_CUSTOM_TIMES("GPU.GPUInitializationTime.V4",
                              gpu_info_.initialization_time,
                              base::Milliseconds(5), base::Seconds(90), 100);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kGpuInitializationEventCategory, kGpuInitializationEvent,
-      TRACE_ID_LOCAL(this), start_time_);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kGpuInitializationEventCategory, kGpuInitializationEvent,
-      TRACE_ID_LOCAL(this), now);
+  TRACE_EVENT_BEGIN(kGpuInitializationEventCategory, kGpuInitializationEvent,
+                    perfetto::Track::FromPointer(this), start_time_);
+  TRACE_EVENT_END(kGpuInitializationEventCategory,
+                  /* kGpuInitializationEvent */
+                  perfetto::Track::FromPointer(this), now);
 }
 
 void GpuServiceImpl::UpdateGPUInfoGL() {

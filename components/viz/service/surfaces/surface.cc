@@ -29,6 +29,7 @@
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 
@@ -91,9 +92,9 @@ Surface::Surface(const SurfaceInfo& surface_info,
       pending_copy_surface_id_(pending_copy_surface_id),
       allocation_group_(allocation_group),
       max_uncommitted_frames_(max_uncommitted_frames) {
-  TRACE_EVENT_ASYNC_BEGIN1(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"),
-                           "Surface", this, "surface_info",
-                           surface_info.ToString());
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"),
+                    "Surface", perfetto::Track::FromPointer(this),
+                    "surface_info", surface_info.ToString());
   allocation_group_->RegisterSurface(this);
   is_fallback_ =
       allocation_group_->GetLastReference().IsNewerThan(surface_id());
@@ -121,9 +122,10 @@ Surface::~Surface() {
   DCHECK(deadline_);
   deadline_->Cancel();
 
-  TRACE_EVENT_ASYNC_END1(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"),
-                         "Surface", this, "surface_info",
-                         surface_info_.ToString());
+  TRACE_EVENT_END(
+      TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"), /* Surface */
+      perfetto::Track::FromPointer(this), "surface_info",
+      surface_info_.ToString());
   allocation_group_->UnregisterSurface(this);
   if (surface_client_) {
     surface_client_->OnSurfaceDestroyed(this);
@@ -270,10 +272,10 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
     for (auto& it : activation_dependencies_)
       traced_value->AppendString(it.ToString());
     traced_value->EndArray();
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-        "viz", "SurfaceQueuedPending", TRACE_ID_LOCAL(this), "LocalSurfaceId",
-        surface_info_.id().ToString(), "ActivationDependencies",
-        std::move(traced_value));
+    TRACE_EVENT_BEGIN("viz", "SurfaceQueuedPending",
+                      perfetto::Track::FromPointer(this), "LocalSurfaceId",
+                      surface_info_.id().ToString(), "ActivationDependencies",
+                      std::move(traced_value));
 
     deadline_->Set(ResolveFrameDeadline(pending_frame_data_->frame));
     if (deadline_->HasDeadlinePassed()) {
@@ -362,8 +364,8 @@ void Surface::OnActivationDependencyResolved(
   if (!activation_dependencies_.empty())
     return;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("viz", "SurfaceQueuedPending",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END(
+      "viz", /* SurfaceQueuedPending */ perfetto::Track::FromPointer(this));
 
   // All blockers have been cleared. The surface can be activated now.
   ActivatePendingFrame();
@@ -374,8 +376,8 @@ void Surface::ActivatePendingFrameForDeadline() {
     return;
 
   if (!activation_dependencies_.empty()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("viz", "SurfaceQueuedPending",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END(
+        "viz", /* SurfaceQueuedPending */ perfetto::Track::FromPointer(this));
   }
 
   // If a frame is being activated because of a deadline, then clear its set

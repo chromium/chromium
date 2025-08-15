@@ -35,6 +35,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace download {
 namespace {
@@ -153,8 +154,8 @@ void ControllerImpl::Initialize(base::OnceClosure callback) {
       this, "DownloadService",
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "download_service", "DownloadServiceInitialize", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("download_service", "DownloadServiceInitialize",
+                    perfetto::Track::FromPointer(this));
 
   driver_->Initialize(this);
   model_->Initialize(this);
@@ -1129,8 +1130,9 @@ void ControllerImpl::NotifyClientsOfStartup(bool state_lost) {
 }
 
 void ControllerImpl::NotifyServiceOfStartup() {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "download_service", "DownloadServiceInitialize", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END(
+      "download_service",
+      /* DownloadServiceInitialize */ perfetto::Track::FromPointer(this));
 
   if (init_callback_.is_null())
     return;

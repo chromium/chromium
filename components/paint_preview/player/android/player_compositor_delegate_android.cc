@@ -22,6 +22,7 @@
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/player/android/convert_to_java_bitmap.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -228,9 +229,9 @@ jint PlayerCompositorDelegateAndroid::RequestBitmap(
     jint j_clip_width,
     jint j_clip_height) {
   TRACE_EVENT0("paint_preview", "RequestBitmap");
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "paint_preview", "PlayerCompositorDelegateAndroid::RequestBitmap",
-      TRACE_ID_LOCAL(request_id_));
+  TRACE_EVENT_BEGIN("paint_preview",
+                    "PlayerCompositorDelegateAndroid::RequestBitmap",
+                    perfetto::Track(request_id_));
   gfx::Rect rect(j_clip_x, j_clip_y, j_clip_width, j_clip_height);
   auto callback = base::BindPostTask(
       task_runner_,
@@ -267,9 +268,9 @@ void PlayerCompositorDelegateAndroid::OnJavaBitmapCallback(
     int request_id,
     JavaBitmapResult result) {
   TRACE_EVENT0("paint_preview", "OnBitmapReceived");
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "paint_preview", "PlayerCompositorDelegateAndroid::RequestBitmap",
-      TRACE_ID_LOCAL(request_id), "status", static_cast<int>(result.status),
+  TRACE_EVENT_END(
+      "paint_preview", /* PlayerCompositorDelegateAndroid::RequestBitmap */
+      perfetto::Track(request_id), "status", static_cast<int>(result.status),
       "bytes", result.bytes);
 
   if (result.status ==

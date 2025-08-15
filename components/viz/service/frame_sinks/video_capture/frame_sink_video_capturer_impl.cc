@@ -40,6 +40,7 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -461,9 +462,10 @@ void FrameSinkVideoCapturerImpl::Start(
       pixel_format_, kFramePoolCapacity, buffer_format_preference_,
       gmb_video_frame_pool_context_provider_);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-      "gpu.capture", "FrameSinkVideoCapturerImpl::Start", this, "pixel_format_",
-      pixel_format_, "buffer_format_preference_", buffer_format_preference_);
+  TRACE_EVENT_BEGIN("gpu.capture", "FrameSinkVideoCapturerImpl::Start",
+                    perfetto::Track::FromPointer(this), "pixel_format_",
+                    pixel_format_, "buffer_format_preference_",
+                    buffer_format_preference_);
 
   // If we should start capture for NV12 format, we can only hand out GMBs so
   // the caller must tolerate them:
@@ -527,8 +529,10 @@ void FrameSinkVideoCapturerImpl::Stop() {
     resolved_target_->OnClientCaptureStopped();
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("gpu.capture",
-                                  "FrameSinkVideoCapturerImpl::Start", this);
+  TRACE_EVENT_END(
+      "gpu.capture",
+      /* FrameSinkVideoCapturerImpl::Start */ perfetto::Track::FromPointer(
+          this));
 
   video_capture_started_ = false;
   buffer_format_preference_ = mojom::BufferFormatPreference::kDefault;

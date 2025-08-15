@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/input/features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gestures/blink/web_gesture_curve_impl.h"
 
@@ -161,9 +162,10 @@ void FlingController::ProcessGestureFlingStart(
   if (!UpdateCurrentFlingState(gesture_event.event))
     return;
 
-  TRACE_EVENT_ASYNC_BEGIN2("input", kFlingTraceName, this, "vx",
-                           current_fling_parameters_.velocity.x(), "vy",
-                           current_fling_parameters_.velocity.y());
+  TRACE_EVENT_BEGIN("input", perfetto::StaticString(kFlingTraceName),
+                    perfetto::Track::FromPointer(this), "vx",
+                    current_fling_parameters_.velocity.x(), "vy",
+                    current_fling_parameters_.velocity.y());
 
   last_progress_time_ = base::TimeTicks();
 
@@ -198,7 +200,8 @@ void FlingController::ProgressFling(
   if (!fling_curve_)
     return;
 
-  TRACE_EVENT_ASYNC_STEP_INTO0("input", kFlingTraceName, this, "ProgressFling");
+  TRACE_EVENT_INSTANT("input", "ProgressFling",
+                      perfetto::Track::FromPointer(this));
 
   if (!first_fling_update_sent()) {
     // Guard against invalid as there are no guarantees fling event and progress
@@ -374,7 +377,8 @@ void FlingController::EndCurrentFling(base::TimeTicks current_time) {
 
   if (fling_curve_) {
     scheduler_client_->DidStopFlingingOnBrowser(weak_ptr_factory_.GetWeakPtr());
-    TRACE_EVENT_ASYNC_END0("input", kFlingTraceName, this);
+    TRACE_EVENT_END("input",
+                    /* kFlingTraceName */ perfetto::Track::FromPointer(this));
   }
 
   fling_curve_.reset();

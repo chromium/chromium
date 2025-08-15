@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 // Initializes a allowlist of URL schemes.
 void InitializeSchemeAllowlist(SchemeSet* allowlist,
@@ -105,8 +106,8 @@ InMemoryURLIndex::~InMemoryURLIndex() {
 }
 
 void InMemoryURLIndex::Init() {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("omnibox", "InMemoryURLIndex::Init",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("omnibox", "InMemoryURLIndex::Init",
+                    perfetto::Track::FromPointer(this));
 
   if (!history_service_)
     return;
@@ -222,8 +223,9 @@ void InMemoryURLIndex::Shutdown() {
 void InMemoryURLIndex::DoneRebuildingPrivateDataFromHistoryDB(
     bool succeeded,
     scoped_refptr<URLIndexPrivateData> private_data) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("omnibox", "InMemoryURLIndex::Init",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END(
+      "omnibox",
+      /* InMemoryURLIndex::Init */ perfetto::Track::FromPointer(this));
   DCHECK(thread_checker_.CalledOnValidThread());
   if (succeeded) {
     private_data_tracker_.TryCancelAll();

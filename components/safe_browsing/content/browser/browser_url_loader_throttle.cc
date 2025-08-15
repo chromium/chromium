@@ -29,6 +29,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace {
 
@@ -153,8 +154,8 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
 BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (deferred_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("safe_browsing", /* Deferred */
+                    perfetto::Track::FromPointer(this));
   }
   if (was_async_faster_than_sync_.has_value()) {
     base::UmaHistogramBoolean(
@@ -407,8 +408,8 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
   deferred_ = true;
   defer_start_time_ = base::TimeTicks::Now();
   *defer = true;
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("safe_browsing", "Deferred",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("safe_browsing", "Deferred",
+                    perfetto::Track::FromPointer(this));
 }
 
 const char* BrowserURLLoaderThrottle::NameForLoggingWillProcessResponse() {
@@ -468,8 +469,8 @@ void BrowserURLLoaderThrottle::OnCompleteSyncCheck(
   if (result.proceed) {
     if (pending_sync_checks_ == 0 && deferred_) {
       deferred_ = false;
-      TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
-                                      TRACE_ID_LOCAL(this));
+      TRACE_EVENT_END("safe_browsing", /* Deferred */
+                      perfetto::Track::FromPointer(this));
       delegate_->Resume();
       MaybeTransferAsyncChecker();
     }

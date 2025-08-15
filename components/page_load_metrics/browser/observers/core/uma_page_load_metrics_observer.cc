@@ -81,15 +81,6 @@ std::unique_ptr<base::trace_event::TracedValue> FirstInputDelayTraceData(
   return data;
 }
 
-#define TRACE_WITH_TIMESTAMP0(category_group, name, trace_id, begin_time,   \
-                              end_time)                                     \
-  do {                                                                      \
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(category_group, name,  \
-                                                     trace_id, begin_time); \
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(category_group, name,    \
-                                                   trace_id, end_time);     \
-  } while (0)
-
 }  // namespace
 
 namespace internal {
@@ -466,16 +457,20 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     // paint.
     if (timing.paint_timing->first_contentful_paint.value() >
         kFirstContentfulPaintTraceThreshold) {
-      auto trace_id = TRACE_ID_WITH_SCOPE(
-          "UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage_for_"
-          "LongNavigation",
-          TRACE_ID_LOCAL(this));
       base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "latency", "Long Navigation to First Contentful Paint", trace_id,
+      TRACE_EVENT_BEGIN(
+          "latency", "Long Navigation to First Contentful Paint",
+          perfetto::NamedTrack(
+              "UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage_for_"
+              "LongNavigation",
+              reinterpret_cast<uintptr_t>(this)),
           navigation_start);
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-          "latency", "Long Navigation to First Contentful Paint", trace_id,
+      TRACE_EVENT_END(
+          "latency", /* Long Navigation to First Contentful Paint */
+          perfetto::NamedTrack(
+              "UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage_for_"
+              "LongNavigation",
+              reinterpret_cast<uintptr_t>(this)),
           navigation_start +
               timing.paint_timing->first_contentful_paint.value());
     }
@@ -759,11 +754,16 @@ void UmaPageLoadMetricsObserver::OnLoadedResource(
         internal::kHistogramCommitSentToFirstSubresourceLoadStart,
         timing_info.request_start - commit_sent_time);
 
-    TRACE_WITH_TIMESTAMP0(
+    TRACE_EVENT_BEGIN(
         "loading", "CommitSentToFirstSubresourceLoadStart",
-        TRACE_ID_WITH_SCOPE("CommitSentToFirstSubresourceLoadStart",
-                            TRACE_ID_LOCAL(this)),
-        commit_sent_time, timing_info.request_start);
+        perfetto::NamedTrack("CommitSentToFirstSubresourceLoadStart",
+                             reinterpret_cast<uintptr_t>(this)),
+        commit_sent_time);
+    TRACE_EVENT_END(
+        "loading", /* CommitSentToFirstSubresourceLoadStart */
+        perfetto::NamedTrack("CommitSentToFirstSubresourceLoadStart",
+                             reinterpret_cast<uintptr_t>(this)),
+        timing_info.request_start);
   }
 }
 

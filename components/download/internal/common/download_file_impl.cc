@@ -29,6 +29,7 @@
 #include "crypto/sha2.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
@@ -192,8 +193,8 @@ DownloadFileImpl::DownloadFileImpl(
       observer_(observer) {
   TRACE_EVENT_INSTANT0("download", "DownloadFileCreated",
                        TRACE_EVENT_SCOPE_THREAD);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("download", "DownloadFileActive",
-                                    download_id);
+  TRACE_EVENT_BEGIN("download", "DownloadFileActive",
+                    perfetto::Track(download_id));
 
   source_streams_.insert(
       {save_info_->offset,
@@ -207,8 +208,8 @@ DownloadFileImpl::DownloadFileImpl(
 DownloadFileImpl::~DownloadFileImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("download", "DownloadFileActive",
-                                  download_id_);
+  TRACE_EVENT_END("download",
+                  /* DownloadFileActive */ perfetto::Track(download_id_));
 }
 
 void DownloadFileImpl::Initialize(

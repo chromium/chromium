@@ -37,6 +37,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace paint_preview {
 
@@ -369,9 +370,8 @@ void PaintPreviewClient::CapturePaintPreview(
       params.inner.skip_accelerated_content;
   document_data_it = all_document_data_.insert(
       document_data_it, {params.inner.document_guid, std::move(document_data)});
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("paint_preview",
-                                    "PaintPreviewClient::CapturePaintPreview",
-                                    TRACE_ID_LOCAL(&document_data_it->second));
+  TRACE_EVENT_BEGIN("paint_preview", "PaintPreviewClient::CapturePaintPreview",
+                    perfetto::Track::FromPointer(&document_data_it->second));
   CapturePaintPreviewInternal(params.inner, render_frame_host,
                               document_data_it->second);
 }

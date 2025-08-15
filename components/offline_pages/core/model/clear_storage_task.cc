@@ -27,6 +27,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace offline_pages {
 
@@ -160,7 +161,8 @@ ClearStorageTask::ClearStorageTask(OfflinePageMetadataStore* store,
 ClearStorageTask::~ClearStorageTask() = default;
 
 void ClearStorageTask::Run() {
-  TRACE_EVENT_ASYNC_BEGIN0("offline_pages", "ClearStorageTask running", this);
+  TRACE_EVENT_BEGIN("offline_pages", "ClearStorageTask running",
+                    perfetto::Track::FromPointer(this));
   archive_manager_->GetStorageStats(
       base::BindOnce(&ClearStorageTask::OnGetStorageStatsDone,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -192,9 +194,10 @@ void ClearStorageTask::InformClearStorageDone(size_t pages_cleared,
                                               ClearStorageResult result) {
   std::move(callback_).Run(pages_cleared, result);
   TaskComplete();
-  TRACE_EVENT_ASYNC_END2("offline_pages", "ClearStorageTask running", this,
-                         "result", static_cast<int>(result), "pages_cleared",
-                         pages_cleared);
+  TRACE_EVENT_END(
+      "offline_pages",
+      /* ClearStorageTask running */ perfetto::Track::FromPointer(this),
+      "result", static_cast<int>(result), "pages_cleared", pages_cleared);
 }
 
 }  // namespace offline_pages

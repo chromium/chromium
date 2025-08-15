@@ -40,6 +40,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/media_switches.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/aura/env.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/compositor.h"
@@ -104,6 +105,11 @@ gpu::SharedImageInterface* GetSharedImageInterface() {
     return nullptr;
   }
   return context_provider->SharedImageInterface();
+}
+
+perfetto::NamedTrack GetTrack(const void* buffer_id) {
+  return perfetto::NamedTrack(kBufferInUse,
+                              reinterpret_cast<uintptr_t>(buffer_id));
 }
 
 }  // namespace
@@ -312,7 +318,7 @@ void Buffer::Texture::UpdateSharedImage(
     sii->UpdateSharedImage(gpu::SyncToken(), std::move(acquire_fence),
                            shared_image_->mailbox());
     sync_token_ = sii->GenUnverifiedSyncToken();
-    TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, GetBufferId(), "bound");
+    TRACE_EVENT_INSTANT("exo", "bound", GetTrack(GetBufferId()));
   }
 }
 
@@ -396,8 +402,7 @@ void Buffer::Texture::ReleaseWhenQueryResultIsAvailable(
   release_callback_ = std::move(callback);
   wait_for_release_time_ = base::TimeTicks::Now() + wait_for_release_delay_;
   ScheduleWaitForRelease(wait_for_release_delay_);
-  TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, GetBufferId(),
-                               "pending_query");
+  TRACE_EVENT_INSTANT("exo", "pending_query", GetTrack(GetBufferId()));
   context_provider_->ContextSupport()->SignalQuery(
       query_id_, base::BindOnce(&Buffer::Texture::Released,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -635,8 +640,8 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
   Texture* contents_texture = contents_texture_.get();
 
   if (release_contents_callback_.IsCancelled()) {
-    TRACE_EVENT_ASYNC_BEGIN1("exo", kBufferInUse, GetBufferId(), "buffer_id",
-                             GetBufferId());
+    TRACE_EVENT_BEGIN("exo", kBufferInUse, GetTrack(GetBufferId()), "buffer_id",
+                      GetBufferId());
   }
 
   // Cancel pending contents release callback.
@@ -805,7 +810,7 @@ bool Buffer::NeedsHardwareProtection() {
 // Buffer, private:
 
 void Buffer::Release() {
-  TRACE_EVENT_ASYNC_END0("exo", kBufferInUse, GetBufferId());
+  TRACE_EVENT_END("exo", /* kBufferInUse */ GetTrack(GetBufferId()));
 
   // Run release callback to notify the client that buffer has been released.
   if (!release_callback_.is_null() && !legacy_release_skippable_) {
@@ -836,8 +841,7 @@ void Buffer::ReleaseContents() {
   release_contents_callback_.Cancel();
 
   if (attach_count_) {
-    TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, GetBufferId(),
-                                 "attached");
+    TRACE_EVENT_INSTANT("exo", "attached", GetTrack(GetBufferId()));
   } else {
     // Release buffer if not attached to surface.
     Release();

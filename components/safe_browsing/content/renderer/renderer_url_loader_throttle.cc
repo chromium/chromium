@@ -18,6 +18,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"  // nogncheck
@@ -54,8 +55,8 @@ RendererURLLoaderThrottle::RendererURLLoaderThrottle(
 
 RendererURLLoaderThrottle::~RendererURLLoaderThrottle() {
   if (deferred_)
-    TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("safe_browsing",
+                    /* Deferred */ perfetto::Track::FromPointer(this));
 }
 
 void RendererURLLoaderThrottle::DetachFromCurrentSequence() {
@@ -157,9 +158,9 @@ void RendererURLLoaderThrottle::WillProcessResponse(
   DCHECK(!deferred_);
   deferred_ = true;
   *defer = true;
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("safe_browsing", "Deferred",
-                                    TRACE_ID_LOCAL(this), "original_url",
-                                    original_url_.spec());
+  TRACE_EVENT_BEGIN("safe_browsing", "Deferred",
+                    perfetto::Track::FromPointer(this), "original_url",
+                    original_url_.spec());
 }
 
 const char* RendererURLLoaderThrottle::NameForLoggingWillProcessResponse() {
@@ -181,8 +182,8 @@ void RendererURLLoaderThrottle::OnCheckUrlResult(
   if (proceed) {
     if (pending_checks_ == 0 && deferred_) {
       deferred_ = false;
-      TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
-                                      TRACE_ID_LOCAL(this));
+      TRACE_EVENT_END("safe_browsing",
+                      /* Deferred */ perfetto::Track::FromPointer(this));
       delegate_->Resume();
     }
   } else {
@@ -208,8 +209,8 @@ void RendererURLLoaderThrottle::OnMojoDisconnect() {
 
   if (deferred_) {
     deferred_ = false;
-    TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("safe_browsing",
+                    /* Deferred */ perfetto::Track::FromPointer(this));
     delegate_->Resume();
   }
 }

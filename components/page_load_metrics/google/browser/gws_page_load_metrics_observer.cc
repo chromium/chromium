@@ -32,6 +32,7 @@
 #include "content/public/browser/site_instance.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using page_load_metrics::PageAbortReason;
 
@@ -558,40 +559,39 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   RecordLatencyHitograms(timing.non_redirect_response_start_time);
 
   // Record trace events according to the navigation milestone.
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "loading", "GWSNavigationStartToFirstRequestStart", TRACE_ID_LOCAL(this),
-      navigation_start_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "loading", "GWSNavigationStartToFirstRequestStart", TRACE_ID_LOCAL(this),
-      timing.first_request_start_time);
+  TRACE_EVENT_BEGIN("loading", "GWSNavigationStartToFirstRequestStart",
+                    perfetto::Track::FromPointer(this), navigation_start_time);
+  TRACE_EVENT_END("loading", /* GWSNavigationStartToFirstRequestStart */
+                  perfetto::Track::FromPointer(this),
+                  timing.first_request_start_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "loading", "GWSFirstRequestStartToFirstResponseStart",
-      TRACE_ID_LOCAL(this), timing.first_request_start_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "loading", "GWSFirstRequestStartToFirstResponseStart",
-      TRACE_ID_LOCAL(this), timing.first_response_start_time);
+  TRACE_EVENT_BEGIN("loading", "GWSFirstRequestStartToFirstResponseStart",
+                    perfetto::Track::FromPointer(this),
+                    timing.first_request_start_time);
+  TRACE_EVENT_END("loading", /* GWSFirstRequestStartToFirstResponseStart */
+                  perfetto::Track::FromPointer(this),
+                  timing.first_response_start_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "loading", "GWSFirstResponseStartToFirstLoaderCallback",
-      TRACE_ID_LOCAL(this), timing.first_response_start_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "loading", "GWSFirstResponseStartToFirstLoaderCallback",
-      TRACE_ID_LOCAL(this), timing.first_loader_callback_time);
+  TRACE_EVENT_BEGIN("loading", "GWSFirstResponseStartToFirstLoaderCallback",
+                    perfetto::Track::FromPointer(this),
+                    timing.first_response_start_time);
+  TRACE_EVENT_END("loading", /* GWSFirstResponseStartToFirstLoaderCallback */
+                  perfetto::Track::FromPointer(this),
+                  timing.first_loader_callback_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "loading", "GWSFirstLoadCallbackToFinalResponseStart",
-      TRACE_ID_LOCAL(this), timing.first_loader_callback_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "loading", "GWSFirstLoadCallbackToFinalResponseStart",
-      TRACE_ID_LOCAL(this), timing.final_response_start_time);
+  TRACE_EVENT_BEGIN("loading", "GWSFirstLoadCallbackToFinalResponseStart",
+                    perfetto::Track::FromPointer(this),
+                    timing.first_loader_callback_time);
+  TRACE_EVENT_END("loading", /* GWSFirstLoadCallbackToFinalResponseStart */
+                  perfetto::Track::FromPointer(this),
+                  timing.final_response_start_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "loading", "GWSFinalResponseStartToFinalLoaderCallback",
-      TRACE_ID_LOCAL(this), timing.final_response_start_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "loading", "GWSFinalResponseStartToFinalLoaderCallback",
-      TRACE_ID_LOCAL(this), timing.final_loader_callback_time);
+  TRACE_EVENT_BEGIN("loading", "GWSFinalResponseStartToFinalLoaderCallback",
+                    perfetto::Track::FromPointer(this),
+                    timing.final_response_start_time);
+  TRACE_EVENT_END("loading", /* GWSFinalResponseStartToFinalLoaderCallback */
+                  perfetto::Track::FromPointer(this),
+                  timing.final_loader_callback_time);
 }
 
 void GWSPageLoadMetricsObserver::RecordPreCommitHistograms() {
@@ -661,15 +661,13 @@ std::string GWSPageLoadMetricsObserver::AddHistogramSuffix(
 void GWSPageLoadMetricsObserver::RecordLatencyHitograms(
     base::TimeTicks response_start_time) {
   CHECK(!is_prerendered_);
-  const auto trace_id =
-      TRACE_ID_WITH_SCOPE("GWSLatencyEvent", TRACE_ID_LOCAL(navigation_id_));
+  const auto track = perfetto::NamedTrack("GWSLatencyEvent", navigation_id_);
   // TODO(crbug.com/364278026): SRT starts from the time when the user submits
   // a query. Using the navigation start time may not perfect to measure SRT.
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "navigation", "GWSLatency:SRT", trace_id,
-      GetDelegate().GetNavigationStart());
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("navigation", "GWSLatency:SRT",
-                                                 trace_id, response_start_time);
+  TRACE_EVENT_BEGIN("navigation", "GWSLatency:SRT", track,
+                    GetDelegate().GetNavigationStart());
+  TRACE_EVENT_END("navigation", /* GWSLatency:SRT */
+                  track, response_start_time);
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSSRT,
                       response_start_time - GetDelegate().GetNavigationStart());
 
@@ -681,37 +679,40 @@ void GWSPageLoadMetricsObserver::RecordLatencyHitograms(
     // Currently `aft_start_time_` has the value of the server response time,
     // but in theory AFT starts at the end of SRT, the time when the client
     // receives the first byte of the header chunk.
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "navigation", "GWSLatency:AFT", trace_id, response_start_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "navigation", "GWSLatency:AFT", trace_id,
-        GetDelegate().GetNavigationStart() + aft_end_time_.value());
+    TRACE_EVENT_BEGIN("navigation", "GWSLatency:AFT", track,
+                      response_start_time);
+    TRACE_EVENT_END("navigation", /* GWSLatency:AFT */
+                    track,
+                    GetDelegate().GetNavigationStart() + aft_end_time_.value());
   }
   if (body_chunk_start_time_.has_value()) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "navigation", "GWSLatency:SCT", trace_id, response_start_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "navigation", "GWSLatency:SCT", trace_id,
+    TRACE_EVENT_BEGIN("navigation", "GWSLatency:SCT", track,
+                      response_start_time);
+    TRACE_EVENT_END(
+        "navigation", /* GWSLatency:SCT */
+        track,
         GetDelegate().GetNavigationStart() + body_chunk_start_time_.value());
     sct_time = GetDelegate().GetNavigationStart() +
                body_chunk_start_time_.value() - response_start_time;
     PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSSCT, sct_time.value());
   }
   if (header_chunk_end_time_.has_value()) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "navigation", "GWSLatency:HCT", trace_id, response_start_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "navigation", "GWSLatency:HCT", trace_id,
+    TRACE_EVENT_BEGIN("navigation", "GWSLatency:HCT", track,
+                      response_start_time);
+    TRACE_EVENT_END(
+        "navigation", /* GWSLatency:HCT */
+        track,
         GetDelegate().GetNavigationStart() + header_chunk_end_time_.value());
     hct_time = GetDelegate().GetNavigationStart() +
                header_chunk_end_time_.value() - response_start_time;
     PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHCT, hct_time.value());
   }
   if (header_chunk_start_time_.has_value()) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "navigation", "GWSLatency:HST", trace_id, response_start_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "navigation", "GWSLatency:HST", trace_id,
+    TRACE_EVENT_BEGIN("navigation", "GWSLatency:HST", track,
+                      response_start_time);
+    TRACE_EVENT_END(
+        "navigation", /* GWSLatency:HST */
+        track,
         GetDelegate().GetNavigationStart() + header_chunk_start_time_.value());
     PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHST,
                         GetDelegate().GetNavigationStart() +

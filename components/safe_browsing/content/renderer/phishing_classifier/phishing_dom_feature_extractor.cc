@@ -23,6 +23,7 @@
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace safe_browsing {
 
@@ -125,8 +126,8 @@ void PhishingDOMFeatureExtractor::ExtractFeatures(blink::WebDocument document,
   features_ = features;
   done_callback_ = std::move(done_callback);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("safe_browsing", "ExtractDomFeatures",
-                                    this);
+  TRACE_EVENT_BEGIN("safe_browsing", "ExtractDomFeatures",
+                    perfetto::Track::FromPointer(this));
   page_feature_state_ = std::make_unique<PageFeatureState>(clock_->NowTicks());
   cur_document_ = document;
 
@@ -320,7 +321,8 @@ void PhishingDOMFeatureExtractor::HandleScript(
 void PhishingDOMFeatureExtractor::RunCallback(bool success) {
   DCHECK(page_feature_state_.get());
   DCHECK(!done_callback_.is_null());
-  TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "ExtractDomFeatures", this);
+  TRACE_EVENT_END("safe_browsing", /* ExtractDomFeatures */
+                  perfetto::Track::FromPointer(this));
   std::move(done_callback_).Run(success);
   Clear();
 }

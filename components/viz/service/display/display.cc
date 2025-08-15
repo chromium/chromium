@@ -76,6 +76,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -1008,8 +1009,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     return false;
   }
 
-  TRACE_EVENT_ASYNC_BEGIN0("viz,benchmark", "Graphics.Pipeline.DrawAndSwap",
-                           display_trace_id);
+  TRACE_EVENT_BEGIN("viz,benchmark", "Graphics.Pipeline.DrawAndSwap",
+                    perfetto::Track(display_trace_id));
 
   // Run callbacks early to allow pipelining and collect presented callbacks.
   damage_tracker_->RunDrawCallbacks();
@@ -1074,9 +1075,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
   std::optional<base::ElapsedTimer> draw_timer;
   if (should_draw) {
-    TRACE_EVENT_ASYNC_STEP_INTO0("viz,benchmark",
-                                 "Graphics.Pipeline.DrawAndSwap",
-                                 display_trace_id, "Draw");
+    TRACE_EVENT_BEGIN("viz,benchmark", "Graphics.Pipeline.Draw",
+                      perfetto::Track(display_trace_id));
     base::ElapsedTimer draw_occlusion_timer;
     occlusion_culler_->RemoveOverdrawQuads(&frame);
     DebugDrawFrameVisible(frame);
@@ -1100,6 +1100,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     renderer_->DrawFrame(&frame.render_pass_list, device_scale_factor_,
                          current_surface_size, display_color_spaces_,
                          std::move(frame.surface_damage_rect_list_));
+    TRACE_EVENT_END("viz,benchmark", perfetto::Track(display_trace_id));
   } else {
     TRACE_EVENT_INSTANT0("viz", "Draw skipped.", TRACE_EVENT_SCOPE_THREAD);
   }
@@ -1195,9 +1196,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
       }
     }
 
-    TRACE_EVENT_ASYNC_STEP_INTO0("viz,benchmark",
-                                 "Graphics.Pipeline.DrawAndSwap",
-                                 display_trace_id, "WaitForSwap");
+    TRACE_EVENT_INSTANT("viz,benchmark", "Graphics.Pipeline.WaitForSwap",
+                        perfetto::Track(display_trace_id));
     swapped_since_resize_ = true;
 
     IssueDisplayRenderingStatsEvent();
@@ -1268,8 +1268,10 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     if (should_draw)
       renderer_->SwapBuffersSkipped();
 
-    TRACE_EVENT_ASYNC_END1("viz,benchmark", "Graphics.Pipeline.DrawAndSwap",
-                           display_trace_id, "status", "canceled");
+    TRACE_EVENT_END(
+        "viz,benchmark",
+        /* Graphics.Pipeline.DrawAndSwap */ perfetto::Track(display_trace_id),
+        "status", "canceled");
     PopBackExpectedDisplayTraceId(pending_swap_ack_trace_ids_,
                                   display_trace_id);
     PopBackExpectedDisplayTraceId(pending_presented_trace_ids_,
@@ -1322,12 +1324,10 @@ void Display::DidReceiveSwapBuffersAck(
   const gfx::SwapTimings& timings = params.swap_response.timings;
   int64_t swap_ack_trace_id =
       PopFrontDisplayTraceId(pending_swap_ack_trace_ids_);
-  TRACE_EVENT_ASYNC_STEP_INTO_WITH_TIMESTAMP0(
-      "viz,benchmark", "Graphics.Pipeline.DrawAndSwap", swap_ack_trace_id,
-      "Swap", timings.swap_start);
-  TRACE_EVENT_ASYNC_STEP_INTO_WITH_TIMESTAMP0(
-      "viz,benchmark", "Graphics.Pipeline.DrawAndSwap", swap_ack_trace_id,
-      "WaitForPresentation", timings.swap_end);
+  TRACE_EVENT_INSTANT("viz,benchmark", "Swap",
+                      perfetto::Track(swap_ack_trace_id), timings.swap_start);
+  TRACE_EVENT_INSTANT("viz,benchmark", "WaitForPresentation",
+                      perfetto::Track(swap_ack_trace_id), timings.swap_end);
 
   if (overlay_processor_)
     overlay_processor_->OverlayPresentationComplete();
@@ -1427,8 +1427,9 @@ void Display::DidReceivePresentationFeedback(
   int64_t presented_trace_id =
       PopFrontDisplayTraceId(pending_presented_trace_ids_);
   copy_feedback.display_trace_id = presented_trace_id;
-  TRACE_EVENT_ASYNC_END_WITH_TIMESTAMP0(
-      "viz,benchmark", "Graphics.Pipeline.DrawAndSwap", presented_trace_id,
+  TRACE_EVENT_END(
+      "viz,benchmark",
+      /* Graphics.Pipeline.DrawAndSwap */ perfetto::Track(presented_trace_id),
       copy_feedback.timestamp);
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP0(
       "benchmark,viz," TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"),

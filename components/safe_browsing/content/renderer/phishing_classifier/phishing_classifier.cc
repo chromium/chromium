@@ -45,6 +45,7 @@
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "url/gurl.h"
 
@@ -75,8 +76,8 @@ bool PhishingClassifier::is_ready() const {
 void PhishingClassifier::BeginClassification(
     scoped_refptr<const base::RefCountedString16> page_text,
     DoneCallback done_callback) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("safe_browsing", "PhishingClassification",
-                                    this);
+  TRACE_EVENT_BEGIN("safe_browsing", "PhishingClassification",
+                    perfetto::Track::FromPointer(this));
   DCHECK(is_ready());
 
   // However, in an opt build, we will go ahead and clean up the pending
@@ -294,8 +295,8 @@ void PhishingClassifier::OnVisualTfLiteModelDone(
 
 void PhishingClassifier::RunCallback(const ClientPhishingRequest& verdict,
                                      Result phishing_classifier_result) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "PhishingClassification",
-                                  this);
+  TRACE_EVENT_END("safe_browsing", /* PhishingClassification */
+                  perfetto::Track::FromPointer(this));
   std::move(done_callback_).Run(verdict, phishing_classifier_result);
   Clear();
 }

@@ -12,6 +12,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 AccountInfoFetcher::AccountInfoFetcher(
     ProfileOAuth2TokenService* token_service,
@@ -23,12 +24,14 @@ AccountInfoFetcher::AccountInfoFetcher(
       url_loader_factory_(std::move(url_loader_factory)),
       service_(service),
       account_id_(account_id) {
-  TRACE_EVENT_ASYNC_BEGIN1("AccountFetcherService", "AccountIdFetcher", this,
-                           "account_id", account_id.ToString());
+  TRACE_EVENT_BEGIN("AccountFetcherService", "AccountIdFetcher",
+                    perfetto::Track::FromPointer(this), "account_id",
+                    account_id.ToString());
 }
 
 AccountInfoFetcher::~AccountInfoFetcher() {
-  TRACE_EVENT_ASYNC_END0("AccountFetcherService", "AccountIdFetcher", this);
+  TRACE_EVENT_END("AccountFetcherService",
+                  /* AccountIdFetcher */ perfetto::Track::FromPointer(this));
 }
 
 void AccountInfoFetcher::Start() {
@@ -42,8 +45,8 @@ void AccountInfoFetcher::Start() {
 void AccountInfoFetcher::OnGetTokenSuccess(
     const OAuth2AccessTokenManager::Request* request,
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
-  TRACE_EVENT_ASYNC_STEP_PAST0("AccountFetcherService", "AccountIdFetcher",
-                               this, "OnGetTokenSuccess");
+  TRACE_EVENT_INSTANT("AccountFetcherService", "OnGetTokenSuccess",
+                      perfetto::Track::FromPointer(this));
   DCHECK_EQ(request, login_token_request_.get());
 
   gaia_oauth_client_ =
@@ -56,9 +59,9 @@ void AccountInfoFetcher::OnGetTokenSuccess(
 void AccountInfoFetcher::OnGetTokenFailure(
     const OAuth2AccessTokenManager::Request* request,
     const GoogleServiceAuthError& error) {
-  TRACE_EVENT_ASYNC_STEP_PAST1("AccountFetcherService", "AccountIdFetcher",
-                               this, "OnGetTokenFailure",
-                               "google_service_auth_error", error.ToString());
+  TRACE_EVENT_INSTANT("AccountFetcherService", "OnGetTokenFailure",
+                      perfetto::Track::FromPointer(this),
+                      "google_service_auth_error", error.ToString());
   LOG(ERROR) << "OnGetTokenFailure: " << error.ToString();
   DCHECK_EQ(request, login_token_request_.get());
   service_->OnUserInfoFetchFailure(account_id_);
@@ -66,23 +69,23 @@ void AccountInfoFetcher::OnGetTokenFailure(
 
 void AccountInfoFetcher::OnGetUserInfoResponse(
     const base::Value::Dict& user_info) {
-  TRACE_EVENT_ASYNC_STEP_PAST1("AccountFetcherService", "AccountIdFetcher",
-                               this, "OnGetUserInfoResponse", "account_id",
-                               account_id_.ToString());
+  TRACE_EVENT_INSTANT("AccountFetcherService", "OnGetUserInfoResponse",
+                      perfetto::Track::FromPointer(this), "account_id",
+                      account_id_.ToString());
   service_->OnUserInfoFetchSuccess(account_id_, user_info);
 }
 
 void AccountInfoFetcher::OnOAuthError() {
-  TRACE_EVENT_ASYNC_STEP_PAST0("AccountFetcherService", "AccountIdFetcher",
-                               this, "OnOAuthError");
+  TRACE_EVENT_INSTANT("AccountFetcherService", "OnOAuthError",
+                      perfetto::Track::FromPointer(this));
   LOG(ERROR) << "OnOAuthError";
   service_->OnUserInfoFetchFailure(account_id_);
 }
 
 void AccountInfoFetcher::OnNetworkError(int response_code) {
-  TRACE_EVENT_ASYNC_STEP_PAST1("AccountFetcherService", "AccountIdFetcher",
-                               this, "OnNetworkError", "response_code",
-                               response_code);
+  TRACE_EVENT_INSTANT("AccountFetcherService", "OnNetworkError",
+                      perfetto::Track::FromPointer(this), "response_code",
+                      response_code);
   LOG(ERROR) << "OnNetworkError " << response_code;
   service_->OnUserInfoFetchFailure(account_id_);
 }

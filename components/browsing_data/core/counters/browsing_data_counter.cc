@@ -13,13 +13,14 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace browsing_data {
 
 namespace {
 static const int kDelayUntilShowCalculatingMs = 140;
 static const int kDelayUntilReadyToShowResultMs = 1000;
-}
+}  // namespace
 
 BrowsingDataCounter::BrowsingDataCounter()
     : initialized_(false), use_delay_(true), state_(State::IDLE) {}
@@ -86,9 +87,9 @@ base::Time BrowsingDataCounter::GetPeriodEnd() {
 
 void BrowsingDataCounter::Restart() {
   DCHECK(initialized_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "browsing_data", "BrowsingDataCounter::Restart", TRACE_ID_LOCAL(this),
-      "data_type", GetPrefName());
+  TRACE_EVENT_BEGIN("browsing_data", "BrowsingDataCounter::Restart",
+                    perfetto::Track::FromPointer(this), "data_type",
+                    GetPrefName());
   if (state_ == State::IDLE) {
     DCHECK(!timer_.IsRunning());
     DCHECK(!staged_result_);
@@ -124,9 +125,10 @@ void BrowsingDataCounter::ReportResult(ResultInt value) {
 void BrowsingDataCounter::ReportResult(std::unique_ptr<Result> result) {
   DCHECK(initialized_);
   DCHECK(result->Finished());
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "browsing_data", "BrowsingDataCounter::Restart", TRACE_ID_LOCAL(this),
-      "data_type", GetPrefName());
+
+  TRACE_EVENT_END(
+      "browsing_data",
+      /* BrowsingDataCounter::Restart */ perfetto::Track::FromPointer(this));
   switch (state_) {
     case State::RESTARTED:
     case State::READY_TO_REPORT_RESULT:
