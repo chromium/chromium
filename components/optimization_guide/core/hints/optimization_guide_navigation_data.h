@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <optional>
 #include <utility>
 
@@ -112,10 +111,6 @@ class OptimizationGuideNavigationData {
   base::flat_map<optimization_guide::proto::OptimizationType,
                  optimization_guide::OptimizationTypeDecision>
       optimization_type_decisions_;
-
-  // The page hint for the navigation.
-  std::optional<std::unique_ptr<optimization_guide::proto::PageHint>>
-      page_hint_;
 
   // The time that the hints fetch for this navigation started. Is only present
   // if a fetch was initiated for this navigation.
