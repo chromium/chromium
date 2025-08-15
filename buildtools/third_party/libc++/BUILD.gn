@@ -89,15 +89,15 @@ if (current_toolchain == default_toolchain) {
       "${root_gen_dir}/third_party/libc++/src/include/{{source_file_part}}",
     ]
   }
+}
 
-  if (use_clang_modules && is_ios) {
-    # sysroot_modulemaps can be inside the build directory. This no-op action
-    # declares the modulemap files as outputs to satisfy GN's dependency
-    # tracking when other targets use them as inputs.
-    action("copy_sysroot_modulemaps") {
-      script = "//build/noop.py"
-      outputs = sysroot_modulemaps
-    }
+if (use_clang_modules && use_xcode_symlinks) {
+  # sysroot_modulemaps can be inside the build directory. This no-op action
+  # declares the modulemap files as outputs to satisfy GN's dependency
+  # tracking when other targets use them as inputs.
+  action("copy_sysroot_modulemaps") {
+    script = "//build/noop.py"
+    outputs = sysroot_modulemaps
   }
 }
 

@@ -5,14 +5,18 @@
 import("//build/config/c++/modules.gni")
 import("//build/config/clang/clang.gni")
 
+use_xcode_symlinks = false
+
 if (is_ios) {
   import("//build/config/ios/ios_sdk.gni")
   sdk_path = ios_sdk_path
+  use_xcode_symlinks = ios_use_xcode_symlinks
 }
 
 if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
   sdk_path = mac_sdk_path
+  use_xcode_symlinks = mac_use_xcode_symlinks
 }
 
 configs_to_add = [
@@ -34,8 +38,18 @@ if (use_clang_modules) {
       if (!defined(public_deps)) {
         public_deps = []
       }
-      if (is_ios) {
-        public_deps += [ "//buildtools/third_party/libc++:copy_sysroot_modulemaps($default_toolchain)" ]
+
+      if (use_xcode_symlinks) {
+        # The `copy_sysroot_modulemaps` action depends on SDK paths that differ
+        # between macOS and iOS, so it must be built with the correct toolchain
+        # for the target OS.
+        toolchain = "//build/toolchain/mac:clang_$target_cpu"
+        if (is_ios) {
+          toolchain = "//build/toolchain/ios:ios_clang_$target_cpu"
+        }
+        public_deps += [
+          "//buildtools/third_party/libc++:copy_sysroot_modulemaps($toolchain)",
+        ]
       }
 
       # Implicit module maps won't work on apple because we're currently
