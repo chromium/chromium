@@ -16,10 +16,14 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/page_content_annotations/page_content_screenshot_service.h"
+#include "chrome/browser/page_content_annotations/page_content_screenshot_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/pdf/common/constants.h"
 #include "components/tabs/public/tab_interface.h"
@@ -56,14 +60,13 @@ const base::FeatureParam<int> kScreenshotJpegQuality{
 const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
     &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(1)};
 
-gfx::Size GetScreenshotSize(content::RenderWidgetHostView* view) {
+gfx::Size GetScreenshotSize(const gfx::Size& original_size) {
   // By default, no scaling.
   if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
     return gfx::Size();
   }
 
   // If either width or height is 0, or the view is empty, no scaling.
-  gfx::Size original_size = view->GetViewBounds().size();
   int max_width = kMaxScreenshotWidthParam.Get();
   int max_height = kMaxScreenshotHeightParam.Get();
   if (max_width == 0 || max_height == 0 || original_size.IsEmpty()) {
@@ -88,6 +91,18 @@ gfx::Size GetScreenshotSize(content::RenderWidgetHostView* view) {
   }
 
   return gfx::Size(new_width, new_height);
+}
+
+double GetScreenshotScaleFactor(const gfx::Size& original_size,
+                                const gfx::Size& new_size) {
+  if (new_size.IsEmpty()) {
+    // When the new size is empty, that means no scaling.
+    return 1.0;
+  }
+  // The aspect ratio was preserved by GetScreenshotSize, so the ratio of the
+  // new width to old width should be the same as the ratio of new height to old
+  // height. WLOG, we'll use the widths.
+  return new_size.width() / original_size.width();
 }
 
 int GetScreenshotJpegQuality() {
@@ -223,30 +238,70 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   void GetTabScreenshot(content::WebContents& web_contents) {
     auto* view = web_contents.GetRenderWidgetHostView();
-    auto finish_error_callback =
-        base::BindOnce(&PageContextFetcher::RecievedJpegScreenshot,
-                       GetWeakPtr(), std::nullopt);
 
     if (!view || !view->IsSurfaceAvailableForCopy()) {
       DLOG(WARNING) << "Could not retrieve RenderWidgetHostView.";
-      std::move(finish_error_callback).Run();
+      RecievedJpegScreenshot(std::nullopt);
       return;
     }
 
+    const gfx::Size view_size = view->GetViewBounds().size();
+
+    if (base::FeatureList::IsEnabled(kGlicTabScreenshotPaintPreviewBackend)) {
+      PageContentScreenshotService* service =
+          PageContentScreenshotServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(web_contents.GetBrowserContext()));
+      if (!service) {
+        DLOG(WARNING) << "Could not get PageContentScreenshotService.";
+        RecievedJpegScreenshot(std::nullopt);
+        return;
+      }
+
+      SetCaptureCountLock(web_contents);
+      ScheduleScreenshotTimeout();
+      service->RequestScreenshot(
+          &web_contents,
+          PageContentScreenshotService::RequestParams{
+              // Copy entire viewport area. Note that the rect's (x,y) coords
+              // are overridden below.
+              .clip_rect =
+                  gfx::Rect(0, 0, view_size.width(), view_size.height()),
+              .scale_factor = GetScreenshotScaleFactor(
+                  view_size, GetScreenshotSize(view_size)),
+              // Position capture at the scroll offsets.
+              .clip_x_coord_override =
+                  paint_preview::mojom::ClipCoordOverride::kScrollOffset,
+              .clip_y_coord_override =
+                  paint_preview::mojom::ClipCoordOverride::kScrollOffset,
+          },
+          base::BindOnce(&PageContextFetcher::ReceivedViewportBitmap,
+                         GetWeakPtr()));
+    } else {
+      SetCaptureCountLock(web_contents);
+      ScheduleScreenshotTimeout();
+
+      view->CopyFromSurface(
+          gfx::Rect(),  // Copy entire surface area.
+          GetScreenshotSize(view_size),
+          base::BindOnce(&PageContextFetcher::ReceivedViewportBitmap,
+                         GetWeakPtr()));
+    }
+  }
+
+  void SetCaptureCountLock(content::WebContents& web_contents) {
     capture_count_lock_ = web_contents.IncrementCapturerCount(
         gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false,
         /*is_activity=*/false);
+  }
 
+  void ScheduleScreenshotTimeout() {
     // Fetching the screenshot sometimes hangs. Quit early if it's taking too
     // long. b/431837630.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, std::move(finish_error_callback), kScreenshotTimeout.Get());
-
-    view->CopyFromSurface(
-        gfx::Rect(),  // Copy entire surface area.
-        GetScreenshotSize(view),
-        base::BindOnce(&PageContextFetcher::ReceivedViewportBitmap,
-                       GetWeakPtr()));
+        FROM_HERE,
+        base::BindOnce(&PageContextFetcher::RecievedJpegScreenshot,
+                       GetWeakPtr(), std::nullopt),
+        kScreenshotTimeout.Get());
   }
 
   void ReceivedViewportBitmap(const SkBitmap& bitmap) {
@@ -420,6 +475,10 @@ class PageContextFetcher : public content::WebContentsObserver {
 };
 
 }  // namespace
+
+BASE_FEATURE(kGlicTabScreenshotPaintPreviewBackend,
+             "GlicTabScreenshotPaintPreviewBackend",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 FetchPageContextOptions::FetchPageContextOptions() = default;
 

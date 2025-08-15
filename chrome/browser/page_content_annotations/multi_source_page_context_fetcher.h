@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/types/expected.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -79,6 +80,10 @@ struct FetchPageContextErrorDetails {
 using FetchPageContextResultCallbackArg =
     base::expected<std::unique_ptr<FetchPageContextResult>,
                    FetchPageContextErrorDetails>;
+
+// Enables the Paint Preview backend for taking screenshots.
+BASE_DECLARE_FEATURE(kGlicTabScreenshotPaintPreviewBackend);
+
 using FetchPageContextResultCallback =
     base::OnceCallback<void(FetchPageContextResultCallbackArg)>;
 void FetchPageContext(content::WebContents& web_contents,

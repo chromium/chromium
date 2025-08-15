@@ -126,6 +126,7 @@
 #include "chrome/browser/origin_trials/origin_trials_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_screenshot_service_factory.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/page_info/merchant_trust_service_factory.h"
@@ -1107,6 +1108,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   OriginTrialsFactory::GetInstance();
   PageContentAnnotationsServiceFactory::GetInstance();
   page_content_annotations::PageContentExtractionServiceFactory::GetInstance();
+  page_content_annotations::PageContentScreenshotServiceFactory::GetInstance();
   page_image_service::ImageServiceFactory::EnsureFactoryBuilt();
   page_load_metrics::PageLoadMetricsMemoryTrackerFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)

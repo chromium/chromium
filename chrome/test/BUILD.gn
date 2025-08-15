@@ -3358,6 +3358,7 @@ if (!is_android) {
       "../browser/ntp_tiles/ntp_tiles_browsertest.cc",
       "../browser/origin_trials/origin_trials_browsertest.cc",
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
+      "../browser/page_content_annotations/multi_source_page_context_fetcher_browsertest.cc",
       "../browser/page_content_annotations/page_content_annotations_service_browsertest.cc",
       "../browser/page_content_annotations/page_text_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/abandoned_page_load_metrics_observer_browsertest.cc",
