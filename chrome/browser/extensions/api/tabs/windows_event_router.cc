@@ -10,8 +10,6 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/api/tabs/app_base_window.h"
-#include "chrome/browser/extensions/api/tabs/app_window_controller.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -21,7 +19,6 @@
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
@@ -156,10 +153,13 @@ bool WillDispatchWindowFocusedEvent(
 WindowsEventRouter::WindowsEventRouter(Profile* profile)
     : profile_(profile),
       focused_profile_(nullptr),
-      focused_window_id_(extension_misc::kUnknownWindowId) {
+      focused_window_id_(extension_misc::kUnknownWindowId),
+      app_window_helper_(
+          profile_,
+          base::BindRepeating(&WindowsEventRouter::OnActiveWindowChanged,
+                              base::Unretained(this))) {
   DCHECK(!profile->IsOffTheRecord());
 
-  observed_app_registry_.Observe(AppWindowRegistry::Get(profile_));
   observed_controller_list_.Observe(WindowControllerList::GetInstance());
   // Needed for when no suitable window can be passed to an extension as the
   // currently focused window. On Mac (even in a toolkit-views build) always
@@ -174,38 +174,12 @@ WindowsEventRouter::WindowsEventRouter(Profile* profile)
 #else
 #error Unsupported
 #endif
-
-  AppWindowRegistry* registry = AppWindowRegistry::Get(profile_);
-  for (AppWindow* app_window : registry->app_windows())
-    AddAppWindow(app_window);
 }
 
 WindowsEventRouter::~WindowsEventRouter() {
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
   views::NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(this);
 #endif
-}
-
-void WindowsEventRouter::OnAppWindowAdded(AppWindow* app_window) {
-  if (!profile_->IsSameOrParent(
-          Profile::FromBrowserContext(app_window->browser_context())))
-    return;
-  AddAppWindow(app_window);
-}
-
-void WindowsEventRouter::OnAppWindowRemoved(AppWindow* app_window) {
-  if (!profile_->IsSameOrParent(
-          Profile::FromBrowserContext(app_window->browser_context())))
-    return;
-
-  app_windows_.erase(app_window->session_id().id());
-}
-
-void WindowsEventRouter::OnAppWindowActivated(AppWindow* app_window) {
-  AppWindowMap::const_iterator iter =
-      app_windows_.find(app_window->session_id().id());
-  OnActiveWindowChanged(iter != app_windows_.end() ? iter->second.get()
-                                                   : nullptr);
 }
 
 void WindowsEventRouter::OnWindowControllerAdded(
@@ -325,12 +299,6 @@ void WindowsEventRouter::DispatchEvent(events::HistogramValue histogram_value,
 
 bool WindowsEventRouter::HasEventListener(const std::string& event_name) {
   return EventRouter::Get(profile_)->HasEventListener(event_name);
-}
-
-void WindowsEventRouter::AddAppWindow(AppWindow* app_window) {
-  std::unique_ptr<AppWindowController> controller(new AppWindowController(
-      app_window, std::make_unique<AppBaseWindow>(app_window), profile_));
-  app_windows_[app_window->session_id().id()] = std::move(controller);
 }
 
 }  // namespace extensions

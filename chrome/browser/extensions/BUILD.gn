@@ -783,6 +783,8 @@ source_set("extensions") {
       "api/tabs/app_base_window.h",
       "api/tabs/app_window_controller.cc",
       "api/tabs/app_window_controller.h",
+      "api/tabs/app_window_helper.cc",
+      "api/tabs/app_window_helper.h",
       "api/tabs/tabs_event_router.cc",
       "api/tabs/tabs_event_router.h",
       "api/tabs/windows_event_router.cc",
