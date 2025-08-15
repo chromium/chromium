@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #import "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 
 enum class ContextualPanelItemType;
 

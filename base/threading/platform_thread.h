@@ -20,7 +20,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread_ref.h"
-#include "base/time/time.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -39,6 +38,8 @@
 #endif
 
 namespace base {
+
+class TimeDelta;
 
 // Used for uniquely identifying a thread.
 //

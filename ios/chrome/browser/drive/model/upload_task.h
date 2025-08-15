@@ -8,6 +8,7 @@
 #import "base/observer_list.h"
 
 class GURL;
+@class NSError;
 @protocol SystemIdentity;
 class UploadTaskObserver;
 

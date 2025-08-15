@@ -8,6 +8,8 @@
 #include <iterator>
 #include <tuple>
 
+#include "base/check_op.h"
+
 namespace metrics {
 
 namespace {

@@ -4,6 +4,8 @@
 
 #include "chrome/services/sharing/nearby/platform/recursive_mutex.h"
 
+#include "base/check_op.h"
+
 namespace nearby::chrome {
 
 RecursiveMutex::RecursiveMutex() = default;

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/bits.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
