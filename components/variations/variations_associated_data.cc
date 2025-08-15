@@ -116,7 +116,7 @@ class GroupMapAccessor {
     for (const auto& id_map : group_to_id_maps_) {
       for (const auto& [id, entry] : id_map) {
         // Update the next time window event if the start or end time is after
-        // 'now' but also before `next_time_window_event_`.
+        // 'current_time' but also before `next_event`.
         if (entry.time_window.start() > current_time &&
             entry.time_window.start() < next_event) {
           next_event = entry.time_window.start();
