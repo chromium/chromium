@@ -19,8 +19,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.createTabStatesAndMetadataFile;
-import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstTabInDialog;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickNthTabInDialog;
@@ -68,6 +66,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -395,12 +394,26 @@ public class TabGroupUiTest {
     @MediumTest
     @DisabledTest(message = "crbug.com/363049835")
     public void testVisibilityChangeWithOmnibox() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getProfileProviderSupplier()
+                                    .get()
+                                    .getOriginalProfile();
+                    UserPrefs.get(profile)
+                            .setBoolean(Pref.DID_SYNC_TAB_GROUPS_IN_LAST_SESSION, false);
+                    TabModelSelector selector =
+                            mActivityTestRule.getActivity().getTabModelSelector();
+                    TabModel model = selector.getCurrentModel();
+                    Tab tab = model.getTabAt(0);
+                    TabGroupModelFilter filter =
+                            selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+                    filter.createSingleTabGroup(tab);
+                });
 
-        // Create a tab group with 2 tabs.
         finishActivity(mActivityTestRule.getActivity());
-        createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
-        createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
-        createTabStatesAndMetadataFile(new int[] {0, 1}, new int[] {0, 0});
 
         // Restart Chrome and make sure tab strip is showing.
         mActivityTestRule.restartMainActivityFromLauncher();
@@ -435,13 +448,16 @@ public class TabGroupUiTest {
                                     .getOriginalProfile();
                     UserPrefs.get(profile)
                             .setBoolean(Pref.DID_SYNC_TAB_GROUPS_IN_LAST_SESSION, false);
+                    TabModelSelector selector =
+                            mActivityTestRule.getActivity().getTabModelSelector();
+                    TabModel model = selector.getCurrentModel();
+                    Tab tab = model.getTabAt(0);
+                    TabGroupModelFilter filter =
+                            selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+                    filter.createSingleTabGroup(tab);
                 });
 
-        // Create a tab group with 2 tabs.
         finishActivity(mActivityTestRule.getActivity());
-        createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
-        createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
-        createTabStatesAndMetadataFile(new int[] {0, 1}, new int[] {0, 0});
 
         // Restart Chrome and make sure tab strip is showing.
         mActivityTestRule.restartMainActivityFromLauncher();

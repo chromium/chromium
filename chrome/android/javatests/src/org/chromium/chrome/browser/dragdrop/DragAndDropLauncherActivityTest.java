@@ -369,8 +369,10 @@ public class DragAndDropLauncherActivityTest {
                         () -> sourceActivity.getTabModelSelector().getTotalTabCount());
         var tabModel = sourceActivity.getTabModelSelector().getCurrentModel();
         var draggedTabs =
-                new ArrayList<Tab>(
-                        Arrays.asList(tabModel.getTabAt(0), tabModel.getTabAt(1)));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new ArrayList<Tab>(
+                                        Arrays.asList(tabModel.getTabAt(0), tabModel.getTabAt(1))));
 
         // Simulate a tab drag/drop event to launch an intent in a new Chrome instance.
         Intent intent = createMultiTabDragDropIntent(draggedTabs, sourceActivity);
