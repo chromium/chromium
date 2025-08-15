@@ -524,7 +524,10 @@ public class MiniOriginBarController implements Observer {
         @Override
         public void onStart(WindowInsetsAnimationCompat animation, BoundsCompat bounds) {
             if (animation != mAnimation) {
-                return;
+                if ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) == 0) {
+                    return;
+                }
+                mAnimation = animation;
             }
 
             mAnimationInProgress = true;
