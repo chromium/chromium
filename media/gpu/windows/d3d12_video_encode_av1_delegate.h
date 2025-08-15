@@ -37,11 +37,10 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   size_t GetMaxNumOfRefFrames() const override;
   size_t GetMaxNumOfManualRefBuffers() const override;
 
-  EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(
-      ID3D12Resource* input_frame,
-      UINT input_frame_subresource,
-      const VideoEncoder::EncodeOptions& options,
-      const gfx::ColorSpace& input_color_space) override;
+  EncoderStatus EncodeImpl(ID3D12Resource* input_frame,
+                           UINT input_frame_subresource,
+                           const VideoEncoder::EncodeOptions& options,
+                           const gfx::ColorSpace& input_color_space) override;
 
   bool SupportsRateControlReconfiguration() const override;
 
@@ -116,9 +115,6 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   AV1BitstreamBuilder::SequenceHeader sequence_header_;
   D3D12VideoEncodeDecodedPictureBuffers<kAV1DPBMaxSize> dpb_;
   int picture_id_ = -1;
-
-  // The metadata of the bitstream buffer for the last encode request.
-  BitstreamBufferMetadata metadata_;
 };
 
 }  // namespace media

@@ -66,7 +66,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
       const VideoEncoder::EncodeOptions& options);
 
   // Do the codec specific encoding.
-  virtual EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(
+  virtual EncoderStatus EncodeImpl(
       ID3D12Resource* input_frame,
       UINT input_frame_subresource,
       const VideoEncoder::EncodeOptions& options,
@@ -173,6 +173,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   std::unique_ptr<D3D12VideoEncoderWrapper> video_encoder_wrapper_;
 
   std::optional<SVCLayers> svc_layers_;
+  // The metadata of the bitstream buffer for the last encode request.
+  BitstreamBufferMetadata metadata_;
 
  private:
   // The video processor factory that may be changed for testing.

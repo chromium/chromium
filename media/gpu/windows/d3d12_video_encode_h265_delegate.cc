@@ -267,8 +267,7 @@ bool D3D12VideoEncodeH265Delegate::UpdateRateControl(const Bitrate& bitrate,
   return D3D12VideoEncodeDelegate::UpdateRateControl(bitrate, framerate);
 }
 
-EncoderStatus::Or<BitstreamBufferMetadata>
-D3D12VideoEncodeH265Delegate::EncodeImpl(
+EncoderStatus D3D12VideoEncodeH265Delegate::EncodeImpl(
     ID3D12Resource* input_frame,
     UINT input_frame_subresource,
     const VideoEncoder::EncodeOptions& options,
@@ -460,7 +459,7 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
 
   metadata_.key_frame = is_keyframe;
   metadata_.qp = qp;
-  return metadata_;
+  return EncoderStatus::Codes::kOk;
 }
 
 EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(

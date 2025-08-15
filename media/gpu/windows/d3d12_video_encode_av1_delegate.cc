@@ -879,8 +879,7 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
   }
 }
 
-EncoderStatus::Or<BitstreamBufferMetadata>
-D3D12VideoEncodeAV1Delegate::EncodeImpl(
+EncoderStatus D3D12VideoEncodeAV1Delegate::EncodeImpl(
     ID3D12Resource* input_frame,
     UINT input_frame_subresource,
     const VideoEncoder::EncodeOptions& options,
@@ -946,9 +945,7 @@ D3D12VideoEncodeAV1Delegate::EncodeImpl(
     }
   }
 
-  metadata_.key_frame = IsKeyFrame();
-  metadata_.qp = picture_params_.Quantization.BaseQIndex;
-  return metadata_;
+  return EncoderStatus::Codes::kOk;
 }
 
 EncoderStatus::Or<size_t>
@@ -1128,6 +1125,8 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
 
   RefreshDPBAndDescriptors();
 
+  metadata_.key_frame = IsKeyFrame();
+  metadata_.qp = frame_header.base_qindex;
   return packed_header_size + compressed_size;
 }
 

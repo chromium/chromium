@@ -291,8 +291,8 @@ D3D12VideoEncodeDelegate::Encode(
 
   auto impl_result = EncodeImpl(input_frame.Get(), input_frame_subresource,
                                 options, output_color_space);
-  if (!impl_result.has_value()) {
-    return std::move(impl_result).error();
+  if (!impl_result.is_ok()) {
+    return std::move(impl_result);
   }
 
   const base::UnsafeSharedMemoryRegion& region = bitstream_buffer.region();
@@ -303,13 +303,13 @@ D3D12VideoEncodeDelegate::Encode(
   if (!payload_size_or_error.has_value()) {
     return std::move(payload_size_or_error).error();
   }
+  metadata_.encoded_color_space = output_color_space;
+  metadata_.payload_size_bytes = std::move(payload_size_or_error).value();
+
   EncodeResult encode_result{
       .bitstream_buffer_id = bitstream_buffer.id(),
-      .metadata = std::move(impl_result).value(),
+      .metadata = metadata_,
   };
-  encode_result.metadata.encoded_color_space = output_color_space;
-  encode_result.metadata.payload_size_bytes =
-      std::move(payload_size_or_error).value();
   return encode_result;
 }
 
