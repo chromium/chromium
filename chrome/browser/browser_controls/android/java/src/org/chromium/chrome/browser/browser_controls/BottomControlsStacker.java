@@ -360,7 +360,12 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             for (int layerType : STACK_ORDER) {
                 BottomControlsLayer layer = mLayers.get(layerType);
                 if (layer == null) continue;
-                additionalHeight += layer.updateOffsetTag(offsetTagsInfo);
+
+                if (isLayerNonScrollable(layer.getType())) {
+                    layer.clearOffsetTag();
+                } else {
+                    additionalHeight += layer.updateOffsetTag(offsetTagsInfo);
+                }
             }
 
             int totalHeight = mTotalHeight;
