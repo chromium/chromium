@@ -47,11 +47,17 @@
   return self;
 }
 
+#pragma mark - Public
+
+- (BOOL)isLensAvailableForProfile {
+  return IsLensOverlayAvailable(_profilePrefs);
+}
+
 #pragma mark - PageActionMenuMutator
 
 - (BOOL)isLensAvailableForTraitCollection:(UITraitCollection*)traitCollection {
   BOOL isLandscape = IsCompactHeight(traitCollection);
-  return IsLensOverlayAvailable(_profilePrefs) &&
+  return [self isLensAvailableForProfile] &&
          search::DefaultSearchProviderIsGoogle(_templateURLService) &&
          !isLandscape;
 }

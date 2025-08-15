@@ -31,6 +31,10 @@ class WebState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Returns whether the Lens overlay is available for the profile. It may still
+// be unavailable for the current web state.
+- (BOOL)isLensAvailableForProfile;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_COORDINATOR_PAGE_ACTION_MENU_MEDIATOR_H_
