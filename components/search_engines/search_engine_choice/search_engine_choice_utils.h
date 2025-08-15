@@ -315,6 +315,14 @@ void ClearSearchEngineChoiceInvalidation(PrefService& prefs);
 
 bool IsSearchEngineChoiceInvalid(PrefService& prefs);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Returns the engine marketing snippet string resource id or -1 if the snippet
+// was not found.
+// The function definition is generated in `generated_marketing_snippets.cc`.
+// `engine_keyword` is the search engine keyword.
+int GetMarketingSnippetResourceId(const std::u16string& engine_keyword);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace search_engines
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_UTILS_H_

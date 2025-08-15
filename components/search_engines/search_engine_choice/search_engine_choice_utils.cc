@@ -39,6 +39,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/grit/components_scaled_resources.h"  // nogncheck
+#include "ui/resources/grit/ui_resources.h"               // nogncheck
+#endif
+
 using ::country_codes::CountryId;
 
 namespace search_engines {
