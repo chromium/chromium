@@ -3966,35 +3966,34 @@ TEST_F(PaymentsDataManagerTest, BnplIssuerGetters_AutofillBnplFeatureDisabled) {
   EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
 }
 
-// Tests that Buy-now-pay-later issuer getters does not return any issuers if
-// `app_locale` is not "en-US".
-TEST_F(PaymentsDataManagerTest,
-       BnplIssuerGetters_AutofillBnplLocaleNotSupported) {
-  test_api(payments_data_manager())
-      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
-  test_api(payments_data_manager())
-      .AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+// Tests that BNPL issuers are supported for "en-US" app locales.
+TEST_F(PaymentsDataManagerTest, AreBnplIssuersSupported_LocaleIsEnUS) {
+  ResetPaymentsDataManager(false, "en-US", "US");
+  EXPECT_TRUE(test_api(payments_data_manager()).AreBnplIssuersSupported());
+}
 
-  ASSERT_EQ(2U, payments_data_manager().GetBnplIssuers().size());
-  ASSERT_EQ(1U, payments_data_manager().GetUnlinkedBnplIssuers().size());
-  ASSERT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
+// Tests that BNPL issuers are supported for "en-GB" app locales.
+TEST_F(PaymentsDataManagerTest, AreBnplIssuersSupported_LocaleIsEnGB) {
+  ResetPaymentsDataManager(false, "en-GB", "US");
+  EXPECT_TRUE(test_api(payments_data_manager()).AreBnplIssuersSupported());
+}
 
-  ResetPaymentsDataManager(false, "en-CA");
+// Tests that BNPL issuers are supported for "en-CA" app locales.
+TEST_F(PaymentsDataManagerTest, AreBnplIssuersSupported_LocaleIsEnCA) {
+  ResetPaymentsDataManager(false, "en-CA", "US");
+  EXPECT_TRUE(test_api(payments_data_manager()).AreBnplIssuersSupported());
+}
 
-  test_api(payments_data_manager())
-      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
-  test_api(payments_data_manager())
-      .AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
-
-  EXPECT_TRUE(payments_data_manager().GetBnplIssuers().empty());
-  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
-  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+// Tests that BNPL issuers are not supported for "es-US" app locales.
+TEST_F(PaymentsDataManagerTest, AreBnplIssuersSupported_LocaleIsEsUS) {
+  ResetPaymentsDataManager(false, "es-US", "US");
+  EXPECT_FALSE(test_api(payments_data_manager()).AreBnplIssuersSupported());
 }
 
 // Tests that Buy-now-pay-later issuer getters does not return any issuers if
 // `experiment_country_code` is not "US".
 TEST_F(PaymentsDataManagerTest,
-       BnplIssuerGetters_AutofillBnplLanguageCodeNotSupported) {
+       BnplIssuerGetters_AutofillBnplCountryNotSupported) {
   test_api(payments_data_manager())
       .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
   test_api(payments_data_manager())

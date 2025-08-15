@@ -48,6 +48,10 @@ class PaymentsDataManagerTestApi {
 
   bool ShouldSuggestServerPaymentMethods();
 
+  bool AreBnplIssuersSupported() const {
+    return payments_data_manager_->AreBnplIssuersSupported();
+  }
+
  private:
   const raw_ref<PaymentsDataManager> payments_data_manager_;
 };
