@@ -21,6 +21,10 @@
 #include "ui/actions/actions.h"
 #include "ui/base/window_open_disposition.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/fre/glic_fre.mojom.h"
+#endif
+
 class Browser;
 class BrowserWindow;
 class BrowserWindowInterface;
@@ -69,6 +73,7 @@ class BrowserCommandController : public CommandUpdater,
   void PrintingStateChanged();
 #if BUILDFLAG(ENABLE_GLIC)
   void GlicWindowActivationChanged(bool active);
+  void GlicFreStateChanged(glic::mojom::FreWebUiState new_state);
 #endif
   void LoadingStateChanged(bool is_loading, bool force);
   void FindBarVisibilityChanged();
@@ -255,6 +260,8 @@ class BrowserCommandController : public CommandUpdater,
   // Callback subscription for listening to changes to the Glic window
   // activation changes.
   base::CallbackListSubscription glic_window_activation_subscription_;
+  // Callback subscription for listening to changes to the Glic FRE
+  base::CallbackListSubscription glic_fre_state_change_subscription_;
 };
 
 }  // namespace chrome

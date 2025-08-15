@@ -144,6 +144,7 @@
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -292,6 +293,11 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
               base::BindRepeating(
                   &BrowserCommandController::GlicWindowActivationChanged,
                   base::Unretained(this)));
+      glic_fre_state_change_subscription_ =
+          service->fre_controller().AddWebUiStateChangedCallback(
+              base::BindRepeating(
+                  &BrowserCommandController::GlicFreStateChanged,
+                  base::Unretained(this)));
     }
   }
 #endif
@@ -419,6 +425,11 @@ void BrowserCommandController::LoadingStateChanged(bool is_loading,
 
 #if BUILDFLAG(ENABLE_GLIC)
 void BrowserCommandController::GlicWindowActivationChanged(bool active) {
+  UpdateGlicState();
+}
+
+void BrowserCommandController::GlicFreStateChanged(
+    glic::mojom::FreWebUiState new_state) {
   UpdateGlicState();
 }
 #endif
@@ -2086,7 +2097,7 @@ void BrowserCommandController::UpdateGlicState() {
     if (service) {
       command_updater_.UpdateCommandEnabled(
           IDC_OPEN_GLIC, glic::GlicEnabling::IsEnabledForProfile(profile()) &&
-                             !service->window_controller().IsShowing());
+                             !service->IsWindowOrFreShowing());
     }
   }
 }
