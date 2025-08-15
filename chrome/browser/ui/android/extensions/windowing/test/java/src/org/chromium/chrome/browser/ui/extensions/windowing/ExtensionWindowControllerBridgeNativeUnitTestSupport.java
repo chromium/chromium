@@ -71,4 +71,9 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
     private long invokeGetNativePtrForTesting() {
         return mExtensionWindowControllerBridge.getNativePtrForTesting();
     }
+
+    @CalledByNative
+    private long getNativeBrowserWindowPtr() {
+        return mChromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
+    }
 }

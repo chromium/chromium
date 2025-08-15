@@ -78,8 +78,8 @@ class BrowserExtensionWindowController : public WindowController {
   // concepts.
 #if !BUILDFLAG(IS_ANDROID)
   const raw_ref<BrowserWindow> window_;
-  const raw_ref<TabListInterface> tab_list_;
 #endif
+  const raw_ref<TabListInterface> tab_list_;
   const SessionID session_id_;
   const api::tabs::WindowType window_type_;
 

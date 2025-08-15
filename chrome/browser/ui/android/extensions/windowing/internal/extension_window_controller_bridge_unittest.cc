@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/ui/android/extensions/windowing/test/native_unit_test_support_jni/ExtensionWindowControllerBridgeNativeUnitTestSupport_jni.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,9 +31,18 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
     java_test_support_.Reset(
         Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_Constructor(
             AttachCurrentThread()));
+
+    BrowserWindowInterface* browser = reinterpret_cast<BrowserWindowInterface*>(
+        Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_getNativeBrowserWindowPtr(
+            AttachCurrentThread(), java_test_support_));
+
+    test_tab_model_ = std::make_unique<TestTabModel>(browser->GetProfile());
+    test_tab_model_->AssociateWithBrowserWindow(browser);
   }
 
   void TearDown() override {
+    test_tab_model_.reset();
+
     Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_tearDown(
         AttachCurrentThread(), java_test_support_);
   }
@@ -60,6 +70,8 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
 
  private:
   ScopedJavaGlobalRef<jobject> java_test_support_;
+
+  std::unique_ptr<TestTabModel> test_tab_model_;
 };
 
 TEST_F(ExtensionWindowControllerBridgeUnitTest,

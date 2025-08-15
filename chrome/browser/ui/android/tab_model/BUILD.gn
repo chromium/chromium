@@ -76,11 +76,13 @@ source_set("test_support") {
     ":tab_model",
     "//chrome/browser",
     "//content/test:test_support",
+    "//ui/base/unowned_user_data",
   ]
   deps = [
     "//chrome/browser/flags:flags_android",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/android/tab_model",
+    "//chrome/browser/ui/browser_window",
   ]
 }
 

@@ -16,6 +16,7 @@
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -96,6 +97,8 @@ class TestTabModel : public TabModel {
   void Ungroup(const std::set<tabs::TabHandle>& tabs) override;
   void MoveGroupTo(tab_groups::TabGroupId group_id, int index) override;
 
+  void AssociateWithBrowserWindow(BrowserWindowInterface* browser_window);
+
  private:
   // A fake value for the current number of tabs.
   int tab_count_ = 0;
@@ -103,6 +106,9 @@ class TestTabModel : public TabModel {
 
   raw_ptr<TabModelObserver> observer_ = nullptr;
   std::vector<raw_ptr<content::WebContents>> web_contents_list_;
+
+  std::unique_ptr<ui::ScopedUnownedUserData<TabModel>>
+      scoped_unowned_user_data_;
 };
 
 // A TabModel that owns the WebContents for each tab and simulates many of the

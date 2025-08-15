@@ -96,8 +96,8 @@ BrowserExtensionWindowController::BrowserExtensionWindowController(
       browser_(CHECK_DEREF(browser)),
 #if !BUILDFLAG(IS_ANDROID)
       window_(CHECK_DEREF(browser->GetBrowserForMigrationOnly()->window())),
-      tab_list_(CHECK_DEREF(TabListInterface::From(browser))),
 #endif  // !BUILDFLAG(IS_ANDROID)
+      tab_list_(CHECK_DEREF(TabListInterface::From(browser))),
       session_id_(browser->GetSessionID()),
       window_type_(GetTabsWindowType(browser)),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {
@@ -169,14 +169,9 @@ bool BrowserExtensionWindowController::IsDeleteScheduled() const {
 }
 
 content::WebContents* BrowserExtensionWindowController::GetActiveTab() const {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-  return nullptr;
-#else
   // In some situations, especially tests, there may not be an active tab.
   tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
   return active_tab ? active_tab->GetContents() : nullptr;
-#endif
 }
 
 bool BrowserExtensionWindowController::HasEditableTabStrip() const {
@@ -189,22 +184,12 @@ bool BrowserExtensionWindowController::HasEditableTabStrip() const {
 }
 
 int BrowserExtensionWindowController::GetTabCount() const {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-  return 0;
-#else
   return tab_list_->GetTabCount();
-#endif
 }
 
 content::WebContents* BrowserExtensionWindowController::GetWebContentsAt(
     int i) const {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-  return nullptr;
-#else
   return tab_list_->GetTab(i)->GetContents();
-#endif
 }
 
 bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(
@@ -272,10 +257,6 @@ base::Value::List BrowserExtensionWindowController::CreateTabList(
     const Extension* extension,
     mojom::ContextType context) const {
   base::Value::List tab_list;
-
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-#else
   const int tab_count = tab_list_->GetTabCount();
 
   for (int i = 0; i < tab_count; ++i) {
@@ -288,7 +269,6 @@ base::Value::List BrowserExtensionWindowController::CreateTabList(
                                           extension, &tab_list_.get(), i)
             .ToValue());
   }
-#endif
 
   return tab_list;
 }
