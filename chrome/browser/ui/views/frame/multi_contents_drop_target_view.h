@@ -51,6 +51,7 @@ class MultiContentsDropTargetView : public views::View,
         int* formats,
         std::set<ui::ClipboardFormatType>* format_types) = 0;
     virtual bool CanDrop(const ui::OSExchangeData& data) = 0;
+    virtual void OnDragEntered(const ui::DropTargetEvent& event) = 0;
     virtual void OnDragExited() = 0;
     virtual void OnDragDone() = 0;
     virtual int OnDragUpdated(const ui::DropTargetEvent& event) = 0;
@@ -84,6 +85,7 @@ class MultiContentsDropTargetView : public views::View,
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool CanDrop(const ui::OSExchangeData& data) override;
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
   void OnDragDone() override;

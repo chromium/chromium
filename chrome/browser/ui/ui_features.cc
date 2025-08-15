@@ -181,6 +181,11 @@ BASE_FEATURE_PARAM(int,
                    &kSideBySideDropTargetNudge,
                    "drop_target_nudge_to_full_width_percentage",
                    20);
+BASE_FEATURE_PARAM(double,
+                   kSideBySideDropTargetNudgeShowRatio,
+                   &kSideBySideDropTargetNudge,
+                   "drop_target_nudge_show_ratio",
+                   0.4f);
 
 constexpr base::FeatureParam<MiniToolbarActiveConfiguration>::Option
     kMiniToolbarActiveConfigurationOptions[] = {

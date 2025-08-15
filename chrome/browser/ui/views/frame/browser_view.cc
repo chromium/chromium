@@ -3527,8 +3527,12 @@ void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
     // is in a split.
     const bool is_in_split_view =
         browser_->tab_strip_model()->GetActiveTab()->IsSplit();
+    const gfx::Point point_in_multi_contents_view =
+        views::View::ConvertPointToTarget(GetActiveContentsContainerView(),
+                                          multi_contents_view_,
+                                          gfx::ToRoundedPoint(point));
     multi_contents_view_->drop_target_controller().OnWebContentsDragUpdate(
-        drop_data, point, is_in_split_view);
+        drop_data, point_in_multi_contents_view, is_in_split_view);
   }
 }
 

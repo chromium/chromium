@@ -29,6 +29,10 @@ class MockDragDelegate : public MultiContentsDropTargetView::DragDelegate {
               (int* formats, std::set<ui::ClipboardFormatType>* format_types),
               (override));
   MOCK_METHOD(bool, CanDrop, (const ui::OSExchangeData& data), (override));
+  MOCK_METHOD(void,
+              OnDragEntered,
+              (const ui::DropTargetEvent& event),
+              (override));
   MOCK_METHOD(void, OnDragExited, (), (override));
   MOCK_METHOD(void, OnDragDone, (), (override));
   MOCK_METHOD(int,

@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -773,6 +774,24 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
         base::NumberToString(std::get<1>(GetParam())));
   }
 
+  void SetUp() override {
+    // TODO(crbug.com/394369035): The parameters for the width of the drop
+    // targets have not been determined yet, and may interfere with the tests
+    // below by shifting the contents around.
+    // These overrides should be removed once the parameters are finalized.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSideBySide,
+          {{features::kSideBySideDropTargetMinWidth.name, "0"},
+           {features::kSideBySideDropTargetMaxWidth.name, "0"}}},
+         {features::kSideBySideDropTargetNudge,
+          {{features::kSideBySideDropTargetNudgeMinWidth.name, "0"},
+           {features::kSideBySideDropTargetNudgeMaxWidth.name, "0"},
+           {features::kSideBySideDropTargetNudgeToFullMinWidth.name, "0"},
+           {features::kSideBySideDropTargetNudgeToFullMaxWidth.name, "0"}}}},
+        {});
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
@@ -1068,6 +1087,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
 
   std::unique_ptr<DragAndDropSimulator> drag_simulator_;
   net::EmbeddedTestServer https_test_server_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Scenario: drag text from outside the browser and drop to the right frame.

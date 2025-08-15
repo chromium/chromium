@@ -240,6 +240,12 @@ bool MultiContentsDropTargetView::CanDrop(const OSExchangeData& data) {
   return drag_delegate_->CanDrop(data);
 }
 
+void MultiContentsDropTargetView::OnDragEntered(
+    const ui::DropTargetEvent& event) {
+  CHECK(drag_delegate_);
+  drag_delegate_->OnDragEntered(event);
+}
+
 int MultiContentsDropTargetView::OnDragUpdated(
     const ui::DropTargetEvent& event) {
   CHECK(drag_delegate_);

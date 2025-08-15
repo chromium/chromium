@@ -63,7 +63,7 @@ class MultiContentsViewDropTargetController final
   // Handles a drag within the web contents area.
   // `point` should be relative to the multi contents view.
   void OnWebContentsDragUpdate(const content::DropData& data,
-                               const gfx::PointF& point,
+                               const gfx::Point& point,
                                bool is_in_split_view);
   void OnWebContentsDragExit();
   void OnWebContentsDragEnded();
@@ -74,6 +74,7 @@ class MultiContentsViewDropTargetController final
   bool CanDrop(const ui::OSExchangeData& data) override;
   void OnDragExited() override;
   void OnDragDone() override;
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
@@ -95,7 +96,8 @@ class MultiContentsViewDropTargetController final
 
   // Updates the timers for a drag at the given point.
   // Assumes the dragged data is droppable (e.g. tab or link).
-  void HandleDragUpdate(const gfx::PointF& point_in_view);
+  void HandleDragUpdate(const gfx::Point& point_in_view);
+  void HandleDragUpdateForNudge(const gfx::Point& point_in_view);
 
   // Starts or updates a running timer to show `target_to_show`.
   void StartOrUpdateDropTargetTimer(

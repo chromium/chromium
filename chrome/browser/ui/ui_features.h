@@ -164,6 +164,8 @@ BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeToFullMaxWidth);
 BASE_DECLARE_FEATURE_PARAM(
     int,
     kSideBySideDropTargetNudgeToFullTargetWidthPercentage);
+// The ratio of window width that will trigger a nudge to show/hide.
+BASE_DECLARE_FEATURE_PARAM(double, kSideBySideDropTargetNudgeShowRatio);
 
 enum class MiniToolbarActiveConfiguration {
   // Hides the toolbar in the active view.

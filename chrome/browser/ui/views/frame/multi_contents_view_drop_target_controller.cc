@@ -50,7 +50,7 @@ void MultiContentsViewDropTargetController::OnTabDragUpdated(
 
   const gfx::Point point_in_parent = views::View::ConvertPointFromScreen(
       &drop_target_parent_view_.get(), point_in_screen);
-  HandleDragUpdate(gfx::PointF(point_in_parent));
+  HandleDragUpdate(point_in_parent);
 }
 
 void MultiContentsViewDropTargetController::OnTabDragEntered() {}
@@ -89,8 +89,36 @@ bool MultiContentsViewDropTargetController::CanDrop(
   return urls.has_value() && !urls.value().empty();
 }
 
+void MultiContentsViewDropTargetController::OnDragEntered(
+    const ui::DropTargetEvent& event) {
+  if (!drop_target_view_->GetVisible()) {
+    return;
+  }
+
+  CHECK(drop_target_view_->state().has_value());
+  if (*drop_target_view_->state() !=
+      MultiContentsDropTargetView::DropTargetState::kNudge) {
+    return;
+  }
+
+  CHECK(drop_target_view_->side().has_value());
+  drop_target_view_->Show(
+      drop_target_view_->side().value(),
+      MultiContentsDropTargetView::DropTargetState::kNudgeToFull);
+}
+
 void MultiContentsViewDropTargetController::OnDragExited() {
-  drop_target_view_->Hide();
+  if (!drop_target_view_->GetVisible()) {
+    return;
+  }
+
+  // If the target is not a nudge or expanded nudge, then hide it immediately.
+  // Otherwise, we should still show even when the drag exits its area.
+  CHECK(drop_target_view_->state().has_value());
+  if (*drop_target_view_->state() ==
+      MultiContentsDropTargetView::DropTargetState::kFull) {
+    drop_target_view_->Hide();
+  }
 }
 
 void MultiContentsViewDropTargetController::OnDragDone() {
@@ -141,7 +169,7 @@ MultiContentsViewDropTargetController::RegisterWillDestroyCallback(
 
 void MultiContentsViewDropTargetController::OnWebContentsDragUpdate(
     const content::DropData& data,
-    const gfx::PointF& point,
+    const gfx::Point& point,
     bool is_in_split_view) {
   // "Drag update" events can still be delivered even if the point is out of the
   // contents area, particularly while the drop target is animating in and
@@ -154,7 +182,12 @@ void MultiContentsViewDropTargetController::OnWebContentsDragUpdate(
     ResetDropTargetTimer();
     return;
   }
-  HandleDragUpdate(point);
+
+  if (base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge)) {
+    HandleDragUpdateForNudge(point);
+  } else {
+    HandleDragUpdate(point);
+  }
 }
 
 void MultiContentsViewDropTargetController::OnWebContentsDragExit() {
@@ -172,13 +205,14 @@ bool MultiContentsViewDropTargetController::IsDropTimerRunningForTesting() {
 }
 
 void MultiContentsViewDropTargetController::HandleDragUpdate(
-    const gfx::PointF& point_in_view) {
+    const gfx::Point& point_in_view) {
   CHECK_LE(0, point_in_view.x());
   CHECK_LE(point_in_view.x(), drop_target_parent_view_->width());
+  const bool is_rtl = base::i18n::IsRTL();
+
   const int drop_entry_point_width = MultiContentsDropTargetView::GetMaxWidth(
       drop_target_parent_view_->width(),
       MultiContentsDropTargetView::DropTargetState::kFull);
-  const bool is_rtl = base::i18n::IsRTL();
   if (point_in_view.x() >=
       drop_target_parent_view_->width() - drop_entry_point_width) {
     StartOrUpdateDropTargetTimer(
@@ -193,7 +227,32 @@ void MultiContentsViewDropTargetController::HandleDragUpdate(
   }
   ResetDropTargetTimer();
   drop_target_view_->Hide();
-  return;
+}
+
+void MultiContentsViewDropTargetController::HandleDragUpdateForNudge(
+    const gfx::Point& point_in_view) {
+  CHECK_LE(0, point_in_view.x());
+  CHECK_LE(point_in_view.x(), drop_target_parent_view_->width());
+  CHECK(base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
+  const bool is_rtl = base::i18n::IsRTL();
+  const float point_ratio =
+      (1.0f * point_in_view.x()) / drop_target_parent_view_->width();
+  const float nudge_ratio = features::kSideBySideDropTargetNudgeShowRatio.Get();
+
+  // Either hide or show the drop target if the drag is in the trigger area.
+  if (point_ratio > nudge_ratio && point_ratio < 1.0f - nudge_ratio) {
+    drop_target_view_->Hide();
+  } else if (point_ratio <= nudge_ratio) {
+    drop_target_view_->Show(
+        is_rtl ? MultiContentsDropTargetView::DropSide::END
+               : MultiContentsDropTargetView::DropSide::START,
+        MultiContentsDropTargetView::DropTargetState::kNudge);
+  } else if (point_ratio >= 1.0f - nudge_ratio) {
+    drop_target_view_->Show(
+        is_rtl ? MultiContentsDropTargetView::DropSide::START
+               : MultiContentsDropTargetView::DropSide::END,
+        MultiContentsDropTargetView::DropTargetState::kNudge);
+  }
 }
 
 void MultiContentsViewDropTargetController::StartOrUpdateDropTargetTimer(
