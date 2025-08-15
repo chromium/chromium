@@ -4785,4 +4785,26 @@ public class ChromeTabbedActivity extends ChromeActivity {
     public @SupportedProfileType int getSupportedProfileType() {
         return mSupportedProfileType;
     }
+
+    @Override
+    protected void applyThemeOverlays() {
+        super.applyThemeOverlays();
+
+        if (isIncognitoWindow()) {
+            // This overlay is for incognito windowing. Any overlay that attempts to change color
+            // roles should be placed before this call in order to not alter incognito coloring.
+            applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
+        }
+    }
+
+    // Applies dynamic colors based on incognito windowing status.
+    @Override
+    protected boolean shouldApplyDynamicColors() {
+        return !isIncognitoWindow();
+    }
+
+    private boolean isIncognitoWindow() {
+        return mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD
+                || ChromeFeatureList.sIncognitoThemeOverlayTesting.isEnabled();
+    }
 }

@@ -334,4 +334,9 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="closeButtonWidth">@dimen/close_button_width_desktop</item>
         <item name="closeButtonHeight">@dimen/close_button_height_desktop</item>
     </style>
+
+    <style name="ThemeOverlay.BrowserUI.TabbedMode.Incognito" parent="">
+        {{ color_palette_dark_attributes() }}
+        <!-- TODO(crbug.com/438804527): Update Incognito theme overlay with missing attributes. -->
+    </style>
 </resources>

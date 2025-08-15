@@ -543,7 +543,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // in org.chromium.chrome.browser.WarmupManager#applyContextOverrides for Custom Tabs
         // UI that's pre-inflated using a themed application context as part of CCT warmup.
         // Note: this should be called before any calls to `Window#getDecorView`.
-        DynamicColors.applyToActivityIfAvailable(this);
+        if (shouldApplyDynamicColors()) {
+            DynamicColors.applyToActivityIfAvailable(this);
+        }
 
         DeferredStartupHandler.getInstance()
                 .addDeferredTask(
@@ -761,5 +763,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                     });
         }
         AutomotiveBackButtonToolbarCoordinator.hideBackButtonToolbar(this);
+    }
+
+    /** Returns whether dynamic colors should be applied. */
+    protected boolean shouldApplyDynamicColors() {
+        return true;
     }
 }
