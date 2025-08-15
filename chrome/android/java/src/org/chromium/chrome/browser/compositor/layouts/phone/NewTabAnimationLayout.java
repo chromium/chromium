@@ -232,6 +232,8 @@ public class NewTabAnimationLayout extends Layout {
                 Log.i(TAG, "forceAnimationToFinish: mForegroundHostView#forceAnimationToFinish");
             }
             mForegroundHostView.forceAnimationToFinish();
+            mAnimationHostView.removeView(mForegroundHostView);
+            mForegroundHostView = null;
         }
         if (mTabCreatedBackgroundAnimation != null) {
             if (mLogsEnabled) {
