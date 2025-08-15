@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -43,9 +44,9 @@ uint32_t CdmPromiseAdapter::SavePromise(std::unique_ptr<CdmPromise> promise,
 
   promises_[promise_id] = std::move(promise);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "media", "CdmPromise", TRACE_ID_WITH_SCOPE("CdmPromise", promise_id),
-      "operation", operation);
+  TRACE_EVENT_BEGIN("media", "CdmPromise",
+                    perfetto::NamedTrack("CdmPromise", promise_id), "operation",
+                    operation);
 
   return promise_id;
 }
@@ -59,9 +60,8 @@ void CdmPromiseAdapter::ResolvePromise(uint32_t promise_id,
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1("media", "CdmPromise",
-                                  TRACE_ID_WITH_SCOPE("CdmPromise", promise_id),
-                                  "status", "resolved");
+  TRACE_EVENT_END("media", perfetto::NamedTrack("CdmPromise", promise_id),
+                  "status", "resolved");
 
   // Sanity check the type before we do static_cast.
   CdmPromise::ResolveParameterType type = promise->GetResolveParameterType();
@@ -84,9 +84,8 @@ void CdmPromiseAdapter::RejectPromise(uint32_t promise_id,
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "media", "CdmPromise", TRACE_ID_WITH_SCOPE("CdmPromise", promise_id),
-      "status", "rejected", "system_code", system_code);
+  TRACE_EVENT_END("media", perfetto::NamedTrack("CdmPromise", promise_id),
+                  "status", "rejected", "system_code", system_code);
 
   promise->reject(exception_code, system_code, error_message);
 }
@@ -95,9 +94,8 @@ void CdmPromiseAdapter::Clear(ClearReason reason) {
   // Reject all outstanding promises.
   DCHECK(thread_checker_.CalledOnValidThread());
   for (auto& [promise_id, promise] : promises_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1(
-        "media", "CdmPromise", TRACE_ID_WITH_SCOPE("CdmPromise", promise_id),
-        "status", "cleared");
+    TRACE_EVENT_END("media", perfetto::NamedTrack("CdmPromise", promise_id),
+                    "status", "cleared");
     promise->reject(CdmPromise::Exception::INVALID_STATE_ERROR,
                     ToSystemCode(reason), "Operation aborted.");
   }

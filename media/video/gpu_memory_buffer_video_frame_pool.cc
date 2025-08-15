@@ -59,6 +59,7 @@
 #include "media/base/video_util.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -820,10 +821,10 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDone(
     bool copy_failed,
     scoped_refptr<VideoFrame> video_frame,
     FrameResource* frame_resource) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "media", "CopyVideoFrameToGpuMemoryBuffer",
-      TRACE_ID_WITH_SCOPE("CopyVideoFrameToGpuMemoryBuffer",
-                          video_frame->timestamp().InNanoseconds()));
+  TRACE_EVENT_END("media",
+                  /*"CopyVideoFrameToGpuMemoryBuffer"*/ perfetto::NamedTrack(
+                      "CopyVideoFrameToGpuMemoryBuffer",
+                      video_frame->timestamp().InNanoseconds()));
 
   media_task_runner_->PostTask(
       FROM_HERE,
@@ -883,10 +884,10 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyVideoFrameToGpuMemoryBuffer(
   auto on_copies_done =
       base::BindOnce(&PoolImpl::OnCopiesDone, this, /*copy_failed=*/false,
                      video_frame, frame_resource);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+  TRACE_EVENT_BEGIN(
       "media", "CopyVideoFrameToGpuMemoryBuffer",
-      TRACE_ID_WITH_SCOPE("CopyVideoFrameToGpuMemoryBuffer",
-                          video_frame->timestamp().InNanoseconds()));
+      perfetto::NamedTrack("CopyVideoFrameToGpuMemoryBuffer",
+                           video_frame->timestamp().InNanoseconds()));
 
   // Compute the number of tasks to post and create the barrier.
   const gfx::Size coded_size = CodedSize(video_frame.get(), output_format_);

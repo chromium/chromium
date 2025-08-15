@@ -8,7 +8,9 @@
 #endif
 
 #include "media/filters/hls_data_source_provider.h"
+
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -89,8 +91,8 @@ void HlsDataSourceStream::Clear() {
 
 uint8_t* HlsDataSourceStream::LockStreamForWriting(int ensure_minimum_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "HLS::Read", this, "minimum space",
-                                    ensure_minimum_space);
+  TRACE_EVENT_BEGIN("media", "HLS::Read", perfetto::Track::FromPointer(this),
+                    "minimum space", ensure_minimum_space);
   CHECK(!stream_locked_);
   stream_locked_ = true;
   CHECK_GE(buffer_.size(), write_index_);
@@ -104,8 +106,8 @@ uint8_t* HlsDataSourceStream::LockStreamForWriting(int ensure_minimum_space) {
 void HlsDataSourceStream::UnlockStreamPostWrite(int read_size,
                                                 bool end_of_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_END2("media", "HLS::Read", this, "bytes",
-                                  read_size, "eos", end_of_stream);
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "bytes",
+                  read_size, "eos", end_of_stream);
   CHECK(stream_locked_);
   write_index_ += read_size;
   read_position_ += read_size;

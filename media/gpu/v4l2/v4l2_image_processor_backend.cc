@@ -36,6 +36,7 @@
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -854,12 +855,11 @@ void V4L2ImageProcessorBackend::Dequeue() {
     output_frame->set_color_space(job_record->input_frame->ColorSpace());
 
     if (job_record->start_time) {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "media", "V4L2ImageProcessorBackend::Process", TRACE_ID_LOCAL(this),
-          job_record->start_time.value());
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-          "media", "V4L2ImageProcessorBackend::Process", TRACE_ID_LOCAL(this),
-          base::TimeTicks::Now(), "timestamp", timestamp.InMilliseconds());
+      TRACE_EVENT_BEGIN("media", "V4L2ImageProcessorBackend::Process",
+                        perfetto::Track::FromPointer(this),
+                        job_record->start_time.value());
+      TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "timestamp",
+                      timestamp.InMilliseconds());
     }
 
     if (!job_record->legacy_ready_cb.is_null()) {

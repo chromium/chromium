@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/base/media_switches.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
@@ -169,14 +170,13 @@ void AudioManager::TraceAmplitudePeak(bool trace_start) {
   if (trace_start) {
     // We might have never closed the previous trace. Abort it now.
     if (is_trace_started_) {
-      TRACE_EVENT_NESTABLE_ASYNC_END1(
-          TRACE_DISABLED_BY_DEFAULT("audio.latency"), kTraceName,
-          current_trace_id_, "aborted", true);
+      TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("audio.latency"),
+                      perfetto::NamedTrack(kTraceName, current_trace_id_),
+                      "aborted", true);
     }
 
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        TRACE_DISABLED_BY_DEFAULT("audio.latency"), kTraceName,
-        ++current_trace_id_);
+    TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("audio.latency"), kTraceName,
+                      perfetto::NamedTrack(kTraceName, ++current_trace_id_));
 
     is_trace_started_ = true;
     return;
@@ -187,9 +187,9 @@ void AudioManager::TraceAmplitudePeak(bool trace_start) {
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(TRACE_DISABLED_BY_DEFAULT("audio.latency"),
-                                  kTraceName, current_trace_id_, "aborted",
-                                  false);
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("audio.latency"),
+                  perfetto::NamedTrack(kTraceName, current_trace_id_),
+                  "aborted", false);
 
   is_trace_started_ = false;
 }

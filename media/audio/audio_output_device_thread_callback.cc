@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_stats_reporter.h"
 #include "media/base/audio_glitch_info.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -81,8 +82,7 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   // that we have some data, we'll get another one after the device is awake and
   // ingesting data, which is what we want to track with this trace.
   if (callback_num_ == 2) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "StartingPlayback",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this));
     if (first_play_start_time_) {
       UmaHistogramTimes("Media.Audio.Render.OutputDeviceStartTime2",
                         base::TimeTicks::Now() - *first_play_start_time_);
@@ -117,8 +117,8 @@ void AudioOutputDeviceThreadCallback::InitializePlayStartTime() {
     return;
 
   DCHECK(!callback_num_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "StartingPlayback",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("audio", "StartingPlayback",
+                    perfetto::Track::FromPointer(this));
   first_play_start_time_ = base::TimeTicks::Now();
 }
 

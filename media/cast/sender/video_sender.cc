@@ -26,6 +26,7 @@
 #include "media/cast/sender/video_bitrate_suggester.h"
 #include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 #include "third_party/openscreen/src/cast/streaming/public/sender.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media::cast {
 
@@ -272,9 +273,9 @@ void VideoSender::InsertRawVideoFrame(
           video_frame, reference_time,
           base::BindOnce(&VideoSender::OnEncodedVideoFrame, AsWeakPtr(),
                          video_frame, reference_time))) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-        "cast.stream", "Video Encode", TRACE_ID_LOCAL(video_frame.get()),
-        "rtp_timestamp", rtp_timestamp.lower_32_bits());
+    TRACE_EVENT_BEGIN("cast.stream", "Video Encode",
+                      perfetto::Track::FromPointer(video_frame.get()),
+                      "rtp_timestamp", rtp_timestamp.lower_32_bits());
     frames_in_encoder_++;
     duration_in_encoder_ += duration_added_by_next_frame;
     last_enqueued_frame_rtp_timestamp_ = rtp_timestamp;
@@ -323,10 +324,10 @@ void VideoSender::OnEncodedVideoFrame(
   // encoder as really slow.
   duration_in_encoder_ = last_enqueued_frame_reference_time_ - reference_time;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "cast.stream", "Video Encode", TRACE_ID_LOCAL(video_frame.get()),
-      "encoder_utilization", last_reported_encoder_utilization_, "lossiness",
-      last_reported_lossiness_);
+  TRACE_EVENT_END("cast.stream",
+                  perfetto::Track::FromPointer(video_frame.get()),
+                  "encoder_utilization", last_reported_encoder_utilization_,
+                  "lossiness", last_reported_lossiness_);
   // The encoder drops a frame.
   if (!encoded_frame || encoded_frame->data.empty()) {
     DVLOG(3) << "Drop frame";

@@ -56,6 +56,7 @@
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/parsers/h264_level_limits.h"
 #include "media/parsers/h264_parser.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #ifndef V4L2_CID_MPEG_VIDEO_H264_HIER_CODING_L0_BR
 #define V4L2_CID_MPEG_VIDEO_H264_HIER_CODING_L0_BR (V4L2_CID_CODEC_BASE + 391)
@@ -779,10 +780,9 @@ void V4L2VideoEncodeAccelerator::FrameProcessed(
   DVLOGF(4) << "force_keyframe=" << force_keyframe
             << ", output_buffer_index=" << output_buffer_index;
   DCHECK_GE(output_buffer_index, 0u);
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "media,gpu", "V4L2VEA::ImageProcessor::Process",
-      timestamp.InMicroseconds(), "timestamp", timestamp.InMicroseconds(),
-      "output_size", image_processor_->output_config().size.ToString());
+  TRACE_EVENT_END("media,gpu", perfetto::Track(timestamp.InMicroseconds()),
+                  "timestamp", timestamp.InMicroseconds(), "output_size",
+                  image_processor_->output_config().size.ToString());
 
   encoder_input_queue_.emplace(std::move(frame), force_keyframe,
                                output_buffer_index);
@@ -1122,9 +1122,9 @@ void V4L2VideoEncodeAccelerator::InputImageProcessorTask() {
   auto frame = std::move(frame_info.frame);
   const bool force_keyframe = frame_info.force_keyframe;
   auto timestamp = frame->timestamp();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "media,gpu", "V4L2VEA::ImageProcessor::Process",
-      timestamp.InMicroseconds(), "timestamp", timestamp.InMicroseconds());
+  TRACE_EVENT_BEGIN("media,gpu", "V4L2VEA::ImageProcessor::Process",
+                    perfetto::Track(timestamp.InMicroseconds()), "timestamp",
+                    timestamp.InMicroseconds());
   auto output_frame = image_processor_output_buffers_[output_buffer_index];
 
   if (!image_processor_->Process(
@@ -1410,9 +1410,9 @@ void V4L2VideoEncodeAccelerator::Dequeue() {
     const uint64_t timestamp_us =
         ret.second->GetTimeStamp().tv_usec +
         ret.second->GetTimeStamp().tv_sec * base::Time::kMicrosecondsPerSecond;
-    TRACE_EVENT_NESTABLE_ASYNC_END2(
-        "media,gpu", "PlatformEncoding.Encode", timestamp_us, "timestamp",
-        timestamp_us, "size", encoder_input_visible_rect_.size().ToString());
+    TRACE_EVENT_END("media,gpu", /*"PlatformEncoding.Encode"*/
+                    perfetto::Track(timestamp_us), "timestamp", timestamp_us,
+                    "size", encoder_input_visible_rect_.size().ToString());
 
     output_buffer_queue_.push_back(std::move(ret.second));
     buffer_dequeued = true;
@@ -1584,10 +1584,9 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
     input_buf.SetPlaneBytesUsed(i, bytesused);
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media,gpu", "PlatformEncoding.Encode",
-                                    frame->timestamp().InMicroseconds(),
-                                    "timestamp",
-                                    frame->timestamp().InMicroseconds());
+  TRACE_EVENT_BEGIN("media,gpu", "PlatformEncoding.Encode",
+                    perfetto::Track(frame->timestamp().InMicroseconds()),
+                    "timestamp", frame->timestamp().InMicroseconds());
 
   switch (input_buf.Memory()) {
     case V4L2_MEMORY_USERPTR: {

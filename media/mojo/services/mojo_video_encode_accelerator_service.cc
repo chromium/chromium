@@ -20,6 +20,7 @@
 #include "media/mojo/services/mojo_media_log.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -351,12 +352,10 @@ void MojoVideoEncodeAcceleratorService::BitstreamBufferReady(
     int64_t timestamp = metadata.timestamp.InMicroseconds();
     const auto timestamp_it = timestamps_.Peek(timestamp);
     if (timestamp_it != timestamps_.end()) {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "media", "MojoVEAService::EncodingFrameDuration", timestamp,
-          timestamp_it->second);
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-          "media", "MojoVEAService::EncodingFrameDuration", timestamp,
-          base::TimeTicks::Now(), "timestamp", timestamp);
+      TRACE_EVENT_BEGIN("media", "MojoVEAService::EncodingFrameDuration",
+                        perfetto::Track(timestamp), timestamp_it->second);
+      TRACE_EVENT_END("media", perfetto::Track(timestamp),
+                      base::TimeTicks::Now(), "timestamp", timestamp);
     }
   }
 

@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/video_types.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace media {
@@ -123,9 +124,9 @@ void VideoCaptureEffectsProcessor::PostProcessData(
                              std::move(out_shared_image),
                              std::move(post_process_cb));
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-      "PostProcessContext::PostProcessContext()", context.trace_id);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                    "PostProcessContext::PostProcessContext()",
+                    perfetto::Track(context.trace_id));
 
   effects_processor_->PostProcess(
       std::move(in_buffer_handle), std::move(frame_info),
@@ -159,9 +160,9 @@ void VideoCaptureEffectsProcessor::PostProcessBuffer(
                              std::move(out_buffer), std::move(out_shared_image),
                              std::move(post_process_cb));
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-      "PostProcessContext::PostProcessContext()", context.trace_id);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                    "PostProcessContext::PostProcessContext()",
+                    perfetto::Track(context.trace_id));
 
   effects_processor_->PostProcess(
       std::move(in_buffer_handle), std::move(frame_info),
@@ -194,9 +195,9 @@ void VideoCaptureEffectsProcessor::PostProcessExternalBuffer(
                              std::move(out_buffer), std::move(out_shared_image),
                              std::move(post_process_cb));
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-      "PostProcessContext::PostProcessContext()", context.trace_id);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                    "PostProcessContext::PostProcessContext()",
+                    perfetto::Track(context.trace_id));
 
   effects_processor_->PostProcess(
       std::move(in_buffer_handle), std::move(frame_info),
@@ -215,10 +216,9 @@ void VideoCaptureEffectsProcessor::OnPostProcess(
     video_effects::mojom::PostProcessResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-      "PostProcessContext::PostProcessContext()", context.trace_id,
-      "is_success", result->is_success());
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                  perfetto::Track(context.trace_id), "is_success",
+                  result->is_success());
 
   switch (result->which()) {
     case video_effects::mojom::PostProcessResult::Tag::kSuccess: {
