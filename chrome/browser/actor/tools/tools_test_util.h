@@ -19,6 +19,10 @@ namespace content {
 class WebContents;
 }
 
+namespace gfx {
+class RectF;
+}
+
 namespace tabs {
 class TabInterface;
 }
@@ -89,6 +93,9 @@ class ActorToolsTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_for_init_;
 };
+
+gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
+                                 std::string_view query);
 
 }  // namespace actor
 

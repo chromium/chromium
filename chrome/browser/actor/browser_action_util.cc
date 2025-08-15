@@ -25,6 +25,7 @@
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
+#include "chrome/browser/actor/tools/scroll_to_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
@@ -64,6 +65,7 @@ using apc::MoveMouseAction;
 using apc::NavigateAction;
 using apc::ScriptToolAction;
 using apc::ScrollAction;
+using apc::ScrollToAction;
 using apc::SelectAction;
 using apc::TypeAction;
 using apc::WaitAction;
@@ -283,6 +285,22 @@ std::unique_ptr<ToolRequest> CreateMoveMouseRequest(
   }
 
   return std::make_unique<MoveMouseToolRequest>(tab_handle, target.value());
+}
+
+std::unique_ptr<ToolRequest> CreateScrollToRequest(
+    const ScrollToAction& action,
+    TabInterface* deprecated_fallback_tab) {
+  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
+  if (!action.has_target() || tab_handle == TabHandle::Null()) {
+    return nullptr;
+  }
+
+  auto target = ToPageTarget(action.target());
+  if (!target.has_value()) {
+    return nullptr;
+  }
+
+  return std::make_unique<ScrollToToolRequest>(tab_handle, target.value());
 }
 
 std::unique_ptr<ToolRequest> CreateDragAndReleaseRequest(
@@ -520,6 +538,10 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
       const ScriptToolAction& script_tool_action = action.script_tool();
       return CreateScriptToolRequest(script_tool_action,
                                      deprecated_fallback_tab);
+    }
+    case optimization_guide::proto::Action::kScrollTo: {
+      const ScrollToAction& scroll_to_action = action.scroll_to();
+      return CreateScrollToRequest(scroll_to_action, deprecated_fallback_tab);
     }
     case optimization_guide::proto::Action::kCreateWindow:
     case optimization_guide::proto::Action::kCloseWindow:

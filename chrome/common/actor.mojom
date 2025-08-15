@@ -45,7 +45,15 @@ struct ClickAction {
 };
 
 // Information specific to a mouse move action.
+// Has no members because the target, included in ToolInvocation, is the only
+// needed parameter.
 struct MouseMoveAction {
+};
+
+// Information specific to a scroll-to action.
+// Has no members because the target, included in ToolInvocation, is the only
+// needed parameter.
+struct ScrollToAction {
 };
 
 // Information specific to the type (keyboard input) action.  Note: TypeAction
@@ -122,6 +130,7 @@ union ToolAction {
   SelectAction select;
   TypeAction type;
   ScriptToolAction script_tool;
+  ScrollToAction scroll_to;
 };
 
 

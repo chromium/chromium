@@ -16,6 +16,8 @@ source_set("actor") {
     "journal.h",
     "mouse_move_tool.cc",
     "mouse_move_tool.h",
+    "no_op_tool.cc",
+    "no_op_tool.h",
     "page_stability_monitor.cc",
     "page_stability_monitor.h",
     "script_tool.cc",

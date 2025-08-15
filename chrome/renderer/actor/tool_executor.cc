@@ -17,6 +17,7 @@
 #include "chrome/renderer/actor/drag_and_release_tool.h"
 #include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/mouse_move_tool.h"
+#include "chrome/renderer/actor/no_op_tool.h"
 #include "chrome/renderer/actor/script_tool.h"
 #include "chrome/renderer/actor/scroll_tool.h"
 #include "chrome/renderer/actor/select_tool.h"
@@ -129,6 +130,14 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
           frame_.get(), invocation->task_id, journal_.get(),
           std::move(invocation->target), std::move(invocation->observed_target),
           std::move(invocation->action->get_script_tool()));
+      break;
+    }
+    case actor::mojom::ToolAction::Tag::kScrollTo: {
+      // This is only used to call `EnsureTargetInView()`.
+      tool_ = std::make_unique<NoOpTool>(
+          frame_.get(), invocation->task_id, journal_.get(),
+          std::move(invocation->target),
+          std::move(invocation->observed_target));
       break;
     }
     default:

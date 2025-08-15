@@ -28,6 +28,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/display/display_switches.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace actor {
 
@@ -162,6 +163,36 @@ ActorTask& ActorToolsTest::actor_task() const {
 std::unique_ptr<ExecutionEngine> ActorToolsTest::CreateExecutionEngine(
     Profile* profile) {
   return std::make_unique<ExecutionEngine>(profile);
+}
+
+gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
+                                 std::string_view query) {
+  double width =
+      content::EvalJs(
+          &rfh, content::JsReplace(
+                    "document.querySelector($1).getBoundingClientRect().width",
+                    query))
+          .ExtractDouble();
+  double height =
+      content::EvalJs(
+          &rfh, content::JsReplace(
+                    "document.querySelector($1).getBoundingClientRect().height",
+                    query))
+          .ExtractDouble();
+  double x =
+      content::EvalJs(
+          &rfh,
+          content::JsReplace(
+              "document.querySelector($1).getBoundingClientRect().x", query))
+          .ExtractDouble();
+  double y =
+      content::EvalJs(
+          &rfh,
+          content::JsReplace(
+              "document.querySelector($1).getBoundingClientRect().y", query))
+          .ExtractDouble();
+
+  return gfx::RectF(x, y, width, height);
 }
 
 }  // namespace actor

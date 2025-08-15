@@ -42,6 +42,9 @@ void ConvertToVariantFn::Apply(const ScriptToolRequest& tr) {
 void ConvertToVariantFn::Apply(const ScrollToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+void ConvertToVariantFn::Apply(const ScrollToToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
 void ConvertToVariantFn::Apply(const SelectToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }

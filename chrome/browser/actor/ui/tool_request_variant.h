@@ -23,6 +23,7 @@ using ToolRequestVariant = std::variant<ActivateTabToolRequest,
                                         NavigateToolRequest,
                                         ScriptToolRequest,
                                         ScrollToolRequest,
+                                        ScrollToToolRequest,
                                         SelectToolRequest,
                                         TypeToolRequest,
                                         WaitToolRequest>;
@@ -44,6 +45,7 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const NavigateToolRequest&) override;
   void Apply(const ScriptToolRequest&) override;
   void Apply(const ScrollToolRequest&) override;
+  void Apply(const ScrollToToolRequest&) override;
   void Apply(const SelectToolRequest&) override;
   void Apply(const TypeToolRequest&) override;
   void Apply(const WaitToolRequest&) override;

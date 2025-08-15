@@ -74,7 +74,8 @@ constexpr absl::Overload PreToolEventsFn{
     },
     NoUiEvents<WaitToolRequest>,
     NoUiEvents<AttemptLoginToolRequest>,
-    NoUiEvents<ScriptToolRequest>};
+    NoUiEvents<ScriptToolRequest>,
+    NoUiEvents<ScrollToToolRequest>};
 
 constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<ClickToolRequest>,          NoUiEvents<ActivateTabToolRequest>,
@@ -83,7 +84,8 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<MoveMouseToolRequest>,      NoUiEvents<NavigateToolRequest>,
     NoUiEvents<ScrollToolRequest>,         NoUiEvents<SelectToolRequest>,
     NoUiEvents<TypeToolRequest>,           NoUiEvents<WaitToolRequest>,
-    NoUiEvents<AttemptLoginToolRequest>,   NoUiEvents<ScriptToolRequest>};
+    NoUiEvents<AttemptLoginToolRequest>,   NoUiEvents<ScriptToolRequest>,
+    NoUiEvents<ScrollToToolRequest>};
 
 // TODO(crbug.com/425784083): Remove FirstActEventsFn once functionality moves
 // to ActorTaskChangeFn.

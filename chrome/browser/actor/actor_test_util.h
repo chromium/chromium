@@ -87,6 +87,8 @@ optimization_guide::proto::Actions MakeScroll(
     std::optional<int> content_node_id,
     float scroll_offset_x,
     float scroll_offset_y);
+optimization_guide::proto::Actions MakeScrollTo(content::RenderFrameHost& rfh,
+                                                int content_node_id);
 optimization_guide::proto::Actions MakeDragAndRelease(
     const gfx::Point& from_point,
     const gfx::Point& to_point);
@@ -128,6 +130,8 @@ std::unique_ptr<ToolRequest> MakeScrollRequest(
     std::optional<int> content_node_id,
     float scroll_offset_x,
     float scroll_offset_y);
+std::unique_ptr<ToolRequest> MakeScrollToRequest(content::RenderFrameHost& rfh,
+                                                 int content_node_id);
 std::unique_ptr<ToolRequest> MakeDragAndReleaseRequest(
     tabs::TabInterface& tab,
     const gfx::Point& from_point,

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Blank Page</title>
+    <style>
+      div {
+        border: 1px solid #000;
+        height: 100px;
+        position: absolute;
+        width: 50px;
+      }
+      #in-viewport {
+        left: 200px;
+        top: 300px;
+      }
+      #out-of-viewport {
+        left: 110vw;
+        top: 110vh;
+      }
+      #fixed {
+        left: 400px;
+        position: fixed;
+        top: 500px;
+      }
+      #display-none {
+        display: none;
+        left: 180vw;
+        top: 180vw;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="in-viewport">in-viewport</div>
+    <div id="out-of-viewport">out-of-viewport</div>
+    <div id="fixed">fixed</div>
+    <div id="display-none">display-none</div>
+  </body>
+</html>

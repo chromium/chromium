@@ -23,36 +23,6 @@ namespace actor {
 
 namespace {
 
-gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
-                                 std::string_view query) {
-  double width =
-      content::EvalJs(
-          &rfh, content::JsReplace(
-                    "document.querySelector($1).getBoundingClientRect().width",
-                    query))
-          .ExtractDouble();
-  double height =
-      content::EvalJs(
-          &rfh, content::JsReplace(
-                    "document.querySelector($1).getBoundingClientRect().height",
-                    query))
-          .ExtractDouble();
-  double x =
-      content::EvalJs(
-          &rfh,
-          content::JsReplace(
-              "document.querySelector($1).getBoundingClientRect().x", query))
-          .ExtractDouble();
-  double y =
-      content::EvalJs(
-          &rfh,
-          content::JsReplace(
-              "document.querySelector($1).getBoundingClientRect().y", query))
-          .ExtractDouble();
-
-  return gfx::RectF(x, y, width, height);
-}
-
 int GetRangeValue(content::RenderFrameHost& rfh, std::string_view query) {
   return content::EvalJs(
              &rfh, content::JsReplace(

@@ -22,6 +22,7 @@
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
+#include "chrome/browser/actor/tools/scroll_to_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
@@ -57,6 +58,7 @@ using ::optimization_guide::proto::HistoryForwardAction;
 using ::optimization_guide::proto::MoveMouseAction;
 using ::optimization_guide::proto::NavigateAction;
 using ::optimization_guide::proto::ScrollAction;
+using ::optimization_guide::proto::ScrollToAction;
 using ::optimization_guide::proto::SelectAction;
 using ::optimization_guide::proto::TypeAction;
 using ::optimization_guide::proto::TypeAction_TypeMode;
@@ -211,6 +213,17 @@ Actions MakeScroll(RenderFrameHost& rfh,
     scroll->set_direction(ScrollAction::UP);
     scroll->set_distance(-scroll_offset_y);
   }
+  return actions;
+}
+
+Actions MakeScrollTo(RenderFrameHost& rfh, int content_node_id) {
+  Actions actions;
+  ScrollToAction* scroll_to = actions.add_actions()->mutable_scroll_to();
+  scroll_to->mutable_target()->set_content_node_id(content_node_id);
+  scroll_to->mutable_target()
+      ->mutable_document_identifier()
+      ->set_serialized_token(*DocumentIdentifierUserData::GetDocumentIdentifier(
+          rfh.GetGlobalFrameToken()));
   return actions;
 }
 
@@ -385,6 +398,11 @@ std::unique_ptr<ToolRequest> MakeScrollRequest(
 
   return std::make_unique<ScrollToolRequest>(
       GetTab(rfh), MakeTarget(rfh, node_id), direction, distance);
+}
+std::unique_ptr<ToolRequest> MakeScrollToRequest(content::RenderFrameHost& rfh,
+                                                 int content_node_id) {
+  return std::make_unique<ScrollToToolRequest>(
+      GetTab(rfh), MakeTarget(rfh, content_node_id));
 }
 std::unique_ptr<ToolRequest> MakeDragAndReleaseRequest(
     TabInterface& tab,
