@@ -856,8 +856,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.{EnabledDuration}"
-    units="times" expires_after="2025-09-14">
-  <owner>thefrog@chromium.org</owner>
+    units="times" expires_after="2026-03-14">
+  <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the number of times Enhanced Safe Browsing was disabled the last 28
