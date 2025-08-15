@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 
+#include "base/byte_count.h"
 #include "base/process/kill.h"
 #include "build/build_config.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
@@ -147,8 +148,8 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
        discard_reason.value() == mojom::LifecycleUnitDiscardReason::SUGGESTED);
 
   if (contents->WasDiscarded()) {
-    data.discarded_memory_savings_in_bytes =
-        memory_saver::GetDiscardedMemorySavingsInBytes(contents);
+    data.discarded_memory_savings = base::ByteCount(
+        memory_saver::GetDiscardedMemorySavingsInBytes(contents));
   }
 
   if (const auto* const resource_tab_helper =
@@ -184,8 +185,7 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
          should_hide_throbber == other.should_hide_throbber &&
          is_tab_discarded == other.is_tab_discarded &&
          should_show_discard_status == other.should_show_discard_status &&
-         discarded_memory_savings_in_bytes ==
-             other.discarded_memory_savings_in_bytes &&
+         discarded_memory_savings == other.discarded_memory_savings &&
          tab_resource_usage == other.tab_resource_usage &&
          is_monochrome_favicon == other.is_monochrome_favicon &&
          tab_interface.get() == other.tab_interface.get();

@@ -561,14 +561,13 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
   EXPECT_TRUE(alert_row->icon()->GetImageModel().IsEmpty());
 
   // Show discard status with memory savings
-  tab_renderer_data.discarded_memory_savings_in_bytes = 1000;
+  tab_renderer_data.discarded_memory_savings = base::ByteCount(1000);
   tab_strip->SetTabData(1, tab_renderer_data);
   SimulateHoverTab(browser(), 1);
   EXPECT_EQ(
       l10n_util::FormatString(
           l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB_MEMORY_SAVINGS),
-          {ui::FormatBytes(base::ByteCount(
-              tab_renderer_data.discarded_memory_savings_in_bytes))},
+          {ui::FormatBytes(tab_renderer_data.discarded_memory_savings)},
           nullptr),
       alert_row->footer_label()->GetText());
 }

@@ -939,8 +939,8 @@ bool Tab::ShouldUpdateAccessibleName(TabRendererData& old_data,
           old_data.alert_state != new_data.alert_state ||
           old_data.should_show_discard_status !=
               new_data.should_show_discard_status ||
-          old_data.discarded_memory_savings_in_bytes !=
-              new_data.discarded_memory_savings_in_bytes ||
+          old_data.discarded_memory_savings !=
+              new_data.discarded_memory_savings ||
           old_data.tab_resource_usage != new_data.tab_resource_usage ||
           old_data.pinned != new_data.pinned ||
           old_data.title != new_data.title || collaboration_message_changed);

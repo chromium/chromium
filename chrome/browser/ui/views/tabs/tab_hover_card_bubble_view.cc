@@ -596,17 +596,15 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   // if the memory usage in hover cards pref is disabled.
   // However, collaboration messaging takes precedence over memory usage for
   // shared tabs.
-  const bool show_memory_usage = !show_collaboration_messaging &&
-                                 !show_discard_status &&
-                                 ((bubble_params_.show_memory_usage &&
-                                   tab_memory_usage > base::ByteCount(0)) ||
-                                  is_high_memory_usage);
+  const bool show_memory_usage =
+      !show_collaboration_messaging && !show_discard_status &&
+      ((bubble_params_.show_memory_usage && tab_memory_usage.is_positive()) ||
+       is_high_memory_usage);
   const bool show_footer = alert_state_.has_value() || show_discard_status ||
                            show_memory_usage || show_collaboration_messaging;
 
   footer_view_->SetAlertData(
-      {alert_state_, show_discard_status,
-       base::ByteCount(tab_data.discarded_memory_savings_in_bytes)});
+      {alert_state_, show_discard_status, tab_data.discarded_memory_savings});
 
   footer_view_->SetPerformanceData(
       {show_memory_usage, is_high_memory_usage, tab_memory_usage});

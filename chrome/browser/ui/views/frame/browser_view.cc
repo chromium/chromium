@@ -4097,11 +4097,10 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
   const TabRendererData& tab_data = tabstrip_->tab_at(index)->data();
   if (tab_data.should_show_discard_status) {
     title = l10n_util::GetStringFUTF16(IDS_TAB_AX_INACTIVE_TAB, title);
-    if (tab_data.discarded_memory_savings_in_bytes > 0) {
+    if (tab_data.discarded_memory_savings.is_positive()) {
       title = l10n_util::GetStringFUTF16(
           IDS_TAB_AX_MEMORY_SAVINGS, title,
-          ui::FormatBytes(
-              base::ByteCount(tab_data.discarded_memory_savings_in_bytes)));
+          ui::FormatBytes(tab_data.discarded_memory_savings));
     }
   } else if (tab_data.tab_resource_usage &&
              tab_data.tab_resource_usage->memory_usage_in_bytes() > 0) {

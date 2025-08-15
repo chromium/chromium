@@ -366,7 +366,7 @@ TEST_F(TabRendererDataTest, TabLifecycleManagement) {
       TabRendererData::FromTabInModel(&tab_strip_model_, index);
   EXPECT_FALSE(data_default.is_tab_discarded);
   EXPECT_FALSE(data_default.should_show_discard_status);
-  EXPECT_EQ(data_default.discarded_memory_savings_in_bytes, 0);
+  EXPECT_TRUE(data_default.discarded_memory_savings.is_zero());
   EXPECT_TRUE(data_default.tab_resource_usage);
 
   usage_helper->SetMemoryUsageInBytes(1234);
