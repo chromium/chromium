@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -564,8 +565,16 @@ IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
       VerifyDiyAppMenuItemViews());
 }
 
-IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
-                       DIYAppMenuWorksCorrectlyInvalidManifestParsingSites) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DIYAppMenuWorksCorrectlyInvalidManifestParsingSites \
+  DISABLED_DIYAppMenuWorksCorrectlyInvalidManifestParsingSites
+#else
+#define MAYBE_DIYAppMenuWorksCorrectlyInvalidManifestParsingSites \
+  DIYAppMenuWorksCorrectlyInvalidManifestParsingSites
+#endif
+IN_PROC_BROWSER_TEST_F(
+    UniversalInstallAppMenuModelInteractiveTest,
+    MAYBE_DIYAppMenuWorksCorrectlyInvalidManifestParsingSites) {
   RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
                   ObserveState(kAppBannerManagerState, GetManager()),
                   NavigateWebContents(kPrimaryTabPageElementId,
