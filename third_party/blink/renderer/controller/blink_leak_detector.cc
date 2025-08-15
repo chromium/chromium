@@ -56,7 +56,7 @@ void BlinkLeakDetector::PerformLeakDetection(
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating([](v8::Isolate* isolate) {
+      ->ForEachMainThreadIsolate(BindRepeating([](v8::Isolate* isolate) {
         v8::HandleScope handle_scope(isolate);
 
         // Instruct V8 to drop its non-essential internal caches. In contrast to

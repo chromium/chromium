@@ -151,7 +151,7 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
   // The <iframe> tag will have a fixed id attribute and no src attribute.
   auto iframe_attribution_matcher =
       Pointee(AllOf(Field(&IframeAttributionData::id, "iframe-id"),
-                    Field(&IframeAttributionData::src, WTF::String())));
+                    Field(&IframeAttributionData::src, String())));
 
   // Create an empty frame. This will send a notification as the main frame's
   // context is created.

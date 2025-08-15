@@ -124,7 +124,7 @@ void DevToolsFrontendImpl::SetupDevToolsFrontend(
   api_script_ = api_script;
   host_.Bind(std::move(host),
              GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI));
-  host_.set_disconnect_handler(WTF::BindOnce(
+  host_.set_disconnect_handler(BindOnce(
       &DevToolsFrontendImpl::DestroyOnHostGone, WrapWeakPersistent(this)));
   GetSupplementable()->GetPage()->SetDefaultPageScaleLimits(1.f, 1.f);
 }

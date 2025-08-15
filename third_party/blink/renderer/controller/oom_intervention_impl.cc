@@ -146,7 +146,7 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
     host_->OnHighMemoryUsage();
     MemoryUsageMonitorInstance().RemoveObserver(this);
     // Send memory pressure notification to trigger GC.
-    task_runner_->PostTask(FROM_HERE, WTF::BindOnce(&TriggerGC));
+    task_runner_->PostTask(FROM_HERE, BindOnce(&TriggerGC));
     // Notify V8GCForContextDispose that page navigation gc is needed when
     // intervention runs, as it indicates that memory usage is high.
     V8GCForContextDispose::Instance().SetForcePageNavigationGC();
@@ -157,7 +157,7 @@ void OomInterventionImpl::TriggerGC() {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating([](v8::Isolate* isolate) {
+      ->ForEachMainThreadIsolate(BindRepeating([](v8::Isolate* isolate) {
         isolate->MemoryPressureNotification(v8::MemoryPressureLevel::kCritical);
       }));
 }

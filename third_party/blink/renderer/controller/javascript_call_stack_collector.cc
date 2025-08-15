@@ -80,7 +80,7 @@ void PostHandleCollectedCallStackTask(
       *Platform::Current()->GetIOTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(
           &JavaScriptCallStackCollector::HandleCallStackCollected,
-          WTF::CrossThreadUnretained(collector), builder.ReleaseString(),
+          CrossThreadUnretained(collector), builder.ReleaseString(),
           frame_token));
 }
 
@@ -155,9 +155,9 @@ void JavaScriptCallStackCollector::CollectJavaScriptCallStack() {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating(
+      ->ForEachMainThreadIsolate(BindRepeating(
           &JavaScriptCallStackCollector::InterruptIsolateAndCollectCallStack,
-          WTF::Unretained(this)));
+          Unretained(this)));
 }
 
 }  // namespace blink

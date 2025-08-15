@@ -96,7 +96,7 @@ class MemoryUsageChecker {
 TEST_F(V8WorkerMemoryReporterTest, OnMeasurementSuccess) {
   MockCallback mock_callback;
   V8WorkerMemoryReporter reporter(
-      WTF::BindOnce(&MockCallback::Callback, WTF::Unretained(&mock_callback)));
+      BindOnce(&MockCallback::Callback, Unretained(&mock_callback)));
   reporter.SetWorkerCount(6);
   Result result = {Vector<WorkerMemoryUsage>(
       {WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()), 1},
@@ -115,7 +115,7 @@ TEST_F(V8WorkerMemoryReporterTest, OnMeasurementSuccess) {
 TEST_F(V8WorkerMemoryReporterTest, OnMeasurementFailure) {
   MockCallback mock_callback;
   V8WorkerMemoryReporter reporter(
-      WTF::BindOnce(&MockCallback::Callback, WTF::Unretained(&mock_callback)));
+      BindOnce(&MockCallback::Callback, Unretained(&mock_callback)));
   reporter.SetWorkerCount(3);
   Result result = {Vector<WorkerMemoryUsage>(
       {WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()), 1},
@@ -132,7 +132,7 @@ TEST_F(V8WorkerMemoryReporterTest, OnMeasurementFailure) {
 TEST_F(V8WorkerMemoryReporterTest, OnTimeout) {
   MockCallback mock_callback;
   V8WorkerMemoryReporter reporter(
-      WTF::BindOnce(&MockCallback::Callback, WTF::Unretained(&mock_callback)));
+      BindOnce(&MockCallback::Callback, Unretained(&mock_callback)));
   reporter.SetWorkerCount(4);
   Result result = {Vector<WorkerMemoryUsage>(
       {WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()), 1},
@@ -153,7 +153,7 @@ TEST_F(V8WorkerMemoryReporterTest, OnTimeout) {
 TEST_F(V8WorkerMemoryReporterTest, OnTimeoutNoop) {
   MockCallback mock_callback;
   V8WorkerMemoryReporter reporter(
-      WTF::BindOnce(&MockCallback::Callback, WTF::Unretained(&mock_callback)));
+      BindOnce(&MockCallback::Callback, Unretained(&mock_callback)));
   reporter.SetWorkerCount(2);
   Result result = {Vector<WorkerMemoryUsage>(
       {WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()), 1},
@@ -177,7 +177,7 @@ TEST_F(V8WorkerMemoryReporterTestWithDedicatedWorker, GetMemoryUsage) {
   MemoryUsageChecker checker(1, kBytesPerArrayElement * kArrayLength,
                              MemoryUsageChecker::CallbackAction::kExitRunLoop);
   V8WorkerMemoryReporter::GetMemoryUsage(
-      WTF::BindOnce(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)),
+      BindOnce(&MemoryUsageChecker::Callback, Unretained(&checker)),
       v8::MeasureMemoryExecution::kEager);
   checker.Run();
   EXPECT_TRUE(checker.IsCalled());
@@ -191,7 +191,7 @@ TEST_F(V8WorkerMemoryReporterTestWithMockPlatform, GetMemoryUsageTimeout) {
   // we cannot call WaitUntilWorkerIsRunning here as that would block.
   MemoryUsageChecker checker(0, 0, MemoryUsageChecker::CallbackAction::kNone);
   V8WorkerMemoryReporter::GetMemoryUsage(
-      WTF::BindOnce(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)),
+      BindOnce(&MemoryUsageChecker::Callback, Unretained(&checker)),
       v8::MeasureMemoryExecution::kEager);
   FastForwardBy(
       base::Seconds(V8WorkerMemoryReporter::kTimeout.InSeconds() + 1));

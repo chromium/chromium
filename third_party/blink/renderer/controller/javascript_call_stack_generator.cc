@@ -26,14 +26,14 @@ void JavaScriptCallStackGenerator::OnCollectorFinished(
 
 void JavaScriptCallStackGenerator::CollectJavaScriptCallStack(
     CollectJavaScriptCallStackCallback callback) {
-    std::unique_ptr<JavaScriptCallStackCollector> call_stack_collector =
-        std::make_unique<JavaScriptCallStackCollector>(
-            std::move(callback),
-            WTF::BindOnce(&JavaScriptCallStackGenerator::OnCollectorFinished,
-                          WTF::Unretained(this)));
-    JavaScriptCallStackCollector* raw_collector = call_stack_collector.get();
-    collectors_.Set(raw_collector, std::move(call_stack_collector));
-    raw_collector->CollectJavaScriptCallStack();
+  std::unique_ptr<JavaScriptCallStackCollector> call_stack_collector =
+      std::make_unique<JavaScriptCallStackCollector>(
+          std::move(callback),
+          BindOnce(&JavaScriptCallStackGenerator::OnCollectorFinished,
+                   Unretained(this)));
+  JavaScriptCallStackCollector* raw_collector = call_stack_collector.get();
+  collectors_.Set(raw_collector, std::move(call_stack_collector));
+  raw_collector->CollectJavaScriptCallStack();
 }
 
 void JavaScriptCallStackGenerator::Bind(

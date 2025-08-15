@@ -232,7 +232,7 @@ void SetCorsExemptHeaderList(
       base::checked_cast<wtf_size_t>(web_cors_exempt_header_list.size()));
   std::ranges::transform(web_cors_exempt_header_list,
                          cors_exempt_header_list.begin(),
-                         &WebString::operator WTF::String);
+                         &WebString::operator String);
   LoaderFactoryForFrame::SetCorsExemptHeaderList(
       std::move(cors_exempt_header_list));
 }
@@ -244,9 +244,9 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
 
 #if BUILDFLAG(IS_ANDROID)
   binders.Add<mojom::blink::OomIntervention>(
-      ConvertToBaseRepeatingCallback(
-          CrossThreadBindRepeating(&OomInterventionImpl::BindReceiver,
-                                   WTF::RetainedRef(main_thread_task_runner))),
+      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+          &OomInterventionImpl::BindReceiver,
+          blink::RetainedRef(main_thread_task_runner))),
       main_thread_task_runner);
 
   binders.Add<mojom::blink::CrashMemoryMetricsReporter>(
@@ -264,7 +264,8 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
 
   binders.Add<mojom::blink::LeakDetector>(
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-          &BlinkLeakDetector::Bind, WTF::RetainedRef(main_thread_task_runner))),
+          &BlinkLeakDetector::Bind,
+          blink::RetainedRef(main_thread_task_runner))),
       main_thread_task_runner);
 
   binders.Add<mojom::blink::DiskAllocator>(
@@ -319,16 +320,16 @@ void BlinkInitializer::RegisterMemoryWatchers(Platform* platform) {
 void BlinkInitializer::InitLocalFrame(LocalFrame& frame) const {
   if (RuntimeEnabledFeatures::DisplayCutoutAPIEnabled()) {
     frame.GetInterfaceRegistry()->AddAssociatedInterface(
-        WTF::BindRepeating(&DisplayCutoutClientImpl::BindMojoReceiver,
-                           WrapWeakPersistent(&frame)));
+        BindRepeating(&DisplayCutoutClientImpl::BindMojoReceiver,
+                      WrapWeakPersistent(&frame)));
   }
-  frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddAssociatedInterface(BindRepeating(
       &DevToolsFrontendImpl::BindMojoRequest, WrapWeakPersistent(&frame)));
 
-  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &LocalFrame::PauseSubresourceLoading, WrapWeakPersistent(&frame)));
 
-  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &AnnotationAgentContainerImpl::BindReceiver, WrapWeakPersistent(&frame)));
   ModulesInitializer::InitLocalFrame(frame);
 }
