@@ -2186,6 +2186,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.SessionLength.FRE.{SessionType}" units="ms"
+    expires_after="2026-02-13">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The duration of a Gemini session that happens to be the first run, from when
+    the UI appears to when it is dismissed. This metric is segmented by the type
+    of sessions.
+  </summary>
+  <token key="SessionType">
+    <variant name="Abandoned"
+        summary="Sessions closed without any prompts submitted"/>
+    <variant name="WithPrompt"
+        summary="Sessions where the user submitted at least one prompt"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.Gemini.SessionLength.{SessionType}" units="ms"
+    expires_after="2026-02-13">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The duration of a Gemini session, from when the UI appears to when it is
+    dismissed. This metric is segmented by the type of sessions.
+  </summary>
+  <token key="SessionType">
+    <variant name="Abandoned"
+        summary="Sessions closed without any prompts submitted"/>
+    <variant name="WithPrompt"
+        summary="Sessions where the user submitted at least one prompt"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.Gemini.StartupTime.{FirstRunBool}" units="ms"
     expires_after="2026-07-21">
   <owner>nicolasmacbeth@google.com</owner>
