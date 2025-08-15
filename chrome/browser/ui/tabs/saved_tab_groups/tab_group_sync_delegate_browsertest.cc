@@ -500,8 +500,17 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
             GURL("chrome://newtab"));
 }
 
+// TODO(crbug.com/438299988): Re-enable this test after resolving null tab in
+// SavedTabGroupWebContentsListener::DidFinishNavigation.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP \
+  DISABLED_RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP
+#else
+#define MAYBE_RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP \
+  RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP
+#endif
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
-                       RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP) {
+                       MAYBE_RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP) {
   chrome::AddTabAt(browser(), GURL("chrome://history"), 1, false);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
