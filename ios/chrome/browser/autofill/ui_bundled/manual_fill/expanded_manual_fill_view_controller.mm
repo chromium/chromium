@@ -103,6 +103,19 @@ UIImageSymbolConfiguration* GetCloseButtonSymbolConfiguration() {
                            scale:UIImageSymbolScaleMedium];
 }
 
+// Returns the constant to apply to the header view top constraint.
+CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    if (!is_compact_height) {
+      return -kHeaderViewTopPadding;
+    }
+  }
+#endif
+
+  return kHeaderViewTopPadding;
+}
+
 }  // namespace
 
 @interface ExpandedManualFillViewController ()
@@ -196,9 +209,12 @@ UIImageSymbolConfiguration* GetCloseButtonSymbolConfiguration() {
       [self createSegmentedControlAndSelectDataType:_initialDataType];
   _headerViewHeightConstraint = [_headerView.heightAnchor
       constraintEqualToConstant:kHeaderViewHeightWideLayout];
+  _headerViewTopConstraint =
+      [_headerView.topAnchor constraintEqualToAnchor:self.view.topAnchor];
 
   [self setUpHeaderView:_headerView
       headerViewHeightConstraint:_headerViewHeightConstraint
+         headerViewTopConstraint:_headerViewTopConstraint
                       chromeLogo:_chromeLogo
                      closeButton:_closeButton
                 segmentedControl:_segmentedControl
@@ -212,9 +228,6 @@ UIImageSymbolConfiguration* GetCloseButtonSymbolConfiguration() {
   _headerViewTrailingConstraint = [_headerView.trailingAnchor
       constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                      constant:-kHeaderViewHorizontalPadding];
-  _headerViewTopConstraint =
-      [_headerView.topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                            constant:kHeaderViewTopPadding];
   _headerViewPopoverTopConstraint = [_headerView.topAnchor
       constraintEqualToAnchor:self.view.topAnchor
                      constant:kHeaderViewPopoverTopPadding];
@@ -455,13 +468,17 @@ UIImageSymbolConfiguration* GetCloseButtonSymbolConfiguration() {
 // Sets up the header view depending on the device's orientation.
 - (void)setUpHeaderView:(UIView*)headerView
     headerViewHeightConstraint:(NSLayoutConstraint*)headerViewHeightConstraint
+       headerViewTopConstraint:(NSLayoutConstraint*)headerViewTopConstraint
                     chromeLogo:(UIImageView*)chromeLogo
                    closeButton:(UIButton*)closeButton
               segmentedControl:(UISegmentedControl*)segmentedControl
                  headerTopView:(UIView*)headerTopView {
   // If the vertical size class is compact, apply the wide layout. Otherwise,
   // apply the narrow layout.
-  if (IsCompactHeight(self)) {
+  bool isCompactHeight = IsCompactHeight(self);
+  _headerViewTopConstraint.constant =
+      GetHeaderViewTopConstraintConstant(isCompactHeight);
+  if (isCompactHeight) {
     [headerView addSubview:chromeLogo];
     [headerView addSubview:closeButton];
     [headerView addSubview:segmentedControl];
@@ -546,6 +563,7 @@ UIImageSymbolConfiguration* GetCloseButtonSymbolConfiguration() {
 // Resets the header view. Called when a layout change is needed.
 - (void)resetHeaderView:(UIView*)headerView
     headerViewHeightConstraint:(NSLayoutConstraint*)headerViewHeightConstraint
+       headerViewTopConstraint:(NSLayoutConstraint*)headerViewTopConstraint
                     chromeLogo:(UIImageView*)chromeLogo
                    closeButton:(UIButton*)closeButton
               segmentedControl:(UISegmentedControl*)segmentedControl
@@ -558,6 +576,7 @@ UIImageSymbolConfiguration* GetCloseButtonSymbolConfiguration() {
 
   [self setUpHeaderView:headerView
       headerViewHeightConstraint:headerViewHeightConstraint
+         headerViewTopConstraint:headerViewTopConstraint
                       chromeLogo:chromeLogo
                      closeButton:closeButton
                 segmentedControl:segmentedControl
@@ -595,6 +614,7 @@ UIImageSymbolConfiguration* GetCloseButtonSymbolConfiguration() {
 - (void)resetHeaderViewOnTraitChange {
   [self resetHeaderView:_headerView
       headerViewHeightConstraint:_headerViewHeightConstraint
+         headerViewTopConstraint:_headerViewTopConstraint
                       chromeLogo:_chromeLogo
                      closeButton:_closeButton
                 segmentedControl:_segmentedControl
