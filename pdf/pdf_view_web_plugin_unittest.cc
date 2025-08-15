@@ -3591,10 +3591,9 @@ TEST_F(PdfViewWebPluginAnnotationAgentContainerTest,
       .Times(2)
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment).Times(0);
-  EXPECT_CALL(*engine_ptr_, RemoveTextFragments);
+  // Every agent will eventually disconnect and trigger `RemoveTextFragments()`.
+  EXPECT_CALL(*engine_ptr_, RemoveTextFragments).Times(2);
   CreateAgent(blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
-  // When creating the second agent, the IPC to the first agent is disconnected.
-  // The disconnection will trigger a `RemoveTextFragments()`.
   CreateAgent(blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
 }
 
@@ -3611,7 +3610,7 @@ TEST_F(PdfViewWebPluginAnnotationAgentContainerTest, ConsecutiveQueries) {
   EXPECT_CALL(*engine_ptr_, FindAndHighlightTextFragments)
       .Times(2)
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*engine_ptr_, RemoveTextFragments);
+  EXPECT_CALL(*engine_ptr_, RemoveTextFragments).Times(2);
   {
     EXPECT_CALL(*engine_ptr_,
                 ScrollToFirstTextFragment(/*force_smooth_scroll=*/true));

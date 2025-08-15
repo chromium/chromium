@@ -1062,9 +1062,14 @@ bool PDFiumEngine::FindAndHighlightTextFragments(
   HighlightChangeInvalidator invalidator(this);
   PDFiumTextFragmentFinder text_fragment_finder(this);
   client_->OnNewTextFragmentsSearchStarted();
+  // Caches results.
   text_fragment_highlights_ =
       text_fragment_finder.FindTextFragments(text_fragments);
   return !text_fragment_highlights_.empty();
+}
+
+void PDFiumEngine::ScrollTextFragmentIntoView() {
+  ScrollToFirstTextFragment(/*force_smooth_scroll=*/true);
 }
 
 void PDFiumEngine::ScrollToFirstTextFragment(bool force_smooth_scroll) {

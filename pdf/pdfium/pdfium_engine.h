@@ -32,6 +32,7 @@
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/loader/document_loader.h"
+#include "pdf/pdf_annotation_agent.h"
 #include "pdf/pdf_caret.h"
 #include "pdf/pdf_caret_client.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
@@ -146,6 +147,7 @@ using AddSearchResultCallback = base::RepeatingCallback<void(PDFiumRange)>;
 // Many methods in this class are virtual to facilitate testing.
 class PDFiumEngine : public DocumentLoader::Client,
                      public IFSDK_PAUSE,
+                     public PdfAnnotationAgent::Container,
                      public PdfCaretClient {
  public:
   // Maximum number of parameters a nameddest view can contain.
@@ -503,6 +505,12 @@ class PDFiumEngine : public DocumentLoader::Client,
       const PageCharacterIndex& index) const override;
   void InvalidateRect(const gfx::Rect& rect) override;
 
+  // `PdfAnnotationAgent::Container`:
+  bool FindAndHighlightTextFragments(
+      base::span<const std::string> text_fragments) override;
+  void ScrollTextFragmentIntoView() override;
+  void RemoveTextFragments() override;
+
 #if defined(PDF_ENABLE_XFA)
   void UpdatePageCount();
 #endif  // defined(PDF_ENABLE_XFA)
@@ -559,20 +567,11 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Sets whether form highlight should be enabled or cleared.
   virtual void SetFormHighlight(bool enable_form);
 
-  // Attempts to find and highlight all the `text_fragments` in the PDF. Returns
-  // true if any of the fragments is found, and caches the results in
-  // `text_fragment_highlights_`.
-  virtual bool FindAndHighlightTextFragments(
-      base::span<const std::string> text_fragments);
-
   // Scrolls to and highlights the first entry in `text_fragment_highlights_`.
   // Only valid if `text_fragment_highlights_` is non-empty (gated by a CHECK).
   // `force_smooth_scroll` forces smooth scrolling regardless of the current
   // animation settings.
   virtual void ScrollToFirstTextFragment(bool force_smooth_scroll);
-
-  // Removes the text fragments and their highlights.
-  virtual void RemoveTextFragments();
 
   // Searches for a text fragment within the text of the PDF.
   void SearchForFragment(const std::u16string& term,

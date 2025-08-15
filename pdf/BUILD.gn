@@ -119,6 +119,8 @@ if (enable_pdf) {
       "paint_ready_rect.h",
       "parsed_params.cc",
       "parsed_params.h",
+      "pdf_annotation_agent.cc",
+      "pdf_annotation_agent.h",
       "pdf_caret.cc",
       "pdf_caret.h",
       "pdf_caret_client.h",
@@ -370,8 +372,6 @@ if (enable_pdf) {
     ]
 
     sources = [
-      "pdf_annotation_agent.cc",
-      "pdf_annotation_agent.h",
       "pdf_view_web_plugin.cc",
       "post_message_receiver.cc",
       "post_message_receiver.h",

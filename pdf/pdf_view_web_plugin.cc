@@ -619,6 +619,9 @@ void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
 }
 
 void PdfViewWebPlugin::Destroy() {
+  // Holds a pointer to `engine_`. So it must be destroyed before `engine_`.
+  annotation_agent_.reset();
+
   if (initialized_) {
     // Explicitly destroy the PDFiumEngine during destruction as it may call
     // back into this object.
@@ -2992,7 +2995,7 @@ void PdfViewWebPlugin::CreateAgent(
     blink::mojom::SelectorPtr selector,
     std::optional<int> search_range_start_node_id) {
   annotation_agent_ = std::make_unique<PdfAnnotationAgent>(
-      this, type, std::move(selector), std::move(host_remote),
+      engine_.get(), type, std::move(selector), std::move(host_remote),
       std::move(agent_receiver));
 }
 
@@ -3013,24 +3016,6 @@ void PdfViewWebPlugin::SendThumbnailForTesting(base::Value::Dict reply,
                                                int page_index,
                                                Thumbnail thumbnail) {
   SendThumbnail(std::move(reply), page_index, std::move(thumbnail));
-}
-
-bool PdfViewWebPlugin::FindAndHighlightTextFragments(
-    base::span<const std::string> text_fragments) {
-  return engine_ &&
-         engine_->FindAndHighlightTextFragments(std::move(text_fragments));
-}
-
-void PdfViewWebPlugin::ScrollTextFragmentIntoView() {
-  if (engine_) {
-    engine_->ScrollToFirstTextFragment(/*force_smooth_scroll=*/true);
-  }
-}
-
-void PdfViewWebPlugin::RemoveTextFragments() {
-  if (engine_) {
-    engine_->RemoveTextFragments();
-  }
 }
 
 void PdfViewWebPlugin::SendThumbnail(base::Value::Dict reply,
