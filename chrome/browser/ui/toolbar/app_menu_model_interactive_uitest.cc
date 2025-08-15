@@ -146,7 +146,9 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
+// TODO(crbug.com/438830170): Re-enable this test
+IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest,
+                       DISABLED_PerformanceNavigation) {
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
       PressButton(kToolbarAppMenuButtonElementId),
