@@ -685,32 +685,36 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         button.setVisibility(VISIBLE);
 
         updateCustomActionButtonVisuals(button, drawable, description);
-
         int buttonWidth = getDimensionPx(R.dimen.toolbar_button_width);
         button.setLayoutParams(new ViewGroup.LayoutParams(buttonWidth, LayoutParams.MATCH_PARENT));
+        int index = mCustomActionButtons.getChildCount() < 2 ? 0 : 1;
+        mButtonVisibilityRule.addButtonForCustomAction(
+                index == 0 ? ButtonId.CUSTOM_1 : ButtonId.CUSTOM_2, button, true, type);
+        if (index == 1) {
+            // The 2nd custom button disables optional button.
+            mButtonVisibilityRule.addButton(ButtonId.MTB, /* view= */ null, /* visible= */ false);
+        }
+        adjustCustomActionButtonPadding(index, button);
 
+        // Add the view at the beginning of the child list.
+        mCustomActionButtons.addView(button, 0);
+    }
+
+    private void adjustCustomActionButtonPadding(int index, ImageButton button) {
         // Set the padding to give 16dp spacing. |mCustomActionButtons| contains custom/optional
         // buttons. Optional button, though not visible, is counted in #getChildCount() as ViewStub.
         @Dimension int paddingStart;
         @Dimension int paddingEnd;
-        if (mCustomActionButtons.getChildCount() < 2) {
+        if (index == 0) {
             // 16:act1:8 - 8:menu:16
             paddingStart = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_16);
             paddingEnd = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_8);
-            mButtonVisibilityRule.addButtonForCustomAction(ButtonId.CUSTOM_1, button, true, type);
         } else {
             // 24:act2:0 - 16:act1:8 - 8:menu:16
             paddingStart = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_24);
             paddingEnd = 0;
-            mButtonVisibilityRule.addButtonForCustomAction(ButtonId.CUSTOM_2, button, true, type);
-
-            // The 2nd custom button disables optional button.
-            mButtonVisibilityRule.addButton(ButtonId.MTB, /* view= */ null, /* visible= */ false);
         }
         button.setPaddingRelative(paddingStart, /* top= */ 0, paddingEnd, /* bottom= */ 0);
-
-        // Add the view at the beginning of the child list.
-        mCustomActionButtons.addView(button, 0);
     }
 
     private @Dimension int getDimensionPx(@DimenRes int resId) {
@@ -720,7 +724,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     protected void updateCustomActionButton(int index, Drawable drawable, String description) {
         ImageButton button;
-
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             button =
                     (ImageButton)
@@ -734,6 +737,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
         assert button != null;
         updateCustomActionButtonVisuals(button, drawable, description);
+        adjustCustomActionButtonPadding(index, button);
     }
 
     /**
