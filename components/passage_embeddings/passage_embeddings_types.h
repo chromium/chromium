@@ -12,7 +12,6 @@
 
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
-#include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 
 namespace passage_embeddings {
 

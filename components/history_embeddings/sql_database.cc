@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
