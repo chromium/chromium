@@ -163,8 +163,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       *browser, *browser);
 
   // Initialize bookmark bar controller for all browser types.
-  bookmark_bar_controller_ = std::make_unique<BookmarkBarController>(
-      *browser, *browser->GetTabStripModel());
+  bookmark_bar_controller_ =
+      GetUserDataFactory().CreateInstance<BookmarkBarController>(
+          *browser, *browser, *browser->GetTabStripModel());
 
   // Avoid passing `browser` directly to features. Instead, pass the minimum
   // necessary state or controllers necessary.
