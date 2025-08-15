@@ -121,3 +121,11 @@ BASE_FEATURE(kPageContextAnchorTags,
 bool IsPageContextAnchorTagsEnabled() {
   return base::FeatureList::IsEnabled(kPageContextAnchorTags);
 }
+
+BASE_FEATURE(kGeminiForManagedAccounts,
+             "GeminiForManagedAccounts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiAvailableForManagedAccounts() {
+  return base::FeatureList::IsEnabled(kGeminiForManagedAccounts);
+}

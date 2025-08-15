@@ -85,4 +85,11 @@ BASE_DECLARE_FEATURE(kPageContextAnchorTags);
 // Returns true if the anchor tags are enabled in Page Context.
 bool IsPageContextAnchorTagsEnabled();
 
+// Feature flag controlling whether Gemini is available for managed accounts.
+BASE_DECLARE_FEATURE(kGeminiForManagedAccounts);
+
+// Returns true if Gemini is available for managed accounts. If true, can still
+// be disabled by an Enterprise policy.
+bool IsGeminiAvailableForManagedAccounts();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

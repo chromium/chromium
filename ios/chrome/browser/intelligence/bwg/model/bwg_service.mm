@@ -9,6 +9,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -38,6 +39,13 @@ void BwgService::Shutdown() {
 #pragma mark - Public
 
 bool BwgService::IsProfileEligibleForBwg() {
+  if (!IsGeminiAvailableForManagedAccounts()) {
+    if (auth_service_->HasPrimaryIdentityManaged(
+            signin::ConsentLevel::kSignin)) {
+      return false;
+    }
+  }
+
   AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   bool tokens_ok =
