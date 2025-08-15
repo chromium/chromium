@@ -1984,7 +1984,7 @@ deps = {
   },
 
   'src/third_party/readability/src':
-    Var('chromium_git') + '/external/github.com/mozilla/readability.git' + '@' + '04fd32f72b448c12b02ba6c40928b67e510bac49',
+    Var('chromium_git') + '/external/github.com/mozilla/readability.git' + '@' + '1f0ec42686c89a4a1c71789849f7ffde349ab197',
 
   'src/third_party/content_analysis_sdk/src':
     Var('chromium_git') + '/external/github.com/chromium/content_analysis_sdk.git' + '@' + '9a408736204513e0e95dd2ab3c08de0d95963efc',
