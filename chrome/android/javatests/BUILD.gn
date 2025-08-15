@@ -232,6 +232,7 @@ android_library("chrome_test_java_helper") {
     "//chrome/test/android:chrome_java_test_pagecontroller",
     "//chrome/test/android:chrome_java_transit",
     "//chrome/test/android/test_trusted_web_activity:test_trusted_web_activity_java",
+    "//components/android_autofill/browser/test_support:java",
     "//components/autofill/android:autofill_features_java",
     "//components/autofill/android:autofill_java",
     "//components/autofill/android:payments_interfaces_java",
@@ -1253,6 +1254,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
 
   sources = [
     "src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateTest.java",
+    "src/org/chromium/chrome/browser/tab/PageContentProtoViewStructureBuilderTest.java",
     "src/org/chromium/chrome/browser/tab/RepostFormWarningTest.java",
     "src/org/chromium/chrome/browser/tab/RequestDesktopSiteTest.java",
     "src/org/chromium/chrome/browser/tab/SadTabTest.java",

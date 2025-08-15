@@ -85,6 +85,7 @@ public class ContentView extends FrameLayout
 
     // TODO(b/422918648): Remove this.
     @Nullable private MotionEvent mPendingTwoFingerSwipeDownEvent;
+    @Nullable private VirtualStructureProvider mVirtualStructureProvider;
 
     /**
      * The desired size of this view in {@link MeasureSpec}. Set by the host when it should be
@@ -200,6 +201,10 @@ public class ContentView extends FrameLayout
 
     public void setStylusWritingIconSupplier(Supplier<PointerIcon> iconSupplier) {
         mStylusWritingIconSupplier = iconSupplier;
+    }
+
+    public void setVirtualStructureProvider(VirtualStructureProvider virtualStructureProvider) {
+        mVirtualStructureProvider = virtualStructureProvider;
     }
 
     @Override
@@ -644,6 +649,12 @@ public class ContentView extends FrameLayout
 
     @Override
     public void onProvideVirtualStructure(final ViewStructure structure) {
+        if (hasValidWebContents() && mVirtualStructureProvider != null) {
+            mVirtualStructureProvider.provideVirtualStructureForWebContents(
+                    structure, mWebContents);
+            return;
+        }
+
         WebContentsAccessibility wcax = getWebContentsAccessibility();
         if (wcax != null) wcax.onProvideVirtualStructure(structure, false);
     }

@@ -226,6 +226,7 @@ if (is_android) {
       "//chrome/test/android:chrome_java_unit_test_support",
       "//components/android_autofill/browser:features_java",
       "//components/android_autofill/browser:java",
+      "//components/android_autofill/browser/test_support:java",
       "//components/autofill/android:autofill_features_java",
       "//components/autofill/android:autofill_java_resources",
       "//components/autofill/android:main_autofill_java",
@@ -1032,6 +1033,7 @@ if (is_android) {
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.tab") {
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/tab/TabFaviconTest.java",
+      "src/org/chromium/chrome/browser/tab/PageContentProtoViewStructureBuilderUnitTest.java",
       "src/org/chromium/chrome/browser/tab/TabArchiveSettingsTest.java",
       "src/org/chromium/chrome/browser/tab/TabArchiverUnitTest.java",
       "src/org/chromium/chrome/browser/tab/TabAttributesTest.java",

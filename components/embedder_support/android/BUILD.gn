@@ -155,6 +155,7 @@ android_library("content_view_java") {
   ]
   sources = [
     "java/src/org/chromium/components/embedder_support/view/ContentView.java",
+    "java/src/org/chromium/components/embedder_support/view/VirtualStructureProvider.java",
   ]
 }
 

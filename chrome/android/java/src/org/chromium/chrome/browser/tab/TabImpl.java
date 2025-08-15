@@ -1960,6 +1960,10 @@ class TabImpl implements Tab {
             ContentView cv = ContentView.createContentView(mThemedApplicationContext, webContents);
             cv.setContentDescription(
                     mThemedApplicationContext.getString(R.string.accessibility_content_view));
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.ANNOTATED_PAGE_CONTENTS_VIRTUAL_STRUCTURE)) {
+                cv.setVirtualStructureProvider(new PageContentProtoViewStructureBuilder());
+            }
             mContentView = cv;
             webContents.setDelegates(
                     PRODUCT_VERSION,
