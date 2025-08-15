@@ -9,15 +9,15 @@
 
 #include "build/build_config.h"
 
-static_assert(!BUILDFLAG(IS_ANDROID));
-
 namespace search_engines_data {
 
+#if !BUILDFLAG(IS_ANDROID)
 // Returns the engine marketing snippet string resource id or -1 if the snippet
 // was not found.
 // The function definition is generated in `resources_to_move_out/built_in_marketing_snippets.cc`.
 // `engine_keyword` is the search engine keyword.
 int GetMarketingSnippetResourceId(const std::u16string& engine_keyword);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace search_engines_data
 
