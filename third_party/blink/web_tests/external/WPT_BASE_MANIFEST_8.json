@@ -177900,13 +177900,39 @@
         {}
        ]
       ],
-      "line-clamp-with-text-overflow-string.html": [
-       "ebe6f798d90c164873a3e8be40aab71ce1d5c04b",
+      "line-clamp-with-text-overflow-string-001.html": [
+       "3f6f544063283fd88a5ebdb9c5ef9fce6b9a8a5a",
        [
         null,
         [
          [
           "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-text-overflow-string-002.html": [
+       "b6f25ff5bdca3833850b5fa983cf495d00e63f81",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-text-overflow-string-003.html": [
+       "04d45332d105296df5168c1d6ab23633544cbea8",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-text-overflow-string-003-ref.html",
           "=="
          ]
         ],
@@ -186407,6 +186433,19 @@
        [
         [
          "/css/css-pseudo/first-line-line-height-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "first-line-line-height-003.html": [
+      "7ae7fe20168bec6032f7e2b101367d8d301361df",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/first-line-line-height-003-ref.html",
          "=="
         ]
        ],
@@ -326717,7 +326756,7 @@
       []
      ],
      "util.js": [
-      "8f9efad5a22c6251bfe0d00ed6730354751f6954",
+      "085fdc8eaede408f23e12b4f5a1776cdc9babc70",
       []
      ]
     },
@@ -364592,6 +364631,10 @@
         "12b8cdc441a64fb4e1a6249ee8aea640c66b82b5",
         []
        ],
+       "line-clamp-with-text-overflow-string-003-ref.html": [
+        "02ef51cfeb3332b0ffa77e51d0b00e37c24a5a66",
+        []
+       ],
        "webkit-line-clamp-001-ref.html": [
         "ef28e01dac0223c9a2768d3fd1415fb9ef2f1c6b",
         []
@@ -367432,6 +367475,10 @@
      ],
      "first-line-line-height-002-ref.html": [
       "904d5dad1823840780cc4ea881d7c4bf2b2afbb8",
+      []
+     ],
+     "first-line-line-height-003-ref.html": [
+      "6935d3d97c1cdf1818c722cbf519b656f6cf9765",
       []
      ],
      "first-line-on-ancestor-block-ref.html": [
@@ -419586,7 +419633,7 @@
      []
     ],
     "html.idl": [
-     "a7a03c97ad07a65cb672ba280864882d1de0fb99",
+     "acb1b57ffe866059960c51f0cd9346a377cfb2f2",
      []
     ],
     "idle-detection.idl": [
@@ -476663,6 +476710,62 @@
          [
           "script",
           "../resources/util.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ]
+    },
+    "proofreader": {
+     "proofreader-abort.tentative.https.window.js": [
+      "8d7f1456fcf290da7b8a6b8884f34fed7d853a43",
+      [
+       "ai/proofreader/proofreader-abort.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Proofreader Abort"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "proofreader-proofread.tentative.https.window.js": [
+      "95cd38b13a506c8e2d1b35cd126c994d5b2c82e9",
+      [
+       "ai/proofreader/proofreader-proofread.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Proofreader Proofread"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
          ]
         ],
         "timeout": "long"
@@ -548836,7 +548939,7 @@
      ]
     ],
     "non-fully-active.https.html": [
-     "19cbd94744f55975845fe526af0960b623cf445d",
+     "61f40d1b0d3144b2fd470e4b0e297f7a17f02031",
      [
       null,
       {

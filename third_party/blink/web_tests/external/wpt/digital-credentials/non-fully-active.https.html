@@ -76,13 +76,12 @@
     await iframe.focus();
     const p = promise_rejects_dom(
       t,
-      "InvalidStateError",
+      "AbortError",
       DOMExceptionCtor,
       iframe.contentWindow.navigator.credentials.get(request),
       "Expect promise to reject if the document becomes non-fully active"
     );
     iframe.remove();
-    assert_equals(stolenNavigator.credentials, null, "CredentialsContainer should be null after iframe is removed");
     await p;
   }, "Promise rejects with DOMException when the document becomes non-fully active");
 </script>
