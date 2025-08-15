@@ -156,11 +156,24 @@ void MultiContentsView::CloseSplitView() {
   if (!IsInSplitView()) {
     return;
   }
-  if (active_index_ == 1) {
+
+  if (active_index_ != 0) {
+    ContentsContainerView* start_view = contents_container_views_[0];
+    ContentsContainerView* active_view =
+        contents_container_views_[active_index_];
+
     // Move the active WebContents so that the first ContentsContainerView in
     // contents_container_views_ can always be visible.
     std::iter_swap(contents_container_views_.begin(),
                    contents_container_views_.begin() + active_index_);
+
+    // Reorder the child views so that focus order will be consistent with
+    // contents_container_views_.
+    size_t start_view_child_index = GetIndexOf(start_view).value();
+    size_t active_view_child_index = GetIndexOf(active_view).value();
+    ReorderChildView(start_view, active_view_child_index);
+    ReorderChildView(active_view, start_view_child_index);
+
     active_index_ = 0;
   }
   contents_container_views_[1]->GetContentsView()->SetWebContents(nullptr);

@@ -8,8 +8,13 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -165,4 +170,154 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, TabChangesAvoidSpuriousFocus) {
   // Everything that was focused on must be a WebView.
   EXPECT_FALSE(focus_change_recorder.GetHasFocusedOnNonWebView());
   EXPECT_EQ(focus_change_recorder.GetFocusChangeCount(), 2);
+}
+
+class BrowserViewFocusSideBySideTest : public BrowserViewFocusTest {
+ public:
+  BrowserViewFocusSideBySideTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
+  }
+
+  void TestSplitTabFocusOrder() {
+    gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
+    views::FocusManager* focus_manager = widget->GetFocusManager();
+
+    std::vector<ContentsContainerView*> contents_container_views =
+        browser()->GetBrowserView().GetContentsContainerViews();
+    ASSERT_EQ(2, contents_container_views.size());
+
+    // Start from the view prior to the left contents web view in the focus
+    // order. This should be somewhere outside of the contents container, but
+    // where it is depends on the platform.
+    focus_manager->SetFocusedView(
+        contents_container_views[0]->GetContentsView());
+    focus_manager->AdvanceFocus(true);
+    views::View* start_view = focus_manager->GetFocusedView();
+    ASSERT_FALSE(
+        browser()->GetBrowserView().contents_container()->Contains(start_view));
+
+    // Start advancing focus forwards.
+    focus_manager->AdvanceFocus(false);
+    EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+    EXPECT_EQ(focus_manager->GetFocusedView(),
+              contents_container_views[0]->GetContentsView());
+
+    focus_manager->AdvanceFocus(false);
+    EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+    EXPECT_TRUE(contents_container_views[0]->GetMiniToolbar()->Contains(
+        focus_manager->GetFocusedView()));
+
+    focus_manager->AdvanceFocus(false);
+    EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+    EXPECT_TRUE(browser()
+                    ->GetBrowserView()
+                    .multi_contents_view()
+                    ->resize_area_for_testing()
+                    ->Contains(focus_manager->GetFocusedView()));
+
+    focus_manager->AdvanceFocus(false);
+    EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+    EXPECT_EQ(focus_manager->GetFocusedView(),
+              contents_container_views[1]->GetContentsView());
+
+    focus_manager->AdvanceFocus(false);
+    EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+    EXPECT_TRUE(contents_container_views[1]->GetMiniToolbar()->Contains(
+        focus_manager->GetFocusedView()));
+
+    // Focus has advanced past the right tab's mini toolbar button. This should
+    // be somewhere outside of the contents container, but where it is depends
+    // on the platform.
+    focus_manager->AdvanceFocus(false);
+    EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+    ASSERT_FALSE(browser()->GetBrowserView().contents_container()->Contains(
+        focus_manager->GetFocusedView()));
+
+    // Start advancing focus backwards.
+    focus_manager->AdvanceFocus(true);
+    EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+    EXPECT_TRUE(contents_container_views[1]->GetMiniToolbar()->Contains(
+        focus_manager->GetFocusedView()));
+
+    focus_manager->AdvanceFocus(true);
+    EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+    EXPECT_EQ(focus_manager->GetFocusedView(),
+              contents_container_views[1]->GetContentsView());
+
+    focus_manager->AdvanceFocus(true);
+    EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+    EXPECT_TRUE(browser()
+                    ->GetBrowserView()
+                    .multi_contents_view()
+                    ->resize_area_for_testing()
+                    ->Contains(focus_manager->GetFocusedView()));
+
+    focus_manager->AdvanceFocus(true);
+    // The right tab is still focused here, because we entered the left tab's
+    // mini toolbar in reverse, so we have not yet focused the left contents web
+    // view.
+    EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+    EXPECT_TRUE(contents_container_views[0]->GetMiniToolbar()->Contains(
+        focus_manager->GetFocusedView()));
+
+    focus_manager->AdvanceFocus(true);
+    EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+    EXPECT_EQ(focus_manager->GetFocusedView(),
+              contents_container_views[0]->GetContentsView());
+
+    focus_manager->AdvanceFocus(true);
+    EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+    EXPECT_EQ(start_view, focus_manager->GetFocusedView());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserViewFocusSideBySideTest, FocusOrder) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Create a split tab.
+  GURL url = GURL(url::kAboutBlankURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(AddTabAtIndex(1, url, ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->AddToNewSplit(
+      {0}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  TestSplitTabFocusOrder();
+}
+
+// Tests that when we activate and then close the right tab in a split, focus
+// order is preserved. Previously there was a bug where this would cause the
+// left/right containers' order in the view hierarchy to be reversed.
+IN_PROC_BROWSER_TEST_F(BrowserViewFocusSideBySideTest,
+                       FocusOrderAfterClosingRightTab) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Create a split tab.
+  GURL url = GURL(url::kAboutBlankURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(AddTabAtIndex(1, url, ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->AddToNewSplit(
+      {0}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  // Close the right tab, then create another split.
+  browser()->tab_strip_model()->CloseWebContentsAt(1,
+                                                   TabCloseTypes::CLOSE_NONE);
+  ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(AddTabAtIndex(1, url, ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->AddToNewSplit(
+      {0}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  TestSplitTabFocusOrder();
 }
