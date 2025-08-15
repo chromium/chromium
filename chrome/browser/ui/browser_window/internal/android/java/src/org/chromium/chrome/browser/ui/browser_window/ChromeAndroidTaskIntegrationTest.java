@@ -23,6 +23,8 @@ import androidx.test.filters.MediumTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -140,6 +142,43 @@ public class ChromeAndroidTaskIntegrationTest {
 
         // Assert.
         verify(mockFeature, times(1)).onTaskBoundsChanged(any());
+
+        // Cleanup.
+        ntpStation.getActivity().finish();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
+    public void onTopResumedActivityChangedWithNative_invokesOnTaskFocusChangedForFeature() {
+        // Arrange:
+        // Launch ChromeTabbedActivity (the first window);
+        // Find its ChromeAndroidTask;
+        // Add a mock ChromeAndroidTaskFeature.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        int firstTaskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
+        var firstChromeAndroidTask = getChromeAndroidTask(firstTaskId);
+        assertNotNull(firstChromeAndroidTask);
+        var mockFeature = mock(ChromeAndroidTaskFeature.class);
+        firstChromeAndroidTask.addFeature(mockFeature);
+
+        // Act:
+        // Open a new window. The first window will lose focus.
+        // Then reactivate the first window.
+        RegularNewTabPageStation ntpStation =
+                webPageStation.openRegularTabAppMenu().openNewWindow();
+        int secondTaskId = ntpStation.getActivity().getTaskId();
+        var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
+        assertNotNull(secondChromeAndroidTask);
+        CriteriaHelper.pollUiThread(secondChromeAndroidTask::isActive);
+
+        firstChromeAndroidTask.activate();
+        CriteriaHelper.pollUiThread(firstChromeAndroidTask::isActive);
+
+        // Assert.
+        InOrder inOrder = Mockito.inOrder(mockFeature);
+        inOrder.verify(mockFeature).onTaskFocusChanged(/* hasFocus= */ false);
+        inOrder.verify(mockFeature).onTaskFocusChanged(/* hasFocus= */ true);
 
         // Cleanup.
         ntpStation.getActivity().finish();

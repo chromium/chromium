@@ -27,6 +27,7 @@ import android.view.WindowMetrics;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -466,5 +467,22 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         assertEquals(elapsedRealTime1, chromeAndroidTask.getLastActivatedTimeMillis());
+    }
+
+    @Test
+    public void onTopResumedActivityChanged_invokesOnTaskFocusChangedForFeature() {
+        // Arrange.
+        var chromeAndroidTask = createChromeAndroidTask();
+        var mockFeature = mock(ChromeAndroidTaskFeature.class);
+        chromeAndroidTask.addFeature(mockFeature);
+
+        // Act.
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ true);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ false);
+
+        // Assert.
+        InOrder inOrder = Mockito.inOrder(mockFeature);
+        inOrder.verify(mockFeature).onTaskFocusChanged(true);
+        inOrder.verify(mockFeature).onTaskFocusChanged(false);
     }
 }

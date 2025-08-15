@@ -39,4 +39,11 @@ public interface ChromeAndroidTaskFeature {
      * @param newBounds The new Task bounds.
      */
     void onTaskBoundsChanged(Rect newBounds);
+
+    /**
+     * Called by a {@link ChromeAndroidTask} when the Task (window) has gained or lost focus.
+     *
+     * @param hasFocus True if the Task has focus.
+     */
+    void onTaskFocusChanged(boolean hasFocus);
 }

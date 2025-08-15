@@ -52,6 +52,11 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
         }
     }
 
+    @Override
+    public void onTaskFocusChanged(boolean hasFocus) {
+        // TODO(crbug.com/424857039): relay the "focus changed" event to extension internals.
+    }
+
     long getNativePtrForTesting() {
         return mNativeExtensionWindowControllerBridge;
     }

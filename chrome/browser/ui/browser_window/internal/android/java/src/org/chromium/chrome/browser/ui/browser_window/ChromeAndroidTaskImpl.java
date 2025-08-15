@@ -257,6 +257,12 @@ final class ChromeAndroidTaskImpl
         if (isTopResumedActivity) {
             mLastActivatedTimeMillis.set(TimeUtils.elapsedRealtimeMillis());
         }
+
+        synchronized (mFeaturesLock) {
+            for (var feature : mFeatures) {
+                feature.onTaskFocusChanged(isTopResumedActivity);
+            }
+        }
     }
 
     /**
