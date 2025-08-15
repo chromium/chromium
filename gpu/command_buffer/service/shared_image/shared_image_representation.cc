@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -837,6 +838,12 @@ void WebNNTensorRepresentation::ConsumeWebNNTensor(
   NOTREACHED();
 }
 #endif
+
+#if BUILDFLAG(IS_MAC)
+IOSurfaceRef WebNNTensorRepresentation::GetIOSurface() const {
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 ///////////////////////////////////////////////////////////////////////////////
 // OverlayImageRepresentation

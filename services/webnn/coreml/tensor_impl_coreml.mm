@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/coreml/buffer_content_coreml.h"
 #include "services/webnn/coreml/context_impl_coreml.h"
@@ -166,6 +167,73 @@ TensorImplCoreml::Create(
   } else {
     multi_array = CreateMultiArrayFromDescriptor(tensor_info->descriptor);
   }
+  if (!multi_array) {
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to allocate tensor."));
+  }
+
+  auto buffer_content = std::make_unique<BufferContent>(std::move(multi_array));
+  auto buffer_state =
+      base::MakeRefCounted<QueueableResourceState<BufferContent>>(
+          std::move(buffer_content));
+  return base::MakeRefCounted<TensorImplCoreml>(
+      std::move(receiver), std::move(context), std::move(tensor_info),
+      std::move(buffer_state), base::PassKey<TensorImplCoreml>());
+}
+
+// static
+base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+TensorImplCoreml::Create(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+    base::WeakPtr<WebNNContextImpl> context,
+    mojom::TensorInfoPtr tensor_info,
+    std::unique_ptr<gpu::WebNNTensorRepresentation> representation) {
+  if (tensor_info->descriptor.data_type() != OperandDataType::kFloat16) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Unsupported data type for WebGPU interop."));
+  }
+  IOSurfaceRef io_surface = representation->GetIOSurface();
+
+  if (IOSurfaceGetBytesPerElement(io_surface) != 2) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Invalid IOSurface: bytes per element is not 2."));
+  }
+  if (IOSurfaceGetPixelFormat(io_surface) !=
+      kCVPixelFormatType_OneComponent16Half) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError,
+        "Invalid IOSurface: pixel format is not OneComponent16Half."));
+  }
+  size_t height = 1ul;
+  const std::vector<uint32_t>& shape = tensor_info->descriptor.shape();
+  if (!shape.empty()) {
+    height = shape.back();
+  }
+  size_t width = tensor_info->descriptor.NumberOfElements() / height;
+  if (height != IOSurfaceGetHeight(io_surface) ||
+      width != IOSurfaceGetWidth(io_surface)) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError,
+        "Invalid IOSurface: width and height doesn't match with tensor."));
+  }
+
+  CVPixelBufferRef pixel_buffer = nullptr;
+  CVReturn pixel_buffer_result = CVPixelBufferCreateWithIOSurface(
+      kCFAllocatorDefault, io_surface,
+      /*pixelBufferAttributes=*/nil, &pixel_buffer);
+  if (pixel_buffer_result != kCVReturnSuccess) {
+    LOG(ERROR) << "[WebNN] Failed to create pixel buffer from IOSurface: "
+               << pixel_buffer_result;
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create pixel buffer from IOSurface."));
+  }
+
+  MLMultiArray* multi_array =
+      [[MLMultiArray alloc] initWithPixelBuffer:pixel_buffer
+                                          shape:ShapeToNSArray(shape)];
   if (!multi_array) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to allocate tensor."));

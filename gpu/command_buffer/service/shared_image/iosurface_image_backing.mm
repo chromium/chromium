@@ -18,6 +18,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_nsobject.h"
 #include "base/memory/scoped_policy.h"
+#include "base/notimplemented.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -243,6 +244,28 @@ class BackpressureMetalSharedEventImpl final
 };
 
 }  // namespace
+
+WebNNIOSurfaceTensorRepresentation::WebNNIOSurfaceTensorRepresentation(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker)
+    : WebNNTensorRepresentation(manager, backing, tracker) {}
+
+WebNNIOSurfaceTensorRepresentation::~WebNNIOSurfaceTensorRepresentation() =
+    default;
+
+IOSurfaceRef WebNNIOSurfaceTensorRepresentation::GetIOSurface() const {
+  return static_cast<IOSurfaceImageBacking*>(backing())->GetIOSurface();
+}
+
+bool WebNNIOSurfaceTensorRepresentation::BeginAccess() {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void WebNNIOSurfaceTensorRepresentation::EndAccess() {
+  NOTIMPLEMENTED();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // IOSurfaceBackingEGLState
@@ -1416,6 +1439,10 @@ void IOSurfaceImageBacking::ClearEGLDisplaysWithPendingCommands(
   }
 }
 
+IOSurfaceRef IOSurfaceImageBacking::GetIOSurface() {
+  return io_surface_.get();
+}
+
 std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
@@ -1660,6 +1687,14 @@ void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 
 gfx::GpuMemoryBufferHandle IOSurfaceImageBacking::GetGpuMemoryBufferHandle() {
   return gfx::GpuMemoryBufferHandle(io_surface_);
+}
+
+std::unique_ptr<WebNNTensorRepresentation>
+IOSurfaceImageBacking::ProduceWebNNTensor(SharedImageManager* manager,
+                                          MemoryTypeTracker* tracker) {
+  CHECK(usage() & SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR);
+  return std::make_unique<WebNNIOSurfaceTensorRepresentation>(manager, this,
+                                                              tracker);
 }
 
 bool IOSurfaceImageBacking::BeginAccess(bool readonly) {

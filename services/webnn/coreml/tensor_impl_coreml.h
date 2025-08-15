@@ -13,6 +13,10 @@
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_tensor_impl.h"
 
+namespace gpu {
+class WebNNTensorRepresentation;
+}  // namespace gpu
+
 namespace webnn {
 
 class WebNNContextImpl;
@@ -28,6 +32,12 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info);
+
+  static base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr> Create(
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+      base::WeakPtr<WebNNContextImpl> context,
+      mojom::TensorInfoPtr tensor_info,
+      std::unique_ptr<gpu::WebNNTensorRepresentation> representation);
 
   TensorImplCoreml(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,

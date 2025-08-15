@@ -7,6 +7,7 @@
 #import <CoreML/CoreML.h>
 
 #include "base/sequence_checker.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/coreml/graph_impl_coreml.h"
 #include "services/webnn/coreml/tensor_impl_coreml.h"
@@ -76,9 +77,23 @@ ContextImplCoreml::CreateTensorFromMailboxImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
     gpu::Mailbox mailbox) {
-  return base::unexpected(
-      mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                        "WebGPU Interop is not supported."));
+  gpu::SharedImageManager* shared_image_manager =
+      context_provider()->shared_image_manager();
+  CHECK(shared_image_manager);
+
+  // TODO(crbug.com/345352987): give WebNN its own memory source and tracker.
+  std::unique_ptr<gpu::WebNNTensorRepresentation> representation =
+      shared_image_manager->ProduceWebNNTensor(
+          mailbox,
+          context_provider()->shared_context_state()->memory_type_tracker());
+  if (!representation) {
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to create tensor."));
+  }
+
+  return TensorImplCoreml::Create(std::move(receiver), AsWeakPtr(),
+                                  std::move(tensor_info),
+                                  std::move(representation));
 }
 
 }  // namespace webnn::coreml

@@ -46,6 +46,8 @@ uint32_t SharedImageFormatToIOSurfacePixelFormat(viz::SharedImageFormat format,
                                                  bool override_rgba_to_bgra) {
   if (format == viz::SinglePlaneFormat::kR_8) {
     return 'L008';
+  } else if (format == viz::SinglePlaneFormat::kR_F16) {
+    return 'L00h';
   } else if (format == viz::SinglePlaneFormat::kRG_88) {
     return '2C08';
   } else if (format == viz::SinglePlaneFormat::kR_16) {

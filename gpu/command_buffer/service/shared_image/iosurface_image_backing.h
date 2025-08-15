@@ -27,6 +27,21 @@ class ScopedEGLSurfaceIOSurface;
 }  // namespace gl
 
 namespace gpu {
+class WebNNTensorRepresentation;
+
+// Representation of a IOSurfaceImageBacking as a tensor.
+class WebNNIOSurfaceTensorRepresentation : public WebNNTensorRepresentation {
+ public:
+  WebNNIOSurfaceTensorRepresentation(SharedImageManager* manager,
+                                     SharedImageBacking* backing,
+                                     MemoryTypeTracker* tracker);
+  ~WebNNIOSurfaceTensorRepresentation() override;
+
+ private:
+  IOSurfaceRef GetIOSurface() const override;
+  bool BeginAccess() override;
+  void EndAccess() override;
+};
 
 // The state associated with an EGL texture representation of an IOSurface.
 // This is used by the representations GLTextureIRepresentation and
@@ -158,6 +173,8 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   void WaitForCommandsToBeScheduled(id<MTLDevice> waiting_device = nil)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  IOSurfaceRef GetIOSurface();
+
  private:
   class GLTextureIRepresentation;
   class DawnRepresentation;
@@ -202,6 +219,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   bool IsPurgeable() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
+  std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
 
   // IOSurfaceBackingEGLState::Client:
   bool IOSurfaceBackingEGLStateBeginAccess(IOSurfaceBackingEGLState* egl_state,
