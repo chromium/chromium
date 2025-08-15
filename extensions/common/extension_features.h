@@ -275,6 +275,18 @@ BASE_DECLARE_FEATURE(kAvoidCloneArgsOnExtensionFunctionDispatch);
 // channel would've already been closed by the first valid response.
 BASE_DECLARE_FEATURE(kOneTimeMessageUnserializableResponseClosesChannel);
 
+// Addresses content verification race conditions during extension updates. When
+// an extension updates, a content verification job for a previous version can
+// sometimes run *after* the new version has been loaded. This can lead to two
+// issues:
+//   1) the old job might be given the hashes for the new version, or
+//   2) it might unnecessarily re-create hashes for the old version.
+//
+// When this feature is enabled, the verification job will strictly use its
+// original extension version for all hash lookups and creations, preventing
+// these inconsistencies.
+BASE_DECLARE_FEATURE(kContentVerifyJobUseJobVersionForHashing);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

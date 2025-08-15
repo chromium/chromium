@@ -90,7 +90,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // as early as possible.
   // The `failure_callback` will be called at most once if there was a failure.
   void Start(ContentVerifier* verifier,
-             const base::Version& extension_version,
+             const base::Version& current_extension_version,
              int manifest_version,
              FailureCallback failure_callback);
 
@@ -106,6 +106,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   void DoneReading();
 
   const ExtensionId& extension_id() const { return extension_id_; }
+  const base::Version& extension_version() const { return extension_version_; }
   const base::FilePath& relative_path() const { return relative_path_; }
 
   class TestObserver : public base::RefCountedThreadSafe<TestObserver> {

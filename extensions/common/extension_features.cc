@@ -241,4 +241,8 @@ BASE_FEATURE(kOneTimeMessageUnserializableResponseClosesChannel,
              "OneTimeMessageUnserializableResponseClosesChannel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContentVerifyJobUseJobVersionForHashing,
+             "ContentVerifyJobUseJobVersionForHashing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

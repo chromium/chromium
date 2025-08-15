@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -31,6 +32,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/file_util.h"
@@ -880,7 +882,7 @@ void ContentVerifier::OnExtensionDataReady(const ExtensionId& extension_id) {
   }
 }
 
-bool ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
+void ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
   TRACE_EVENT("extensions.content_verifier.debug", "ContentVerifier::StartJob",
               "job_extension_id", job->extension_id());
   const ContentVerifierIOData::ExtensionData* data =
@@ -888,7 +890,7 @@ bool ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
   // The absence of |data| means that we don't have to verify the extension
   // resource.
   if (!data) {
-    return false;
+    return;
   }
 
   TRACE_EVENT_INSTANT("extensions.content_verifier.debug",
@@ -899,7 +901,7 @@ bool ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
   VerifiedFileType verified_file_type =
       VerifiedFileTypeHelper(*data).GetVerifiedFileType(job->relative_path());
   if (verified_file_type == VerifiedFileType::kNone) {
-    return false;  // Not a file to be verified.
+    return;  // Not a file to be verified.
   }
 
   std::vector<VerifiedFileType> file_types({verified_file_type});
@@ -907,8 +909,19 @@ bool ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
       base::BindOnce(&ContentVerifier::VerifyFailed, this, job->extension_id(),
                      file_types, data->manifest_version);
 
-  job->Start(this, data->version, data->manifest_version, std::move(callback));
-  return true;
+  const base::Version& current_extension_version = data->version;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kContentVerifyJobUseJobVersionForHashing) &&
+      current_extension_version != job->extension_version()) {
+    // This verify job must've started after a newer version of the extension
+    // has been loaded so let's not start the job since it'll try to check for a
+    // non-existent `ContentHash` and/or create a `ContentHash` for an unloaded
+    // extension version.
+    return;
+  }
+
+  job->Start(this, current_extension_version, data->manifest_version,
+             std::move(callback));
 }
 
 void ContentVerifier::OnFetchComplete(

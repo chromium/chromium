@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -25,6 +26,7 @@
 #include "extensions/browser/content_verifier/content_hash.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 
 namespace extensions {
@@ -164,20 +166,33 @@ ContentVerifyJob::ContentVerifyJob(const ExtensionId& extension_id,
 ContentVerifyJob::~ContentVerifyJob() = default;
 
 void ContentVerifyJob::Start(ContentVerifier* verifier,
-                             const base::Version& extension_version,
+                             const base::Version& current_extension_version,
                              int manifest_version,
                              FailureCallback failure_callback) {
   TRACE_EVENT("extensions.content_verifier.debug", "ContentVerifyJob::Start",
-              "extension_version", extension_version.GetString(), "job_root",
+              "job_extension_version", extension_version_.GetString(),
+              "current_extension_version",
+              current_extension_version.GetString(), "job_root",
               extension_root_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kContentVerifyJobUseJobVersionForHashing) &&
+      current_extension_version != extension_version_) {
+    // The version should have been checked in ContentVerifier::StartJob(), so
+    // we should never reach here.
+    NOTREACHED() << "Content verification job was started for an extension "
+                    "version other than the currently loaded extension. "
+                    "Hashing errors could occur if the job continued.";
+  }
+
   base::AutoLock auto_lock(lock_);
   manifest_version_ = manifest_version;
   failure_callback_ = std::move(failure_callback);
 
   // The content verification hashes are most likely already cached.
   auto content_hash = verifier->GetCachedContentHash(
-      extension_id_, extension_version,
+      extension_id_, extension_version_,
       /*force_missing_computed_hashes_creation=*/true);
   if (content_hash) {
     StartWithContentHash(std::move(content_hash));
@@ -185,7 +200,7 @@ void ContentVerifyJob::Start(ContentVerifier* verifier,
   }
 
   verifier->CreateContentHash(
-      extension_id_, extension_root_, extension_version,
+      extension_id_, extension_root_, extension_version_,
       /*force_missing_computed_hashes_creation=*/true,
       base::BindOnce(&ContentVerifyJob::DidCreateContentHashOnIO, this));
 }
@@ -207,6 +222,22 @@ void ContentVerifyJob::StartWithContentHash(
               "ContentVerifyJob::StartWithContentHash", "job_root",
               extension_root_, "hash_root", content_hash->extension_root());
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kContentVerifyJobUseJobVersionForHashing) &&
+      content_hash->extension_version() != extension_version_) {
+    // TODO(crbug.com/416484593): Remove crash keys once we're confident the
+    // issue is fixed.
+    debug::ScopedContentVerifyJobCrashKey crash_keys(
+        content_hash->extension_root(), extension_root_,
+        content_hash->extension_id(), extension_id_,
+        content_hash->extension_version(), extension_version_);
+    // The version should have been checked in ContentVerifierJob::Start(), so
+    // we should never reach here.
+    NOTREACHED() << "Content verification job was started with a hash for a "
+                    "different extension version. Hashing errors could occur "
+                    "if the job continued.";
+  }
 
   // If the hash and the verify jobs' roots don't match then the hash comparison
   // done later will match against the wrong files.
