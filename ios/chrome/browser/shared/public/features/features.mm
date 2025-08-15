@@ -1234,7 +1234,7 @@ bool IsBestOfAppLensAnimatedPromoEnabled() {
 
 BASE_FEATURE(kFeedbackIncludeGWSVariations,
              "FeedbackIncludeGWSVariations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsFeedbackIncludeGWSVariationsEnabled() {
   return base::FeatureList::IsEnabled(kFeedbackIncludeGWSVariations);
