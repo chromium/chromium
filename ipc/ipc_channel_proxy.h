@@ -235,14 +235,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
     // Sends |message| from appropriate thread.
     void Send(Message* message);
 
-    // Adds |task_runner| for the task to be executed later.
-    void AddListenerTaskRunner(
-        int32_t routing_id,
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-    // Removes task runner for |routing_id|.
-    void RemoveListenerTaskRunner(int32_t routing_id);
-
     // Called on the IPC::Channel thread.
     // Returns the task runner associated with |routing_id|.
     scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
@@ -307,12 +299,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
     void AddGenericAssociatedInterfaceForIOThread(
         const std::string& name,
         const GenericAssociatedInterfaceFactory& factory);
-
-    base::Lock listener_thread_task_runners_lock_;
-    // Map of routing_id and listener's thread task runner.
-    std::map<int32_t, scoped_refptr<base::SingleThreadTaskRunner>>
-        listener_thread_task_runners_
-            GUARDED_BY(listener_thread_task_runners_lock_);
 
     scoped_refptr<base::SingleThreadTaskRunner> default_listener_task_runner_;
     raw_ptr<Listener> listener_;
