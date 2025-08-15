@@ -45,13 +45,6 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   // WebView.
   virtual void UpdateState(const ActorOverlayState& state, bool is_visible);
 
-  // Attaches a WebView (either newly created or previously detached) to the
-  // current ActorOverlayWindowController. Called by ActorUiTabController when
-  // the tab is inserted into a window. Re-attaches a previously detached
-  // WebView if one exists. This is important when tab's that are being
-  // actuated, move between different windows.
-  virtual void AttachManagedWebViewToWindowController();
-
   // Detaches the overlay's WebView from its current window controller and
   // reclaims its ownership. Called by ActorUiTabController when the tab is
   // about to detach from a window. This is important when tab's that are being
@@ -76,6 +69,12 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   // Hides the overlay WebView and re-enables input to the underlying web
   // contents. Called by UpdateState.
   void HideWebView();
+
+  // Attaches a WebView (either newly created or previously detached) to the
+  // current ActorOverlayWindowController. Called always before a view is shown
+  // to ensure the attachment is done. Will do nothing if the view is already
+  // attached.
+  virtual void AttachManagedWebViewToWindowController();
 
   // Manages the lifetime of the WebContents input event ignoring state.
   std::optional<content::WebContents::ScopedIgnoreInputEvents>

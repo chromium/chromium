@@ -380,8 +380,12 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
         &chrome::NewTab(browser_with_actuated_tab));
     ASSERT_NE(new_tab, nullptr);
     ASSERT_EQ(browser_with_actuated_tab->tab_strip_model()->count(), 2);
+
     // Move the actuated tab (at index 0) to a new browser window.
+    TestFuture<void> move_future;
+    controller->SetCallbackForTesting(move_future.GetCallback());
     chrome::MoveTabsToNewWindow(browser_with_actuated_tab, {0});
+    ASSERT_TRUE(move_future.Wait());
   }
   // After the final move in the loop, update the browser pointer.
   browser_with_actuated_tab =

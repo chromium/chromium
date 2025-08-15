@@ -67,8 +67,6 @@ void ActorUiTabController::RegisterTabSubscriptions() {
   if (features::kGlicActorUiOverlay.Get()) {
     tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
         &ActorUiTabController::OnTabWillDetach, weak_factory_.GetWeakPtr())));
-    tab_subscriptions_.push_back(tab_->RegisterDidInsert(base::BindRepeating(
-        &ActorUiTabController::OnTabDidInsert, weak_factory_.GetWeakPtr())));
   }
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&ActorUiTabController::OnTabActiveStatusChanged,
@@ -115,12 +113,6 @@ void ActorUiTabController::OnTabWillDetach(TabInterface* tab,
                                            TabInterface::DetachReason reason) {
   if (features::kGlicActorUiOverlay.Get()) {
     actor_overlay_view_controller_->NullifyWebView();
-  }
-}
-
-void ActorUiTabController::OnTabDidInsert(TabInterface* tab) {
-  if (features::kGlicActorUiOverlay.Get()) {
-    actor_overlay_view_controller_->AttachManagedWebViewToWindowController();
   }
 }
 

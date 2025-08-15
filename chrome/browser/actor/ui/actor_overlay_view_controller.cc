@@ -122,11 +122,11 @@ void ActorOverlayViewController::CreateWebView() {
   managed_overlay_web_view_->LoadInitialURL(
       GURL(chrome::kChromeUIActorOverlayURL));
   managed_overlay_web_view_->SetVisible(false);
-  // Attach the newly created WebView to the window controller.
-  AttachManagedWebViewToWindowController();
 }
 
 void ActorOverlayViewController::ShowWebView() {
+  // Attach if one was created prior to a tab moving.
+  AttachManagedWebViewToWindowController();
   // Only show if the WebView is currently attached.
   if (!overlay_web_view_) {
     return;
