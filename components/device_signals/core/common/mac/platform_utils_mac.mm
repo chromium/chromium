@@ -14,16 +14,35 @@
 #include <net/if.h>
 #include <net/if_dl.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/login_util.h"
 #include "base/mac/mac_util.h"
 #include "base/process/launch.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "components/device_signals/core/common/platform_utils.h"
+#include "components/device_signals/core/common/platform_wrapper.h"
+#include "components/device_signals/core/common/signals_features.h"
 
 namespace device_signals {
+
+namespace {
+
+std::optional<std::string> TryGetStringFromDictionary(NSDictionary* dictionary,
+                                                      NSString* key) {
+  NSString* value = [dictionary objectForKey:key];
+  if (!value) {
+    return std::nullopt;
+  }
+
+  return base::SysNSStringToUTF8(value);
+}
+
+}  // namespace
 
 base::FilePath GetCrowdStrikeZtaFilePath() {
   static constexpr base::FilePath::CharType kZtaFilePath[] = FILE_PATH_LITERAL(
@@ -56,14 +75,14 @@ SettingValue GetScreenlockSecured() {
 
 SettingValue GetDiskEncrypted() {
   base::FilePath fdesetup_path("/usr/bin/fdesetup");
-  if (!base::PathExists(fdesetup_path)) {
+  if (!PlatformWrapper::Get()->PathExists(fdesetup_path)) {
     return SettingValue::UNKNOWN;
   }
 
   base::CommandLine command(fdesetup_path);
   command.AppendArg("status");
   std::string output;
-  if (!base::GetAppOutput(command, &output)) {
+  if (!PlatformWrapper::Get()->Execute(command, &output)) {
     return SettingValue::UNKNOWN;
   }
 
@@ -104,6 +123,53 @@ std::vector<std::string> internal::GetMacAddressesImpl() {
   }
   freeifaddrs(ifa);
   return result;
+}
+
+std::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
+  if (!enterprise_signals::features::IsDetectedAgentSignalCollectionEnabled()) {
+    return std::nullopt;
+  }
+
+  static constexpr base::FilePath::CharType kFlaconCtlPath[] =
+      FILE_PATH_LITERAL(
+          "/Applications/Falcon.app/Contents/Resources/falconctl");
+  base::FilePath falcon_ctl_path(kFlaconCtlPath);
+  if (!PlatformWrapper::Get()->PathExists(falcon_ctl_path)) {
+    return std::nullopt;
+  }
+
+  base::CommandLine command(falcon_ctl_path);
+  command.AppendArg("info");
+  std::string output;
+  if (!PlatformWrapper::Get()->Execute(command, &output) && !output.empty()) {
+    return std::nullopt;
+  }
+
+  // Output should be a plist encoded as XML.
+  @autoreleasepool {
+    NSData* plist_data = [NSData dataWithBytes:output.data()
+                                        length:output.length()];
+    NSDictionary* all_keys =
+        base::apple::ObjCCastStrict<NSDictionary>([NSPropertyListSerialization
+            propertyListWithData:plist_data
+                         options:NSPropertyListImmutable
+                          format:nil
+                           error:nil]);
+
+    if (!all_keys) {
+      return std::nullopt;
+    }
+
+    const auto& customer_id = TryGetStringFromDictionary(all_keys, @"cid");
+    const auto& agent_id = TryGetStringFromDictionary(all_keys, @"aid");
+    if (customer_id || agent_id) {
+      return CrowdStrikeSignals{
+          base::ToLowerASCII(customer_id.value_or(std::string())),
+          base::ToLowerASCII(agent_id.value_or(std::string()))};
+    }
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace device_signals

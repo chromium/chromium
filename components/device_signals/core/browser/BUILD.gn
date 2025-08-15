@@ -160,7 +160,10 @@ source_set("unit_tests") {
       "desktop/desktop_os_signals_collector_unittest.cc",
       "detected_agent_client_unittest.cc",
     ]
-    deps += [ "//services/data_decoder/public/cpp:test_support" ]
+    deps += [
+      "//components/device_signals/core/common:test_support",
+      "//services/data_decoder/public/cpp:test_support",
+    ]
   }
 
   if (is_win) {

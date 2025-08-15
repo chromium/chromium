@@ -7,23 +7,32 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/browser/metrics_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/common_types.h"
+#include "components/device_signals/core/common/scoped_platform_wrapper.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_reg_util_win.h"
+#elif BUILDFLAG(IS_MAC)
+#include "base/command_line.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace device_signals {
+
+using testing::_;
 
 namespace {
 
@@ -130,6 +139,8 @@ class CrowdStrikeClientTest : public testing::Test {
 #endif
 
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_signals::features::kDetectedAgentSignalCollectionEnabled);
   }
 
   void InitializeClient(bool empty_file = true) {
@@ -189,7 +200,9 @@ class CrowdStrikeClientTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  testing::NiceMock<ScopedPlatformWrapper> scoped_platform_wrapper_;
   base::ScopedTempDir scoped_temp_dir_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::HistogramTester histogram_tester_;
 
@@ -409,6 +422,177 @@ TEST_F(CrowdStrikeClientTest, Identifiers_DecodingFailed_RegistryFallback) {
   ValidateHistogram(SignalsParsingError::kBase64DecodingFailed);
 }
 
-#endif  // BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_MAC)
+
+namespace {
+
+constexpr base::FilePath::CharType kFlaconCtlPath[] =
+    FILE_PATH_LITERAL("/Applications/Falcon.app/Contents/Resources/falconctl");
+
+base::CommandLine BuildExpectedCommandLine() {
+  base::FilePath ctl_path(kFlaconCtlPath);
+  base::CommandLine command(ctl_path);
+  command.AppendArg("info");
+  return command;
+}
+
+std::string GetPlistContent(std::optional<std::string> aid,
+                            std::optional<std::string> cid) {
+  static constexpr const char* kPlistPrefix = R"(
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>falcon_version</key>
+    <string>7.26.19707.0</string>
+    <key>rfm</key>
+    <false/>
+    <key>sensor_loaded</key>
+    <true/>)";
+  static constexpr const char* kPlistSuffix = R"(
+</dict>
+</plist>
+  )";
+  static constexpr const char* kPlistAidFormat = R"(
+    <key>aid</key>
+    <string>%s</string>)";
+  static constexpr const char* kPlistCidFormat = R"(
+    <key>cid</key>
+    <string>%s</string>)";
+
+  std::vector<std::string> tokens;
+  tokens.push_back(kPlistPrefix);
+  if (aid) {
+    tokens.push_back(base::StringPrintf(kPlistAidFormat, aid.value()));
+  }
+  if (cid) {
+    tokens.push_back(base::StringPrintf(kPlistCidFormat, cid.value()));
+  }
+  tokens.push_back(kPlistSuffix);
+
+  return base::StrCat(tokens);
+}
+
+MATCHER_P(IsCommandLine, cmd_line, "") {
+  return arg.GetCommandLineString() == cmd_line.GetCommandLineString();
+}
+
+}  // namespace
+
+TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_CommandFailed) {
+  InitializeClient();
+
+  EXPECT_CALL(scoped_platform_wrapper_,
+              PathExists(base::FilePath(kFlaconCtlPath)))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(scoped_platform_wrapper_,
+              Execute(IsCommandLine(BuildExpectedCommandLine()), _))
+      .WillOnce(testing::Return(false));
+
+  auto signals = GetSignals();
+  EXPECT_FALSE(signals);
+}
+
+TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_InvalidPlist) {
+  InitializeClient();
+
+  EXPECT_CALL(scoped_platform_wrapper_,
+              PathExists(base::FilePath(kFlaconCtlPath)))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(scoped_platform_wrapper_,
+              Execute(IsCommandLine(BuildExpectedCommandLine()), _))
+      .WillOnce(testing::DoAll(testing::SetArgPointee<1>("invalid plist"),
+                               testing::Return(true)));
+
+  auto signals = GetSignals();
+  EXPECT_FALSE(signals);
+}
+
+TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_BothIds) {
+  InitializeClient();
+
+  const auto& plist_content =
+      GetPlistContent("AGENT_ID_123", "CUSTOMER_ID_456");
+
+  EXPECT_CALL(scoped_platform_wrapper_,
+              PathExists(base::FilePath(kFlaconCtlPath)))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(scoped_platform_wrapper_,
+              Execute(IsCommandLine(BuildExpectedCommandLine()), _))
+      .WillOnce(testing::DoAll(testing::SetArgPointee<1>(plist_content),
+                               testing::Return(true)));
+
+  auto signals = GetSignals();
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(signals->agent_id, "agent_id_123");
+  EXPECT_EQ(signals->customer_id, "customer_id_456");
+}
+
+TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_FeatureDisabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      enterprise_signals::features::kDetectedAgentSignalCollectionEnabled);
+
+  InitializeClient();
+
+  auto signals = GetSignals();
+  ASSERT_FALSE(signals);
+}
+
+TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_OnlyAgentId) {
+  InitializeClient();
+
+  const auto& plist_content = GetPlistContent("AGENT_ID_123", std::nullopt);
+
+  EXPECT_CALL(scoped_platform_wrapper_,
+              PathExists(base::FilePath(kFlaconCtlPath)))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(scoped_platform_wrapper_,
+              Execute(IsCommandLine(BuildExpectedCommandLine()), _))
+      .WillOnce(testing::DoAll(testing::SetArgPointee<1>(plist_content),
+                               testing::Return(true)));
+
+  auto signals = GetSignals();
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(signals->agent_id, "agent_id_123");
+  EXPECT_TRUE(signals->customer_id.empty());
+}
+
+TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_OnlyCustomerId) {
+  InitializeClient();
+
+  const auto& plist_content = GetPlistContent(std::nullopt, "CUSTOMER_ID_456");
+
+  EXPECT_CALL(scoped_platform_wrapper_,
+              PathExists(base::FilePath(kFlaconCtlPath)))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(scoped_platform_wrapper_,
+              Execute(IsCommandLine(BuildExpectedCommandLine()), _))
+      .WillOnce(testing::DoAll(testing::SetArgPointee<1>(plist_content),
+                               testing::Return(true)));
+
+  auto signals = GetSignals();
+  ASSERT_TRUE(signals);
+  EXPECT_TRUE(signals->agent_id.empty());
+  EXPECT_EQ(signals->customer_id, "customer_id_456");
+}
+
+TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_NoId) {
+  InitializeClient();
+
+  const auto& plist_content = GetPlistContent(std::nullopt, std::nullopt);
+
+  EXPECT_CALL(scoped_platform_wrapper_,
+              PathExists(base::FilePath(kFlaconCtlPath)))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(scoped_platform_wrapper_,
+              Execute(IsCommandLine(BuildExpectedCommandLine()), _))
+      .WillOnce(testing::DoAll(testing::SetArgPointee<1>(plist_content),
+                               testing::Return(true)));
+
+  auto signals = GetSignals();
+  EXPECT_FALSE(signals);
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace device_signals

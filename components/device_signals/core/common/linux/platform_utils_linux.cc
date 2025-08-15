@@ -183,4 +183,8 @@ std::optional<std::string> GetDistributionVersion() {
   return std::nullopt;
 }
 
+std::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
+  return std::nullopt;
+}
+
 }  // namespace device_signals
