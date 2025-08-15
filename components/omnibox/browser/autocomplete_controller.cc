@@ -1746,7 +1746,8 @@ void AutocompleteController::AttachActions() {
 #endif
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-    internal_result_.AttachAimAction(template_url_service_);
+    internal_result_.AttachAimAction(template_url_service_,
+                                     provider_client_.get());
 #endif
   }
 

@@ -22,7 +22,9 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/url_database.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -32,6 +34,7 @@
 #include "components/variations/hashing.h"
 #include "components/variations/variations_associated_data.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/ui_base_features.h"
 
 using metrics::OmniboxEventProto;
@@ -658,6 +661,44 @@ bool IsHideSuggestionGroupHeadersEnabledInContext(
     default:
       return false;
   }
+}
+
+bool IsDeterministicAimActionInTypedStateEnabled(AutocompleteProviderClient* client) {
+  ui::DeviceFormFactor factor = ui::GetDeviceFormFactor();
+  if (!(factor == ui::DEVICE_FORM_FACTOR_PHONE || factor == ui::DEVICE_FORM_FACTOR_FOLDABLE)) {
+    return false;
+  }
+
+  // If the feature is overridden to be false, return false.
+  auto* feature_list = base::FeatureList::GetInstance();
+  if (feature_list &&
+      feature_list->IsFeatureOverridden(omnibox::kOmniboxAimShortcutTypedState.name) &&
+      !base::FeatureList::IsEnabled(omnibox::kOmniboxAimShortcutTypedState)) {
+    return false;
+  }
+
+  const auto* aim_eligibility_service = client->GetAimEligibilityService();
+#if BUILDFLAG(IS_IOS)
+  // TODO (ameurhosni): Remove this once AimEligibilityService is ready in iOS.
+  if (!aim_eligibility_service) {
+    return base::FeatureList::IsEnabled(omnibox::kOmniboxAimShortcutTypedState);
+  }
+#endif
+
+  // If the server eligibility is enabled, check overall eligibility alone.
+  // The service will control locale rollout so there's no need to check the
+  // state of omnibox::kOmniboxAimShortcutTypedState below.
+  if (aim_eligibility_service->IsServerEligibilityEnabled()) {
+    return aim_eligibility_service->IsAimEligible();
+  }
+
+  // If not locally eligible, return false.
+  if (!aim_eligibility_service->IsAimLocallyEligible()) {
+    return false;
+  }
+
+  // Otherwise, check the feature state.
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxAimShortcutTypedState);
 }
 
 // Rich autocompletion.

@@ -21,6 +21,8 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 
+class AutocompleteProviderClient;
+
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -406,6 +408,9 @@ bool IsOnFocusZeroSuggestEnabledInContext(
 // popup in the given context.
 bool IsHideSuggestionGroupHeadersEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
+
+// Returns whether the deterministic AIM shortcut action in typed state is enabled.
+bool IsDeterministicAimActionInTypedStateEnabled(AutocompleteProviderClient* client);
 
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();

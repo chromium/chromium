@@ -731,6 +731,8 @@ static_library("test_support") {
     "fake_tab_matcher.h",
     "history_test_util.cc",
     "history_test_util.h",
+    "mock_aim_eligibility_service.cc",
+    "mock_aim_eligibility_service.h",
     "mock_autocomplete_provider_client.cc",
     "mock_autocomplete_provider_client.h",
     "mock_tab_matcher.cc",
