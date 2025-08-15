@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -250,8 +251,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<TabSearchSyncHandler>(profile));
 
   page_handler_timer_ = base::ElapsedTimer();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "browser", "TabSearchPageHandlerConstructionDelay", this);
+  TRACE_EVENT_BEGIN("browser", "TabSearchPageHandlerConstructionDelay",
+                    perfetto::Track::FromPointer(this));
 }
 
 TabSearchUI::~TabSearchUI() = default;
@@ -281,8 +282,7 @@ void TabSearchUI::CreatePageHandler(
   // reuse TabSearchUI. Check to make sure |page_handler_timer_| is valid before
   // logging metrics.
   if (page_handler_timer_.has_value()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "browser", "TabSearchPageHandlerConstructionDelay", this);
+    TRACE_EVENT_END("browser", perfetto::Track::FromPointer(this));
     UmaHistogramMediumTimes("Tabs.TabSearch.PageHandlerConstructionDelay",
                             page_handler_timer_->Elapsed());
     page_handler_timer_.reset();

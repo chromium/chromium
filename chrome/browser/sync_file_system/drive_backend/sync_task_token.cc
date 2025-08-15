@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task_manager.h"
 #include "chrome/browser/sync_file_system/drive_backend/task_dependency_manager.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace sync_file_system {
 namespace drive_backend {
@@ -88,15 +89,15 @@ void SyncTaskToken::InitializeTaskLog(const std::string& task_description) {
   task_log_->start_time = base::TimeTicks::Now();
   task_log_->task_description = task_description;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      TRACE_DISABLED_BY_DEFAULT("SyncFileSystem"), "SyncTask",
-      TRACE_ID_LOCAL(task_log_->log_id), "task_description", task_description);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("SyncFileSystem"), "SyncTask",
+                    perfetto::Track(task_log_->log_id), "task_description",
+                    task_description);
 }
 
 void SyncTaskToken::FinalizeTaskLog(const std::string& result_description) {
-  TRACE_EVENT_NESTABLE_ASYNC_END1(TRACE_DISABLED_BY_DEFAULT("SyncFileSystem"),
-                                  "SyncTask", TRACE_ID_LOCAL(task_log_->log_id),
-                                  "result_description", result_description);
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("SyncFileSystem"),
+                  perfetto::Track(task_log_->log_id), "result_description",
+                  result_description);
 
   DCHECK(task_log_);
   task_log_->result_description = result_description;

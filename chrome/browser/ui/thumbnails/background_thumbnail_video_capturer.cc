@@ -17,6 +17,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -59,8 +60,8 @@ void BackgroundThumbnailVideoCapturer::Start(
     // safe since this is only invoked from the UI thread.
     static uint64_t capture_num GUARDED_BY_CONTEXT(sequence_checker_) = 0;
     cur_capture_num_ = ++capture_num;
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "Tab.Preview.VideoCapture",
-                                      TRACE_ID_LOCAL(cur_capture_num_));
+    TRACE_EVENT_BEGIN("ui", "Tab.Preview.VideoCapture",
+                      perfetto::Track(cur_capture_num_));
   }
 
   start_time_ = base::TimeTicks::Now();
@@ -87,8 +88,7 @@ void BackgroundThumbnailVideoCapturer::Stop() {
   video_capturer_->Stop();
   video_capturer_.reset();
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("ui", "Tab.Preview.VideoCapture",
-                                  TRACE_ID_LOCAL(cur_capture_num_));
+  TRACE_EVENT_END("ui", perfetto::Track(cur_capture_num_));
   start_time_ = base::TimeTicks();
   cur_capture_num_ = 0;
 }

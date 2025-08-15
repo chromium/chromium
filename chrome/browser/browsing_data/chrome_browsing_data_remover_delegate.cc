@@ -165,6 +165,7 @@
 #include "net/http/http_transaction_factory.h"
 #include "net/net_buildflags.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/customtabs/chrome_origin_verifier.h"
@@ -1534,11 +1535,10 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskStarted(
   auto result = pending_sub_tasks_.insert(data_type);
   DCHECK(result.second) << "Task already started: "
                         << static_cast<int>(data_type);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "browsing_data", "ChromeBrowsingDataRemoverDelegate",
-      TRACE_ID_WITH_SCOPE("ChromeBrowsingDataRemoverDelegate",
-                          static_cast<int>(data_type)),
-      "data_type", static_cast<int>(data_type));
+  TRACE_EVENT_BEGIN("browsing_data", "ChromeBrowsingDataRemoverDelegate",
+                    perfetto::NamedTrack("ChromeBrowsingDataRemoverDelegate",
+                                         static_cast<int>(data_type)),
+                    "data_type", static_cast<int>(data_type));
 }
 
 void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
@@ -1549,11 +1549,10 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   size_t num_erased = pending_sub_tasks_.erase(data_type);
   DCHECK_EQ(num_erased, 1U);
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "browsing_data", "ChromeBrowsingDataRemoverDelegate",
-      TRACE_ID_WITH_SCOPE("ChromeBrowsingDataRemoverDelegate",
-                          static_cast<int>(data_type)),
-      "data_type", static_cast<int>(data_type));
+  TRACE_EVENT_END("browsing_data",
+                  perfetto::NamedTrack("ChromeBrowsingDataRemoverDelegate",
+                                       static_cast<int>(data_type)),
+                  "data_type", static_cast<int>(data_type));
   base::UmaHistogramMediumTimes(
       base::StrCat({"History.ClearBrowsingData.Duration.ChromeTask.",
                     GetHistogramSuffix(data_type)}),

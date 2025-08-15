@@ -20,6 +20,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace internal {
 
@@ -834,12 +835,11 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
         "Blink.LCPP.NavigationToStartPreload.MainFrame.FirstSubresource.Time",
         subresource_load_start);
     const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "loading", "NavigationToStartFirstPreload", TRACE_ID_LOCAL(this),
-        navigation_start, "url", subresource_url);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "loading", "NavigationToStartFirstPreload", TRACE_ID_LOCAL(this),
-        navigation_start + subresource_load_start);
+    TRACE_EVENT_BEGIN("loading", "NavigationToStartFirstPreload",
+                      perfetto::Track::FromPointer(this), navigation_start,
+                      "url", subresource_url);
+    TRACE_EVENT_END("loading", perfetto::Track::FromPointer(this),
+                    navigation_start + subresource_load_start);
   }
   base::UmaHistogramMediumTimes(
       "Blink.LCPP.NavigationToStartPreload.MainFrame.EachSubresource.Time",

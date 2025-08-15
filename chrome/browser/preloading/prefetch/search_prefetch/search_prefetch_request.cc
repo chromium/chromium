@@ -48,6 +48,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -118,12 +119,13 @@ void MaybeRecordTraceFromSearchPrefetchRequestStartToNavigationIntercepted(
   const auto trace_id =
       TRACE_ID_WITH_SCOPE(kSearchPrefetchRequestStartToNavigationIntercepted,
                           TRACE_ID_LOCAL(search_prefetch_request));
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "navigation", kSearchPrefetchRequestStartToNavigationIntercepted,
-      trace_id, time_start_prefetch_request);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "navigation", kSearchPrefetchRequestStartToNavigationIntercepted,
-      trace_id, base::TimeTicks::Now());
+  TRACE_EVENT_BEGIN("navigation",
+                    kSearchPrefetchRequestStartToNavigationIntercepted,
+                    perfetto::Track::FromPointer(search_prefetch_request),
+                    time_start_prefetch_request);
+  TRACE_EVENT_END("navigation",
+                  perfetto::Track::FromPointer(search_prefetch_request),
+                  base::TimeTicks::Now());
 }
 
 }  // namespace

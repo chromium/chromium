@@ -22,6 +22,7 @@
 #include "components/ntp_tiles/metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace {
 
@@ -466,12 +467,11 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
 
 void NTPUserDataLogger::EmitNtpTraceEvent(const char* event_name,
                                           base::TimeDelta duration) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(kUIEventCategory, event_name,
-                                                   TRACE_ID_LOCAL(this),
-                                                   ntp_navigation_start_time_);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kUIEventCategory, event_name, TRACE_ID_LOCAL(this),
-      ntp_navigation_start_time_ + duration);
+  TRACE_EVENT_BEGIN(kUIEventCategory, perfetto::DynamicString(event_name),
+                    perfetto::Track::FromPointer(this),
+                    ntp_navigation_start_time_);
+  TRACE_EVENT_END(kUIEventCategory, perfetto::Track::FromPointer(this),
+                  ntp_navigation_start_time_ + duration);
 }
 
 void NTPUserDataLogger::RecordDoodleImpression(base::TimeDelta time,

@@ -122,6 +122,7 @@
 #include "rlz/buildflags/buildflags.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gl/gl_switches.h"
@@ -1785,8 +1786,8 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
   // Trace the entry and exit of this main message loop. We don't use the
   // TRACE_EVENT_BEGIN0 macro because the tracing infrastructure doesn't expect
   // a synchronous event around the main loop of a thread.
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "toplevel", "ChromeBrowserMainParts::MainMessageLoopRun", this);
+  TRACE_EVENT_BEGIN("toplevel", "ChromeBrowserMainParts::MainMessageLoopRun",
+                    perfetto::Track::FromPointer(this));
 #endif
 }
 
@@ -1810,8 +1811,7 @@ void ChromeBrowserMainParts::OnFirstIdle() {
 }
 
 void ChromeBrowserMainParts::PostMainMessageLoopRun() {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "toplevel", "ChromeBrowserMainParts::MainMessageLoopRun", this);
+  TRACE_EVENT_END("toplevel", perfetto::Track::FromPointer(this));
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostMainMessageLoopRun");
 #if BUILDFLAG(IS_ANDROID)
   // Chrome on Android does not use default MessageLoop. It has its own

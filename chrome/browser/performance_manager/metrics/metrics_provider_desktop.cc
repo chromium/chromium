@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
@@ -137,12 +138,10 @@ void EmitCpuStatusSamplingTraceEvents(base::TimeTicks posted_at_time,
 
   base::TimeTicks end_time = started_running_time + wall_time;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationEvent, TRACE_ID_LOCAL(id),
-      posted_at_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
-                                                 kCpuEstimationEvent,
-                                                 TRACE_ID_LOCAL(id), end_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationEvent,
+                    perfetto::Track::FromPointer(id), posted_at_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  end_time);
 
   const char* selected;
   switch (status) {
@@ -167,41 +166,34 @@ void EmitCpuStatusSamplingTraceEvents(base::TimeTicks posted_at_time,
       break;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
-                                                   selected, TRACE_ID_LOCAL(id),
-                                                   posted_at_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, selected, TRACE_ID_LOCAL(id), end_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory,
+                    perfetto::StaticString(selected),
+                    perfetto::Track::FromPointer(id), posted_at_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  end_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationQueuedEvent,
-      TRACE_ID_LOCAL(id), posted_at_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationQueuedEvent,
-      TRACE_ID_LOCAL(id), started_running_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationQueuedEvent,
+                    perfetto::Track::FromPointer(id), posted_at_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  started_running_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationRunningEvent,
-      TRACE_ID_LOCAL(id), started_running_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
-                                                 kCpuEstimationRunningEvent,
-                                                 TRACE_ID_LOCAL(id), end_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationRunningEvent,
+                    perfetto::Track::FromPointer(id), started_running_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  end_time);
 
   // Emit a block for the running thread time
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationThreadTimeEvent,
-      TRACE_ID_LOCAL(id), started_running_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationThreadTimeEvent,
-      TRACE_ID_LOCAL(id), started_running_time + thread_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationThreadTimeEvent,
+                    perfetto::Track::FromPointer(id), started_running_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  started_running_time + thread_time);
 
   // And then one of the wall time spent descheduled
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
-      TRACE_ID_LOCAL(id), started_running_time + thread_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
-      TRACE_ID_LOCAL(id), started_running_time + wall_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
+                    perfetto::Track::FromPointer(id),
+                    started_running_time + thread_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  started_running_time + wall_time);
 }
 #endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 

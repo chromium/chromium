@@ -198,6 +198,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "rlz/buildflags/buildflags.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -787,8 +788,8 @@ void UserSessionManager::StartSession(
     bool has_auth_cookies,
     bool has_active_session,
     base::WeakPtr<UserSessionManagerDelegate> delegate) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kEventCategoryChromeOS, kEventStartSession,
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN(kEventCategoryChromeOS, kEventStartSession,
+                    perfetto::Track::FromPointer(this));
 
   delegate_ = std::move(delegate);
   start_session_type_ = start_session_type;
@@ -808,8 +809,8 @@ void UserSessionManager::StartSession(
                          user_context_.GetAccountId()),
                      user_context_, known_user);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      kEventCategoryChromeOS, kEventPrePrepareProfile, TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN(kEventCategoryChromeOS, kEventPrePrepareProfile,
+                    perfetto::Track::FromPointer(this));
   InitDemoSessionIfNeeded(base::BindOnce(
       &UserSessionManager::UpdateArcFileSystemCompatibilityAndPrepareProfile,
       GetUserSessionManagerAsWeakPtr()));
@@ -1369,11 +1370,10 @@ void UserSessionManager::InitializeAccountManager() {
 }
 
 void UserSessionManager::PrepareProfile(const base::FilePath& profile_path) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      kEventCategoryChromeOS, kEventPrePrepareProfile, TRACE_ID_LOCAL(this));
-
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kEventCategoryChromeOS,
-                                    kEventPrepareProfile, TRACE_ID_LOCAL(this));
+  // End previous kEventPrePrepareProfile event.
+  TRACE_EVENT_END(kEventCategoryChromeOS, perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(kEventCategoryChromeOS, kEventPrepareProfile,
+                    perfetto::Track::FromPointer(this));
 
   g_browser_process->profile_manager()->CreateProfileAsync(
       profile_path,
@@ -1783,8 +1783,8 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
 
   profile->OnLogin();
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(kEventCategoryChromeOS, kEventPrepareProfile,
-                                  TRACE_ID_LOCAL(this));
+  // End kEventPrepareProfile event.
+  TRACE_EVENT_END(kEventCategoryChromeOS, perfetto::Track::FromPointer(this));
 
   {
     TRACE_EVENT0(kEventCategoryChromeOS, kEventHandleProfileLoad);
@@ -2489,13 +2489,12 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   }
 
   base::OnceClosure login_host_finalized_callback = base::BindOnce(
-      [](uint64_t trace_id) {
+      [](perfetto::Track track) {
         session_manager::SessionManager::Get()->SessionStarted();
-        TRACE_EVENT_NESTABLE_ASYNC_END0(kEventCategoryChromeOS,
-                                        kEventStartSession,
-                                        TRACE_ID_LOCAL(trace_id));
+        // End kEventStartSession event.
+        TRACE_EVENT_END(kEventCategoryChromeOS, track);
       },
-      static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this)));
+      perfetto::Track::FromPointer(this));
 
   // Mark login host for deletion after browser starts.  This
   // guarantees that the message loop will be referenced by the

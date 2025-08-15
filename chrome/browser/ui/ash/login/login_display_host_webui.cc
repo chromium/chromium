@@ -102,6 +102,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -680,9 +681,8 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
 
   OnStartSignInScreenCommon();
 
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0(
-      "ui", "WaitForScreenStateInitialize",
-      TRACE_ID_WITH_SCOPE(kShowLoginWebUIid, TRACE_ID_GLOBAL(1)));
+  TRACE_EVENT_INSTANT("ui", "WaitForScreenStateInitialize",
+                      perfetto::NamedTrack::Global(kShowLoginWebUIid));
 
   // TODO(crbug.com/40549648): Make sure this is ported to views.
   BootTimesRecorder::Get()->RecordCurrentStats(

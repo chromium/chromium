@@ -52,6 +52,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
 
@@ -377,10 +378,9 @@ void FirstWebContentsProfilerForProfilePicker::RecordFirstNonEmptyPaint() {
       "ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint";
   base::TimeTicks paint_time = base::TimeTicks::Now();
   base::UmaHistogramLongTimes100(histogram_name, paint_time - pick_time_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0("startup", histogram_name,
-                                                   this, pick_time_);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("startup", histogram_name,
-                                                 this, paint_time);
+  TRACE_EVENT_BEGIN("startup", histogram_name,
+                    perfetto::Track::FromPointer(this), pick_time_);
+  TRACE_EVENT_END("startup", perfetto::Track::FromPointer(this), paint_time);
 }
 
 bool FirstWebContentsProfilerForProfilePicker::WasStartupInterrupted() {
