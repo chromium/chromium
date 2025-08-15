@@ -1137,7 +1137,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Listens for the system being under memory pressure.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
 
   // Contains diagnostic information about the sql database that is non-empty
   // when a catastrophic error occurs.
