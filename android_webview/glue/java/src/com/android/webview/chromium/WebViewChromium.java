@@ -1339,6 +1339,7 @@ class WebViewChromium
     @Override
     public void evaluateJavaScript(
             final String script, final ValueCallback<String> resultCallback) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
                 recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
@@ -1634,16 +1635,17 @@ class WebViewChromium
 
     @Override
     public float getScale() {
+        // No checkThread() as it is mostly thread safe (workaround for b/10652991).
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_SCALE")) {
             recordWebViewApiCall(ApiCall.GET_SCALE);
-            // No checkThread() as it is mostly thread safe (workaround for b/10652991).
-            mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
             return mAwContents.getScale();
         }
     }
 
     @Override
     public void setInitialScale(final int scaleInPercent) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_INITIAL_SCALE")) {
             recordWebViewApiCall(ApiCall.SET_INITIAL_SCALE);
             // No checkThread() as it is thread safe
@@ -2184,6 +2186,7 @@ class WebViewChromium
 
     @Override
     public void setWebViewClient(WebViewClient client) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_WEBVIEW_CLIENT")) {
             recordWebViewApiCall(ApiCall.SET_WEBVIEW_CLIENT);
             mAwContents.cancelAllPrerendering();
@@ -2258,6 +2261,7 @@ class WebViewChromium
 
     @Override
     public void setWebChromeClient(WebChromeClient client) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_WEBCHROME_CLIENT")) {
             recordWebViewApiCall(ApiCall.SET_WEBCHROME_CLIENT);
@@ -2538,6 +2542,7 @@ class WebViewChromium
     @Override
     public void setRendererPriorityPolicy(
             int rendererRequestedPriority, boolean waivedWhenNotVisible) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.SET_RENDERER_PRIORITY_POLICY",
@@ -2563,6 +2568,7 @@ class WebViewChromium
 
     @Override
     public int getRendererRequestedPriority() {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_RENDERER_REQUESTED_PRIORITY")) {
             recordWebViewApiCall(ApiCall.GET_RENDERER_REQUESTED_PRIORITY);
@@ -2593,6 +2599,7 @@ class WebViewChromium
 
     @Override
     public void setTextClassifier(TextClassifier textClassifier) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_TEXT_CLASSIFIER")) {
             recordWebViewApiCall(ApiCall.SET_TEXT_CLASSIFIER);
@@ -2602,6 +2609,7 @@ class WebViewChromium
 
     @Override
     public TextClassifier getTextClassifier() {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_TEXT_CLASSIFIER")) {
             recordWebViewApiCall(ApiCall.GET_TEXT_CLASSIFIER);
@@ -2650,6 +2658,7 @@ class WebViewChromium
 
     @Override
     public void onProvideContentCaptureStructure(ViewStructure structure, int flags) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
             Log.i("ContentCapture", "onProvideContentCaptureStructure");
         }
@@ -3376,6 +3385,7 @@ class WebViewChromium
 
     @Override
     public void onStartTemporaryDetach() {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_START_TEMPORARY_DETACH")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_START_TEMPORARY_DETACH);
@@ -3385,6 +3395,7 @@ class WebViewChromium
 
     @Override
     public void onFinishTemporaryDetach() {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_FINISH_TEMPORARY_DETACH")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_FINISH_TEMPORARY_DETACH);
@@ -3413,11 +3424,13 @@ class WebViewChromium
 
     @Override
     public WindowInsets onApplyWindowInsets(WindowInsets insets) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         return mAwContents.onApplyWindowInsets(insets);
     }
 
     // TODO(crbug.com/40280893): Add override annotation when SDK includes this method.
     public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         return mAwContents.onResolvePointerIcon(event, pointerIndex);
     }
 
@@ -3526,6 +3539,7 @@ class WebViewChromium
 
     @Override
     public PrintDocumentAdapter createPrintDocumentAdapter(String documentName) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.CREATE_PRINT_DOCUMENT_ADAPTER")) {
             recordWebViewApiCall(ApiCall.CREATE_PRINT_DOCUMENT_ADAPTER);
@@ -3617,6 +3631,7 @@ class WebViewChromium
     // Implements SmartClipProvider
     @Override
     public void extractSmartClipData(int x, int y, int width, int height) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.EXTRACT_SMART_CLIP_DATA")) {
             recordWebViewApiCall(ApiCall.EXTRACT_SMART_CLIP_DATA);
@@ -3628,6 +3643,7 @@ class WebViewChromium
     // Implements SmartClipProvider
     @Override
     public void setSmartClipResultHandler(final Handler resultHandler) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_SMART_CLIP_RESULT_HANDLER")) {
             recordWebViewApiCall(ApiCall.SET_SMART_CLIP_RESULT_HANDLER);
