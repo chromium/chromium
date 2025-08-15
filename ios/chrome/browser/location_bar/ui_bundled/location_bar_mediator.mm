@@ -207,6 +207,10 @@ const CGFloat kIconPointSize = 16.0;
 
 /// Returns whether the Lens overlay is currently available for the web state.
 - (BOOL)isLensOverlayAvailable {
+  if (IsPageActionMenuEnabled() && IsDirectBWGEntryPoint()) {
+    return NO;
+  }
+
   if (_webStateList) {
     web::WebState* webState = _webStateList->GetActiveWebState();
     if (webState) {
@@ -230,6 +234,10 @@ const CGFloat kIconPointSize = 16.0;
           ProfileIOS::FromBrowserState(webState->GetBrowserState());
       BwgService* BWGService = BwgServiceFactory::GetForProfile(profile);
       if (BWGService) {
+        if (IsDirectBWGEntryPoint()) {
+          return BWGService->IsBwgAvailableForWebState(webState);
+        }
+
         return BWGService->IsProfileEligibleForBwg();
       }
     }
