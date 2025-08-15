@@ -644,7 +644,6 @@ def main():
   imported_template = jinja_env.get_template("templates/Imported_h.template")
 
   outputs = dict()
-  deps = set()
 
   for domain in protocol.json_api["domains"]:
     class_name = domain["domain"]
@@ -732,17 +731,6 @@ def main():
     if not config.use_embedder_types:
       generate_lib_file(os.path.join(config.lib.output, to_file_name(
           config, "Protocol.cpp")), protocol_cpp_templates)
-
-  # Make gyp / make generatos happy, otherwise make rebuilds world.
-  inputs_ts = max(map(os.path.getmtime, inputs))
-  up_to_date = True
-  for output_file in outputs.keys():
-    if (not os.path.exists(output_file)
-        or os.path.getmtime(output_file) < inputs_ts):
-      up_to_date = False
-      break
-  if up_to_date:
-    sys.exit()
 
   if stamp_filename:
     with open(stamp_filename, "w"):
