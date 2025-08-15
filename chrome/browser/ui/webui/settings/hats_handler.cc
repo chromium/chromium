@@ -114,10 +114,6 @@ void HatsHandler::HandleSecurityPageHatsRequest(const base::Value::List& args) {
       /*failure_callback*/ base::DoNothing(),
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/product_specific_string_data);
-
-  // Log histogram that indicates that a survey is requested from the security
-  // page.
-  base::UmaHistogramBoolean("Feedback.SecurityPage.SurveyRequested", true);
 }
 
 /**

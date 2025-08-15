@@ -4971,15 +4971,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records the source that requested showing the feedback app.</summary>
 </histogram>
 
-<histogram name="Feedback.SecurityPage.SurveyRequested" enum="Boolean"
-    expires_after="2025-05-12">
-  <owner>zackhan@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Recorded once every time the security page survey is triggered.
-  </summary>
-</histogram>
-
 <histogram name="Feedback.TrustSafetySentiment.CallTriggerOccurred"
     enum="TrustSafetySentimentFeatureArea" expires_after="2025-12-28">
   <owner>skrakowi@google.com</owner>
