@@ -298,6 +298,11 @@ void TestResponseProvider::GetLanguageResponse(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableReaderModeTranslation);
+
+  if ([self isRunningTest:@selector(testTranslateInReaderMode)]) {
+    config.features_enabled.push_back(kEnableReaderMode);
+  }
+
   return config;
 }
 
