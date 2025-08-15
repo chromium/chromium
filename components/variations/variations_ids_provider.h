@@ -24,11 +24,6 @@
 namespace variations {
 class VariationsClient;
 
-namespace cros_early_boot::evaluate_seed {
-// For friend purposes (for DestroyInstanceForTesting().)
-class VariationsCrosEvaluateSeedMainTest;
-}  // namespace cros_early_boot::evaluate_seed
-
 // The key for a VariationsIdsProvider's |variations_headers_map_|. A
 // VariationsHeaderKey provides more details about the VariationsIDs included in
 // a particular header. For example, the header associated with a key with true
@@ -165,9 +160,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   typedef std::pair<VariationID, IDCollectionKey> VariationIDEntry;
 
   friend class ScopedVariationsIdsProvider;
-  // For DestroyInstanceForTesting
-  friend class cros_early_boot::evaluate_seed::
-      VariationsCrosEvaluateSeedMainTest;
 
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest, ForceVariationIds_Valid);
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
