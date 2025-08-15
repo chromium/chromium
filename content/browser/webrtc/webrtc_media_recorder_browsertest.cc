@@ -177,7 +177,13 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
   MakeTypicalCall("testTwoChannelAudio();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, RecordWithTransparency) {
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/438812886
+#define MAYBE_RecordWithTransparency DISABLED_RecordWithTransparency
+#else
+#define MAYBE_RecordWithTransparency RecordWithTransparency
+#endif
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_RecordWithTransparency) {
   MakeTypicalCall(base::StringPrintf("testRecordWithTransparency(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
