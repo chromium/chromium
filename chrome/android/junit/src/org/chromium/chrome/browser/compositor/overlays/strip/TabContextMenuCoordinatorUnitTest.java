@@ -324,37 +324,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
-    public void testListMenuItems_tabOutsideOfGroup() {
-        MultiWindowUtils.setInstanceCountForTesting(1);
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_OUTSIDE_OF_GROUP_ID);
-
-        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
-
-        // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE);
-
-        // List item 2
-        verifyAddToWindowSubmenu(modelList, List.of());
-
-        // List item 3
-        assertEquals(DIVIDER, modelList.get(2).type);
-
-        // List item 4
-        assertEquals(R.string.share, modelList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.share_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 5
-        assertEquals(R.string.close, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
-    public void testAddToGroupSubmenu_fallbackTabGroupNameName() {
+    public void testAddToGroupSubmenu_fallbackTabGroupName() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         mSavedTabGroup.title = "";
         var modelList = new ModelList();
@@ -491,6 +461,90 @@ public class TabContextMenuCoordinatorUnitTest {
                         + " R.style.TextAppearance_TextLarge_Primary_Baseline_Light in incognito",
                 R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                 modelList.get(4).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures({
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
+        ChromeFeatureList.ANDROID_PINNED_TABS
+    })
+    public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showPinTabOption() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_OUTSIDE_OF_GROUP_ID);
+
+        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+
+        // List item 1
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE);
+
+        // List item 2
+        verifyAddToWindowSubmenu(modelList, List.of());
+
+        // List item 3
+        assertEquals(DIVIDER, modelList.get(2).type);
+
+        // List item 4
+        assertEquals(R.string.share, modelList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.share_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 5
+        assertEquals(
+                R.string.menu_pin_tab, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.pin_tab_menu_id,
+                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 6
+        assertEquals(R.string.close, modelList.get(5).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures({
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
+        ChromeFeatureList.ANDROID_PINNED_TABS
+    })
+    public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showUnpinTabOption() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        var modelList = new ModelList();
+
+        // Pin tab to show unpin option.
+        when(mTabOutsideOfGroup.getIsPinned()).thenReturn(true);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_OUTSIDE_OF_GROUP_ID);
+
+        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+
+        // List item 1
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE);
+
+        // List item 2
+        verifyAddToWindowSubmenu(modelList, List.of());
+
+        // List item 3
+        assertEquals(DIVIDER, modelList.get(2).type);
+
+        // List item 4
+        assertEquals(R.string.share, modelList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.share_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 5
+        assertEquals(
+                R.string.menu_unpin_tab,
+                modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.unpin_tab_menu_id,
+                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 6
+        assertEquals(R.string.close, modelList.get(5).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test

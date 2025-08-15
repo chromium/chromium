@@ -201,6 +201,10 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                         .get()
                         .share(tab, /* shareDirectly= */ false, TAB_STRIP_CONTEXT_MENU);
                 RecordUserAction.record("MobileToolbarTabMenu.ShareTab");
+            } else if (menuId == R.id.pin_tab_menu_id) {
+                tabModel.pinTab(tab.getId());
+            } else if (menuId == R.id.unpin_tab_menu_id) {
+                tabModel.unpinTab(tab.getId());
             } else if (menuId == R.id.close_tab) {
                 boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 tabModel.getTabRemover()
@@ -261,6 +265,13 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         if (ShareUtils.shouldEnableShare(tab)) {
             itemList.add(buildListItem(R.string.share, R.id.share_tab, isIncognito));
         }
+
+        if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
+            int menuId = tab.getIsPinned() ? R.id.unpin_tab_menu_id : R.id.pin_tab_menu_id;
+            int titleId = tab.getIsPinned() ? R.string.menu_unpin_tab : R.string.menu_pin_tab;
+            itemList.add(buildListItem(titleId, menuId, isIncognito));
+        }
+
         itemList.add(buildListItem(R.string.close, R.id.close_tab, isIncognito));
     }
 
