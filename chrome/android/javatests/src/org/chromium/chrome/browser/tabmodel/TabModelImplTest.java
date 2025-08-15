@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -70,6 +71,9 @@ import java.util.List;
 })
 @Batch(Batch.PER_CLASS)
 public class TabModelImplTest {
+    private static final String TAG = "TabModelImplTest";
+    private static final boolean ENABLE_DEBUG_LOGGING = false;
+
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
@@ -1304,13 +1308,43 @@ public class TabModelImplTest {
         Tab oldIndexTab = mTabModelJni.getTabAt(oldIndex);
         assert movingInsideGroup || oldIndexTab.getTabGroupId() == null
                 : "This is not a single tab movement";
+        if (ENABLE_DEBUG_LOGGING) {
+            logTabModelStructure(mTabModelJni, "Before move");
+            Log.i(
+                    TAG,
+                    "Moving "
+                            + oldIndexTab.getId()
+                            + " from "
+                            + oldIndex
+                            + " to "
+                            + newIndex
+                            + " actual valid index "
+                            + expectedIndex);
+        }
         mTabModelJni.moveTabToIndex(oldIndexTab, newIndex);
+        if (ENABLE_DEBUG_LOGGING) {
+            logTabModelStructure(mTabModelJni, "After move");
+        }
         assertEquals(oldIndexTab, mTabModelJni.getTabAt(expectedIndex));
     }
 
     private void assertMoveTabGroup(List<Tab> tabs, int requestedIndex, int firstValidIndex) {
         Token tabGroupId = tabs.get(0).getTabGroupId();
+        if (ENABLE_DEBUG_LOGGING) {
+            logTabModelStructure(mTabModelJni, "Before move");
+            Log.i(
+                    TAG,
+                    "Moving "
+                            + tabGroupId
+                            + " to "
+                            + requestedIndex
+                            + " actual valid index "
+                            + firstValidIndex);
+        }
         mTabModelJni.moveGroupToIndex(tabGroupId, requestedIndex);
+        if (ENABLE_DEBUG_LOGGING) {
+            logTabModelStructure(mTabModelJni, "After move");
+        }
 
         int size = tabs.size();
         for (int i = 0; i < size; i++) {
@@ -1344,5 +1378,47 @@ public class TabModelImplTest {
 
     private void createTabs(int n) {
         for (int i = 0; i < n; i++) createTab();
+    }
+
+    private void logTabModelStructure(TabModel tabModel, String prefix) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(prefix).append("\n");
+        sb.append("TabModel structure:\n");
+        int tabCount = tabModel.getCount();
+        sb.append("Tab count: " + tabCount + "\n");
+        int i = 0;
+        for (; i < tabCount; i++) {
+            sb.append("Pinned: [\n");
+            Tab tab = tabModel.getTabAt(i);
+            if (!tab.getIsPinned()) break;
+            printTab(sb, tab, i);
+        }
+        sb.append("],\n");
+        sb.append("Unpinned: [\n");
+        for (; i < tabCount; i++) {
+            Tab tab = tabModel.getTabAt(i);
+            Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId != null) {
+                sb.append("Group: " + tabGroupId + " [\n");
+                while (i < tabCount) {
+                    Tab groupTab = tabModel.getTabAt(i);
+                    if (!tabGroupId.equals(groupTab.getTabGroupId())) {
+                        i--;
+                        break;
+                    }
+                    printTab(sb, groupTab, i);
+                    i++;
+                }
+                sb.append("],\n");
+            } else {
+                printTab(sb, tab, i);
+            }
+        }
+        sb.append("]\n");
+        Log.i(TAG, sb.toString());
+    }
+
+    private void printTab(StringBuilder sb, Tab tab, int index) {
+        sb.append(index).append(": ").append(tab.getId()).append(",\n");
     }
 }

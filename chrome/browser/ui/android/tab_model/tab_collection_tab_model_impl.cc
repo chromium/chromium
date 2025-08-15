@@ -211,7 +211,7 @@ int TabCollectionTabModelImpl::MoveTabGroupTo(JNIEnv* env,
   // to account for the size of the group. To do this we subtract the number of
   // tabs in the group from the `to_index`. Note that GetSafeIndex() already
   // subtracts one when moving to a higher index so we subtract 1 less.
-  if (to_index >= base::checked_cast<int>(range.end())) {
+  if (to_index >= base::checked_cast<int>(range.end() - 1U)) {
     to_index -= range.length() - 1;
     CHECK_GE(to_index, 0);
   }
@@ -388,6 +388,8 @@ size_t TabCollectionTabModelImpl::GetSafeIndex(
       current_index, tab_strip_collection_->TabCountRecursive());
   size_t clamped_index =
       std::clamp(proposed_index, first_non_pinned_index, total_tabs);
+
+  // If a tab is part of a group, it cannot be moved out of the group.
   if (!is_tab_group && tab_group_id) {
     TabGroupTabCollection* group_collection =
         tab_strip_collection_->GetTabGroupCollection(*tab_group_id);
@@ -402,28 +404,53 @@ size_t TabCollectionTabModelImpl::GetSafeIndex(
     }
   }
 
-  // Always safe since these are the edges.
+  // Early exit if the index is one of the edges, as it is a safe index.
   if (clamped_index == first_non_pinned_index || clamped_index == total_tabs) {
     return clamped_index;
   }
 
+  // If the destination is inside a group, the tab should be moved to be
+  // adjacent to the group.
   std::optional<TabGroupId> group_at_index = GetGroupIdAt(clamped_index);
   if (group_at_index) {
-    // Insertion will happen inside a tab group we need to push it out.
-    TabGroupTabCollection* group_collection =
-        tab_strip_collection_->GetTabGroupCollection(*group_at_index);
-    gfx::Range range = group_collection->GetTabGroup()->ListTabs();
-
     // When moving a tab group to be within its own range this should no-op.
     if (is_tab_group && group_at_index == tab_group_id) {
-      return range.start();
+      return current_index.value_or(clamped_index);
     }
 
-    // Push to the nearest boundary.
-    if (clamped_index - range.start() < range.end() - clamped_index) {
-      return ClampIfMovingToHigherIndex(current_index, range.start());
+    TabGroupTabCollection* destination_group_collection =
+        tab_strip_collection_->GetTabGroupCollection(*group_at_index);
+    gfx::Range destination_range =
+        destination_group_collection->GetTabGroup()->ListTabs();
+
+    // If a tab is being moved to a location that is a group of size 1, the move
+    // should be allowed.
+    if (destination_range.length() == 1) {
+      return clamped_index;
+    }
+
+    // If the tab is otherwise inside a group we need to push the move outside
+    // the group.
+    const size_t front_delta = clamped_index - destination_range.start();
+    const size_t back_delta = (destination_range.end() - 1) - clamped_index;
+
+    // Check which side of the group the tab is being moved from. This is used
+    // to determine which side of the group the tab should be moved to.
+    const bool is_moving_from_left =
+        current_index && *current_index < destination_range.start();
+
+    // Push the tab to be in front of the group if the front delta is smaller or
+    // the deltas are equal and the tab is being moved from in front of the
+    // group.
+    const bool keep_in_front =
+        front_delta < back_delta ||
+        (front_delta == back_delta && is_moving_from_left);
+
+    if (keep_in_front) {
+      return ClampIfMovingToHigherIndex(current_index,
+                                        destination_range.start());
     } else {
-      return ClampIfMovingToHigherIndex(current_index, range.end());
+      return ClampIfMovingToHigherIndex(current_index, destination_range.end());
     }
   }
 
