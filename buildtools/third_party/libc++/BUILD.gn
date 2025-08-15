@@ -68,44 +68,35 @@ modulemap_config("libcxx_modulemap") {
 }
 
 if (current_toolchain == default_toolchain) {
-  if (use_clang_modules) {
-    # The Clang modules build requires libc++ headers, __assertion_handler, and
-    # __config_site to be in the same directory.
-    #
-    # To avoid redundant work, the copy targets are declared only in the default
-    # toolchain. This prevents unnecessary copies in multi-toolchain builds and
-    # allows Siso to use its precomputed tree for the default toolchain's `gen`
-    # directory.
-    copy("copy_libcxx_headers") {
-      sources = libcxx_headers
-      outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
-    }
+  # The Clang modules build requires libc++ headers, __assertion_handler, and
+  # __config_site to be in the same directory.
+  #
+  # To avoid redundant work, the copy targets are declared only in the default
+  # toolchain. This prevents unnecessary copies in multi-toolchain builds and
+  # allows Siso to use its precomputed tree for the default toolchain's `gen`
+  # directory.
+  copy("copy_libcxx_headers") {
+    sources = libcxx_headers
+    outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
+  }
 
-    copy("copy_custom_headers") {
-      sources = [
-        "__assertion_handler",
-        "__config_site",
-      ]
-      outputs = [
-        "${root_gen_dir}/third_party/libc++/src/include/{{source_file_part}}",
-      ]
-    }
+  copy("copy_custom_headers") {
+    sources = [
+      "__assertion_handler",
+      "__config_site",
+    ]
+    outputs = [
+      "${root_gen_dir}/third_party/libc++/src/include/{{source_file_part}}",
+    ]
+  }
 
-    if (is_ios) {
-      # sysroot_modulemaps can be inside the build directory. This no-op action
-      # declares the modulemap files as outputs to satisfy GN's dependency
-      # tracking when other targets use them as inputs.
-      action("copy_sysroot_modulemaps") {
-        script = "//build/noop.py"
-        outputs = sysroot_modulemaps
-      }
-    }
-  } else {
-    # These are no-op targets for when use_clang_modules = false. They are
-    # still referenced in BUILDCONFIG.gn.
-    group("copy_libcxx_headers") {
-    }
-    group("copy_custom_headers") {
+  if (use_clang_modules && is_ios) {
+    # sysroot_modulemaps can be inside the build directory. This no-op action
+    # declares the modulemap files as outputs to satisfy GN's dependency
+    # tracking when other targets use them as inputs.
+    action("copy_sysroot_modulemaps") {
+      script = "//build/noop.py"
+      outputs = sysroot_modulemaps
     }
   }
 }
