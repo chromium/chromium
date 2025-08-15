@@ -123,6 +123,16 @@ class DumpAccessibilityTestBase
     return EventTestPassesExcept<ui::AXApiType::kWinUIA>();
   }
 
+  // We currently don't support dumping blink events. However, the event tests
+  // have optional support for dumping the accessibility tree before and after
+  // each go() pass. Those tree dumps are also supported for blink, providing
+  // a means to test changes to the internal tree in response to events.
+  static ApiTypeVector EventTestPassesWithBlink() {
+    ApiTypeVector passes = EventTestPasses();
+    passes.push_back(ui::AXApiType::kBlink);
+    return passes;
+  }
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;

@@ -1,0 +1,55 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Dialog Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-dialog'
+++++++++++genericContainer ignored invisible
+++++++++++dialog ignored invisible
+++++++++++++heading ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++sectionWithoutName ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++++staticText ignored invisible
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Dialog Events'
+++genericContainer ignored invisible <<<<<< CHANGED
+++++genericContainer ignored invisible <<<<<< CHANGED
+++++dialog className='has-headline has-actions' htmlTag='dialog' name='Test' <<<<<< CHANGED
+++++++genericContainer className='container' htmlTag='div' <<<<<< CHANGED
+++++++++genericContainer className='headline' htmlTag='div' <<<<<< CHANGED
+++++++++++heading htmlTag='h2' name='Test' <<<<<< CHANGED
+++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++staticText name='Test' <<<<<< CHANGED
+++++++++++++++++++inlineTextBox name='Test' <<<<<< CHANGED
+++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++genericContainer className='content' htmlTag='div' <<<<<< CHANGED
+++++++++++++genericContainer className='top anchor' htmlTag='div' <<<<<< CHANGED
+++++++++++++sectionWithoutName htmlTag='form' <<<<<< CHANGED
+++++++++++++++paragraph htmlTag='p' <<<<<< CHANGED
+++++++++++++++++staticText name='Test' <<<<<< CHANGED
+++++++++++++++++++inlineTextBox name='Test' <<<<<< CHANGED
+++++++++++++genericContainer className='bottom anchor' htmlTag='div' <<<<<< CHANGED
+++++++++genericContainer className='actions' htmlTag='div' <<<<<< CHANGED
+++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++genericContainer htmlTag='md-text-button' <<<<<< CHANGED
+++++++++++++++genericContainer className='background' htmlTag='div' <<<<<< CHANGED
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++button className='button' htmlTag='button' name='OK' <<<<<< CHANGED
+++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++staticText name='OK' <<<<<< CHANGED
+++++++++++++++++++++++inlineTextBox name='OK' <<<<<< CHANGED
+=== End accessibility tree ===

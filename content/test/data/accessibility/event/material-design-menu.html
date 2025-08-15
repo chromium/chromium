@@ -15,7 +15,7 @@
     <title>Material Web Menu Events</title>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
     <script type="module">
-        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner } from "../material-design/resources/utils.js";
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
         injectImportMap();
 
         const components = [
@@ -26,6 +26,7 @@
         ];
 
         setupEventTestRunner();
+        window.waitForStable = waitForStable;
         loadAndWaitForReady(components, () => {
             const statusDiv = document.getElementById("status");
             const menuContainer = document.createElement("div");
@@ -41,6 +42,8 @@
             menu.id = "test-menu";
             menu.anchor = "test-menu-button";
             menu.quick = true;
+            menu.stayOpenOnOutsideClick = true;
+            menu.stayOpenOnFocusout = true;
 
             const menuItem1 = document.createElement("md-menu-item");
             menuItem1.headline = "Menu Item 1";
@@ -70,14 +73,15 @@
 </body>
 <script>
     window.go_passes = [
-        () => {
+        async () => {
             const menu = document.getElementById("test-menu");
             if (menu) {
                 menu.open = true;
+                await waitForStable(menu);
             }
         },
 
-        () => {
+        async () => {
             const menu = document.getElementById("test-menu");
             if (menu) {
                 // There's a race condition among three things:
@@ -89,6 +93,7 @@
                 // Therefore manually set the focus.
                 menu.anchorElement.focus({ preventScroll: true });
                 menu.open = false;
+                await waitForStable(menu);
             }
         }
     ];

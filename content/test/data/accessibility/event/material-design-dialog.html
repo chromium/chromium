@@ -22,7 +22,7 @@
         }
     </style>
     <script type="module">
-        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner } from "../material-design/resources/utils.js";
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
         injectImportMap();
 
         const components = [
@@ -31,6 +31,7 @@
         ];
 
         setupEventTestRunner();
+        window.waitForStable = waitForStable;
         loadAndWaitForReady(components, () => {
             const statusDiv = document.getElementById("status");
             const dialog = document.createElement("md-dialog");
@@ -80,8 +81,7 @@
             if (dialog) {
                 await dialog.updateComplete;
                 dialog.show();
-                await dialog.updateComplete;
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await waitForStable(dialog);
             }
         }
     ];

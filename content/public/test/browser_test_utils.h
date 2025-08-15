@@ -1181,6 +1181,11 @@ ui::AXNodeData GetFocusedAccessibilityNodeInfo(WebContents* web_contents);
 // until any change happens to the accessibility tree.
 void WaitForAccessibilityTreeToChange(WebContents* web_contents);
 
+// Waits for any change to the accessibility tree, with a timeout.
+// Returns true if a change occurred, false if the timeout was reached.
+bool WaitForAccessibilityTreeToChange(WebContents* web_contents,
+                                      base::TimeDelta timeout);
+
 // Searches the accessibility tree to see if any node's accessible name
 // is equal to the given name. If not, repeatedly calls
 // WaitForAccessibilityTreeToChange, above, and then checks again.

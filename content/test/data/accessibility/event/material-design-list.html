@@ -16,7 +16,7 @@
 <head>
     <title>Material Web List Events</title>
     <script type="module">
-        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner } from "../material-design/resources/utils.js";
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
         injectImportMap();
 
         const components = [
@@ -25,6 +25,7 @@
         ];
 
         setupEventTestRunner();
+        window.waitForStable = waitForStable;
         loadAndWaitForReady(components, () => {
             const statusDiv = document.getElementById("status");
 
@@ -68,7 +69,7 @@
             const item = document.getElementById("test-item-1");
             if (item) {
                 item.dispatchEvent(new Event("request-activation", { bubbles: true }));
-                await item.updateComplete;
+                await waitForStable(item);
             }
         },
 
@@ -76,7 +77,7 @@
             const item = document.getElementById("test-item-3");
             if (item) {
                 item.dispatchEvent(new Event("request-activation", { bubbles: true }));
-                await item.updateComplete;
+                await waitForStable(item);
             }
         }
     ];

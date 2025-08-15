@@ -2343,6 +2343,12 @@ void WaitForAccessibilityTreeToChange(WebContents* web_contents) {
   ASSERT_TRUE(accessibility_waiter.WaitForNotification());
 }
 
+bool WaitForAccessibilityTreeToChange(WebContents* web_contents,
+                                      base::TimeDelta timeout) {
+  AccessibilityNotificationWaiter accessibility_waiter(web_contents);
+  return accessibility_waiter.WaitForNotificationWithTimeout(timeout);
+}
+
 void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
                                                    std::string_view name) {
   WebContentsImpl* web_contents_impl =

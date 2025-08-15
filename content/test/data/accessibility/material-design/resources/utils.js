@@ -124,23 +124,40 @@ function animationsFinished(element) {
  * and waiting for any associated animations to complete.
  * @param {HTMLElement} element The component element to wait for.
  */
-async function waitForStable(element) {
+export async function waitForStable(element) {
   await element.updateComplete;
   await animationsFinished(element);
   await new Promise(resolve => requestAnimationFrame(resolve));
   await element.updateComplete;
 
-  // Extra stability for form controls with visual states
-  if (element.tagName === "MD-CHECKBOX" || element.tagName === "MD-RADIO" ||
-      element.tagName === "MD-SWITCH") {
-    await new Promise(resolve => requestAnimationFrame(resolve));
+  const tagName = element.tagName;
+  // Components with complex state changes: Need double updateComplete with
+  // timeout to ensure all cascading DOM updates complete before tree dump.
+  if (tagName === "MD-DIALOG" || tagName === "MD-LIST" ||
+      tagName === "MD-FAB" || tagName === "MD-MENU" ||
+      tagName === "MD-FILTER-CHIP" || tagName === "MD-CHIP-SET" ||
+      tagName === "MD-FILLED-TEXT-FIELD" ||
+      tagName === "MD-OUTLINED-TEXT-FIELD") {
     await element.updateComplete;
+    await new Promise(resolve => setTimeout(resolve, 250));
+    await element.updateComplete;
+
+    // Dialogs are flaky on LSan/ASan.
+    if (tagName === "MD-DIALOG") {
+      document.body.offsetHeight; // Force layout
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
   }
 
-  // Containers need extra time.
-  if (element.tagName === "MD-DIALOG" || element.tagName === "MD-FAB" ||
-      element.tagName === "MD-LIST") {
-    await new Promise(resolve => setTimeout(resolve, 100));
+  // Form controls: Layout stability via forced reflow, single updateComplete
+  // is sufficient to know we've reached the final state and can dump the tree.
+  if (tagName === "MD-CHECKBOX" || tagName === "MD-RADIO" ||
+      tagName === "MD-SWITCH" || tagName === "MD-FILLED-SELECT" ||
+      tagName === "MD-OUTLINED-SELECT") {
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    document.body.offsetHeight; // Force layout
+    await new Promise(resolve => requestAnimationFrame(resolve));
     await element.updateComplete;
   }
 }
@@ -310,10 +327,32 @@ export function setupEventTestRunner() {
 
             if (isReady) {
                 return new Promise(resolve => {
-                    setTimeout(() => {
+                    setTimeout(async () => {
                         if (window.current_pass < window.go_passes.length) {
                             try {
-                                window.go_passes[window.current_pass++].call();
+                                const result =
+                                    window.go_passes[window.current_pass++]
+                                        .call();
+                                if (result &&
+                                    typeof result.then === "function") {
+                                    await result;
+                                }
+
+                                const statusDiv =
+                                    document.getElementById("status");
+                                if (statusDiv) {
+                                    const components =
+                                        statusDiv.querySelectorAll(
+                                        "md-filled-select, " +
+                                        "md-outlined-select, " +
+                                        "md-filled-text-field, " +
+                                        "md-outlined-text-field, " +
+                                        "md-checkbox, md-radio, md-switch"
+                                    );
+                                    for (const component of components) {
+                                        await waitForStable(component);
+                                    }
+                                }
                             } catch (error) {
                                 console.error(`Error in go_passes[${window.current_pass - 1}]:`, error);
                             }

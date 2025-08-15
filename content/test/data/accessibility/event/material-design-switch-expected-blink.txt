@@ -1,0 +1,86 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Switch Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-switch'
+++++++++++genericContainer className='switch  unselected ' htmlTag='div'
+++++++++++++switch className='touch' htmlTag='input' name='Test Switch' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Switch Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-switch'
+++++++++++genericContainer className='switch selected' htmlTag='div' <<<<<< CHANGED
+++++++++++++switch className='touch' htmlTag='input' name='Test Switch' checkedState=true <<<<<< CHANGED
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Switch Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-switch'
+++++++++++genericContainer className='switch selected' htmlTag='div'
+++++++++++++switch className='touch' htmlTag='input' name='Test Switch' checkedState=true
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Switch Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-switch'
+++++++++++genericContainer className='switch unselected' htmlTag='div' <<<<<< CHANGED
+++++++++++++switch className='touch' htmlTag='input' name='Test Switch' checkedState=false <<<<<< CHANGED
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Switch Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-switch'
+++++++++++genericContainer className='switch unselected' htmlTag='div'
+++++++++++++switch className='touch' htmlTag='input' name='Test Switch' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Switch Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-switch'
+++++++++++genericContainer className='switch selected' htmlTag='div' <<<<<< CHANGED
+++++++++++++switch className='touch' htmlTag='input' name='Test Switch' checkedState=true <<<<<< CHANGED
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+=== End accessibility tree ===

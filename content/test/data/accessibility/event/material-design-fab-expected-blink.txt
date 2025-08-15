@@ -1,0 +1,92 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web FAB Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-fab'
+++++++++++button className='fab  small primary ' htmlTag='button' name='Add'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web FAB Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-fab'
+++++++++++button className='fab small primary lowered' htmlTag='button' name='Add' <<<<<< CHANGED
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web FAB Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-fab'
+++++++++++button className='fab small primary lowered' htmlTag='button' name='Add'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web FAB Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-fab'
+++++++++++button className='fab small primary' htmlTag='button' name='Add' <<<<<< CHANGED
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web FAB Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-fab'
+++++++++++button className='fab small primary' htmlTag='button' name='Add'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web FAB Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-fab'
+++++++++++button className='fab small primary' htmlTag='button' name='Add'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+=== End accessibility tree ===

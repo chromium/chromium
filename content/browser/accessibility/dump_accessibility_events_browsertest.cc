@@ -154,6 +154,9 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
     }
     return marked_after_lines;
   }
+
+  std::pair<base::Value, std::vector<std::string>> CaptureEvents(
+      InvokeAction invoke_action) override;
 };
 
 std::vector<std::string> DumpAccessibilityEventsTest::Dump() {
@@ -177,6 +180,15 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump() {
       if (go_pass_number == 1) {
         WaitForFinalTreeContents();
       }
+#if BUILDFLAG(IS_ANDROID)
+      // By default, Android does not load inline text boxes. We need to
+      // explicitly load them to ensure consistent Blink trees.
+      if (ui::BrowserAccessibilityManager* manager = GetManager()) {
+        manager->LoadInlineTextBoxes(*manager->GetBrowserAccessibilityRoot());
+        content::WaitForAccessibilityTreeToChange(GetWebContents(),
+                                                  base::Milliseconds(500));
+      }
+#endif
       std::string initial_tree_dump = DumpTreeAsString();
       result.emplace_back("=== Accessibility tree before go() pass " +
                           base::NumberToString(go_pass_number) + " ===");
@@ -207,6 +219,11 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump() {
 
     // 3. Optionally dump the after-run accessibility tree, noting any changes.
     if (ShouldDumpAccessibilityTreeAfterEachGoPass()) {
+#if BUILDFLAG(IS_ANDROID)
+      if (ui::BrowserAccessibilityManager* manager = GetManager()) {
+        manager->LoadInlineTextBoxes(*manager->GetBrowserAccessibilityRoot());
+      }
+#endif
       std::string final_tree_dump = DumpTreeAsString();
       result.emplace_back("=== Accessibility tree after go() pass " +
                           base::NumberToString(go_pass_number) + " ===");
@@ -260,6 +277,28 @@ void DumpAccessibilityEventsTest::RunEventTest(
   RunTest(event_file, "accessibility/event");
 }
 
+std::pair<base::Value, std::vector<std::string>>
+DumpAccessibilityEventsTest::CaptureEvents(InvokeAction invoke_action) {
+  // Platforms that support event recording should do their normal thing.
+  if (GetParam() != ui::AXApiType::kBlink) {
+    return DumpAccessibilityTestBase::CaptureEvents(std::move(invoke_action));
+  }
+
+  // Execute this `go()` run for blink tests.
+  base::Value action_result = std::move(invoke_action).Run();
+
+  if (ShouldDumpAccessibilityTreeAfterEachGoPass()) {
+    // Wait for DOM changes to propagate to accessibility tree.
+    // Note that some tests have their own logic to indicate readiness, so
+    // not receiving an update is not necessarily a bug.
+    content::WaitForAccessibilityTreeToChange(GetWebContents(),
+                                              base::Milliseconds(500));
+  }
+
+  std::vector<std::string> empty_events;
+  return std::make_pair(std::move(action_result), std::move(empty_events));
+}
+
 class DumpAccessibilityEventsTestExceptUIA
     : public DumpAccessibilityEventsTest {};
 
@@ -275,7 +314,7 @@ struct DumpAccessibilityEventsTestPassToString {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityEventsTest,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPasses()),
+    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesWithBlink()),
     DumpAccessibilityEventsTestPassToString());
 
 INSTANTIATE_TEST_SUITE_P(
@@ -284,7 +323,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesExceptUIA()),
     DumpAccessibilityEventsTestPassToString());
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 class DumpAccessibilityEventsWithMaterialDesignTest
     : public DumpAccessibilityEventsTest {
  public:
@@ -297,9 +336,9 @@ class DumpAccessibilityEventsWithMaterialDesignTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityEventsWithMaterialDesignTest,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPasses()),
+    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesWithBlink()),
     DumpAccessibilityEventsTestPassToString());
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 class DumpAccessibilityEventsWithExperimentalWebFeaturesTest
     : public DumpAccessibilityEventsTest {

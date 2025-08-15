@@ -1,0 +1,188 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-button'
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Filled Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Filled Button'
+++++++++++++++++++inlineTextBox name='Filled Button'
+++++++++genericContainer htmlTag='md-outlined-button' restriction=disabled
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Outlined Button' restriction=disabled
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Outlined Button'
+++++++++++++++++++inlineTextBox name='Outlined Button'
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-button'
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Filled Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Filled Button'
+++++++++++++++++++inlineTextBox name='Filled Button'
+++++++++genericContainer htmlTag='md-outlined-button' restriction=disabled
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Outlined Button' restriction=disabled
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Outlined Button'
+++++++++++++++++++inlineTextBox name='Outlined Button'
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-button'
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Filled Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Filled Button'
+++++++++++++++++++inlineTextBox name='Filled Button'
+++++++++genericContainer htmlTag='md-outlined-button' restriction=disabled
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Outlined Button' restriction=disabled
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Outlined Button'
+++++++++++++++++++inlineTextBox name='Outlined Button'
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-button' restriction=disabled <<<<<< CHANGED
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Filled Button' restriction=disabled <<<<<< CHANGED
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Filled Button'
+++++++++++++++++++inlineTextBox name='Filled Button'
+++++++++genericContainer htmlTag='md-outlined-button' restriction=disabled
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Outlined Button' restriction=disabled
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Outlined Button'
+++++++++++++++++++inlineTextBox name='Outlined Button'
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-button' restriction=disabled
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Filled Button' restriction=disabled
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Filled Button'
+++++++++++++++++++inlineTextBox name='Filled Button'
+++++++++genericContainer htmlTag='md-outlined-button' restriction=disabled
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Outlined Button' restriction=disabled
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Outlined Button'
+++++++++++++++++++inlineTextBox name='Outlined Button'
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-button' restriction=disabled
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Filled Button' restriction=disabled
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Filled Button'
+++++++++++++++++++inlineTextBox name='Filled Button'
+++++++++genericContainer htmlTag='md-outlined-button' <<<<<< CHANGED
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Outlined Button' <<<<<< CHANGED
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Outlined Button'
+++++++++++++++++++inlineTextBox name='Outlined Button'
+=== End accessibility tree ===
