@@ -14,7 +14,6 @@ source_set("ui_bundled") {
     "//components/favicon/core",
     "//components/favicon_base",
     "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/resources",
     "//url",

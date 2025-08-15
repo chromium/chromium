@@ -17,6 +17,8 @@ NSString* const kFaviconDefaultBackgroundColorKey =
 NSString* const kFaviconDefaultImageKey = @"faviconDefaultImage";
 }  // namespace
 
+const CGFloat kFallbackIconDefaultTextColorGrayscale = 0.667;
+
 @implementation FaviconAttributes
 
 - (instancetype)initWithImage:(UIImage*)image

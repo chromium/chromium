@@ -143,7 +143,17 @@
                                             faviconLoadedBlock);
   } else {
     /// If the URL does not exist, return the monogram for the username.
-    faviconLoadedBlock([FaviconAttributes attributesWithDefaultImage]);
+    CHECK(item.username.length > 0);
+    NSString* monogram =
+        [[item.username substringToIndex:1] localizedUppercaseString];
+    faviconLoadedBlock([FaviconAttributes
+        attributesWithMonogram:monogram
+                     textColor:[UIColor
+                                   colorWithWhite:
+                                       kFallbackIconDefaultTextColorGrayscale
+                                            alpha:1]
+               backgroundColor:UIColor.clearColor
+        defaultBackgroundColor:YES]);
   }
   return YES;
 }

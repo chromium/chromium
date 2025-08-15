@@ -7,6 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+// The grayscale value of the default color for monogram string.
+extern const CGFloat kFallbackIconDefaultTextColorGrayscale;
+
 // Attributes of a favicon. A favicon is represented either with an image or
 // with a fallback monogram of a given color and background color.
 @interface FaviconAttributes : NSObject <NSCoding>
@@ -20,7 +23,7 @@
 @property(nonatomic, readonly, strong, nullable) UIColor* textColor;
 // Favicon monogram background color. Only available when there is no image.
 @property(nonatomic, readonly, strong, nullable) UIColor* backgroundColor;
-// Whether the background color is the default one.Only available when there is
+// Whether the background color is the default one. Only available when there is
 // no image.
 @property(nonatomic, readonly, assign, getter=isDefaultBackgroundColor)
     BOOL defaultBackgroundColor;
