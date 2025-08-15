@@ -74,6 +74,7 @@ inline constexpr char kSavePasswordsEphemeralModule[] =
     "save_passwords_ephemeral_module";
 inline constexpr char kLensEphemeralModule[] = "lens_ephemeral_module";
 inline constexpr char kSendTabNotificationPromo[] = "send_tab_promo";
+inline constexpr char kAppBundlePromo[] = "app_bundle_promo";
 
 // Variation labels for emphemeral IOS modules.
 // Lens variation labels

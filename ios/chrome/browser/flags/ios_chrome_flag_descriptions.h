@@ -26,9 +26,6 @@ extern const char kAIMPrototypeDevToolsDescription[];
 extern const char kAIMPrototypeName[];
 extern const char kAIMPrototypeDescription[];
 
-extern const char kOmniboxDRSPrototypeName[];
-extern const char kOmniboxDRSPrototypeDescription[];
-
 extern const char kAppBackgroundRefreshName[];
 extern const char kAppBackgroundRefreshDescription[];
 
@@ -634,6 +631,9 @@ extern const char kNativeFindInPageDescription[];
 
 extern const char kNTPViewHierarchyRepairName[];
 extern const char kNTPViewHierarchyRepairDescription[];
+
+extern const char kOmniboxDRSPrototypeName[];
+extern const char kOmniboxDRSPrototypeDescription[];
 
 extern const char kOmniboxHttpsUpgradesName[];
 extern const char kOmniboxHttpsUpgradesDescription[];

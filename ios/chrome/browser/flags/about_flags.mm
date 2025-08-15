@@ -811,6 +811,7 @@ const FeatureEntry::FeatureParam kTipsSavePasswordsForceHideArm[] = {
      segmentation_platform::kSavePasswordsEphemeralModule},
 };
 
+// Send Tab Promo
 const FeatureEntry::FeatureParam kSendTabPromoForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kSendTabNotificationPromo},
@@ -818,6 +819,16 @@ const FeatureEntry::FeatureParam kSendTabPromoForceShowArm[] = {
 const FeatureEntry::FeatureParam kSendTabPromoForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
      segmentation_platform::kSendTabNotificationPromo},
+};
+
+// App Bundle Promo
+const FeatureEntry::FeatureParam kAppBundlePromoForceShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kAppBundlePromo},
+};
+const FeatureEntry::FeatureParam kAppBundlePromoForceHideArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
+     segmentation_platform::kAppBundlePromo},
 };
 
 // ShopCard experiment arms
@@ -909,6 +920,12 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
          std::size(kSendTabPromoForceShowArm), nullptr},
         {"- Force Hide Send Tab Promo", kSendTabPromoForceHideArm,
          std::size(kSendTabPromoForceHideArm), nullptr},
+
+        // App Bundle Promo.
+        {"- Force Show App Bundle Promo", kAppBundlePromoForceShowArm,
+         std::size(kAppBundlePromoForceShowArm), nullptr},
+        {"- Force Hide App Bundle Promo", kAppBundlePromoForceHideArm,
+         std::size(kAppBundlePromoForceHideArm), nullptr},
 };
 
 const FeatureEntry::FeatureParam
