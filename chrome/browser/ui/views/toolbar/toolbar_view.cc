@@ -125,6 +125,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
+#include "chrome/common/intentive/intentive_features.h"
+#include "chrome/browser/ui/views/intentive/intentive_chat_overlay.h"
+#include "ui/views/controls/button/label_button.h"
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/recovery/recovery_install_global_error_factory.h"
 #endif
@@ -496,6 +500,13 @@ void ToolbarView::Init() {
 
   LoadImages();
 
+  if (base::FeatureList::IsEnabled(intentive::kIntentiveUI)) {
+    auto cb = base::BindRepeating(&ToolbarView::OnCommandButtonPressed,
+                                  base::Unretained(this));
+    command_button_ = container_view_->AddChildView(
+        std::make_unique<views::LabelButton>(cb, u"Command"));
+  }
+  
   // Start global error services now so we set the icon on the menu correctly.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   RecoveryInstallGlobalErrorFactory::GetForProfile(browser_->profile());
@@ -681,6 +692,14 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
   BookmarkBubbleView::ShowBubble(anchor_view, GetWebContents(),
                                  bookmark_star_icon, browser_, url,
                                  already_bookmarked);
+}
+
+void ToolbarView::OnCommandButtonPressed() {
+  if (!base::FeatureList::IsEnabled(intentive::kIntentiveUI)) return;
+  auto* bv = BrowserView::GetBrowserViewForBrowser(browser_);
+  auto* container = bv->contents_container();
+  auto* profile = browser_->profile();
+  IntentiveChatOverlay::ShowOrToggle(container, profile);
 }
 
 views::Button* ToolbarView::GetChromeLabsButton() const {

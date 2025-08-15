@@ -365,6 +365,10 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<View> background_view_left_ = nullptr;
   raw_ptr<View> background_view_right_ = nullptr;
 
+  // Intentive
+  raw_ptr<views::LabelButton> command_button_ = nullptr;
+  void OnCommandButtonPressed();
+
   // Listens to changes to window active state to update background_view_right_
   // and background_view_left_, as their background depends on active state.
   base::CallbackListSubscription active_state_subscription_;
