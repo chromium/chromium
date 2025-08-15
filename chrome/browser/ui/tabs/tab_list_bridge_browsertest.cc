@@ -214,3 +214,22 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, DuplicateTab) {
               testing::ElementsAre(MatchesTab(url1), MatchesTab(url1),
                                    MatchesTab(url2)));
 }
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, CloseTab) {
+  TabListInterface* tab_list_interface = TabListBridge::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  EXPECT_EQ(1, tab_list_interface->GetTabCount());
+
+  const GURL url("http://one.example");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_EQ(2, tab_list_interface->GetTabCount());
+
+  tabs::TabInterface* tab_to_close = tab_list_interface->GetActiveTab();
+  ASSERT_TRUE(tab_to_close);
+
+  tab_list_interface->CloseTab(tab_to_close->GetHandle());
+  EXPECT_EQ(1, tab_list_interface->GetTabCount());
+}

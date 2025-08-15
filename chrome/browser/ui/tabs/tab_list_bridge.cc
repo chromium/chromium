@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "components/tabs/public/tab_interface.h"
@@ -82,7 +83,12 @@ void TabListBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
 
 void TabListBridge::MoveTab(tabs::TabHandle tab, int index) {}
 
-void TabListBridge::CloseTab(tabs::TabHandle tab) {}
+void TabListBridge::CloseTab(tabs::TabHandle tab) {
+  const int index = GetIndexOfTab(tab);
+  CHECK_NE(index, TabStripModel::kNoTab)
+      << "Trying to close a tab that doesn't exist in this tab list.";
+  tab_strip_->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
+}
 
 std::vector<tabs::TabInterface*> TabListBridge::GetAllTabs() {
   std::vector<tabs::TabInterface*> all_tabs;
