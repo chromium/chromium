@@ -347,6 +347,22 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
                                       /* initial_nesting_level */ 0);
       line_box_state.ComputeTextMetrics(line_style, *line_box_state.font,
                                         baseline_type, &text_scale);
+      // If ::first-line has a smaller computed line-height than its containing
+      // block, recompute text metrics using the containing block's style
+      // instead. This satisfies the CSS specification that a ::first-line
+      // pseudo-element must behave like an inline-level element.
+      // https://drafts.csswg.org/selectors-3/#first-line
+      if (RuntimeEnabledFeatures::FirstLineTextMetricsEnabled() &&
+          line_style.StyleType() == kPseudoIdFirstLine &&
+          node.Style().ComputedLineHeight() > line_style.ComputedLineHeight()) {
+        InlineBoxState first_line_box_state;
+        first_line_box_state.ResetStyle(node.Style(), node.IsSvgText(),
+                                        *node.GetLayoutBox());
+        first_line_box_state.ComputeTextMetrics(
+            node.Style(), *node.Style().GetFont(), baseline_type, &text_scale);
+        line_box_state.text_metrics = first_line_box_state.text_metrics;
+        line_box_state.metrics = first_line_box_state.metrics;
+      }
     }
   }
 

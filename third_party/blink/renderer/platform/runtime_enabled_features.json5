@@ -2240,6 +2240,10 @@
       status: "stable",
     },
     {
+      name: "FirstLineTextMetrics",
+      status: "stable",
+    },
+    {
       // crbug.com/411739501
       name: "FixNextPositionCalculationInInsertList",
       status: "stable",
