@@ -363,6 +363,7 @@ public class ToolbarManager
     private boolean mIsDestroyed;
 
     private final boolean mIsCustomTab;
+    private final boolean mIsTablet;
 
     private final ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
     private final Runnable mReadAloudReadabilityCallback = this::onReadAloudReadabilityUpdated;
@@ -832,12 +833,13 @@ public class ToolbarManager
         mMultiInstanceManager = multiInstanceManager;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
+        mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mCustomTabCount =
                 new CustomTabCount(
                         tabModelSelectorSupplier.get().getCurrentModelTabCountSupplier());
         mProfileSupplier = profileSupplier;
         mIsNewTabPageCustomizationToolbarButtonEnabled =
-                !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
+                !mIsTablet
                         && ChromeFeatureList.sNewTabPageCustomization.isEnabled()
                         && ChromeFeatureList.sNewTabPageCustomizationToolbarButton.isEnabled();
 
@@ -898,13 +900,12 @@ public class ToolbarManager
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mTopUiThemeColorProvider.addThemeColorObserver(this);
 
-        final boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         final boolean isDefaultDisplay = DisplayUtil.isContextInDefaultDisplay(mActivity);
         mAppThemeColorProvider =
                 new AppThemeColorProvider(
                         /* context= */ mActivity,
                         ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(
-                                        isTablet, isDefaultDisplay)
+                                        mIsTablet, isDefaultDisplay)
                                 ? mActivityLifecycleDispatcher
                                 : null,
                         mDesktopWindowStateManager);
@@ -944,7 +945,7 @@ public class ToolbarManager
         assert controlsVisibilityDelegate != null;
         mControlsVisibilityDelegate = controlsVisibilityDelegate;
         ThemeColorProvider browsingModeThemeColorProvider =
-                isTablet ? mAppThemeColorProvider : mTopUiThemeColorProvider;
+                mIsTablet ? mAppThemeColorProvider : mTopUiThemeColorProvider;
         ThemeColorProvider overviewModeThemeColorProvider = mAppThemeColorProvider;
 
         Runnable requestFocusRunnable = compositorViewHolder::requestFocus;
@@ -1617,7 +1618,7 @@ public class ToolbarManager
                             mToolbar.onTabSwitcherTransitionFinished();
                             updateButtonStatus();
 
-                            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+                            if (mIsTablet) {
                                 checkIfNtpLoaded();
                                 mLocationBar.maybeShowOrClearCursorInLocationBar();
                             }
@@ -2634,6 +2635,7 @@ public class ToolbarManager
 
                         mSearchEngine = searchEngine;
                         mToolbar.onDefaultSearchEngineChanged();
+                        checkIfNtpShowingWithNoPendingLoad();
                     }
                 };
         mTemplateUrlService.addObserver(mTemplateUrlObserver);
@@ -2988,9 +2990,7 @@ public class ToolbarManager
         boolean isIncognitoBranded = profile.isIncognitoBranded();
         // This method is called prior to action mode destroy callback for incognito <-> normal
         // tab switch. Makes sure the action mode toolbar is hidden before selecting the new tab.
-        if (previousTab != null
-                && wasIncognitoBranded != isIncognitoBranded
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+        if (previousTab != null && wasIncognitoBranded != isIncognitoBranded && mIsTablet) {
             mActionModeController.startHideAnimation();
         }
         // NOTE: Here we're not checking if isIncognitoBranded has changed because it's redundant
@@ -3045,8 +3045,9 @@ public class ToolbarManager
     private void checkIfNtpShowingWithNoPendingLoad() {
         boolean isNtpUrl = UrlUtilities.isNtpUrl(mLocationBarModel.getCurrentGurl());
         if (isNtpUrl && getNewTabPageForCurrentTab() != null) {
+            boolean searchEngineHasLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
             mIsNtpWithFakeboxShowingSupplier.set(
-                    getNewTabPageForCurrentTab().isLocationBarShownInNtp());
+                    NewTabPage.isInSingleUrlBarMode(mIsTablet, searchEngineHasLogo));
         } else {
             mIsNtpWithFakeboxShowingSupplier.set(false);
             maybeShowBottomToolbarIph();
@@ -3126,7 +3127,7 @@ public class ToolbarManager
     }
 
     private void maybeShowUrlBarCursorIfHardwareKeyboardAvailable() {
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) return;
+        if (!mIsTablet) return;
         if (!UrlUtilities.isNtpUrl(mLocationBarModel.getCurrentGurl())) return;
 
         if (mActivity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
