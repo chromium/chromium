@@ -27806,30 +27806,28 @@
             ]
         }
     ],
-    "WebViewReducedSeedExpiration": [
+    "WebViewReducedFinchTime": [
         {
             "platforms": [
                 "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "ReducedSeedExpiration",
                     "enable_features": [
                         "WebViewReducedSeedExpiration"
                     ]
-                }
-            ]
-        }
-    ],
-    "WebViewReducedSeedRequestPeriod": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
+                },
                 {
-                    "name": "Enabled",
+                    "name": "ReducedSeedRequestPeriod",
                     "enable_features": [
+                        "WebViewReducedSeedRequestPeriod"
+                    ]
+                },
+                {
+                    "name": "BothEnabled",
+                    "enable_features": [
+                        "WebViewReducedSeedExpiration",
                         "WebViewReducedSeedRequestPeriod"
                     ]
                 }
