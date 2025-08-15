@@ -8258,6 +8258,11 @@ const char kEnableGenericOidcAuthProfileManagementName[] =
     "Enable generic OIDC profile management";
 const char kEnableGenericOidcAuthProfileManagementDescription[] =
     "Enables profile management triggered by generic OIDC authentications.";
+
+const char kEnableOidcProfileRemoteCommandsName[] =
+    "Enable OIDC profile remote commands";
+const char kEnableOidcProfileRemoteCommandsDescription[] =
+    "Enables remote commands for OIDC profiles.";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

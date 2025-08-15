@@ -4030,6 +4030,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-oidc-profile-remote-commands",
+    "owners": [ "hmare@google.com", "cbe-device-trust-eng@google.com"],
+    "expiry_milestone": 143
+  },
+  {
     "name": "enable-ongoing-processes",
     "owners": ["kradtke@chromium.org"],
     "expiry_milestone": 131

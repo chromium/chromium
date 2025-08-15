@@ -9200,6 +9200,7 @@ from previous Chrome versions.
   <int value="-1812547164"
       label="AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement:enabled"/>
   <int value="-1812105527" label="WarmUpCompositor:enabled"/>
+  <int value="-1812091085" label="kEnableOidcProfileRemoteCommands:disabled"/>
   <int value="-1811949013" label="SameSiteByDefaultCookies:disabled"/>
   <int value="-1811394154" label="disable-webrtc-hw-vp8-encoding"/>
   <int value="-1810891359" label="SendTabToSelfManageDevicesLink:disabled"/>
@@ -11373,6 +11374,7 @@ from previous Chrome versions.
   <int value="-1022281869" label="ArcRtVcpuDualCore:enabled"/>
   <int value="-1022165708" label="BreakingNewsPush:disabled"/>
   <int value="-1021707835" label="ResetAudioSelectionImprovementPref:enabled"/>
+  <int value="-1021296874" label="EnableOidcProfileRemoteCommands:enabled"/>
   <int value="-1021097344" label="PolicyAtomicGroup:disabled"/>
   <int value="-1021038914" label="CrostiniImeSupport:enabled"/>
   <int value="-1020450980" label="gesture-deletion"/>
@@ -14666,6 +14668,7 @@ from previous Chrome versions.
   <int value="188213654" label="PageInfoHideSiteSettings:disabled"/>
   <int value="188531208" label="HidGetFeatureReportFix:disabled"/>
   <int value="188610022" label="NewMessageListView:enabled"/>
+  <int value="189721469" label="kEnableOidcProfileRemoteCommands:enabled"/>
   <int value="189728101" label="FasterLocationReload:disabled"/>
   <int value="189777537" label="DisableInitialMostVisitedFadeIn:enabled"/>
   <int value="190395448" label="SearchWebInSidePanel:enabled"/>
@@ -17463,6 +17466,7 @@ from previous Chrome versions.
   <int value="1212314391"
       label="EnableSupervisedUserSkipParentApprovalToInstallExtensions:disabled"/>
   <int value="1212526465" label="MediaAppPdfInInk:disabled"/>
+  <int value="1213886096" label="EnableOidcProfileRemoteCommands:disabled"/>
   <int value="1214219155" label="gamepad-polling-interval"/>
   <int value="1214246730" label="TerminalAlternativeRenderer:enabled"/>
   <int value="1214253278" label="AIPromptAPI:disabled"/>
