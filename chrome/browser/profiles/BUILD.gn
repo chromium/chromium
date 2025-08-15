@@ -415,16 +415,51 @@ source_set("profiles_extra_parts_impl") {
   }
 }
 
+source_set("profile_downloader") {
+  sources = [
+    "profile_downloader.cc",
+    "profile_downloader.h",
+    "profile_downloader_delegate.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/image_decoder",
+    "//components/signin/public/identity_manager",
+    "//services/network/public/cpp",
+    "//skia",
+  ]
+
+  deps = [
+    ":profile",
+    "//components/signin/public/base",
+    "//google_apis",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/mojom:url_loader_base",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "profile_metrics_unittest.cc" ]
+  sources = [
+    "profile_downloader_unittest.cc",
+    "profile_metrics_unittest.cc",
+  ]
   deps = [
+    ":profile_downloader",
     ":profile_util",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/signin",
+    "//chrome/test:test_support",
     "//components/prefs:test_support",
+    "//components/signin/public/base:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 

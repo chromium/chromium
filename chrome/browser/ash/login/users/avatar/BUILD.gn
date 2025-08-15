@@ -26,6 +26,7 @@ static_library("avatar") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile_downloader",
     "//components/session_manager/core",
     "//components/sync_preferences",
     "//components/user_manager",
@@ -114,6 +115,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/external_data:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_downloader",
     "//chrome/browser/signin",
     "//chrome/common:constants",
     "//chrome/test:test_support",
