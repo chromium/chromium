@@ -59,7 +59,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/half_float.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -585,7 +584,7 @@ TYPED_TEST(ClipboardTest, ChromiumCustomFormatTest) {
 namespace {
 
 using U8x4 = std::array<uint8_t, 4>;
-using F16x4 = std::array<gfx::HalfFloat, 4>;
+using U16x4 = std::array<uint16_t, 4>;
 
 void WriteBitmap(Clipboard* clipboard,
                  const SkImageInfo& info,
@@ -645,7 +644,7 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
 // Only kN32_SkColorType bitmaps are allowed into the clipboard to prevent
 // surprising buffer overflows due to bits-per-pixel assumptions.
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_F16_Premul) {
-  constexpr F16x4 kRGBAF16Premul = {0x30c5, 0x2d86, 0x2606, 0x3464};
+  constexpr U16x4 kRGBAF16Premul = {0x30c5, 0x2d86, 0x2606, 0x3464};
   constexpr U8x4 kRGBAPremul = {0x26, 0x16, 0x06, 0x46};
   EXPECT_DEATH_IF_SUPPORTED(
       TestBitmapWriteAndPngRead(

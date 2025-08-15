@@ -48,7 +48,9 @@
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -2170,17 +2172,16 @@ TEST_F(PointerTest, SetCursorBitmapFromBuffer) {
 
   auto scoped_mapping = shared_image->Map();
   ASSERT_TRUE(scoped_mapping);
-  auto span0 = scoped_mapping->GetMemoryForPlane(0);
-  auto stride0 = scoped_mapping->Stride(0);
-
-  ASSERT_NE(span0.size(), size_t(0));
-  ASSERT_NE(stride0, size_t(0));
 
   // Set the shared image to yellow.
-  constexpr uint8_t yellow_rgba[] = {255u, 255u, 0u, 255u};
-  gl::GLTestSupport::SetBufferDataToColor(
-      buffer_size.width(), buffer_size.height(), stride0, /*plane=*/0,
-      gfx::BufferFormat::RGBA_8888, yellow_rgba, span0.data());
+  SkImageInfo image_info =
+      SkImageInfo::Make(buffer_size.width(), buffer_size.height(),
+                        kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+  sk_sp<SkSurface> sk_surface = SkSurfaces::WrapPixels(
+      image_info, scoped_mapping->GetMemoryForPlane(0).data(),
+      image_info.minRowBytes());
+  sk_surface->getCanvas()->clear(SK_ColorYELLOW);
+
   scoped_mapping.reset();
 
   std::unique_ptr<Surface> pointer_surface(new Surface);
