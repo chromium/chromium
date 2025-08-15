@@ -492,6 +492,9 @@ chromium-metrics-reviews@google.com.
       summary="promotes expanded player for Read Aloud"/>
   <variant name="IPH_ReadAloudPlaybackModeFeature"
       summary="promotes playback mode selector for Read Aloud"/>
+  <variant name="IPH_ReaderModeDistillInApp"
+      summary="educating users about the reader mode distill in app feature
+               on Android"/>
   <variant name="IPH_ReadingListDiscovery"
       summary="first time a tab is added to reading list"/>
   <variant name="IPH_ReadingListEntryPoint"

@@ -94,6 +94,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.PAGE_INFO_FEATURE,
     FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE,
     FeatureConstants.PAGE_ZOOM_FEATURE,
+    FeatureConstants.READER_MODE_DISTILL_IN_APP_FEATURE,
     FeatureConstants.READ_ALOUD_APP_MENU_FEATURE,
     FeatureConstants.READ_ALOUD_EXPANDED_PLAYER_FEATURE,
     FeatureConstants.READ_ALOUD_PLAYBACK_MODE_FEATURE,
@@ -205,6 +206,7 @@ public @interface FeatureConstants {
     String PAGE_ZOOM_FEATURE = "IPH_PageZoom";
     String PREVIEWS_OMNIBOX_UI_FEATURE = "IPH_PreviewsOmniboxUI";
     String TRANSLATE_MENU_BUTTON_FEATURE = "IPH_TranslateMenuButton";
+    String READER_MODE_DISTILL_IN_APP_FEATURE = "IPH_ReaderModeDistillInApp";
     String READ_ALOUD_APP_MENU_FEATURE = "IPH_ReadAloudAppMenuFeature";
     String READ_ALOUD_EXPANDED_PLAYER_FEATURE = "IPH_ReadAloudExpandedPlayerFeature";
     String READ_ALOUD_PLAYBACK_MODE_FEATURE = "IPH_ReadAloudPlaybackModeFeature";
