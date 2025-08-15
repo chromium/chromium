@@ -64,8 +64,6 @@ class MultiContentsDropTargetView : public views::View,
       delete;
   ~MultiContentsDropTargetView() override;
 
-  double GetAnimationValue() const;
-
   void SetDragDelegate(DragDelegate* drag_delegate);
 
   void Show(DropSide side, DropTargetState state);
@@ -108,6 +106,7 @@ class MultiContentsDropTargetView : public views::View,
   void UpdateVisibility(bool should_be_open);
 
   bool ShouldShowAnimation() const;
+  double GetAnimationValue() const;
 
   void DoDrop(const ui::DropTargetEvent& event,
               ui::mojom::DragOperation& output_drag_op,
@@ -123,6 +122,9 @@ class MultiContentsDropTargetView : public views::View,
 
   // Animation controlling showing and hiding of the drop target view.
   gfx::SlideAnimation animation_{this};
+  // The width at the time the animation started.
+  // This is relevant for transitioning from a nudge state to a full state.
+  std::optional<int> animate_expand_starting_width_ = std::nullopt;
 
   raw_ptr<views::View> inner_container_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;

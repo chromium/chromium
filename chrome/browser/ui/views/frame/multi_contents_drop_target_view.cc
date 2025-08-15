@@ -146,7 +146,11 @@ int MultiContentsDropTargetView::GetPreferredWidth(
   }
 
   CHECK(state_.has_value());
-  return GetAnimationValue() * GetMaxWidth(web_contents_width, *state_);
+
+  const int target_full_width = GetMaxWidth(web_contents_width, *state_);
+  const int animation_start_width = animate_expand_starting_width_.value_or(0);
+  return animation_start_width +
+         (GetAnimationValue() * (target_full_width - animation_start_width));
 }
 
 void MultiContentsDropTargetView::AnimationProgressed(
@@ -167,6 +171,13 @@ void MultiContentsDropTargetView::Show(DropSide side, DropTargetState state) {
       state == DropTargetState::kNudgeToFull) {
     CHECK(base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
   }
+
+  // If transitioning from a nudge to full state, start a new animation.
+  if (state == DropTargetState::kNudgeToFull &&
+      state_ == MultiContentsDropTargetView::DropTargetState::kNudge) {
+    animation_.Reset(0);
+  }
+
   side_ = side;
   state_ = state;
   UpdateVisibility(true);
@@ -184,6 +195,13 @@ void MultiContentsDropTargetView::SetVisible(bool visible) {
 }
 
 void MultiContentsDropTargetView::UpdateVisibility(bool should_be_open) {
+  // If starting a new "expand" animation, then update the starting width.
+  if (animation_.GetCurrentValue() == 0 && should_be_open) {
+    animate_expand_starting_width_ = width();
+  } else if (!should_be_open) {
+    animate_expand_starting_width_.reset();
+  }
+
   if (ShouldShowAnimation()) {
     if (should_be_open) {
       SetVisible(should_be_open);

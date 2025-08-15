@@ -332,4 +332,123 @@ TEST_F(DropTargetViewTest, GetPreferredWidthWithStates) {
   EXPECT_EQ(200, view->GetPreferredWidth(1000));
 }
 
+TEST_F(DropTargetViewTest, AnimateFromNudgeToFull) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kSideBySide, {}},
+       {features::kSideBySideDropTargetNudge,
+        {{features::kSideBySideDropTargetNudgeMinWidth.name, "50"},
+         {features::kSideBySideDropTargetNudgeMaxWidth.name, "100"},
+         {features::kSideBySideDropTargetNudgeTargetWidthPercentage.name, "5"},
+         {features::kSideBySideDropTargetNudgeToFullMinWidth.name, "80"},
+         {features::kSideBySideDropTargetNudgeToFullMaxWidth.name, "2200"},
+         {features::kSideBySideDropTargetNudgeToFullTargetWidthPercentage.name,
+          "20"}}}},
+      {});
+
+  // Arbitrarily chosen. The view will calculate widths relative to this.
+  constexpr int kContentsWidth = 1200;
+
+  MultiContentsDropTargetView* view = drop_target_view();
+  auto now = base::TimeTicks::Now();
+  gfx::AnimationTestApi animation(
+      &(drop_target_view()->animation_for_testing()));
+  view->animation_for_testing().SetSlideDuration(
+      base::Seconds(kDelayedAnimationDuration));
+  auto scoped_mode = animation.SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
+  // Start in nudge state.
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kNudge);
+  EXPECT_TRUE(view->GetVisible());
+
+  // Finish the animation and check the width.
+  animation.SetStartTime(now);
+  animation.Step(now + base::Seconds(kDelayedAnimationDuration));
+  const int nudge_width = view->GetPreferredWidth(kContentsWidth);
+  view->SetSize(gfx::Size(nudge_width, view->size().height()));
+  EXPECT_EQ(0.05f * kContentsWidth, nudge_width);
+
+  // Transition to nudge-to-full state with an animation.
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kNudgeToFull);
+  EXPECT_EQ(0.05f * kContentsWidth, view->GetPreferredWidth(kContentsWidth));
+
+  // Step the animation to the middle.
+  animation.Step(now + base::Seconds(kDelayedAnimationDuration / 2));
+
+  // Check that the width is between the nudge and nudge-to-full widths.
+  // At half of the animation, we expect a width of at most 10% of the contents
+  // width.
+  const int nudge_to_full_width = 0.2f * kContentsWidth;
+  const int current_width = view->GetPreferredWidth(kContentsWidth);
+  EXPECT_GT(current_width, nudge_width);
+  EXPECT_LT(current_width, nudge_to_full_width);
+
+  // Finish the animation.
+  animation.Step(now + base::Seconds(kDelayedAnimationDuration));
+  EXPECT_EQ(view->GetPreferredWidth(kContentsWidth), nudge_to_full_width);
+}
+
+TEST_F(DropTargetViewTest, AnimateFromNudgeToFullMidAnimation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kSideBySide, {}},
+       {features::kSideBySideDropTargetNudge,
+        {{features::kSideBySideDropTargetNudgeMinWidth.name, "50"},
+         {features::kSideBySideDropTargetNudgeMaxWidth.name, "100"},
+         {features::kSideBySideDropTargetNudgeTargetWidthPercentage.name, "5"},
+         {features::kSideBySideDropTargetNudgeToFullMinWidth.name, "80"},
+         {features::kSideBySideDropTargetNudgeToFullMaxWidth.name, "2200"},
+         {features::kSideBySideDropTargetNudgeToFullTargetWidthPercentage.name,
+          "20"}}}},
+      {});
+
+  // Arbitrarily chosen. The view will calculate widths relative to this.
+  constexpr int kContentsWidth = 1200;
+
+  MultiContentsDropTargetView* view = drop_target_view();
+  auto now = base::TimeTicks::Now();
+  gfx::AnimationTestApi animation(
+      &(drop_target_view()->animation_for_testing()));
+  view->animation_for_testing().SetSlideDuration(
+      base::Seconds(kDelayedAnimationDuration));
+  auto scoped_mode = animation.SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
+  // Start in nudge state.
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kNudge);
+  EXPECT_TRUE(view->GetVisible());
+
+  // Step the animation to the middle.
+  animation.SetStartTime(now);
+  animation.Step(now + base::Seconds(kDelayedAnimationDuration / 2));
+
+  const int nudge_width = 0.05f * kContentsWidth;
+  const int nudge_mid_animation_width = view->GetPreferredWidth(kContentsWidth);
+  EXPECT_GT(nudge_mid_animation_width, 0);
+  EXPECT_LT(nudge_mid_animation_width, nudge_width);
+
+  // Transition to nudge-to-full state with an animation.
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kNudgeToFull);
+
+  // Step the animation by 1ms. The width should be larger than where it was
+  // when the nudge-animation was interrupted.
+  animation.Step(now + base::Seconds(kDelayedAnimationDuration / 2) +
+                 base::Milliseconds(1));
+
+  // Check that the width is between the nudge and nudge-to-full widths.
+  const int nudge_to_full_width = 0.2f * kContentsWidth;
+  const int full_mid_animation_width = view->GetPreferredWidth(kContentsWidth);
+  EXPECT_GT(full_mid_animation_width, nudge_mid_animation_width);
+  EXPECT_LT(full_mid_animation_width, nudge_to_full_width);
+
+  // Finish the animation.
+  animation.Step(now + base::Seconds(kDelayedAnimationDuration * 2));
+  EXPECT_EQ(view->GetPreferredWidth(kContentsWidth), nudge_to_full_width);
+}
+
 }  // namespace
