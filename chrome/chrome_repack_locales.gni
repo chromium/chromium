@@ -100,11 +100,9 @@ template("chrome_repack_locales") {
       }
       compress = true
     }
-    if (enable_builtin_search_provider_assets && !is_android) {
-      source_patterns += [ "${root_gen_dir}/third_party/search_engines_data/search_engine_descriptions_strings_" ]
-      deps += [
-        "//third_party/search_engines_data:search_engine_descriptions_strings",
-      ]
+    if (!is_android) {
+      source_patterns += [ "${root_gen_dir}/components/strings/search_engine_descriptions_strings_" ]
+      deps += [ "//components/strings:search_engine_descriptions_strings" ]
     }
     if (enable_extensions_core) {
       source_patterns +=

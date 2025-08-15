@@ -21,6 +21,7 @@ group("strings") {
     ":components_locale_settings",
     ":components_strings",
     ":privacy_sandbox_strings",
+    ":search_engine_descriptions_strings",
   ]
 }
 
@@ -63,6 +64,11 @@ grit_strings("components_locale_settings") {
   if (is_android) {
     create_android_resources = true
   }
+}
+
+grit_strings("search_engine_descriptions_strings") {
+  source = "../search_engine_descriptions_strings.grd"
+  outputs = [ "grit/search_engine_descriptions_strings.h" ]
 }
 
 if (is_android) {
