@@ -4,6 +4,8 @@
 
 #include "net/device_bound_sessions/session_error.h"
 
+#include "base/notreached.h"
+
 namespace net::device_bound_sessions {
 
 SessionError::SessionError(SessionError::ErrorType type) : type(type) {}
@@ -45,6 +47,11 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kNetError:
     case kTransientHttpError:
       return std::nullopt;
+    // Registration-only errors never trigger session deletion.
+    case kWellKnownUnavailable:
+    case kSubdomainRegistrationUnauthorized:
+    case kWellKnownMalformed:
+      NOTREACHED();
   }
 }
 
@@ -77,6 +84,11 @@ bool SessionError::IsServerError() const {
     case kNoCredentials:
     case kInvalidScopeIncludeSite:
       return true;
+    // Registration-only errors never get reported to the server.
+    case kWellKnownUnavailable:
+    case kSubdomainRegistrationUnauthorized:
+    case kWellKnownMalformed:
+      NOTREACHED();
   }
 }
 

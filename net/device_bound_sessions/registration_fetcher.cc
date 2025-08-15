@@ -8,10 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
@@ -353,8 +355,86 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
-    RunCallback(Session::CreateIfValid(params_or_error.value()));
+    base::expected<std::unique_ptr<Session>, SessionError> session_or_error =
+        Session::CreateIfValid(params_or_error.value());
+    if (!session_or_error.has_value()) {
+      RunCallback(base::unexpected(std::move(session_or_error).error()));
+      // *this is deleted here
+      return;
+    }
+
+    // Session::CreateIfValid confirms that the registration endpoint is
+    // same-site with the scope origin. But we still need to validate
+    // that this subdomain is allowed to register a session for the
+    // whole site.
+    if (base::FeatureList::IsEnabled(
+            features::kDeviceBoundSessionsOriginTrialFeedback) &&
+        !IsForRefreshRequest() && params_or_error->scope.include_site &&
+        // Skip all validations if the fetcher endpoint is not a subdomain but
+        // rather the top-level site (which matches the origin when including
+        // the site).
+        fetcher_endpoint_.host() != (*session_or_error)->origin().host()) {
+      GURL::Replacements replacements;
+      replacements.SetPathStr("/.well-known/device-bound-sessions");
+      replacements.SetHostStr((*session_or_error)->origin().host());
+      GURL well_known_url =
+          fetcher_endpoint_.ReplaceComponents(std::move(replacements));
+      url_fetcher_ = std::make_unique<URLFetcher>(context_, well_known_url,
+                                                  net_log_source_);
+      url_fetcher_->request().set_method("GET");
+      url_fetcher_->request().set_allow_credentials(false);
+      url_fetcher_->request().set_site_for_cookies(
+          isolation_info_.site_for_cookies());
+      url_fetcher_->request().set_initiator(original_request_initiator_);
+      url_fetcher_->request().set_isolation_info(isolation_info_);
+      // `this` owns `url_fetcher_`, so it's safe to use
+      // `base::Unretained`
+      url_fetcher_->Start(
+          base::BindOnce(&RegistrationFetcherImpl::OnWellKnownRequestComplete,
+                         base::Unretained(this), std::move(*session_or_error)));
+      return;
+    }
+
+    RunCallback(std::move(session_or_error));
+    // *this is deleted here
+  }
+
+  void OnWellKnownRequestComplete(std::unique_ptr<Session> session) {
+    RunCallback(OnWellKnownRequestCompleteInternal(std::move(session)));
     // *this is deleted here.
+  }
+
+  base::expected<std::unique_ptr<Session>, SessionError>
+  OnWellKnownRequestCompleteInternal(std::unique_ptr<Session> session) {
+    HttpResponseHeaders* headers = url_fetcher_->request().response_headers();
+    const int response_code = headers ? headers->response_code() : 0;
+    RecordHttpResponseOrErrorCode(
+        "Net.DeviceBoundSessions.SubdomainWellKnown.Network.Result",
+        url_fetcher_->net_error(), response_code);
+
+    if (url_fetcher_->net_error() != OK) {
+      return base::unexpected(
+          SessionError{SessionError::ErrorType::kWellKnownUnavailable});
+    }
+
+    if (!headers || headers->response_code() != 200) {
+      return base::unexpected(
+          SessionError{SessionError::ErrorType::kWellKnownUnavailable});
+    }
+
+    base::expected<WellKnownParams, SessionError> params_or_error =
+        ParseWellKnownJson(url_fetcher_->data_received());
+    if (!params_or_error.has_value()) {
+      return base::unexpected(std::move(params_or_error).error());
+    }
+
+    if (!base::Contains(params_or_error->registering_origins,
+                        url::Origin::Create(fetcher_endpoint_).Serialize())) {
+      return base::unexpected(SessionError{
+          SessionError::ErrorType::kSubdomainRegistrationUnauthorized});
+    }
+
+    return std::move(session);
   }
 
   void RunCallback(

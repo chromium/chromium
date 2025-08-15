@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -66,7 +67,7 @@ constexpr char kBasicValidJson[] =
   "session_identifier": "session_id",
   "refresh_url": "/refresh",
   "scope": {
-    "origin": "https://a.test/",
+    "origin": "https://a.test",
     "include_site": true,
     "scope_specification" : [
       {
@@ -150,6 +151,16 @@ class RegistrationTest : public TestWithTaskEnvironment {
   scoped_refptr<net::RuleBasedHostResolverProc> host_resolver_;
 };
 
+class RegistrationTestWithOriginTrialFeedback : public RegistrationTest {
+ protected:
+  RegistrationTestWithOriginTrialFeedback() {
+    feature_list_.InitAndEnableFeature(
+        features::kDeviceBoundSessionsOriginTrialFeedback);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class TestRegistrationCallback {
  public:
   TestRegistrationCallback() = default;
@@ -229,6 +240,44 @@ std::unique_ptr<test_server::HttpResponse> ReturnInvalidResponse(
     const test_server::HttpRequest& request) {
   return std::make_unique<test_server::RawHttpResponse>(
       "", "Not a valid HTTP response.");
+}
+
+std::unique_ptr<test_server::HttpResponse> ReturnResponseAndWellKnown(
+    test_server::EmbeddedTestServer::HandleRequestCallback default_callback,
+    test_server::EmbeddedTestServer::HandleRequestCallback well_known_callback,
+    const test_server::HttpRequest& request) {
+  if (request.relative_url == "/.well-known/device-bound-sessions") {
+    return well_known_callback.Run(request);
+  } else {
+    return default_callback.Run(request);
+  }
+}
+
+std::unique_ptr<test_server::HttpResponse> ReturnWellKnownForHosts(
+    std::vector<std::string_view> hosts,
+    const test_server::HttpRequest& request) {
+  base::Value::List registering_origins;
+  for (std::string_view host : hosts) {
+    GURL::Replacements replacements;
+    replacements.SetHostStr(host);
+    auto origin = url::Origin::Create(
+        request.base_url.ReplaceComponents(std::move(replacements)));
+    registering_origins.Append(origin.Serialize());
+  }
+
+  base::Value::Dict well_known;
+  well_known.Set("registering_origins", std::move(registering_origins));
+
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  response->set_content_type("application/json");
+  response->set_code(HTTP_OK);
+  response->set_content(*base::WriteJson(std::move(well_known)));
+  return response;
+}
+
+std::unique_ptr<test_server::HttpResponse> NotCalledHandler(
+    const test_server::HttpRequest& request) {
+  NOTREACHED();
 }
 
 class UnauthorizedThenSuccessResponseContainer {
@@ -1609,6 +1658,257 @@ TEST_F(RegistrationTest, ShutdownDuringRequest) {
   fetcher.reset();
 
   EXPECT_EQ(context_->url_requests()->size(), 0u);
+}
+
+TEST_F(RegistrationTest, RegistrationBySubdomain_Success) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponseAndWellKnown,
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson),
+      base::BindRepeating(&NotCalledHandler)));
+  ASSERT_TRUE(server_.Start());
+
+  GURL::Replacements replacements;
+  replacements.SetHostStr("subdomain.a.test");
+  GURL registration_url =
+      GetBaseURL().ReplaceComponents(std::move(replacements));
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam(registration_url);
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
+      callback.outcome();
+  ASSERT_TRUE(out_session.has_value());
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       RegistrationBySubdomain_Success) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponseAndWellKnown,
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson),
+      base::BindRepeating(&ReturnWellKnownForHosts,
+                          std::vector<std::string_view>{"subdomain.a.test"})));
+  ASSERT_TRUE(server_.Start());
+
+  GURL::Replacements replacements;
+  replacements.SetHostStr("subdomain.a.test");
+  GURL registration_url =
+      GetBaseURL().ReplaceComponents(std::move(replacements));
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam(registration_url);
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
+      callback.outcome();
+  ASSERT_TRUE(out_session.has_value());
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       RegistrationBySubdomain_WellKnownUnavailable) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponseAndWellKnown,
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson),
+      base::BindRepeating(&ReturnResponse, HTTP_BAD_REQUEST, "")));
+  ASSERT_TRUE(server_.Start());
+
+  GURL::Replacements replacements;
+  replacements.SetHostStr("subdomain.a.test");
+  GURL registration_url =
+      GetBaseURL().ReplaceComponents(std::move(replacements));
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam(registration_url);
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
+      callback.outcome();
+  ASSERT_FALSE(out_session.has_value());
+  EXPECT_EQ(out_session.error().type,
+            SessionError::ErrorType::kWellKnownUnavailable);
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       RegistrationBySubdomain_WellKnownMalformed) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponseAndWellKnown,
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson),
+      base::BindRepeating(&ReturnResponse, HTTP_OK, "invalid JSON")));
+  ASSERT_TRUE(server_.Start());
+
+  GURL::Replacements replacements;
+  replacements.SetHostStr("subdomain.a.test");
+  GURL registration_url =
+      GetBaseURL().ReplaceComponents(std::move(replacements));
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam(registration_url);
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
+      callback.outcome();
+  ASSERT_FALSE(out_session.has_value());
+  EXPECT_EQ(out_session.error().type,
+            SessionError::ErrorType::kWellKnownMalformed);
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       RegistrationBySubdomain_WellKnownMalformedEntry) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponseAndWellKnown,
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson),
+      base::BindRepeating(&ReturnResponse, HTTP_OK,
+                          "{\"registering_origins\": [ 12345 ]}")));
+  ASSERT_TRUE(server_.Start());
+
+  GURL::Replacements replacements;
+  replacements.SetHostStr("subdomain.a.test");
+  GURL registration_url =
+      GetBaseURL().ReplaceComponents(std::move(replacements));
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam(registration_url);
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
+      callback.outcome();
+  ASSERT_FALSE(out_session.has_value());
+  EXPECT_EQ(out_session.error().type,
+            SessionError::ErrorType::kWellKnownMalformed);
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       RegistrationBySubdomain_Unauthorized) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponseAndWellKnown,
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson),
+      base::BindRepeating(&ReturnWellKnownForHosts,
+                          std::vector<std::string_view>{"subdomain.a.test"})));
+  ASSERT_TRUE(server_.Start());
+
+  GURL::Replacements replacements;
+  replacements.SetHostStr("not-allowed-subdomain.a.test");
+  GURL registration_url =
+      GetBaseURL().ReplaceComponents(std::move(replacements));
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam(registration_url);
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
+      callback.outcome();
+  ASSERT_FALSE(out_session.has_value());
+  EXPECT_EQ(out_session.error().type,
+            SessionError::ErrorType::kSubdomainRegistrationUnauthorized);
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       RegistrationBySubdomain_MultipleAllowed) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponseAndWellKnown,
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson),
+      base::BindRepeating(&ReturnWellKnownForHosts,
+                          std::vector<std::string_view>{
+                              "subdomain.a.test", "other-subdomain.a.test"})));
+  ASSERT_TRUE(server_.Start());
+
+  GURL::Replacements replacements;
+  replacements.SetHostStr("subdomain.a.test");
+  GURL registration_url =
+      GetBaseURL().ReplaceComponents(std::move(replacements));
+  auto param = GetBasicParam(registration_url);
+
+  {
+    TestRegistrationCallback callback;
+    std::unique_ptr<RegistrationFetcher> fetcher =
+        RegistrationFetcher::CreateFetcher(
+            param, unexportable_key_service(), context_.get(),
+            IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+            /*net_log_source=*/std::nullopt,
+            /*original_request_initiator=*/std::nullopt);
+    fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                      callback.callback());
+
+    callback.WaitForCall();
+    const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
+        callback.outcome();
+    ASSERT_TRUE(out_session.has_value());
+  }
+
+  {
+    TestRegistrationCallback callback;
+    replacements.SetHostStr("other-subdomain.a.test");
+    registration_url = GetBaseURL().ReplaceComponents(std::move(replacements));
+
+    param = GetBasicParam(registration_url);
+
+    std::unique_ptr<RegistrationFetcher> fetcher =
+        RegistrationFetcher::CreateFetcher(
+            param, unexportable_key_service(), context_.get(),
+            IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+            /*net_log_source=*/std::nullopt,
+            /*original_request_initiator=*/std::nullopt);
+    fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                      callback.callback());
+    callback.WaitForCall();
+    ASSERT_TRUE(callback.outcome().has_value());
+  }
 }
 
 class RegistrationTokenHelperTest : public testing::Test {

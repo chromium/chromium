@@ -1897,22 +1897,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Net.DeviceBoundSessions.{RefreshOrRegistration}.Network.Result"
+<histogram name="Net.DeviceBoundSessions.{RequestType}.Network.Result"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-01-22">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    This records the network result of a {RefreshOrRegistration} request for a
-    Device Bound Session
-    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is logged
-    when {RefreshOrRegistration} network response processing finishes. If a
+    This records the network result of a {RequestType} request for a Device
+    Bound Session (https://github.com/w3c/webappsec-dbsc/blob/main/README.md).
+    This is logged when {RequestType} network response processing finishes. If a
     network error occurs at any point while reading the response body, that is
     logged instead of the HTTP status code.
   </summary>
-  <token key="RefreshOrRegistration">
+  <token key="RequestType">
     <variant name="Refresh" summary="refresh"/>
     <variant name="Registration" summary="registration"/>
+    <variant name="SubdomainWellKnown" summary="subomdain .well-known"/>
   </token>
 </histogram>
 

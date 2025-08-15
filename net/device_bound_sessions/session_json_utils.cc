@@ -157,4 +157,31 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
                        std::move(allowed_refresh_initiators));
 }
 
+base::expected<WellKnownParams, SessionError> ParseWellKnownJson(
+    std::string_view response_json) {
+  std::optional<base::Value::Dict> maybe_root = base::JSONReader::ReadDict(
+      response_json, base::JSON_PARSE_RFC, /*max_depth=*/5u);
+  if (!maybe_root) {
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kWellKnownMalformed});
+  }
+
+  const base::Value::List* registering_origins_list =
+      maybe_root->FindList("registering_origins");
+  std::vector<std::string> registering_origins;
+  registering_origins.reserve(registering_origins_list->size());
+  for (const auto& registering_origin : *registering_origins_list) {
+    const std::string* registering_origin_string =
+        registering_origin.GetIfString();
+    if (!registering_origin_string) {
+      return base::unexpected(
+          SessionError{SessionError::ErrorType::kWellKnownMalformed});
+    }
+
+    registering_origins.push_back(*registering_origin_string);
+  }
+
+  return WellKnownParams{std::move(registering_origins)};
+}
+
 }  // namespace net::device_bound_sessions

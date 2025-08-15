@@ -251,6 +251,10 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Missing scope"/>
   <int value="22" label="No credentials"/>
   <int value="23" label="Invalid include_site in scope"/>
+  <int value="24" label=".well-known unavailable"/>
+  <int value="25"
+      label=".well-known did not authorize registration by subdomain"/>
+  <int value="26" label=".well-known content malformed"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

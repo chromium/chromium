@@ -512,6 +512,11 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kTransientHttpError:
       backoff_.InformOfRequest(/*succeeded=*/false);
       break;
+    // Registration-only errors
+    case kWellKnownUnavailable:
+    case kSubdomainRegistrationUnauthorized:
+    case kWellKnownMalformed:
+      NOTREACHED();
   }
 }
 

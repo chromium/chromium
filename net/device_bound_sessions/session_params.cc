@@ -38,4 +38,11 @@ SessionParams::Scope& SessionParams::Scope::operator=(
 
 SessionParams::Scope::~Scope() = default;
 
+WellKnownParams::WellKnownParams(std::vector<std::string> registering_origins)
+    : registering_origins(std::move(registering_origins)) {}
+WellKnownParams::~WellKnownParams() = default;
+WellKnownParams::WellKnownParams(WellKnownParams&& other) noexcept = default;
+WellKnownParams& WellKnownParams::operator=(WellKnownParams&& other) noexcept =
+    default;
+
 }  // namespace net::device_bound_sessions
