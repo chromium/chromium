@@ -4189,7 +4189,6 @@
     },
     {
       name: "ScriptRunIteratorCombiningMarks",
-      status: "stable",
     },
     {
       name: "ScriptTools",
