@@ -10,6 +10,11 @@
 #include "base/values.h"
 #import "components/sync/protocol/theme_types.pb.h"
 
+struct HomeUserUploadedBackground;
+
+typedef std::variant<sync_pb::NtpCustomBackground, HomeUserUploadedBackground>
+    HomeCustomBackground;
+
 // C++ representation of framing coordinates for background images.
 // This struct is persisted to disk via prefs. When adding new fields,
 // ensure backward compatibility by providing defaults in FromDict().

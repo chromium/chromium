@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer_bridge.h"
+#import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
@@ -402,17 +403,42 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   CustomUITraitAccessor* traitAccessor = [[CustomUITraitAccessor alloc]
       initWithMutableTraits:self.consumer.traitOverrides];
 
-  std::optional<HomeUserUploadedBackground> userUploaded =
-      _backgroundCustomizationService->GetCurrentUserUploadedBackground();
-  if (userUploaded) {
-    [self handleUserUploadedBackground:userUploaded->image_path
-                    framingCoordinates:userUploaded->framing_coordinates];
-    [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
-    return;
-  }
-
-  std::optional<sync_pb::NtpCustomBackground> background =
+  std::optional<HomeCustomBackground> customBackground =
       _backgroundCustomizationService->GetCurrentCustomBackground();
+  [traitAccessor
+      setBoolForNewTabPageImageBackgroundTrait:customBackground.has_value()];
+  if (customBackground) {
+    if (std::holds_alternative<sync_pb::NtpCustomBackground>(
+            customBackground.value())) {
+      sync_pb::NtpCustomBackground background =
+          std::get<sync_pb::NtpCustomBackground>(customBackground.value());
+
+      GURL imageURL = GURL(background.url());
+
+      image_fetcher::ImageFetcher* imageFetcher =
+          _imageFetcherService->GetImageFetcher(
+              image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+
+      __weak __typeof(self) weakSelf = self;
+      imageFetcher->FetchImage(
+          imageURL,
+          base::BindOnce(^(const gfx::Image& image,
+                           const image_fetcher::RequestMetadata& metadata) {
+            if (!image.IsEmpty()) {
+              [weakSelf handleBackgroundImageFetch:image];
+            }
+          }),
+          // TODO (crbug.com/417234848): Add annotation.
+          image_fetcher::ImageFetcherParams(NO_TRAFFIC_ANNOTATION_YET, "Test"));
+    } else {
+      HomeUserUploadedBackground userBackground =
+          std::get<HomeUserUploadedBackground>(customBackground.value());
+      [self handleUserUploadedBackground:userBackground.image_path
+                      framingCoordinates:userBackground.framing_coordinates];
+    }
+  } else {
+    [self.consumer setBackgroundImage:nil];
+  }
 
   std::optional<sync_pb::UserColorTheme> colorTheme =
       _backgroundCustomizationService->GetCurrentColorTheme();
@@ -425,40 +451,12 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
         ProtoEnumToSchemeVariant(colorTheme->browser_color_variant()));
 
     [traitAccessor setObjectForNewTabPageTrait:colorPalette];
-    [self.consumer setBackgroundImage:nil];
-    [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
     return;
   }
 
   // Clears the color palette associated with the New Tab Page trait,
   // reverting to the default colors defined by the trait.
   [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
-
-  [traitAccessor
-      setBoolForNewTabPageImageBackgroundTrait:background.has_value()];
-
-  if (!background) {
-    [self.consumer setBackgroundImage:nil];
-    return;
-  }
-
-  GURL imageURL = GURL(background->url());
-
-  image_fetcher::ImageFetcher* imageFetcher =
-      _imageFetcherService->GetImageFetcher(
-          image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
-
-  __weak __typeof(self) weakSelf = self;
-  imageFetcher->FetchImage(
-      imageURL,
-      base::BindOnce(^(const gfx::Image& image,
-                       const image_fetcher::RequestMetadata& metadata) {
-        if (!image.IsEmpty()) {
-          [weakSelf handleBackgroundImageFetch:image];
-        }
-      }),
-      // TODO (crbug.com/417234848): Add annotation.
-      image_fetcher::ImageFetcherParams(NO_TRAFFIC_ANNOTATION_YET, "Test"));
 }
 
 #pragma mark - BrowserViewVisibilityObserving

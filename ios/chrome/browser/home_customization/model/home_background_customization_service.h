@@ -38,13 +38,10 @@ class HomeBackgroundCustomizationService : public KeyedService {
   void Shutdown() override;
 
   // Returns the current custom background data, if there is one.
-  std::optional<sync_pb::NtpCustomBackground> GetCurrentCustomBackground();
+  std::optional<HomeCustomBackground> GetCurrentCustomBackground();
 
   // Returns the current New Tab Page color theme, if there is one.
   std::optional<sync_pb::UserColorTheme> GetCurrentColorTheme();
-
-  // Gets the current user-uploaded background data, if there is one.
-  std::optional<HomeUserUploadedBackground> GetCurrentUserUploadedBackground();
 
   /// Sets the background to the given parameters. This represents a background
   /// image url from the NtpBackgroundService.
@@ -103,6 +100,13 @@ class HomeBackgroundCustomizationService : public KeyedService {
 
   // Loads the theme data from disk.
   void LoadCurrentTheme();
+
+  // Extracts the current custom background from the current theme, if there is
+  // one.
+  std::optional<sync_pb::NtpCustomBackground> GetCurrentNtpCustomBackground();
+
+  // Gets the current user-uploaded background data, if there is one.
+  std::optional<HomeUserUploadedBackground> GetCurrentUserUploadedBackground();
 
   sync_pb::ThemeSpecificsIos current_theme_;
 

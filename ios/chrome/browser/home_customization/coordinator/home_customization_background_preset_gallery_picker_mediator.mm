@@ -105,8 +105,15 @@
   NSMutableArray<BackgroundCollectionConfiguration*>* collectionConfigurations =
       [NSMutableArray array];
 
-  std::optional<sync_pb::NtpCustomBackground> background =
+  std::optional<HomeCustomBackground> background =
       _backgroundCustomizationService->GetCurrentCustomBackground();
+
+  std::optional<sync_pb::NtpCustomBackground> ntpCustomBackground;
+  if (background && std::holds_alternative<sync_pb::NtpCustomBackground>(
+                        background.value())) {
+    ntpCustomBackground =
+        std::get<sync_pb::NtpCustomBackground>(background.value());
+  }
 
   NSString* selectedBackgroundId = nil;
 
@@ -123,7 +130,8 @@
               initWithCollectionImage:image];
       [imageConfigurations addObject:config];
 
-      if (background && image.image_url == background->url()) {
+      if (ntpCustomBackground &&
+          image.image_url == ntpCustomBackground->url()) {
         selectedBackgroundId = config.configurationID;
       }
     }

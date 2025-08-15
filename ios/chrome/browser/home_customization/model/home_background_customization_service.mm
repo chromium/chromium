@@ -34,8 +34,18 @@ void HomeBackgroundCustomizationService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kIosUserUploadedBackground);
 }
 
-std::optional<sync_pb::NtpCustomBackground>
+std::optional<HomeCustomBackground>
 HomeBackgroundCustomizationService::GetCurrentCustomBackground() {
+  std::optional<HomeUserUploadedBackground> user_uploaded_background =
+      GetCurrentUserUploadedBackground();
+  if (user_uploaded_background) {
+    return user_uploaded_background;
+  }
+  return GetCurrentNtpCustomBackground();
+}
+
+std::optional<sync_pb::NtpCustomBackground>
+HomeBackgroundCustomizationService::GetCurrentNtpCustomBackground() {
   if (!current_theme_.has_ntp_background()) {
     return std::nullopt;
   }
@@ -114,7 +124,7 @@ void HomeBackgroundCustomizationService::RestoreCurrentTheme() {
 
   std::optional<sync_pb::UserColorTheme> colorTheme = GetCurrentColorTheme();
   std::optional<sync_pb::NtpCustomBackground> presetImage =
-      GetCurrentCustomBackground();
+      GetCurrentNtpCustomBackground();
   std::optional<HomeUserUploadedBackground> uploadedImage =
       GetCurrentUserUploadedBackground();
 

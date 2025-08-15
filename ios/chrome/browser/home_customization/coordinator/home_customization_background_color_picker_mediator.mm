@@ -97,11 +97,8 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   // when a background image is active, or to 0 when there is no background.
   if (!selectedColorIndex) {
     selectedColorIndex =
-        _backgroundCustomizationService->GetCurrentCustomBackground() ||
-                _backgroundCustomizationService
-                    ->GetCurrentUserUploadedBackground()
-            ? nil
-            : @(0);
+        _backgroundCustomizationService->GetCurrentCustomBackground() ? nil
+                                                                      : @(0);
   }
 
   [_consumer setColorPalettes:colorPalettes

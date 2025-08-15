@@ -1120,6 +1120,7 @@ CGFloat SpaceBetweenModules() {
     _feedContainer.backgroundColor = UIColor.clearColor;
     _feedVisualEffectBackgroundView.hidden = NO;
     _backgroundGradientView.hidden = YES;
+    self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
     return;
   }
 
