@@ -2941,7 +2941,7 @@ crbug.com/437855566 [ Mac14 ] virtual/unified-autoplay/external/wpt/feature-poli
 crbug.com/437594843 [ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/blocklisted-manufacturer-data-in-filter.https.window.html [ Pass Timeout ]
 crbug.com/437594843 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/invalid-companyIdentifier.https.window.html [ Pass Timeout ]
 crbug.com/437594843 [ Win10.20h2 ] external/wpt/bluetooth/bidi/service/getCharacteristic/gen-invalid-characteristic-name.https.window.html [ Pass Timeout ]
-crbug.com/437594843 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/getCharacteristics/blocklisted-characteristics.https.window.html [ Pass Timeout ]
+crbug.com/437594843 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/getCharacteristics/blocklisted-characteristics.https.window.html [ Pass Timeout Failure ]
 crbug.com/437622043 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?7-8 [ Crash Pass ]
 crbug.com/437531734 [ Android ] external/wpt/webdriver/tests/bidi/network/add_data_collector/user_contexts.py [ Failure ]
 crbug.com/435913825 [ Win10.20h2 ] external/wpt/bluetooth/bidi/characteristic/startNotifications/gen-characteristic-is-removed.https.window.html [ Pass Timeout ]
