@@ -1495,62 +1495,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "android-cronet-asan-arm-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["android"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "main_builder",
-            apply_configs = [
-                "cronet_builder",
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(config = "base_config"),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder_without_codecs",
-            "android_with_static_analysis",
-            "cronet_android",
-            "release_builder",
-            "remoteexec",
-            "minimal_symbols",
-            "arm_no_neon",
-            "clang",
-            "android_asan",
-            "strip_debug_info",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "cronet_gtests",
-        ],
-        additional_compile_targets = [
-            "cronet_package",
-            "cronet_perf_test_apk",
-        ],
-        mixins = [
-            "has_native_resultdb_integration",
-            "bullhead",
-            "marshmallow",
-        ],
-    ),
-    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
-    console_view_entry = consoles.console_view_entry(
-        category = "cronet|asan",
-    ),
-    contact_team_email = "cronet-team@google.com",
-    notifies = ["cronet"],
-)
-
-ci.builder(
     name = "android-cronet-riscv64-dbg",
     description_html = "Verifies building Cronet against RISC-V64",
     builder_spec = builder_config.builder_spec(

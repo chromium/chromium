@@ -26,7 +26,6 @@ chromium/try/android-cronet-arm-dbg
 chromium/try/android-cronet-arm-rel
 chromium/try/android-cronet-arm64-dbg
 chromium/try/android-cronet-arm64-rel
-chromium/try/android-cronet-asan-arm-rel
 chromium/try/android-cronet-code-coverage-java
 chromium/try/android-cronet-code-coverage-native
 chromium/try/android-cronet-riscv64-dbg

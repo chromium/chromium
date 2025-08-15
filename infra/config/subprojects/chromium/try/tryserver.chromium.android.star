@@ -689,14 +689,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-cronet-asan-arm-rel",
-    mirrors = ["ci/android-cronet-asan-arm-rel"],
-    gn_args = "ci/android-cronet-asan-arm-rel",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "android-cronet-riscv64-dbg",
     mirrors = ["ci/android-cronet-riscv64-dbg"],
     gn_args = "ci/android-cronet-riscv64-dbg",
