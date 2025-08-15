@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <utility>
@@ -88,12 +89,12 @@ bool AreDisplayListDrawingResultsSame(const gfx::Rect& layer_rect,
 
   auto pixels_a = base::HeapArray<unsigned char>::Uninit(pixel_size);
   auto pixels_b = base::HeapArray<unsigned char>::Uninit(pixel_size);
-  UNSAFE_TODO(memset(pixels_a.data(), 0, pixel_size));
-  UNSAFE_TODO(memset(pixels_b.data(), 0, pixel_size));
+  std::ranges::fill(pixels_a, 0);
+  std::ranges::fill(pixels_b, 0);
   DrawDisplayList(pixels_a.data(), layer_rect, list_a);
   DrawDisplayList(pixels_b.data(), layer_rect, list_b);
 
-  return !UNSAFE_TODO(memcmp(pixels_a.data(), pixels_b.data(), pixel_size));
+  return pixels_a.as_span() == pixels_b.as_span();
 }
 
 Region ImageRectsToRegion(const DiscardableImageMap::Rects& rects) {
