@@ -93,7 +93,17 @@ void BwgTabHelper::DeactivateBWGSession() {
 }
 
 bool BwgTabHelper::ShouldShowZeroState() {
-  std::optional<std::string> last_interaction_url = GetURLOnLastInteraction();
+  std::optional<std::string> last_interaction_url;
+
+  if (IsGeminiCrossTabEnabled()) {
+    PrefService* pref_service =
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
+    last_interaction_url =
+        pref_service->GetString(prefs::kLastGeminiInteractionURL);
+  } else {
+    last_interaction_url = GetURLOnLastInteraction();
+  }
+
   // Show zero-state if no last interaction URL was found.
   if (!last_interaction_url.has_value()) {
     return true;
@@ -106,10 +116,7 @@ bool BwgTabHelper::ShouldShowZeroState() {
 }
 
 bool BwgTabHelper::ShouldShowSuggestionChips() {
-  // Show suggestion chips if we should show zero-state and we're not currently
-  // on a Search results page.
-  return ShouldShowZeroState() &&
-         !google_util::IsGoogleSearchUrl(web_state_->GetVisibleURL());
+  return !google_util::IsGoogleSearchUrl(web_state_->GetVisibleURL());
 }
 
 void BwgTabHelper::CreateOrUpdateBwgSessionInStorage(std::string server_id) {
@@ -219,6 +226,8 @@ void BwgTabHelper::CreateOrUpdateSessionInPrefs(std::string client_id,
         ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
     pref_service->SetTime(prefs::kLastGeminiInteractionTimestamp,
                           base::Time::Now());
+    pref_service->SetString(prefs::kLastGeminiInteractionURL,
+                            web_state_->GetVisibleURL().spec());
     pref_service->SetString(prefs::kGeminiConversationId, server_id);
   } else {
     base::Value::Dict session_info_dict;
