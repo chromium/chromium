@@ -21,26 +21,27 @@ constexpr float kStandardCircleRadius = kIconSize * kMaxCircleIconSize / 2.0f;
 // Returns whether the bitmaps are equal.
 bool AreBitmapsEqual(const SkBitmap& first_bitmap,
                      const SkBitmap& second_bitmap) {
-  const size_t size = first_bitmap.computeByteSize();
-  bool bitmaps_equal = true;
+  if (first_bitmap.width() != second_bitmap.width() ||
+      first_bitmap.height() != second_bitmap.height() ||
+      first_bitmap.colorType() != second_bitmap.colorType()) {
+    return false;
+  }
 
-  uint8_t* first_data = reinterpret_cast<uint8_t*>(first_bitmap.getPixels());
-  uint8_t* second_data = reinterpret_cast<uint8_t*>(second_bitmap.getPixels());
-  for (size_t i = 0; i < size; ++i) {
-    if (UNSAFE_TODO(first_data[i]) != UNSAFE_TODO(second_data[i])) {
-      bitmaps_equal = false;
-      break;
+  for (int y = 0; y < first_bitmap.height(); ++y) {
+    for (int x = 0; x < first_bitmap.width(); ++x) {
+      if (first_bitmap.getColor(x, y) != second_bitmap.getColor(x, y)) {
+        return false;
+      }
     }
   }
 
-  return bitmaps_equal;
+  return true;
 }
 
 bool DoesIconHaveWhiteBackgroundCircle(const SkBitmap& bitmap) {
   const int y = kIconSize / 2;
-  SkColor* src_color = reinterpret_cast<SkColor*>(bitmap.getAddr32(0, y));
   for (int x = 0; x < bitmap.width(); ++x) {
-    if (UNSAFE_TODO(src_color[x]) == SK_ColorWHITE) {
+    if (bitmap.getColor(x, y) == SK_ColorWHITE) {
       return true;
     }
   }
