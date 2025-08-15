@@ -128,7 +128,7 @@ Refer to README.md for content description and update process.
  <item id="oauth2_api_call_flow" added_in_milestone="65" type="completing" content_hash_code="067ca204" os_list="linux,windows,chromeos,android" policy_fields="-1" file_path="google_apis/gaia/oauth2_api_call_flow.cc" />
  <item id="oauth2_mint_token_flow" added_in_milestone="62" type="partial" second_id="oauth2_api_call_flow" content_hash_code="05756bf8" os_list="linux,windows,chromeos,android" semantics_fields="1,2,3,4,5" policy_fields="3,4" file_path="google_apis/gaia/oauth2_mint_token_flow.cc" />
  <item id="omaha_client_android_uc" added_in_milestone="99" content_hash_code="0757ca45" os_list="android" file_path="chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java" />
- <item id="omnibox_documentsuggest" added_in_milestone="69" content_hash_code="07917541" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/document_suggestions_service.cc" />
+ <item id="omnibox_documentsuggest" added_in_milestone="69" content_hash_code="02ef43b3" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/document_suggestions_service.cc" />
  <item id="omnibox_navigation_observer" added_in_milestone="62" content_hash_code="043a7a2f" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc" />
  <item id="omnibox_result_change" added_in_milestone="62" content_hash_code="00bbc4fe" os_list="linux,windows,chromeos,android" file_path="chrome/browser/bitmap_fetcher/bitmap_fetcher_service.cc" />
  <item id="omnibox_suggest" added_in_milestone="62" content_hash_code="0524cc7e" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/remote_suggestions_service.cc" />
@@ -483,7 +483,7 @@ Refer to README.md for content description and update process.
  <item id="shared_storage_worklet_host" added_in_milestone="133" content_hash_code="04cb9ff5" os_list="linux,windows,android,chromeos" file_path="content/browser/shared_storage/shared_storage_worklet_host.cc" />
  <item id="webauthn_challenge_fetch" added_in_milestone="133" content_hash_code="03692327" os_list="linux,windows,chromeos" file_path="chrome/browser/webauthn/challenge_url_fetcher.cc" />
  <item id="outlook_calendar_page_handler" added_in_milestone="133" content_hash_code="02d4c022" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.cc" />
- <item id="omnibox_search_aggregator_suggest" added_in_milestone="133" content_hash_code="066dcb07" os_list="linux,windows,android,chromeos" file_path="components/omnibox/browser/enterprise_search_aggregator_suggestions_service.cc" />
+ <item id="omnibox_search_aggregator_suggest" added_in_milestone="133" content_hash_code="07a2e0b4" os_list="linux,windows,android,chromeos" file_path="components/omnibox/browser/enterprise_search_aggregator_suggestions_service.cc" />
  <item id="microsoft_files_page_handler" added_in_milestone="134" content_hash_code="0550fd5d" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler.cc" />
  <item id="outlook_calendar_event_attachment" added_in_milestone="134" content_hash_code="07ede3aa" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.cc" />
  <item id="ip_protection_service_get_probabilistic_reveal_token" added_in_milestone="135" content_hash_code="0632ab3e" os_list="linux,windows,android,chromeos" file_path="components/ip_protection/common/ip_protection_probabilistic_reveal_token_direct_fetcher.cc" />
@@ -516,4 +516,5 @@ Refer to README.md for content description and update process.
  <item id="glic_web_ui" added_in_milestone="140" content_hash_code="015cd923" os_list="linux,windows" file_path="chrome/browser/glic/glic_net_log.cc" />
  <item id="glic_fre_web_ui" added_in_milestone="140" content_hash_code="0354f161" os_list="linux,windows" file_path="chrome/browser/glic/glic_net_log.cc" />
  <item id="webview_preconnect" added_in_milestone="140" content_hash_code="03d15024" os_list="android" file_path="android_webview/browser/aw_preconnector.cc" />
+ <item id="aim_eligibility_fetch" added_in_milestone="141" content_hash_code="0750802b" os_list="linux,windows,android,chromeos" file_path="chrome/browser/autocomplete/aim_eligibility_service.cc" />
 </annotations>

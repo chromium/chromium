@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -19,6 +20,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -88,7 +90,7 @@ void EnterpriseSearchAggregatorSuggestionsService::
   }
   for (size_t i = 0; i < suggestion_types.size(); i++) {
     requests[i]->url = suggest_url;
-    requests[i]->method = "POST";
+    requests[i]->method = net::HttpRequestHeaders::kPostMethod;
     requests[i]->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
 
     requests[i]->site_for_cookies = net::SiteForCookies::FromUrl(suggest_url);
@@ -104,9 +106,9 @@ void EnterpriseSearchAggregatorSuggestionsService::
         semantics {
           sender: "Omnibox"
           description:
-            "Request for enterprise suggestions from the omnibox."
-            "Enterprise suggestions provide enterprise specific documents"
-            "to enterprise users and are configured by enterprise admin."
+            "Request for enterprise suggestions from the omnibox. Enterprise "
+            "suggestions provide enterprise specific documents to enterprise "
+            "users and are configured by enterprise admin."
           trigger: "Signed-in enterprise user enters text in the omnibox."
           user_data {
             type: ACCESS_TOKEN

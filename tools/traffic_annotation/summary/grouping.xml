@@ -383,6 +383,7 @@ after discussions on the right group.
       <annotation id="password_change_submission_model_execution"/>
       <annotation id="glic_web_ui"/>
       <annotation id="glic_fre_web_ui"/>
+      <annotation id="aim_eligibility_fetch"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
