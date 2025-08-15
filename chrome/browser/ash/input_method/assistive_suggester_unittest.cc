@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
@@ -152,6 +153,8 @@ class AssistiveSuggesterTest : public testing::Test {
     // Emoji is default to true now, so need to set emoji pref false to test
     // IsAssistiveFeatureEnabled correctly.
     profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
+
+    browser_controller_ = std::make_unique<BrowserControllerImpl>();
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -160,6 +163,7 @@ class AssistiveSuggesterTest : public testing::Test {
   std::unique_ptr<AssistiveSuggester> assistive_suggester_;
   std::unique_ptr<FakeSuggestionHandler> suggestion_handler_;
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
 };
 
 TEST_F(AssistiveSuggesterTest, EmojiSuggestion_UserPrefEnabledFalse) {

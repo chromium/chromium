@@ -19,8 +19,6 @@
 #include "base/hash/hash.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "components/exo/wm_helper.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/text_input_type.h"

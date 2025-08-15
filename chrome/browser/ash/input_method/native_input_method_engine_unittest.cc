@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/ash/input_method/stub_input_method_engine_observer.h"
@@ -271,6 +272,8 @@ class NativeInputMethodEngineTest : public ::testing::Test {
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
+
+    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
   }
 
   // TODO(b/264817001): Refactor EnableDefaultFeature*() functions to be
@@ -321,6 +324,7 @@ class NativeInputMethodEngineTest : public ::testing::Test {
       keyboard_controller_client_test_helper_;
   chromeos::machine_learning::FakeServiceConnectionImpl
       fake_service_connection_;
+  std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
 };
 
 TEST_F(NativeInputMethodEngineTest,
@@ -1090,6 +1094,8 @@ class NativeInputMethodEngineWithRenderViewHostTest
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
+
+    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
   }
 
   std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
@@ -1102,6 +1108,7 @@ class NativeInputMethodEngineWithRenderViewHostTest
       keyboard_controller_client_test_helper_;
   chromeos::machine_learning::FakeServiceConnectionImpl
       fake_service_connection_;
+  std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
 };
 
 TEST_F(NativeInputMethodEngineWithRenderViewHostTest,

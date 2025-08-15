@@ -345,6 +345,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:global_features",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/input_method:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
