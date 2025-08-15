@@ -114,6 +114,8 @@ class CORE_EXPORT PositionArea {
   static AnchorQuery AnchorRight();
 
  private:
+  bool IsAmbiguousSelfReferenceBox() const;
+
   PositionAreaRegion span1_start_ = PositionAreaRegion::kNone;
   PositionAreaRegion span1_end_ = PositionAreaRegion::kNone;
   PositionAreaRegion span2_start_ = PositionAreaRegion::kNone;

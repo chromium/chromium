@@ -149,7 +149,19 @@ PositionAreaRegion ToPhysicalRegion(
   return PositionAreaRegion::kTop;
 }
 
+bool IsAmbiguousSelfAreaRegion(PositionAreaRegion region) {
+  return region == PositionAreaRegion::kSelfStart ||
+         region == PositionAreaRegion::kSelfEnd;
+}
+
 }  // namespace
+
+bool PositionArea::IsAmbiguousSelfReferenceBox() const {
+  return IsAmbiguousSelfAreaRegion(FirstStart()) ||
+         IsAmbiguousSelfAreaRegion(FirstEnd()) ||
+         IsAmbiguousSelfAreaRegion(SecondStart()) ||
+         IsAmbiguousSelfAreaRegion(SecondEnd());
+}
 
 PositionArea PositionArea::ToPhysical(
     const WritingDirectionMode& container_writing_direction,
@@ -169,10 +181,12 @@ PositionArea PositionArea::ToPhysical(
         << "Both regions representing the same axis should not happen";
     // If neither span includes a physical keyword, the first refers to the
     // block axis of the containing block, and the second to the inline axis.
-    first_axis = ToPhysicalAxes(kLogicalAxesBlock,
-                                container_writing_direction.GetWritingMode());
-    second_axis = ToPhysicalAxes(kLogicalAxesInline,
-                                 container_writing_direction.GetWritingMode());
+    WritingMode writing_mode =
+        IsAmbiguousSelfReferenceBox()
+            ? self_writing_direction.GetWritingMode()
+            : container_writing_direction.GetWritingMode();
+    first_axis = ToPhysicalAxes(kLogicalAxesBlock, writing_mode);
+    second_axis = ToPhysicalAxes(kLogicalAxesInline, writing_mode);
   } else {
     if (first_axis == kPhysicalAxesNone) {
       first_axis = second_axis ^ kPhysicalAxesBoth;
