@@ -387,11 +387,11 @@ TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_RegistryNoCustomerId) {
 
   DeleteRegistryValues();
 
-  // Expect the value to not have been cached.
+  // Expect the value to still be cached.
   signals = GetSignals();
 
   ASSERT_TRUE(signals);
-  EXPECT_TRUE(signals->agent_id.empty());
+  EXPECT_EQ(signals->agent_id, base::ToLowerASCII(kFakeHexCSAgentId));
   EXPECT_TRUE(signals->customer_id.empty());
 }
 

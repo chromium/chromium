@@ -879,6 +879,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceSignals.Collection.CrowdStrike.FromDataFile"
+    enum="Boolean" expires_after="2026-02-10">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures whether the CrowdStrike identifiers were captured from the data
+    file or not.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.DeviceSignals.Collection.Failure.{Signal}.{ErrorType}Error"
     enum="DeviceSignalsSignalCollectionError" expires_after="2026-02-10">
