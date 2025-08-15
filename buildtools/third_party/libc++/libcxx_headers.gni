@@ -4,6 +4,7 @@
 
 # DO NOT EDIT. This file is generated.
 # To regenerate, run buildtools/third_party/libc++/generate_libcxx_headers.py
+# then remove the assertion (until it's updated via autorolling).
 
 libcxx_headers = [
   "//third_party/libc++/src/include/__algorithm/adjacent_find.h",

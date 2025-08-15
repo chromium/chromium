@@ -11,16 +11,16 @@ import subprocess
 from typing import Optional
 
 _CURRENT_DIR = pathlib.Path(__file__).parent
-_OUT_OF_DATE_ERROR = """Your libcxx_headers.gni is out of date.
+_OUT_OF_DATE_ERROR = """libcxx_headers.gni and third_party/libc++ are out of sync.
 
-If you synced without running hooks, run `gclient sync`
+Hint: Try running `gclient sync`
 
 If you were messing around with the libc++ repository, run:
 `buildtools/third_party/libc++/generate_libcxx_headers.py`
 
-In any other scenario, this *should not* happen. You can temporarily solve the
-problem by running the above command, but please file a bug and assign it to
-msta@ with reproduction details.""".replace('\n', '$0x0A')
+In any other scenario, this *should not* happen. If `gclient sync` doesn't
+solve your problem, file a bug to msta@ with reproduction details.
+""".replace('\n', '$0x0A')
 
 
 def _get_headers(include_dir: pathlib.Path) -> list[str]:
@@ -79,7 +79,7 @@ libcxx_headers = [
 if __name__ == '__main__':
     libcxx = _CURRENT_DIR / '../../../third_party/libc++/src'
     _write_headers(
-        _CURRENT_DIR / 'generated_libcxx_headers.gni',
+        _CURRENT_DIR / 'libcxx_headers.gni',
         _get_headers(libcxx / 'include'),
         _get_libcxx_revision(libcxx),
     )
