@@ -3216,24 +3216,11 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, TestContextMenu) {
   auto* guest_main_frame =
       GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
   ASSERT_TRUE(guest_main_frame);
-
-  auto close_menu_and_stop_run_loop = [](base::OnceClosure closure,
-                                         RenderViewContextMenu* context_menu) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&RenderViewContextMenuBase::Cancel,
-                                  base::Unretained(context_menu)));
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(closure));
-  };
-
-  base::RunLoop run_loop;
-  RenderViewContextMenu::RegisterMenuShownCallbackForTesting(
-      base::BindOnce(close_menu_and_stop_run_loop, run_loop.QuitClosure()));
-
+  ContextMenuShownObserver context_menu_shown_observer =
+      ContextMenuShownObserver();
   OpenContextMenu(guest_main_frame);
-
-  // Wait for the context menu to be visible.
-  run_loop.Run();
+  context_menu_shown_observer.Wait();
+  EXPECT_EQ(true, context_menu_shown_observer.shown());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, MediaAccessAPIAllow_TestAllow) {

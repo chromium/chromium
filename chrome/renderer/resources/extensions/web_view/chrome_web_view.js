@@ -68,14 +68,12 @@ function createContextMenusOnContextMenuEvent(
           $Function.apply(newEvent.dispatch, newEvent, [event]);
 
           if (!defaultPrevented) {
-            // TODO(lazyboy): Remove |items| parameter completely from
-            // ChromeWebView.showContextMenu as we don't do anything useful with
-            // it currently.
-            const items = [];
             const guestInstanceId =
                 GuestViewInternalNatives.GetViewFromID(webViewInstanceId)
                     .guest.getId();
-            ChromeWebView.showContextMenu(guestInstanceId, e.requestId, items);
+            //TODO: Remove the unused items array from the definition of
+            //showContextMenu.
+            ChromeWebView.showContextMenu(guestInstanceId, e.requestId);
           }
         }, newEvent), {instanceId: webViewInstanceId});
   }
@@ -173,6 +171,8 @@ ChromeWebViewImpl.prototype.createWebViewContextMenus = function() {
 };
 
 ChromeWebViewImpl.prototype.setupContextMenus = function() {
+  // Code below can not be member of a context menus instance,
+  // belongs to webview implementations, crbug.com/429599984
   if (!this.contextMenusOnContextMenuEvent_) {
     const eventName = 'chromeWebViewInternal.onContextMenuShow';
     const eventSchema =
@@ -181,8 +181,6 @@ ChromeWebViewImpl.prototype.setupContextMenus = function() {
       supportsListeners: true,
       supportsLazyListeners: false,
     };
-    // TODO(crbug.com/429599984): Move this member to the context menus
-    // instance.
     this.contextMenusOnContextMenuEvent_ = createContextMenusOnContextMenuEvent(
         this.viewInstanceId, eventName, eventSchema, eventOptions);
   }
