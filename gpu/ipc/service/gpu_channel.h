@@ -228,8 +228,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   bool CreateSharedImageStub(const gfx::GpuExtraInfo& gpu_extra_info);
 
   std::unique_ptr<IPC::SyncChannel> sync_channel_;  // nullptr in tests.
-  raw_ptr<IPC::Sender>
-      channel_;  // Same as sync_channel_.get() except in tests.
 
   base::ProcessId client_pid_ = base::kNullProcessId;
 

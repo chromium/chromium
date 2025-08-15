@@ -764,7 +764,6 @@ void GpuChannel::Init(IPC::ChannelHandle channel_handle,
       base::BindRepeating(&GpuChannelMessageFilter::BindGpuChannel, filter_));
   sync_channel_->Init(channel_handle, IPC::Channel::MODE_SERVER,
                       /*create_pipe_now=*/false);
-  channel_ = sync_channel_.get();
 }
 
 base::WeakPtr<GpuChannel> GpuChannel::AsWeakPtr() {
