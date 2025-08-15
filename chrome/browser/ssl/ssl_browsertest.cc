@@ -549,6 +549,21 @@ class SSLUITestBase : public InProcessBrowserTest,
             "window.certificateErrorPageController.reportPhishingError();";
         break;
       }
+      case security_interstitials::CMD_OPEN_HELP_CENTER_IN_NEW_TAB: {
+        javascript =
+            "window.certificateErrorPageController.openHelpCenterInNewTab();";
+        break;
+      }
+      case security_interstitials::CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB: {
+        javascript = "window.certificateErrorPageController."
+                     "openReportingPrivacyInNewTab();";
+        break;
+      }
+      case security_interstitials::CMD_OPEN_WHITEPAPER_IN_NEW_TAB: {
+        javascript =
+            "window.certificateErrorPageController.openWhitepaperInNewTab();";
+        break;
+      }
       default: {
         // Other values in the enum are not used by these tests, and don't
         // have a Javascript equivalent that can be called here.
@@ -6661,7 +6676,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, NetworkErrorDoesntRevokeExemptions) {
 // Checks we don't attempt to show an interstitial (or crash) when visiting an
 // SSL error related page in chrome://network-errors. Regression test for
 // crbug.com/953812
-IN_PROC_BROWSER_TEST_F(SSLUITest, NoInterstitialOnNetworkErrorPage) {
+IN_PROC_BROWSER_TEST_F(SSLUITest,
+                       NoInterstitialOnNetworkErrorPage) {
   GURL invalid_cert_url(blink::kChromeUINetworkErrorURL);
   GURL::Replacements replacements;
   replacements.SetPathStr("-207");
@@ -6669,6 +6685,81 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, NoInterstitialOnNetworkErrorPage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), invalid_cert_url));
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(SSLUITest, OpenHelpCenterInNewTab) {
+  ASSERT_TRUE(https_server_expired_.Start());
+  WebContents* interstitial_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_expired_.GetURL("/ssl/google.html")));
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingSSLInterstitial(interstitial_tab));
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  SendInterstitialCommand(
+      interstitial_tab,
+      security_interstitials::CMD_OPEN_HELP_CENTER_IN_NEW_TAB);
+  nav_observer.Wait();
+
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(new_tab);
+  EXPECT_NE(new_tab, interstitial_tab);
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(new_tab));
+}
+
+IN_PROC_BROWSER_TEST_F(SSLUITest, OpenReportingPrivacyInNewTab) {
+  ASSERT_TRUE(https_server_expired_.Start());
+  WebContents* interstitial_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_expired_.GetURL("/ssl/google.html")));
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingSSLInterstitial(interstitial_tab));
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  SendInterstitialCommand(
+      interstitial_tab,
+      security_interstitials::CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB);
+  nav_observer.Wait();
+
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(new_tab);
+  EXPECT_NE(new_tab, interstitial_tab);
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(new_tab));
+}
+
+IN_PROC_BROWSER_TEST_F(SSLUITest, OpenWhitepaperInNewTab) {
+  ASSERT_TRUE(https_server_expired_.Start());
+  WebContents* interstitial_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_expired_.GetURL("/ssl/google.html")));
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingSSLInterstitial(interstitial_tab));
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  SendInterstitialCommand(
+      interstitial_tab,
+      security_interstitials::CMD_OPEN_WHITEPAPER_IN_NEW_TAB);
+  nav_observer.Wait();
+
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(new_tab);
+  EXPECT_NE(new_tab, interstitial_tab);
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(new_tab));
 }
 
 // This SPKI hash is from a self signed certificate generated using the

@@ -58,6 +58,10 @@ class SafeBrowsingLoudErrorUI
   // Handle update to interstitial_interaction_data_ when a command occurs.
   void UpdateInterstitialInteractionData(SecurityInterstitialCommand command);
 
+  void OpenHelpCenter(bool always_open_in_new_tab);
+  void OpenDiagnostic(bool always_open_in_new_tab);
+  void ReportPhishingError(bool always_open_in_new_tab);
+
   const bool created_prior_to_navigation_;
 };
 

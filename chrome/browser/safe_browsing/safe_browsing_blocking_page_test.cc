@@ -4365,4 +4365,144 @@ IN_PROC_BROWSER_TEST_P(WarningShownTimestampCSBRRDisabledBrowserTest,
   CheckCSBRRForTimestamp();
 }
 
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       OpenHelpCenterInNewTab) {
+  SetupWarningAndNavigate(browser());
+  WebContents* interstitial_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(interstitial_tab);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  SendCommand(security_interstitials::CMD_OPEN_HELP_CENTER_IN_NEW_TAB);
+  nav_observer.Wait();
+
+  // A new tab has been opened.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  // The new tab is active.
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(new_tab, interstitial_tab);
+
+  // Interstitial does not display in the new tab.
+  EXPECT_FALSE(IsShowingInterstitial(new_tab));
+
+  // Interstitial should still display in the background tab.
+  EXPECT_TRUE(IsShowingInterstitial(interstitial_tab));
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       OpenDiagnosticInNewTab) {
+  SetupWarningAndNavigate(browser());
+  WebContents* interstitial_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(interstitial_tab);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  SendCommand(security_interstitials::CMD_OPEN_DIAGNOSTIC_IN_NEW_TAB);
+  nav_observer.Wait();
+
+  // A new tab has been opened.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  // The new tab is active.
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(new_tab, interstitial_tab);
+
+  // Interstitial does not display in the new tab.
+  EXPECT_FALSE(IsShowingInterstitial(new_tab));
+
+  // Interstitial should still display in the background tab.
+  EXPECT_TRUE(IsShowingInterstitial(interstitial_tab));
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       OpenReportingPrivacyInNewTab) {
+  SetupWarningAndNavigate(browser());
+  WebContents* interstitial_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(interstitial_tab);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  SendCommand(security_interstitials::CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB);
+  nav_observer.Wait();
+
+  // A new tab has been opened.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  // The new tab is active.
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(new_tab, interstitial_tab);
+
+  // Interstitial does not display in the new tab.
+  EXPECT_FALSE(IsShowingInterstitial(new_tab));
+
+  // Interstitial should still display in the background tab.
+  EXPECT_TRUE(IsShowingInterstitial(interstitial_tab));
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       OpenWhitepaperInNewTab) {
+  SetupWarningAndNavigate(browser());
+  WebContents* interstitial_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(interstitial_tab);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  SendCommand(security_interstitials::CMD_OPEN_WHITEPAPER_IN_NEW_TAB);
+  nav_observer.Wait();
+
+  // A new tab has been opened.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  // The new tab is active.
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(new_tab, interstitial_tab);
+
+  // Interstitial does not display in the new tab.
+  EXPECT_FALSE(IsShowingInterstitial(new_tab));
+
+  // Interstitial should still display in the background tab.
+  EXPECT_TRUE(IsShowingInterstitial(interstitial_tab));
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       ReportPhishingErrorInNewTab) {
+  SetupWarningAndNavigate(browser());
+  WebContents* interstitial_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(interstitial_tab);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  SendCommand(security_interstitials::CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB);
+  nav_observer.Wait();
+
+  // A new tab has been opened.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  // The new tab is active.
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(new_tab, interstitial_tab);
+
+  // Interstitial does not display in the new tab.
+  EXPECT_FALSE(IsShowingInterstitial(new_tab));
+
+  // Interstitial should still display in the background tab.
+  EXPECT_TRUE(IsShowingInterstitial(interstitial_tab));
+}
+
 }  // namespace safe_browsing

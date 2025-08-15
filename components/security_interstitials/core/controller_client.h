@@ -57,6 +57,12 @@ enum SecurityInterstitialCommand {
   // Request permission to blocked website.
   CMD_REQUEST_SITE_ACCESS_PERMISSION = 15,
   CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS = 16,
+  // Commands for opening links in a new tab, used by middle-clicks.
+  CMD_OPEN_HELP_CENTER_IN_NEW_TAB = 17,
+  CMD_OPEN_DIAGNOSTIC_IN_NEW_TAB = 18,
+  CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB = 19,
+  CMD_OPEN_WHITEPAPER_IN_NEW_TAB = 20,
+  CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB = 21,
 };
 
 // Provides methods for handling commands from the user, which requires some
@@ -129,6 +135,11 @@ class ControllerClient {
   GURL GetBaseHelpCenterUrl() const;
 
   void SetBaseHelpCenterUrlForTesting(const GURL& test_url);
+
+  // The following methods are for handling the new `_IN_NEW_TAB` commands.
+  virtual void OpenHelpCenterInNewTab() {}
+  virtual void OpenReportingPrivacyInNewTab() {}
+  virtual void OpenWhitepaperInNewTab() {}
 
  protected:
   virtual const std::string GetExtendedReportingPrefName() const = 0;

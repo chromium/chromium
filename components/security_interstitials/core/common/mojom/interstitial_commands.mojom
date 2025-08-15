@@ -17,6 +17,11 @@ interface InterstitialCommands {
   DontReport();
   OpenReportingPrivacy();
   OpenWhitepaper();
+  OpenHelpCenterInNewTab();
+  OpenDiagnosticInNewTab();
+  OpenReportingPrivacyInNewTab();
+  OpenWhitepaperInNewTab();
+  ReportPhishingErrorInNewTab();
   ReportPhishingError();
   // Opens the enhanced protection settings in a new tab.
   OpenEnhancedProtectionSettings();
