@@ -9205,6 +9205,29 @@
             ]
         }
     ],
+    "DontForwardMemoryPressureToV8": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "BackgroundingGCNoMemoryReducer",
+                    "enable_features": [
+                        "V8Flag_gc_on_background_notification",
+                        "V8Flag_memory_reducer_respects_frozen_state"
+                    ],
+                    "disable_features": [
+                        "ForwardMemoryPressureToBlinkIsolates"
+                    ]
+                }
+            ]
+        }
+    ],
     "DownloadLater": [
         {
             "platforms": [
@@ -15471,63 +15494,6 @@
                     "enable_features": [
                         "MemoryCacheChangeStrongReferencePruneDelay",
                         "MemoryCacheStrongReference"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MemoryPurgeInBackground": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DisableAll",
-                    "enable_features": [
-                        "ForwardMemoryPressureToBlinkIsolates",
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ],
-                    "disable_features": [
-                        "MemoryPurgeInBackground"
-                    ]
-                },
-                {
-                    "name": "DisableGC",
-                    "enable_features": [
-                        "MemoryPurgeInBackground",
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ],
-                    "disable_features": [
-                        "ForwardMemoryPressureToBlinkIsolates"
-                    ]
-                },
-                {
-                    "name": "DisableStrongReferences",
-                    "enable_features": [
-                        "ForwardMemoryPressureToBlinkIsolates",
-                        "MemoryPurgeInBackground",
-                        "ReleaseResourceDecodedDataOnMemoryPressure"
-                    ],
-                    "disable_features": [
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ]
-                },
-                {
-                    "name": "DisableDecodedData",
-                    "enable_features": [
-                        "ForwardMemoryPressureToBlinkIsolates",
-                        "MemoryPurgeInBackground",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ],
-                    "disable_features": [
-                        "ReleaseResourceDecodedDataOnMemoryPressure"
                     ]
                 }
             ]
