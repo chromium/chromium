@@ -513,7 +513,8 @@ TEST_F(GroupingHeuristicsTest,
        VisibilityScore_GroupNotShown_OneTabInGroupHasInvisibleHistory) {
   features_.InitAndEnableFeatureWithParameters(
       features::kGroupSuggestionService,
-      {{"group_suggestion_enable_recently_opened", "true"}});
+      {{"group_suggestion_enable_recently_opened", "true"},
+       {"group_suggestion_enable_visibility_check", "true"}});
 
   heuristics_ =
       std::make_unique<GroupingHeuristics>();  // Re-init after features
@@ -553,7 +554,8 @@ TEST_F(GroupingHeuristicsTest,
        VisibilityScore_GroupNotShown_AllTabsInGroupLackHistory) {
   features_.InitAndEnableFeatureWithParameters(
       features::kGroupSuggestionService,
-      {{"group_suggestion_enable_recently_opened", "true"}});
+      {{"group_suggestion_enable_recently_opened", "true"},
+       {"group_suggestion_enable_visibility_check", "true"}});
 
   heuristics_ =
       std::make_unique<GroupingHeuristics>();  // Re-init after features
@@ -586,10 +588,11 @@ TEST_F(GroupingHeuristicsTest,
 }
 
 TEST_F(GroupingHeuristicsTest,
-       VisibilityScore_GroupShown_MixedHistoryInGroup_VisibleAndNoHistory) {
+       VisibilityScore_GroupNotShown_MixedHistoryInGroup_VisibleAndNoHistory) {
   features_.InitAndEnableFeatureWithParameters(
       features::kGroupSuggestionService,
-      {{"group_suggestion_enable_recently_opened", "true"}});
+      {{"group_suggestion_enable_recently_opened", "true"},
+       {"group_suggestion_enable_visibility_check", "true"}});
 
   heuristics_ =
       std::make_unique<GroupingHeuristics>();  // Re-init after features
@@ -616,9 +619,8 @@ TEST_F(GroupingHeuristicsTest,
       CreateVisitForTab(base::Seconds(700), 5, GURL(kFooUrl5)));
   SetVisibilityScore(candidates.back(), kVisibilityThreshold + 0.1f);
 
-  // Potential group: {1,2,3,4}. Tabs 1 & 4 lack history (implicitly
-  // visible). Tabs 2 & 3 have visible history. Intended: `IsGroupVisible`
-  // returns true.
+  // Potential group: {1,2,3,4}. Tabs 1 & 4 lack history, so the group is not
+  // considered visible.
   std::optional<GroupSuggestions> suggestions =
       GetSuggestionsFor(std::move(candidates),
                         GroupSuggestion::SuggestionReason::kRecentlyOpened);

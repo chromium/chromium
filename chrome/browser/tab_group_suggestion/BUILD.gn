@@ -22,6 +22,7 @@ if (is_android) {
       ":java_resources",
       "//base:base_java",
       "//build/android:build_java",
+      "//chrome/browser/flags:java",
       "//chrome/browser/hub:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
