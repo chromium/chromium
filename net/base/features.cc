@@ -827,12 +827,6 @@ BASE_FEATURE(kSelfSignedLocalNetworkInterstitial,
 BASE_FEATURE(kVerifyQWACs, "VerifyQWACs", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kIncludeDeprecatedClientCertLookup,
-             "IncludeDeprecatedClientCertLookup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kRestrictAbusePorts,
              "RestrictAbusePorts",
              base::FEATURE_DISABLED_BY_DEFAULT);

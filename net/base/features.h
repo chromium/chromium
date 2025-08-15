@@ -843,15 +843,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSelfSignedLocalNetworkInterstitial);
 NET_EXPORT BASE_DECLARE_FEATURE(kVerifyQWACs);
 #endif
 
-#if BUILDFLAG(IS_MAC)
-// If enabled, includes deprecated APIs for looking up client certificates on
-// macOS. This is disabled by default and is available as an emergency kill
-// switch.
-// TODO(crbug.com/40233280): This will reach stable in M137 (May 2025). Remove
-// this flag sometime after August 2025.
-NET_EXPORT BASE_DECLARE_FEATURE(kIncludeDeprecatedClientCertLookup);
-#endif
-
 // Finch-controlled list of ports that should be blocked due to ongoing abuse.
 NET_EXPORT BASE_DECLARE_FEATURE(kRestrictAbusePorts);
 NET_EXPORT extern const base::FeatureParam<std::string>
