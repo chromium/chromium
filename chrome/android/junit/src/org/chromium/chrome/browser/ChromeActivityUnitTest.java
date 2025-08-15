@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
@@ -37,6 +38,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -47,6 +49,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -89,6 +92,8 @@ public class ChromeActivityUnitTest {
     @Mock EnterpriseInfo mEnterpriseInfo;
     @Mock UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private ObservableSupplier<LayoutManagerImpl> mLayoutManagerSupplier;
+    @Mock private TabStateThemeResourceProvider mThemeResourceProvider;
 
     ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
@@ -144,6 +149,22 @@ public class ChromeActivityUnitTest {
                 ensureFullscreenVideoPictureInPictureController() {
             return mFullscreenVideoPictureInPictureController;
         }
+
+        @Override
+        protected void onPreCreate() {
+            // Override the method in test so it can be accessible in test body.
+            super.onPreCreate();
+        }
+
+        @Override
+        public ObservableSupplier<LayoutManagerImpl> getLayoutManagerSupplier() {
+            return mLayoutManagerSupplier;
+        }
+
+        @Override
+        public ActivityTabProvider getActivityTabProvider() {
+            return mActivityTabProvider;
+        }
     }
 
     @Before
@@ -161,7 +182,7 @@ public class ChromeActivityUnitTest {
         ChromeActivity.createWindowErrorSnackbar(errorString, snackbarManager);
         Snackbar snackbar = snackbarManager.getCurrentSnackbarForTesting();
         Mockito.verify(snackbarManager).showSnackbar(ArgumentMatchers.any());
-        Assert.assertNull("Snackbar controller should be null.", snackbar.getController());
+        assertNull("Snackbar controller should be null.", snackbar.getController());
         Assert.assertEquals(
                 "Snackbar text should match.", errorString, snackbar.getTextForTesting());
         Assert.assertEquals(
@@ -286,5 +307,49 @@ public class ChromeActivityUnitTest {
                         R.id.reader_mode_menu_id, /* fromMenu= */ true));
         verify(mReaderModeManager).hideReaderMode();
         assertEquals(1, userActionTester.getActionCount("MobileMenuHideReaderMode"));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
+    public void testThemeResourceProvider_enabled() {
+        TestChromeActivity chromeActivity = new TestChromeActivity();
+        chromeActivity.onPreCreate();
+        assertNotNull(
+                "ThemeResourceProvider should be created.",
+                chromeActivity.getThemeResourceProviderForTesting());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
+    public void testThemeResourceProvider_disabled() {
+        TestChromeActivity chromeActivity = new TestChromeActivity();
+        chromeActivity.onPreCreate();
+        assertNull(
+                "ThemeResourceProvider should not be created.",
+                chromeActivity.getThemeResourceProviderForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
+    public void testThemeResourceProvider_wrongActivityType() {
+        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        doReturn(ActivityType.CUSTOM_TAB).when(chromeActivity).getActivityType();
+        chromeActivity.onPreCreate();
+        assertNull(
+                "ThemeResourceProvider should not be created.",
+                chromeActivity.getThemeResourceProviderForTesting());
+    }
+
+    // Bare minimum test to ensure #getResource call is delegate to the theme resource provider.
+    // Real use case covered by java integration test.
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
+    public void testGetResources() {
+
+        TestChromeActivity chromeActivity = new TestChromeActivity();
+        chromeActivity.setThemeResourceProviderForTesting(mThemeResourceProvider);
+        chromeActivity.getResources();
+
+        verify(mThemeResourceProvider).getResources();
     }
 }

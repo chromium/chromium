@@ -13,7 +13,6 @@ import android.view.ContextThemeWrapper;
 import androidx.annotation.StyleRes;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -84,7 +83,6 @@ public class ThemeResourceWrapper {
      * @see Context#getTheme()
      */
     public Theme getTheme() {
-        ThreadUtils.assertOnUiThread();
         assert !mIsBusy;
         try {
             mIsBusy = true;
@@ -100,7 +98,6 @@ public class ThemeResourceWrapper {
      * @see Context#getResources()
      */
     public Resources getResources() {
-        ThreadUtils.assertOnUiThread();
         assert !mIsBusy;
         try {
             mIsBusy = true;
@@ -116,7 +113,6 @@ public class ThemeResourceWrapper {
      * @see Context#getResources()
      */
     public AssetManager getAssets() {
-        ThreadUtils.assertOnUiThread();
         assert !mIsBusy;
         try {
             mIsBusy = true;
@@ -132,7 +128,6 @@ public class ThemeResourceWrapper {
      * @see Context#getSystemService(String)
      */
     public Object getSystemService(String name) {
-        ThreadUtils.assertOnUiThread();
         assert !mIsBusy;
         try {
             mIsBusy = true;
@@ -164,5 +159,9 @@ public class ThemeResourceWrapper {
 
     Context getThemedContextForTesting() {
         return mThemedContext;
+    }
+
+    public boolean getIsUsingOverlayForTesting() {
+        return mIsUsingOverlay;
     }
 }

@@ -14,7 +14,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -66,6 +69,7 @@ import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.PlayServicesVersionInfo;
+import org.chromium.chrome.browser.TabStateThemeResourceProvider;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.ai.AiAssistantService;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
@@ -418,6 +422,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private TabModalLifetimeHandler mTabModalLifetimeHandler;
     private ViewGroup mBaseChromeLayout;
 
+    private @Nullable TabStateThemeResourceProvider mThemeResourceProvider;
+
     protected ChromeActivity() {
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
         sNextActivityId++;
@@ -447,6 +453,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
         super.onPreCreate();
         initializeBackPressHandling();
+        initializeThemeResourceWrapper();
     }
 
     @Override
@@ -3041,4 +3048,61 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     protected int getAutomotiveToolbarImplementation() {
         return AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW;
     }
+
+    // === START of ThemeResourceProvider functionality ===
+
+    private void initializeThemeResourceWrapper() {
+        if (!ChromeFeatureList.sAndroidThemeResourceProvider.isEnabled()
+                || getActivityType() != ActivityType.TABBED) {
+            return;
+        }
+
+        // TODO: This is temporary. Replace with real theme overlay.
+        int resourceId = R.style.ThemeOverlay_BrowserUI_Switch_Incognito;
+        mThemeResourceProvider =
+                new TabStateThemeResourceProvider(
+                        this, resourceId, getActivityTabProvider(), getLayoutManagerSupplier());
+    }
+
+    @Override
+    public Resources getResources() {
+        if (mThemeResourceProvider != null && !mThemeResourceProvider.isBusy()) {
+            return mThemeResourceProvider.getResources();
+        }
+        return super.getResources();
+    }
+
+    @Override
+    public Theme getTheme() {
+        if (mThemeResourceProvider != null && !mThemeResourceProvider.isBusy()) {
+            return mThemeResourceProvider.getTheme();
+        }
+        return super.getTheme();
+    }
+
+    @Override
+    public AssetManager getAssets() {
+        if (mThemeResourceProvider != null && !mThemeResourceProvider.isBusy()) {
+            return mThemeResourceProvider.getAssets();
+        }
+        return super.getAssets();
+    }
+
+    @Override
+    public Object getSystemService(String name) {
+        if (mThemeResourceProvider != null && !mThemeResourceProvider.isBusy()) {
+            return mThemeResourceProvider.getSystemService(name);
+        }
+        return super.getSystemService(name);
+    }
+
+    public TabStateThemeResourceProvider getThemeResourceProviderForTesting() {
+        return mThemeResourceProvider;
+    }
+
+    public void setThemeResourceProviderForTesting(TabStateThemeResourceProvider instance) {
+        mThemeResourceProvider = instance;
+    }
+
+    // === END of ThemeResourceProvider functionality ===
 }

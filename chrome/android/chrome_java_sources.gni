@@ -40,6 +40,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/SwipeRefreshHandler.java",
   "java/src/org/chromium/chrome/browser/SynchronousInitializationActivity.java",
   "java/src/org/chromium/chrome/browser/TabGroupUsageTracker.java",
+  "java/src/org/chromium/chrome/browser/TabStateThemeResourceProvider.java",
   "java/src/org/chromium/chrome/browser/TabUsageTracker.java",
   "java/src/org/chromium/chrome/browser/TabbedMismatchedIndicesHandler.java",
   "java/src/org/chromium/chrome/browser/TabbedModeTabDelegateFactory.java",
