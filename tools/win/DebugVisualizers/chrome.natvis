@@ -137,27 +137,61 @@
   </Type>
   <!-- Handles most classes inside base/time/time.h -->
   <Type Name="base::time_internal::TimeBase&lt;*&gt;">
-    <DisplayString>{us_.value_} us</DisplayString>
+    <Intrinsic Name="microseconds" Expression="us_.value_" />
+    <!-- These static constexpr values are not consistently embedded in
+        the PDB. To ensure it works in all build configs, define them directly
+        here. -->
+    <Intrinsic Name="kHoursPerDay" Expression="24" />
+    <Intrinsic Name="kMinutesPerHour" Expression="60" />
+    <Intrinsic Name="kSecondsPerMinute" Expression="60" />
+    <Intrinsic Name="kMillisecondsPerSecond" Expression="1000" />
+    <Intrinsic Name="kMicrosecondsPerMillisecond" Expression="1000" />
+    <Intrinsic Name="kMicrosecondsPerSecond" Expression="kMicrosecondsPerMillisecond() * kMillisecondsPerSecond()" />
+    <Intrinsic Name="kMicrosecondsPerMinute" Expression="kMicrosecondsPerSecond() * kSecondsPerMinute()" />
+    <Intrinsic Name="kMicrosecondsPerHour" Expression="(int64_t)kMicrosecondsPerMinute() * kMinutesPerHour()" />
+    <Intrinsic Name="kMicrosecondsPerDay" Expression="(int64_t)kMicrosecondsPerHour() * kHoursPerDay()" />
+    <Intrinsic Name="microseconds_float" Expression="microseconds() * 1.0" />
+    <DisplayString Condition="microseconds() % kMicrosecondsPerDay() == 0">{microseconds() / kMicrosecondsPerDay()}d</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerHour() == 0">{microseconds() / kMicrosecondsPerHour()}h</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerMinute() == 0">{microseconds() / kMicrosecondsPerMinute()}m</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerSecond() == 0">{microseconds() / kMicrosecondsPerSecond()}s</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerMillisecond() == 0">{microseconds() / kMicrosecondsPerMillisecond()}ms</DisplayString>
+    <DisplayString>{microseconds()}us</DisplayString>
+    <Expand>
+      <Item Name="[in days]">microseconds_float() / kMicrosecondsPerDay()</Item>
+      <Item Name="[in hours]">microseconds_float() / kMicrosecondsPerHour()</Item>
+      <Item Name="[in minutes]">microseconds_float() / kMicrosecondsPerMinute()</Item>
+      <Item Name="[in seconds]">microseconds_float() / kMicrosecondsPerSecond()</Item>
+      <Item Name="[in milliseconds]">microseconds_float() / kMicrosecondsPerMillisecond()</Item>
+      <Item Name="[in microseconds]">microseconds()</Item>
+    </Expand>
   </Type>
   <Type Name="base::TimeDelta">
-    <DisplayString>{delta_.value_} us</DisplayString>
+    <Intrinsic Name="microseconds" Expression="delta_.value_" />
+    <!-- The below should be identical to the Type definition for base::time_internal::TimeBase<*>. -->
+    <Intrinsic Name="kHoursPerDay" Expression="24" />
+    <Intrinsic Name="kMinutesPerHour" Expression="60" />
+    <Intrinsic Name="kSecondsPerMinute" Expression="60" />
+    <Intrinsic Name="kMillisecondsPerSecond" Expression="1000" />
+    <Intrinsic Name="kMicrosecondsPerMillisecond" Expression="1000" />
+    <Intrinsic Name="kMicrosecondsPerSecond" Expression="kMicrosecondsPerMillisecond() * kMillisecondsPerSecond()" />
+    <Intrinsic Name="kMicrosecondsPerMinute" Expression="kMicrosecondsPerSecond() * kSecondsPerMinute()" />
+    <Intrinsic Name="kMicrosecondsPerHour" Expression="(int64_t)kMicrosecondsPerMinute() * kMinutesPerHour()" />
+    <Intrinsic Name="kMicrosecondsPerDay" Expression="(int64_t)kMicrosecondsPerHour() * kHoursPerDay()" />
+    <Intrinsic Name="microseconds_float" Expression="microseconds() * 1.0" />
+    <DisplayString Condition="microseconds() % kMicrosecondsPerDay() == 0">{microseconds() / kMicrosecondsPerDay()}d</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerHour() == 0">{microseconds() / kMicrosecondsPerHour()}h</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerMinute() == 0">{microseconds() / kMicrosecondsPerMinute()}m</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerSecond() == 0">{microseconds() / kMicrosecondsPerSecond()}s</DisplayString>
+    <DisplayString Condition="microseconds() % kMicrosecondsPerMillisecond() == 0">{microseconds() / kMicrosecondsPerMillisecond()}ms</DisplayString>
+    <DisplayString>{microseconds()}us</DisplayString>
     <Expand>
-      <Synthetic Name="Days">
-        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerDay)}</DisplayString>
-      </Synthetic>
-      <Synthetic Name="Hours">
-        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerHour)}</DisplayString>
-      </Synthetic>
-      <Synthetic Name="Minutes">
-        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerMinute)}</DisplayString>
-      </Synthetic>
-      <Synthetic Name="Seconds">
-        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerSecond)}</DisplayString>
-      </Synthetic>
-      <Synthetic Name="Milliseconds">
-        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerMillisecond)}</DisplayString>
-      </Synthetic>
-      <Item Name="Microseconds">delta_.value_</Item>
+      <Item Name="[in days]">microseconds_float() / kMicrosecondsPerDay()</Item>
+      <Item Name="[in hours]">microseconds_float() / kMicrosecondsPerHour()</Item>
+      <Item Name="[in minutes]">microseconds_float() / kMicrosecondsPerMinute()</Item>
+      <Item Name="[in seconds]">microseconds_float() / kMicrosecondsPerSecond()</Item>
+      <Item Name="[in milliseconds]">microseconds_float() / kMicrosecondsPerMillisecond()</Item>
+      <Item Name="[in microseconds]">microseconds()</Item>
     </Expand>
   </Type>
   <Type Name="GURL">
