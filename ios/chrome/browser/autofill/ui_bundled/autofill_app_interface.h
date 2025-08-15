@@ -72,10 +72,6 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
 + (NSString*)saveLocalCreditCard;
 
-// Saves a local credit card that requires CVC to be used.
-// Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
-+ (NSString*)saveLocalCreditCardWithCvc;
-
 // Returns the number of credit cards in the local store.
 + (NSInteger)localCreditCount;
 

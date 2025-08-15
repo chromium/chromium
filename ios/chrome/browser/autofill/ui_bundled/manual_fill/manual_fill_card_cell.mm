@@ -649,20 +649,9 @@ CGFloat GPayIconTopAnchorOffset() {
 - (void)userDidTapCVC:(UIButton*)sender {
   base::RecordAction(
       base::UserMetricsAction([self createMetricsAction:@"SelectCvc"]));
-  // For local card, insert real CVC stored.
-  if (self.card.recordType == autofill::CreditCard::RecordType::kLocalCard) {
-    if (![self.contentInjector canUserInjectInPasswordField:NO
-                                              requiresHTTPS:YES]) {
-      return;
-    }
-    [self.contentInjector userDidPickContent:self.card.CVC
-                               passwordField:NO
-                               requiresHTTPS:YES];
-  } else {
-    [self.navigationDelegate
-        requestFullCreditCard:self.card
-                    fieldType:manual_fill::PaymentFieldType::kCVC];
-  }
+  [self.navigationDelegate
+      requestFullCreditCard:self.card
+                  fieldType:manual_fill::PaymentFieldType::kCVC];
 }
 
 // Called when the "Autofill Form" button is tapped. Fills the current form with

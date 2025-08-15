@@ -80,19 +80,6 @@
       // information.
       CVC = base::SysUTF16ToNSString(creditCard.cvc());
     }
-  } else if (creditCard.record_type() ==
-             autofill::CreditCard::RecordType::kLocalCard) {
-    // For local card, the CVC should be shown.
-    if (!creditCard.cvc().empty()) {
-      CVC = base::SysUTF16ToNSString(creditCard.cvc());
-    }
-  } else {
-    // For server card, the CVC should be masked.
-    if (!creditCard.cvc().empty()) {
-      CVC =
-          base::SysUTF16ToNSString(autofill::CreditCard::GetMidlineEllipsisDots(
-              autofill::GetCvcLengthForCardNetwork(creditCard.network())));
-    }
   }
 
   return [self initWithGUID:GUID
