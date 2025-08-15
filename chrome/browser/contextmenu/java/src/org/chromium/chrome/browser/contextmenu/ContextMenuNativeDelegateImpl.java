@@ -127,11 +127,11 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
     }
 
     @Override
-    public void togglePictureInPicture(boolean isInPip) {
+    public void setPictureInPicture(boolean enterPip) {
         if (mNativePtr == 0) return;
 
         ContextMenuNativeDelegateImplJni.get()
-                .togglePictureInPicture(mNativePtr, mRenderFrameHost, isInPip);
+                .setPictureInPicture(mNativePtr, mRenderFrameHost, enterPip);
     }
 
     /** The class hold the |retrieveImageForShare| callback result. */
@@ -195,9 +195,9 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
                 int x,
                 int y);
 
-        void togglePictureInPicture(
+        void setPictureInPicture(
                 long nativeContextMenuNativeDelegateImpl,
                 @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
-                boolean isInPip);
+                boolean enterPip);
     }
 }

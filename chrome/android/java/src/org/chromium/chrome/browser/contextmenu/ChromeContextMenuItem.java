@@ -65,6 +65,7 @@ class ChromeContextMenuItem {
         Item.ADD_TO_CONTACTS,
         Item.COPY,
         Item.SAVE_VIDEO,
+        Item.PICTURE_IN_PICTURE,
         Item.OPEN_IN_CHROME,
         Item.OPEN_IN_NEW_TAB_IN_GROUP,
         Item.SHARE_HIGHLIGHT,
@@ -116,20 +117,21 @@ class ChromeContextMenuItem {
         int COPY = 30;
         // Video Group
         int SAVE_VIDEO = 31;
+        int PICTURE_IN_PICTURE = 32;
         // Other
-        int OPEN_IN_CHROME = 32;
+        int OPEN_IN_CHROME = 33;
         // Shared Highlighting options
-        int SHARE_HIGHLIGHT = 33;
-        int REMOVE_HIGHLIGHT = 34;
-        int LEARN_MORE = 35;
+        int SHARE_HIGHLIGHT = 34;
+        int REMOVE_HIGHLIGHT = 35;
+        int LEARN_MORE = 36;
         // Page Group
-        int SAVE_PAGE = 36;
-        int SHARE_PAGE = 37;
-        int PRINT_PAGE = 38;
+        int SAVE_PAGE = 37;
+        int SHARE_PAGE = 38;
+        int PRINT_PAGE = 39;
         // Developer Group
-        int INSPECT_ELEMENT = 39;
+        int INSPECT_ELEMENT = 40;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 40;
+        int NUM_ENTRIES = 41;
     }
 
     /** Mapping from {@link Item} to the ID found in the ids.xml. */
@@ -166,6 +168,7 @@ class ChromeContextMenuItem {
         R.id.contextmenu_add_to_contacts, // Item.ADD_TO_CONTACTS
         R.id.contextmenu_copy, // Item.COPY
         R.id.contextmenu_save_video, // Item.SAVE_VIDEO
+        R.id.contextmenu_picture_in_picture, // Item.PICTURE_IN_PICTURE
         R.id.contextmenu_open_in_chrome, // Item.OPEN_IN_CHROME
         R.id.contextmenu_share_highlight, // Item.SHARE_HIGHLIGHT
         R.id.contextmenu_remove_highlight, // Item.REMOVE_HIGHLIGHT
@@ -210,6 +213,7 @@ class ChromeContextMenuItem {
         R.string.contextmenu_add_to_contacts, // Item.ADD_TO_CONTACTS:
         R.string.contextmenu_copy, // Item.COPY:
         R.string.contextmenu_save_video, // Item.SAVE_VIDEO:
+        0, // Item.PICTURE_IN_PICTURE is not handled by this mapping.
         R.string.menu_open_in_chrome, // Item.OPEN_IN_CHROME:
         R.string.contextmenu_share_highlight, // Item.SHARE_HIGHLIGHT
         R.string.contextmenu_remove_highlight, // Item.REMOVE_HIGHLIGHT

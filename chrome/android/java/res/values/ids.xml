@@ -100,8 +100,9 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_remove_highlight" />
     <item type="id" name="contextmenu_learn_more" />
 
-    <!-- Other Group -->
+    <!-- Video Group -->
     <item type="id" name="contextmenu_save_video" />
+    <item type="id" name="contextmenu_picture_in_picture" />
 
     <!-- Menu item IDs for FullscreenActivities -->
     <item type="id" name="contextmenu_open_in_chrome" />

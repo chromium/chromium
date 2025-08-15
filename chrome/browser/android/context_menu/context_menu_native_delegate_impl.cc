@@ -198,10 +198,10 @@ void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
           base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
-void ContextMenuNativeDelegateImpl::TogglePictureInPicture(
+void ContextMenuNativeDelegateImpl::SetPictureInPicture(
     JNIEnv* env,
     content::RenderFrameHost* render_frame_host,
-    jboolean is_in_pip) {
+    jboolean enter_pip) {
   if (!render_frame_host) {
     return;
   }
@@ -209,7 +209,7 @@ void ContextMenuNativeDelegateImpl::TogglePictureInPicture(
   render_frame_host->ExecuteMediaPlayerActionAtLocation(
       gfx::Point(context_menu_params_->x, context_menu_params_->y),
       blink::mojom::MediaPlayerAction(
-          blink::mojom::MediaPlayerActionType::kPictureInPicture, !is_in_pip));
+          blink::mojom::MediaPlayerActionType::kPictureInPicture, enter_pip));
 }
 
 static jlong JNI_ContextMenuNativeDelegateImpl_Init(

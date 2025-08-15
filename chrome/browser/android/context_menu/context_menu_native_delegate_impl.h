@@ -44,9 +44,9 @@ class ContextMenuNativeDelegateImpl {
                       content::RenderFrameHost* render_frame_host,
                       jint x,
                       jint y);
-  void TogglePictureInPicture(JNIEnv* env,
-                              content::RenderFrameHost* render_frame_host,
-                              jboolean is_in_pip);
+  void SetPictureInPicture(JNIEnv* env,
+                           content::RenderFrameHost* render_frame_host,
+                           jboolean enter_pip);
 
  protected:
   using ImageRetrieveCallback = base::OnceCallback<void(

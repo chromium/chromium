@@ -63,9 +63,10 @@ public interface ContextMenuNativeDelegate {
     RenderFrameHost getRenderFrameHost();
 
     /**
-     * Toggles Picture-in-Picture for the video.
+     * Requests to enter or exit Picture-in-Picture for the video.
      *
-     * @param isInPip Whether the video is currently in Picture-in-Picture.
+     * @param enterPip {@code true} to request entering Picture-in-Picture, or {@code false} to
+     *     request exiting.
      */
-    void togglePictureInPicture(boolean isInPip);
+    void setPictureInPicture(boolean enterPip);
 }

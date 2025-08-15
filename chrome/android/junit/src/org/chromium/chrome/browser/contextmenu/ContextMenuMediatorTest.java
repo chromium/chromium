@@ -240,12 +240,16 @@ public class ContextMenuMediatorTest {
         // Video items
         ModelList groupOne = new ModelList();
         groupOne.add(createListItem(ChromeContextMenuItem.Item.SAVE_VIDEO));
+        groupOne.add(
+                createListItem(
+                        ChromeContextMenuItem.Item.PICTURE_IN_PICTURE, "Picture in Picture"));
         rawItems.add(groupOne);
         ModelList itemList = getItemList(rawItems, /* hasHeader= */ true);
 
         assertThat(itemList.get(0).type, equalTo(ContextMenuItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
         assertThat(itemList.get(2).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(itemList.get(3).type, equalTo(ListItemType.MENU_ITEM));
     }
 
     @Test
@@ -353,6 +357,16 @@ public class ContextMenuMediatorTest {
                         .with(
                                 TITLE,
                                 ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
+                        .build();
+        return new ListItem(ListItemType.MENU_ITEM, model);
+    }
+
+    private ListItem createListItem(@ChromeContextMenuItem.Item int item, String title) {
+        final PropertyModel model =
+                new PropertyModel.Builder(MENU_ITEM_ID, TITLE, ENABLED, CLICK_LISTENER)
+                        .with(MENU_ITEM_ID, ChromeContextMenuItem.getMenuId(item))
+                        .with(ENABLED, true)
+                        .with(TITLE, title)
                         .build();
         return new ListItem(ListItemType.MENU_ITEM, model);
     }

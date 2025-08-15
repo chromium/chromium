@@ -2955,6 +2955,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_SAVE_VIDEO" desc="Context sensitive menu item for saving the selected video. [CHAR_LIMIT=30]">
         Download video
       </message>
+      <message name="IDS_CONTEXTMENU_PICTURE_IN_PICTURE" desc="The context menu item to enter picture-in-picture mode for a video. [CHAR_LIMIT=30]">
+        Picture in Picture
+      </message>
+      <message name="IDS_CONTEXTMENU_EXIT_PICTURE_IN_PICTURE" desc="The context menu item to exit picture-in-picture mode for a video. [CHAR_LIMIT=30]">
+        Exit Picture in Picture
+      </message>
       <message name="IDS_CONTEXTMENU_OPEN_IN_NEW_CHROME_TAB" desc="Context sensitive menu item to open the selected link in a new Chrome tab from Chrome Custom Tab. [CHAR_LIMIT=30]">
         Open in new Chrome tab
       </message>

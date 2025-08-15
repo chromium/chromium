@@ -220,6 +220,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.PRINT_PAGE,
             Action.INSPECT_ELEMENT,
             Action.SHOW_INTEREST_IN_ELEMENT,
+            Action.ENTER_PICTURE_IN_PICTURE,
+            Action.EXIT_PICTURE_IN_PICTURE,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -272,7 +274,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             // int RELOAD = 46;  Deprecated since 05/2025.
             int INSPECT_ELEMENT = 47;
             int SHOW_INTEREST_IN_ELEMENT = 48;
-            int NUM_ENTRIES = 49;
+            int ENTER_PICTURE_IN_PICTURE = 49;
+            int EXIT_PICTURE_IN_PICTURE = 50;
+            int NUM_ENTRIES = 51;
         }
 
         // LINT.ThenChange(/tools/metrics/histograms/enums.xml:ContextMenuOptionAndroid)
@@ -627,17 +631,30 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             groupedItems.add(imageGroup);
         }
 
-        if (mParams.isVideo()
-                && FirstRunStatus.getFirstRunFlowComplete()
-                && mParams.canSaveMedia()
-                && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())) {
+        if (mParams.isVideo() && FirstRunStatus.getFirstRunFlowComplete()) {
             ModelList videoGroup = new ModelList();
-            videoGroup.add(
-                    createListItem(
-                            Item.SAVE_VIDEO,
-                            /* showInProductHelp= */ false,
-                            !mIsDownloadRestrictedByPolicy));
-            groupedItems.add(videoGroup);
+            if (mParams.canSaveMedia() && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())) {
+                videoGroup.add(
+                        createListItem(
+                                Item.SAVE_VIDEO,
+                                /* showInProductHelp= */ false,
+                                !mIsDownloadRestrictedByPolicy));
+            }
+            if (ChromeFeatureList.sContextMenuPictureInPictureAndroid.isEnabled()
+                    && mParams.canPictureInPicture()) {
+                int titleResId =
+                        mParams.isPictureInPicture()
+                                ? R.string.contextmenu_exit_picture_in_picture
+                                : R.string.contextmenu_picture_in_picture;
+                videoGroup.add(
+                        createListItem(
+                                Item.PICTURE_IN_PICTURE,
+                                mContext.getString(titleResId),
+                                /* enabled= */ true));
+            }
+            if (!videoGroup.isEmpty()) {
+                groupedItems.add(videoGroup);
+            }
         }
 
         if (mParams.getOpenedFromHighlight()) {
@@ -1051,6 +1068,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             recordContextMenuSelection(ContextMenuUma.Action.INSPECT_ELEMENT);
             mNativeDelegate.inspectElement(
                     mParams.getTriggeringTouchXDp(), mParams.getTriggeringTouchYDp());
+        } else if (itemId == R.id.contextmenu_picture_in_picture) {
+            boolean enterPiP = !mParams.isPictureInPicture();
+            recordContextMenuSelection(
+                    enterPiP
+                            ? ContextMenuUma.Action.ENTER_PICTURE_IN_PICTURE
+                            : ContextMenuUma.Action.EXIT_PICTURE_IN_PICTURE);
+            mNativeDelegate.setPictureInPicture(enterPiP);
         } else if (itemId == R.id.contextmenu_show_interest_in_element) {
             recordContextMenuSelection(ContextMenuUma.Action.SHOW_INTEREST_IN_ELEMENT);
             WebContents webContents = mItemDelegate.getWebContents();
@@ -1276,7 +1300,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     /** Record a UMA ping and a UKM ping if enabled. */
-    private void recordContextMenuSelection(int actionId) {
+    protected void recordContextMenuSelection(int actionId) {
         ContextMenuUma.record(mParams, actionId);
         if (LensUtils.shouldLogUkmForLensContextMenuFeatures()) {
             maybeRecordActionUkm("ContextMenuAndroid.Selected", actionId);
@@ -1349,8 +1373,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private ListItem createListItem(@Item int item, boolean showInProductHelp, boolean enabled) {
         CharSequence title =
                 ChromeContextMenuItem.getTitle(mContext, getProfile(), item, showInProductHelp);
-        int menuItemId = ChromeContextMenuItem.getMenuId(item);
+        return createListItem(item, title, enabled);
+    }
 
+    private ListItem createListItem(@Item int item, CharSequence title, boolean enabled) {
+        int menuItemId = ChromeContextMenuItem.getMenuId(item);
         final PropertyModel model = buildListItemModel(title, menuItemId, enabled);
         return new ListItem(ListItemType.MENU_ITEM, model);
     }

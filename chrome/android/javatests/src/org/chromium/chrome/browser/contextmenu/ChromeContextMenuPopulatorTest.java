@@ -11,8 +11,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -293,6 +295,31 @@ public class ChromeContextMenuPopulatorTest {
                 "",
                 null,
                 false,
+                0,
+                0,
+                MenuSourceType.TOUCH,
+                false,
+                /* openedFromInterestFor= */ false,
+                /* interestForNodeID= */ 0,
+                /* additionalNavigationParams= */ null);
+    }
+
+    private ContextMenuParams createVideoPipParams(@ContextMenuDataMediaFlags int mediaFlags) {
+        GURL sourceUrl = new GURL("http://www.blah.com/");
+        GURL url = new GURL(sourceUrl.getSpec() + "I_love_mouse_video.avi");
+        return new ContextMenuParams(
+                0,
+                mMenuModelBridge,
+                ContextMenuDataMediaType.VIDEO,
+                mediaFlags,
+                new GURL(PAGE_URL),
+                url,
+                "VIDEO!",
+                GURL.emptyGURL(),
+                sourceUrl,
+                "",
+                null,
+                true,
                 0,
                 0,
                 MenuSourceType.TOUCH,
@@ -978,6 +1005,72 @@ public class ChromeContextMenuPopulatorTest {
                 Arrays.asList(R.id.contextmenu_save_link_as, R.id.contextmenu_save_video),
                 expected5Tab1,
                 expected2Tab2);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
+    public void testVideoPictureInPicture_Enter() {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+        final String enterPip =
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.contextmenu_picture_in_picture);
+        final String exitPip =
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.contextmenu_exit_picture_in_picture);
+
+        ContextMenuParams canPipParams =
+                createVideoPipParams(ContextMenuDataMediaFlags.MEDIA_CAN_PICTURE_IN_PICTURE);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, canPipParams);
+        // Mock this method because it goes into native code to record a histogram.
+        doNothing().when(mPopulator).recordContextMenuSelection(anyInt());
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+        ListItem pipItem = findItemWithTitle(menuState, enterPip);
+        assertNotNull("Should have 'Picture in Picture' menu item.", pipItem);
+        assertNull(
+                "Should not have 'Exit Picture in Picture' menu item.",
+                findItemWithTitle(menuState, exitPip));
+
+        assertTrue(
+                "Clicking on enter pip should be handled.",
+                mPopulator.onItemSelected(R.id.contextmenu_picture_in_picture));
+        verify(mNativeDelegate).setPictureInPicture(true);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
+    public void testVideoPictureInPicture_Exit() {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+        final String enterPip =
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.contextmenu_picture_in_picture);
+        final String exitPip =
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.contextmenu_exit_picture_in_picture);
+
+        ContextMenuParams inPipParams =
+                createVideoPipParams(
+                        ContextMenuDataMediaFlags.MEDIA_CAN_PICTURE_IN_PICTURE
+                                | ContextMenuDataMediaFlags.MEDIA_PICTURE_IN_PICTURE);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, inPipParams);
+        // Mock this method because it goes into native code to record a histogram.
+        doNothing().when(mPopulator).recordContextMenuSelection(anyInt());
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+        ListItem pipItem = findItemWithTitle(menuState, exitPip);
+        assertNotNull("Should have 'Exit Picture in Picture' menu item.", pipItem);
+        assertNull(
+                "Should not have 'Picture in Picture' menu item.",
+                findItemWithTitle(menuState, enterPip));
+
+        assertTrue(
+                "Clicking on exit pip should be handled.",
+                mPopulator.onItemSelected(R.id.contextmenu_picture_in_picture));
+        verify(mNativeDelegate).setPictureInPicture(false);
     }
 
     @Test
