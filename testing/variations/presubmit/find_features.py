@@ -15,7 +15,7 @@ import re
 
 from typing import List, Set
 
-BASE_FEATURE_PATTERN = br'BASE_FEATURE\((.*?),(.*?),(.*?)\);'
+BASE_FEATURE_PATTERN = br'BASE_FEATURE\((.*?)\);'
 BASE_FEATURE_RE = re.compile(BASE_FEATURE_PATTERN,
                              flags=re.MULTILINE + re.DOTALL)
 
@@ -75,9 +75,22 @@ def _FindFeaturesInFile(filepath: str) -> List[str]:
   # Work on bytes to avoid utf-8 decode errors outside feature declarations
   file_contents = pathlib.Path(filepath).read_bytes()
   matches = BASE_FEATURE_RE.finditer(file_contents)
-  # Remove whitespace and surrounding " from the second argument
-  # which is the feature name.
-  return [m.group(2).strip().strip(b'"').decode('utf-8') for m in matches]
+  feature_names = []
+  for m in matches:
+    # Split the arguments to handle both 2- and 3-argument versions of
+    # BASE_FEATURE.
+    args = [arg.strip() for arg in m.group(1).split(b',')]
+    if len(args) == 3:
+      # 3-arg: BASE_FEATURE(kMyFeature, "MyFeature", ...), name is the 2nd arg.
+      feature_name = args[1].strip(b'"')
+    elif len(args) == 2:
+      # 2-arg: BASE_FEATURE(MyFeature, ...), name is the 1st arg.
+      feature_name = args[0]
+    else:
+      # Should not happen with valid C++ code.
+      continue
+    feature_names.append(feature_name.decode('utf-8'))
+  return feature_names
 
 
 def _FindDeclaredFeaturesImpl(repository_root: pathlib.Path) -> Set[str]:

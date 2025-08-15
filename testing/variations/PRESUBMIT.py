@@ -10,7 +10,6 @@ for more details on the presubmit API built into depot_tools.
 import copy
 import io
 import json
-import re
 import sys
 
 # TODO(b/365662411): Upgrade to PRESUBMIT_VERSION 2.0.0.
@@ -25,11 +24,6 @@ VALID_EXPERIMENT_KEYS = [
 ]
 
 FIELDTRIAL_CONFIG_FILE_NAME = 'fieldtrial_testing_config.json'
-
-BASE_FEATURE_PATTERN = r'BASE_FEATURE\((.*?),(.*?),(.*?)\);'
-BASE_FEATURE_RE = re.compile(BASE_FEATURE_PATTERN,
-                             flags=re.MULTILINE + re.DOTALL)
-
 
 # LINT.IfChange
 def PrettyPrint(contents):
