@@ -47,9 +47,9 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
 
   ScopedOrtEnv env_;
 
-  static base::Lock lock_;
+  static base::Lock& GetLock();
   // Make `Environment` a singleton to avoid duplicate `OrtEnv` creation.
-  static raw_ptr<Environment> instance_ GUARDED_BY(lock_);
+  static raw_ptr<Environment> instance_ GUARDED_BY(GetLock());
 };
 
 }  // namespace webnn::ort

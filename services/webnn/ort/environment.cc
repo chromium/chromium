@@ -167,7 +167,7 @@ void ORT_API_CALL OrtCustomLoggingFunction(void* /*param*/,
 // static
 base::expected<scoped_refptr<Environment>, std::string>
 Environment::GetInstance(const gpu::GPUInfo& gpu_info) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(GetLock());
   if (instance_) {
     return base::WrapRefCounted(instance_);
   }
@@ -266,7 +266,7 @@ void Environment::AddRef() const {
 }
 
 void Environment::Release() const {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(GetLock());
   if (base::subtle::RefCountedThreadSafeBase::Release()) {
     ANALYZER_SKIP_THIS_PATH();
     CHECK_EQ(instance_, this);
@@ -309,7 +309,11 @@ bool Environment::IsExternalDataSupported(mojom::Device device_type) const {
   return true;
 }
 
-base::Lock Environment::lock_;
+// static
+base::Lock& Environment::GetLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
 
 raw_ptr<Environment> Environment::instance_ = nullptr;
 
