@@ -59,11 +59,17 @@ RecordingTypeMenuView::RecordingTypeMenuView(
           this,
           SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
-  SetBackground(views::CreateSolidBackground(kColorAshShieldAndBase80));
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kRoundedCorners);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  SetBackground(views::CreateSolidBackground(
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemOnBaseOpaque));
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
   AddOption(
       &kCaptureModeVideoIcon,

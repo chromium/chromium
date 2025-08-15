@@ -157,12 +157,17 @@ CaptureLabelView::CaptureLabelView(
       shadow_(SystemShadow::CreateShadowOnTextureLayer(
           SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-
-  SetBackground(views::CreateSolidBackground(kColorAshShieldAndBase80));
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCaptureLabelRadius));
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  SetBackground(views::CreateSolidBackground(
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemOnBaseOpaque));
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
   capture_button_container_ = AddChildView(std::make_unique<CaptureButtonView>(
       std::move(on_capture_button_pressed),

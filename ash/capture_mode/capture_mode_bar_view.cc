@@ -93,13 +93,19 @@ CaptureModeBarView::CaptureModeBarView()
     : shadow_(SystemShadow::CreateShadowOnTextureLayer(
           SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
-  SetBackground(views::CreateSolidBackground(kColorAshShieldAndBase80));
+  SetBackground(views::CreateSolidBackground(
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemOnBaseOpaque));
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
   const int border_radius = capture_mode::kCaptureBarHeight / 2;
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(border_radius));
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kBarPadding,
