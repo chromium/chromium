@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/download/public/common/base_file.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -369,7 +365,8 @@ DownloadInterruptReason BaseFile::CalculatePartialHash(
     // kMaxBufferSize, which fits on an int.
     int bytes_to_read =
         std::min<int64_t>(buffer.size(), bytes_so_far_ - current_position);
-    int length = file_.ReadAtCurrentPos(&buffer.front(), bytes_to_read);
+    int length =
+        UNSAFE_TODO(file_.ReadAtCurrentPos(&buffer.front(), bytes_to_read));
     if (length == -1) {
       return LogInterruptReason("Reading partial file",
                                 logging::GetLastSystemErrorCode(),
@@ -394,8 +391,8 @@ DownloadInterruptReason BaseFile::CalculatePartialHash(
     std::unique_ptr<crypto::SecureHash> partial_hash(secure_hash_->Clone());
     partial_hash->Finish(&buffer.front(), buffer.size());
 
-    if (memcmp(&buffer.front(), hash_to_expect.c_str(),
-               partial_hash->GetHashLength())) {
+    if (UNSAFE_TODO(memcmp(&buffer.front(), hash_to_expect.c_str(),
+                           partial_hash->GetHashLength()))) {
       return LogInterruptReason("Verifying prefix hash", 0,
                                 DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH);
     }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/autocomplete_result.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
@@ -90,11 +86,11 @@ void PopulateAutocompleteMatchesFromTestData(const T* data,
   ASSERT_TRUE(matches != nullptr);
   for (size_t i = 0; i < count; ++i) {
     AutocompleteMatch match;
-    match.destination_url = GURL(data[i].destination_url);
+    match.destination_url = GURL(UNSAFE_TODO(data[i]).destination_url);
     match.relevance =
         matches->empty() ? 1300 : (matches->back().relevance - 100);
     match.allowed_to_be_default_match = true;
-    match.type = data[i].type;
+    match.type = UNSAFE_TODO(data[i]).type;
     matches->push_back(match);
   }
 }
@@ -349,7 +345,7 @@ void AutocompleteResultTest::RunTransferOldMatchesTest(
       /*is_lens_active=*/false, /*can_show_contextual_suggestions=*/false,
       /*mia_enabled*/ false);
 
-  AssertResultMatches(current_result, {expected, expected_size});
+  AssertResultMatches(current_result, UNSAFE_TODO({expected, expected_size}));
 }
 
 void AutocompleteResultTest::SortMatchesAndVerifyOrder(
@@ -368,8 +364,9 @@ void AutocompleteResultTest::SortMatchesAndVerifyOrder(
                      /*mia_enabled*/ false);
 
   std::vector<std::string> expected;
-  std::ranges::transform(expected_order, std::back_inserter(expected),
-                         [&](size_t i) { return data[i].destination_url; });
+  std::ranges::transform(
+      expected_order, std::back_inserter(expected),
+      [&](size_t i) { return UNSAFE_TODO(data[i]).destination_url; });
   std::vector<std::string> actual;
   std::ranges::transform(
       result, std::back_inserter(actual),
@@ -2990,7 +2987,8 @@ TEST_F(AutocompleteResultTest, Desktop_ZpsGroupingIPH) {
     SCOPED_TRACE("Query from omnibox - without IPH");
     // Remove the IPH suggestion from the list of matches.
     matches.clear();
-    PopulateAutocompleteMatches({data, std::size(data) - 1}, &matches);
+    PopulateAutocompleteMatches(UNSAFE_TODO({data, std::size(data) - 1}),
+                                &matches);
 
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);

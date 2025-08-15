@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/variations/net/variations_command_line.h"
 
 #include "base/base64.h"
 #include "base/base_switches.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
@@ -44,7 +40,7 @@ const std::array<uint8_t, X25519_PUBLIC_VALUE_LEN> kFeedbackEncryptionPublicKey{
 
 // Exits the browser with a helpful error message.
 void ExitWithMessage(const std::string& message) {
-  puts(message.c_str());
+  UNSAFE_TODO(puts(message.c_str()));
   exit(1);
 }
 

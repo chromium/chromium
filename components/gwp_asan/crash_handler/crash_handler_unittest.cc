@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gwp_asan/crash_handler/crash_handler.h"
 
 #include <array>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -160,9 +156,9 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
         new crashpad::SanitizationAllowedMemoryRanges::Range[memory_ranges
                                                                  .size()];
     for (size_t i = 0; i < memory_ranges.size(); i++) {
-      range_array[i].base =
+      UNSAFE_TODO(range_array[i]).base =
           reinterpret_cast<crashpad::VMAddress>(memory_ranges[i].first);
-      range_array[i].length = memory_ranges[i].second;
+      UNSAFE_TODO(range_array[i]).length = memory_ranges[i].second;
     }
     allowed_memory_ranges.size = memory_ranges.size();
     allowed_memory_ranges.entries =
@@ -246,12 +242,12 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
       // Avoid these issues by underflowing with an actual negative value. This
       // is still UB (thus the crash), but requires knowledge of `ptr` to
       // observe, so a non-ASan compiler does not interfere with it in practice.
-      ((unsigned char*)ptr)[-static_cast<ptrdiff_t>(i)] = 0;
+      UNSAFE_TODO(((unsigned char*)ptr)[-static_cast<ptrdiff_t>(i)]) = 0;
     }
   } else if (test_name == "Overflow") {
     void* ptr = gpa->Allocate(kAllocationSize);
     for (size_t i = 0; i <= base::GetPageSize(); i++) {
-      ((unsigned char*)ptr)[i] = 0;
+      UNSAFE_TODO(((unsigned char*)ptr)[i]) = 0;
     }
   } else if (test_name == "UnrelatedException") {
     __builtin_trap();
@@ -475,11 +471,11 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
     EXPECT_FALSE(proto_.missing_metadata());
 
     EXPECT_TRUE(proto_.has_allocator());
-    if (!strcmp(params_.allocator, "malloc"))
+    if (!UNSAFE_TODO(strcmp(params_.allocator, "malloc"))) {
       EXPECT_EQ(proto_.allocator(), Crash_Allocator_MALLOC);
-    else if (!strcmp(params_.allocator, "partitionalloc"))
+    } else if (!UNSAFE_TODO(strcmp(params_.allocator, "partitionalloc"))) {
       EXPECT_EQ(proto_.allocator(), Crash_Allocator_PARTITIONALLOC);
-    else
+    } else
       ASSERT_TRUE(false) << "Unknown allocator name";
   }
 

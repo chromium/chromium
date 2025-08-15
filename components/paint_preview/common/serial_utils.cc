@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/paint_preview/common/serial_utils.h"
 
+#include "base/compiler_specific.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -229,7 +225,7 @@ sk_sp<SkPicture> DeserializePictureAsRectData(const void* data,
   if (length < sizeof(rect_data)) {
     return MakeEmptyPicture();
   }
-  memcpy(&rect_data, data, sizeof(rect_data));
+  UNSAFE_TODO(memcpy(&rect_data, data, sizeof(rect_data)));
   auto* context = reinterpret_cast<DeserializationContext*>(ctx);
   context->insert(
       {rect_data.content_id,
@@ -251,7 +247,7 @@ sk_sp<SkPicture> GetPictureFromDeserialContext(const void* data,
   if (length < sizeof(rect_data)) {
     return MakeEmptyPicture();
   }
-  memcpy(&rect_data, data, sizeof(rect_data));
+  UNSAFE_TODO(memcpy(&rect_data, data, sizeof(rect_data)));
   auto* context = reinterpret_cast<LoadedFramesDeserialContext*>(ctx);
 
   auto it = context->find(rect_data.content_id);

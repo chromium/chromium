@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/policy/core/common/policy_proto_decoders.h"
 
 #include <cstring>
 #include <limits>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -135,8 +131,9 @@ bool UseExternalDataFetcher(const char* policy_name,
     return true;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (strcmp(policy_name, key::kWebAppInstallForceList) == 0)
+  if (UNSAFE_TODO(strcmp(policy_name, key::kWebAppInstallForceList)) == 0) {
     return true;
+  }
 #endif
   return false;
 }

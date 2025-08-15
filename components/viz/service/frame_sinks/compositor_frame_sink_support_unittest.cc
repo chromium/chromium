@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 

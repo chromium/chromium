@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/browser/policy_conversions_client.h"
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -279,7 +275,7 @@ Value::Dict PolicyConversionsClient::GetPolicyValue(
                            : "mandatory");
     value.Set("source", policy.IsDefaultValue()
                             ? "sourceDefault"
-                            : kPolicySources[policy.source].name);
+                            : UNSAFE_TODO(kPolicySources[policy.source]).name);
   } else {
     value.Set("scope", policy.scope);
     value.Set("level", policy.level);

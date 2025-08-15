@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/spellcheck/renderer/spellcheck_provider.h"
 
 #include <algorithm>
 #include <unordered_map>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -350,7 +346,7 @@ bool SpellCheckProvider::HasWordCharacters(const std::u16string& text,
   size_t length = text.length();
   while (index < length) {
     uint32_t code = 0;
-    U16_NEXT(data, index, length, code);
+    UNSAFE_TODO(U16_NEXT(data, index, length, code));
     UErrorCode error = U_ZERO_ERROR;
     if (uscript_getScript(code, &error) != USCRIPT_COMMON)
       return true;

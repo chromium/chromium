@@ -5,10 +5,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 
 #include "third_party/omnibox_proto/types.pb.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
 
 #include <algorithm>
 #include <string>

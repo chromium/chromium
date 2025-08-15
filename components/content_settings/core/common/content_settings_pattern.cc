@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -511,7 +507,8 @@ void ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
   if (g_non_domain_wildcard_non_port_schemes) {
     DCHECK_EQ(g_non_domain_wildcard_non_port_schemes_count, count);
     for (size_t i = 0; i < count; ++i) {
-      DCHECK_EQ(g_non_domain_wildcard_non_port_schemes[i], schemes[i]);
+      UNSAFE_TODO(
+          DCHECK_EQ(g_non_domain_wildcard_non_port_schemes[i], schemes[i]));
     }
   }
 
@@ -525,7 +522,7 @@ bool ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
   DCHECK(g_non_domain_wildcard_non_port_schemes ||
          g_non_domain_wildcard_non_port_schemes_count == 0);
   for (size_t i = 0; i < g_non_domain_wildcard_non_port_schemes_count; ++i) {
-    if (g_non_domain_wildcard_non_port_schemes[i] == scheme) {
+    if (UNSAFE_TODO(g_non_domain_wildcard_non_port_schemes[i]) == scheme) {
       return true;
     }
   }

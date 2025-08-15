@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/storage/sandboxed_vfs_file_impl.h"
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "sql/sandboxed_vfs.h"
 
@@ -57,7 +53,7 @@ int SandboxedVfsFileImpl::Read(void* buffer, int size, sqlite3_int64 offset) {
   // and try to fill as much of the request as possible from the mmap()ed
   // region.
 
-  int bytes_read = file_.Read(offset, data, size);
+  int bytes_read = UNSAFE_TODO(file_.Read(offset, data, size));
   DCHECK_LE(bytes_read, size);
   if (bytes_read == size) {
     return SQLITE_OK;
@@ -71,7 +67,7 @@ int SandboxedVfsFileImpl::Read(void* buffer, int size, sqlite3_int64 offset) {
       // The unlocked read is considered an optimization. SQLite can continue
       // even if the read fails, as long as failure is communicated by zeroing
       // out the output buffer.
-      std::memset(data, 0, size);
+      UNSAFE_TODO(std::memset(data, 0, size));
       return SQLITE_OK;
     }
 
@@ -80,7 +76,7 @@ int SandboxedVfsFileImpl::Read(void* buffer, int size, sqlite3_int64 offset) {
   }
 
   // SQLite requires that we fill the unread bytes in the buffer with zeros.
-  std::memset(data + bytes_read, 0, size - bytes_read);
+  UNSAFE_TODO(std::memset(data + bytes_read, 0, size - bytes_read));
   return SQLITE_IOERR_SHORT_READ;
 }
 
@@ -103,7 +99,7 @@ int SandboxedVfsFileImpl::Write(const void* buffer,
   // and try to fill as much of the request as possible by copying to the
   // mmap()ed region.
 
-  int bytes_written = file_.Write(offset, data, size);
+  int bytes_written = UNSAFE_TODO(file_.Write(offset, data, size));
   DCHECK_LE(bytes_written, size);
   if (bytes_written >= size) {
     return SQLITE_OK;

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -1142,15 +1143,16 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
     EXPECT_EQ(ASCIIToUTF16(test_cases[i].contents), match.contents);
     for (size_t match_index = 0; match_index < match.contents_class.size();
          ++match_index) {
-      EXPECT_EQ(test_cases[i].offsets[match_index],
-                match.contents_class[match_index].offset);
+      UNSAFE_TODO(EXPECT_EQ(test_cases[i].offsets[match_index],
+                            match.contents_class[match_index].offset));
       EXPECT_EQ(ACMatchClassification::URL |
                     (match_index == test_cases[i].match_classification_index
                          ? ACMatchClassification::MATCH
                          : 0),
                 match.contents_class[match_index].style);
     }
-    EXPECT_EQ(npos, test_cases[i].offsets[match.contents_class.size()]);
+    UNSAFE_TODO(
+        EXPECT_EQ(npos, test_cases[i].offsets[match.contents_class.size()]));
   }
 }
 
@@ -1240,11 +1242,13 @@ TEST_F(HistoryURLProviderTest, HUPScoringExperiment) {
     std::array<UrlAndLegalDefault, kProviderMaxMatches> output;
     size_t max_matches;
     for (max_matches = 0; max_matches < kProviderMaxMatches; ++max_matches) {
-      if (test_cases[i].matches[max_matches].url == nullptr)
+      if (UNSAFE_TODO(test_cases[i].matches[max_matches]).url == nullptr) {
         break;
+      }
       output[max_matches].url =
-          url_formatter::FixupURL(test_cases[i].matches[max_matches].url,
-                                  std::string())
+          url_formatter::FixupURL(
+              UNSAFE_TODO(test_cases[i].matches[max_matches]).url,
+              std::string())
               .spec();
       output[max_matches].allowed_to_be_default_match = true;
     }
@@ -1255,8 +1259,8 @@ TEST_F(HistoryURLProviderTest, HUPScoringExperiment) {
                                     std::string(), false,
                                     base::span(output).first(max_matches)));
     for (size_t j = 0; j < max_matches; ++j) {
-      EXPECT_EQ(test_cases[i].matches[j].experiment_relevance,
-                matches_[j].relevance);
+      UNSAFE_TODO(EXPECT_EQ(test_cases[i].matches[j].experiment_relevance,
+                            matches_[j].relevance));
     }
   }
 }

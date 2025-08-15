@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 
 #include <algorithm>
@@ -21,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
@@ -3439,9 +3435,10 @@ TEST_F(BrowserAutofillManagerTest,
                      {"Password", "password", 30, "new-password"}};
 
   for (const auto& test_field : test_fields) {
-    FormControlType field_type = strcmp(test_field.name, "password") == 0
-                                     ? FormControlType::kInputPassword
-                                     : FormControlType::kInputText;
+    FormControlType field_type =
+        UNSAFE_TODO(strcmp(test_field.name, "password")) == 0
+            ? FormControlType::kInputPassword
+            : FormControlType::kInputText;
     test_api(form).Append(CreateTestFormField(
         test_field.label, test_field.name, "", field_type,
         test_field.autocomplete_attribute, test_field.max_length));

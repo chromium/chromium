@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/visitedlink/browser/visitedlink_writer.h"
 
 #include <stdio.h>
@@ -18,6 +13,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -77,7 +73,7 @@ namespace {
 void GenerateSalt(uint8_t (&salt)[LINK_SALT_LENGTH]) {
   uint64_t randval = base::RandUint64();
   static_assert(sizeof(salt) == sizeof(randval), "Salt size mismatch");
-  memcpy(salt, &randval, sizeof(salt));
+  UNSAFE_TODO(memcpy(salt, &randval, sizeof(salt)));
 }
 
 // Opens file on a background thread to not block UI thread.
@@ -96,7 +92,7 @@ static bool WriteToFile(FILE* file,
   if (fseek(file, offset, SEEK_SET) != 0)
     return false;  // Don't write to an invalid part of the file.
 
-  size_t num_written = fwrite(data, 1, data_len, file);
+  size_t num_written = UNSAFE_TODO(fwrite(data, 1, data_len, file));
 
   // The write may not make it to the kernel (stdlib may buffer the write)
   // until the next fseek/fclose call.  If we crash, it's easy for our used
@@ -177,7 +173,7 @@ VisitedLinkWriter::LoadFromFileResult::LoadFromFileResult(
       hash_table_memory(std::move(hash_table_memory)),
       num_entries(num_entries),
       used_count(used_count) {
-  memcpy(this->salt, salt, LINK_SALT_LENGTH);
+  UNSAFE_TODO(memcpy(this->salt, salt, LINK_SALT_LENGTH));
 }
 
 VisitedLinkWriter::LoadFromFileResult::~LoadFromFileResult() = default;
@@ -407,7 +403,8 @@ void VisitedLinkWriter::DeleteAllURLs() {
 
   // Clear the hash table.
   used_items_ = 0;
-  memset(hash_table_, 0, this->table_length_ * sizeof(Fingerprint));
+  UNSAFE_TODO(
+      memset(hash_table_, 0, this->table_length_ * sizeof(Fingerprint)));
 
   // Resize it if it is now too empty. Resize may write the new table out for
   // us, otherwise, schedule writing the new table to disk ourselves.
@@ -505,7 +502,7 @@ VisitedLinkWriter::Hash VisitedLinkWriter::AddFingerprint(
 
     if (cur_fingerprint == null_fingerprint_) {
       // End of probe sequence found, insert here.
-      hash_table_[cur_hash] = fingerprint;
+      UNSAFE_TODO(hash_table_[cur_hash]) = fingerprint;
       used_items_++;
       // If allowed, notify listener that a new visited link was added.
       if (send_notifications)
@@ -569,8 +566,9 @@ bool VisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint,
     Hash next_hash = IncrementHash(end_range);
     if (next_hash == deleted_hash)
       break;  // We wrapped around and the whole table is full.
-    if (!hash_table_[next_hash])
+    if (!UNSAFE_TODO(hash_table_[next_hash])) {
       break;  // Found the last spot.
+    }
     end_range = next_hash;
   }
 
@@ -581,15 +579,15 @@ bool VisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint,
   absl::InlinedVector<Fingerprint, 32> shuffled_fingerprints;
   Hash stop_loop = IncrementHash(end_range);  // The end range is inclusive.
   for (Hash i = deleted_hash; i != stop_loop; i = IncrementHash(i)) {
-    if (hash_table_[i] != fingerprint) {
+    if (UNSAFE_TODO(hash_table_[i]) != fingerprint) {
       // Don't save the one we're deleting!
-      shuffled_fingerprints.push_back(hash_table_[i]);
+      shuffled_fingerprints.push_back(UNSAFE_TODO(hash_table_[i]));
 
       // This will balance the increment of this value in AddFingerprint below
       // so there is no net change.
       used_items_--;
     }
-    hash_table_[i] = null_fingerprint_;
+    UNSAFE_TODO(hash_table_[i]) = null_fingerprint_;
   }
 
   if (!shuffled_fingerprints.empty()) {
@@ -761,7 +759,7 @@ void VisitedLinkWriter::OnTableLoadComplete(
   // Assign the loaded table.
   DCHECK(load_from_file_result->hash_table_memory.region.IsValid() &&
          load_from_file_result->hash_table_memory.mapping.IsValid());
-  memcpy(salt_, load_from_file_result->salt, LINK_SALT_LENGTH);
+  UNSAFE_TODO(memcpy(salt_, load_from_file_result->salt, LINK_SALT_LENGTH));
   mapped_table_memory_ = std::move(load_from_file_result->hash_table_memory);
   hash_table_ = GetHashTableFromMapping(mapped_table_memory_.mapping);
   table_length_ = load_from_file_result->num_entries;
@@ -843,7 +841,8 @@ bool VisitedLinkWriter::ReadFileHeader(FILE* file,
 
   // Verify the signature.
   int32_t signature;
-  memcpy(&signature, &header[kFileHeaderSignatureOffset], sizeof(signature));
+  UNSAFE_TODO(memcpy(&signature, &header[kFileHeaderSignatureOffset],
+                     sizeof(signature)));
   if (signature != kFileSignature)
     return false;
 
@@ -851,22 +850,25 @@ bool VisitedLinkWriter::ReadFileHeader(FILE* file,
   // mistmatch will trigger a rebuild of the database from history, which will
   // have the effect of migrating the database.
   int32_t version;
-  memcpy(&version, &header[kFileHeaderVersionOffset], sizeof(version));
+  UNSAFE_TODO(
+      memcpy(&version, &header[kFileHeaderVersionOffset], sizeof(version)));
   if (version != kFileCurrentVersion)
     return false;  // Bad version.
 
   // Read the table size and make sure it matches the file size.
-  memcpy(num_entries, &header[kFileHeaderLengthOffset], sizeof(*num_entries));
+  UNSAFE_TODO(memcpy(num_entries, &header[kFileHeaderLengthOffset],
+                     sizeof(*num_entries)));
   if (*num_entries * sizeof(Fingerprint) + kFileHeaderSize != file_size)
     return false;  // Bad size.
 
   // Read the used item count.
-  memcpy(used_count, &header[kFileHeaderUsedOffset], sizeof(*used_count));
+  UNSAFE_TODO(
+      memcpy(used_count, &header[kFileHeaderUsedOffset], sizeof(*used_count)));
   if (*used_count > *num_entries)
     return false;  // Bad used item count;
 
   // Read the salt.
-  memcpy(salt, &header[kFileHeaderSaltOffset], LINK_SALT_LENGTH);
+  UNSAFE_TODO(memcpy(salt, &header[kFileHeaderSaltOffset], LINK_SALT_LENGTH));
 
   // This file looks OK from the header's perspective.
   return true;
@@ -922,12 +924,12 @@ bool VisitedLinkWriter::CreateApartURLTable(
   if (!memory->IsValid())
     return false;
 
-  memset(memory->mapping.memory(), 0, alloc_size);
+  UNSAFE_TODO(memset(memory->mapping.memory(), 0, alloc_size));
 
   // Save the header for other processes to read.
   SharedHeader* header = static_cast<SharedHeader*>(memory->mapping.memory());
   header->length = num_entries;
-  memcpy(header->salt, salt, LINK_SALT_LENGTH);
+  UNSAFE_TODO(memcpy(header->salt, salt, LINK_SALT_LENGTH));
 
   return true;
 }
@@ -991,7 +993,7 @@ void VisitedLinkWriter::ResizeTable(int32_t new_size) {
     // Now we have two tables, our local copy which is the old one, and the new
     // one loaded into this object where we need to copy the data.
     for (int32_t i = 0; i < old_table_length; i++) {
-      Fingerprint cur = old_hash_table[i];
+      Fingerprint cur = UNSAFE_TODO(old_hash_table[i]);
       if (cur)
         AddFingerprint(cur, false);
     }
@@ -1138,7 +1140,7 @@ void VisitedLinkWriter::WriteHashRangeToFile(Hash first_hash, Hash last_hash) {
     // Handle wraparound at 0. This first write is first_hash->EOF
     WriteToFile(scoped_file_holder_.get(),
                 first_hash * sizeof(Fingerprint) + kFileHeaderSize,
-                &hash_table_[first_hash],
+                &UNSAFE_TODO(hash_table_[first_hash]),
                 (table_length_ - first_hash) * sizeof(Fingerprint));
 
     // Now do 0->last_lash.
@@ -1148,7 +1150,7 @@ void VisitedLinkWriter::WriteHashRangeToFile(Hash first_hash, Hash last_hash) {
     // Normal case, just write the range.
     WriteToFile(scoped_file_holder_.get(),
                 first_hash * sizeof(Fingerprint) + kFileHeaderSize,
-                &hash_table_[first_hash],
+                &UNSAFE_TODO(hash_table_[first_hash]),
                 (last_hash - first_hash + 1) * sizeof(Fingerprint));
   }
 }
@@ -1161,7 +1163,7 @@ bool VisitedLinkWriter::ReadFromFile(FILE* file,
   if (fseek(file, offset, SEEK_SET) != 0)
     return false;
 
-  size_t num_read = fread(data, 1, data_size, file);
+  size_t num_read = UNSAFE_TODO(fread(data, 1, data_size, file));
   return num_read == data_size;
 }
 
@@ -1172,7 +1174,7 @@ VisitedLinkWriter::TableBuilder::TableBuilder(
     const uint8_t salt[LINK_SALT_LENGTH])
     : writer_(writer), success_(true) {
   fingerprints_.reserve(4096);
-  memcpy(salt_, salt, LINK_SALT_LENGTH * sizeof(uint8_t));
+  UNSAFE_TODO(memcpy(salt_, salt, LINK_SALT_LENGTH * sizeof(uint8_t)));
 }
 
 // TODO(brettw): Do we want to try to cancel the request if this happens? It
@@ -1208,8 +1210,8 @@ VisitedLinkCommon::Fingerprint* VisitedLinkWriter::GetHashTableFromMapping(
     base::WritableSharedMemoryMapping& hash_table_mapping) {
   DCHECK(hash_table_mapping.IsValid());
   // Our table pointer is just the data immediately following the header.
-  return reinterpret_cast<Fingerprint*>(
-      static_cast<char*>(hash_table_mapping.memory()) + sizeof(SharedHeader));
+  return reinterpret_cast<Fingerprint*>(UNSAFE_TODO(
+      static_cast<char*>(hash_table_mapping.memory()) + sizeof(SharedHeader)));
 }
 
 }  // namespace visitedlink

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -665,7 +661,7 @@ TEST_F(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
   // Should be able to write to memory with WritableSharedMemoryMapping field.
   void* memory_addr = service()->GetFlatBufferMemoryAddressForTesting();
 
-  EXPECT_EQ(memset(memory_addr, 'G', 1), memory_addr);
+  UNSAFE_TODO(EXPECT_EQ(memset(memory_addr, 'G', 1), memory_addr));
 
   bool called = false;
   base::CallbackListSubscription subscription =
@@ -702,7 +698,7 @@ TEST_F(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
   // Can remove this if flaky.
   // Windows ASAN flake: crbug.com/1234652
 #if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-  BASE_EXPECT_DEATH(memset(memory_addr, 'G', 1), "");
+  UNSAFE_TODO(BASE_EXPECT_DEATH(memset(memory_addr, 'G', 1), ""));
 #endif
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This is a copy of url/url_canon_internal.cc circa 2023. It should be used
 // only by components/feedback/redaction_tool/. We need a copy because the
 // components/feedback/redaction_tool source code is shared into ChromeOS and
@@ -17,6 +12,8 @@
 #include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
+
+#include "base/compiler_specific.h"
 #ifdef __SSE2__
 #include <immintrin.h>
 #elif defined(__aarch64__)
@@ -152,9 +149,9 @@ int _itoa_s(int value, char* buffer, size_t size_in_chars, int radix) {
   // "%d" or "%x" based on radix.
   int written;
   if (radix == 10) {
-    written = snprintf(buffer, size_in_chars, "%d", value);
+    written = UNSAFE_TODO(snprintf(buffer, size_in_chars, "%d", value));
   } else if (radix == 16) {
-    written = snprintf(buffer, size_in_chars, "%x", value);
+    written = UNSAFE_TODO(snprintf(buffer, size_in_chars, "%x", value));
   } else {
     return EINVAL;
   }

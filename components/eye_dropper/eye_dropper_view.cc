@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/eye_dropper/eye_dropper_view.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -152,8 +148,8 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
   }
 
   frame_.allocN32Pixels(frame->size().width(), frame->size().height(), true);
-  memcpy(frame_.getAddr32(0, 0), frame->data(),
-         frame->size().height() * frame->stride());
+  UNSAFE_TODO(memcpy(frame_.getAddr32(0, 0), frame->data(),
+                     frame->size().height() * frame->stride()));
   frame_.setImmutable();
 
   // The captured frame is in full desktop coordinates. E.g. the top left

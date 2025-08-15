@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 
 #include <string>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/debug/stack_trace.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -199,8 +195,8 @@ void ProfilingClient::RetrieveHeapProfile(
     mojo_sample->stack.insert(
         mojo_sample->stack.end(),
         reinterpret_cast<const uintptr_t*>(sample.stack.data()),
-        reinterpret_cast<const uintptr_t*>(sample.stack.data() +
-                                           sample.stack.size()));
+        reinterpret_cast<const uintptr_t*>(
+            UNSAFE_TODO(sample.stack.data() + sample.stack.size())));
     if (g_include_thread_names) {
       static const char* kUnknownThreadName = "<unknown>";
       const char* thread_name =

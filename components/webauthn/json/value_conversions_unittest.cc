@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/webauthn/json/value_conversions.h"
 
 #include <cstdint>
@@ -15,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/json/json_string_value_serializer.h"
@@ -60,7 +56,8 @@ using blink::mojom::RemoteDesktopClientOverridePtr;
 constexpr bool kUpdateRobolectricTests = false;
 
 void PrintJava(const char* name, base::span<const uint8_t> data) {
-  fprintf(stderr, "private static final byte[] %s = new byte[] {", name);
+  UNSAFE_TODO(
+      fprintf(stderr, "private static final byte[] %s = new byte[] {", name));
   for (size_t i = 0; i < data.size(); i++) {
     const uint8_t byte = data[i];
     if (i) {

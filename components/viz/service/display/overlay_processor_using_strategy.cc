@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -993,7 +989,8 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
 
   OverlayCombinationToTest result =
       overlay_combination_cache_.GetOverlayCombinationToTest(
-          base::span(first_candidate_without_masks, sorted_candidates.end()),
+          UNSAFE_TODO(base::span(first_candidate_without_masks,
+                                 sorted_candidates.end())),
           max_overlays_without_mask_candidates);
 
   std::vector<OverlayProposedCandidate> test_candidates =
@@ -1062,8 +1059,8 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
 
   // Only declare test candidates that do not have candidates with rounded
   // display masks.
-  overlay_combination_cache_.DeclarePromotedCandidates(
-      base::span(test_candidates.begin(), begin_rounded_corner_candidate));
+  overlay_combination_cache_.DeclarePromotedCandidates(UNSAFE_TODO(
+      base::span(test_candidates.begin(), begin_rounded_corner_candidate)));
 
   // Update `candidates` if it was decided to composite some test_candidates in
   // `ProcessOverlayTestResults()`.

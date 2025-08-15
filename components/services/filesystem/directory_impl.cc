@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/filesystem/directory_impl.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -299,8 +295,9 @@ void DirectoryImpl::ReadEntireFile(const std::string& raw_path,
   const int kBufferSize = 1 << 16;
   auto buf = base::HeapArray<char>::Uninit(kBufferSize);
   int len;
-  while ((len = base_file.ReadAtCurrentPos(buf.data(), kBufferSize)) > 0) {
-    contents.insert(contents.end(), buf.data(), buf.data() + len);
+  while ((len = UNSAFE_TODO(
+              base_file.ReadAtCurrentPos(buf.data(), kBufferSize))) > 0) {
+    contents.insert(contents.end(), buf.data(), UNSAFE_TODO(buf.data() + len));
   }
 
   std::move(callback).Run(base::File::Error::FILE_OK, contents);
@@ -331,8 +328,9 @@ void DirectoryImpl::WriteFile(const std::string& raw_path,
   // If we're given empty data, we don't write and just truncate the file.
   if (data.size()) {
     const int data_size = static_cast<int>(data.size());
-    if (base_file.Write(0, reinterpret_cast<const char*>(&data.front()),
-                        data_size) == -1) {
+    if (UNSAFE_TODO(base_file.Write(
+            0, reinterpret_cast<const char*>(&data.front()), data_size)) ==
+        -1) {
       std::move(callback).Run(GetError(base_file));
       return;
     }

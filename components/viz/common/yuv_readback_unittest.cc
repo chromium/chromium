@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
 #include <array>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -246,7 +242,8 @@ class YUVReadbackTest : public testing::Test {
     for (int y = 0; y < std::min(24, ysize); y++) {
       std::string formatted;
       for (int x = 0; x < std::min(24, xsize); x++) {
-        formatted.append(base::StringPrintf("%3d, ", plane[y * stride + x]));
+        formatted.append(
+            base::StringPrintf("%3d, ", UNSAFE_TODO(plane[y * stride + x])));
       }
       LOG(ERROR) << formatted;
     }
@@ -265,8 +262,8 @@ class YUVReadbackTest : public testing::Test {
                     std::string message) {
     for (int x = 0; x < xsize; x++) {
       for (int y = 0; y < ysize; y++) {
-        int a = other[y * other_stride + x];
-        int b = truth[y * truth_stride + x];
+        int a = UNSAFE_TODO(other[y * other_stride + x]);
+        int b = UNSAFE_TODO(truth[y * truth_stride + x]);
         EXPECT_NEAR(a, b, maxdiff)
             << " x=" << x << " y=" << y << " " << message;
         if (std::abs(a - b) > maxdiff) {
@@ -403,9 +400,9 @@ class YUVReadbackTest : public testing::Test {
     int32_t y_stride = truth_frame->stride(media::VideoFrame::Plane::kY);
     int32_t u_stride = truth_frame->stride(media::VideoFrame::Plane::kU);
     int32_t v_stride = truth_frame->stride(media::VideoFrame::Plane::kV);
-    memset(Y, 0x00, y_stride * output_ysize);
-    memset(U, 0x80, u_stride * output_ysize / 2);
-    memset(V, 0x80, v_stride * output_ysize / 2);
+    UNSAFE_TODO(memset(Y, 0x00, y_stride * output_ysize));
+    UNSAFE_TODO(memset(U, 0x80, u_stride * output_ysize / 2));
+    UNSAFE_TODO(memset(V, 0x80, v_stride * output_ysize / 2));
 
     const auto kRGBtoYColorWeights =
         std::to_array<float>({0.257f, 0.504f, 0.098f, 0.0625f});
@@ -416,7 +413,7 @@ class YUVReadbackTest : public testing::Test {
 
     for (int y = 0; y < ysize; y++) {
       for (int x = 0; x < xsize; x++) {
-        Y[(y + ymargin) * y_stride + x + xmargin] = float_to_byte(
+        UNSAFE_TODO(Y[(y + ymargin) * y_stride + x + xmargin]) = float_to_byte(
             ChannelAsFloat(&input_pixels, x, y, 0) * kRGBtoYColorWeights[0] +
             ChannelAsFloat(&input_pixels, x, y, 1) * kRGBtoYColorWeights[1] +
             ChannelAsFloat(&input_pixels, x, y, 2) * kRGBtoYColorWeights[2] +
@@ -426,7 +423,7 @@ class YUVReadbackTest : public testing::Test {
 
     for (int y = 0; y < ysize / 2; y++) {
       for (int x = 0; x < xsize / 2; x++) {
-        U[(y + ymargin / 2) * u_stride + x + xmargin / 2] =
+        UNSAFE_TODO(U[(y + ymargin / 2) * u_stride + x + xmargin / 2]) =
             float_to_byte(Bilinear(&input_pixels, x * 2 + 1.0, y * 2 + 1.0, 0) *
                               kRGBtoUColorWeights[0] +
                           Bilinear(&input_pixels, x * 2 + 1.0, y * 2 + 1.0, 1) *
@@ -434,7 +431,7 @@ class YUVReadbackTest : public testing::Test {
                           Bilinear(&input_pixels, x * 2 + 1.0, y * 2 + 1.0, 2) *
                               kRGBtoUColorWeights[2] +
                           kRGBtoUColorWeights[3]);
-        V[(y + ymargin / 2) * v_stride + x + xmargin / 2] =
+        UNSAFE_TODO(V[(y + ymargin / 2) * v_stride + x + xmargin / 2]) =
             float_to_byte(Bilinear(&input_pixels, x * 2 + 1.0, y * 2 + 1.0, 0) *
                               kRGBtoVColorWeights[0] +
                           Bilinear(&input_pixels, x * 2 + 1.0, y * 2 + 1.0, 1) *

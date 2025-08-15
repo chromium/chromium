@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/storage/service_worker/service_worker_resource_ops.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/pickle.h"
@@ -515,8 +511,9 @@ void ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo(
   }
 
   // Deserialize the http info structure, ensuring we got headers.
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(base::as_bytes(
-      base::span(buffer->data(), base::checked_cast<size_t>(status))));
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_bytes(UNSAFE_TODO(
+          base::span(buffer->data(), base::checked_cast<size_t>(status)))));
   auto http_info = std::make_unique<net::HttpResponseInfo>();
   bool response_truncated = false;
   if (!http_info->InitFromPickle(pickle, &response_truncated) ||

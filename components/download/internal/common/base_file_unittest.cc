@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/download/public/common/base_file.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -190,7 +186,8 @@ class BaseFileTest : public testing::Test {
     std::vector<uint8_t> hash_value(hash_state->GetHashLength());
     hash_state->Finish(&hash_value.front(), hash_value.size());
     ASSERT_EQ(SZ, hash_value.size());
-    EXPECT_EQ(0, memcmp(expected_hash, &hash_value.front(), hash_value.size()));
+    UNSAFE_TODO(EXPECT_EQ(
+        0, memcmp(expected_hash, &hash_value.front(), hash_value.size())));
   }
 
  private:

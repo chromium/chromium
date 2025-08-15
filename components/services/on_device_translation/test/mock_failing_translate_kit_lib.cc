@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This file implements the ABI of libtranslatekit only for testing. It is not
 // used in production.
 // This file's CreateTranslateKit() method returns 0 to test the behavior of the
@@ -36,7 +31,7 @@ TRANSLATE_KIT_EXPORT bool GetTranslateKitVersion(TranslateKitVersion* version) {
 
   // Always return a maximum version.
   constexpr char kMaxVersion[] = "9999.99.99.99";
-  strncpy(version->buffer, kMaxVersion, sizeof(kMaxVersion));
+  UNSAFE_TODO(strncpy(version->buffer, kMaxVersion, sizeof(kMaxVersion)));
   version->buffer_size = sizeof(kMaxVersion) - 1;
   return true;
 }

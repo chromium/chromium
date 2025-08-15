@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <cstdint>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "components/viz/service/debugger/viz_debugger.h"
@@ -186,10 +182,11 @@ TEST_F(VizDebuggerMultithreadTest, kReadersTest) {
 
   // Initialize each thread and start thread
   for (uint32_t i = 0; i < kNumReaderThreads; ++i) {
-    threads[i].Init(test_config, 1, 0);
+    UNSAFE_TODO(threads[i]).Init(test_config, 1, 0);
   }
   for (uint32_t i = 0; i < kNumReaderThreads; ++i) {
-    ASSERT_TRUE(base::PlatformThread::Create(0, &threads[i], &handles[i]));
+    UNSAFE_TODO(
+        ASSERT_TRUE(base::PlatformThread::Create(0, &threads[i], &handles[i])));
   }
 
   // Collect all threads
@@ -325,11 +322,11 @@ TEST_F(VizDebuggerMultithreadTest, kReadersOneWriterCommandsSequenceTest) {
   // Initialize and start each thread. Each thread will start making VizDebugger
   // debug calls simultaneously upon starting.
   for (uint32_t i = 0; i < kNumReaderThreads; ++i) {
-    reader_threads[i].Init(test_config, 1, kReaderSpinAmount);
+    UNSAFE_TODO(reader_threads[i]).Init(test_config, 1, kReaderSpinAmount);
   }
   for (uint32_t i = 0; i < kNumReaderThreads; ++i) {
-    ASSERT_TRUE(base::PlatformThread::Create(0, &reader_threads[i],
-                                             &reader_thread_handles[i]));
+    UNSAFE_TODO(ASSERT_TRUE(base::PlatformThread::Create(
+        0, &reader_threads[i], &reader_thread_handles[i])));
   }
   writer_thread.Init(this, kNumWriterTries, kWriterSpinAmount);
   ASSERT_TRUE(

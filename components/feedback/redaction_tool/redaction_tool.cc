@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/feedback/redaction_tool/redaction_tool.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
@@ -1061,7 +1057,7 @@ std::string RedactionTool::RedactIbans(
       chunk.append(numbers_only.substr(pos, next_chunk_size));
 
       const unsigned long chunk_number =
-          std::strtoul(chunk.c_str(), nullptr, 10);
+          UNSAFE_TODO(std::strtoul(chunk.c_str(), nullptr, 10));
 
       remainder = chunk_number % 97;
       chunk = base::NumberToString(remainder);
@@ -1208,7 +1204,7 @@ std::string RedactionTool::RedactCustomPatternWithContext(
       prematch.append(pre_matched_id);
       scrubbed_match = MaybeScrubIPAddress(matched_id_as_string);
       if (scrubbed_match == matched_id_as_string ||
-          ((strcmp("IPv4", pattern.alias) == 0) &&
+          ((UNSAFE_TODO(strcmp("IPv4", pattern.alias)) == 0) &&
            ShouldSkipIPv4Address(prematch))) {
         result.append(skipped);
         result.append(pre_matched_id);
@@ -1288,14 +1284,14 @@ bool IsUrlExempt(std::string_view url,
   }
 
   int i = 0;
-  const char* test_id = first_party_extension_ids[i];
+  const char* test_id = UNSAFE_TODO(first_party_extension_ids[i]);
   const std::string_view url_sub =
       url.substr(sizeof("chrome-extension://") - 1);
   while (test_id) {
     if (url_sub.starts_with(test_id)) {
       return true;
     }
-    test_id = first_party_extension_ids[++i];
+    test_id = UNSAFE_TODO(first_party_extension_ids[++i]);
   }
   return false;
 }

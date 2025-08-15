@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -17,6 +12,7 @@
 #include <tuple>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/aligned_memory.h"
@@ -95,8 +91,8 @@ base::span<const uint8_t> MakePixelSpan(const std::vector<T>& vec) {
 }
 
 base::span<const uint8_t> MakePixelSpan(const SkBitmap& bitmap) {
-  return base::span(static_cast<const uint8_t*>(bitmap.getPixels()),
-                    bitmap.computeByteSize());
+  return UNSAFE_TODO(base::span(static_cast<const uint8_t*>(bitmap.getPixels()),
+                                bitmap.computeByteSize()));
 }
 
 void DeleteSharedImage(scoped_refptr<gpu::ClientSharedImage> shared_image,
@@ -450,30 +446,32 @@ void CreateTestY16TextureDrawQuad_TwoColor(
   DCHECK_EQ(video_frame->stride(0) % 2, 0ul);
 
   for (int j = 0; j < video_frame->rows(0); ++j) {
-    uint8_t* row = video_frame->writable_data(0) + j * video_frame->stride(0);
+    uint8_t* row =
+        UNSAFE_TODO(video_frame->writable_data(0) + j * video_frame->stride(0));
     if (j < foreground_rect.y() || j >= foreground_rect.bottom()) {
       for (size_t i = 0; i < video_frame->stride(0) / 2; ++i) {
-        *row++ = i & 0xFF;  // Fill R with anything. It is not rendered.
-        *row++ = g_background;
+        *UNSAFE_TODO(row++) =
+            i & 0xFF;  // Fill R with anything. It is not rendered.
+        *UNSAFE_TODO(row++) = g_background;
       }
     } else {
       for (size_t i = 0; i < std::min<size_t>(video_frame->stride(0) / 2,
                                               foreground_rect.x());
            ++i) {
-        *row++ = i & 0xFF;
-        *row++ = g_background;
+        *UNSAFE_TODO(row++) = i & 0xFF;
+        *UNSAFE_TODO(row++) = g_background;
       }
       for (size_t i = foreground_rect.x();
            i < std::min<size_t>(video_frame->stride(0) / 2,
                                 foreground_rect.right());
            ++i) {
-        *row++ = i & 0xFF;
-        *row++ = g_foreground;
+        *UNSAFE_TODO(row++) = i & 0xFF;
+        *UNSAFE_TODO(row++) = g_foreground;
       }
       for (size_t i = foreground_rect.right(); i < video_frame->stride(0) / 2;
            ++i) {
-        *row++ = i & 0xFF;
-        *row++ = g_background;
+        *UNSAFE_TODO(row++) = i & 0xFF;
+        *UNSAFE_TODO(row++) = g_background;
       }
     }
   }
@@ -498,10 +496,10 @@ void CreateTestMultiplanarVideoDrawQuad(
   float draw_opacity = 1.0f;
   const bool with_alpha = (video_frame->format() == media::PIXEL_FORMAT_I420A);
   if (with_alpha) {
-    memset(video_frame->writable_data(media::VideoFrame::Plane::kA),
-           alpha_value,
-           video_frame->stride(media::VideoFrame::Plane::kA) *
-               video_frame->rows(media::VideoFrame::Plane::kA));
+    UNSAFE_TODO(memset(video_frame->writable_data(media::VideoFrame::Plane::kA),
+                       alpha_value,
+                       video_frame->stride(media::VideoFrame::Plane::kA) *
+                           video_frame->rows(media::VideoFrame::Plane::kA)));
   } else {
     EXPECT_EQ(alpha_value, 255);
   }
@@ -546,25 +544,25 @@ class TestVideoFrameBuilder {
     uint8_t u_value = 0;
     uint8_t v_value = 0;
     for (int i = 0; i < video_frame_->rows(media::VideoFrame::Plane::kY); ++i) {
-      uint8_t* y_row =
+      uint8_t* y_row = UNSAFE_TODO(
           video_frame_->writable_data(media::VideoFrame::Plane::kY) +
-          video_frame_->stride(media::VideoFrame::Plane::kY) * i;
+          video_frame_->stride(media::VideoFrame::Plane::kY) * i);
       for (int j = 0; j < video_frame_->row_bytes(media::VideoFrame::Plane::kY);
            ++j) {
-        y_row[j] = (y_value += 1);
+        UNSAFE_TODO(y_row[j]) = (y_value += 1);
       }
     }
     for (int i = 0; i < video_frame_->rows(media::VideoFrame::Plane::kU); ++i) {
-      uint8_t* u_row =
+      uint8_t* u_row = UNSAFE_TODO(
           video_frame_->writable_data(media::VideoFrame::Plane::kU) +
-          video_frame_->stride(media::VideoFrame::Plane::kU) * i;
-      uint8_t* v_row =
+          video_frame_->stride(media::VideoFrame::Plane::kU) * i);
+      uint8_t* v_row = UNSAFE_TODO(
           video_frame_->writable_data(media::VideoFrame::Plane::kV) +
-          video_frame_->stride(media::VideoFrame::Plane::kV) * i;
+          video_frame_->stride(media::VideoFrame::Plane::kV) * i);
       for (int j = 0; j < video_frame_->row_bytes(media::VideoFrame::Plane::kU);
            ++j) {
-        u_row[j] = (u_value += 3);
-        v_row[j] = (v_value += 5);
+        UNSAFE_TODO(u_row[j]) = (u_value += 3);
+        UNSAFE_TODO(v_row[j]) = (v_value += 5);
       }
     }
 
@@ -601,8 +599,9 @@ class TestVideoFrameBuilder {
     auto sample_size = std::to_array<int>({1, 2, 2});
 
     for (int i = 0; i < 3; ++i) {
-      memset(video_frame_->writable_data(planes[i]), yuv_background[i],
-             video_frame_->stride(planes[i]) * video_frame_->rows(planes[i]));
+      UNSAFE_TODO(memset(
+          video_frame_->writable_data(planes[i]), yuv_background[i],
+          video_frame_->stride(planes[i]) * video_frame_->rows(planes[i])));
     }
 
     for (int i = 0; i < 3; ++i) {
@@ -620,7 +619,8 @@ class TestVideoFrameBuilder {
       for (int y = sample_rect.y(); y < sample_rect.bottom(); ++y) {
         for (int x = sample_rect.x(); x < sample_rect.right(); ++x) {
           size_t offset = y * video_frame_->stride(planes[i]) + x;
-          video_frame_->writable_data(planes[i])[offset] = yuv_foreground[i];
+          UNSAFE_TODO(video_frame_->writable_data(planes[i])[offset]) =
+              yuv_foreground[i];
         }
       }
     }
@@ -631,9 +631,10 @@ class TestVideoFrameBuilder {
   scoped_refptr<media::VideoFrame> DrawSolid(uint8_t y, uint8_t u, uint8_t v) {
     // YUV values of a solid, constant, color. Useful for testing that color
     // space/color range are being handled properly.
-    memset(video_frame_->writable_data(media::VideoFrame::Plane::kY), y,
-           video_frame_->stride(media::VideoFrame::Plane::kY) *
-               video_frame_->rows(media::VideoFrame::Plane::kY));
+    UNSAFE_TODO(
+        memset(video_frame_->writable_data(media::VideoFrame::Plane::kY), y,
+               video_frame_->stride(media::VideoFrame::Plane::kY) *
+                   video_frame_->rows(media::VideoFrame::Plane::kY)));
     if (video_frame_->format() == media::PIXEL_FORMAT_NV12) {
       const int stride_uv = video_frame_->stride(media::VideoFrame::Plane::kUV);
       const int half_height = (video_frame_->coded_size().height() + 1) / 2;
@@ -643,19 +644,21 @@ class TestVideoFrameBuilder {
       for (int row = 0; row < half_height; ++row) {
         for (int col = 0; col < stride_uv; col++) {
           *uv_plane = col % 2 == 0 ? u : v;
-          uv_plane++;
+          UNSAFE_TODO(uv_plane++);
         }
       }
     } else {
       // Only NV12, YV12 and I420 formats are used for testing here.
       CHECK(video_frame_->format() == media::PIXEL_FORMAT_I420 ||
             video_frame_->format() == media::PIXEL_FORMAT_YV12);
-      memset(video_frame_->writable_data(media::VideoFrame::Plane::kU), u,
-             video_frame_->stride(media::VideoFrame::Plane::kU) *
-                 video_frame_->rows(media::VideoFrame::Plane::kU));
-      memset(video_frame_->writable_data(media::VideoFrame::Plane::kV), v,
-             video_frame_->stride(media::VideoFrame::Plane::kV) *
-                 video_frame_->rows(media::VideoFrame::Plane::kV));
+      UNSAFE_TODO(
+          memset(video_frame_->writable_data(media::VideoFrame::Plane::kU), u,
+                 video_frame_->stride(media::VideoFrame::Plane::kU) *
+                     video_frame_->rows(media::VideoFrame::Plane::kU)));
+      UNSAFE_TODO(
+          memset(video_frame_->writable_data(media::VideoFrame::Plane::kV), v,
+                 video_frame_->stride(media::VideoFrame::Plane::kV) *
+                     video_frame_->rows(media::VideoFrame::Plane::kV)));
     }
 
     return std::move(video_frame_);
@@ -2415,10 +2418,11 @@ scoped_refptr<media::VideoFrame> CreateHighbitVideoFrame(
       for (int x = 0; x < width; x++) {
         // Replicate the top bits into the lower bits, this way
         // 0xFF becomes 0x3FF.
-        dst[x] = (src[x] << 2) | (src[x] >> 6);
+        UNSAFE_TODO(dst[x]) =
+            (UNSAFE_TODO(src[x]) << 2) | (UNSAFE_TODO(src[x]) >> 6);
       }
-      src += video_frame->stride(plane);
-      dst += ret->stride(plane) / 2;
+      UNSAFE_TODO(src += video_frame->stride(plane));
+      UNSAFE_TODO(dst += ret->stride(plane) / 2);
     }
   }
   return ret;
@@ -6264,18 +6268,19 @@ class ColorTransformPixelTest
       int gradient_value = (x * 255) / (rect.width() - 1);
       for (int y = 0; y < rect.height(); ++y) {
         uint8_t* pixel = &input_colors[4 * (x + rect.width() * y)];
-        pixel[3] = 255;
+        UNSAFE_TODO(pixel[3]) = 255;
         if (y < 3) {
-          pixel[y] = gradient_value;
+          UNSAFE_TODO(pixel[y]) = gradient_value;
         } else if (y == 3) {
-          pixel[0] = pixel[1] = pixel[2] = gradient_value;
+          pixel[0] = UNSAFE_TODO(pixel[1]) = UNSAFE_TODO(pixel[2]) =
+              gradient_value;
         } else {
           if (this->premultiplied_alpha_) {
-            pixel[x % 3] = gradient_value;
-            pixel[3] = gradient_value;
+            UNSAFE_TODO(pixel[x % 3]) = gradient_value;
+            UNSAFE_TODO(pixel[3]) = gradient_value;
           } else {
-            pixel[x % 3] = 0xFF;
-            pixel[3] = gradient_value;
+            UNSAFE_TODO(pixel[x % 3]) = 0xFF;
+            UNSAFE_TODO(pixel[3]) = gradient_value;
           }
         }
       }

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/cronet/cronet_prefs_manager.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -59,8 +55,8 @@ bool IsCurrentVersion(const base::FilePath& version_filepath) {
   base::File version_file(version_filepath,
                           base::File::FLAG_OPEN | base::File::FLAG_READ);
   uint32_t version = kStorageVersionUnknown;
-  int bytes_read =
-      version_file.Read(0, reinterpret_cast<char*>(&version), sizeof(version));
+  int bytes_read = UNSAFE_TODO(
+      version_file.Read(0, reinterpret_cast<char*>(&version), sizeof(version)));
   if (bytes_read != sizeof(version)) {
     DLOG(WARNING) << "Cannot read from version file.";
     return false;
@@ -93,8 +89,8 @@ void InitializeStorageDirectory(const base::FilePath& dir) {
 
   DCHECK(new_version_file.created());
   uint32_t new_version = kStorageVersion;
-  int bytes_written = new_version_file.Write(
-      0, reinterpret_cast<char*>(&new_version), sizeof(new_version));
+  int bytes_written = UNSAFE_TODO(new_version_file.Write(
+      0, reinterpret_cast<char*>(&new_version), sizeof(new_version)));
   if (bytes_written != sizeof(new_version)) {
     DLOG(WARNING) << "Cannot write to version file.";
     return;

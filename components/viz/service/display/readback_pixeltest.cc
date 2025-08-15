@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <memory>
 #include <tuple>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -258,8 +254,9 @@ void ReadbackResultRGBA(TestGpuServiceHolder* gpu_service_holder,
                               ->shared_image_manager()
                               ->ProduceMemory(mailbox, memory_tracker.get());
     auto access = representation->BeginScopedReadAccess();
-    memcpy(out_plane.pixmap().writable_addr(), access->pixmap().addr(),
-           out_plane.pixmap().computeByteSize());
+    UNSAFE_TODO(memcpy(out_plane.pixmap().writable_addr(),
+                       access->pixmap().addr(),
+                       out_plane.pixmap().computeByteSize()));
     return;
   }
 
@@ -445,8 +442,8 @@ class ReadbackPixelTest : public VizPixelTest {
           {format, size, color_space, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
            "TestLabels"});
       auto scoped_mapping = shared_image->Map();
-      memcpy(scoped_mapping->GetMemoryForPlane(0).data(), pixels.data(),
-             pixels.size());
+      UNSAFE_TODO(memcpy(scoped_mapping->GetMemoryForPlane(0).data(),
+                         pixels.data(), pixels.size()));
       return shared_image;
     } else {
       return sii->CreateSharedImage(

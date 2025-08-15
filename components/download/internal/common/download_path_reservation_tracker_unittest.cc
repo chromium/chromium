@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "components/download/public/common/download_path_reservation_tracker.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -24,7 +22,6 @@
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "net/base/filename_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -488,10 +485,10 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
       expected_path =
           path.InsertBeforeExtensionASCII(" - 2019-01-23T163530.020");
     }
-    items[i] = CreateDownloadItem(i);
+    UNSAFE_TODO(items[i]) = CreateDownloadItem(i);
     EXPECT_FALSE(IsPathInUse(expected_path));
 
-    CreateReservation(items[i].get(), path,
+    CreateReservation(UNSAFE_TODO(items[i]).get(), path,
                       DownloadPathReservationTracker::UNIQUIFY, expected_result,
                       expected_path);
   }
