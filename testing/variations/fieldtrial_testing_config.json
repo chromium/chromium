@@ -27816,6 +27816,13 @@
             ],
             "experiments": [
                 {
+                    "name": "BothEnabled",
+                    "enable_features": [
+                        "WebViewReducedSeedExpiration",
+                        "WebViewReducedSeedRequestPeriod"
+                    ]
+                },
+                {
                     "name": "ReducedSeedExpiration",
                     "enable_features": [
                         "WebViewReducedSeedExpiration"
@@ -27824,13 +27831,6 @@
                 {
                     "name": "ReducedSeedRequestPeriod",
                     "enable_features": [
-                        "WebViewReducedSeedRequestPeriod"
-                    ]
-                },
-                {
-                    "name": "BothEnabled",
-                    "enable_features": [
-                        "WebViewReducedSeedExpiration",
                         "WebViewReducedSeedRequestPeriod"
                     ]
                 }
