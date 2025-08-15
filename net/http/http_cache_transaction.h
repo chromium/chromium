@@ -335,6 +335,29 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpCacheNotCoveredReason)
 
+  // The status of the entry that we are considering to doom.
+  //
+  // LINT.IfChange(HttpCacheEntryRejectionStatus)
+  enum class HttpCacheEntryRejectionStatus {
+    // The cache entry was rejected.
+    kRejection = 0,
+    // The cache entry was not rejected because it is usable.
+    kNoRejectionUsable = 1,
+    // The cache entry was not rejected because the request is for a partial
+    // cache entry.
+    kNoRejectionPartial = 2,
+    // The cache entry was not rejected because the transaction is not in
+    // read-write mode.
+    kNoRejectionNonReadWriteMode = 3,
+    // The cache entry was not rejected because cache validation was skipped.
+    kNoRejectionSkipCacheValidation = 4,
+    // The cache entry was not rejected because the request was loaded only from
+    // cache.
+    kNoRejectionLoadOnlyFromCache = 5,
+    kMaxValue = kNoRejectionLoadOnlyFromCache,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpCacheEntryRejectionStatus)
+
   // Runs the state transition loop. Resets and calls |callback_| on exit,
   // unless the return value is ERR_IO_PENDING.
   int DoLoop(int result);
@@ -456,6 +479,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Returns true if |method_| indicates that we should only try to open an
   // entry and not attempt to create.
   bool ShouldOpenOnlyMethods() const;
+
+  HttpCacheEntryRejectionStatus GetHttpCacheEntryRejectionStatus(
+      uint8_t in_memory_info);
 
   // Returns true if the resource info MemoryEntryDataHints bit flags in
   // |in_memory_info| and the current request & load flags suggest that
