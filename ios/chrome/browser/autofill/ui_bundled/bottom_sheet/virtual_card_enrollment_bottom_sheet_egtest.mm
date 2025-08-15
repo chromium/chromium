@@ -285,15 +285,8 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
 }
 
 // TODO(crbug.com/415396933): Re-enable the test.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed \
-  DISABLED_testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed
-#else
-#define MAYBE_testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed \
-  testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed
-#endif
 - (void)
-    MAYBE_testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed {
+    DISABLED_testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed {
   // TODO(crbug.com/437268290): Re-enable the test on iOS26.
   if (base::ios::IsRunningOnIOS26OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
