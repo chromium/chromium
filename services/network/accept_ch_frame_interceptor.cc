@@ -168,9 +168,17 @@ AcceptCHFrameInterceptor::NeedsObserverCheck(
   }
 
   CHECK(base::FeatureList::IsEnabled(features::kOffloadAcceptCHFrameCheck));
-  if (!std::all_of(hints.cbegin(), hints.cend(), [&](const auto& h) {
-        return base::Contains(enabled_client_hints_->hints, h);
-      })) {
+  if (!std::all_of(hints.cbegin(), hints.cend(),
+                   [&](const network::mojom::WebClientHintsType& h) {
+                     const bool hint_enabled =
+                         base::Contains(enabled_client_hints_->hints, h);
+                     if (!hint_enabled) {
+                       base::UmaHistogramEnumeration(
+                           "Net.AcceptCHFrameInterceptor.MismatchClientHint",
+                           h);
+                     }
+                     return hint_enabled;
+                   })) {
     return NeedsObserverCheckReason::kHintNotEnabled;
   }
 
