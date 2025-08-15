@@ -809,9 +809,6 @@ class CupsPrintersManagerImpl
   void NotifyObservers(const std::vector<PrinterClass>& printer_classes) {
     for (auto printer_class : printer_classes) {
       auto printers = printers_.Get(printer_class);
-      PRINTER_LOG(DEBUG) << "Sending notification for " << printers.size()
-                         << " printers in class (" << ToString(printer_class)
-                         << ")";
       for (auto& observer : observer_list_) {
         observer.OnPrintersChanged(printer_class, printers);
       }
