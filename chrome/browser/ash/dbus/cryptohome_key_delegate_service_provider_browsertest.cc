@@ -32,7 +32,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "extensions/common/features/simple_feature.h"
@@ -174,16 +174,15 @@ class CryptohomeKeyDelegateServiceProviderTest
 
   // Returns whether the given |signature| is a valid signature of the original
   // data.
-  bool IsSignatureValid(crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+  bool IsSignatureValid(crypto::sign::SignatureKind algorithm,
                         const std::vector<uint8_t>& signature) const {
     const std::string spki =
         certificate_provider_extension()->GetCertificateSpki();
-    crypto::SignatureVerifier verifier;
-    if (!verifier.VerifyInit(algorithm, signature, base::as_byte_span(spki))) {
-      return false;
-    }
-    verifier.VerifyUpdate(base::as_byte_span(kDataToSign));
-    return verifier.VerifyFinal();
+    const auto pubkey = crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+        base::as_byte_span(spki));
+    CHECK(pubkey.has_value());
+    return crypto::sign::Verify(algorithm, *pubkey,
+                                base::as_byte_span(kDataToSign), signature);
   }
 
   TestCertificateProviderExtension* certificate_provider_extension() {
@@ -222,8 +221,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeKeyDelegateServiceProviderTest,
   std::vector<uint8_t> signature;
   EXPECT_TRUE(CallSignatureChallengeKey(
       cryptohome::CHALLENGE_RSASSA_PKCS1_V1_5_SHA256, &signature));
-  EXPECT_TRUE(
-      IsSignatureValid(crypto::SignatureVerifier::RSA_PKCS1_SHA256, signature));
+  EXPECT_TRUE(IsSignatureValid(crypto::sign::RSA_PKCS1_SHA256, signature));
 }
 
 // Verifies that the ChallengeKey request with the PKCS #1 v1.5 SHA-1 algorithm
@@ -233,8 +231,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeKeyDelegateServiceProviderTest,
   std::vector<uint8_t> signature;
   EXPECT_TRUE(CallSignatureChallengeKey(
       cryptohome::CHALLENGE_RSASSA_PKCS1_V1_5_SHA1, &signature));
-  EXPECT_TRUE(
-      IsSignatureValid(crypto::SignatureVerifier::RSA_PKCS1_SHA1, signature));
+  EXPECT_TRUE(IsSignatureValid(crypto::sign::RSA_PKCS1_SHA1, signature));
 }
 
 // Verifies that the ChallengeKey request fails when the requested algorithm
