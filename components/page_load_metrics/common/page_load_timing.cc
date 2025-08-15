@@ -82,7 +82,7 @@ bool IsEmpty(const mojom::LargestContentfulPaintTiming& timing) {
 }
 
 bool IsEmpty(const mojom::SoftNavigationMetrics& timing) {
-  return !timing.count && !timing.start_time.is_zero() &&
+  return !timing.count && timing.start_time.is_zero() &&
          !timing.navigation_id &&
          (!timing.largest_contentful_paint ||
           IsEmpty(*timing.largest_contentful_paint));
