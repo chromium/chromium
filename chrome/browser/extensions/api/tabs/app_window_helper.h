@@ -12,6 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_PLATFORM_APPS));
 
 class Profile;
 

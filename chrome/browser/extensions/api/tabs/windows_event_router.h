@@ -13,10 +13,14 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api/tabs/app_window_helper.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/extensions/window_controller_list_observer.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/browser/extensions/api/tabs/app_window_helper.h"
+#endif
 
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
 #include "ui/views/focus/native_view_focus_manager.h"  // nogncheck
@@ -25,6 +29,8 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/mac/key_window_notifier.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -76,6 +82,10 @@ class WindowsEventRouter :
   // The main profile that owns this event router.
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+  AppWindowHelper app_window_helper_;
+#endif
+
   // The profile the currently focused window belongs to; either the main or
   // incognito profile or NULL (none of the above). We remember this in order
   // to correctly handle focus changes between non-OTR and OTR windows.
@@ -84,8 +94,6 @@ class WindowsEventRouter :
   // The currently focused window. We keep this so as to avoid sending multiple
   // windows.onFocusChanged events with the same windowId.
   int focused_window_id_;
-
-  AppWindowHelper app_window_helper_;
 
   // Observed WindowControllerList.
   base::ScopedObservation<WindowControllerList, WindowControllerListObserver>

@@ -170,6 +170,8 @@ source_set("extensions") {
     "api/tabs/tabs_constants.h",
     "api/tabs/tabs_windows_api.cc",
     "api/tabs/tabs_windows_api.h",
+    "api/tabs/windows_event_router.cc",
+    "api/tabs/windows_event_router.h",
     "api/tabs/windows_util.cc",
     "api/tabs/windows_util.h",
     "api/top_sites/top_sites_api.cc",
@@ -783,12 +785,8 @@ source_set("extensions") {
       "api/tabs/app_base_window.h",
       "api/tabs/app_window_controller.cc",
       "api/tabs/app_window_controller.h",
-      "api/tabs/app_window_helper.cc",
-      "api/tabs/app_window_helper.h",
       "api/tabs/tabs_event_router.cc",
       "api/tabs/tabs_event_router.h",
-      "api/tabs/windows_event_router.cc",
-      "api/tabs/windows_event_router.h",
       "app_tab_helper.cc",
       "app_tab_helper.h",
       "chrome_app_sorting.cc",
@@ -1563,6 +1561,13 @@ source_set("extensions") {
       deps += [ "//chrome/browser/ui/toasts" ]
     }
   }  # if (enable_extensions)
+
+  if (enable_platform_apps) {
+    sources += [
+      "api/tabs/app_window_helper.cc",
+      "api/tabs/app_window_helper.h",
+    ]
+  }
 }
 
 if (enable_extensions_core) {
