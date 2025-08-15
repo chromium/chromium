@@ -211,16 +211,7 @@ interface FileSystemProviderService {
   // DeprecatedOperationFinished@6 was removed.
   // OperationFinished@9 was removed.
   // OpenFileFinishedSuccessfully@12 was removed.
-
-  // The following function represents responses from the Extension after
-  // handling a mount request. As opposed to `OperationFinished`, these
-  // requests are handled per-provider instead of per provided file system
-  // (no `FileSystemId).
-  // |request_id| corresponds to ids passed in via methods on interface
-  // FileSystemProvider.
-  [MinVersion=4]
-  MountFinished@10(string extension_id, int64 request_id,
-      mojo_base.mojom.ListValue args) => (string error);
+  // MountFinished@10 was removed.
 
   // Called by Lacros when a filesystem providing extension is loaded.
   [MinVersion=2]

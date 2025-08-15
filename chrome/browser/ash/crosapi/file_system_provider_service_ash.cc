@@ -36,28 +36,6 @@ using ash::file_system_provider::Watchers;
 namespace crosapi {
 namespace {
 
-constexpr char kDeserializationError[] = "deserialization error";
-
-// Either returns a valid request manager for provider-level requests, or else
-// an error string.
-base::expected<ash::file_system_provider::RequestManager*, std::string>
-GetProviderRequestManager(Profile* profile,
-                          extensions::ExtensionId extension_id) {
-  Service* service = Service::Get(profile);
-  if (!service) {
-    return base::unexpected("File system provider service not found.");
-  }
-
-  ash::file_system_provider::ProviderInterface* provider =
-      service->GetProvider(ProviderId::CreateFromExtensionId(extension_id));
-  if (!provider) {
-    return base::unexpected(
-        extensions::FileErrorToString(base::File::FILE_ERROR_NOT_FOUND));
-  }
-
-  return provider->GetRequestManager();
-}
-
 std::string ForwardOperationResponseImpl(
     ash::file_system_provider::RequestManager& manager,
     int64_t request_id,
@@ -157,16 +135,6 @@ void FileSystemProviderServiceAsh::Notify(
                     ProfileManager::GetPrimaryUserProfile());
 }
 
-void FileSystemProviderServiceAsh::MountFinished(
-    const std::string& extension_id,
-    int64_t request_id,
-    base::Value::List args,
-    MountFinishedCallback callback) {
-  MountFinishedWithProfile(extension_id, request_id, std::move(args),
-                           std::move(callback),
-                           ProfileManager::GetPrimaryUserProfile());
-}
-
 void FileSystemProviderServiceAsh::ExtensionLoadedDeprecated(
     bool configurable,
     bool watchable,
@@ -264,41 +232,6 @@ void FileSystemProviderServiceAsh::NotifyWithProfile(
                       ParseChangeType(type), ParseChanges(std::move(changes)),
                       watcher->last_tag,
                       base::BindOnce(&RunErrorCallback, std::move(callback)));
-}
-
-void FileSystemProviderServiceAsh::MountFinishedWithProfile(
-    const std::string& extension_id,
-    int64_t request_id,
-    base::Value::List args,
-    MountFinishedCallback callback,
-    Profile* profile) {
-  auto manager = GetProviderRequestManager(profile, extension_id);
-  if (!manager.has_value()) {
-    std::move(callback).Run(manager.error());
-    return;
-  }
-
-  using extensions::api::file_system_provider_internal::RespondToMountRequest::
-      Params;
-  std::optional<Params> params = Params::Create(std::move(args));
-  if (!params) {
-    std::move(callback).Run(kDeserializationError);
-    return;
-  }
-  base::File::Error mount_error =
-      extensions::ProviderErrorToFileError(params->error);
-  base::File::Error result =
-      mount_error == base::File::FILE_OK
-          ? manager.value()->FulfillRequest(request_id,
-                                            /*response=*/RequestValue(),
-                                            /*has_more=*/false)
-          : manager.value()->RejectRequest(
-                request_id, /*response=*/RequestValue(), mount_error);
-
-  std::string error_str;
-  if (result != base::File::FILE_OK)
-    error_str = extensions::FileErrorToString(result);
-  std::move(callback).Run(error_str);
 }
 
 std::string FileSystemProviderServiceAsh::ForwardOperationResponse(

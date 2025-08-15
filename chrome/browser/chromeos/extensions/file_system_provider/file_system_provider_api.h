@@ -82,10 +82,6 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
  protected:
   ~FileSystemProviderInternal() override = default;
 
-  // Forwards the result of the mount request to the file system provider
-  // service. Returns false if the forwarding failed.
-  bool ForwardMountResult(int64_t request_id, base::Value::List& args);
-
   // Forwards the result of the operation to the file system provider service.
   ResponseAction ForwardOperationResult(
       const std::string& file_system_id,

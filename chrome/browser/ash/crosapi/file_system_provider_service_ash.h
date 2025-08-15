@@ -36,10 +36,6 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
               mojom::FSPChangeType type,
               std::vector<mojom::FSPChangePtr> changes,
               NotifyCallback callback) override;
-  void MountFinished(const std::string& extension_id,
-                     int64_t request_id,
-                     base::Value::List args,
-                     MountFinishedCallback callback) override;
   void ExtensionLoadedDeprecated(bool configurable,
                                  bool watchable,
                                  bool multiple_mounts,
@@ -64,11 +60,6 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
                          std::vector<mojom::FSPChangePtr> changes,
                          NotifyCallback callback,
                          Profile* profile);
-  void MountFinishedWithProfile(const std::string& extension_id,
-                                int64_t request_id,
-                                base::Value::List args,
-                                MountFinishedCallback callback,
-                                Profile* profile);
 
   // Forwards an operation response from an extension to the request manager and
   // then returns the error message. Empty string means success.
