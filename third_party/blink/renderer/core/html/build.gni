@@ -669,6 +669,7 @@ blink_core_tests_html = [
   "custom/custom_element_test_helpers.cc",
   "custom/custom_element_test_helpers.h",
   "custom/custom_element_upgrade_sorter_test.cc",
+  "display_ad_element_monitor_test.cc",
   "fenced_frame/fence_test.cc",
   "fenced_frame/fenced_frame_config_test.cc",
   "fenced_frame/html_fenced_frame_element_test.cc",
