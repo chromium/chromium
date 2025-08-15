@@ -11613,13 +11613,14 @@ const FeatureEntry kFeatureEntries[] = {
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     {"autofill-enable-buy-now-pay-later",
      flag_descriptions::kAutofillEnableBuyNowPayLaterName,
-     flag_descriptions::kAutofillEnableBuyNowPayLaterDescription, kOsDesktop,
+     flag_descriptions::kAutofillEnableBuyNowPayLaterDescription,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableBuyNowPayLater)},
 
     {"autofill-enable-buy-now-pay-later-syncing",
      flag_descriptions::kAutofillEnableBuyNowPayLaterSyncingName,
      flag_descriptions::kAutofillEnableBuyNowPayLaterSyncingDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableBuyNowPayLaterSyncing)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -12119,7 +12120,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"autofill-enable-amount-extraction-desktop",
      flag_descriptions::kAutofillEnableAmountExtractionDesktopName,
      flag_descriptions::kAutofillEnableAmountExtractionDesktopDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableAmountExtractionDesktop)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -12141,7 +12142,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableAmountExtractionAllowlistDesktopName,
      flag_descriptions::
          kAutofillEnableAmountExtractionAllowlistDesktopDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableAmountExtractionAllowlistDesktop)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -12829,7 +12830,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"autofill-enable-buy-now-pay-later-for-klarna",
      flag_descriptions::kAutofillEnableBuyNowPayLaterForKlarnaName,
      flag_descriptions::kAutofillEnableBuyNowPayLaterForKlarnaDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableBuyNowPayLaterForKlarna)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -12920,7 +12921,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableBuyNowPayLaterForExternallyLinkedName,
      flag_descriptions::
          kAutofillEnableBuyNowPayLaterForExternallyLinkedDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableBuyNowPayLaterForExternallyLinked)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
