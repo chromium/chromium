@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] cross shadow CommandEvent retargets source to host element
+  Cannot read properties of null (reading 'append')
+Harness: the test ran to completion.
+

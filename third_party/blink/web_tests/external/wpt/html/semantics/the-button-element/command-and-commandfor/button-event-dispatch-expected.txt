@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+[FAIL] event dispatches on click with addEventListener
+  assert_equals: composed expected false but got true
+[FAIL] event dispatches on click with oncommand property
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command property to --foo (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command attribute to --foo (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command property to --foo- (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command attribute to --foo- (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command property to --cAsE-cArRiEs (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command attribute to --cAsE-cArRiEs (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command property to -- (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command attribute to -- (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command property to --a- (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command attribute to --a- (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command property to --a-b (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command attribute to --a-b (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command property to --- (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command attribute to --- (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command property to --show-picker (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] setting custom command attribute to --show-picker (must include dash) sets event command
+  assert_equals: composed expected false but got true
+[FAIL] event dispatches if button is form associated, with explicit type=button
+  assert_equals: composed expected false but got true
+Harness: the test ran to completion.
+
