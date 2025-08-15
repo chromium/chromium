@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/unguessable_token.h"
+#include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/serialized_recording.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -24,6 +25,13 @@ struct RecordingParams {
 
   // The rect to which to clip the capture to.
   gfx::Rect clip_rect;
+
+  // Allows renderer-side overrides of the x coordinate in `clip_rect`.
+  mojom::ClipCoordOverride clip_x_coord_override =
+      mojom::ClipCoordOverride::kNone;
+  // Allows renderer-side overrides of the y coordinate in `clip_rect`.
+  mojom::ClipCoordOverride clip_y_coord_override =
+      mojom::ClipCoordOverride::kNone;
 
   // Whether the capture is for the main frame or an OOP subframe.
   bool is_main_frame;

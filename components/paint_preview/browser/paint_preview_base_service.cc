@@ -65,6 +65,8 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
     params.root_dir = *capture_params.root_dir;
   }
   params.inner.clip_rect = capture_params.clip_rect;
+  params.inner.clip_x_coord_override = capture_params.clip_x_coord_override;
+  params.inner.clip_y_coord_override = capture_params.clip_y_coord_override;
   params.inner.is_main_frame = render_frame_host->IsInPrimaryMainFrame();
   params.inner.capture_links = capture_params.capture_links;
   params.inner.max_capture_size = capture_params.max_per_capture_size;

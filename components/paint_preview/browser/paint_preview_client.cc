@@ -22,6 +22,7 @@
 #include "base/version.h"
 #include "components/paint_preview/common/capture_result.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
+#include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/proto_validator.h"
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/version.h"
@@ -121,6 +122,8 @@ mojom::PaintPreviewCaptureParamsPtr CreateRecordingRequestParams(
   mojo_params->capture_links = capture_params.capture_links;
   mojo_params->guid = capture_params.document_guid;
   mojo_params->clip_rect = capture_params.clip_rect;
+  mojo_params->clip_x_coord_override = capture_params.clip_x_coord_override;
+  mojo_params->clip_y_coord_override = capture_params.clip_y_coord_override;
   // For now treat all clip rects as hints only. This API should be exposed
   // when clip_rects are used intentionally to limit capture time.
   mojo_params->clip_rect_is_hint = true;
@@ -388,6 +391,8 @@ void PaintPreviewClient::CaptureSubframePaintPreview(
 
   RecordingParams params(guid);
   params.clip_rect = rect;
+  // Note: no need to set `params.clip_x_coordinate_override` or
+  // `params.clip_y_coordinate_override` for subframes.
   params.is_main_frame = false;
   params.capture_links = document_data->capture_links;
   params.max_capture_size = document_data->max_per_capture_size;

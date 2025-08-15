@@ -89,10 +89,12 @@ class PaintPreviewBaseService : public KeyedService {
 
     // If not `kNone`, overrides the x coordinate of `clip_rect` with some
     // renderer-computed value.
-    paint_preview::mojom::ClipCoordOverride clip_x_coord_override;
+    mojom::ClipCoordOverride clip_x_coord_override =
+        mojom::ClipCoordOverride::kNone;
     // If not `kNone`, overrides the y coordinate of `clip_rect` with some
     // renderer-computed value.
-    paint_preview::mojom::ClipCoordOverride clip_y_coord_override;
+    mojom::ClipCoordOverride clip_y_coord_override =
+        mojom::ClipCoordOverride::kNone;
 
     // Whether to record links.
     bool capture_links{false};
