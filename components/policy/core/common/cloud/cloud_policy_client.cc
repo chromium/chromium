@@ -51,6 +51,13 @@ BASE_FEATURE(kPolicyFetchWithSha256,
              "PolicyFetchWithSha256",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableReregistration, "EnableReregistration",
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 namespace {
 
 const char kDmServerCloudPolicyRequestHistogramBase[] =
@@ -1716,9 +1723,16 @@ void CloudPolicyClient::OnPolicyFetchCompleted(base::Time start_time,
     if (result.dm_status == DM_STATUS_SERVICE_DEVICE_NOT_FOUND ||
         result.dm_status == DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
       // Mark as unregistered and initialize re-registration flow.
-      reregistration_dm_token_ = dm_token_;
-      dm_token_.clear();
-      NotifyRegistrationStateChanged();
+      // This re-registration flow is only used by ChromeOS. Using an
+      // experiemntal flag to turn it off on other platforms.
+      // TODO(b/437175703): Once we have verified that it's safe to remove such
+      // logic on other platforms, we will remove the experiment and guarded all
+      // related logic behind the #if condition.
+      if (base::FeatureList::IsEnabled(kEnableReregistration)) {
+        reregistration_dm_token_ = dm_token_;
+        dm_token_.clear();
+        NotifyRegistrationStateChanged();
+      }
     }
   }
 }

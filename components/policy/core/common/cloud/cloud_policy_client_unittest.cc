@@ -246,6 +246,7 @@ em::DeviceManagementResponse GetTokenBasedRegistrationResponse() {
   return registration_response;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 em::DeviceManagementRequest GetReregistrationRequest() {
   em::DeviceManagementRequest request;
 
@@ -269,6 +270,8 @@ em::DeviceManagementRequest GetReregistrationRequest() {
 
   return request;
 }
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 em::DeviceManagementRequest GetTokenBasedDeviceRegistrationRequest() {
   em::DeviceManagementRequest request;
@@ -3286,6 +3289,7 @@ TEST_F(CloudPolicyClientTest, RequestGcmIdUpdate) {
             gcm_id_update_request.SerializePartialAsString());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(CloudPolicyClientTest, PolicyReregistration) {
   RegisterClient();
 
@@ -3379,6 +3383,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
   EXPECT_EQ(DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID,
             client_->last_dm_status());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CloudPolicyClientTest, ResultCopyAssignment) {
   CloudPolicyClient::Result result1 =
@@ -3393,58 +3398,6 @@ TEST_F(CloudPolicyClientTest, ResultCopyAssignment) {
   EXPECT_EQ(400, result2.GetNetError());
   EXPECT_EQ(result1.GetResponse(), result2.GetResponse());
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(CloudPolicyClientTest, PolicyReregistrationAfterDMTokenDeletion) {
-  RegisterClient();
-  EXPECT_TRUE(client_->is_registered());
-  EXPECT_FALSE(client_->requires_reregistration());
-
-  // Handle 410 (device needs reset) on policy fetch.
-  DeviceManagementService::JobConfiguration::JobType upload_type;
-  em::DeviceManagementResponse response;
-  response.add_error_detail(em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN);
-  EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(
-          service_.CaptureJobType(&upload_type),
-          service_.SendJobResponseAsync(
-              net::OK, DeviceManagementService::kDeviceNotFound, response)));
-
-  RunClientTaskAndWaitError(base::BindLambdaForTesting(
-      [this]() { client_->FetchPolicy(kPolicyFetchReason); }));
-
-  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NEEDS_RESET, client_->last_dm_status());
-  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_FALSE(client_->is_registered());
-  EXPECT_TRUE(client_->requires_reregistration());
-
-  // Re-register.
-  ExpectAndCaptureJob(GetRegistrationResponse());
-  EXPECT_CALL(device_dmtoken_callback_observer_,
-              OnDeviceDMTokenRequested(
-                  /*user_affiliation_ids=*/std::vector<std::string>()))
-      .WillOnce(Return(kDeviceDMToken));
-  RunClientTaskAndWaitRegistration(base::BindLambdaForTesting([this]() {
-    CloudPolicyClient::RegistrationParameters user_recovery(
-        em::DeviceRegisterRequest::USER,
-        em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_RECOVERY);
-    client_->Register(user_recovery, client_id_, kOAuthToken);
-  }));
-
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
-            upload_type);
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
-            job_type_);
-  EXPECT_EQ(auth_data_, DMAuth::NoAuth());
-  VerifyQueryParameter();
-  EXPECT_EQ(job_request_.SerializePartialAsString(),
-            GetReregistrationRequest().SerializePartialAsString());
-  EXPECT_TRUE(client_->is_registered());
-  EXPECT_FALSE(client_->requires_reregistration());
-  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CloudPolicyClientTest, RequestFetchRobotAuthCodes) {
   RegisterClient();
