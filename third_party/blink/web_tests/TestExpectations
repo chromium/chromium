@@ -2884,6 +2884,8 @@ crbug.com/435620308 external/wpt/pointerevents/pointerevent_lostpointercapture_r
 crbug.com/438770398 external/wpt/css/css-anchor-position/position-visibility-remove-no-overflow.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11-arm64 ] external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html [ Skip Timeout ]
+[ Linux ] external/wpt/digital-credentials/allow-attribute-with-get.https.html [ Timeout ]
 crbug.com/438309772 [ Mac14 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.html [ Pass Timeout ]
 crbug.com/438309772 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.html [ Pass Timeout ]
 crbug.com/438294026 [ Mac14 ] external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html [ Skip Timeout ]
@@ -3188,7 +3190,6 @@ crbug.com/429130580 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-r
 crbug.com/429112747 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/data-prefix-and-mask-size.https.window.html [ Skip Timeout ]
 crbug.com/429112747 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.html [ Skip Timeout ]
 crbug.com/429123936 [ Mac14 ] external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html [ Crash ]
-crbug.com/429123936 [ Win11-arm64 ] external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html [ Crash ]
 crbug.com/429115402 external/wpt/css/css-text/hanging-punctuation/hanging-punctuation-allow-end-001.xht [ Failure ]
 crbug.com/429115402 external/wpt/css/css-text/hanging-punctuation/hanging-punctuation-block-bound-001.html [ Failure ]
 crbug.com/429115402 external/wpt/css/css-text/hanging-punctuation/hanging-punctuation-first-001.xht [ Failure ]

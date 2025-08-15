@@ -1,5 +1,5 @@
 <svg viewBox="-10 -10 280 220" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:html="http://www.w3.org/1999/xhtml">
-  <html:link rel="match" href="paintorder-text-decorations-ref.svg"/>
+  <html:link rel="match" href="paint-order-text-decorations-ref.svg"/>
   <defs>
     <marker id="m" refX="5" refY="5" viewBox="0 0 10 10" overflow="visible">
       <circle cx="5" cy="5" r="3" fill="black" stroke="black" fill-opacity="0.5"/>
