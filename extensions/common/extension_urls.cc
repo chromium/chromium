@@ -101,6 +101,12 @@ GURL GetWebstoreItemSnippetURL(const extensions::ExtensionId& extension_id) {
                                   extension_id.c_str()));
 }
 
+GURL GetWebstoreBlockStatusURL() {
+  return GURL(kChromeWebstoreApiURL)
+      .Resolve(base::StringPrintf(
+          "v2/items:batchFetchItemBlockStatusForEnterprise"));
+}
+
 base::AutoReset<const GURL*> SetItemSnippetURLForTesting(const GURL* test_url) {
   return base::AutoReset<const GURL*>(&g_item_snippet_url_for_test_, test_url);
 }

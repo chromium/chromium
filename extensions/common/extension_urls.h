@@ -76,6 +76,10 @@ std::string GetWebstoreItemDetailURLPrefix();
 // etc.) about an extension from the webstore using the new itemSnippets API.
 GURL GetWebstoreItemSnippetURL(const extensions::ExtensionId& extension_id);
 
+// Returns the URL used to get the block status of queried extensions from the
+// webstore.
+GURL GetWebstoreBlockStatusURL();
+
 // Sets the itemSnippets API URL to `test_url`.
 base::AutoReset<const GURL*> SetItemSnippetURLForTesting(const GURL* test_url);
 
