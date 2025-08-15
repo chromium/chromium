@@ -861,10 +861,6 @@ export class SearchboxElement extends SearchboxElementBase {
       queryUrl.search = searchParams.toString();
       const href = queryUrl.href;
 
-      chrome.metricsPrivate.recordBoolean(
-          'NewTabPage.ComposeEntrypoint.Click.UserTextPresent',
-          !this.isInputEmpty());
-
       // Handle mouse events.
       if (e.detail.ctrlKey || e.detail.metaKey) {
         window.open(href, '_blank');
@@ -876,6 +872,10 @@ export class SearchboxElement extends SearchboxElementBase {
     } else {
       this.dispatchEvent(new CustomEvent('open-composebox'));
     }
+
+    chrome.metricsPrivate.recordBoolean(
+        'NewTabPage.ComposeEntrypoint.Click.UserTextPresent',
+        !this.isInputEmpty());
   }
 
   private onRemoveThumbnailClick_() {
