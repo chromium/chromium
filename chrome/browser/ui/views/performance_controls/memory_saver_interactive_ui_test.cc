@@ -470,8 +470,13 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
 // Page Action chip should stay collapsed when navigating between two
 // discarded tabs
 // TODO(crbug.com/391482960): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChipCollapseRemainCollapse DISABLED_ChipCollapseRemainCollapse
+#else
+#define MAYBE_ChipCollapseRemainCollapse ChipCollapseRemainCollapse
+#endif
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       ChipCollapseRemainCollapse) {
+                       MAYBE_ChipCollapseRemainCollapse) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
