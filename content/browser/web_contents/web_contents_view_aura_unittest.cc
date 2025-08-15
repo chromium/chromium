@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -968,6 +969,65 @@ TEST_F(WebContentsViewAuraTest,
   ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
   EXPECT_TRUE(exchange_data);
   EXPECT_EQ(exchange_data->GetString(), url_string);
+}
+
+TEST_F(WebContentsViewAuraTest, EndDragIsCalledAfterAsyncDrop) {
+  const char kGoogleUrl[] = "https://google.com/";
+
+  // Declare an empty but NON-NULL string
+  std::u16string empty_string;
+  NavigateAndCommit(GURL(kGoogleUrl));
+  DropData drop_data;
+  drop_data.text = empty_string;
+  drop_data.url = GURL(kGoogleUrl);
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  // Mark the Web Contents as native UI.
+  WebContentsViewAura* view = GetView();
+
+  // Make sure EndDrag() is called async.
+  view->drag_in_progress_ = true;
+
+  auto data = std::make_unique<ui::OSExchangeData>();
+  const std::u16string string_data = u"Some string data";
+  data->SetString(string_data);
+  ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
+                            ui::DragDropTypes::DRAG_COPY);
+
+  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
+                      blink::DragOperationsMask::kDragOperationNone,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(),
+                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+
+  // Simulate drop.
+  auto callback = base::BindOnce(&WebContentsViewAuraTest::OnDropComplete,
+                                 base::Unretained(this));
+  view->RegisterDropCallbackForTesting(std::move(callback));
+
+  // Simulate `EndDrag`.
+  base::RunLoop end_drag_run_loop;
+  view->end_drag_runner_.ReplaceClosure(end_drag_run_loop.QuitClosure());
+
+  base::RunLoop end_drop_run_loop;
+  async_drop_closure_ = end_drop_run_loop.QuitClosure();
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+
+  // Post `drop_cb` to simulate an async drop processing. This happens
+  // when `PerformDropOrExitDrag` or `PerformDropCallback` is async.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(drop_cb), std::move(data),
+                                std::ref(output_drag_op),
+                                /*drag_image_layer_owner=*/nullptr));
+
+  end_drop_run_loop.Run();
+  CheckDropData(view);
+
+  end_drag_run_loop.Run();
 }
 
 }  // namespace content

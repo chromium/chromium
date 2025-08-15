@@ -1561,9 +1561,9 @@ void WebContentsViewAura::CompleteDragExit() {
   current_drag_data_.reset();
 }
 
-void WebContentsViewAura::OnDropExit(
-    base::ScopedClosureRunner end_drag_runner) {
+void WebContentsViewAura::OnDropExit() {
   drag_in_progress_ = false;
+  auto end_drag_runner = std::move(end_drag_runner_);
 }
 
 // PerformDropCallback() is called once the user releases the mouse button
@@ -1621,8 +1621,7 @@ void WebContentsViewAura::PerformDropCallback(
   // Exit callback to make sure |drag_in_progress_| is flipped on exit and
   // |end_drag_runner_| is run after OnGotVirtualFilesAsTempFiles finishes.
   base::ScopedClosureRunner drop_exit_cleanup(base::BindOnce(
-      &WebContentsViewAura::OnDropExit, weak_ptr_factory_.GetWeakPtr(),
-      std::move(end_drag_runner_)));
+      &WebContentsViewAura::OnDropExit, weak_ptr_factory_.GetWeakPtr()));
 
   if (!target) {
     return;
