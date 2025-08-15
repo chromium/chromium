@@ -230,6 +230,7 @@ CGFloat const kSheetCornerRadius = 30;
   _mainViewController.navigationItem.rightBarButtonItem = dismissButton;
   _mainViewController.navigationItem.leftBarButtonItem = nil;
 
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.preferredCornerRadius = kSheetCornerRadius;
 
   auto detentResolver = ^CGFloat(
