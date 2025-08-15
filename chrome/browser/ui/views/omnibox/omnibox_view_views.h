@@ -133,8 +133,7 @@ class OmniboxViewViews
   void SelectAll(bool reversed) override;
   void RevertAll() override;
   void SetFocus(bool is_user_initiated) override;
-  void RequestViewFocus() override;
-  void RequestAimButtonFocus() override;
+  void ApplyFocusRingToAimButton(bool focus_aim) override;
   bool IsImeComposing() const override;
   gfx::NativeView GetRelativeWindowForPopup() const override;
   bool IsImeShowingPopup() const override;

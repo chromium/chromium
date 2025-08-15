@@ -114,6 +114,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/button_drag_utils.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -543,15 +544,34 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   model()->ConsumeCtrlKey();
 }
 
-void OmniboxViewViews::RequestViewFocus() {
-  RequestFocus();
-}
-
-void OmniboxViewViews::RequestAimButtonFocus() {
-  set_focus_is_going_to_aim_button(true);
-  location_bar_view_->page_action_icon_controller()
-      ->GetIconView(PageActionIconType::kAiMode)
-      ->RequestFocus();
+void OmniboxViewViews::ApplyFocusRingToAimButton(bool force_focus) {
+  if (!location_bar_view_) {
+    return;
+  }
+  auto* icon_view =
+      location_bar_view_->page_action_icon_controller()->GetIconView(
+          PageActionIconType::kAiMode);
+  if (!icon_view) {
+    return;
+  }
+  auto* const focus_ring = views::FocusRing::Get(icon_view);
+  focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
+  focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](bool force_focus, const views::View* parent) {
+        if (force_focus) {
+          // Focus ring is forced to be shown in this case. Used by the omnibox
+          // popup when it wants to indicate button focus even though the
+          // omnibox itself is still the focused view.
+          return true;
+        } else {
+          // Otherwise, focus ring is shown if the parent view has focus (the
+          // standard behavior, required to handle normal tab key focus
+          // traversal).
+          return parent->HasFocus();
+        }
+      },
+      force_focus));
+  focus_ring->SchedulePaint();
 }
 
 int OmniboxViewViews::GetTextWidth() const {
@@ -1470,14 +1490,6 @@ bool OmniboxViewViews::HandleAccessibleAction(
 void OmniboxViewViews::OnFocus() {
   views::Textfield::OnFocus();
 
-  // If focus is returning from the AIM button, there is no need for any of the
-  // usual bookkeeping, since the omnibox was logically considered to have
-  // retained focus.
-  if (focus_is_returning_from_aim_button()) {
-    set_focus_is_returning_from_aim_button(false);
-    return;
-  }
-
   // TODO(tommycli): This does not seem like it should be necessary.
   // Investigate why it's needed and see if we can remove it.
   model()->ResetDisplayTexts();
@@ -1510,14 +1522,6 @@ void OmniboxViewViews::OnFocus() {
 
 void OmniboxViewViews::OnBlur() {
   views::Textfield::OnBlur();
-
-  // If focus is going to the AIM button, there is no need for any of the usual
-  // bookkeeping, since the omnibox will logically be considered to have
-  // retained focus.
-  if (focus_is_going_to_aim_button()) {
-    set_focus_is_going_to_aim_button(false);
-    return;
-  }
 
   // Save the user's existing selection to restore it later.
   saved_selection_for_focus_change_ = GetSelectedRange();
