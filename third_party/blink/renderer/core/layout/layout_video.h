@@ -91,7 +91,8 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
   }
   CompositingReasons AdditionalCompositingReasons() const override;
 
-  PhysicalNaturalSizingInfo natural_dimensions_;
+  PhysicalNaturalSizingInfo natural_dimensions_ =
+      PhysicalNaturalSizingInfo::None();
 };
 
 template <>

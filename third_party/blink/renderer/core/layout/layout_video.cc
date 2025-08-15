@@ -33,18 +33,9 @@
 
 namespace blink {
 
-LayoutVideo::LayoutVideo(HTMLVideoElement* video)
-    : LayoutMedia(video),
-      natural_dimensions_(
-          RuntimeEnabledFeatures::VideoAspectRatioNaturalDimensionEnabled()
-              ? PhysicalNaturalSizingInfo::None()
-              : PhysicalNaturalSizingInfo::MakeFixed(DefaultSize())) {}
+LayoutVideo::LayoutVideo(HTMLVideoElement* video) : LayoutMedia(video) {}
 
 LayoutVideo::~LayoutVideo() = default;
-
-PhysicalSize LayoutVideo::DefaultSize() {
-  return PhysicalSize(LayoutUnit(kDefaultWidth), LayoutUnit(kDefaultHeight));
-}
 
 void LayoutVideo::NaturalSizeChanged() {
   NOT_DESTROYED();
@@ -108,14 +99,7 @@ PhysicalNaturalSizingInfo LayoutVideo::GetNaturalDimensions() const {
       break;
   }
 
-  if (RuntimeEnabledFeatures::VideoAspectRatioNaturalDimensionEnabled()) {
-    return PhysicalNaturalSizingInfo::None();
-  }
-
-  // Natural dimensions are missing.
-  PhysicalSize default_size(DefaultSize());
-  default_size.Scale(StyleRef().EffectiveZoom());
-  return PhysicalNaturalSizingInfo::MakeFixed(default_size);
+  return PhysicalNaturalSizingInfo::None();
 }
 
 void LayoutVideo::ImageChanged(WrappedImagePtr new_image,
