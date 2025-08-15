@@ -27,6 +27,7 @@ message LensOverlayClientLogs {
     OMNIBOX_CONTEXTUAL_SUGGESTION = 8;
     HOMEWORK_ACTION_CHIP = 9;
     TEXT_CONTEXT_MENU = 10;
+    VIDEO_CONTEXT_MENU = 11;
   }
 
   // The Lens Overlay entry point used to access lens.
