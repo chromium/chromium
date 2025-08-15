@@ -324,9 +324,10 @@ TEST_F(BitmapImageTest, pngHasColorProfile) {
 }
 
 TEST_F(BitmapImageTest, pngHasInvalidColorProfile) {
-  LoadImage("png-inf-gamma-color-profile.png");
+  LoadImage("png-zero-gamma-color-profile.png");
   auto actualBitmap = GenerateBitmap(0u);
-  auto expectedBitmap = GenerateBitmapForImage("png-inf-gamma-color-profile-ref.png");
+  auto expectedBitmap =
+      GenerateBitmapForImage("png-zero-gamma-color-profile-ref.png");
   VerifyBitmap(actualBitmap, expectedBitmap);
 }
 
