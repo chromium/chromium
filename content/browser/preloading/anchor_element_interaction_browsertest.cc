@@ -182,7 +182,14 @@ IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
 #if !BUILDFLAG(IS_MAC)
 
 // End-to-end test that document rules can cause prefetch on touch down.
-IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest, TouchDownPrefetch) {
+// TODO(crbug.com/438933681): Flaky on TSan bots, fails consistently locally.
+#ifdef THREAD_SANITIZER
+#define MAYBE_TouchDownPrefetch DISABLED_TouchDownPrefetch
+#else
+#define MAYBE_TouchDownPrefetch TouchDownPrefetch
+#endif
+IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
+                       MAYBE_TouchDownPrefetch) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   ASSERT_TRUE(ExecJs(shell()->web_contents(),
