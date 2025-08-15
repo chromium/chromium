@@ -1,0 +1,181 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef NET_SOCKET_SOCKET_APPLE_H_
+#define NET_SOCKET_SOCKET_APPLE_H_
+
+#include <sys/types.h>
+
+// This is a workaround for https://crbug.com/40064248. See also: b/283787255,
+// FB12198214, and FB19384824.
+//
+// In this bug, the `sendto` and `write` system calls, and the `send` wrapper
+// around `sendto`, appear to return bogus values under certain conditions. This
+// has been observed when writing to established IPv6 (AF_INET6) sockets
+// following certain network reconfigurations on the system. It occurs when
+// bringing up a utun-based VPN, when data sent via the socket would become
+// subject to the tunnel. The bug occurs on macOS 13.3 22E252 (2023-03-27) and
+// later OS versions.
+//
+// This discussion focuses on `send` but the bug is identical for `sendto`; for
+// `write`, substitute SYS_write = 4 for SYS_sendto = 133.
+//
+// ssize_t send(int fd, void const* buffer, size_t size, int flags)
+//
+// `size` contains the number of bytes in `buffer` to be sent via the socket
+// whose file descriptor is `fd`.
+//
+// The ssize_t return value (rv) should be:
+//  - rv = -1 for an error, with errno set appropriately; or
+//  - 0 ≤ rv ≤ size on success. rv contains the number of bytes accepted by the
+//    kernel, conveying the portion of `buffer` that was either sent or queued
+//    for sending. This may be equal to `size` if the entire buffer was
+//    accepted, or it may be less than `size` if the kernel did not accept the
+//    entire buffer (a “short write”).
+//
+// When the bug occurs, `send` appears to return successfully (not -1) but
+// reports a bogus value in place of the number of bytes accepted.
+//  - On arm64 (including x86_64-on-arm64 via Rosetta translation), the bogus
+//    return value is the value of `fd` passed to `send`.
+//  - On x86_64 (without binary translation), the bogus return value is the
+//    system call class (SYSCALL_CLASS_UNIX = 2) and number (SYS_sendto = 133),
+//    packed into a single integer: 0x2000085. `send` is a thin C wrapper
+//    tail-calling the `sendto` system call.
+//
+// The characteristics of the bogus return value impact how easy it is to detect
+// the bug’s occurrence with a defensive return value checking technique.
+//  - rv > size: The bug has unambiguously occurred. This would mean that the
+//    kernel has accepted more data than was provided in `buffer`, which is
+//    impossible. This is easy to detect. 0x2000085 (32MB + 133) is almost
+//    always larger than the buffer size, so these unambiguous returns occur
+//    frequently when the bug occurs on x86_64.
+//  - rv ≤ size: This is indistinguishable from a normal successful return. File
+//    descriptor numbers are normally small, so these ambiguous return values
+//    appear frequently when the bug occurs on arm64.
+//
+// The mechanics of the bug are specific to the kernel’s architecture, largely
+// following each architecture’s standard function call ABI, with an extra
+// register dedicated to selecting the system call, and an architectural flag
+// bit used to distinguish successful from error returns.
+//  - On arm64, the system call number (SYS_sendto = 133) is stored in x16.
+//    Arguments are presented in w0 (the low 32 bits of x0) = fd, x1 = buffer,
+//    x2 = size, and w3 = flags. x0 is used for the return value or error
+//    number. cpsr.c (the carry flag of “nzcv”) is set for an error return, and
+//    clear for a successful return.
+//  - On x86_64, the system call class and number (0x2000085) is stored in eax
+//    (the low 32 bits of rax). Arguments are presented in edi = fd, rsi =
+//    buffer, rdx = size, and ecx = flags. rax is used for the return value or
+//    error number. rflags.cf (the carry flag) is set for an error return, and
+//    clear for a successful return.
+//
+// The bug occurs when the EJUSTRETURN path is incorrectly taken in the kernel
+// on system call return. xnu source code references are to xnu-11417.121.6,
+// which shipped with macOS 15.5 24F74 (2025-05-12):
+//  - https://github.com/apple-oss-distributions/xnu/blob/xnu-11417.121.6/bsd/dev/arm/systemcalls.c#L504
+//  - https://github.com/apple-oss-distributions/xnu/blob/xnu-11417.121.6/bsd/dev/i386/systemcalls.c#L411
+//
+// The EJUSTRETURN path exists at this level solely for the use of the
+// `sigreturn` system call, which returns from a user-space signal handler
+// function back to the interrupted user thread via the kernel. `sigreturn`
+// restores the interrupted thread context, and has no return to its caller
+// proper, so EJUSTRETURN exists to suppress the normal register manipulation
+// done during any other system call return.
+//
+// There are also kernel-internal uses of EJUSTRETURN, but aside from
+// `sigreturn`, none should “leak” to system call return. Socket code and other
+// networking code in the kernel use EJUSTRETURN internally, at that layer
+// generally meaning that no further processing should be performed. The bug is
+// likely caused when one of these internal uses of EJUSTRETURN is not handled
+// properly within the networking layer and instead propagates from that layer
+// to become `sendto`’s return, improperly “leaking” to the system call return
+// level where it takes on a different meaning.
+//
+// When the bug occurs and the EJUSTRETURN path is taken for a return from
+// `sendto`, the user-bound return value (uthread->uu_rval[0]) does not make it
+// into the register state to be restored on user return (x0 via ss64->x[0], rax
+// via regs->rax), leaving the return value register’s previous contents from
+// system call entry intact. x0 will still contain the file descriptor number,
+// and rax will still contain the system call selector. The carry flag will have
+// been optimistically cleared, so the bug’s occurrence is always observed as a
+// successful return in the user program.
+//
+// To provide more robust detection of even the ambiguous case, this workaround
+// leverages the fact that all successful system call returns set a secondary
+// return register in addition to the primary return value in x0 and rax. The
+// secondary return registers are x1 and rdx, identical to each architecture’s
+// ABI for a return of a struct containing 2 integers. For the vast majority of
+// system calls (only `fork` and `pipe` are exceptions), the secondary return
+// register is cleared. Thus, if the secondary return register is nonzero on
+// system call entry, and it remains nonzero on system call return, it can be
+// taken as a signal that the bug occurred unambiguously.
+//
+// By architecture:
+//  - On arm64, x1 = buffer. x1 can be consulted to detect the bug unambiguously
+//    as long as buffer != nullptr. If buffer == nullptr and size > 0, the call
+//    would have resulted in an error return (EFAULT) so the bug would not have
+//    been observed.
+//  - On x86_64, rdx = size. rdx can be consulted to detect the bug
+//    unambiguously as long as size != 0.
+//
+// For slightly different reasons on each architecture, it is possible for the
+// secondary return value mechanism to fail to detect the bug’s occurrence when
+// size == 0. The bug cannot occur for a `send` on a TCP socket with size == 0,
+// because sending 0 bytes via TCP is a no-op, and an early-return path is taken
+// in the kernel without the bogus return value appearing. Thus, for any TCP
+// socket, the secondary return value provides robust and unambiguous detection
+// of the bug’s occurrence.
+//
+// The workaround is implemented in a bug-detecting wrapper around `send`.
+// Substitute the SendAndDetectBogusReturnValue wrapper for a call to `send`,
+// and when the bug occurs and is detected, its return value will be
+// kSendBogusReturnValueDetected. In all other respects, it behaves identically
+// to `send`.
+//
+// Assuming that `send` tail-calls `sendto`, and a successful `sendto` returns
+// immediately from the system call to its caller without modifying any
+// registers, this detection mechanism will be valid. These assumptions hold
+// empirically, as well as through a read of all of the source code on both the
+// user and kernel sides of the system call boundary, at all relevant OS
+// versions. However, there’s no guarantee that it must hold into the future,
+// and it’s possible that a future OS version might invalidate these
+// assumptions. In that case, this technique of detecting the bug’s occurrence
+// via x1 and rdx might be jeopardized. The TODO below, and one in
+// socket_apple.cc, are intended to mitigate against this possibility as soon as
+// a macOS version with the fix for this bug is published.
+//
+// Note that these assumptions are not valid for an error return from the system
+// call, and the secondary return register is not set during an error return
+// either, so the bug-detecting wrapper takes care to only attempt detection
+// during apparent successful returns.
+
+// TODO(mark): In the future, when a version of macOS with a fix for FB19384824
+// is published, place the following contents of the file in a compile-time
+// guard to only enable this workaround so long as the minimum OS version being
+// targeted is older than the OS version that contains the fix (such as via
+// <Availability.h> __MAC_OS_X_VERSION_MIN_REQUIRED and
+// __IPHONE_OS_VERSION_MIN_REQUIRED).
+#define WORK_AROUND_CRBUG_40064248 1
+
+namespace net {
+
+// A return value used to signal the bug’s occurrence in-band. This must be
+// negative to avoid being confused with any possible successful return value,
+// and it must not be -1 to avoid being confused with a normal errno-setting
+// error return. In-band signaling makes things easier for callers, because
+// `send` can be swapped out easily in favor of its wrapper, which can be used
+// equally well with HANDLE_EINTR as appropriate.
+inline constexpr ssize_t kSendBogusReturnValueDetected = -2;
+static_assert(kSendBogusReturnValueDetected < 0 &&
+              kSendBogusReturnValueDetected != -1);
+
+// Wrap `send`, returning kSendBogusReturnValueDetected when the bug’s
+// occurrence is detected.
+ssize_t SendAndDetectBogusReturnValue(int fd,
+                                      void const* buffer,
+                                      size_t size,
+                                      int flags);
+
+}  // namespace net
+
+#endif  // NET_SOCKET_SOCKET_APPLE_H_
