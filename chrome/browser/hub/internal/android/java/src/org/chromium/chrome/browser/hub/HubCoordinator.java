@@ -155,7 +155,8 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
                             mainContainer,
                             paneManager,
                             hubColorMixer,
-                            bottomToolbarDelegate);
+                            bottomToolbarDelegate,
+                            edgeToEdgeSupplier);
         } else {
             mHubBottomToolbarCoordinator = null;
         }

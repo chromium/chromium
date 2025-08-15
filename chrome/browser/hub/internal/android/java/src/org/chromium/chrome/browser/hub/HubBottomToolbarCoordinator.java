@@ -9,7 +9,13 @@ import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import android.content.Context;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -25,6 +31,8 @@ public class HubBottomToolbarCoordinator {
     /** The delegate that provides bottom toolbar functionality. */
     private final HubBottomToolbarDelegate mDelegate;
 
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+
     /**
      * Creates a new HubBottomToolbarCoordinator.
      *
@@ -39,7 +47,8 @@ public class HubBottomToolbarCoordinator {
             ViewGroup container,
             PaneManager paneManager,
             HubColorMixer hubColorMixer,
-            HubBottomToolbarDelegate delegate) {
+            HubBottomToolbarDelegate delegate,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mDelegate = delegate;
 
         PropertyModel model =
@@ -58,11 +67,21 @@ public class HubBottomToolbarCoordinator {
         }
 
         mMediator = new HubBottomToolbarMediator(model, mDelegate);
+
+        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled() && hubBottomToolbarView != null) {
+            mEdgeToEdgePadAdjuster =
+                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                            hubBottomToolbarView, edgeToEdgeSupplier);
+        }
     }
 
     /** Cleans up observers and resources. */
     public void destroy() {
         mMediator.destroy();
         mDelegate.destroy();
+        if (mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgePadAdjuster.destroy();
+            mEdgeToEdgePadAdjuster = null;
+        }
     }
 }
