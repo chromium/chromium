@@ -176,7 +176,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
   // whether the feature is enabled and the card's strike count.
   is_for_bottom_sheet =
       ShouldShowSaveCardBottomSheet(
-          options.num_strikes.value_or(0),
+          options.card_save_type, options.num_strikes.value_or(0),
           /*should_request_name_from_user=*/false,
           /*should_request_expiration_date_from_user=*/false) &&
       base::FeatureList::IsEnabled(
@@ -198,7 +198,6 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
     case CardSaveType::kCardSaveWithCvc: {
       CHECK(base::FeatureList::IsEnabled(
           features::kAutofillEnableCvcStorageAndFilling));
-
       save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
       save_card_prompt_title_id =
           !is_for_bottom_sheet
@@ -300,7 +299,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
 #elif BUILDFLAG(IS_IOS)
   is_for_bottom_sheet =
       ShouldShowSaveCardBottomSheet(
-          options.num_strikes.value_or(0),
+          options.card_save_type, options.num_strikes.value_or(0),
           options.should_request_name_from_user,
           options.should_request_expiration_date_from_user) &&
       base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet);
@@ -362,10 +361,12 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
 
 #if BUILDFLAG(IS_IOS)
 bool ShouldShowSaveCardBottomSheet(
+    CardSaveType card_save_type,
     int num_strikes,
     bool should_request_name_from_user,
     bool should_request_expiration_date_from_user) {
-  return num_strikes == 0 && !should_request_name_from_user &&
+  return card_save_type != CardSaveType::kCvcSaveOnly && num_strikes == 0 &&
+         !should_request_name_from_user &&
          !should_request_expiration_date_from_user;
 }
 #endif  // BUILDFLAG(IS_IOS)

@@ -356,10 +356,8 @@ TEST_F(
 TEST_F(IOSChromePaymentsAutofillClientTest,
        UsesSaveCvcInfobarTypeForUploadSaveCvc) {
   // Set up the save options for a CVC-only save.
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enable_features=*/{features::kAutofillEnableCvcStorageAndFilling},
-      /*disable_features=*/{features::kAutofillSaveCardBottomSheet});
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
   payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   options.card_save_type =
       payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly;
@@ -641,30 +639,6 @@ TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
   const std::optional<AutofillErrorDialogContext>& error_context =
       [autofill_commands() autofillErrorDialogContext];
   EXPECT_FALSE(error_context.has_value());
-}
-
-// Test that a save CVC Bottomsheet is shown when saving only a CVC for upload
-// save.
-TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
-       UsesSaveCvcBottomsheetForUploadSaveCvc) {
-  // Set up the save options for a CVC-only save.
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
-  payments::PaymentsAutofillClient::SaveCreditCardOptions options;
-  options.card_save_type =
-      payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly;
-  options.show_prompt = true;
-
-  payments_client()->ShowSaveCreditCardToCloud(autofill::test::GetCreditCard(),
-                                               LegalMessageLines(), options,
-                                               base::DoNothing());
-
-  // Make sure that a bottomsheet was shown and is specifically for the CVC-only
-  // prompt.
-  EXPECT_TRUE([autofill_commands() showSaveCardBottomSheetCalled]);
-  EXPECT_EQ(
-      bottomsheet_tab_helper_->GetSaveCardBottomSheetModel()->title(),
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD));
 }
 
 class IOSChromePaymentsAutofillClientWithLocalSaveCardBottomSheetTest
