@@ -52,6 +52,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
+                /* multiInstanceManager= */ null,
                 tabGroupSyncService,
                 collaborationService,
                 context);

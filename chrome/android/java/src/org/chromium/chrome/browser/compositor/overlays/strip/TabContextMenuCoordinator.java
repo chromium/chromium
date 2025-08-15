@@ -94,7 +94,6 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
     private final Supplier<TabModel> mTabModelSupplier;
 
     private final TabGroupModelFilter mTabGroupModelFilter;
-    private final MultiInstanceManager mMultiInstanceManager;
     private final WindowAndroid mWindowAndroid;
     private final Context mContext;
 
@@ -117,12 +116,12 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                         multiInstanceManager,
                         shareDelegateSupplier),
                 tabModelSupplier,
+                multiInstanceManager,
                 tabGroupSyncService,
                 collaborationService,
-                windowAndroid.getActivity().get());
+                context);
         mTabModelSupplier = tabModelSupplier;
         mTabGroupModelFilter = tabGroupModelFilter;
-        mMultiInstanceManager = multiInstanceManager;
         mWindowAndroid = windowAndroid;
         mContext = context;
     }
@@ -255,9 +254,16 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                             isIncognito));
         }
 
-        if (tab.getTabGroupId() == null && MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+        if (tab.getTabGroupId() == null
+                && MultiWindowUtils.isMultiInstanceApi31Enabled()
+                && mMultiInstanceManager != null) {
             // Show the option to move the tab to another window iff the tab is not in a group.
-            itemList.add(createMoveToWindowItem(tab, isIncognito));
+            itemList.add(
+                    createMoveToWindowItem(
+                            id,
+                            isIncognito,
+                            R.plurals.move_tab_to_another_window,
+                            R.id.move_to_other_window_menu_id));
         }
 
         itemList.add(buildMenuDivider(isIncognito));
@@ -297,6 +303,28 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         var tab = mTabModelSupplier.get().getTabById(id);
         if (tab == null) return null;
         return TabShareUtils.getCollaborationIdOrNull(tab.getTabGroupId(), mTabGroupSyncService);
+    }
+
+    @Override
+    protected void moveToNewWindow(Integer tabId) {
+        if (tabId == Tab.INVALID_TAB_ID) return;
+        TabModel tabModel = mTabModelSupplier.get();
+        Tab tab = tabModel.getTabById(tabId);
+        if (tab == null) return;
+        RecordUserAction.record("MobileToolbarTabMenu.MoveTabToNewWindow");
+        assumeNonNull(mMultiInstanceManager).moveTabsToNewWindow(Collections.singletonList(tab));
+    }
+
+    @Override
+    protected void moveToWindow(InstanceInfo instanceInfo, Integer tabId) {
+        if (tabId == Tab.INVALID_TAB_ID) return;
+        TabModel tabModel = mTabModelSupplier.get();
+        Tab tab = tabModel.getTabById(tabId);
+        if (tab == null) return;
+        RecordUserAction.record("MobileToolbarTabMenu.MoveTabToOtherWindow");
+        assumeNonNull(mMultiInstanceManager)
+                .moveTabsToWindow(
+                        instanceInfo, Collections.singletonList(tab), TabList.INVALID_TAB_INDEX);
     }
 
     private ListItem createMoveToTabGroupItem(Tab tab, boolean isIncognito) {
@@ -362,7 +390,8 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         // TODO(crbug.com/437327793): Stop filtering out Inactive windows if we can support moving a
         // tab to a group in an Inactive window.
         Set<Integer> activeInstanceIds = new HashSet<>();
-        List<InstanceInfo> activeInstances = mMultiInstanceManager.getInstanceInfo(ACTIVE);
+        List<InstanceInfo> activeInstances =
+                assumeNonNull(mMultiInstanceManager).getInstanceInfo(ACTIVE);
         for (InstanceInfo activeInstance : activeInstances) {
             activeInstanceIds.add(activeInstance.instanceId);
         }
@@ -453,75 +482,5 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             circleDrawable.setColor(color);
         }
         return circleDrawable;
-    }
-
-    private ListItem createMoveToWindowItem(Tab tab, boolean isIncognito) {
-        // TODO(crbug.com/437418051): Clean up move_tab_to_another_window strings.
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)) {
-            return new ListItemBuilder()
-                    .withTitle(
-                            mContext.getResources()
-                                    .getQuantityString(
-                                            R.plurals.move_tab_to_another_window,
-                                            MultiWindowUtils.getInstanceCount()))
-                    .withMenuId(R.id.move_to_other_window_menu_id)
-                    .withIsIncognito(isIncognito)
-                    .build();
-        }
-        List<ListItem> submenuItems = new ArrayList<>();
-        submenuItems.add(
-                new ListItem(
-                        MENU_ITEM,
-                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                .with(TITLE_ID, R.string.menu_new_window)
-                                .with(ENABLED, true)
-                                .with(
-                                        CLICK_LISTENER,
-                                        v -> {
-                                            RecordUserAction.record(
-                                                    "MobileToolbarTabMenu.MoveTabToNewWindow");
-                                            mMultiInstanceManager.moveTabsToOtherWindow(
-                                                    Collections.singletonList(tab));
-                                        })
-                                .build()));
-        List<InstanceInfo> activeInstances = mMultiInstanceManager.getInstanceInfo(ACTIVE);
-        if (activeInstances.size() > 1) {
-            submenuItems.add(buildMenuDivider(isIncognito));
-            for (InstanceInfo instanceInfo : activeInstances) {
-                if (mMultiInstanceManager.getCurrentInstanceId() == instanceInfo.instanceId) {
-                    continue;
-                }
-                submenuItems.add(
-                        new ListItem(
-                                MENU_ITEM,
-                                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                        .with(TITLE, instanceInfo.title)
-                                        .with(
-                                                CLICK_LISTENER,
-                                                (v) -> {
-                                                    RecordUserAction.record(
-                                                            "MobileToolbarTabMenu.MoveTabToOtherWindow");
-                                                    mMultiInstanceManager.moveTabsToWindow(
-                                                            instanceInfo,
-                                                            Collections.singletonList(tab),
-                                                            TabList.INVALID_TAB_INDEX);
-                                                })
-                                        .with(ENABLED, true)
-                                        .build()));
-            }
-        }
-        return new ListItem(
-                MENU_ITEM_WITH_SUBMENU,
-                new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
-                        .with(
-                                TITLE,
-                                mContext.getResources()
-                                        .getQuantityString(
-                                                R.plurals.move_tab_to_another_window,
-                                                2)) // Choose any # > 1
-                        .with(SUBMENU_ITEMS, submenuItems)
-                        .with(ENABLED, true)
-                        .build());
     }
 }

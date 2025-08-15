@@ -88,6 +88,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                         shareDelegateSupplier,
                         showTabListEditor),
                 tabGroupModelFilter::getTabModel,
+                /* multiInstanceManager= */ null,
                 tabGroupSyncService,
                 collaborationService,
                 activity);

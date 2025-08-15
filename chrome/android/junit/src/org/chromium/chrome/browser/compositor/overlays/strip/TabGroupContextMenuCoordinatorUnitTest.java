@@ -12,8 +12,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP;
+import static org.chromium.chrome.browser.multiwindow.InstanceInfo.Type.CURRENT;
+import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.ACTIVE;
 
 import android.app.Activity;
 import android.os.SystemClock;
@@ -25,6 +30,7 @@ import android.widget.EditText;
 import androidx.annotation.IdRes;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,6 +50,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,6 +61,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
@@ -76,6 +84,8 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.widget.RectProvider;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -113,6 +123,40 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Mock private ServiceStatus mServiceStatus;
     @Mock private DataSharingTabManager mDataSharingTabManager;
 
+    // Window state
+    private static final GURL EXAMPLE_URL = new GURL("https://example.com");
+    private static final int INSTANCE_ID_1 = 5;
+    private static final int INSTANCE_ID_2 = 6;
+    private static final String WINDOW_TITLE_1 = "Window Title 1";
+    private static final String WINDOW_TITLE_2 = "Window Title 2";
+    private static final int TASK_ID = 7;
+    private static final int NUM_TABS = 1;
+    private static final int NUM_INCOGNITO_TABS = 0;
+    private static final long LAST_ACCESSED_TIME = 100L;
+    private static final InstanceInfo INSTANCE_INFO_1 =
+            new InstanceInfo(
+                    INSTANCE_ID_1,
+                    TASK_ID,
+                    CURRENT,
+                    EXAMPLE_URL.toString(),
+                    WINDOW_TITLE_1,
+                    NUM_TABS,
+                    NUM_INCOGNITO_TABS,
+                    /* isIncognitoSelected= */ false,
+                    LAST_ACCESSED_TIME);
+
+    private static final InstanceInfo INSTANCE_INFO_2 =
+            new InstanceInfo(
+                    INSTANCE_ID_2,
+                    TASK_ID,
+                    CURRENT,
+                    EXAMPLE_URL.toString(),
+                    WINDOW_TITLE_2,
+                    NUM_TABS,
+                    NUM_INCOGNITO_TABS,
+                    /* isIncognitoSelected= */ false,
+                    LAST_ACCESSED_TIME);
+
     // Other dependencies
     @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
@@ -143,6 +187,9 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabModel.setTabCreatorForTesting(mTabCreator);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mProfile.isOffTheRecord()).thenReturn(true);
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(INSTANCE_ID_1);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
         mOnItemClickedCallback =
                 TabGroupContextMenuCoordinator.getMenuItemClickedCallback(
@@ -163,18 +210,21 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabGroupContextMenuCoordinator.setGroupDataForTesting(TAB_GROUP_ID);
     }
 
+    @After
+    public void tearDown() {
+        mTabGroupContextMenuCoordinator.destroyMenuForTesting();
+    }
+
     @Test
     @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems() {
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         mTabGroupContextMenuCoordinator.setTabGroupSyncServiceForTesting(mTabGroupSyncService);
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(null);
 
-        // Build custom view first to setup menu view.
-        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
-
-        ModelList modelList = new ModelList();
-        mTabGroupContextMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_ID);
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
 
         // Assert: verify number of items in the model list.
         assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
@@ -195,14 +245,11 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_Incognito() {
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
-
-        // Build custom view first to setup menu view.
-        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
-
-        ModelList modelList = new ModelList();
-        mTabGroupContextMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_ID);
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
 
         // Assert: verify number of items in the model list.
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
@@ -213,6 +260,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.DATA_SHARING)
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     @Feature("Tab Strip Group Context Menu")
     public void testListMenuItems_DataShareDisabled() {
         when(mServiceStatus.isAllowedToCreate()).thenReturn(false);
@@ -277,20 +325,16 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testCollaborationMenuItems_Owner() {
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         mTabGroupContextMenuCoordinator.setTabGroupSyncServiceForTesting(mTabGroupSyncService);
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(mSavedTabGroup);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
-
-        ModelList modelList = new ModelList();
-
-        // Build regular menu views.
-        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
-        mTabGroupContextMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_ID);
-
-        // Build collaboration view.
-        mTabGroupContextMenuCoordinator.buildCollaborationMenuItems(modelList, MemberRole.OWNER);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID))
+                .thenReturn(MemberRole.OWNER);
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
 
         // Assert: verify number of items in the model list.
         assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
@@ -302,20 +346,16 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testCollaborationMenuItems_Member() {
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         mTabGroupContextMenuCoordinator.setTabGroupSyncServiceForTesting(mTabGroupSyncService);
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(mSavedTabGroup);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
-
-        ModelList modelList = new ModelList();
-
-        // Build regular menu views.
-        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
-        mTabGroupContextMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_ID);
-
-        // Build collaboration view.
-        mTabGroupContextMenuCoordinator.buildCollaborationMenuItems(modelList, MemberRole.MEMBER);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID))
+                .thenReturn(MemberRole.MEMBER);
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
 
         // Assert: verify number of items in the model list.
         assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
@@ -522,6 +562,50 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertEquals("1 tab", groupTitleEditText.getText().toString());
     }
 
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveToNewWindow() {
+        setUpTabGroupModelFilter();
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE)).thenReturn(List.of(INSTANCE_INFO_1));
+        var modelList = new ModelList();
+        mTabGroupContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_GROUP_ID);
+
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                4,
+                R.plurals.move_group_to_another_window_context_menu_item,
+                List.of(),
+                mWeakReferenceActivity.get());
+
+        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 4, mMenuView);
+
+        verify(mMultiInstanceManager, times(1))
+                .moveTabGroupToNewWindow(any(TabGroupMetadata.class));
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveToWindow() {
+        setUpTabGroupModelFilter();
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+        var modelList = new ModelList();
+        mTabGroupContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_GROUP_ID);
+
+        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToWindowRow(
+                modelList, 4, WINDOW_TITLE_2, mMenuView);
+
+        verify(mMultiInstanceManager, times(1))
+                .moveTabGroupToWindow(
+                        eq(INSTANCE_INFO_2),
+                        any(TabGroupMetadata.class),
+                        eq(TabList.INVALID_TAB_INDEX));
+    }
+
     private List<Tab> setUpTabGroupModelFilter() {
         Tab tab = mTabModel.addTab(TAB_ID);
         tab.setTabGroupId(TAB_GROUP_ID);
@@ -547,12 +631,12 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertEquals(
                 R.id.close_tab_group,
                 modelList.get(closeGroupPosition).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-        assertEquals(
-                R.id.move_to_other_window_menu_id,
-                modelList
-                        .get(closeGroupPosition + 1)
-                        .model
-                        .get(ListMenuItemProperties.MENU_ITEM_ID));
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                closeGroupPosition + 1,
+                R.plurals.move_group_to_another_window_context_menu_item,
+                List.of(WINDOW_TITLE_2),
+                mWeakReferenceActivity.get());
     }
 
     private void verifyCollaborationListItems(ModelList modelList, @MemberRole int memberRole) {
@@ -573,10 +657,12 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 R.id.close_tab_group,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(0, modelList.get(4).model.get(ListMenuItemProperties.START_ICON_ID));
-        assertEquals(
-                R.id.move_to_other_window_menu_id,
-                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-        assertEquals(0, modelList.get(4).model.get(ListMenuItemProperties.START_ICON_ID));
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                5,
+                R.plurals.move_group_to_another_window_context_menu_item,
+                List.of(WINDOW_TITLE_2),
+                mWeakReferenceActivity.get());
         verifyDivider(modelList.get(6));
 
         // Verify delete group or leave group depending on the member role.

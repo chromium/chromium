@@ -324,6 +324,41 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_tabOutsideOfGroup() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_OUTSIDE_OF_GROUP_ID);
+
+        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
+
+        // List item 1
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE);
+
+        // List item 2
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                1,
+                R.plurals.move_tab_to_another_window,
+                List.of(),
+                mWeakReferenceActivity.get());
+
+        // List item 3
+        assertEquals(DIVIDER, modelList.get(2).type);
+
+        // List item 4
+        assertEquals(R.string.share, modelList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.share_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 5
+        assertEquals(R.string.close, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testAddToGroupSubmenu_fallbackTabGroupName() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         mSavedTabGroup.title = "";
@@ -353,7 +388,12 @@ public class TabContextMenuCoordinatorUnitTest {
         verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE);
 
         // List item 2
-        verifyAddToWindowSubmenu(modelList, List.of(WINDOW_TITLE_2));
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                1,
+                R.plurals.move_tab_to_another_window,
+                List.of(WINDOW_TITLE_2),
+                mWeakReferenceActivity.get());
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -628,43 +668,22 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testMoveToNewWindow() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_OUTSIDE_OF_GROUP_ID);
-
-        var moveToOtherWindowItem = modelList.get(1);
-        moveToOtherWindowItem.model.get(CLICK_LISTENER).onClick(mView);
-        assertEquals("Expected model list to have 2 items", 2, modelList.size());
-        ListItem newWindowItem = modelList.get(1);
-        assertEquals("Expected 2nd item to have MENU_ITEM type", MENU_ITEM, newWindowItem.type);
-        assertEquals(
-                "Expected 2nd item to be 'New window' row",
-                R.string.menu_new_window,
-                newWindowItem.model.get(TITLE_ID));
-
-        newWindowItem.model.get(CLICK_LISTENER).onClick(mView);
-
-        verify(mMultiInstanceManager, times(1)).moveTabsToOtherWindow(List.of(mTabOutsideOfGroup));
+        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 1, mView);
+        verify(mMultiInstanceManager, times(1)).moveTabsToNewWindow(List.of(mTabOutsideOfGroup));
     }
 
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
-    public void testMoveToOtherWindow() {
+    public void testMoveToWindow() {
         MultiWindowUtils.setInstanceCountForTesting(2);
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
                 .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_OUTSIDE_OF_GROUP_ID);
 
-        var moveToOtherWindowItem = modelList.get(1);
-        moveToOtherWindowItem.model.get(CLICK_LISTENER).onClick(mView);
-        assertEquals("Expected model list to have 4 items", 4, modelList.size());
-        ListItem windowRowItem = modelList.get(3);
-        assertEquals("Expected 4th item to be a menu item", MENU_ITEM, windowRowItem.type);
-        assertEquals(
-                "Expected 4th item to display the name of the other window",
-                WINDOW_TITLE_2,
-                windowRowItem.model.get(TITLE));
-
-        windowRowItem.model.get(CLICK_LISTENER).onClick(mView);
+        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToWindowRow(
+                modelList, 1, WINDOW_TITLE_2, mView);
 
         verify(mMultiInstanceManager, times(1))
                 .moveTabsToWindow(

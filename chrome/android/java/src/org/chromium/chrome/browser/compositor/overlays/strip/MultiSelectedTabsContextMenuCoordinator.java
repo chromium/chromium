@@ -18,7 +18,9 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
@@ -72,9 +75,10 @@ public class MultiSelectedTabsContextMenuCoordinator
                         tabGroupListBottomSheetCoordinator,
                         multiInstanceManager),
                 () -> tabModel,
+                multiInstanceManager,
                 tabGroupSyncService,
                 collaborationService,
-                windowAndroid.getActivity().get());
+                assumeNonNull(windowAndroid.getActivity().get()));
         mTabModel = tabModel;
         mWindowAndroid = windowAndroid;
         mTabGroupModelFilter = tabGroupModelFilter;
@@ -124,7 +128,7 @@ public class MultiSelectedTabsContextMenuCoordinator
         return (menuId, tabIds, collaborationId, listViewTouchTracker) -> {
             assert !tabIds.isEmpty() : "Empty tab id list provided";
             TabModel tabModel = tabModelSupplier.get();
-            List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, false);
+            List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
             List<Tab> groupedTabs = getGroupedTabs(tabGroupModelFilter, tabs);
 
             if (menuId == R.id.add_to_tab_group) {
@@ -192,7 +196,7 @@ public class MultiSelectedTabsContextMenuCoordinator
                         .withIsIncognito(isIncognito)
                         .build());
         // Remove tabs from group.
-        if (isAnyTabGrouped(TabModelUtils.getTabsById(ids, mTabModel, false))) {
+        if (isAnyTabGrouped(TabModelUtils.getTabsById(ids, mTabModel, /* allowClosing= */ false))) {
             // Show the option if any selected tab is part of a group.
             itemList.add(
                     buildListItem(
@@ -201,17 +205,13 @@ public class MultiSelectedTabsContextMenuCoordinator
                             isIncognito));
         }
         // Move tabs to another window.
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            title =
-                    res.getQuantityString(
-                            R.plurals.move_tabs_to_another_window,
-                            MultiWindowUtils.getInstanceCount());
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled() && mMultiInstanceManager != null) {
             itemList.add(
-                    new ListItemBuilder()
-                            .withTitle(title)
-                            .withMenuId(R.id.move_to_other_window_menu_id)
-                            .withIsIncognito(isIncognito)
-                            .build());
+                    createMoveToWindowItem(
+                            ids,
+                            isIncognito,
+                            R.plurals.move_tabs_to_another_window,
+                            R.id.move_to_other_window_menu_id));
         }
         // Divider
         itemList.add(buildMenuDivider(isIncognito));
@@ -240,6 +240,38 @@ public class MultiSelectedTabsContextMenuCoordinator
     protected @Nullable String getCollaborationIdOrNull(List<Integer> ids) {
         // Multi-select does not support collaboration yet.
         return null;
+    }
+
+    @Override
+    @RequiresNonNull("mMultiInstanceManager")
+    protected void moveToNewWindow(List<Integer> tabIds) {
+        // TODO(crbug.com/404074503): Add user metrics.
+        ungroupTabs(tabIds);
+        mMultiInstanceManager.moveTabsToNewWindow(
+                TabModelUtils.getTabsById(tabIds, mTabModel, /* allowClosing= */ false));
+    }
+
+    @Override
+    @RequiresNonNull("mMultiInstanceManager")
+    protected void moveToWindow(InstanceInfo instanceInfo, List<Integer> tabIds) {
+        // TODO(crbug.com/404074503): Add user metrics.
+        ungroupTabs(tabIds);
+        mMultiInstanceManager.moveTabsToWindow(
+                instanceInfo,
+                TabModelUtils.getTabsById(tabIds, mTabModel, /* allowClosing= */ false),
+                TabList.INVALID_TAB_INDEX);
+    }
+
+    /** Ungroups any tabs in {@param tabIds} which are currently in a group. */
+    private void ungroupTabs(List<Integer> tabIds) {
+        List<Tab> tabs = TabModelUtils.getTabsById(tabIds, mTabModel, /* allowClosing= */ false);
+        List<Tab> groupedTabs = getGroupedTabs(mTabGroupModelFilter, tabs);
+        if (!groupedTabs.isEmpty()) {
+            // Ungroup all tabs before performing the move operation.
+            mTabGroupModelFilter
+                    .getTabUngrouper()
+                    .ungroupTabs(groupedTabs, /* trailing= */ true, /* allowDialog= */ false);
+        }
     }
 
     /**

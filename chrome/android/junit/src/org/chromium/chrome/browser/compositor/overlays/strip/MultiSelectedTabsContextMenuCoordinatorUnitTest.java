@@ -10,10 +10,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP;
+import static org.chromium.chrome.browser.multiwindow.InstanceInfo.Type.CURRENT;
+import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.ACTIVE;
 import static org.chromium.ui.listmenu.ListItemType.DIVIDER;
 import static org.chromium.ui.listmenu.ListSectionDividerProperties.COLOR_ID;
 
 import android.app.Activity;
+import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -32,6 +36,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -41,6 +46,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
@@ -73,6 +79,37 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     private static final String COLLABORATION_ID = "CollaborationId";
     private static final GURL EXAMPLE_URL = new GURL("https://example.com");
     private static final GURL CHROME_SCHEME_URL = new GURL("chrome://history");
+    private static final int INSTANCE_ID_1 = 5;
+    private static final int INSTANCE_ID_2 = 6;
+    private static final String WINDOW_TITLE_1 = "Window Title 1";
+    private static final String WINDOW_TITLE_2 = "Window Title 2";
+    private static final int TASK_ID = 7;
+    private static final int NUM_TABS = 1;
+    private static final int NUM_INCOGNITO_TABS = 0;
+    private static final long LAST_ACCESSED_TIME = 100L;
+    private static final InstanceInfo INSTANCE_INFO_1 =
+            new InstanceInfo(
+                    INSTANCE_ID_1,
+                    TASK_ID,
+                    CURRENT,
+                    EXAMPLE_URL.toString(),
+                    WINDOW_TITLE_1,
+                    NUM_TABS,
+                    NUM_INCOGNITO_TABS,
+                    /* isIncognitoSelected= */ false,
+                    LAST_ACCESSED_TIME);
+
+    private static final InstanceInfo INSTANCE_INFO_2 =
+            new InstanceInfo(
+                    INSTANCE_ID_2,
+                    TASK_ID,
+                    CURRENT,
+                    EXAMPLE_URL.toString(),
+                    WINDOW_TITLE_2,
+                    NUM_TABS,
+                    NUM_INCOGNITO_TABS,
+                    /* isIncognitoSelected= */ false,
+                    LAST_ACCESSED_TIME);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -101,6 +138,7 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
+    @Mock private View mView;
 
     @Before
     public void setUp() {
@@ -141,6 +179,9 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         when(mNonUrlTab.getUrl()).thenReturn(CHROME_SCHEME_URL);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(INSTANCE_ID_1);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
         setupWithIncognito(/* incognito= */ false); // Most tests will run not in incognito mode
         initializeCoordinator();
     }
@@ -239,6 +280,7 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testAnchor_offset() {
         StripLayoutContextMenuCoordinatorTestUtils.testAnchor_offset(
                 (rectProvider) ->
@@ -248,6 +290,7 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testAnchor_offset_incognito() {
         setupWithIncognito(/* incognito= */ true);
         StripLayoutContextMenuCoordinatorTestUtils.testAnchor_offset_incognito(
@@ -258,9 +301,10 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_tabsInGroup() {
         var modelList = new ModelList();
-        mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
+        mMultiSelectedTabsContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, List.of(TAB_1_ID, TAB_2_ID));
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
@@ -276,11 +320,12 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                 modelList, 1, R.string.remove_tabs_from_group, R.id.remove_from_tab_group);
 
         // List item 3
-        assertMenuItemTitle(
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
                 modelList,
                 2,
-                getQuantityString(R.plurals.move_tabs_to_another_window, 1),
-                R.id.move_to_other_window_menu_id);
+                R.plurals.move_tabs_to_another_window,
+                List.of(WINDOW_TITLE_2),
+                mWeakReferenceActivity.get());
 
         // List item 4
         assertEquals(DIVIDER, modelList.get(3).type);
@@ -294,9 +339,10 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_tabsOutsideOfGroup() {
         var modelList = new ModelList();
-        mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
+        mMultiSelectedTabsContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID_1, TAB_OUTSIDE_OF_GROUP_ID_2));
         assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
@@ -308,11 +354,12 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                 R.id.add_to_tab_group);
 
         // List item 2
-        assertMenuItemTitle(
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
                 modelList,
                 1,
-                getQuantityString(R.plurals.move_tabs_to_another_window, 1),
-                R.id.move_to_other_window_menu_id);
+                R.plurals.move_tabs_to_another_window,
+                List.of(WINDOW_TITLE_2),
+                mWeakReferenceActivity.get());
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -326,9 +373,10 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_someTabsInGroup() {
         var modelList = new ModelList();
-        mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
+        mMultiSelectedTabsContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1));
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
@@ -344,11 +392,12 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                 modelList, 1, R.string.remove_tabs_from_group, R.id.remove_from_tab_group);
 
         // List item 3
-        assertMenuItemTitle(
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
                 modelList,
                 2,
-                getQuantityString(R.plurals.move_tabs_to_another_window, 1),
-                R.id.move_to_other_window_menu_id);
+                R.plurals.move_tabs_to_another_window,
+                List.of(WINDOW_TITLE_2),
+                mWeakReferenceActivity.get());
 
         // List item 4
         assertEquals(DIVIDER, modelList.get(3).type);
@@ -362,11 +411,12 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_incognito() {
         setupWithIncognito(/* incognito= */ true);
         initializeCoordinator();
         var modelList = new ModelList();
-        mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
+        mMultiSelectedTabsContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1));
 
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
@@ -385,12 +435,12 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         assertStringStyleForIncognito(modelList, 1);
 
         // List item 3
-        assertMenuItemTitle(
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
                 modelList,
                 2,
-                getQuantityString(R.plurals.move_tabs_to_another_window, 1),
-                R.id.move_to_other_window_menu_id);
-        assertStringStyleForIncognito(modelList, 2);
+                R.plurals.move_tabs_to_another_window,
+                List.of(WINDOW_TITLE_2),
+                mWeakReferenceActivity.get());
 
         // List item 4
         assertEquals(DIVIDER, modelList.get(3).type);
@@ -437,11 +487,12 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_tabOutsideOfGroup_multipleWindows() {
         MultiWindowUtils.setInstanceCountForTesting(2);
 
         var modelList = new ModelList();
-        mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
+        mMultiSelectedTabsContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1));
 
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
@@ -458,11 +509,12 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                 modelList, 1, R.string.remove_tabs_from_group, R.id.remove_from_tab_group);
 
         // List item 3
-        assertMenuItemTitle(
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
                 modelList,
                 2,
-                getQuantityString(R.plurals.move_tabs_to_another_window, 2),
-                R.id.move_to_other_window_menu_id);
+                R.plurals.move_tabs_to_another_window,
+                List.of(WINDOW_TITLE_2),
+                mWeakReferenceActivity.get());
 
         // List item 4
         assertEquals(DIVIDER, modelList.get(3).type);
@@ -498,71 +550,148 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    public void testMoveMultipleTabsToAnotherWindow_noSubmenu() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        List<Tab> tabsToMove = List.of(mTabOutsideOfGroup1, mTabOutsideOfGroup2);
+
+        mOnItemClickedCallback.onClick(
+                R.id.move_to_other_window_menu_id,
+                List.of(TAB_OUTSIDE_OF_GROUP_ID_1, TAB_OUTSIDE_OF_GROUP_ID_2),
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
+
+        verify(mTabUngrouper, times(0))
+                .ungroupTabs(
+                        (List<Tab>) org.mockito.ArgumentMatchers.any(),
+                        org.mockito.ArgumentMatchers.anyBoolean(),
+                        org.mockito.ArgumentMatchers.anyBoolean());
+        verify(mMultiInstanceManager, times(1)).moveTabsToOtherWindow(tabsToMove);
+    }
+
+    @Test
+    public void testMoveMultipleTabsToAnotherWindow_oneTabInGroup_noSubmenu() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        List<Tab> tabsToMove = List.of(mTab1, mTabOutsideOfGroup1);
+
+        mOnItemClickedCallback.onClick(
+                R.id.move_to_other_window_menu_id,
+                List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1),
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
+
+        verify(mTabUngrouper, times(1)).ungroupTabs(Collections.singletonList(mTab1), true, false);
+        verify(mMultiInstanceManager, times(1)).moveTabsToOtherWindow(tabsToMove);
+    }
+
+    @Test
+    public void testMoveMultipleTabsToAnotherWindow_multipleWindows_noSubmenu() {
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        List<Tab> tabsToMove = List.of(mTabOutsideOfGroup1, mTabOutsideOfGroup2);
+
+        mOnItemClickedCallback.onClick(
+                R.id.move_to_other_window_menu_id,
+                List.of(TAB_OUTSIDE_OF_GROUP_ID_1, TAB_OUTSIDE_OF_GROUP_ID_2),
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
+
+        verify(mTabUngrouper, times(0))
+                .ungroupTabs(
+                        (List<Tab>) org.mockito.ArgumentMatchers.any(),
+                        org.mockito.ArgumentMatchers.anyBoolean(),
+                        org.mockito.ArgumentMatchers.anyBoolean());
+        verify(mMultiInstanceManager, times(1)).moveTabsToOtherWindow(tabsToMove);
+    }
+
+    @Test
+    public void testMoveMultipleTabsToAnotherWindow_multipleWindows_oneTabInGroup_noSubmenu() {
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        List<Tab> tabsToMove = List.of(mTab1, mTabOutsideOfGroup1);
+
+        mOnItemClickedCallback.onClick(
+                R.id.move_to_other_window_menu_id,
+                List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1),
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
+
+        verify(mTabUngrouper, times(1)).ungroupTabs(Collections.singletonList(mTab1), true, false);
+        verify(mMultiInstanceManager, times(1)).moveTabsToOtherWindow(tabsToMove);
+    }
+
+    @Test
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveMultipleTabsToAnotherWindow() {
         MultiWindowUtils.setInstanceCountForTesting(1);
+        var modelList = new ModelList();
         List<Tab> tabsToMove = List.of(mTabOutsideOfGroup1, mTabOutsideOfGroup2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE)).thenReturn(List.of(INSTANCE_INFO_1));
+        mMultiSelectedTabsContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID_1, TAB_OUTSIDE_OF_GROUP_ID_2));
 
-        mOnItemClickedCallback.onClick(
-                R.id.move_to_other_window_menu_id,
-                List.of(TAB_OUTSIDE_OF_GROUP_ID_1, TAB_OUTSIDE_OF_GROUP_ID_2),
-                COLLABORATION_ID,
-                /* listViewTouchTracker= */ null);
+        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 1, mView);
 
         verify(mTabUngrouper, times(0))
                 .ungroupTabs(
                         (List<Tab>) org.mockito.ArgumentMatchers.any(),
                         org.mockito.ArgumentMatchers.anyBoolean(),
                         org.mockito.ArgumentMatchers.anyBoolean());
-        verify(mMultiInstanceManager, times(1)).moveTabsToOtherWindow(tabsToMove);
+        verify(mMultiInstanceManager, times(1)).moveTabsToNewWindow(tabsToMove);
     }
 
     @Test
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveMultipleTabsToAnotherWindow_oneTabInGroup() {
         MultiWindowUtils.setInstanceCountForTesting(1);
+        var modelList = new ModelList();
         List<Tab> tabsToMove = List.of(mTab1, mTabOutsideOfGroup1);
+        mMultiSelectedTabsContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1));
 
-        mOnItemClickedCallback.onClick(
-                R.id.move_to_other_window_menu_id,
-                List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1),
-                COLLABORATION_ID,
-                /* listViewTouchTracker= */ null);
+        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 2, mView);
 
         verify(mTabUngrouper, times(1)).ungroupTabs(Collections.singletonList(mTab1), true, false);
-        verify(mMultiInstanceManager, times(1)).moveTabsToOtherWindow(tabsToMove);
+        verify(mMultiInstanceManager, times(1)).moveTabsToNewWindow(tabsToMove);
     }
 
     @Test
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveMultipleTabsToAnotherWindow_multipleWindows() {
         MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+        var modelList = new ModelList();
         List<Tab> tabsToMove = List.of(mTabOutsideOfGroup1, mTabOutsideOfGroup2);
+        mMultiSelectedTabsContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID_1, TAB_OUTSIDE_OF_GROUP_ID_2));
 
-        mOnItemClickedCallback.onClick(
-                R.id.move_to_other_window_menu_id,
-                List.of(TAB_OUTSIDE_OF_GROUP_ID_1, TAB_OUTSIDE_OF_GROUP_ID_2),
-                COLLABORATION_ID,
-                /* listViewTouchTracker= */ null);
+        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToWindowRow(
+                modelList, 1, WINDOW_TITLE_2, mView);
 
         verify(mTabUngrouper, times(0))
                 .ungroupTabs(
                         (List<Tab>) org.mockito.ArgumentMatchers.any(),
                         org.mockito.ArgumentMatchers.anyBoolean(),
                         org.mockito.ArgumentMatchers.anyBoolean());
-        verify(mMultiInstanceManager, times(1)).moveTabsToOtherWindow(tabsToMove);
+        verify(mMultiInstanceManager, times(1))
+                .moveTabsToWindow(INSTANCE_INFO_2, tabsToMove, TabModel.INVALID_TAB_INDEX);
     }
 
     @Test
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveMultipleTabsToAnotherWindow_multipleWindows_oneTabInGroup() {
         MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+        var modelList = new ModelList();
         List<Tab> tabsToMove = List.of(mTab1, mTabOutsideOfGroup1);
+        mMultiSelectedTabsContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1));
 
-        mOnItemClickedCallback.onClick(
-                R.id.move_to_other_window_menu_id,
-                List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1),
-                COLLABORATION_ID,
-                /* listViewTouchTracker= */ null);
+        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToWindowRow(
+                modelList, 2, WINDOW_TITLE_2, mView);
 
         verify(mTabUngrouper, times(1)).ungroupTabs(Collections.singletonList(mTab1), true, false);
-        verify(mMultiInstanceManager, times(1)).moveTabsToOtherWindow(tabsToMove);
+        verify(mMultiInstanceManager, times(1))
+                .moveTabsToWindow(INSTANCE_INFO_2, tabsToMove, TabModel.INVALID_TAB_INDEX);
     }
 
     @Test
