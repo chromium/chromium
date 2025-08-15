@@ -26,12 +26,10 @@ cros_toolchain("target") {
     sysroot = target_sysroot
   }
 
-  if (!lacros_use_chromium_toolchain) {
-    extra_cflags = cros_target_extra_cflags
-    extra_cppflags = cros_target_extra_cppflags
-    extra_cxxflags = cros_target_extra_cxxflags
-    extra_ldflags = cros_target_extra_ldflags
-  }
+  extra_cflags = cros_target_extra_cflags
+  extra_cppflags = cros_target_extra_cppflags
+  extra_cxxflags = cros_target_extra_cxxflags
+  extra_ldflags = cros_target_extra_ldflags
 }
 
 cros_toolchain("host") {
@@ -41,12 +39,10 @@ cros_toolchain("host") {
     sysroot = cros_host_sysroot
   }
 
-  if (!lacros_use_chromium_toolchain) {
-    extra_cflags = cros_host_extra_cflags
-    extra_cppflags = cros_host_extra_cppflags
-    extra_cxxflags = cros_host_extra_cxxflags
-    extra_ldflags = cros_host_extra_ldflags
-  }
+  extra_cflags = cros_host_extra_cflags
+  extra_cppflags = cros_host_extra_cppflags
+  extra_cxxflags = cros_host_extra_cxxflags
+  extra_ldflags = cros_host_extra_ldflags
 }
 
 cros_toolchain("v8_snapshot") {
@@ -61,10 +57,8 @@ cros_toolchain("v8_snapshot") {
     sysroot = cros_v8_snapshot_sysroot
   }
 
-  if (!lacros_use_chromium_toolchain) {
-    extra_cflags = cros_v8_snapshot_extra_cflags
-    extra_cppflags = cros_v8_snapshot_extra_cppflags
-    extra_cxxflags = cros_v8_snapshot_extra_cxxflags
-    extra_ldflags = cros_v8_snapshot_extra_ldflags
-  }
+  extra_cflags = cros_v8_snapshot_extra_cflags
+  extra_cppflags = cros_v8_snapshot_extra_cppflags
+  extra_cxxflags = cros_v8_snapshot_extra_cxxflags
+  extra_ldflags = cros_v8_snapshot_extra_ldflags
 }
