@@ -123,10 +123,12 @@ void VerifyContent(ContentVerifier* verifier,
                    const ExtensionId& extension_id,
                    const base::FilePath& extension_root,
                    const base::FilePath& relative_path,
+                   const base::Version& extension_version,
                    const std::optional<std::string>& content) {
   DCHECK(verifier);
   scoped_refptr<ContentVerifyJob> job(ContentVerifier::CreateAndStartJobFor(
-      extension_id, extension_root, relative_path, verifier));
+      extension_id, extension_root, extension_version, relative_path,
+      verifier));
   CHECK(job);
   if (content) {
     job->BytesRead(*content, MOJO_RESULT_OK);
@@ -183,6 +185,7 @@ void LoadScriptContent(const mojom::HostID& host_id,
                        const std::optional<int>& script_resource_id,
                        const SubstitutionMap* localization_messages,
                        const scoped_refptr<ContentVerifier>& verifier,
+                       const base::Version& extension_version,
                        size_t& remaining_length) {
   DCHECK(script_file);
   auto [content, source] =
@@ -193,7 +196,7 @@ void LoadScriptContent(const mojom::HostID& host_id,
     // Note: |content| is nullopt here for missing / unreadable file. We still
     // pass it through ContentVerifier to report content verification error.
     VerifyContent(verifier.get(), host_id.id, script_file->extension_root(),
-                  script_file->relative_path(), content);
+                  script_file->relative_path(), extension_version, content);
   }
 
   if (!content) {
@@ -291,7 +294,7 @@ void LoadUserScripts(
       if (script_file->GetContent().empty()) {
         LoadScriptContent(script->host_id(), script_file.get(),
                           script_resource_ids[script_file.get()], nullptr,
-                          verifier, remaining_length);
+                          verifier, host_info.version, remaining_length);
       }
 
       script_files_length += script_file->GetContent().length();
@@ -308,7 +311,7 @@ void LoadUserScripts(
           LoadScriptContent(script->host_id(), script_file.get(),
                             script_resource_ids[script_file.get()],
                             localization_messages.get(), verifier,
-                            remaining_length);
+                            host_info.version, remaining_length);
         }
 
         script_files_length += script_file->GetContent().length();
@@ -522,6 +525,21 @@ std::unique_ptr<UserScript> CopyDynamicScriptInfo(const UserScript& script) {
 
 }  // namespace
 
+ExtensionUserScriptLoader::PathAndLocaleInfo::PathAndLocaleInfo(
+    base::FilePath file_path,
+    base::Version version,
+    std::string default_locale,
+    extension_l10n_util::GzippedMessagesPermission gzip_permission)
+    : file_path(std::move(file_path)),
+      version(std::move(version)),
+      default_locale(std::move(default_locale)),
+      gzip_permission(gzip_permission) {}
+
+ExtensionUserScriptLoader::PathAndLocaleInfo::PathAndLocaleInfo(
+    const PathAndLocaleInfo& other) = default;
+
+ExtensionUserScriptLoader::PathAndLocaleInfo::~PathAndLocaleInfo() = default;
+
 ExtensionUserScriptLoader::ExtensionUserScriptLoader(
     BrowserContext* browser_context,
     const Extension& extension,
@@ -540,7 +558,8 @@ ExtensionUserScriptLoader::ExtensionUserScriptLoader(
     : UserScriptLoader(
           browser_context,
           mojom::HostID(mojom::HostID::HostType::kExtensions, extension.id())),
-      host_info_({extension.path(), LocaleInfo::GetDefaultLocale(&extension),
+      host_info_({extension.path(), extension.version(),
+                  LocaleInfo::GetDefaultLocale(&extension),
                   extension_l10n_util::GetGzippedMessagesPermissionForExtension(
                       &extension)}),
       helper_(browser_context, extension.id(), state_store),

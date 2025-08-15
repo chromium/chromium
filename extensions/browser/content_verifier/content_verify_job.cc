@@ -46,15 +46,16 @@ bool IsIgnorableReadError(MojoResult read_result) {
   return read_result == MOJO_RESULT_ABORTED;
 }
 
-base::debug::CrashKeyString* GetContentHashExtensionVersionCrashKey() {
+base::debug::CrashKeyString* GetContentHashExtensionVersionFromRootCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ext_content_hash_version", base::debug::CrashKeySize::Size256);
+      "ext_content_hash_root_version", base::debug::CrashKeySize::Size256);
   return crash_key;
 }
 
-base::debug::CrashKeyString* GetContentVerifyJobExtensionVersionCrashKey() {
+base::debug::CrashKeyString*
+GetContentVerifyJobExtensionVersionFromRootCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ext_verify_job_version", base::debug::CrashKeySize::Size256);
+      "ext_verify_job_root_version", base::debug::CrashKeySize::Size256);
   return crash_key;
 }
 
@@ -67,6 +68,18 @@ base::debug::CrashKeyString* GetContentHashExtensionIdCrashKey() {
 base::debug::CrashKeyString* GetContentVerifyJobExtensionIdCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "ext_verify_job_id", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentHashExtensionVersionCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_content_hash_ext_version", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentVerifyJobExtensionVersionCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_verify_job_ext_version", base::debug::CrashKeySize::Size256);
   return crash_key;
 }
 
@@ -95,17 +108,25 @@ class ScopedContentVerifyJobCrashKey {
       const base::FilePath& content_hash_extension_root,
       const base::FilePath& verify_job_extension_root,
       const ExtensionId& content_hash_extension_id,
-      const ExtensionId& verify_job_extension_id)
-      : content_hash_ext_version_crash_key_(
-            GetContentHashExtensionVersionCrashKey(),
+      const ExtensionId& verify_job_extension_id,
+      const base::Version& content_hash_extension_version,
+      const base::Version& verify_job_extension_version)
+      : content_hash_ext_root_version_crash_key_(
+            GetContentHashExtensionVersionFromRootCrashKey(),
             GetExtensionVersionFromExtensionRoot(content_hash_extension_root)),
-        verify_job_ext_version_crash_key_(
-            GetContentVerifyJobExtensionVersionCrashKey(),
+        verify_job_ext_root_version_crash_key_(
+            GetContentVerifyJobExtensionVersionFromRootCrashKey(),
             GetExtensionVersionFromExtensionRoot(verify_job_extension_root)),
         content_hash_ext_id_crash_key_(GetContentHashExtensionIdCrashKey(),
                                        content_hash_extension_id),
         verify_job_ext_id_crash_key_(GetContentVerifyJobExtensionIdCrashKey(),
-                                     verify_job_extension_id)
+                                     verify_job_extension_id),
+        content_hash_ext_version_crash_key_(
+            GetContentHashExtensionVersionCrashKey(),
+            content_hash_extension_version.GetString()),
+        verify_job_ext_version_crash_key_(
+            GetContentVerifyJobExtensionVersionCrashKey(),
+            verify_job_extension_version.GetString())
 
   {}
   ~ScopedContentVerifyJobCrashKey() = default;
@@ -116,22 +137,29 @@ class ScopedContentVerifyJobCrashKey {
   //   "/path/to/chromium/<profile_name>/Extensions/<ext_id>/<ext_version>/""
   //
   // We record <ext_version>.
-  base::debug::ScopedCrashKeyString content_hash_ext_version_crash_key_;
-  base::debug::ScopedCrashKeyString verify_job_ext_version_crash_key_;
+  base::debug::ScopedCrashKeyString content_hash_ext_root_version_crash_key_;
+  base::debug::ScopedCrashKeyString verify_job_ext_root_version_crash_key_;
 
   // The ExtensionId for ContentHash and ContentVerify Job.
   base::debug::ScopedCrashKeyString content_hash_ext_id_crash_key_;
   base::debug::ScopedCrashKeyString verify_job_ext_id_crash_key_;
+
+  // These extension version recorded when the content hash was created and when
+  // the verification job was created.
+  base::debug::ScopedCrashKeyString content_hash_ext_version_crash_key_;
+  base::debug::ScopedCrashKeyString verify_job_ext_version_crash_key_;
 };
 
 }  // namespace debug
 
 ContentVerifyJob::ContentVerifyJob(const ExtensionId& extension_id,
+                                   const base::Version& extension_version,
                                    const base::FilePath& extension_root,
                                    const base::FilePath& relative_path)
     : extension_id_(extension_id),
       extension_root_(extension_root),
-      relative_path_(relative_path) {}
+      relative_path_(relative_path),
+      extension_version_(extension_version) {}
 
 ContentVerifyJob::~ContentVerifyJob() = default;
 
@@ -186,7 +214,8 @@ void ContentVerifyJob::StartWithContentHash(
       content_hash->extension_root() != extension_root_) {
     debug::ScopedContentVerifyJobCrashKey crash_keys(
         content_hash->extension_root(), extension_root_,
-        content_hash->extension_id(), extension_id_);
+        content_hash->extension_id(), extension_id_,
+        content_hash->extension_version(), extension_version_);
     base::debug::DumpWithoutCrashing();
   }
 

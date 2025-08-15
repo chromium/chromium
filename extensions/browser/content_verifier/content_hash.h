@@ -150,6 +150,7 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   }
   const ExtensionId& extension_id() const { return extension_id_; }
   const base::FilePath& extension_root() const { return extension_root_; }
+  const base::Version& extension_version() const { return extension_version_; }
 
   // Returns whether or not computed_hashes.json re-creation might be required
   // for `this` to succeed.
@@ -173,6 +174,7 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
 
   ContentHash(const ExtensionId& id,
               const base::FilePath& root,
+              const base::Version& extension_version,
               ContentVerifierDelegate::VerifierSourceType source_type,
               std::unique_ptr<const VerifiedContents> verified_contents);
   ~ContentHash();
@@ -208,6 +210,7 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   static void DispatchFetchFailure(
       const ExtensionId& extension_id,
       const base::FilePath& extension_root,
+      const base::Version& extension_version,
       ContentVerifierDelegate::VerifierSourceType source_type,
       CreatedCallback created_callback,
       const IsCancelledCallback& is_cancelled,
@@ -247,6 +250,10 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
 
   const ExtensionId extension_id_;
   const base::FilePath extension_root_;
+  // The version of the extension associated with the hash.
+  // Used for comparing against the version from `ContentVerifyJob` when
+  // starting the job.
+  const base::Version extension_version_;
   ContentVerifierDelegate::VerifierSourceType source_type_;
 
   ComputedHashes::Status computed_hashes_status_ =

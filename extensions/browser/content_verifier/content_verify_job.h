@@ -79,6 +79,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   using FailureCallback = base::OnceCallback<void(FailureReason)>;
 
   ContentVerifyJob(const ExtensionId& extension_id,
+                   const base::Version& extension_version,
                    const base::FilePath& extension_root,
                    const base::FilePath& relative_path);
 
@@ -196,6 +197,10 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // The manifest version of the extension associated with the verify job.
   // Used only for metrics purposes.
   int manifest_version_ = 0;
+
+  // The version of the extension associated with the verify job.
+  // Used for comparing against the version from `ContentHash`.
+  const base::Version extension_version_;
 
   // Called once if verification fails.
   FailureCallback failure_callback_;

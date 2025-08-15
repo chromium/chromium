@@ -88,6 +88,7 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   static scoped_refptr<ContentVerifyJob> CreateAndStartJobFor(
       const ExtensionId& extension_id,
       const base::FilePath& extension_root,
+      const base::Version& extension_version,
       const base::FilePath& relative_path,
       scoped_refptr<ContentVerifier> verifier);
 

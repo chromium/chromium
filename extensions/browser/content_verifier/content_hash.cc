@@ -162,10 +162,12 @@ std::string ContentHash::ComputeTreeHashForContent(const std::string& contents,
 ContentHash::ContentHash(
     const ExtensionId& id,
     const base::FilePath& root,
+    const base::Version& extension_version,
     ContentVerifierDelegate::VerifierSourceType source_type,
     std::unique_ptr<const VerifiedContents> verified_contents)
     : extension_id_(id),
       extension_root_(root),
+      extension_version_(extension_version),
       source_type_(source_type),
       verified_contents_(std::move(verified_contents)) {}
 
@@ -290,14 +292,14 @@ void ContentHash::GetComputedHashes(
           ContentVerifierDelegate::VerifierSourceType::SIGNED_HASHES &&
       !verified_contents) {
     DCHECK(did_attempt_fetch);
-    ContentHash::DispatchFetchFailure(key.extension_id, key.extension_root,
-                                      source_type, std::move(created_callback),
-                                      is_cancelled, fetch_error);
+    ContentHash::DispatchFetchFailure(
+        key.extension_id, key.extension_root, key.extension_version,
+        source_type, std::move(created_callback), is_cancelled, fetch_error);
     return;
   }
-  scoped_refptr<ContentHash> hash =
-      new ContentHash(key.extension_id, key.extension_root, source_type,
-                      std::move(verified_contents));
+  scoped_refptr<ContentHash> hash = new ContentHash(
+      key.extension_id, key.extension_root, key.extension_version, source_type,
+      std::move(verified_contents));
   hash->BuildComputedHashes(did_attempt_fetch, /*force_build=*/false,
                             is_cancelled);
   std::move(created_callback).Run(hash, is_cancelled && is_cancelled.Run());
@@ -307,6 +309,7 @@ void ContentHash::GetComputedHashes(
 void ContentHash::DispatchFetchFailure(
     const ExtensionId& extension_id,
     const base::FilePath& extension_root,
+    const base::Version& extension_version,
     ContentVerifierDelegate::VerifierSourceType source_type,
     CreatedCallback created_callback,
     const IsCancelledCallback& is_cancelled,
@@ -317,7 +320,8 @@ void ContentHash::DispatchFetchFailure(
   RecordFetchResult(false, fetch_error);
   // NOTE: bare new because ContentHash constructor is private.
   scoped_refptr<ContentHash> content_hash =
-      new ContentHash(extension_id, extension_root, source_type, nullptr);
+      new ContentHash(extension_id, extension_root, extension_version,
+                      source_type, /*verified_contents=*/nullptr);
   std::move(created_callback)
       .Run(content_hash, is_cancelled && is_cancelled.Run());
 }

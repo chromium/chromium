@@ -127,7 +127,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
       ContentVerifyJobAsyncRunMode run_mode) {
     TestContentVerifySingleJobObserver observer(extension.id(), resource_path);
     auto verify_job = base::MakeRefCounted<ContentVerifyJob>(
-        extension.id(), extension.path(), resource_path);
+        extension.id(), extension.version(), extension.path(), resource_path);
 
     auto run_content_read_step = base::BindRepeating(
         [](std::optional<std::string_view> resource_contents,
@@ -179,7 +179,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
       base::span<MojoResult> read_errors) {
     TestContentVerifySingleJobObserver observer(extension.id(), resource_path);
     auto verify_job = base::MakeRefCounted<ContentVerifyJob>(
-        extension.id(), extension.path(), resource_path);
+        extension.id(), extension.version(), extension.path(), resource_path);
 
     // Read hashes asynchronously.
     StartJob(verify_job, extension.version(), extension.manifest_version(),
@@ -196,7 +196,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
   void StartContentVerifyJob(const Extension& extension,
                              const base::FilePath& resource_path) {
     auto verify_job = base::MakeRefCounted<ContentVerifyJob>(
-        extension.id(), extension.path(), resource_path);
+        extension.id(), extension.version(), extension.path(), resource_path);
     StartJob(verify_job, extension.version(), extension.manifest_version(),
              base::DoNothing());
   }
@@ -843,7 +843,8 @@ class ContentVerifyJobWithHashFetchUnittest : public ContentVerifyJobUnittest {
       // Then ContentVerifyJob gets the read result.
       scoped_refptr<ContentVerifyJob> verify_job =
           base::MakeRefCounted<ContentVerifyJob>(
-              extension->id(), extension->path(), resource_path);
+              extension->id(), extension->version(), extension->path(),
+              resource_path);
       auto do_read_and_done =
           [](scoped_refptr<ContentVerifyJob> job,
              scoped_refptr<ContentVerifier> content_verifier,

@@ -599,6 +599,7 @@ void ContentVerifier::ShutdownOnIO() {
 scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
     const ExtensionId& extension_id,
     const base::FilePath& extension_root,
+    const base::Version& extension_version,
     const base::FilePath& relative_path,
     scoped_refptr<ContentVerifier> verifier) {
   base::FilePath normalized_unix_path = NormalizeRelativePath(relative_path);
@@ -606,7 +607,7 @@ scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
   // TODO(asargent) - we can probably get some good performance wins by having
   // a cache of ContentHashReader's that we hold onto past the end of each job.
   scoped_refptr<ContentVerifyJob> job = base::MakeRefCounted<ContentVerifyJob>(
-      extension_id, extension_root, normalized_unix_path);
+      extension_id, extension_version, extension_root, normalized_unix_path);
 
   // Priority set explicitly to avoid unwanted task priority inheritance.
   content::GetIOThreadTaskRunner({base::TaskPriority::USER_BLOCKING})

@@ -647,6 +647,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
   }
 
   void OnResourceInfoRead(const extensions::ExtensionResource& resource,
+                          const base::Version& extension_version,
                           scoped_refptr<net::HttpResponseHeaders> headers,
                           scoped_refptr<ContentVerifier> content_verifier,
                           const ResourceInfo& resource_info) {
@@ -685,7 +686,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     scoped_refptr<ContentVerifyJob> verify_job;
     if (content_verifier && should_verify_content) {
       verify_job = ContentVerifier::CreateAndStartJobFor(
-          resource.extension_id(), resource.extension_root(),
+          resource.extension_id(), resource.extension_root(), extension_version,
           resource.relative_path(), content_verifier);
     }
 
@@ -857,7 +858,8 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
         base::BindOnce(&ReadResourceInfo, resource, directory_path),
         base::BindOnce(&ExtensionURLLoader::OnResourceInfoRead,
                        weak_ptr_factory_.GetWeakPtr(), resource,
-                       std::move(headers), std::move(content_verifier)));
+                       extension->version(), std::move(headers),
+                       std::move(content_verifier)));
   }
 
   void OnMojoDisconnect() { DeleteThis(); }
