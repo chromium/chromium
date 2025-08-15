@@ -318,8 +318,6 @@ if (use_blink) {
     sources = [
       "ipc_test_base.cc",
       "ipc_test_base.h",
-      "ipc_test_channel_listener.cc",
-      "ipc_test_channel_listener.h",
     ]
     public_deps = [ ":ipc" ]
     deps = [
