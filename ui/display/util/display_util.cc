@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/util/display_util.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <array>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -61,8 +57,10 @@ bool NearlyEqual(const skcms_Matrix3x3& lhs,
                  float epsilon) {
   for (int r = 0; r < 3; r++) {
     for (int c = 0; c < 3; c++) {
-      if (std::abs(lhs.vals[r][c] - rhs.vals[r][c]) > epsilon)
+      if (std::abs(UNSAFE_TODO(lhs.vals[r][c]) - UNSAFE_TODO(rhs.vals[r][c])) >
+          epsilon) {
         return false;
+      }
     }
   }
   return true;

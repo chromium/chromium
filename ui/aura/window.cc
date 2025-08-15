@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/aura/window.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -1566,13 +1562,13 @@ void Window::OnLayerBoundsChanged(const gfx::Rect& old_bounds,
 
   // Trigger the changed notification for each of the bounds "properties".
   if (old_bounds.x() != bounds_.x())
-    TriggerChangedCallback(&bounds_ + kBoundsX);
+    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsX));
   if (old_bounds.y() != bounds_.y())
-    TriggerChangedCallback(&bounds_ + kBoundsY);
+    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsY));
   if (old_bounds.width() != bounds_.width())
-    TriggerChangedCallback(&bounds_ + kBoundsWidth);
+    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsWidth));
   if (old_bounds.height() != bounds_.height())
-    TriggerChangedCallback(&bounds_ + kBoundsHeight);
+    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsHeight));
 }
 
 void Window::OnLayerOpacityChanged(ui::PropertyChangeReason reason) {

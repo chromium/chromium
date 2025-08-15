@@ -2,16 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "ui/snapshot/snapshot.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -38,6 +32,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/snapshot/snapshot.h"
 
 namespace ui {
 namespace {
@@ -81,7 +76,8 @@ size_t GetFailedPixelsCountWithScaleFactor(const gfx::Image& image,
   size_t result = 0;
   for (int y = 0; y < bitmap->height(); y += scale_factor) {
     for (int x = 0; x < bitmap->width(); x += scale_factor) {
-      if (static_cast<SkColor>(bitmap_data[x + y * bitmap->width()]) !=
+      if (static_cast<SkColor>(
+              UNSAFE_TODO(bitmap_data[x + y * bitmap->width()])) !=
           GetExpectedColorForPoint(x / scale_factor, y / scale_factor)) {
         ++result;
       }

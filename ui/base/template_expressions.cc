@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/template_expressions.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -152,12 +148,13 @@ bool ReplaceTemplateExpressionsInternal(
     size_t next_pos = source.find(kLeader, current_pos);
 
     if (next_pos == std::string::npos) {
-      formatted->append(source.data() + current_pos,
+      formatted->append(UNSAFE_TODO(source.data() + current_pos),
                         source.size() - current_pos);
       break;
     }
 
-    formatted->append(source.data() + current_pos, next_pos - current_pos);
+    formatted->append(UNSAFE_TODO(source.data() + current_pos),
+                      next_pos - current_pos);
     current_pos = next_pos + kLeaderSize;
 
     size_t context_end = source.find(kKeyOpen, current_pos);

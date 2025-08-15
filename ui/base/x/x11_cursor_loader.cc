@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/base/x/x11_cursor_loader.h"
 
 #include <dlfcn.h>
@@ -354,7 +349,7 @@ scoped_refptr<X11Cursor> XCursorLoader::CreateCursor(
 
   size_t size = bitmap.computeByteSize();
   std::vector<uint8_t> vec(size);
-  memcpy(vec.data(), bitmap.getPixels(), size);
+  UNSAFE_TODO(memcpy(vec.data(), bitmap.getPixels(), size));
   auto* connection = x11::Connection::Get();
   x11::PutImageRequest put_image_request{
       .format = x11::ImageFormat::ZPixmap,

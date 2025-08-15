@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gtk/gtk_ui.h"
 
 #include <cairo.h>
@@ -23,6 +18,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/leak_annotations.h"
@@ -58,7 +54,6 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/font_render_params.h"
-#include "ui/gfx/linux/fontconfig_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -131,28 +126,29 @@ gfx::FontRenderParams GetGtkFontRenderParams() {
   gfx::FontRenderParams params;
   params.antialiasing = antialias != 0;
 
-  if (hinting == 0 || !hint_style || strcmp(hint_style, "hintnone") == 0) {
+  if (hinting == 0 || !hint_style ||
+      UNSAFE_TODO(strcmp(hint_style, "hintnone")) == 0) {
     params.hinting = gfx::FontRenderParams::HINTING_NONE;
-  } else if (strcmp(hint_style, "hintslight") == 0) {
+  } else if (UNSAFE_TODO(strcmp(hint_style, "hintslight")) == 0) {
     params.hinting = gfx::FontRenderParams::HINTING_SLIGHT;
-  } else if (strcmp(hint_style, "hintmedium") == 0) {
+  } else if (UNSAFE_TODO(strcmp(hint_style, "hintmedium")) == 0) {
     params.hinting = gfx::FontRenderParams::HINTING_MEDIUM;
-  } else if (strcmp(hint_style, "hintfull") == 0) {
+  } else if (UNSAFE_TODO(strcmp(hint_style, "hintfull")) == 0) {
     params.hinting = gfx::FontRenderParams::HINTING_FULL;
   } else {
     LOG(WARNING) << "Unexpected gtk-xft-hintstyle \"" << hint_style << "\"";
     params.hinting = gfx::FontRenderParams::HINTING_NONE;
   }
 
-  if (!rgba || strcmp(rgba, "none") == 0) {
+  if (!rgba || UNSAFE_TODO(strcmp(rgba, "none")) == 0) {
     params.subpixel_rendering = gfx::FontRenderParams::SUBPIXEL_RENDERING_NONE;
-  } else if (strcmp(rgba, "rgb") == 0) {
+  } else if (UNSAFE_TODO(strcmp(rgba, "rgb")) == 0) {
     params.subpixel_rendering = gfx::FontRenderParams::SUBPIXEL_RENDERING_RGB;
-  } else if (strcmp(rgba, "bgr") == 0) {
+  } else if (UNSAFE_TODO(strcmp(rgba, "bgr")) == 0) {
     params.subpixel_rendering = gfx::FontRenderParams::SUBPIXEL_RENDERING_BGR;
-  } else if (strcmp(rgba, "vrgb") == 0) {
+  } else if (UNSAFE_TODO(strcmp(rgba, "vrgb")) == 0) {
     params.subpixel_rendering = gfx::FontRenderParams::SUBPIXEL_RENDERING_VRGB;
-  } else if (strcmp(rgba, "vbgr") == 0) {
+  } else if (UNSAFE_TODO(strcmp(rgba, "vbgr")) == 0) {
     params.subpixel_rendering = gfx::FontRenderParams::SUBPIXEL_RENDERING_VBGR;
   } else {
     LOG(WARNING) << "Unexpected gtk-xft-rgba \"" << rgba << "\"";
@@ -758,17 +754,18 @@ base::flat_map<std::string, std::string> GtkUi::GetKeyboardLayoutMap() {
       for (gint i = 0; i < n_entries; ++i) {
         // There are 4 entries per layout group, one each for shift level 0..3.
         // We only care about the unshifted values (level = 0).
-        if (keys[i].level == 0) {
-          uint16_t unicode = gdk_keyval_to_unicode(keyvals[i]);
+        if (UNSAFE_TODO(keys[i]).level == 0) {
+          uint16_t unicode = gdk_keyval_to_unicode(UNSAFE_TODO(keyvals[i]));
           if (unicode == 0) {
             for (const auto& i_dead : kDeadKeyMapping) {
-              if (keyvals[i] == i_dead.gdk_key) {
+              if (UNSAFE_TODO(keyvals[i]) == i_dead.gdk_key) {
                 unicode = i_dead.unicode;
               }
             }
           }
           if (unicode != 0) {
-            layouts->GetLayout(keys[i].group)->AddKeyMapping(domcode, unicode);
+            layouts->GetLayout(UNSAFE_TODO(keys[i]).group)
+                ->AddKeyMapping(domcode, unicode);
           }
         }
       }

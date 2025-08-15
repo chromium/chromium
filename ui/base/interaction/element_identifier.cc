@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/base/interaction/element_identifier.h"
 
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 
@@ -43,8 +39,9 @@ ElementIdentifier ElementIdentifier::FromRawValue(intptr_t value) {
 // static
 ElementIdentifier ElementIdentifier::FromName(const char* name) {
   for (const auto* impl : GetKnownIdentifiers()) {
-    if (!strcmp(impl->name, name))
+    if (!UNSAFE_TODO(strcmp(impl->name, name))) {
       return ElementIdentifier(impl);
+    }
   }
   return ElementIdentifier();
 }

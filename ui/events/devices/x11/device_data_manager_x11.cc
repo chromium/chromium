@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -715,7 +711,7 @@ void DeviceDataManagerX11::SetValuatorDataForTest(
   x11::Input::Fp3232* valuators = devev->axisvalues.data();
   for (int i = 0; i < index; ++i) {
     if (IsXinputMaskSet(devev->valuator_mask.data(), i))
-      valuators++;
+      UNSAFE_TODO(valuators++);
   }
   for (int i = DT_LAST_ENTRY - 1; i > valuators - devev->axisvalues.data();
        --i) {

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -99,7 +95,7 @@ class GetFallbackFontTest
     size_t i = 0;
     while (i < text.length()) {
       UChar32 code_point;
-      U16_NEXT(text.c_str(), i, text.size(), code_point);
+      UNSAFE_TODO(U16_NEXT(text.c_str(), i, text.size(), code_point));
       if (!uscript_hasScript(code_point, script)) {
         // Retrieve the appropriate script
         UErrorCode script_error;
@@ -128,7 +124,7 @@ class GetFallbackFontTest
     const SkGlyphID kUnsupportedGlyph = 0;
     while (i < text.length()) {
       UChar32 code_point;
-      U16_NEXT(text.c_str(), i, text.size(), code_point);
+      UNSAFE_TODO(U16_NEXT(text.c_str(), i, text.size(), code_point));
       SkGlyphID glyph_id = skia_face->unicharToGlyph(code_point);
       if (glyph_id == kUnsupportedGlyph)
         return false;

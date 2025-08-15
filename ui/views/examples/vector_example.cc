@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/views/examples/vector_example.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -147,8 +143,8 @@ class VectorIconGallery : public View, public TextfieldController {
     if (new_contents.size() != 8u) {
       return;
     }
-    unsigned new_color =
-        strtoul(base::UTF16ToASCII(new_contents).c_str(), nullptr, 16);
+    unsigned new_color = UNSAFE_TODO(
+        strtoul(base::UTF16ToASCII(new_contents).c_str(), nullptr, 16));
     if (new_color <= 0xffffffff) {
       color_ = new_color;
       Update();

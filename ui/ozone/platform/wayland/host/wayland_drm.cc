@@ -2,23 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include <wayland-drm-client-protocol.h>
+#include "ui/ozone/platform/wayland/host/wayland_drm.h"
 
 #include <fcntl.h>
+#include <wayland-drm-client-protocol.h>
 #include <xf86drm.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_drm.h"
 
 #if defined(WAYLAND_GBM)
 #include "base/command_line.h"
@@ -154,7 +150,7 @@ void WaylandDrm::Authenticate(const char* drm_device_path) {
   }
 
   drm_magic_t magic;
-  memset(&magic, 0, sizeof(magic));
+  UNSAFE_TODO(memset(&magic, 0, sizeof(magic)));
   if (drmGetMagic(drm_fd.get(), &magic)) {
     HandleDrmFailure("Failed to get drm magic");
     return;

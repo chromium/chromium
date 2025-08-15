@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "ui/events/ozone/evdev/event_converter_evdev.h"
 
 #include <errno.h>
 #include <linux/input.h>
 #include <stddef.h>
 
-#include "ui/events/ozone/evdev/event_converter_evdev.h"
-
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/task/current_thread.h"
@@ -241,7 +237,7 @@ void EventConverterEvdev::SetCapsLockLed(bool enabled) {
     return;
 
   input_event events[2];
-  memset(&events, 0, sizeof(events));
+  UNSAFE_TODO(memset(&events, 0, sizeof(events)));
 
   events[0].type = EV_LED;
   events[0].code = LED_CAPSL;

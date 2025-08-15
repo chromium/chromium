@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
 
 #include <fcntl.h>
@@ -18,6 +13,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -59,7 +55,7 @@ void PrimeSyncStart(int dmabuf_fd) {
   // Do memset() instead of aggregate initialization because the latter can
   // behave unintuitively with unions in C++, and we probably should not assume
   // that dma_buf_sync will never contain a union.
-  memset(&sync_start, 0, sizeof(sync_start));
+  UNSAFE_TODO(memset(&sync_start, 0, sizeof(sync_start)));
 
   sync_start.flags = DMA_BUF_SYNC_START | DMA_BUF_SYNC_RW;
   int rv = HANDLE_EINTR(ioctl(dmabuf_fd, DMA_BUF_IOCTL_SYNC, &sync_start));
@@ -72,7 +68,7 @@ void PrimeSyncEnd(int dmabuf_fd) {
   // Do memset() instead of aggregate initialization because the latter can
   // behave unintuitively with unions in C++, and we probably should not assume
   // that dma_buf_sync will never contain a union.
-  memset(&sync_end, 0, sizeof(sync_end));
+  UNSAFE_TODO(memset(&sync_end, 0, sizeof(sync_end)));
 
   sync_end.flags = DMA_BUF_SYNC_END | DMA_BUF_SYNC_RW;
   int rv = HANDLE_EINTR(ioctl(dmabuf_fd, DMA_BUF_IOCTL_SYNC, &sync_end));
@@ -252,8 +248,8 @@ size_t ClientNativePixmapDmaBuf::GetNumberOfPlanes() const {
 void* ClientNativePixmapDmaBuf::GetMemoryAddress(size_t plane) const {
   DCHECK_LT(plane, pixmap_handle_.planes.size());
   CHECK(mapped_);
-  return static_cast<uint8_t*>(plane_info_[plane].data) +
-         plane_info_[plane].offset;
+  return UNSAFE_TODO(static_cast<uint8_t*>(plane_info_[plane].data) +
+                     plane_info_[plane].offset);
 }
 
 int ClientNativePixmapDmaBuf::GetStride(size_t plane) const {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/native_theme/native_theme_base.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/notimplemented.h"
@@ -1285,8 +1281,10 @@ SkColor NativeThemeBase::SaturateAndBrighten(SkScalar* hsv,
                                              SkScalar brighten_amount) const {
   SkScalar color[3];
   color[0] = hsv[0];
-  color[1] = std::clamp(hsv[1] + saturate_amount, SkScalar{0}, SK_Scalar1);
-  color[2] = std::clamp(hsv[2] + brighten_amount, SkScalar{0}, SK_Scalar1);
+  color[1] = std::clamp(UNSAFE_TODO(hsv[1]) + saturate_amount, SkScalar{0},
+                        SK_Scalar1);
+  color[2] = std::clamp(UNSAFE_TODO(hsv[2]) + brighten_amount, SkScalar{0},
+                        SK_Scalar1);
   return SkHSVToColor(color);
 }
 
@@ -1367,10 +1365,12 @@ SkColor NativeThemeBase::OutlineColor(SkScalar* hsv1, SkScalar* hsv2) const {
   //
   // The following code has been tested to look OK with all of the
   // default GTK themes.
-  SkScalar min_diff = std::clamp((hsv1[1] + hsv2[1]) * 1.2f, 0.28f, 0.5f);
-  SkScalar diff = std::clamp(fabsf(hsv1[2] - hsv2[2]) / 2, min_diff, 0.5f);
+  SkScalar min_diff = std::clamp(
+      (UNSAFE_TODO(hsv1[1]) + UNSAFE_TODO(hsv2[1])) * 1.2f, 0.28f, 0.5f);
+  SkScalar diff = std::clamp(
+      fabsf(UNSAFE_TODO(hsv1[2]) - UNSAFE_TODO(hsv2[2])) / 2, min_diff, 0.5f);
 
-  if (hsv1[2] + hsv2[2] > 1.0) {
+  if (UNSAFE_TODO(hsv1[2]) + UNSAFE_TODO(hsv2[2]) > 1.0) {
     diff = -diff;
   }
 

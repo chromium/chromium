@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // IMPORTANT NOTE: All QtUi members that use `shim_` must be decorated
 // with DISABLE_CFI_VCALL.
 
@@ -104,8 +99,8 @@ int Qt5WeightToCssWeight(int weight) {
 
   weight = std::clamp(weight, 0, 99);
   for (size_t i = 0; i < std::size(kMapping) - 1; i++) {
-    const auto& lo = kMapping[i];
-    const auto& hi = kMapping[i + 1];
+    const auto& lo = UNSAFE_TODO(kMapping[i]);
+    const auto& hi = UNSAFE_TODO(kMapping[i + 1]);
     if (weight <= hi.qt_weight) {
       return (weight - lo.qt_weight) * (hi.css_weight - lo.css_weight) /
                  (hi.qt_weight - lo.qt_weight) +
@@ -666,7 +661,7 @@ void QtUi::ScaleFactorMaybeChangedImpl() {
   std::vector<display::DisplayGeometry> ui_monitors;
   ui_monitors.reserve(n_monitors);
   for (size_t i = 0; i < n_monitors; i++) {
-    const qt::MonitorScale& monitor = qt_monitors[i];
+    const qt::MonitorScale& monitor = UNSAFE_TODO(qt_monitors[i]);
     ui_monitors.push_back(display::DisplayGeometry{
         {monitor.x_px, monitor.y_px, monitor.width_px, monitor.height_px},
         monitor.scale});

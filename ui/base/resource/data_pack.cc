@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/resource/data_pack.h"
 
 #include <errno.h>
@@ -19,6 +14,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -97,7 +93,7 @@ int DataPack::Alias::CompareById(const void* void_key, const void* void_entry) {
 }
 
 void DataPack::Iterator::UpdateResourceData() {
-  const Entry* const next_entry = entry_ + 1;
+  const Entry* const next_entry = UNSAFE_TODO(entry_ + 1);
   resource_data_ = new ResourceData(
       entry_->resource_id,
       GetStringViewFromOffset(entry_->file_offset, next_entry->file_offset,
@@ -105,11 +101,12 @@ void DataPack::Iterator::UpdateResourceData() {
 }
 
 DataPack::Iterator DataPack::begin() const {
-  return Iterator(data_source_->GetData(), &resource_table_[0]);
+  return Iterator(data_source_->GetData(), &UNSAFE_TODO(resource_table_[0]));
 }
 
 DataPack::Iterator DataPack::end() const {
-  return Iterator(data_source_->GetData(), &resource_table_[resource_count_]);
+  return Iterator(data_source_->GetData(),
+                  &UNSAFE_TODO(resource_table_[resource_count_]));
 }
 
 class DataPack::MemoryMappedDataSource : public DataPack::DataSource {
@@ -289,14 +286,15 @@ DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
     return base::unexpected(FailureReason::kTooShort);
   }
 
-  resource_table_ = reinterpret_cast<const Entry*>(&data[margin_to_skip]);
+  resource_table_ =
+      reinterpret_cast<const Entry*>(&UNSAFE_TODO(data[margin_to_skip]));
   alias_table_ = reinterpret_cast<const Alias*>(
-      &data[margin_to_skip + resource_table_size]);
+      &UNSAFE_TODO(data[margin_to_skip + resource_table_size]));
 
   // 2) Verify the entries are within the appropriate bounds. There's an extra
   // entry after the last item which gives us the length of the last item.
   for (size_t i = 0; i < resource_count_ + 1; ++i) {
-    if (resource_table_[i].file_offset > data_length) {
+    if (UNSAFE_TODO(resource_table_[i]).file_offset > data_length) {
       LOG(ERROR) << "Data pack file corruption: "
                  << "Entry #" << i << " past end.";
       return base::unexpected(FailureReason::kBoundsExceeded);
@@ -305,7 +303,8 @@ DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
 
   // 3) Verify the entries are ordered correctly.
   for (size_t i = 0; i < resource_count_; ++i) {
-    if (resource_table_[i].file_offset > resource_table_[i + 1].file_offset) {
+    if (UNSAFE_TODO(resource_table_[i]).file_offset >
+        UNSAFE_TODO(resource_table_[i + 1]).file_offset) {
       LOG(ERROR) << "Data pack file corruption: " << "Entry #" << i + 1
                  << " before Entry #" << i << ".";
       return base::unexpected(FailureReason::kOrderingViolation);
@@ -314,7 +313,7 @@ DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
 
   // 4) Verify the aliases are within the appropriate bounds.
   for (size_t i = 0; i < alias_count_; ++i) {
-    if (alias_table_[i].entry_index >= resource_count_) {
+    if (UNSAFE_TODO(alias_table_[i]).entry_index >= resource_count_) {
       LOG(ERROR) << "Data pack file corruption: "
                  << "Alias #" << i << " past end.";
       return base::unexpected(FailureReason::kAliasTableCorrupt);
@@ -331,7 +330,7 @@ base::expected<void, DataPack::FailureReason> DataPack::LoadImpl(
   // Parse the version and check for truncated header.
   uint32_t version = 0;
   if (data_length > sizeof(version)) {
-    memcpy(&version, data, sizeof(uint32_t));
+    UNSAFE_TODO(memcpy(&version, data, sizeof(uint32_t)));
   }
   size_t header_length =
       version == kFileFormatV4 ? kHeaderLengthV4 : kHeaderLengthV5;
@@ -342,14 +341,14 @@ base::expected<void, DataPack::FailureReason> DataPack::LoadImpl(
 
   // Parse the header of the file.
   if (version == kFileFormatV4) {
-    memcpy(&resource_count_, data + 4, sizeof(uint32_t));
+    UNSAFE_TODO(memcpy(&resource_count_, data + 4, sizeof(uint32_t)));
     alias_count_ = 0;
-    text_encoding_type_ = static_cast<TextEncodingType>(data[8]);
+    text_encoding_type_ = static_cast<TextEncodingType>(UNSAFE_TODO(data[8]));
   } else if (version == kFileFormatV5) {
     // Version 5 added the alias table and changed the header format.
-    text_encoding_type_ = static_cast<TextEncodingType>(data[4]);
-    memcpy(&resource_count_, data + 8, sizeof(uint16_t));
-    memcpy(&alias_count_, data + 10, sizeof(uint16_t));
+    text_encoding_type_ = static_cast<TextEncodingType>(UNSAFE_TODO(data[4]));
+    UNSAFE_TODO(memcpy(&resource_count_, data + 8, sizeof(uint16_t)));
+    UNSAFE_TODO(memcpy(&alias_count_, data + 10, sizeof(uint16_t)));
   } else {
     LOG(ERROR) << "Bad data pack version: got " << version << ", expected "
                << kFileFormatV4 << " or " << kFileFormatV5;
@@ -374,15 +373,15 @@ base::expected<void, DataPack::FailureReason> DataPack::LoadImpl(
 const DataPack::Entry* DataPack::LookupEntryById(uint16_t resource_id) const {
   // Search the resource table first as most resources will be in there.
   const Entry* ret = reinterpret_cast<const Entry*>(
-      bsearch(&resource_id, resource_table_, resource_count_, sizeof(Entry),
-              Entry::CompareById));
+      UNSAFE_TODO(bsearch(&resource_id, resource_table_, resource_count_,
+                          sizeof(Entry), Entry::CompareById)));
   if (ret == nullptr) {
     // Search the alias table for the ~10% of entries which are aliases.
     const Alias* alias = reinterpret_cast<const Alias*>(
-        bsearch(&resource_id, alias_table_, alias_count_, sizeof(Alias),
-                Alias::CompareById));
+        UNSAFE_TODO(bsearch(&resource_id, alias_table_, alias_count_,
+                            sizeof(Alias), Alias::CompareById)));
     if (alias != nullptr) {
-      ret = &resource_table_[alias->entry_index];
+      ret = &UNSAFE_TODO(resource_table_[alias->entry_index]);
     }
   }
   return ret;
@@ -397,7 +396,9 @@ std::string_view DataPack::GetStringViewFromOffset(uint32_t target_offset,
                                                    uint32_t next_offset,
                                                    const uint8_t* data_source) {
   size_t length = next_offset - target_offset;
-  return {reinterpret_cast<const char*>(data_source + target_offset), length};
+  return {
+      reinterpret_cast<const char*>(UNSAFE_TODO(data_source + target_offset)),
+      length};
 }
 
 std::optional<std::string_view> DataPack::GetStringView(
@@ -406,7 +407,7 @@ std::optional<std::string_view> DataPack::GetStringView(
   if (!target)
     return std::nullopt;
 
-  const Entry* next_entry = target + 1;
+  const Entry* next_entry = UNSAFE_TODO(target + 1);
   // If the next entry points beyond the end of the file this data pack's entry
   // table is corrupt. Log an error and return false. See
   // http://crbug.com/371301.
@@ -454,7 +455,7 @@ ResourceScaleFactor DataPack::GetResourceScaleFactor() const {
 void DataPack::CheckForDuplicateResources(
     const std::vector<std::unique_ptr<ResourceHandle>>& packs) {
   for (size_t i = 0; i < resource_count_ + 1; ++i) {
-    const uint16_t resource_id = resource_table_[i].resource_id;
+    const uint16_t resource_id = UNSAFE_TODO(resource_table_[i]).resource_id;
     const float resource_scale =
         GetScaleForResourceScaleFactor(resource_scale_factor_);
     for (const auto& handle : packs) {

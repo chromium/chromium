@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 #include <linux/input.h>
@@ -14,6 +9,7 @@
 #include <array>
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -513,12 +509,13 @@ bool EventDeviceInfo::Initialize(int fd, const base::FilePath& path) {
     if (!HasAbsEvent(i))
       continue;
 
-    memset(request.data(), 0, request.memsize());
+    UNSAFE_TODO(memset(request.data(), 0, request.memsize()));
     request_code = i;
     GetSlotValues(fd, path, request);
 
     std::vector<int32_t>* slots = &slot_values_[i - EVDEV_ABS_MT_FIRST];
-    slots->assign(request.begin() + 1, request.begin() + 1 + max_num_slots);
+    slots->assign(UNSAFE_TODO(request.begin() + 1),
+                  UNSAFE_TODO(request.begin() + 1 + max_num_slots));
   }
 
   if (!GetDeviceName(fd, path, &name_))
@@ -577,7 +574,7 @@ void EventDeviceInfo::SetAbsInfo(unsigned int code,
   if (code > ABS_MAX)
     return;
 
-  memcpy(&abs_info_[code], &abs_info, sizeof(abs_info));
+  UNSAFE_TODO(memcpy(&abs_info_[code], &abs_info, sizeof(abs_info)));
 }
 
 void EventDeviceInfo::SetAbsMtSlots(unsigned int code,

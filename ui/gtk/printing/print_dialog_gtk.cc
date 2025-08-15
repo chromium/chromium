@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gtk/printing/print_dialog_gtk.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -555,8 +551,8 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
           if (gtk_range) {
             for (int i = 0; i < num_ranges; ++i) {
               printing::PageRange range;
-              range.from = gtk_range[i].start;
-              range.to = gtk_range[i].end;
+              range.from = UNSAFE_TODO(gtk_range[i]).start;
+              range.to = UNSAFE_TODO(gtk_range[i]).end;
               ranges_vector.push_back(range);
             }
             g_free(gtk_range);
