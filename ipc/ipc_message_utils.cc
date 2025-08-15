@@ -320,18 +320,6 @@ bool ReadValue(const base::Pickle* pickle,
 
 // -----------------------------------------------------------------------------
 
-LogData::LogData()
-    : routing_id(0),
-      type(0),
-      sent(0),
-      receive(0),
-      dispatch(0) {
-}
-
-LogData::LogData(const LogData& other) = default;
-
-LogData::~LogData() = default;
-
 void ParamTraits<bool>::Log(const param_type& p, std::string* l) {
   l->append(p ? "true" : "false");
 }
@@ -1358,37 +1346,6 @@ void ParamTraits<IPC::ChannelHandle>::Log(const param_type& p,
   l->append("ChannelHandle(");
   LogParam(p.mojo_handle, l);
   l->append(")");
-}
-
-void ParamTraits<LogData>::Write(base::Pickle* m, const param_type& p) {
-  WriteParam(m, p.channel);
-  WriteParam(m, p.routing_id);
-  WriteParam(m, p.type);
-  WriteParam(m, p.flags);
-  WriteParam(m, p.sent);
-  WriteParam(m, p.receive);
-  WriteParam(m, p.dispatch);
-  WriteParam(m, p.message_name);
-  WriteParam(m, p.params);
-}
-
-bool ParamTraits<LogData>::Read(const base::Pickle* m,
-                                base::PickleIterator* iter,
-                                param_type* r) {
-  return
-      ReadParam(m, iter, &r->channel) &&
-      ReadParam(m, iter, &r->routing_id) &&
-      ReadParam(m, iter, &r->type) &&
-      ReadParam(m, iter, &r->flags) &&
-      ReadParam(m, iter, &r->sent) &&
-      ReadParam(m, iter, &r->receive) &&
-      ReadParam(m, iter, &r->dispatch) &&
-      ReadParam(m, iter, &r->message_name) &&
-      ReadParam(m, iter, &r->params);
-}
-
-void ParamTraits<LogData>::Log(const param_type& p, std::string* l) {
-  // Doesn't make sense to implement this!
 }
 
 void ParamTraits<Message>::Write(base::Pickle* m, const Message& p) {

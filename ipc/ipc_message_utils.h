@@ -68,28 +68,6 @@ struct ChannelHandle;
 class PlatformFileForTransit;
 #endif
 
-// -----------------------------------------------------------------------------
-// How we send IPC message logs across channels.
-struct COMPONENT_EXPORT(IPC) LogData {
-  LogData();
-  LogData(const LogData& other);
-  ~LogData();
-
-  std::string channel;
-  int32_t routing_id;
-  uint32_t type;  // "User-defined" message type, from ipc_message.h.
-  std::string flags;
-  int64_t sent;  // Time that the message was sent (i.e. at Send()).
-  int64_t receive;  // Time before it was dispatched (i.e. before calling
-                    // OnMessageReceived).
-  int64_t dispatch;  // Time after it was dispatched (i.e. after calling
-                     // OnMessageReceived).
-  std::string message_name;
-  std::string params;
-};
-
-//-----------------------------------------------------------------------------
-
 // A dummy struct to place first just to allow leading commas for all
 // members in the macro-generated constructor initializer lists.
 struct NoParams {
@@ -1086,16 +1064,6 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<IPC::ChannelHandle> {
 };
 
 template <>
-struct COMPONENT_EXPORT(IPC) ParamTraits<LogData> {
-  typedef LogData param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<Message> {
   static void Write(base::Pickle* m, const Message& p);
   static bool Read(const base::Pickle* m,
@@ -1127,17 +1095,6 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<MSG> {
   static void Log(const param_type& p, std::string* l);
 };
 #endif  // BUILDFLAG(IS_WIN)
-
-//-----------------------------------------------------------------------------
-// Generic message subclasses
-
-inline void AddOutputParamsToLog(const Message* msg, std::string* l) {}
-
-template <class ReplyParamType>
-inline void LogReplyParamsToMessage(const ReplyParamType& reply_params,
-                                    const Message* msg) {}
-
-inline void ConnectMessageAndReply(const Message* msg, Message* reply) {}
 
 }  // namespace IPC
 

@@ -99,7 +99,6 @@ void MessageT<Meta, std::tuple<Ins...>, std::tuple<Outs...>>::Log(
     SendParam p;
     if (ReadSendParam(msg, &p))
       LogParam(p, l);
-    AddOutputParamsToLog(msg, l);
   } else {
     ReplyParam p;
     if (ReadReplyParam(msg, &p))

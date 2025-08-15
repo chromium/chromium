@@ -195,7 +195,6 @@ class MessageT<Meta, std::tuple<Ins...>, std::tuple<Outs...>>
     ReplyParam reply_params;
     base::DispatchToMethod(obj, func, std::move(send_params), &reply_params);
     WriteParam(reply, reply_params);
-    LogReplyParamsToMessage(reply_params, msg);
     sender->Send(reply);
     return true;
   }
@@ -214,7 +213,6 @@ class MessageT<Meta, std::tuple<Ins...>, std::tuple<Outs...>>
     }
 
     std::tuple<Message&> t = std::tie(*reply);
-    ConnectMessageAndReply(msg, reply);
     base::DispatchToMethod(obj, func, std::move(send_params), &t);
     return true;
   }
@@ -233,7 +231,6 @@ class MessageT<Meta, std::tuple<Ins...>, std::tuple<Outs...>>
     }
 
     std::tuple<Message&> t = std::tie(*reply);
-    ConnectMessageAndReply(msg, reply);
     std::tuple<P*> parameter_tuple(parameter);
     base::DispatchToMethod(
         obj, func,
