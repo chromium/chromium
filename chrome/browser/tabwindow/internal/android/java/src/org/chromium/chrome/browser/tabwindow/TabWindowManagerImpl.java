@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -58,8 +59,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Manages multiple {@link TabModelSelector} instances, each owned by different {@link Activity}s.
@@ -591,6 +594,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
                             () -> {
                                 model.broadcastSessionRestoreComplete();
                                 unmapOrphanedTabGroups(profile, tabModelSelectorList);
+                                deleteOrphanedTabGroupData(tabModelSelectorList);
                             });
                 },
                 tabModelSelectorList.toArray(new TabModelSelector[0]));
@@ -616,6 +620,23 @@ public class TabWindowManagerImpl implements TabWindowManager {
         }
         TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilterList(
                 tabGroupSyncService, filterList);
+    }
+
+    private void deleteOrphanedTabGroupData(List<TabModelSelector> tabModelSelectors) {
+        if (!ChromeFeatureList.sTabGroupAndroidVisualDataCleanup.isEnabled()) return;
+
+        Set<String> tabGroupIdTokenStrings = new HashSet<>();
+        for (TabModelSelector selector : tabModelSelectors) {
+            var filterProvider = selector.getTabGroupModelFilterProvider();
+            for (boolean isIncognito : List.of(false, true)) {
+                TabGroupModelFilter filter = filterProvider.getTabGroupModelFilter(isIncognito);
+                assumeNonNull(filter);
+                for (Token tabGroupId : filter.getAllTabGroupIds()) {
+                    tabGroupIdTokenStrings.add(tabGroupId.toString());
+                }
+            }
+        }
+        TabGroupVisualDataStore.deleteTabGroupDataExcluding(tabGroupIdTokenStrings);
     }
 
     @Override

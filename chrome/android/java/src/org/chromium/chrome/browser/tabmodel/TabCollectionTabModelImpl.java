@@ -193,6 +193,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             } else if (noTabIsActivated && !isActiveModel()) {
                 mCurrentTabSupplier.set(tab);
             }
+
+            if (restoredTabGroup) {
+                assumeNonNull(tabGroupId);
+                restoreTabGroupVisualData(tabGroupId);
+            }
         }
 
         @Override
@@ -1232,13 +1237,18 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             UndoGroupTabData undoTabData = mergedTabs.get(i);
             Tab mergedTab = undoTabData.tab;
             Token originalTabGroupId = undoTabData.originalTabGroupId;
+            boolean wasSingleOrRestoredGroup = !tabGroupExists(originalTabGroupId);
             moveTabInternal(
                     mergedTab,
                     indexOf(mergedTab),
                     undoTabData.originalIndex,
                     originalTabGroupId,
                     undoTabData.originalIsPinned,
-                    !tabGroupExists(originalTabGroupId));
+                    wasSingleOrRestoredGroup);
+            // Restore the tab group information in case it was deleted or otherwise lost.
+            if (wasSingleOrRestoredGroup && originalTabGroupId != null) {
+                restoreTabGroupVisualData(originalTabGroupId);
+            }
         }
 
         // If the destination tab adopted the metadata of an existing tab group, move the adopted
@@ -2117,6 +2127,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         TabGroupVisualDataStore.deleteAllVisualDataForGroup(tabGroupId);
         TabCollectionTabModelImplJni.get()
                 .closeDetachedTabGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId);
+    }
+
+    private void restoreTabGroupVisualData(Token tabGroupId) {
+        setTabGroupTitle(tabGroupId, getTabGroupTitle(tabGroupId));
+        setTabGroupColor(tabGroupId, getTabGroupColor(tabGroupId));
+        setTabGroupCollapsed(tabGroupId, getTabGroupCollapsed(tabGroupId));
     }
 
     @VisibleForTesting

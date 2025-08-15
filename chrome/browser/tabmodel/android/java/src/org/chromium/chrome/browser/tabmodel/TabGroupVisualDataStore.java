@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.base.ThreadUtils.assertOnUiThread;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
@@ -15,12 +17,15 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Helper class to handle persistence of tab group metadata. This includes the title, color, and
  * collapsed state.
  */
 @NullMarked
-class TabGroupVisualDataStore {
+public class TabGroupVisualDataStore {
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
     private static final String TAB_GROUP_COLLAPSED_FILE_NAME = "tab_group_collapsed";
     private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
@@ -30,6 +35,39 @@ class TabGroupVisualDataStore {
     private static final String COLOR_INITIAL_MIGRATION_CHECK = "migration_check";
     private static final int COLOR_INITIAL_MIGRATION_NOT_DONE = 0;
     private static final int COLOR_INITIAL_MIGRATION_DONE = 1;
+
+    /**
+     * Deletes all the data for keys not in {@code tabGroupTokenIdStrings}. This should only be
+     * performed synchronously on the UI thread with an exhaustive list of in-use tab group ids from
+     * all tab group models.
+     *
+     * @param tabGroupTokenIdStrings The set of all the stringified {@link Token} tab group ids that
+     *     are known about.
+     */
+    public static void deleteTabGroupDataExcluding(Set<String> tabGroupTokenIdStrings) {
+        assertOnUiThread();
+        deleteTabGroupDataExcludingForSharedPreference(
+                getTokenTitleSharedPreferences(), tabGroupTokenIdStrings);
+        deleteTabGroupDataExcludingForSharedPreference(
+                getTokenColorSharedPreferences(), tabGroupTokenIdStrings);
+        deleteTabGroupDataExcludingForSharedPreference(
+                getTokenCollapsedSharedPreferences(), tabGroupTokenIdStrings);
+    }
+
+    private static void deleteTabGroupDataExcludingForSharedPreference(
+            SharedPreferences prefs, Set<String> tabGroupIds) {
+        SharedPreferences.Editor editor = prefs.edit();
+        if (tabGroupIds.isEmpty()) {
+            editor.clear().apply();
+            return;
+        }
+        Set<String> orphanedKeys = new HashSet<>(prefs.getAll().keySet());
+        orphanedKeys.removeAll(tabGroupIds);
+        for (String key : orphanedKeys) {
+            editor.remove(key);
+        }
+        editor.apply();
+    }
 
     // Root ID methods.
 

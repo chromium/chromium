@@ -2002,6 +2002,10 @@ public class TabCollectionTabModelImplTest {
 
         AtomicReference<UndoGroupMetadata> undoGroupMetadataRef = new AtomicReference<>();
         CallbackHelper showUndoSnackbarHelper = new CallbackHelper();
+        final String group1Title = "Group 1";
+        final int group1Color = TabGroupColorId.BLUE;
+        final String group2Title = "Group 2";
+        final int group2Color = TabGroupColorId.RED;
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2010,12 +2014,16 @@ public class TabCollectionTabModelImplTest {
                             List.of(tab0, tab1), tab0, /* notify= */ false);
                     Token groupId1 = tab0.getTabGroupId();
                     assertNotNull(groupId1);
+                    mCollectionModel.setTabGroupTitle(groupId1, group1Title);
+                    mCollectionModel.setTabGroupColor(groupId1, group1Color);
 
                     // Create group 2 with tab2, tab3.
                     mCollectionModel.mergeListOfTabsToGroup(
                             List.of(tab2, tab3), tab2, /* notify= */ false);
                     Token groupId2 = tab2.getTabGroupId();
                     assertNotNull(groupId2);
+                    mCollectionModel.setTabGroupTitle(groupId2, group2Title);
+                    mCollectionModel.setTabGroupColor(groupId2, group2Color);
 
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
 
@@ -2064,6 +2072,12 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(2, mCollectionModel.getTabsInGroup(groupId1).size());
                     assertEquals(2, mCollectionModel.getTabsInGroup(groupId2).size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+
+                    // Visual data should be restored.
+                    assertEquals(group1Title, mCollectionModel.getTabGroupTitle(groupId1));
+                    assertEquals(group1Color, mCollectionModel.getTabGroupColor(groupId1));
+                    assertEquals(group2Title, mCollectionModel.getTabGroupTitle(groupId2));
+                    assertEquals(group2Color, mCollectionModel.getTabGroupColor(groupId2));
                 });
     }
 
@@ -2587,6 +2601,41 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     assertTrue(mCollectionModel.isClosurePending(tab0.getId()));
                     mCollectionModel.cancelTabClosure(tab0.getId());
+                });
+        assertEquals(2, getCount());
+        assertTabsInOrderAre(List.of(tab0, tab1));
+        assertEquals(tabGroupId, getTabAt(0).getTabGroupId());
+        assertEquals(tabGroupId, getTabAt(1).getTabGroupId());
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTab_UndoLastTabInGroup_VisualDataRestored() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        mergeListOfTabsToGroup(List.of(tab0, tab1), tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+        final String title = "Test Title";
+        final int color = TabGroupColorId.BLUE;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.setTabGroupTitle(tabGroupId, title);
+                    mCollectionModel.setTabGroupColor(tabGroupId, color);
+
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tab0, tab1))
+                                    .allowUndo(true)
+                                    .build());
+                });
+        assertEquals(0, getCount());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.cancelTabClosure(tab0.getId());
+                    mCollectionModel.cancelTabClosure(tab1.getId());
+                    assertEquals(title, mCollectionModel.getTabGroupTitle(tabGroupId));
+                    assertEquals(color, mCollectionModel.getTabGroupColor(tabGroupId));
                 });
         assertEquals(2, getCount());
         assertTabsInOrderAre(List.of(tab0, tab1));
