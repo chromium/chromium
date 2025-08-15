@@ -612,3 +612,23 @@ https://storage.cloud.google.com/chromium-translation-screenshots/.
   `gn args` to verify that `symbol_level=1` (or `0`) is present. If it's not,
   you're running into a known issue where the default symbol level, `2`,
   outputs symbols too large for the linker to comprehend.
+
+### Interpreting numeric exit codes and error codes
+
+* Chrome installer exit codes: early in
+[chrome/installer/util/util_constants.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/installer/util/util_constants.h)
+* Updater installer and update service errors: as of 2025-08-15, they start at
+line 327 of
+[chrome/updater/constants.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/constants.h)
+* Update client errors:
+[components/update_client/update_client_errors.h](https://chromium.googlesource.com/chromium/src/+/main/components/update_client/update_client_errors.h)
+* Response codes reported from the network fetcher are standard HTTP
+  response codes.
+* Update service state and result codes in general:
+[chrome/updater/mojom/updater_service.mojom](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/mojom/updater_service.mojom)
+which are intended to stay in sync with the equivalent enumerations in
+[chrome/updater/update_service.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/update_service.h)
+* Chromium Mini-Installer exit codes:
+[chrome/installer/mini_installer/exit_code.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/installer/mini_installer/exit_code.h)
+* LZMA unpacker error codes:
+[chrome/installer/util/lzma_util.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/installer/util/lzma_util.h)
