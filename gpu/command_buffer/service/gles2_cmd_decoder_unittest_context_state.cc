@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
-
 #include <stdint.h>
+
+#include <array>
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,8 +13,8 @@
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_surface_mock.h"
+#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
-
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/program_manager.h"
@@ -490,31 +485,32 @@ TEST_P(GLES2DecoderManualInitTest, ContextStateCapabilityCaching) {
   };
 
   // TODO(vmiura): Should autogen this to match build_gles2_cmd_buffer.py.
-  TestInfo test[] = {{GL_BLEND, false, true},
-                     {GL_CULL_FACE, false, true},
-                     {GL_DEPTH_TEST, false, false},
-                     {GL_DITHER, true, true},
-                     {GL_POLYGON_OFFSET_FILL, false, true},
-                     {GL_SAMPLE_ALPHA_TO_COVERAGE, false, true},
-                     {GL_SAMPLE_COVERAGE, false, true},
-                     {GL_SCISSOR_TEST, false, true},
-                     {GL_STENCIL_TEST, false, false},
-                     {0, false, false}};
+  constexpr std::array kTestInfos = {
+      TestInfo{GL_BLEND, false, true},
+      TestInfo{GL_CULL_FACE, false, true},
+      TestInfo{GL_DEPTH_TEST, false, false},
+      TestInfo{GL_DITHER, true, true},
+      TestInfo{GL_POLYGON_OFFSET_FILL, false, true},
+      TestInfo{GL_SAMPLE_ALPHA_TO_COVERAGE, false, true},
+      TestInfo{GL_SAMPLE_COVERAGE, false, true},
+      TestInfo{GL_SCISSOR_TEST, false, true},
+      TestInfo{GL_STENCIL_TEST, false, false},
+  };
 
   InitState init;
   InitDecoder(init);
 
-  for (int i = 0; test[i].gl_enum; i++) {
-    bool enable_state = test[i].default_state;
+  for (const auto& test : kTestInfos) {
+    bool enable_state = test.default_state;
 
     // Test setting default state initially is ignored.
-    EnableDisableTest(test[i].gl_enum, enable_state, test[i].expect_set);
+    EnableDisableTest(test.gl_enum, enable_state, test.expect_set);
 
     // Test new and cached state changes.
     for (int n = 0; n < 3; n++) {
       enable_state = !enable_state;
-      EnableDisableTest(test[i].gl_enum, enable_state, test[i].expect_set);
-      EnableDisableTest(test[i].gl_enum, enable_state, test[i].expect_set);
+      EnableDisableTest(test.gl_enum, enable_state, test.expect_set);
+      EnableDisableTest(test.gl_enum, enable_state, test.expect_set);
     }
   }
 }
