@@ -2892,9 +2892,9 @@ crbug.com/435620308 external/wpt/pointerevents/pointerevent_lostpointercapture_r
 crbug.com/438770398 external/wpt/css/css-anchor-position/position-visibility-remove-no-overflow.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win10.20h2 ] external/wpt/accelerometer/LinearAccelerationSensor.https.html [ Pass Timeout ]
-[ Win11-arm64 ] external/wpt/bluetooth/bidi/characteristic/readValue/service-is-removed.https.window.html [ Pass Timeout ]
-[ Win11 ] external/wpt/css/css-anchor-position/last-successful-change-fallbacks.html [ Pass Timeout ]
+crbug.com/439125782 [ Win10.20h2 ] external/wpt/accelerometer/LinearAccelerationSensor.https.html [ Pass Timeout ]
+crbug.com/439092812 [ Win11-arm64 ] external/wpt/bluetooth/bidi/characteristic/readValue/service-is-removed.https.window.html [ Pass Timeout ]
+crbug.com/438961585 [ Win11 ] external/wpt/css/css-anchor-position/last-successful-change-fallbacks.html [ Pass Timeout ]
 crbug.com/438767067 [ Mac12 ] external/wpt/storage-access-api/requestStorageAccess-ABA.sub.https.window.html [ Timeout ]
 crbug.com/438957819 [ Mac12 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-to-sticky-003.html [ Failure ]
 crbug.com/438957819 [ Mac14 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-to-sticky-003.html [ Failure ]
