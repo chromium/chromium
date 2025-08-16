@@ -2892,6 +2892,9 @@ crbug.com/435620308 external/wpt/pointerevents/pointerevent_lostpointercapture_r
 crbug.com/438770398 external/wpt/css/css-anchor-position/position-visibility-remove-no-overflow.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win10.20h2 ] external/wpt/accelerometer/LinearAccelerationSensor.https.html [ Pass Timeout ]
+[ Win11-arm64 ] external/wpt/bluetooth/bidi/characteristic/readValue/service-is-removed.https.window.html [ Pass Timeout ]
+[ Win11 ] external/wpt/css/css-anchor-position/last-successful-change-fallbacks.html [ Pass Timeout ]
 crbug.com/438767067 [ Mac12 ] external/wpt/storage-access-api/requestStorageAccess-ABA.sub.https.window.html [ Timeout ]
 crbug.com/438957819 [ Mac12 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-to-sticky-003.html [ Failure ]
 crbug.com/438957819 [ Mac14 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-to-sticky-003.html [ Failure ]
@@ -2932,6 +2935,7 @@ crbug.com/438873383 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-r
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-no-referrer.tentative.html [ Timeout ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_fetch_error.tentative.html [ Crash ]
 crbug.com/438793859 [ Win11-arm64 ] external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Crash ]
+crbug.com/438771340 [ Mac12 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-try-switch-from-fixed-anchor.html [ Failure ]
 crbug.com/438771340 [ Mac13 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-try-switch-from-fixed-anchor.html [ Failure ]
 crbug.com/438771340 [ Mac14 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-try-switch-from-fixed-anchor.html [ Failure ]
 crbug.com/438793860 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/not-secure-connection.html [ Timeout ]
