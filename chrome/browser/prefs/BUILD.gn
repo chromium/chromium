@@ -61,6 +61,7 @@ source_set("impl") {
     ":util",
     "//chrome/browser:browser_process",
     "//chrome/browser:flags",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/devtools",
     "//chrome/browser/media/prefs",
     "//chrome/browser/media/router:media_router_feature",
