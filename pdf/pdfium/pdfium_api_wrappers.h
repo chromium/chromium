@@ -7,10 +7,12 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
 #include "build/build_config.h"
+#include "pdf/pdf_rect.h"
 #include "pdf/pdfium/pdfium_engine_exports.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
@@ -33,6 +35,10 @@ ScopedFPDFDocument LoadPdfData(base::span<const uint8_t> pdf_data);
 // cannot be a string_view, since it needs to be null-terminated.
 ScopedFPDFDocument LoadPdfDataWithPassword(base::span<const uint8_t> pdf_data,
                                            const std::string& password);
+
+// Wrapper around FPDFPageObj_GetBounds(). Returns the bounds for `page_object`,
+// or std::nullopt on failure.
+std::optional<PdfRect> GetPageObjectBounds(FPDF_PAGEOBJECT page_object);
 
 // Wrapper around FPDFPageObjMark_GetName().
 // Returns the name of `mark`, or an empty string on failure.

@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "pdf/pdf_ink_brush.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_ink_reader.h"
 #include "pdf/pdfium/pdfium_page.h"
@@ -32,7 +33,6 @@
 #include "third_party/pdfium/public/fpdfview.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace chrome_pdf {
 
@@ -215,22 +215,19 @@ TEST_P(PDFiumInkWriterTest, WriteToCroppedPage) {
       ReadV2InkPathsFromPageAsModeledShapes(saved_page);
   ASSERT_EQ(saved_results.size(), 1u);
 
-  float left;
-  float bottom;
-  float right;
-  float top;
-  bool get_bounds = FPDFPageObj_GetBounds(saved_results[0].page_object, &left,
-                                          &bottom, &right, &top);
-  ASSERT_TRUE(get_bounds);
+  const std::optional<PdfRect> maybe_bounds =
+      GetPageObjectBounds(saved_results[0].page_object);
+  ASSERT_TRUE(maybe_bounds.has_value());
+  const auto& bounds = maybe_bounds.value();
+
   // While the cropped image shows the stroke on the visible page at an X coord
   // of 92, that object's position in the PDF page is relative to the MediaBox,
   // not the CropBox.  So its bounding box should be 55 points to the right of
   // that.
-  EXPECT_RECTF_NEAR(gfx::RectF(gfx::PointF(left, bottom),
-                               gfx::SizeF(right - left, top - bottom)),
-                    gfx::RectF(gfx::PointF(147.3787f, 49.5206f),
-                               gfx::SizeF(12.5402f, 11.6486f)),
-                    /*abs_error=*/0.0001f);
+  EXPECT_FLOAT_EQ(147.3787f, bounds.left());
+  EXPECT_FLOAT_EQ(49.520641f, bounds.bottom());
+  EXPECT_FLOAT_EQ(159.91898f, bounds.right());
+  EXPECT_FLOAT_EQ(61.169273f, bounds.top());
 }
 
 TEST_P(PDFiumInkWriterTest, EmptyStroke) {

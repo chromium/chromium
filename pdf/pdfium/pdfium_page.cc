@@ -30,6 +30,7 @@
 #include "pdf/page_rotation.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_ocr.h"
 #include "pdf/pdfium/pdfium_rotation.h"
@@ -826,11 +827,20 @@ gfx::RectF PDFiumPage::GetBoundingBox() {
       continue;
     }
 
-    FS_RECTF bounds;
-    if (FPDFPageObj_GetBounds(page_object, &bounds.left, &bounds.bottom,
-                              &bounds.right, &bounds.top)) {
-      largest_bounds = GetLargestBounds(largest_bounds, bounds);
+    const std::optional<PdfRect> maybe_bounds =
+        GetPageObjectBounds(page_object);
+    if (!maybe_bounds.has_value()) {
+      continue;
     }
+
+    const auto& bounds = maybe_bounds.value();
+    // TODO(thestig): Avoid PdfRect to FS_RECTF conversion.
+    const FS_RECTF fs_bounds(
+        /*left=*/bounds.left(),
+        /*top=*/bounds.top(),
+        /*right=*/bounds.right(),
+        /*bottom=*/bounds.bottom());
+    largest_bounds = GetLargestBounds(largest_bounds, fs_bounds);
   }
   for (int i = 0; i < FPDFPage_GetAnnotCount(page); ++i) {
     ScopedFPDFAnnotation annotation(FPDFPage_GetAnnot(page, i));
@@ -1424,19 +1434,22 @@ void PDFiumPage::CalculateImages() {
   int page_object_count = FPDFPage_CountObjects(page);
   for (int i = 0; i < page_object_count; ++i) {
     FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, i);
-    if (FPDFPageObj_GetType(page_object) != FPDF_PAGEOBJ_IMAGE)
+    if (FPDFPageObj_GetType(page_object) != FPDF_PAGEOBJ_IMAGE) {
       continue;
-    float left;
-    float top;
-    float right;
-    float bottom;
-    if (!FPDFPageObj_GetBounds(page_object, &left, &bottom, &right, &top))
-      continue;
+    }
 
+    const std::optional<PdfRect> maybe_bounds =
+        GetPageObjectBounds(page_object);
+    if (!maybe_bounds.has_value()) {
+      continue;
+    }
+
+    const auto& bounds = maybe_bounds.value();
     Image image;
     image.page_object_index = i;
-    image.bounding_rect = PageToScreen(gfx::Point(), 1.0, left, top, right,
-                                       bottom, PageOrientation::kOriginal);
+    image.bounding_rect = PageToScreen(
+        gfx::Point(), 1.0, bounds.left(), bounds.top(), bounds.right(),
+        bounds.bottom(), PageOrientation::kOriginal);
 
     if (engine_->IsPDFDocTagged()) {
       // Collect all marked content IDs for image objects so that they can

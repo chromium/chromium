@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -129,6 +130,16 @@ ScopedFPDFDocument LoadPdfDataWithPassword(base::span<const uint8_t> pdf_data,
                                            const std::string& password) {
   return ScopedFPDFDocument(FPDF_LoadMemDocument64(
       pdf_data.data(), pdf_data.size(), password.c_str()));
+}
+
+std::optional<PdfRect> GetPageObjectBounds(FPDF_PAGEOBJECT page_object) {
+  PdfRect rect;
+  if (!FPDFPageObj_GetBounds(page_object, rect.writable_left(),
+                             rect.writable_bottom(), rect.writable_right(),
+                             rect.writable_top())) {
+    return std::nullopt;
+  }
+  return rect;
 }
 
 std::u16string GetPageObjectMarkName(FPDF_PAGEOBJECTMARK mark) {
