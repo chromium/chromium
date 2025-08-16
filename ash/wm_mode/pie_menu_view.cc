@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_flags.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -419,8 +420,10 @@ void PieMenuView::Layout(PassKey) {
 void PieMenuView::AddedToWidget() {
   auto* layer = GetWidget()->GetLayer();
   layer->SetFillsBoundsOpaquely(false);
-  layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 }
 
 void PieMenuView::OnThemeChanged() {
