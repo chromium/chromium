@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_PAGE_COLORS_H_
-#define CHROME_BROWSER_ACCESSIBILITY_PAGE_COLORS_H_
+#ifndef CHROME_BROWSER_ACCESSIBILITY_PAGE_COLORS_CONTROLLER_H_
+#define CHROME_BROWSER_ACCESSIBILITY_PAGE_COLORS_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -21,20 +21,21 @@ class PrefRegistrySyncable;
 // browser level. This tracks the per-profile preference and OS preferred
 // contrast state from NativeTheme to update the WebContents Page Colors state
 // based on any changes.
-class PageColors : public KeyedService, public ui::NativeThemeObserver {
+class PageColorsController : public KeyedService,
+                             public ui::NativeThemeObserver {
  public:
-  explicit PageColors(PrefService* profile_prefs);
-  PageColors(const PageColors&) = delete;
-  PageColors& operator=(const PageColors&) = delete;
+  explicit PageColorsController(PrefService* profile_prefs);
+  PageColorsController(const PageColorsController&) = delete;
+  PageColorsController& operator=(const PageColorsController&) = delete;
 
-  ~PageColors() override;
+  ~PageColorsController() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   void Init();
 
  private:
-  friend class PageColorsFactory;
+  friend class PageColorsControllerFactory;
 
   // Handles when page colors preferences change.
   void OnPageColorsChanged();
@@ -54,7 +55,7 @@ class PageColors : public KeyedService, public ui::NativeThemeObserver {
 
   raw_ptr<PrefService> profile_prefs_;
 
-  base::WeakPtrFactory<PageColors> weak_factory_{this};
+  base::WeakPtrFactory<PageColorsController> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_PAGE_COLORS_H_
+#endif  // CHROME_BROWSER_ACCESSIBILITY_PAGE_COLORS_CONTROLLER_H_

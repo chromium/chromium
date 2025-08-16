@@ -2,26 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/page_colors_factory.h"
+#include "chrome/browser/accessibility/page_colors_controller_factory.h"
 
-#include "chrome/browser/accessibility/page_colors.h"
+#include "chrome/browser/accessibility/page_colors_controller.h"
 #include "chrome/browser/profiles/profile.h"
 
 // static
-PageColors* PageColorsFactory::GetForProfile(Profile* profile) {
-  return static_cast<PageColors*>(
+PageColorsController* PageColorsControllerFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<PageColorsController*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static
-PageColorsFactory* PageColorsFactory::GetInstance() {
-  static base::NoDestructor<PageColorsFactory> instance;
+PageColorsControllerFactory* PageColorsControllerFactory::GetInstance() {
+  static base::NoDestructor<PageColorsControllerFactory> instance;
   return instance.get();
 }
 
-PageColorsFactory::PageColorsFactory()
+PageColorsControllerFactory::PageColorsControllerFactory()
     : ProfileKeyedServiceFactory(
-          "PageColors",
+          "PageColorsController",
           ProfileSelections::Builder()
               // The incognito profile shares the PageColors with it's original
               // profile.
@@ -33,17 +34,17 @@ PageColorsFactory::PageColorsFactory()
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
-PageColorsFactory::~PageColorsFactory() = default;
+PageColorsControllerFactory::~PageColorsControllerFactory() = default;
 
-bool PageColorsFactory::ServiceIsCreatedWithBrowserContext() const {
+bool PageColorsControllerFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
 std::unique_ptr<KeyedService>
-PageColorsFactory::BuildServiceInstanceForBrowserContext(
+PageColorsControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  auto page_colors = std::make_unique<PageColors>(
+  auto page_colors_controller = std::make_unique<PageColorsController>(
       Profile::FromBrowserContext(context)->GetPrefs());
-  page_colors->Init();
-  return page_colors;
+  page_colors_controller->Init();
+  return page_colors_controller;
 }

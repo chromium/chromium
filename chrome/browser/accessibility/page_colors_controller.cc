@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/page_colors.h"
+#include "chrome/browser/accessibility/page_colors_controller.h"
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,14 +17,14 @@
 #include "ui/linux/linux_ui_factory.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
-PageColors::PageColors(PrefService* profile_prefs)
+PageColorsController::PageColorsController(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 }
-PageColors::~PageColors() = default;
+PageColorsController::~PageColorsController() = default;
 
 // static
-void PageColors::RegisterProfilePrefs(
+void PageColorsController::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kPageColors,
@@ -41,19 +41,20 @@ void PageColors::RegisterProfilePrefs(
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-void PageColors::Init() {
+void PageColorsController::Init() {
   pref_change_registrar_.Init(profile_prefs_);
   pref_change_registrar_.Add(
-      prefs::kPageColors, base::BindRepeating(&PageColors::OnPageColorsChanged,
-                                              weak_factory_.GetWeakPtr()));
+      prefs::kPageColors,
+      base::BindRepeating(&PageColorsController::OnPageColorsChanged,
+                          weak_factory_.GetWeakPtr()));
   pref_change_registrar_.Add(
       prefs::kApplyPageColorsOnlyOnIncreasedContrast,
-      base::BindRepeating(&PageColors::OnPageColorsChanged,
+      base::BindRepeating(&PageColorsController::OnPageColorsChanged,
                           weak_factory_.GetWeakPtr()));
   OnPreferredContrastChanged();
 }
 
-void PageColors::OnPageColorsChanged() {
+void PageColorsController::OnPageColorsChanged() {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 #if BUILDFLAG(IS_LINUX)
   // Allow the Linux native theme to update its state for page colors.
@@ -68,8 +69,9 @@ void PageColors::OnPageColorsChanged() {
       native_theme->GetPageColors();
   ui::NativeTheme::PageColors current_page_colors = CalculatePageColors();
 
-  if (previous_page_colors == current_page_colors)
+  if (previous_page_colors == current_page_colors) {
     return;
+  }
 
 #if BUILDFLAG(IS_WIN)
   if (native_theme->UserHasContrastPreference()) {
@@ -85,7 +87,7 @@ void PageColors::OnPageColorsChanged() {
   native_theme->NotifyOnNativeThemeUpdated();
 }
 
-ui::NativeTheme::PageColors PageColors::CalculatePageColors() {
+ui::NativeTheme::PageColors PageColorsController::CalculatePageColors() {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
   ui::NativeTheme::PageColors page_colors =
@@ -110,7 +112,7 @@ ui::NativeTheme::PageColors PageColors::CalculatePageColors() {
   return used_page_colors;
 }
 
-void PageColors::OnPreferredContrastChanged() {
+void PageColorsController::OnPreferredContrastChanged() {
 #if BUILDFLAG(IS_WIN)
   ui::NativeTheme::PageColors page_colors =
       static_cast<ui::NativeTheme::PageColors>(
@@ -136,9 +138,10 @@ void PageColors::OnPreferredContrastChanged() {
   } else {
     // If increased contrast just got turned off and page colors was 'High
     // Contrast', the used value of Page Colors should be 'Off'.
-    if (page_colors == ui::NativeTheme::PageColors::kHighContrast)
+    if (page_colors == ui::NativeTheme::PageColors::kHighContrast) {
       profile_prefs_->SetInteger(prefs::kPageColors,
                                  ui::NativeTheme::PageColors::kOff);
+    }
   }
 #endif  // BUILDFLAG(IS_WIN)
   OnPageColorsChanged();

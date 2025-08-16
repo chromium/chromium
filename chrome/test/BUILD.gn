@@ -3126,7 +3126,7 @@ if (!is_android) {
       "../browser/accessibility/image_annotation_browsertest.cc",
       "../browser/accessibility/interstitial_accessibility_browsertest.cc",
       "../browser/accessibility/live_translate_controller_browsertest.cc",
-      "../browser/accessibility/page_colors_browsertest.cc",
+      "../browser/accessibility/page_colors_controller_browsertest.cc",
       "../browser/accessibility/phrase_segmentation/dependency_parser_model_loader_browsertest.cc",
       "../browser/ai/ai_data_keyed_service_browsertest.cc",
       "../browser/attribution_reporting/chrome_attribution_browsertest.cc",

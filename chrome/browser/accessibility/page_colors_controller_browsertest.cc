@@ -10,17 +10,19 @@
 #include "content/public/test/browser_test.h"
 #include "ui/native_theme/native_theme.h"
 
-class PageColorsBrowserTest : public InProcessBrowserTest {
+class PageColorsControllerBrowserTest : public InProcessBrowserTest {
  public:
-  PageColorsBrowserTest() = default;
+  PageColorsControllerBrowserTest() = default;
 
-  PageColorsBrowserTest(const PageColorsBrowserTest&) = delete;
-  PageColorsBrowserTest& operator=(const PageColorsBrowserTest&) = delete;
+  PageColorsControllerBrowserTest(const PageColorsControllerBrowserTest&) =
+      delete;
+  PageColorsControllerBrowserTest& operator=(
+      const PageColorsControllerBrowserTest&) = delete;
 };
 
 // Changing the kPageColors pref should affect the state of Page Colors in the
 // NativeTheme.
-IN_PROC_BROWSER_TEST_F(PageColorsBrowserTest, PageColorsPrefChange) {
+IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest, PageColorsPrefChange) {
   ui::NativeTheme::PageColors page_colors_pref =
       static_cast<ui::NativeTheme::PageColors>(
           browser()->profile()->GetPrefs()->GetInteger(prefs::kPageColors));
@@ -55,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserTest, PageColorsPrefChange) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 // When `kApplyPageColorsOnlyOnIncreasedContrast` is true but the OS is not in
 // increased contrast, the page colors pref shouldn't be honored.
-IN_PROC_BROWSER_TEST_F(PageColorsBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
                        MAYBE_PageColorsCalculationWithIncreasedContrastToggle) {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   ui::NativeTheme::PageColors page_colors_pref =
@@ -113,7 +115,8 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserTest,
 // Test default behaviour only for Windows when High Contrast gets switched
 // on and page colors 'Off'. Default should be High contrast initially, unless
 // the user changes it to 'Off' while in a HC state.
-IN_PROC_BROWSER_TEST_F(PageColorsBrowserTest, PageColorsWithHighContrast) {
+IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
+                       PageColorsWithHighContrast) {
   // Initially, expect kIsDefaultPageColorsOnHighContrast to be true.
   ui::NativeTheme::PageColors page_colors_pref =
       static_cast<ui::NativeTheme::PageColors>(
@@ -190,7 +193,8 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserTest, PageColorsWithHighContrast) {
 // When Page colors is changed, the states such as `forced_colors`,
 // `should_use_dark_colors`, `preferred_color_scheme` and `preferred_contrast`
 // for the NativeTheme web instance should be updated appropriately.
-IN_PROC_BROWSER_TEST_F(PageColorsBrowserTest, PageColorsWithNativeTheme) {
+IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
+                       PageColorsWithNativeTheme) {
   // Initially expect Page colors to be 'Off', forced colors to be false, uses
   // dark colors to be false and preferred contrast to be kNoPreference.
   ui::NativeTheme::PageColors page_colors_pref =
