@@ -87,7 +87,9 @@ TEST(HlsMediaPlaylistTest, Segments) {
   builder.ExpectSegment(HasMediaSequenceNumber, 2);
 
   // Segments must not exceed the playlist's target duration when rounded to the
-  // nearest integer
+  // nearest integer. HLS Quirks allows the duration to be exceeded by a fixed
+  // cap. At present that value is 2, however it might be worth changing or
+  // experimenting on.
   {
     auto fork = builder;
     fork.AppendLine("#EXTINF:10.499,bar");
@@ -97,6 +99,11 @@ TEST(HlsMediaPlaylistTest, Segments) {
 
     fork.AppendLine("#EXTINF:10.5,baz");
     fork.AppendLine("baz.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectOk();
+
+    fork.AppendLine("#EXTINF:12.5,baz");
+    fork.AppendLine("bip.ts");
     fork.ExpectError(ParseStatusCode::kMediaSegmentExceedsTargetDuration);
   }
 

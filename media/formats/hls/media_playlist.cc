@@ -19,6 +19,7 @@
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/playlist.h"
 #include "media/formats/hls/playlist_common.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
@@ -581,7 +582,8 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
     // integer). Target duration should always be an integer of seconds, so to
     // avoid floating-point precision issues we use `InSeconds()` rather than
     // `InSecondsF()`.
-    if (rounded_duration > target_duration.InSeconds()) {
+    auto allowance = HLSQuirks::AllowExceedingTargetDurationBySeconds();
+    if (rounded_duration > target_duration.InSeconds() + allowance) {
       return ParseStatusCode::kMediaSegmentExceedsTargetDuration;
     }
 
