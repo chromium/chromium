@@ -10,6 +10,7 @@ import '/lens/shared/searchbox_ghost_loader.js';
 import '/lens/shared/searchbox_shared_style.css.js';
 import '//resources/cr_components/searchbox/searchbox.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
+import '//resources/cr_components/composebox/composebox.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';

@@ -28,6 +28,38 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "chrome/browser/ui/lens/lens_composebox_handler.h"
+
+namespace {
+static constexpr webui::LocalizedString kStrings[] = {
+      // Composebox.
+      {"composeboxCancelButtonTitle", IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL},
+      {"composeboxCancelButtonTitleInput",
+       IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL_INPUT},
+      {"composeboxImageUploadButtonTitle",
+       IDS_NTP_COMPOSE_IMAGE_UPLOAD_BUTTON_A11Y_LABEL},
+      {"composeboxPdfUploadButtonTitle",
+       IDS_NTP_COMPOSE_PDF_UPLOAD_BUTTON_A11Y_LABEL},
+      {"composeboxPlaceholderText", IDS_NTP_COMPOSE_PLACEHOLDER_TEXT},
+      {"composeboxSubmitButtonTitle", IDS_NTP_COMPOSE_SUBMIT_BUTTON_A11Y_LABEL},
+      {"composeboxDeleteFileTitle", IDS_NTP_COMPOSE_DELETE_FILE_A11Y_LABEL},
+      {"composeboxFileUploadStartedText",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_STARTED_A11Y_TEXT},
+      {"composeboxFileUploadCompleteText",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_COMPLETE_A11Y_TEXT},
+      {"composeboxFileUploadInvalidEmptySize",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_EMPTY_SIZE},
+      {"composeboxFileUploadInvalidTooLarge",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_TOO_LARGE},
+      {"composeboxFileUploadImageProcessingError",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_IMAGE_PROCESSING_ERROR},
+      {"composeboxFileUploadValidationFailed",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_VALIDATION_FAILED},
+      {"composeboxFileUploadFailed", IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED},
+      {"composeboxFileUploadExpired", IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED},
+};
+}
 
 namespace lens {
 
@@ -133,6 +165,19 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' chrome-untrusted://resources chrome-untrusted://theme");
 
+  // ComposeBox LoadTimeData
+  html_source->AddLocalizedStrings(kStrings);
+  // Support no file types.
+  html_source->AddString("composeboxImageFileTypes", "");
+  html_source->AddString("composeboxAttachmentFileTypes", "");
+  html_source->AddInteger("composeboxFileMaxSize", 0);
+  html_source->AddInteger("composeboxFileMaxCount", 0);
+  // Disable ZPS.
+  html_source->AddBoolean("composeboxShowZps", false);
+  // Send event when escape is pressed.
+  html_source->AddBoolean("composeboxCloseByEscape", true);
+
+
   // Add required resources.
   webui::SetupWebUIDataSource(html_source, kLensUntrustedResources,
                               IDR_LENS_UNTRUSTED_SIDE_PANEL_SIDE_PANEL_HTML);
@@ -209,6 +254,23 @@ void LensSidePanelUntrustedUI::BindInterface(
     help_bubble_handler_factory_receiver_.reset();
   }
   help_bubble_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
+void LensSidePanelUntrustedUI::BindInterface(
+    mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver) {
+  composebox_page_handler_factory_receiver_.reset();
+  composebox_page_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
+void LensSidePanelUntrustedUI::CreatePageHandler(
+    mojo::PendingRemote<composebox::mojom::Page> pending_page,
+    mojo::PendingReceiver<composebox::mojom::PageHandler> pending_page_handler,
+    mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
+    mojo::PendingReceiver<searchbox::mojom::PageHandler>
+        pending_searchbox_handler) {
+  DCHECK(pending_page.is_valid());
+  auto handler = std::make_unique<LensComposeboxHandler>(
+      std::move(pending_page_handler), std::move(pending_page), std::move(pending_searchbox_handler));
 }
 
 LensSearchController& LensSidePanelUntrustedUI::GetLensSearchController() {
