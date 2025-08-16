@@ -112,6 +112,8 @@ std::string GetUserPreferenceForZeroSuggestCachedResponse(
     const std::string& page_url);
 
 // Returns true if the AIM is allowed per the policy.
+// TODO(crbug.com/436900485): Move into `AimEligibilityService` when that moves
+//   into components/.
 bool IsAimAllowedByPolicy(const PrefService* prefs);
 
 }  // namespace omnibox
