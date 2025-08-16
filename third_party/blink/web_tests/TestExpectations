@@ -2892,7 +2892,7 @@ crbug.com/435620308 external/wpt/pointerevents/pointerevent_lostpointercapture_r
 crbug.com/438770398 external/wpt/css/css-anchor-position/position-visibility-remove-no-overflow.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac12 ] external/wpt/storage-access-api/requestStorageAccess-ABA.sub.https.window.html [ Timeout ]
+crbug.com/438767067 [ Mac12 ] external/wpt/storage-access-api/requestStorageAccess-ABA.sub.https.window.html [ Timeout ]
 crbug.com/438957819 [ Mac12 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-to-sticky-003.html [ Failure ]
 crbug.com/438957819 [ Mac14 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-to-sticky-003.html [ Failure ]
 crbug.com/438957819 [ Mac12 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-visibility-anchors-visible-after-scroll-in.html [ Failure ]
@@ -9719,4 +9719,4 @@ crbug.com/435121429 external/wpt/web-animations/timing-model/animations/setting-
 # Gardener 2025-08-15
 crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/getCharacteristics/blocklisted-characteristics.https.window.js [ Failure Pass ]
 crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.js [ Failure Pass ]
-crbug.com/439012788 [ Linux Debug ] wpt_internal/html/canvas/drawElement/allow-readback/html-images-ignored.https.sub.html [ Failure Pass ]
+crbug.com/439012788 [ Debug Linux ] wpt_internal/html/canvas/drawElement/allow-readback/html-images-ignored.https.sub.html [ Failure Pass ]
