@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/lens/lens_composebox_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
@@ -94,6 +95,8 @@ void LensSearchController::Initialize(
       CreateLensOverlaySidePanelCoordinator();
 
   lens_searchbox_controller_ = CreateLensSearchboxController();
+
+  lens_composebox_controller_ = CreateLensComposeboxController();
 
   lens_contextualization_controller_ =
       CreateLensSearchContextualizationController();
@@ -409,6 +412,12 @@ LensSearchController::lens_searchbox_controller() {
   return lens_searchbox_controller_.get();
 }
 
+lens::LensComposeboxController*
+LensSearchController::lens_composebox_controller() {
+  CheckInitialized(initialized_);
+  return lens_composebox_controller_.get();
+}
+
 lens::LensOverlayEventHandler*
 LensSearchController::lens_overlay_event_handler() {
   CheckInitialized(initialized_);
@@ -471,6 +480,11 @@ LensSearchController::CreateLensOverlaySidePanelCoordinator() {
 std::unique_ptr<lens::LensSearchboxController>
 LensSearchController::CreateLensSearchboxController() {
   return std::make_unique<lens::LensSearchboxController>(this);
+}
+
+std::unique_ptr<lens::LensComposeboxController>
+LensSearchController::CreateLensComposeboxController() {
+  return std::make_unique<lens::LensComposeboxController>(this);
 }
 
 std::unique_ptr<lens::LensSearchContextualizationController>

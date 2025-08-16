@@ -20,11 +20,15 @@
 class MetricsReporter;
 class Profile;
 
-class LensComposeboxHandler
-    : public composebox::mojom::PageHandler,
-      public SearchboxHandler {
+namespace lens {
+
+class LensComposeboxController;
+
+class LensComposeboxHandler : public composebox::mojom::PageHandler,
+                              public SearchboxHandler {
  public:
   explicit LensComposeboxHandler(
+      lens::LensComposeboxController* parent_controller,
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
@@ -61,10 +65,15 @@ class LensComposeboxHandler
   void OnThumbnailRemoved() override;
 
  private:
+  // Owns this.
+  const raw_ptr<lens::LensComposeboxController> lens_composebox_controller_;
+
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.
   mojo::Remote<composebox::mojom::Page> page_;
   mojo::Receiver<composebox::mojom::PageHandler> handler_;
 };
+
+}  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_COMPOSEBOX_HANDLER_H_
