@@ -636,8 +636,7 @@ bool ValidFormatForDirectUploading(GrGLenum format, unsigned int type) {
 // is enabled or disabled. The one-copy path being enabled is the default
 // production state, with this Feature being used to be able to disable this
 // path for performance testing.
-BASE_FEATURE(kOneCopyUploadOfVideoFrameToGLTexture,
-             "OneCopyUploadOfVideoFrameToGLTexture",
+BASE_FEATURE(OneCopyUploadOfVideoFrameToGLTexture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 

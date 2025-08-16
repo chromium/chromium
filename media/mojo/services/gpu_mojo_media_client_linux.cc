@@ -20,8 +20,7 @@ namespace media {
 
 namespace {
 
-BASE_FEATURE(kAcceleratedVideoDecodeLinuxZeroCopyGL,
-             "AcceleratedVideoDecodeLinuxZeroCopyGL",
+BASE_FEATURE(AcceleratedVideoDecodeLinuxZeroCopyGL,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 VideoDecoderType GetPreferredLinuxDecoderImplementation() {

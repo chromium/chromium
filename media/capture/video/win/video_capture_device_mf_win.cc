@@ -53,8 +53,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace media {
 
-BASE_FEATURE(kMediaFoundationVideoCaptureForwardSampleTimestamps,
-             "MediaFoundationVideoCaptureForwardSampleTimestamps",
+BASE_FEATURE(MediaFoundationVideoCaptureForwardSampleTimestamps,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 ULONGLONG CaptureModeToExtendedPlatformFlags(

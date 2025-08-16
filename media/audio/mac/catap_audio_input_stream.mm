@@ -59,9 +59,7 @@ const char kHistogramDeviceIsAliveName[] = "IsAlive";
 // If this feature is enabled, the CoreAudio tap is probed after creation to
 // verify that we have the proper permissions. If this fails the creation is
 // reported as failed.
-BASE_FEATURE(kMacCatapProbeTapOnCreation,
-             "MacCatapProbeTapOnCreation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(MacCatapProbeTapOnCreation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When `kMacCatapCaptureAllDevices` is disabled:
 //
@@ -74,9 +72,7 @@ BASE_FEATURE(kMacCatapProbeTapOnCreation,
 //
 // CatapAudioInputStream captures all system audio, irrespective of the specific
 // output device it's played on or the device ID set.
-BASE_FEATURE(kMacCatapCaptureAllDevices,
-             "MacCatapCaptureAllDevices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(MacCatapCaptureAllDevices, base::FEATURE_DISABLED_BY_DEFAULT);
 
 API_AVAILABLE(macos(14.2))
 OSStatus DeviceIoProc(AudioDeviceID,

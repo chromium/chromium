@@ -42,8 +42,7 @@ namespace {
 // SetLatencyHint(), so we needed to peg this with a constant.
 constexpr int kAbsoluteMaxFrames = 24;
 
-BASE_FEATURE(kReportUnderflowForBackgroundRendering,
-             "ReportUnderflowForBackgroundRendering",
+BASE_FEATURE(ReportUnderflowForBackgroundRendering,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

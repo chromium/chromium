@@ -68,8 +68,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace media {
 
-BASE_FEATURE(kMediaFoundationD3D11VideoCaptureBlocklist,
-             "MediaFoundationD3D11VideoCaptureBlocklist",
+BASE_FEATURE(MediaFoundationD3D11VideoCaptureBlocklist,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {

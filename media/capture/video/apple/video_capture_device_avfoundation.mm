@@ -48,12 +48,10 @@
 #import <UIKit/UIKit.h>
 #endif
 
-BASE_FEATURE(kAVFoundationCaptureForwardSampleTimestamps,
-             "AVFoundationCaptureForwardSampleTimestamps",
+BASE_FEATURE(AVFoundationCaptureForwardSampleTimestamps,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAVFoundationCaptureSonomaRestartStalledCamera,
-             "AVFoundationCaptureSonomaRestartStalledCamera",
+BASE_FEATURE(AVFoundationCaptureSonomaRestartStalledCamera,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
@@ -108,14 +106,11 @@ constexpr size_t kPixelBufferPoolSize = 10;
 namespace media {
 
 // Uses the most recent advice from Apple for configuring and starting.
-BASE_FEATURE(kConfigureCaptureBeforeStart,
-             "ConfigureCaptureBeforeStart",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(ConfigureCaptureBeforeStart, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allow disabling optimizations (https://crbug.com/1143477,
 // https://crbug.com/959962) because of flickering (https://crbug.com/1515598).
-BASE_FEATURE(kOverrideCameraIOSurfaceColorSpace,
-             "OverrideCameraIOSurfaceColorSpace",
+BASE_FEATURE(OverrideCameraIOSurfaceColorSpace,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 AVCaptureDeviceFormat* FindBestCaptureFormat(

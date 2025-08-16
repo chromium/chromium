@@ -93,8 +93,7 @@ VideoPixelFormat PixelFormatToVideoPixelFormat(OSType pixel_format) {
 // to guard against performance regressions.
 // TODO: crbug.com/349290188 - Clean up if no performance regressions are
 // observed.
-BASE_FEATURE(kVideoToolboxFrameConverterSpecifyWebGpuUsage,
-             "VideoToolboxFrameConverterSpecifyWebGpuUsage",
+BASE_FEATURE(VideoToolboxFrameConverterSpecifyWebGpuUsage,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

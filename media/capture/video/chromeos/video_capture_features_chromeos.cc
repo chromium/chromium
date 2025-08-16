@@ -26,8 +26,7 @@ namespace features {
 // The built-in ChromeOS Camera App disables the frame rotation through the
 // private CameraAppDeviceImpl::SetCameraFrameRotationEnabledAtSource() call
 // to achieve zero-copy video encoding when the device is rotated.
-BASE_FEATURE(kDisableCameraFrameRotationAtSource,
-             "DisableCameraFrameRotationAtSource",
+BASE_FEATURE(DisableCameraFrameRotationAtSource,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

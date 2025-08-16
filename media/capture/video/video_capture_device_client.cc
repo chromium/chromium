@@ -228,8 +228,7 @@ namespace media {
 #if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/40070224): When this code path has been verified on
 // Canary, change to enabled-by-default.
-BASE_FEATURE(kFallbackToSharedMemoryIfNotNv12OnMac,
-             "FallbackToSharedMemoryIfNotNv12OnMac",
+BASE_FEATURE(FallbackToSharedMemoryIfNotNv12OnMac,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

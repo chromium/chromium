@@ -38,9 +38,7 @@ namespace media {
 namespace {
 
 // TODO(crbug.com/379418979): Remove after M133 is stable.
-BASE_FEATURE(kStrictFFmpegCodecs,
-             "StrictFFmpegCodecs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(StrictFFmpegCodecs, base::FEATURE_ENABLED_BY_DEFAULT);
 
 EncryptionScheme GetEncryptionScheme(const AVStream* stream) {
   AVDictionaryEntry* key =

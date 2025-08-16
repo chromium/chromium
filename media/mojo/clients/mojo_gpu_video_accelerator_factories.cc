@@ -38,9 +38,7 @@ namespace {
 // preferred 4:2:0 pixel format on Windows according to:
 // https://learn.microsoft.com/en-us/windows-hardware/drivers/display/4-2-0-video-pixel-formats
 // https://learn.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12
-BASE_FEATURE(kUseNV12OutputFormat,
-             "UseNV12OutputFormat",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(UseNV12OutputFormat, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 #endif

@@ -13,9 +13,7 @@ namespace features {
 #if BUILDFLAG(IS_WIN)
 // Enables application audio capture for getDisplayMedia (gDM) window capture in
 // Windows.
-BASE_FEATURE(kApplicationAudioCaptureWin,
-             "ApplicationAudioCaptureWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(ApplicationAudioCaptureWin, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -24,15 +22,11 @@ BASE_FEATURE(kApplicationAudioCaptureWin,
 // as OpenSLES provides more accurate output latency on those devices.
 //
 // TODO(crbug.com/401365323): Remove this feature in the future.
-BASE_FEATURE(kUseAAudioDriver,
-             "UseAAudioDriver",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(UseAAudioDriver, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables loading and using AAudio instead of OpenSLES on compatible devices,
 // for audio input streams.
-BASE_FEATURE(kUseAAudioInput,
-             "UseAAudioInput",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(UseAAudioInput, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables selection of audio devices for each individual AAudio stream instead
 // of using communication streams and managing the system-wide communication
@@ -40,21 +34,16 @@ BASE_FEATURE(kUseAAudioInput,
 //
 // Requires `UseAAudioDriver` and `UseAAudioInput`, otherwise it will have no
 // effect.
-BASE_FEATURE(kAAudioPerStreamDeviceSelection,
-             "AAudioPerStreamDeviceSelection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(AAudioPerStreamDeviceSelection, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use buffer size from AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER for
 // optimal output frame size.
-BASE_FEATURE(kAlwaysUseAudioManagerOutputFramesPerBuffer,
-             "AlwaysUseAudioManagerOutputFramesPerBuffer",
+BASE_FEATURE(AlwaysUseAudioManagerOutputFramesPerBuffer,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the AudioDeviceListener, which listens for changes to the list of
 // audio devices exposed by the OS.
-BASE_FEATURE(kAndroidAudioDeviceListener,
-             "AndroidAudioDeviceListener",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(AndroidAudioDeviceListener, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // This feature flag controls whether the WebAudio destination resampler is
@@ -62,8 +51,7 @@ BASE_FEATURE(kAndroidAudioDeviceListener,
 // the hardware's sample rate, the resampling step that normally occurs within
 // the WebAudio destination node is skipped. This allows the AudioService to
 // handle any necessary resampling, potentially reducing latency and overhead.
-BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
-             "WebAudioRemoveAudioDestinationResampler",
+BASE_FEATURE(WebAudioRemoveAudioDestinationResampler,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else
@@ -76,9 +64,7 @@ BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
 // MacOS will then "Spatialize" the audio for users on compatible Airpods. The
 // end result will give users the option to change modes on their Airpods (Off,
 // Fixed, Head Tracking).
-BASE_FEATURE(kMacAVFoundationPlayback,
-             "MacAVFoundationPlayback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(MacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features

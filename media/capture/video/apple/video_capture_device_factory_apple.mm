@@ -33,8 +33,7 @@
 #import "media/capture/video/mac/video_capture_metrics_mac.h"
 #endif
 
-BASE_FEATURE(kVideoCaptureDeviceFactoryAppleLogging,
-             "VideoCaptureDeviceFactoryAppleLogging",
+BASE_FEATURE(VideoCaptureDeviceFactoryAppleLogging,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
