@@ -41,6 +41,7 @@ class RectF;
 namespace chrome_pdf {
 
 class PDFiumEngine;
+class PdfRect;
 class Thumbnail;
 struct AccessibilityCharInfo;
 struct AccessibilityHighlightInfo;
@@ -243,6 +244,10 @@ class PDFiumPage {
                                      int* char_len);
 
   // Converts from page coordinates to screen coordinates.
+  gfx::Rect PageToScreen(const gfx::Point& page_point,
+                         double zoom,
+                         const PdfRect& rect,
+                         PageOrientation orientation) const;
   gfx::Rect PageToScreen(const gfx::Point& page_point,
                          double zoom,
                          double left,

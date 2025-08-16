@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "third_party/pdfium/public/fpdf_searchex.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -216,20 +217,20 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
       //
       // Should not fail because `text_page` is non-null, `i` is always in
       // range, and the out-parameter is non-null.
-      FS_RECTF rect;
-      bool got_rect = FPDFText_GetLooseCharBox(text_page, i, &rect);
+      PdfRect rect;
+      bool got_rect =
+          FPDFText_GetLooseCharBox(text_page, i, &FsRectFFromPdfRect(rect));
       CHECK(got_rect);
 
       // Check for empty `rect` and skip. PDFiumPage::PageToScreen() may round
       // an empty `rect` to a 1x1 `screen_rect`, which is hard to distinguish
       // from an actual 1x1 `rect`.
-      if (rect.left == rect.right || rect.top == rect.bottom) {
+      if (rect.IsEmpty()) {
         continue;
       }
 
       gfx::Rect screen_rect =
-          page_->PageToScreen(point, zoom, rect.left, rect.top, rect.right,
-                              rect.bottom, orientation);
+          page_->PageToScreen(point, zoom, rect, orientation);
       text_run_rect.Union(screen_rect);
     }
     if (!text_run_rect.IsEmpty()) {

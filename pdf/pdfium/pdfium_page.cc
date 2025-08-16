@@ -29,6 +29,7 @@
 #include "pdf/buildflags.h"
 #include "pdf/page_rotation.h"
 #include "pdf/pdf_features.h"
+#include "pdf/pdf_rect.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -1380,16 +1381,14 @@ void PDFiumPage::PopulateAnnotationLinks() {
     if (area == NONSELECTABLE_AREA)
       continue;
 
-    FS_RECTF link_rect;
-    if (!FPDFLink_GetAnnotRect(link_annot, &link_rect))
+    PdfRect link_rect;
+    if (!FPDFLink_GetAnnotRect(link_annot, &FsRectFFromPdfRect(link_rect))) {
       continue;
+    }
 
     // The horizontal/vertical coordinates in PDF Links could be
     // flipped. Swap the coordinates before further processing.
-    if (link_rect.right < link_rect.left)
-      std::swap(link_rect.right, link_rect.left);
-    if (link_rect.bottom > link_rect.top)
-      std::swap(link_rect.bottom, link_rect.top);
+    link_rect.Normalize();
 
     int quad_point_count = FPDFLink_CountQuadPoints(link_annot);
     // Calculate the bounds of link using the quad points data.
@@ -1407,16 +1406,14 @@ void PDFiumPage::PopulateAnnotationLinks() {
         }
       }
     } else {
-      link.bounding_rects.push_back(PageToScreen(
-          gfx::Point(), 1.0, link_rect.left, link_rect.top, link_rect.right,
-          link_rect.bottom, PageOrientation::kOriginal));
+      link.bounding_rects.push_back(PageToScreen(gfx::Point(), 1.0, link_rect,
+                                                 PageOrientation::kOriginal));
     }
 
     // Calculate underlying text range of link.
     GetUnderlyingTextRangeForRect(
-        gfx::RectF(link_rect.left, link_rect.bottom,
-                   std::abs(link_rect.right - link_rect.left),
-                   std::abs(link_rect.bottom - link_rect.top)),
+        gfx::RectF(link_rect.left(), link_rect.bottom(), link_rect.width(),
+                   link_rect.height()),
         &link.start_char_index, &link.char_count);
     links_.emplace_back(link);
   }
@@ -1441,12 +1438,10 @@ void PDFiumPage::CalculateImages() {
       continue;
     }
 
-    const auto& bounds = maybe_bounds.value();
     Image image;
     image.page_object_index = i;
-    image.bounding_rect = PageToScreen(
-        gfx::Point(), 1.0, bounds.left(), bounds.top(), bounds.right(),
-        bounds.bottom(), PageOrientation::kOriginal);
+    image.bounding_rect = PageToScreen(gfx::Point(), 1.0, maybe_bounds.value(),
+                                       PageOrientation::kOriginal);
 
     if (engine_->IsPDFDocTagged()) {
       // Collect all marked content IDs for image objects so that they can
@@ -1605,9 +1600,8 @@ void PDFiumPage::PopulateHighlight(FPDF_ANNOTATION annot) {
   const auto& rect = FsRectFFromPdfRect(maybe_rect.value());
   Highlight highlight;
   // We use the bounding box of the highlight as the bounding rect.
-  highlight.bounding_rect =
-      PageToScreen(gfx::Point(), 1.0, rect.left, rect.top, rect.right,
-                   rect.bottom, PageOrientation::kOriginal);
+  highlight.bounding_rect = PageToScreen(gfx::Point(), 1.0, maybe_rect.value(),
+                                         PageOrientation::kOriginal);
   GetUnderlyingTextRangeForRect(
       gfx::RectF(rect.left, rect.bottom, std::abs(rect.right - rect.left),
                  std::abs(rect.bottom - rect.top)),
@@ -1745,11 +1739,9 @@ bool PDFiumPage::PopulateFormFieldProperties(FPDF_ANNOTATION annot,
     return false;
   }
 
-  const auto& rect = FsRectFFromPdfRect(maybe_rect.value());
   // We use the bounding box of the form field as the bounding rect.
-  form_field->bounding_rect =
-      PageToScreen(gfx::Point(), 1.0, rect.left, rect.top, rect.right,
-                   rect.bottom, PageOrientation::kOriginal);
+  form_field->bounding_rect = PageToScreen(
+      gfx::Point(), 1.0, maybe_rect.value(), PageOrientation::kOriginal);
   FPDF_FORMHANDLE form_handle = engine_->form();
   form_field->name = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
       base::BindRepeating(&FPDFAnnot_GetFormFieldName, form_handle, annot),
@@ -1801,6 +1793,14 @@ bool PDFiumPage::GetUnderlyingTextRangeForRect(const gfx::RectF& rect,
   *char_len = cur_char_count;
   *start_index = start_char_index;
   return true;
+}
+
+gfx::Rect PDFiumPage::PageToScreen(const gfx::Point& page_point,
+                                   double zoom,
+                                   const PdfRect& rect,
+                                   PageOrientation orientation) const {
+  return PageToScreen(page_point, zoom, rect.left(), rect.top(), rect.right(),
+                      rect.bottom(), orientation);
 }
 
 gfx::Rect PDFiumPage::PageToScreen(const gfx::Point& page_point,

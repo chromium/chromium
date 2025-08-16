@@ -4144,10 +4144,9 @@ void PDFiumEngine::ScrollAnnotationIntoView(FPDF_ANNOTATION annot,
     return;
   }
 
-  const auto& annot_rect = FsRectFFromPdfRect(maybe_annot_rect.value());
-  gfx::Rect rect = pages_[page_index]->PageToScreen(
-      gfx::Point(), /*zoom=*/1.0, annot_rect.left, annot_rect.top,
-      annot_rect.right, annot_rect.bottom, GetCurrentOrientation());
+  gfx::Rect rect = pages_[page_index]->PageToScreen(gfx::Point(), /*zoom=*/1.0,
+                                                    maybe_annot_rect.value(),
+                                                    GetCurrentOrientation());
 
   gfx::Rect visible_rect = GetVisibleRect();
   if (visible_rect.Contains(rect))
@@ -4218,11 +4217,10 @@ void PDFiumEngine::OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot,
       return;
     }
 
-    const auto& annot_rect = FsRectFFromPdfRect(maybe_annot_rect.value());
     // Position assuming top-left of the first page is at (0,0).
     gfx::Rect rect_screen = pages_[page_index]->PageToScreen(
-        gfx::Point(), current_zoom_, annot_rect.left, annot_rect.top,
-        annot_rect.right, annot_rect.bottom, GetCurrentOrientation());
+        gfx::Point(), current_zoom_, maybe_annot_rect.value(),
+        GetCurrentOrientation());
 
     // Position in viewport.
     caret_rect_.SetRect(rect_screen.x() - position_.x(),
