@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -109,8 +110,19 @@ void AiModePageActionIconView::UpdateImpl() {
 }
 
 bool AiModePageActionIconView::ShouldShow() {
-  // Show the AIM view if the focus is within any view in the location bar,
-  // including the omnibox, this view or any other page action icon views.
+  // If the feature is enabled to hide the AIM entrypoint on user input, don't
+  // show the AIM entrypoint if the user is currently typing and the user text
+  // is non-empty.
+  if (base::FeatureList::IsEnabled(omnibox::kHideAimEntrypointOnUserInput)) {
+    OmniboxView* omnibox_view = GetOmniboxView();
+    if (omnibox_view && omnibox_view->model()->user_input_in_progress() &&
+        !omnibox_view->GetText().empty()) {
+      return false;
+    }
+  }
+  // Otherwise, we should show the AIM view if the focus is within any view in
+  // the location bar, including the omnibox, this view or any other page action
+  // icon views.
   View* location_bar_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           kLocationBarElementId,

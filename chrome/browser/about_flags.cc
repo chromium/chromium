@@ -6897,6 +6897,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAiModeOmniboxEntryPointDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kAiModeOmniboxEntryPoint)},
 
+    {"hide-aim-omnibox-entrypoint-on-user-input",
+     flag_descriptions::kHideAimOmniboxEntrypointOnUserInputName,
+     flag_descriptions::kHideAimOmniboxEntrypointOnUserInputDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kHideAimEntrypointOnUserInput)},
+
     {"omnibox-toolbelt", flag_descriptions::kOmniboxToolbeltName,
      flag_descriptions::kOmniboxToolbeltDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(

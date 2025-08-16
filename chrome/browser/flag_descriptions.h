@@ -1391,6 +1391,9 @@ extern const char kPwaRestoreUiAtStartupDescription[];
 extern const char kStartSurfaceReturnTimeName[];
 extern const char kStartSurfaceReturnTimeDescription[];
 
+extern const char kHideAimOmniboxEntrypointOnUserInputName[];
+extern const char kHideAimOmniboxEntrypointOnUserInputDescription[];
+
 extern const char kHistoryEmbeddingsName[];
 extern const char kHistoryEmbeddingsDescription[];
 

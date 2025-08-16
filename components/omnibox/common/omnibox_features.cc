@@ -394,6 +394,11 @@ BASE_FEATURE(kOmniboxAimShortcutTypedState,
 // users to type in multiline / longer text.
 BASE_FEATURE(kMultilineEditField, "OmniboxMultilineEditField", DISABLED);
 
+// Hides the AIM entrypoint in the Omnibox when user input is in progress.
+BASE_FEATURE(kHideAimEntrypointOnUserInput,
+             "OmniboxHideAimEntrypointOnUserInput",
+             DISABLED);
+
 #if BUILDFLAG(IS_ANDROID)
 // Accelerates time from cold start to focused Omnibox on low-end devices,
 // prioritizing Omnibox focus and background initialization.

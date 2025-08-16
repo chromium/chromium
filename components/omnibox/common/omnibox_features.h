@@ -154,6 +154,8 @@ BASE_DECLARE_FEATURE(kOmniboxAimShortcutTypedState);
 // users to type in multiline / longer text.
 BASE_DECLARE_FEATURE(kMultilineEditField);
 
+BASE_DECLARE_FEATURE(kHideAimEntrypointOnUserInput);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kDiagnostics);
 BASE_DECLARE_FEATURE(kJumpStartOmnibox);
