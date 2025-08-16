@@ -496,7 +496,7 @@
 <translation id="1328928545650070438">भौंहें नीचे करें</translation>
 <translation id="1329466763986822896">इस हॉटस्पॉट के लिए निजता सेटिंग को बेहतर करें</translation>
 <translation id="1331065030686329928">“<ph name="GROUP_NAME" />” टैब ग्रुप को मैनेज करें</translation>
-<translation id="1331977651797684645">यह मैं ही था/थी.</translation>
+<translation id="1331977651797684645">यह खाता मेरा था.</translation>
 <translation id="1333489022424033687"><ph name="ORIGIN" /> पर मौजूद कुछ सुविधाएं तब तक काम नहीं करेंगी, जब तक आप उस डेटा को नहीं मिटाते जिसे दूसरी साइटों ने आपके डिवाइस पर सेव किया हुआ है</translation>
 <translation id="1333965224356556482">साइटों को आपकी जगह की जानकारी देखने की अनुमति न दें</translation>
 <translation id="1335282218035876586">अब से, आपके Chromebook को सुरक्षा और सॉफ़्टवेयर से जुड़े अपडेट नहीं मिलेंगे. बेहतर अनुभव पाने के लिए, अपना Chromebook अपग्रेड करें.</translation>
@@ -9794,7 +9794,7 @@
 <translation id="7925108652071887026">ऑटोफ़िल डेटा</translation>
 <translation id="792514962475806987">डॉक किया गया ज़ूम स्तर:</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> का इंतज़ार किया जा रहा है...</translation>
-<translation id="7926423016278357561">यह मैं नहीं था/थी.</translation>
+<translation id="7926423016278357561">यह खाता मेरा नहीं था.</translation>
 <translation id="7926975587469166629">कार्ड का कोई दूसरा नाम</translation>
 <translation id="7928175190925744466">क्या आपने पहले ही यह पासवर्ड बदल दिया है?</translation>
 <translation id="7929468958996190828"><ph name="BEGIN_LINK" />अभी रीफ़्रेश करें<ph name="END_LINK" /> या मिलते-जुलते नए टैब खोलने के बाद, दोबारा कोशिश करें</translation>

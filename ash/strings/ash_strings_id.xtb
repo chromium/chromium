@@ -43,7 +43,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="114221662579355151">Tindakan ini akan mengizinkan akses kamera untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, dan semua aplikasi serta situs yang memiliki izin kamera. Anda mungkin perlu memuat ulang halaman web atau memulai ulang aplikasi.</translation>
 <translation id="1148499908455722006">Buka dialog info untuk <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalender</translation>
-<translation id="1153356358378277386">Perangkat dihubungkan</translation>
+<translation id="1153356358378277386">Perangkat yang tersambung</translation>
 <translation id="1153918444040990015">Tidak dapat terhubung ke suara Fokus</translation>
 <translation id="1155734730463845512">Level baterai saat ini <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">AI generatif bersifat eksperimental dan kontennya mungkin tidak akurat, menyesatkan, atau menyinggung. Hubungi administrator Anda untuk melaporkan masalah. <ph name="LINK_TO_SERVICE_TERMS" /></translation>

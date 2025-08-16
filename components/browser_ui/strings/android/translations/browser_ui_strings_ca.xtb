@@ -422,7 +422,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6171020522141473435">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius Bluetooth. Quan aquesta opció està desactivada, els llocs web no poden utilitzar dispositius Bluetooth.</translation>
 <translation id="6177128806592000436">La connexió amb aquest lloc web no és segura</translation>
-<translation id="6181444274883918285">Afegeix excepció de lloc web</translation>
+<translation id="6181444274883918285">Afegeix una excepció de lloc web</translation>
 <translation id="6192792657125177640">Excepcions</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome tornarà a bloquejar les galetes demà}other{# dies perquè es tornin a bloquejar les galetes}}</translation>
 <translation id="6195163219142236913">Galetes de tercers limitades</translation>

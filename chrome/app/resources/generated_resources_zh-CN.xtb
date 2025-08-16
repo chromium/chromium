@@ -10651,7 +10651,7 @@
 <translation id="8528962588711550376">正在登录。</translation>
 <translation id="8531367864749403520">选择“隐藏组”可将组从标签栏中移除</translation>
 <translation id="8531701051932785007">“增强型安全浏览”功能处于关闭状态</translation>
-<translation id="8533670235862049797">“安全浏览”功能已开启</translation>
+<translation id="8533670235862049797">“安全浏览”已开启</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="EMAIL" />的设备中删除该分组}other{相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="EMAIL" />的设备中删除这些分组}}</translation>
 <translation id="8535005006684281994">Netscape 证书续订网址</translation>
 <translation id="8536810348276651776">会致使您从大多数网站退出账号。但您的 Google 账号仍会保持登录状态，所以 Chrome 中的 Family Link 设置依然有效。</translation>

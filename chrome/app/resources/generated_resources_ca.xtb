@@ -495,7 +495,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1328928545650070438">Baixar les celles</translation>
 <translation id="1329466763986822896">Millora la privadesa d'aquest punt d'accés Wi‐Fi</translation>
 <translation id="1331065030686329928">Gestiona el grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
-<translation id="1331977651797684645">Sí que era jo.</translation>
+<translation id="1331977651797684645">Sí que era jo</translation>
 <translation id="1333489022424033687">Pot ser que algunes funcions que inclou <ph name="ORIGIN" /> no es puguin executar fins que no esborris les dades que altres llocs web han emmagatzemat al teu dispositiu</translation>
 <translation id="1333965224356556482">No permetis que els llocs web vegin la teva ubicació</translation>
 <translation id="1335282218035876586">El teu Chromebook ja no rep actualitzacions de seguretat ni de programari. Compra't un Chromebook nou per gaudir de la millor experiència.</translation>
@@ -9777,7 +9777,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7925108652071887026">Dades d'emplenament automàtic</translation>
 <translation id="792514962475806987">Nivell de zoom acoblat:</translation>
 <translation id="7925285046818567682">Esperant <ph name="HOST_NAME" />...</translation>
-<translation id="7926423016278357561">No era jo.</translation>
+<translation id="7926423016278357561">No era jo</translation>
 <translation id="7926975587469166629">Àlies de la targeta</translation>
 <translation id="7928175190925744466">Ja has canviat aquesta contrasenya?</translation>
 <translation id="7929468958996190828">Pots <ph name="BEGIN_LINK" />actualitzar ara<ph name="END_LINK" /> o tornar-ho a provar més tard després d'obrir pestanyes similars noves</translation>

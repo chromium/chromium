@@ -2896,7 +2896,7 @@
 <translation id="2985348301114641460">می‌خواهید برای نصب «<ph name="EXTENSION_NAME" />»، درخواستی برای سرپرستتان ارسال کنید؟</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> برنامه‌ای را حذف نصب کرد}one{<ph name="APP_NAME" /> # برنامه را حذف نصب کرد}other{<ph name="APP_NAME" /> # برنامه را حذف نصب کرد}}</translation>
 <translation id="2987620471460279764">نوشتار هم‌رسانی‌شده از دستگاه دیگر</translation>
-<translation id="2988018669686457659">تولیدکننده فرعی تصویر</translation>
+<translation id="2988018669686457659">ارائه‌دهنده ذخیره</translation>
 <translation id="2988328607561082373">از هیچ‌کدام از گذرواژه‌هایتان دوباره استفاده نکرده‌اید</translation>
 <translation id="2989123969927553766">شتاب پیمایش موشواره</translation>
 <translation id="2989177286941477290">{NUM_OF_FILES,plural, =1{برای انتقال این فایل در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}one{برای انتقال این فایل در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}other{برای انتقال این فایل‌ها در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}}</translation>
@@ -6330,7 +6330,7 @@
 <translation id="5430931332414098647">اشتراک‌گذاری اینترنت فوری</translation>
 <translation id="5431318178759467895">رنگ</translation>
 <translation id="5432145523462851548">نمایش <ph name="FILE_NAME" /> در پوشه</translation>
-<translation id="5432223177001837288">برای هم‌رسانی صدا، درعوض برگه‌ای را هم‌رسانی کنید</translation>
+<translation id="5432223177001837288">برای هم‌رسانی صدا، درعوض زبانه‌ای را هم‌رسانی کنید</translation>
 <translation id="5432872710261597882">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما این مورد را می‌پسندید.</translation>
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
 <translation id="5433865420958136693">درصورت امکان از شتاب گرافیکی استفاده شود</translation>
@@ -6483,7 +6483,7 @@
 <translation id="5542949973455282971">درحال اتصال به <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">در حال بررسی وضعیت...</translation>
 <translation id="5544482392629385159">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" /></translation>
-<translation id="554517701842997186">تولیدکننده تصویر</translation>
+<translation id="554517701842997186">ارائه‌دهنده</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{افزودن برگه به گروه}one{افزودن برگه‌ها به گروه}other{افزودن برگه‌ها به گروه}}</translation>
 <translation id="554535686826424776">یافتن کوپن</translation>
 <translation id="5546865291508181392">یافتن</translation>
@@ -9819,7 +9819,7 @@
 <translation id="7940265372707990269">به‌ترتیب <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">آمادگی برای اشتراک‌گذاری اینترنت:</translation>
 <translation id="7942349550061667556">قرمز</translation>
-<translation id="7942846369224063421">تولیدکننده تصویر واسط کاربر ازپیش‌بارگیری‌شده</translation>
+<translation id="7942846369224063421">ارائه‌دهنده تصویر واسط کاربر ازپیش‌بارگیری‌شده</translation>
 <translation id="7943368935008348579">‏بارگیری فایل‌های PDF</translation>
 <translation id="7943837619101191061">انتخاب پوشه برای افزودن...</translation>
 <translation id="7944173382284143968">این وب‌سایت برای ذخیره کردن گذرواژه جدید به تأیید گذرواژه یکبارمصرف نیاز دارد. لطفاً برای تکمیل تغییر، روند را به‌صورت دستی تحت‌کنترل بگیرید.</translation>

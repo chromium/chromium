@@ -37,7 +37,7 @@
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
 <translation id="1136104150802877429">عرض مراجعات المنتجات</translation>
 <translation id="1142371195993008685">إيقاف إشعارات "<ph name="FEATURE_NAME" />"</translation>
-<translation id="1147031633655575115">تم تسجيل الدخول بحساب <ph name="USER" />.</translation>
+<translation id="1147031633655575115">تم تسجيل الدخول بحساب <ph name="USER" /></translation>
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1150989369772528668">تقويم</translation>
 <translation id="1161663161838091892">مزامنة علامات التبويب والسجلّ لمواصلة التصفّح</translation>
@@ -835,7 +835,7 @@
 <translation id="4490794477009017910">الانتقال إلى علامة التبويب السابقة</translation>
 <translation id="4493604894403585654">‏لقد سجّلت الدخول باستخدام <ph name="USER_EMAIL" />. يمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="4495516234578759322">العثور على النتيجة التالية</translation>
-<translation id="4502423230170890588">إزالة من هذا الجهاز</translation>
+<translation id="4502423230170890588">الإزالة من هذا الجهاز</translation>
 <translation id="4508750114462689118">إغلاق عرض ترويجي لتسجيل الدخول</translation>
 <translation id="4509345063551561634">المجلد:</translation>
 <translation id="4517684186578051919">معلومات الجهاز</translation>

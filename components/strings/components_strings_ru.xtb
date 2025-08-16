@@ -236,7 +236,7 @@
 <translation id="1382378825779654399">Если на одном из сайтов появится скидка, вы получите оповещение по электронной почте. Эта страница будет сохранена в папку "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="1384725838384960382">Экран проверки учетных данных для защищенных платежей</translation>
 <translation id="1386623374109090026">Заметки</translation>
-<translation id="138810468159004008">Разрешить при нахождении на сайте</translation>
+<translation id="138810468159004008">Разрешить, когда я на сайте</translation>
 <translation id="139161720020179799">Темно-серый 1</translation>
 <translation id="1391625539203220400">Сохранить код IBAN на этом устройстве?</translation>
 <translation id="1392813880755413602">Презентация в формате OpenDocument</translation>
@@ -4119,7 +4119,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать форму Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="8028892419725165118">Казуальные игры</translation>
 <translation id="8028960012888758725">Подрезать после завершения задания</translation>
-<translation id="8028993641010258682">Толщина</translation>
+<translation id="8028993641010258682">Размер</translation>
 <translation id="8029829038322015001">Красный 1</translation>
 <translation id="8030729864112325446">Дополнительное образование и профессиональная подготовка</translation>
 <translation id="8032546467100845887">Прозрачность</translation>
