@@ -88,7 +88,7 @@ class BookmarkButton : public BookmarkButtonBase, public views::WidgetObserver {
   PressedCallback callback_;
   const raw_ref<const GURL> url_;
   const raw_ptr<Browser> browser_;
-  base::RetainingOneShotTimer preloading_timer_;
+  base::RetainingOneShotTimer preconnect_timer_;
   base::WeakPtr<BookmarkBarPreloadPipelineManager> bookmarkbar_preload_manager_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>

@@ -165,7 +165,7 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
   BookmarkButtonBase::OnMouseEntered(event);
 
   if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPreconnect)) {
-    preloading_timer_.Start(
+    preconnect_timer_.Start(
         FROM_HERE,
         base::Milliseconds(
             kPreconnectStartDelayOnMouseHoverByMiliseconds.Get()),
@@ -194,7 +194,7 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
 
 void BookmarkButton::OnMouseExited(const ui::MouseEvent& event) {
   BookmarkButtonBase::OnMouseExited(event);
-  preloading_timer_.Stop();
+  preconnect_timer_.Stop();
   if (bookmarkbar_preload_manager_) {
     bookmarkbar_preload_manager_->ResetPrerender();
   }
