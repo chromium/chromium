@@ -294,7 +294,7 @@ test("components_unittests") {
     "//components/payments/core:unit_tests",
     "//components/persistent_cache:unit_tests",
     "//components/plus_addresses:unit_tests",
-    "//components/plus_addresses/metrics:unit_tests",
+    "//components/plus_addresses/core/browser/metrics:unit_tests",
     "//components/plus_addresses/settings:unit_tests",
     "//components/plus_addresses/webdata:unit_tests",
     "//components/policy/core/browser:unit_tests",

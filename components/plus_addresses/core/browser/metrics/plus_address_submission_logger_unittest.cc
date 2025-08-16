@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/metrics/plus_address_submission_logger.h"
+#include "components/plus_addresses/core/browser/metrics/plus_address_submission_logger.h"
 
 #include <string_view>
 #include <utility>

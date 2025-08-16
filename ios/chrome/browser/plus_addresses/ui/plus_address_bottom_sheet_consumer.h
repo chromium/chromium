@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/core/browser/plus_address_types.h"
-#import "components/plus_addresses/metrics/plus_address_metrics.h"
 
 // Consumer for the plus_address bottom sheet. It is notified as required data
 // elements become available.

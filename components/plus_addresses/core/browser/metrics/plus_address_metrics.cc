@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -56,9 +56,8 @@ void RecordNetErrorCode(PlusAddressNetworkRequestType type, int net_error) {
                            net_error);
 }
 
-void RecordNetworkRequestLatency(
-    PlusAddressNetworkRequestType type,
-    base::TimeDelta request_latency) {
+void RecordNetworkRequestLatency(PlusAddressNetworkRequestType type,
+                                 base::TimeDelta request_latency) {
   base::UmaHistogramTimes(base::ReplaceStringPlaceholders(
                               "PlusAddresses.NetworkRequest.$1.Latency",
                               {PlusAddressNetworkRequestTypeToString(type)},
@@ -66,9 +65,8 @@ void RecordNetworkRequestLatency(
                           request_latency);
 }
 
-void RecordNetworkRequestResponseCode(
-    PlusAddressNetworkRequestType type,
-    int response_code) {
+void RecordNetworkRequestResponseCode(PlusAddressNetworkRequestType type,
+                                      int response_code) {
   // Mapped to "HttpErrorCodes" in histograms.xml.
   base::UmaHistogramSparse(base::ReplaceStringPlaceholders(
                                "PlusAddresses.NetworkRequest.$1.ResponseCode",
@@ -77,9 +75,8 @@ void RecordNetworkRequestResponseCode(
                            response_code);
 }
 
-void RecordNetworkRequestResponseSize(
-    PlusAddressNetworkRequestType type,
-    int response_size) {
+void RecordNetworkRequestResponseSize(PlusAddressNetworkRequestType type,
+                                      int response_size) {
   base::UmaHistogramCounts10000(
       base::ReplaceStringPlaceholders(
           "PlusAddresses.NetworkRequest.$1.ResponseByteSize",
@@ -88,9 +85,7 @@ void RecordNetworkRequestResponseSize(
       response_size);
 }
 
-
-void RecordNetworkRequestOauthError(
-    GoogleServiceAuthError error) {
+void RecordNetworkRequestOauthError(GoogleServiceAuthError error) {
   base::UmaHistogramEnumeration("PlusAddresses.NetworkRequest.OauthError",
                                 error.state(),
                                 GoogleServiceAuthError::NUM_STATES);
