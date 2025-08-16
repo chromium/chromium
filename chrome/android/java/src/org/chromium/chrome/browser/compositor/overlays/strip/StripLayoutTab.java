@@ -157,6 +157,7 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mIsDying;
     private boolean mIsClosed;
     private boolean mIsSelected;
+    private boolean mIsPinned;
     private boolean mIsHovered;
     private boolean mIsMultiSelected;
     private boolean mCanShowCloseButton = true;
@@ -319,6 +320,21 @@ public class StripLayoutTab extends StripLayoutView {
     /** gets the multi-selected state of this tab */
     public boolean getIsMultiSelected() {
         return mIsMultiSelected;
+    }
+
+    /**
+     * Sets whether this tab has been pinned.
+     *
+     * @param isPinned whether this tab has been pinned.
+     */
+    // TODO(crbug.com/436263009) Hide close button and don't hide favicon.
+    public void setIsPinned(boolean isPinned) {
+        mIsPinned = isPinned;
+    }
+
+    /** Gets whether this tab has been pinned */
+    public boolean getIsPinned() {
+        return mIsPinned;
     }
 
     /**

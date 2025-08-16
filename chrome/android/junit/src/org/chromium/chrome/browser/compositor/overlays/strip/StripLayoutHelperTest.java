@@ -756,7 +756,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Tabs should be at minimum width for this test to be valid",
                 MIN_TAB_WIDTH_DP,
-                mStripLayoutHelper.getCachedTabWidthForTesting(),
+                mStripLayoutHelper.getUnpinnedTabWidthForTesting(),
                 EPSILON);
 
         final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
@@ -2510,7 +2510,7 @@ public class StripLayoutHelperTest {
         // Check initial bottom indicator width.
         float expectedStartWidth =
                 calculateExpectedBottomIndicatorWidth(
-                        mStripLayoutHelper.getCachedTabWidthForTesting(), 2, groupTitle);
+                        mStripLayoutHelper.getUnpinnedTabWidthForTesting(), 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width before resize.",
                 expectedStartWidth,
@@ -2584,7 +2584,7 @@ public class StripLayoutHelperTest {
         // Check initial bottom indicator width.
         float expectedStartWidth =
                 calculateExpectedBottomIndicatorWidth(
-                        mStripLayoutHelper.getCachedTabWidthForTesting(), 2, groupTitle);
+                        mStripLayoutHelper.getUnpinnedTabWidthForTesting(), 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width before resize.",
                 expectedStartWidth,
@@ -5841,7 +5841,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0, 1, null);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-        assertNotEquals(0, mStripLayoutHelper.getCachedTabWidthForTesting(), EPSILON);
+        assertNotEquals(0, mStripLayoutHelper.getUnpinnedTabWidthForTesting(), EPSILON);
     }
 
     @Test
