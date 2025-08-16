@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OK</title>
+</head>
+<body>
+    <script>
+    async function echo(obj) {
+      return obj.text;
+    }
+
+    const automationDelegate = window.automationDelegate;
+
+    automationDelegate.registerTool({
+      execute: echo,
+      name: "echo",
+      description: "echo input",
+    });
+  </script>
+</body>
+</html>

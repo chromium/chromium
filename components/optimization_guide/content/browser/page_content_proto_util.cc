@@ -610,7 +610,10 @@ void ConvertScriptTool(
     optimization_guide::proto::ScriptTool* proto_script_tool) {
   proto_script_tool->set_name(tool.name);
   proto_script_tool->set_description(tool.description);
-  proto_script_tool->set_input_schema(tool.input_schema);
+
+  if (tool.input_schema) {
+    proto_script_tool->set_input_schema(*tool.input_schema);
+  }
 
   if (tool.annotations) {
     proto_script_tool->mutable_annotations()->set_read_only(

@@ -16,6 +16,6 @@ struct ScriptTool {
   // These directly map to the corresponding fields in the web API.
   string name;
   string description;
-  string input_schema;
+  string? input_schema;
   ScriptToolAnnotations? annotations;
 };

@@ -38,6 +38,7 @@
 //components/test/data/optimization_guide/relative_path.html
 //components/test/data/optimization_guide/script_tool.html
 //components/test/data/optimization_guide/script_tool_no_annotation.html
+//components/test/data/optimization_guide/script_tool_no_input_schema.html
 //components/test/data/optimization_guide/scroller.html
 //components/test/data/optimization_guide/simple.html
 //components/test/data/optimization_guide/simple_test.tflite

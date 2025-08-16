@@ -1194,6 +1194,20 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestScriptTools,
   EXPECT_FALSE(tool.annotations().read_only());
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestScriptTools,
+                       NoInputSchema) {
+  LoadPage(https_server()->GetURL("/script_tool_no_input_schema.html"));
+
+  const auto& frame_data = page_content().main_frame_data();
+  ASSERT_EQ(frame_data.script_tools().size(), 1u);
+
+  const auto& tool = frame_data.script_tools().at(0);
+  EXPECT_EQ(tool.name(), "echo");
+  EXPECT_EQ(tool.description(), "echo input");
+  EXPECT_FALSE(tool.has_input_schema());
+  EXPECT_FALSE(tool.annotations().read_only());
+}
+
 class PageContentProtoProviderBrowserTestMediaData
     : public PageContentProtoProviderBrowserTest {
  public:
