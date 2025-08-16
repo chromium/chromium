@@ -25,7 +25,9 @@ export function getHtml(this: ComposeboxElement) {
     </div>
   `: ''}
   <div id="composebox" tabindex="-1" @keydown="${this.onKeydown_}"
-      ?inert=${this.showErrorScrim_}>
+      ?inert=${this.showErrorScrim_}
+      @focusin=${this.handleComposeboxFocusIn_}
+      @focusout=${this.handleComposeboxFocusOut_}>
     <div id="inputContainer">
       <ntp-composebox-file-carousel
         id="carousel"
@@ -37,7 +39,7 @@ export function getHtml(this: ComposeboxElement) {
           placeholder="${this.inputPlaceholder_}"
           @keydown="${this.onInputKeydown_}"
           @input=${this.handleInput_}></textarea>
-      <div id="uploadContainer">
+      <div id="uploadContainer" class="icon-fade">
         <cr-icon-button
             class="upload-icon no-overlap"
             id="imageUploadButton"
@@ -56,15 +58,20 @@ export function getHtml(this: ComposeboxElement) {
         </cr-icon-button>
       </div>
     </div>
+    <!-- A seperate container is needed for the submit button so the
+         expand/collapse animation can be applied without affecting the submit
+         button enabled/disabled state. -->
+    <div id="submitContainer" class="icon-fade">
+      <cr-icon-button
+        class="action-icon icon-arrow-upward"
+        id="submitIcon"
+        title="$i18n{composeboxSubmitButtonTitle}"
+        @click="${this.onSubmitClick_}"
+        ?disabled="${!this.submitEnabled_}">
+      </cr-icon-button>
+    </div>
     <cr-icon-button
-      class="action-icon icon-arrow-upward"
-      id="submitIcon"
-      title="$i18n{composeboxSubmitButtonTitle}"
-      @click="${this.onSubmitClick_}"
-      ?disabled="${!this.submitEnabled_}">
-    </cr-icon-button>
-    <cr-icon-button
-        class="action-icon icon-clear"
+        class="action-icon icon-fade icon-clear"
         id="cancelIcon"
         title="${this.computeCancelButtonTitle_()}"
         @click="${this.onCancelClick_}">
