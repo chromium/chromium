@@ -260,6 +260,7 @@ android_resources("ui_java_resources") {
     "java/res/drawable/custom_toast_background.xml",
     "java/res/drawable/dialog_bg_baseline.xml",
     "java/res/drawable/drag_shadow_background.xml",
+    "java/res/drawable/focused_outline_overlay_corners_16dp.xml",
     "java/res/drawable/ic_apps_blue_24dp.xml",
     "java/res/drawable/ic_arrow_back_24dp.xml",
     "java/res/drawable/ic_expand_more_horizontal_black_24dp.xml",
@@ -530,6 +531,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/widget/ChromeImageView.java",
     "java/src/org/chromium/ui/widget/LoadingView.java",
     "java/src/org/chromium/ui/widget/OptimizedFrameLayout.java",
+    "java/src/org/chromium/ui/widget/OutlineOverlayHelper.java",
     "java/src/org/chromium/ui/widget/RectProvider.java",
     "java/src/org/chromium/ui/widget/RippleBackgroundHelper.java",
     "java/src/org/chromium/ui/widget/SpanBackgroundHelper.java",
@@ -758,6 +760,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/util/TokenHolderTest.java",
     "junit/src/org/chromium/ui/widget/AnchoredPopupWindowTest.java",
     "junit/src/org/chromium/ui/widget/LoadingViewTest.java",
+    "junit/src/org/chromium/ui/widget/OutlineOverlayHelperTest.java",
     "junit/src/org/chromium/ui/widget/SpanBackgroundHelperTest.java",
     "junit/src/org/chromium/ui/widget/TextViewWithClickableSpansTest.java",
     "junit/src/org/chromium/ui/widget/ToastManagerTest.java",
@@ -871,6 +874,7 @@ android_library("clipboard_java_test_support") {
 android_resources("test_java_resources") {
   testonly = true
   sources = [
+    "test/java/res/layout/focus_outline_test_layout.xml",
     "test/java/res/layout/text_view_with_leading_bad_text_appearance.xml",
     "test/java/res/layout/text_view_with_leading_direct.xml",
     "test/java/res/layout/text_view_with_leading_no_leading.xml",
@@ -896,6 +900,7 @@ android_library("ui_unit_device_javatests") {
     "javatests/src/org/chromium/ui/base/ClipboardAndroidTest.java",
     "javatests/src/org/chromium/ui/insets/WindowInsetsUtilsJavaUnitTest.java",
     "javatests/src/org/chromium/ui/theme/ThemeResourceWrapperJavaUnitTest.java",
+    "javatests/src/org/chromium/ui/widget/OutlineOverlayHelperJavaUnitTest.java",
     "junit/src/org/chromium/ui/widget/TextViewWithLeadingTest.java",
   ]
 
@@ -904,6 +909,7 @@ android_library("ui_unit_device_javatests") {
     ":test_java_resources",
     ":ui_android_features_java",
     ":ui_java",
+    ":ui_java_resources",
     ":ui_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -912,6 +918,7 @@ android_library("ui_unit_device_javatests") {
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_test_core_java",

@@ -124,4 +124,11 @@ found in the LICENSE file.
     <dimen name="span_background_border_radius">4dp</dimen>
     <dimen name="span_background_border_width">2dp</dimen>
     <dimen name="span_background_horizontal_padding">4dp</dimen>
+
+    <!-- Keyboard focus outline -->
+    <!-- The size between outline and the view outer bound-->
+    <dimen name="focused_outline_offset">2dp</dimen>
+    <!-- TODO: Merge with "focused_icon_background_stroke_width" -->
+    <dimen name="focused_outline_stroke_width">2dp</dimen>
+    <dimen name="focused_outline_corner_radius_card">16dp</dimen>
 </resources>

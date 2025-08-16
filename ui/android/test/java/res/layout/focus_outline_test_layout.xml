@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/button_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <Button
+        android:id="@+id/button_green"
+        android:layout_width="80dp"
+        android:layout_height="60dp"
+        android:layout_margin="8dp"
+        android:backgroundTint="@android:color/holo_green_light"
+        android:focusableInTouchMode="true"
+        android:layout_alignParentStart="true"/>
+
+    <Button
+        android:id="@+id/button_red"
+        android:layout_width="80dp"
+        android:layout_height="60dp"
+        android:layout_margin="8dp"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:focusableInTouchMode="true"
+        android:layout_toEndOf="@+id/button_green"/>
+
+</RelativeLayout>
