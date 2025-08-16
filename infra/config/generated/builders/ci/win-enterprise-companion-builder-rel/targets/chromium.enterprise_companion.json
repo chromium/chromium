@@ -53,7 +53,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "integrity": "high",
-            "os": "Windows-11-22631",
+            "os": "Windows-11",
             "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -70,7 +70,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "integrity": "high",
-            "os": "Windows-11-22631",
+            "os": "Windows-11",
             "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"

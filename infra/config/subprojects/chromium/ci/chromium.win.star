@@ -539,7 +539,7 @@ ci.thin_tester(
         ],
         mixins = [
             "x86-64",
-            "win11",
+            "win11-any",
             "isolate_profile_data",
         ],
         per_test_modifications = {

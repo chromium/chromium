@@ -856,7 +856,7 @@ ci.thin_tester(
             "enterprise_companion_gtests_win",
         ],
         mixins = [
-            "win11",
+            "win11-any",
             "x86-64",
         ],
     ),

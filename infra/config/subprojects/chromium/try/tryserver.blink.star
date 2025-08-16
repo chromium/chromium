@@ -301,7 +301,7 @@ _rebaseline_builder(
                     hard_timeout_sec = 900,
                 ),
             ),
-            "win11",
+            "win11-any",
         ],
         per_test_modifications = {
             "blink_wpt_tests": targets.mixin(
