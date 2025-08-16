@@ -46,8 +46,8 @@ class PredictionModelFetcherTest : public testing::Test {
 
   ~PredictionModelFetcherTest() override = default;
 
-  void OnModelsFetched(std::optional<std::unique_ptr<proto::GetModelsResponse>>
-                           get_models_response) {
+  void OnModelsFetched(
+      std::unique_ptr<proto::GetModelsResponse> get_models_response) {
     if (get_models_response) {
       models_fetched_ = true;
     }

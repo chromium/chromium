@@ -323,8 +323,7 @@ void PredictionManager::FetchModels() {
 
 void PredictionManager::OnModelsFetched(
     const std::vector<proto::ModelInfo> models_request_info,
-    std::optional<std::unique_ptr<proto::GetModelsResponse>>
-        get_models_response_data) {
+    std::unique_ptr<proto::GetModelsResponse> get_models_response_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!get_models_response_data) {
     for (const auto& model_info : models_request_info) {
@@ -335,10 +334,10 @@ void PredictionManager::OnModelsFetched(
     return;
   }
 
-  if ((*get_models_response_data)->models_size() > 0 ||
+  if (get_models_response_data->models_size() > 0 ||
       models_request_info.size() > 0) {
     UpdatePredictionModels(models_request_info,
-                           (*get_models_response_data)->models());
+                           get_models_response_data->models());
   }
 
   prediction_model_fetch_timer_.NotifyModelFetchSuccess();

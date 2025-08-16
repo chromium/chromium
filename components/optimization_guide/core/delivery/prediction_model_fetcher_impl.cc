@@ -58,7 +58,7 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
 
   // If there are no models to request, do not make a GetModelsRequest.
   if (models_request_info.empty()) {
-    std::move(models_fetched_callback).Run(std::nullopt);
+    std::move(models_fetched_callback).Run(nullptr);
     return false;
   }
 
@@ -136,9 +136,8 @@ void PredictionModelFetcherImpl::HandleResponse(
     const std::string& get_models_response_data,
     int net_status,
     int response_code) {
-  std::unique_ptr<optimization_guide::proto::GetModelsResponse>
-      get_models_response =
-          std::make_unique<optimization_guide::proto::GetModelsResponse>();
+  auto get_models_response =
+      std::make_unique<optimization_guide::proto::GetModelsResponse>();
 
   if (response_code >= 0 && response_code <= net::HTTP_VERSION_NOT_SUPPORTED) {
     UMA_HISTOGRAM_ENUMERATION(
@@ -177,7 +176,7 @@ void PredictionModelFetcherImpl::HandleResponse(
       get_models_response->ParseFromString(get_models_response_data)) {
     std::move(models_fetched_callback_).Run(std::move(get_models_response));
   } else {
-    std::move(models_fetched_callback_).Run(std::nullopt);
+    std::move(models_fetched_callback_).Run(nullptr);
   }
 }
 

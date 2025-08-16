@@ -172,9 +172,9 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // the response and stores them for use. The metadata entry containing the
   // time that updates should be fetched from the remote Optimization Guide
   // Service is updated, even when the response is empty.
-  void OnModelsFetched(const std::vector<proto::ModelInfo> models_request_info,
-                       std::optional<std::unique_ptr<proto::GetModelsResponse>>
-                           get_models_response_data);
+  void OnModelsFetched(
+      const std::vector<proto::ModelInfo> models_request_info,
+      std::unique_ptr<proto::GetModelsResponse> get_models_response_data);
 
   // Load models for every target in |optimization_targets| that have not yet
   // been loaded from the store.

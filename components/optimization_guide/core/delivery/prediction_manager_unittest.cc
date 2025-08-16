@@ -185,16 +185,6 @@ enum class PredictionModelFetcherEndState {
   kFetchSuccessWithEmptyResponse = 2,
 };
 
-void RunGetModelsCallback(
-    ModelsFetchedCallback callback,
-    std::unique_ptr<proto::GetModelsResponse> get_models_response) {
-  if (get_models_response) {
-    std::move(callback).Run(std::move(get_models_response));
-    return;
-  }
-  std::move(callback).Run(std::nullopt);
-}
-
 // A mock class implementation of PredictionModelFetcherImpl.
 class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
  public:
@@ -215,7 +205,7 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
       const std::string& locale,
       ModelsFetchedCallback models_fetched_callback) override {
     if (!ValidateModelsInfoForFetch(models_request_info)) {
-      std::move(models_fetched_callback).Run(std::nullopt);
+      std::move(models_fetched_callback).Run(nullptr);
       return false;
     }
 
@@ -236,8 +226,7 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
         break;
     }
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&RunGetModelsCallback,
-                                  std::move(models_fetched_callback),
+        FROM_HERE, base::BindOnce(std::move(models_fetched_callback),
                                   std::move(get_models_response)));
     return true;
   }
