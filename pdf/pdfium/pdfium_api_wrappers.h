@@ -28,6 +28,11 @@
 
 namespace chrome_pdf {
 
+// Converts between the two rect types. The returned rect is really the same
+// instance as the input rect.
+const FS_RECTF& FsRectFFromPdfRect(const PdfRect& rect);
+FS_RECTF& FsRectFFromPdfRect(PdfRect& rect);
+
 // Same as LoadPdfDataWithPassword(), but without a password.
 ScopedFPDFDocument LoadPdfData(base::span<const uint8_t> pdf_data);
 
@@ -35,6 +40,10 @@ ScopedFPDFDocument LoadPdfData(base::span<const uint8_t> pdf_data);
 // cannot be a string_view, since it needs to be null-terminated.
 ScopedFPDFDocument LoadPdfDataWithPassword(base::span<const uint8_t> pdf_data,
                                            const std::string& password);
+
+// Wrapper around FPDFAnnot_GetRect(). Returns the bounds for `annot`, or
+// std::nullopt on failure.
+std::optional<PdfRect> GetAnnotRect(FPDF_ANNOTATION annot);
 
 // Wrapper around FPDFPageObj_GetBounds(). Returns the bounds for `page_object`,
 // or std::nullopt on failure.

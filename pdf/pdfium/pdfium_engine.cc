@@ -55,6 +55,7 @@
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_transform.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_document.h"
 #include "pdf/pdfium/pdfium_document_metadata.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
@@ -4138,10 +4139,12 @@ void PDFiumEngine::ScrollAnnotationIntoView(FPDF_ANNOTATION annot,
   if (!PageIndexInBounds(page_index))
     return;
 
-  FS_RECTF annot_rect;
-  if (!FPDFAnnot_GetRect(annot, &annot_rect))
+  const std::optional<PdfRect> maybe_annot_rect = GetAnnotRect(annot);
+  if (!maybe_annot_rect.has_value()) {
     return;
+  }
 
+  const auto& annot_rect = FsRectFFromPdfRect(maybe_annot_rect.value());
   gfx::Rect rect = pages_[page_index]->PageToScreen(
       gfx::Point(), /*zoom=*/1.0, annot_rect.left, annot_rect.top,
       annot_rect.right, annot_rect.bottom, GetCurrentOrientation());
@@ -4210,10 +4213,12 @@ void PDFiumEngine::OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot,
       is_form_text_area && IsAnnotationAnEditableFormTextArea(annot, form_type);
 
   if (editable_form_text_area_ && PageIndexInBounds(page_index)) {
-    FS_RECTF annot_rect;
-    if (!FPDFAnnot_GetRect(annot, &annot_rect))
+    const std::optional<PdfRect> maybe_annot_rect = GetAnnotRect(annot);
+    if (!maybe_annot_rect.has_value()) {
       return;
+    }
 
+    const auto& annot_rect = FsRectFFromPdfRect(maybe_annot_rect.value());
     // Position assuming top-left of the first page is at (0,0).
     gfx::Rect rect_screen = pages_[page_index]->PageToScreen(
         gfx::Point(), current_zoom_, annot_rect.left, annot_rect.top,

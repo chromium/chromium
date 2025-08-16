@@ -20,16 +20,16 @@ void PdfRect::Normalize() {
 
 void PdfRect::Scale(float scale_factor) {
   left_ *= scale_factor;
-  bottom_ *= scale_factor;
-  right_ *= scale_factor;
   top_ *= scale_factor;
+  right_ *= scale_factor;
+  bottom_ *= scale_factor;
 }
 
 void PdfRect::Intersect(const PdfRect& rect) {
   left_ = std::max(left_, rect.left_);
-  bottom_ = std::max(bottom_, rect.bottom_);
-  right_ = std::min(right_, rect.right_);
   top_ = std::min(top_, rect.top_);
+  right_ = std::min(right_, rect.right_);
+  bottom_ = std::max(bottom_, rect.bottom_);
 }
 
 }  // namespace chrome_pdf

@@ -833,14 +833,8 @@ gfx::RectF PDFiumPage::GetBoundingBox() {
       continue;
     }
 
-    const auto& bounds = maybe_bounds.value();
-    // TODO(thestig): Avoid PdfRect to FS_RECTF conversion.
-    const FS_RECTF fs_bounds(
-        /*left=*/bounds.left(),
-        /*top=*/bounds.top(),
-        /*right=*/bounds.right(),
-        /*bottom=*/bounds.bottom());
-    largest_bounds = GetLargestBounds(largest_bounds, fs_bounds);
+    const auto& bounds = FsRectFFromPdfRect(maybe_bounds.value());
+    largest_bounds = GetLargestBounds(largest_bounds, bounds);
   }
   for (int i = 0; i < FPDFPage_GetAnnotCount(page); ++i) {
     ScopedFPDFAnnotation annotation(FPDFPage_GetAnnot(page, i));
@@ -848,10 +842,13 @@ gfx::RectF PDFiumPage::GetBoundingBox() {
       continue;
     }
 
-    FS_RECTF bounds;
-    if (FPDFAnnot_GetRect(annotation.get(), &bounds)) {
-      largest_bounds = GetLargestBounds(largest_bounds, bounds);
+    const std::optional<PdfRect> maybe_bounds = GetAnnotRect(annotation.get());
+    if (!maybe_bounds.has_value()) {
+      continue;
     }
+
+    const auto& bounds = FsRectFFromPdfRect(maybe_bounds.value());
+    largest_bounds = GetLargestBounds(largest_bounds, bounds);
   }
 
   gfx::RectF bounding_box =
@@ -1600,10 +1597,12 @@ void PDFiumPage::PopulateHighlight(FPDF_ANNOTATION annot) {
   DCHECK(annot);
   DCHECK_EQ(FPDFAnnot_GetSubtype(annot), FPDF_ANNOT_HIGHLIGHT);
 
-  FS_RECTF rect;
-  if (!FPDFAnnot_GetRect(annot, &rect))
+  const std::optional<PdfRect> maybe_rect = GetAnnotRect(annot);
+  if (!maybe_rect.has_value()) {
     return;
+  }
 
+  const auto& rect = FsRectFFromPdfRect(maybe_rect.value());
   Highlight highlight;
   // We use the bounding box of the highlight as the bounding rect.
   highlight.bounding_rect =
@@ -1741,10 +1740,12 @@ void PDFiumPage::PopulateFormField(FPDF_ANNOTATION annot) {
 bool PDFiumPage::PopulateFormFieldProperties(FPDF_ANNOTATION annot,
                                              FormField* form_field) {
   DCHECK(annot);
-  FS_RECTF rect;
-  if (!FPDFAnnot_GetRect(annot, &rect))
+  const std::optional<PdfRect> maybe_rect = GetAnnotRect(annot);
+  if (!maybe_rect.has_value()) {
     return false;
+  }
 
+  const auto& rect = FsRectFFromPdfRect(maybe_rect.value());
   // We use the bounding box of the form field as the bounding rect.
   form_field->bounding_rect =
       PageToScreen(gfx::Point(), 1.0, rect.left, rect.top, rect.right,

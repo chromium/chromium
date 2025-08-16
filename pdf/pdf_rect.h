@@ -5,18 +5,21 @@
 #ifndef PDF_PDF_RECT_H_
 #define PDF_PDF_RECT_H_
 
+#include <stddef.h>
+
 namespace chrome_pdf {
 
 // Represents PDF rectangles:
 // - The origin is at the bottom-left.
 // - All units are in points.
 //
-// Can be easily used with PDFium's bounding box functions.
+// Can be easily used with PDFium APIs that take either FS_RECTF, or 4 float
+// pointers.
 class PdfRect {
  public:
   constexpr PdfRect() : PdfRect(0, 0, 0, 0) {}
   constexpr PdfRect(float left, float bottom, float right, float top)
-      : left_(left), bottom_(bottom), right_(right), top_(top) {}
+      : left_(left), top_(top), right_(right), bottom_(bottom) {}
   constexpr ~PdfRect() = default;
 
   float left() const { return left_; }
@@ -25,7 +28,7 @@ class PdfRect {
   float top() const { return top_; }
 
   // These return pointers so they can be directly passed into PDFium's public
-  // API, which is written in C.
+  // APIs, which are written in C.
   float* writable_left() { return &left_; }
   float* writable_bottom() { return &bottom_; }
   float* writable_right() { return &right_; }
@@ -44,11 +47,21 @@ class PdfRect {
 
   void Intersect(const PdfRect& rect);
 
+  // Exposes offsetof() values for the private variables.
+  static constexpr size_t offsetof_left() { return offsetof(PdfRect, left_); }
+  static constexpr size_t offsetof_bottom() {
+    return offsetof(PdfRect, bottom_);
+  }
+  static constexpr size_t offsetof_right() { return offsetof(PdfRect, right_); }
+  static constexpr size_t offsetof_top() { return offsetof(PdfRect, top_); }
+
  private:
+  // Do not change the ordering here, or add new member variables. This is
+  // arranged to be the same order as PDFium's FS_RECTF.
   float left_;
-  float bottom_;
-  float right_;
   float top_;
+  float right_;
+  float bottom_;
 };
 
 }  // namespace chrome_pdf
