@@ -121,6 +121,7 @@ struct CalcProvider : Config<CalcProvider> {
 // AIM related omnibox features.
 struct AiMode : Config<AiMode> {
   DECLARE_FEATURE(kAiModeEchoMatchTweaks);
+  DECLARE_FEATURE(kAiModeEligibility);
 
   AiMode();
 
@@ -153,6 +154,14 @@ struct AiMode : Config<AiMode> {
   // These changes apply to both omnibox and other (e.g. bookmark, web)
   // navigations.
   bool do_not_show_historic_aim_suggestions = true;
+
+  // Whether to check for AI mode eligibility on the client side
+  // `AimEligibilityService` based on the user's locale.
+  bool check_ai_locale_client_side = true;
+
+  // If true, use the gws side eligibility values. Otherwise, ignore the gws
+  // side response and use client side eligibility values.
+  bool check_ai_eligibility_gws_side = false;
 };
 
 // A config struct for features related to contextual search in omnibox.

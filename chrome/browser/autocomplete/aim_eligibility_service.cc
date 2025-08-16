@@ -12,6 +12,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_observer.h"
 #include "chrome/browser/browser_process.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
@@ -152,9 +153,18 @@ bool AimEligibilityService::IsAimEligible() const {
   // TODO(crbug.com/436901669): Conditionally check
   //   `most_recent_aim_eligibility_response.is_eligible()` and
   //   `IsCountryAndLocale()` depending on feature param state.
+  const bool client_locale_eligible =
+      !omnibox_feature_configs::AiMode::Get().check_ai_locale_client_side ||
+      IsCountryAndLocale("us", "en-*");
+
+  const bool server_locale_eligible =
+      !omnibox_feature_configs::AiMode::Get().check_ai_eligibility_gws_side ||
+      most_recent_aim_eligibility_response.is_eligible();
+
+  const bool locale_eligible = client_locale_eligible || server_locale_eligible;
+
   return search::DefaultSearchProviderIsGoogle(template_url_service_) &&
-         IsCountryAndLocale("us", "en-US") &&
-         omnibox::IsAimAllowedByPolicy(pref_service_);
+         locale_eligible && omnibox::IsAimAllowedByPolicy(pref_service_);
 }
 
 void AimEligibilityService::NotifyObservers() const {

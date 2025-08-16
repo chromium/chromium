@@ -47,6 +47,9 @@ CalcProvider::CalcProvider() {
 BASE_FEATURE(AiMode::kAiModeEchoMatchTweaks,
              "kAiModeEchoMatchTweaks",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(AiMode::kAiModeEligibility,
+             "kAiModeEligibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 AiMode::AiMode() {
   ai_mode_echo_match_tweaks =
       base::FeatureList::IsEnabled(kAiModeEchoMatchTweaks);
@@ -60,6 +63,16 @@ AiMode::AiMode() {
       base::FeatureParam<bool>(&kAiModeEchoMatchTweaks,
                                "DoNotShowHistoricAimSuggestions",
                                do_not_show_historic_aim_suggestions)
+          .Get();
+
+  check_ai_locale_client_side =
+      base::FeatureParam<bool>(&kAiModeEligibility, "CheckAiLocaleClientSide",
+                               check_ai_locale_client_side)
+          .Get();
+
+  check_ai_eligibility_gws_side =
+      base::FeatureParam<bool>(&kAiModeEligibility, "CheckAiEligibilityGWSSide",
+                               check_ai_eligibility_gws_side)
           .Get();
 }
 
