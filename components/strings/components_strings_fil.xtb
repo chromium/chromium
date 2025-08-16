@@ -700,6 +700,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2154484045852737596">I-edit ang card</translation>
 <translation id="2154739667870063220">I-reboot</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
+<translation id="2156467141257470387">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Hindi nito babaguhin ang iyong kasalukuyang address ng trabaho. Ise-save ito sa iyong Google Account, na <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Mga notification sa pag-track ng presyo</translation>
 <translation id="21613918653299710">Mga Online na Gallery ng Larawan</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -2997,6 +2998,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5984570616552610254">Humidity sa chamber</translation>
 <translation id="598637245381783098">Hindi mabuksan ang app sa pagbabayad</translation>
 <translation id="5989320800837274978">Hindi tunukoy ang alinman sa mga hindi nababagong proxy server o isang .pac script URL.</translation>
+<translation id="5989917734461988169">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Hindi nito babaguhin ang iyong kasalukuyang address ng tahanan. Ise-save ito sa iyong Google Account, na <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Engineering Z-fold</translation>
 <translation id="5992805036496113940">Tingnan ang impormasyong ginamit para magpakita sa iyo ng mga ad</translation>
 <translation id="5995727681868049093">Pamahalaan ang iyong impormasyon, privacy, at seguridad sa iyong Google Account</translation>
@@ -4898,6 +4900,7 @@ Mga karagdagang detalye:
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Gustong gumamit ng Chrome browser ng fingerprint para i-autofill ang mga password</translation>
 <translation id="9141013498910525015">Pamahalaan ang mga address</translation>
+<translation id="9141435142213469335">Mag-save ng address nang may higit pang impormasyon</translation>
 <translation id="9141672681283222114">Pinapayagan ang AR sa pagkakataong ito</translation>
 <translation id="9143898823728499852">Puwede mong i-autofill ang card na ito dahil naka-link sa Google Pay ang iyong <ph name="CARD_ISSUER_NAME" /> account</translation>
 <translation id="9144951720726881238">Expiration date:</translation>

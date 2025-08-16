@@ -310,6 +310,7 @@
 <translation id="443121186588148776">串行端口</translation>
 <translation id="4434045419905280838">弹出式窗口和重定向</translation>
 <translation id="443552056913301231">此操作会删除所有本地数据（包括 Cookie）并重置 <ph name="ORIGIN" /> 的所有权限</translation>
+<translation id="4441527683895888777">已打开 Chrome 颜色底部动作条，并以最大高度显示</translation>
 <translation id="4468959413250150279">将某个特定网站静音。</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# 个 Cookie}other{# 个 Cookie}}</translation>
 <translation id="4478158430052450698">更轻松地自定义不同网站的缩放级别</translation>
@@ -345,6 +346,7 @@
 <translation id="4953688446973710931">开启此设置后，网站可以请求自动下载多个文件。关闭此设置后，网站无法自动下载多个文件。</translation>
 <translation id="4962975101802056554">撤消设备的所有权限</translation>
 <translation id="4972737347717125191">网站可以请求使用虚拟现实设备和数据</translation>
+<translation id="4973805849704516244">Chrome 颜色底部动作条</translation>
 <translation id="497421865427891073">前进</translation>
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
 <translation id="4978178243417029856">详细了解探索信息流</translation>

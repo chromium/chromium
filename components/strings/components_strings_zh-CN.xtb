@@ -700,7 +700,7 @@
 <translation id="2154484045852737596">修改支付卡</translation>
 <translation id="2154739667870063220">重新启动</translation>
 <translation id="2155260325161282517">5 x 7 英寸</translation>
-<translation id="2156467141257470387">您可在各种 Google 产品中使用已保存的地址。这不会更改现有的工作地址。系统会将该地址保存在 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
+<translation id="2156467141257470387">您可在各种 Google 产品中使用已保存的地址。这不会更改现有的工作地址。以上信息将保存在您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2157640075051554492">价格跟踪通知</translation>
 <translation id="21613918653299710">在线图库</translation>
 <translation id="2161656808144014275">文字</translation>
@@ -2994,7 +2994,7 @@
 <translation id="5984570616552610254">室内湿度</translation>
 <translation id="598637245381783098">无法打开付款应用</translation>
 <translation id="5989320800837274978">固定代理服务器和 .pac 脚本网址均未指定。</translation>
-<translation id="5989917734461988169">您可在各种 Google 产品中使用已保存的地址。这不会更改现有的住址。系统会将该地址保存在 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
+<translation id="5989917734461988169">您可在各种 Google 产品中使用已保存的地址。这不会更改现有的住址。以上信息将保存在您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="5992691462791905444">工程 Z 型折</translation>
 <translation id="5992805036496113940">查看向您展示广告时使用的信息</translation>
 <translation id="5995727681868049093">在您的 Google 账号中管理自己的信息、隐私和安全</translation>
@@ -4896,7 +4896,7 @@
 <translation id="9139318394846604261">购物</translation>
 <translation id="9140198744651252040">Chrome 浏览器希望使用指纹来自动填充密码</translation>
 <translation id="9141013498910525015">管理地址</translation>
-<translation id="9141435142213469335">保存包含更多信息的地址</translation>
+<translation id="9141435142213469335">保存新增了信息的地址</translation>
 <translation id="9141672681283222114">这次允许使用 AR</translation>
 <translation id="9143898823728499852">您可以自动填充此卡的信息，因为您的 <ph name="CARD_ISSUER_NAME" /> 账号已关联到 Google Pay</translation>
 <translation id="9144951720726881238">到期日期：</translation>

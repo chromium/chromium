@@ -1641,6 +1641,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2110941575868943054">Com permissão para procurar dispositivos Bluetooth</translation>
 <translation id="211144231511833662">Limpar tipos</translation>
 <translation id="2111670510994270194">Nova guia à direita</translation>
+<translation id="2111778868023567359">Os grupos de guias não vão mais aparecer nesta página</translation>
 <translation id="2112554630428445878">Olá, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fixar guia</translation>
 <translation id="2113479184312716848">Abrir &amp;arquivo...</translation>
@@ -2052,6 +2053,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2392369802118427583">Ativar</translation>
 <translation id="2393136602862631930">Configure o <ph name="APP_NAME" /> no seu Chromebook</translation>
 <translation id="2393313392064891208">Conteúdo dos Termos do Google ChromeOS Flex</translation>
+<translation id="2393944685985256805"><ph name="MODULE_NAME" /> oculto</translation>
 <translation id="2395616325548404795">Seu <ph name="DEVICE_TYPE" /> foi registrado para o gerenciamento corporativo, mas as informações de localização e recurso não foram enviadas. Forneça essas informações manualmente no Admin Console do dispositivo.</translation>
 <translation id="2396783860772170191">Insira o PIN de quatro dígitos (0000-9999)</translation>
 <translation id="2398546389094871088">O Powerwash do dispositivo não removerá seus perfis de eSIM. Para remover esses perfis manualmente, acesse <ph name="LINK_BEGIN" />Configurações do celular<ph name="LINK_END" />.</translation>
@@ -2657,6 +2659,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2794522004398861033">Conecte-se a uma rede Wi-Fi ou Ethernet para configurar o eSIM</translation>
 <translation id="2794977172822818797">Adicionar sites atuais</translation>
 <translation id="2795716239552913152">Os sites geralmente usam sua localização para recursos ou informações relevantes, como notícias locais ou lojas por perto</translation>
+<translation id="2797712124653482791">Ocultar por <ph name="DISMISS_DAYS" /> dias</translation>
 <translation id="2798347533012571708">Manter atualizações</translation>
 <translation id="2799162042226656283">Seu Chrome</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
@@ -4082,6 +4085,10 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3800764353337460026">Estilo dos símbolos</translation>
 <translation id="3800828618615365228">Termos adicionais do Google Chrome e do ChromeOS</translation>
 <translation id="3800898876950197674">Para permitir essa extensão, digite sua senha.</translation>
+<translation id="3801131837165361989">Você está recebendo sugestões sobre como personalizar o Chrome e torná-lo mais eficiente para atender às suas necessidades diárias.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        É possível gerenciar as configurações no menu do card ou ver mais opções em "Personalizar o Chrome".</translation>
 <translation id="3801449494961771207">Voz do sistema da conversão de texto em voz</translation>
 <translation id="3802486193901166966">Esta extensão não requer permissões especiais e não tem nenhum acesso extra a sites</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -4875,7 +4882,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4358643842961018282">O dispositivo está atualizado</translation>
 <translation id="4358995225307748864">Selecione um app para abrir</translation>
 <translation id="4359408040881008151">Instalada devido a extensões dependentes.</translation>
-<translation id="4359809482106103048">Resumo de segurança</translation>
+<translation id="4359809482106103048">Resumo sobre segurança</translation>
 <translation id="4360738659108163902">Clicar com o botão direito do mouse</translation>
 <translation id="4361745360460842907">Abrir como guia</translation>
 <translation id="4362459470237309049">Use a tecla “.” para soltar um botão do mouse</translation>
@@ -4968,6 +4975,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4415815425191869676">Sempre manter estes sites ativos</translation>
 <translation id="4416582610654027550">Digite um URL válido</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Pausar guia}one{Pausar guia}other{Pausar guias}}</translation>
+<translation id="4419287616181386201">As senhas podem ser excluídas nas configurações de gerenciamento</translation>
 <translation id="4421932172707401417">As sugestões de texto são baseados nos seus comandos e no conteúdo da página da Web</translation>
 <translation id="4421932782753506458">Pelúcia</translation>
 <translation id="4423376891418188461">Restaurar configurações</translation>
@@ -5320,7 +5328,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4676543021048806071">Digite o PIN de 6 dígitos do Gerenciador de senhas do Google</translation>
 <translation id="4676595058027112862">Seu smartphone. Saiba mais</translation>
 <translation id="4676616966096505747">Alguns dados ainda não foram salvos na sua conta</translation>
-<translation id="4677772697204437347">Memória do GPU</translation>
+<translation id="4677772697204437347">Memória da GPU</translation>
 <translation id="467809019005607715">Apresentações Google</translation>
 <translation id="4678848110205818817">Cartão de crédito/débito</translation>
 <translation id="4679018849559620189">Ele ajuda você a acessar as chaves de acesso salvas em qualquer dispositivo</translation>
@@ -5859,6 +5867,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5064921774605267982">Abrir perfil <ph name="PROFILE_NAME" />. Esse perfil é gerenciado pelo seu familiar responsável.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gerenciar o DNS seguro nas configurações do ChromeOS</translation>
+<translation id="5066523884829290323">Mudar no site</translation>
 <translation id="5066534201484101197">Rolagem esticada para navegar entre as páginas</translation>
 <translation id="5067399438976153555">Sempre ativado</translation>
 <translation id="5067867186035333991">Perguntar se <ph name="HOST" /> deseja acessar seu microfone</translation>
@@ -6479,6 +6488,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5496730470963166430">Bloquear o envio de pop-ups ou o uso de redirecionamentos</translation>
 <translation id="5497250476399536588">Ele pode ser encontrado em "Endereços e mais"</translation>
 <translation id="5497251278400702716">Este arquivo</translation>
+<translation id="549762298434242239">Essa extensão não é considerada confiável pela Navegação Segura com Maior Proteção. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">O Chrome não conseguiu verificar o pacote de instalação</translation>
 <translation id="5498967291577176373">Escrever mais rápido com sugestões in-line para seu nome, endereço ou número de telefone</translation>
 <translation id="5499211612787418966">A caixa de diálogo não está em foco. Pressione Alt + Shift + A para focar na caixa de diálogo.</translation>
@@ -6540,6 +6550,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Escolher sua configuração</translation>
 <translation id="5551573675707792127">Teclado e entrada de texto</translation>
+<translation id="5551753770140674714">Os dados são criptografados com sua senha longa de sincronização Isso não inclui formas de pagamento e endereços do Google Pay.</translation>
 <translation id="5553089923092577885">Mapeamentos da diretiva de certificação</translation>
 <translation id="5554240068773209752">Clique aqui para personalizar os controles</translation>
 <translation id="5554403733534868102">Depois disto, chega de esperar atualizações</translation>
@@ -6844,6 +6855,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5780973441651030252">Prioridade do processo</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Mover os dados da sua conta escolar para a pessoal</translation>
+<translation id="5781244749114921664">Grupos de guias ocultos</translation>
 <translation id="5782227691023083829">Traduzindo...</translation>
 <translation id="5783346913439924978">Rastreamento da cabeça</translation>
 <translation id="57838592816432529">Desativar som</translation>
@@ -6963,7 +6975,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5857693745746757503">Economize US$ 50 ou mais em um novo Chromebook fazendo upgrade hoje mesmo</translation>
 <translation id="5858490737742085133">Terminal</translation>
 <translation id="585979798156957858">Meta externa</translation>
-<translation id="5860033963881614850">Desativado</translation>
+<translation id="5860033963881614850">Desativada</translation>
 <translation id="5860254591544742609">Mostrar barra de título</translation>
 <translation id="5860335608673904825">Pesquisa + Ctrl + Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="5860491529813859533">Ativar</translation>
@@ -8964,6 +8976,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7292067737327289208">O <ph name="BEGIN_LINK" />navegador é gerenciado<ph name="END_LINK" /> pela sua organização, e seu <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" /> é gerenciado por <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="7292147651179697920">Peça para um familiar responsável permitir o acesso nas Configurações</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">O histórico de pesquisa, do Gemini e as senhas podem ser excluídos nas configurações de gerenciamento</translation>
 <translation id="7295614427631867477">O Android, o Google Play e os apps associados são regidos pelas próprias políticas de uso e de coleta de dados.</translation>
 <translation id="7296503797589217366">Selecionar pasta <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verde-escuro</translation>
@@ -9759,6 +9772,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7830276128493844263">A localização está desativada nas configurações do sistema</translation>
 <translation id="7830833461614351956">Copiar <ph name="NUM_OF_FILES" /> arquivos para abrir no <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">Mudar por mim</translation>
 <translation id="7833720883933317473">As palavras personalizadas salvas serão exibidas aqui</translation>
 <translation id="7834832693620032149">Para compartilhar áudio, compartilhe uma guia ou janela</translation>
 <translation id="7836577093182643605">Lista de temas bloqueados que você não quer compartilhar com sites</translation>
@@ -10030,6 +10044,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8008704580256716350">Arquivo suspeito bloqueado</translation>
 <translation id="8009196983040865987">Quando você usa o Organizador de guias, os títulos e URLs das suas guias abertas são enviados ao Google para gerar grupos de guias sugeridos</translation>
 <translation id="8009225694047762179">Gerenciar senhas</translation>
+<translation id="8010312870936510509">Os dados foram criptografados com sua senha longa de sincronização em <ph name="TIME" />. Isso não inclui formas de pagamento e endereços do Google Pay.</translation>
 <translation id="8011372169388649948">O favorito "<ph name="BOOKMARK_TITLE" />" foi movido.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Detalhes do ponto de acesso instantâneo</translation>

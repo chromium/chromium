@@ -1128,6 +1128,7 @@
 <translation id="1768212860412467516">针对实验“<ph name="EXPERIMENT_NAME" />”发送反馈。</translation>
 <translation id="1769104665586091481">在新窗口中打开链接(&amp;W)</translation>
 <translation id="1769157454356586138">扫描失败。您的管理员已屏蔽此文件</translation>
+<translation id="176920518817780870">将分组转换为书签文件夹</translation>
 <translation id="1770407692401984718">将图片拖到此处，或者</translation>
 <translation id="177053719077591686">将 Android 应用备份到 Google 云端硬盘。</translation>
 <translation id="1773329206876345543">使用 <ph name="DEVICE_TYPE" /> 的移动流量创建 WLAN 热点，以便向其他设备提供互联网连接。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -2032,6 +2033,7 @@
 <translation id="2392369802118427583">激活</translation>
 <translation id="2393136602862631930">在 Chromebook 上设置 <ph name="APP_NAME" /></translation>
 <translation id="2393313392064891208">Google ChromeOS Flex 条款内容</translation>
+<translation id="2393944685985256805">已隐藏“<ph name="MODULE_NAME" />”</translation>
 <translation id="2395616325548404795">您的 <ph name="DEVICE_TYPE" /> 已成功注册企业管理服务，但未能发送其资产和位置信息。请通过管理控制台为此设备手动输入这些信息。</translation>
 <translation id="2396783860772170191">输入 4 位数的 PIN 码 (0000-9999)</translation>
 <translation id="2398546389094871088">对您的设备执行 Powerwash 不会移除您的 eSIM 卡配置文件。请转到<ph name="LINK_BEGIN" />移动设置<ph name="LINK_END" />页面手动移除这些配置文件。</translation>
@@ -2637,6 +2639,7 @@
 <translation id="2794522004398861033">请连接到 Wi-Fi 或以太网以设置 eSIM 卡</translation>
 <translation id="2794977172822818797">添加当前网站</translation>
 <translation id="2795716239552913152">网站通常会使用您的位置信息以实现相关功能或提供相关信息（例如本地新闻或附近的商店）</translation>
+<translation id="2797712124653482791">隐藏 <ph name="DISMISS_DAYS" /> 天</translation>
 <translation id="2798347533012571708">保留更新</translation>
 <translation id="2799162042226656283">您的 Chrome</translation>
 <translation id="2799223571221894425">重新启动</translation>
@@ -4059,6 +4062,10 @@
 <translation id="3800764353337460026">符号样式</translation>
 <translation id="3800828618615365228">Google Chrome 和 Chrome 操作系统附加条款</translation>
 <translation id="3800898876950197674">要允许使用此扩展程序，请输入密码。</translation>
+<translation id="3801131837165361989">这里显示的建议会告诉您如何对 Chrome 进行个性化设置，让它发挥更大作用，以满足您的日常需求。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        您可在卡片菜单中管理设置，或在“自定义 Chrome”部分查看更多选项。</translation>
 <translation id="3801449494961771207">系统默认文字转语音声音</translation>
 <translation id="3802486193901166966">此扩展程序无需任何特殊权限，并且无权访问其他网站</translation>
 <translation id="380329542618494757">姓名</translation>
@@ -4944,6 +4951,7 @@
 <translation id="4415815425191869676">始终让以下网站保持活跃状态</translation>
 <translation id="4416582610654027550">请输入一个有效网址</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{暂停此标签页}other{暂停这些标签页}}</translation>
+<translation id="4419287616181386201">可在管理设置中删除密码</translation>
 <translation id="4421932172707401417">系统会根据您的提示和网页内容提供写作建议</translation>
 <translation id="4421932782753506458">猫咪</translation>
 <translation id="4423376891418188461">还原设置</translation>
@@ -5266,6 +5274,7 @@
 <translation id="4653116291358041820">小阴影</translation>
 <translation id="4653405415038586100">配置 Linux 时出错</translation>
 <translation id="4654236001025007561">与附近的 Chromebook 和 Android 设备分享文件</translation>
+<translation id="4654801841330730814">全部</translation>
 <translation id="4657810666108475055">标签页搜索</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="4658285806588491142">保护您的屏幕隐私</translation>
@@ -5834,6 +5843,7 @@
 <translation id="5064921774605267982">打开“<ph name="PROFILE_NAME" />”个人资料。这份个人资料由家长管理。</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">在 ChromeOS 设置中管理安全 DNS</translation>
+<translation id="5066523884829290323">在网站上更改</translation>
 <translation id="5066534201484101197">滚动即可浏览各个页面</translation>
 <translation id="5067399438976153555">始终启用</translation>
 <translation id="5067867186035333991">当 <ph name="HOST" /> 想要使用麦克风时询问我</translation>
@@ -6515,6 +6525,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">选择您的设置</translation>
 <translation id="5551573675707792127">键盘和文字输入</translation>
+<translation id="5551753770140674714">使用您的同步口令加密数据，Google Pay 中的支付方式和地址不在加密范围内。</translation>
 <translation id="5553089923092577885">证书政策映射</translation>
 <translation id="5554240068773209752">点击此处可自定义控件</translation>
 <translation id="5554403733534868102">此后，再也不必等待系统完成更新</translation>
@@ -7219,6 +7230,7 @@
 <translation id="606449270532897041">管理网站数据</translation>
 <translation id="6064764629679333574">通过将低分辨率音频提升为高分辨率，改善蓝牙麦克风的音质。</translation>
 <translation id="6065289257230303064">证书主题背景目录属性</translation>
+<translation id="6066649679804058181">将分组转换为书签文件夹</translation>
 <translation id="6066794465984119824">图片哈希未设置</translation>
 <translation id="6069464830445383022">您将使用 Google 账号登录 Chromebook</translation>
 <translation id="6071181508177083058">确认密码</translation>
@@ -8934,6 +8946,7 @@
 <translation id="7292067737327289208">您的<ph name="BEGIN_LINK" />浏览器<ph name="END_LINK" />由贵组织管理，您的<ph name="BEGIN_LINK" />个人资料<ph name="END_LINK" />由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="7292147651179697920">请家长在“设置”中授予访问权限</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">可在管理设置中删除搜索记录、Gemini 历史记录和密码</translation>
 <translation id="7295614427631867477">请注意，Android、Play 及相关应用受各自的数据收集和使用政策的约束。</translation>
 <translation id="7296503797589217366">选择“<ph name="FOLDER_TITLE" />”文件夹</translation>
 <translation id="7297726121602187087">深绿色</translation>
@@ -9729,6 +9742,7 @@
 <translation id="7830276128493844263">位置信息服务在系统设置中已关闭</translation>
 <translation id="7830833461614351956">将 <ph name="NUM_OF_FILES" /> 个文件复制到 <ph name="CLOUD_PROVIDER" />后再打开？</translation>
 <translation id="7831754656372780761">“<ph name="TAB_TITLE" />”<ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">帮我更改</translation>
 <translation id="7833720883933317473">已保存的自定义字词将显示在这里</translation>
 <translation id="7834832693620032149">如需共享音频，请改为共享标签页或窗口</translation>
 <translation id="7836577093182643605">主题列表，这些主题已被您屏蔽，因为您不想将它们分享给网站</translation>
@@ -10000,6 +10014,7 @@
 <translation id="8008704580256716350">已屏蔽可疑文件</translation>
 <translation id="8009196983040865987">当您使用标签页整理功能时，系统会将您打开的标签页的标题和网址发送给 Google，以生成建议的标签页分组</translation>
 <translation id="8009225694047762179">管理密码</translation>
+<translation id="8010312870936510509">已于 <ph name="TIME" />使用您的同步口令加密数据，Google Pay 中的支付方式和地址不在加密范围内。</translation>
 <translation id="8011372169388649948">已移动书签“<ph name="BOOKMARK_TITLE" />”。</translation>
 <translation id="8012188750847319132">CapsLock 键</translation>
 <translation id="8012463809859447963">智能热点详情</translation>
@@ -10761,7 +10776,7 @@
 <translation id="8528962588711550376">正在登录。</translation>
 <translation id="8531367864749403520">选择“隐藏组”可将组从标签栏中移除</translation>
 <translation id="8531701051932785007">“增强型安全浏览”功能处于关闭状态</translation>
-<translation id="8533670235862049797">“安全浏览”功能已开启</translation>
+<translation id="8533670235862049797">“安全浏览”已开启</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="EMAIL" />的设备中删除该分组}other{相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="EMAIL" />的设备中删除这些分组}}</translation>
 <translation id="8535005006684281994">Netscape 证书续订网址</translation>
 <translation id="8536810348276651776">会致使您从大多数网站退出账号。但您的 Google 账号仍会保持登录状态，所以 Chrome 中的 Family Link 设置依然有效。</translation>

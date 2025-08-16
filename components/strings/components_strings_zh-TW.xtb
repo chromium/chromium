@@ -699,6 +699,7 @@
 <translation id="2154484045852737596">編輯卡片資訊</translation>
 <translation id="2154739667870063220">重新啟動</translation>
 <translation id="2155260325161282517">5 x 7 吋</translation>
+<translation id="2156467141257470387">你可以在各項 Google 產品中使用儲存的地址。這不會變更現有的公司地址。這項資料會儲存到你的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="2157640075051554492">價格追蹤通知</translation>
 <translation id="21613918653299710">線上圖庫</translation>
 <translation id="2161656808144014275">文字</translation>
@@ -2995,6 +2996,7 @@
 <translation id="5984570616552610254">室內溼度</translation>
 <translation id="598637245381783098">無法開啟付款應用程式</translation>
 <translation id="5989320800837274978">沒有指定固定的 Proxy 伺服器和 .pac 指令碼網址。</translation>
+<translation id="5989917734461988169">你可以在各項 Google 產品中使用儲存的地址。這不會變更你現有的住家地址。這項資料會儲存到你的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="5992691462791905444">大小彈簧摺</translation>
 <translation id="5992805036496113940">查看系統用於放送廣告的資訊</translation>
 <translation id="5995727681868049093">管理 Google 帳戶的資訊、隱私權和安全性</translation>
@@ -4896,6 +4898,7 @@
 <translation id="9139318394846604261">購物</translation>
 <translation id="9140198744651252040">Chrome 瀏覽器想使用指紋自動填入密碼</translation>
 <translation id="9141013498910525015">管理地址</translation>
+<translation id="9141435142213469335">儲存地址和其他資訊</translation>
 <translation id="9141672681283222114">這次允許使用 AR</translation>
 <translation id="9143898823728499852">你的「<ph name="CARD_ISSUER_NAME" />」帳戶已連結 Google Pay，因此可以自動填入這張卡片的資訊</translation>
 <translation id="9144951720726881238">到期日：</translation>

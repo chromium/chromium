@@ -700,6 +700,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2154484045852737596">Breyta korti</translation>
 <translation id="2154739667870063220">Endurræsa</translation>
 <translation id="2155260325161282517">5 x 7 to.</translation>
+<translation id="2156467141257470387">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta breytir ekki núverandi heimilisfangi vinnunnar þinnar. Það verður vistað á Google-reikningnum þínum, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Verðvöktunartilkynningar</translation>
 <translation id="21613918653299710">Myndasöfn á netinu</translation>
 <translation id="2161656808144014275">Texti</translation>
@@ -2997,6 +2998,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5984570616552610254">Raki í hólfi</translation>
 <translation id="598637245381783098">Ekki var hægt að opna greiðsluforritið</translation>
 <translation id="5989320800837274978">Hvorki fastir proxy-þjónar né vefslóð á .pac-skriftu er skilgreind.</translation>
+<translation id="5989917734461988169">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta breytir ekki núverandi heimilisfangi þínu. Það verður vistað á Google-reikningnum þínum, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Z-brot</translation>
 <translation id="5992805036496113940">Sjá upplýsingar sem eru notaðar til að birta þér auglýsingar</translation>
 <translation id="5995727681868049093">Stjórnaðu upplýsingum, persónuvernd og öryggi á Google reikningnum þínum</translation>
@@ -4897,6 +4899,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9139318394846604261">Innkaup</translation>
 <translation id="9140198744651252040">Chrome-vafri vill nota fingrafar til að fylla aðgangsorð út sjálfvirkt</translation>
 <translation id="9141013498910525015">Stjórna heimilisföngum</translation>
+<translation id="9141435142213469335">Vista heimilisfang með meiri upplýsingum</translation>
 <translation id="9141672681283222114">Aukinn veruleiki leyfður í þetta sinn</translation>
 <translation id="9143898823728499852">Þú getur fyllt þetta kort út sjálfkrafa vegna þess að <ph name="CARD_ISSUER_NAME" />-reikningurinn þinn er tengdur við Google Pay</translation>
 <translation id="9144951720726881238">Lokadagsetning:</translation>

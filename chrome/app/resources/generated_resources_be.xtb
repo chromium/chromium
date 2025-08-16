@@ -1136,6 +1136,7 @@
 <translation id="1768212860412467516">Адпраўце водгук пра эксперымент "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="1769104665586091481">Адкрыць спасылку ў новым &amp;акне</translation>
 <translation id="1769157454356586138">Не ўдалося выканаць праверку. Гэты файл заблакіраваны адміністратарам.</translation>
+<translation id="176920518817780870">Пераўтварыць групу ў папку закладак</translation>
 <translation id="1770407692401984718">Перацягніце відарыс сюды або</translation>
 <translation id="177053719077591686">Рэзервовае капіраванне праграм для Android на Google Дыск.</translation>
 <translation id="1773329206876345543">Стварыце хот-спот Wi-Fi, выкарыстоўваючы мабільную перадачу даных на прыладзе <ph name="DEVICE_TYPE" />, каб іншыя прылады маглі падключацца да інтэрнэту. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -2040,6 +2041,7 @@
 <translation id="2392369802118427583">Уключыць</translation>
 <translation id="2393136602862631930">Усталюйце <ph name="APP_NAME" /> на свой Chromebook</translation>
 <translation id="2393313392064891208">Змест умоў выкарыстання АС Google Chrome OS Flex</translation>
+<translation id="2393944685985256805"><ph name="MODULE_NAME" />: схавана</translation>
 <translation id="2395616325548404795">Ваша прылада <ph name="DEVICE_TYPE" /> паспяхова зарэгістравана для карпаратыўнага кіравання, але не адправіла інфармацыю аб аб’екце ўласнасці і месцазнаходжанні. Увядзіце гэту інфармацыю пра прыладу ўручную на кансолі адміністратара.</translation>
 <translation id="2396783860772170191">Увядзіце 4-значны PIN-код (0000–9999)</translation>
 <translation id="2398546389094871088">Пры выкарыстанні функцыі Powerwash для скіду налад профілі eSIM-карты не выдаляюцца. Іх можна выдаліць уручную ў <ph name="LINK_BEGIN" />наладах мабільнай прылады<ph name="LINK_END" />.</translation>
@@ -2646,6 +2648,7 @@
 <translation id="2794522004398861033">Каб наладзіць eSIM-карту, падключыцеся да сеткі Wi-Fi або Ethernet</translation>
 <translation id="2794977172822818797">Дадайце бягучыя сайты</translation>
 <translation id="2795716239552913152">Сайты звычайна выкарыстоўваюць ваша месцазнаходжанне для работы адпаведных функцый або паведамлення інфармацыі (напрыклад, мясцовых навін або звестак пра крамы паблізу)</translation>
+<translation id="2797712124653482791">Схаваць на <ph name="DISMISS_DAYS" /> сут?</translation>
 <translation id="2798347533012571708">Усталёўваць абнаўленні аўтаматычна</translation>
 <translation id="2799162042226656283">Ваш Chrome</translation>
 <translation id="2799223571221894425">Перазапусціць</translation>
@@ -4068,6 +4071,10 @@
 <translation id="3800764353337460026">Стыль сімвалаў</translation>
 <translation id="3800828618615365228">Дадатковыя ўмовы Google Chrome і Chrome OS</translation>
 <translation id="3800898876950197674">Каб дазволіць выкарыстоўваць гэта пашырэнне, увядзіце пароль.</translation>
+<translation id="3801131837165361989">Вы бачыце прапановы, як персаналізаваць Chrome і зрабіць яго больш эфектыўным інструментам для вашых штодзённых задач.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        У вас ёсць магчымасць кіраваць наладамі з меню карткі і праглядаць дадатковыя параметры ў раздзеле "Наладзіць Chrome".</translation>
 <translation id="3801449494961771207">Стандартны голас для сінтэзу маўлення</translation>
 <translation id="3802486193901166966">Пашырэнне не патрабуе спецыяльных дазволаў, і ў яго няма дадатковага доступу да сайтаў</translation>
 <translation id="380329542618494757">Імя</translation>
@@ -4954,6 +4961,7 @@
 <translation id="4415815425191869676">Сайты, укладкі з якімі заўсёды павінны заставацца актыўнымі</translation>
 <translation id="4416582610654027550">Увядзіце правільны URL-адрас</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Прыпыніць гэту ўкладку}one{Прыпыніць гэтыя ўкладкі}few{Прыпыніць гэтыя ўкладкі}many{Прыпыніць гэтыя ўкладкі}other{Прыпыніць гэтыя ўкладкі}}</translation>
+<translation id="4419287616181386201">Паролі можна выдаліць у наладах кіравання імі</translation>
 <translation id="4421932172707401417">Прапановы па напісанні ўлічваюць вашы запыты і змесціва вэб-старонак.</translation>
 <translation id="4421932782753506458">Пушок</translation>
 <translation id="4423376891418188461">Аднавіць налады</translation>
@@ -5276,6 +5284,7 @@
 <translation id="4653116291358041820">Малы цень</translation>
 <translation id="4653405415038586100">Памылка наладжвання Linux</translation>
 <translation id="4654236001025007561">Абагульвайце файлы з прыладамі Chromebook і Android паблізу</translation>
+<translation id="4654801841330730814">Усе</translation>
 <translation id="4657810666108475055">Пошук укладак</translation>
 <translation id="4657914796247705218">Хуткасць TrackPoint</translation>
 <translation id="4658285806588491142">Захоўвайце прыватнасць інфармацыі на экране</translation>
@@ -5845,6 +5854,7 @@
 <translation id="5064921774605267982">Адкрыць профіль карыстальніка <ph name="PROFILE_NAME" />. Гэты профіль знаходзіцца пад кіраваннем бацькоў.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Кіраванне абароненай DNS у наладах Chrome OS</translation>
+<translation id="5066523884829290323">Змяніць на сайце</translation>
 <translation id="5066534201484101197">Пераходзіць паміж старонкамі пры дасягненні канца прагорткі</translation>
 <translation id="5067399438976153555">Заўсёды ўключана</translation>
 <translation id="5067867186035333991">Запытваць, калі <ph name="HOST" /> патрабуе доступ да мікрафона</translation>
@@ -6526,6 +6536,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Выберыце варыянт наладжвання</translation>
 <translation id="5551573675707792127">Клавіятура і ўвод тэксту</translation>
+<translation id="5551753770140674714">Даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Шыфраванне не распаўсюджваецца на спосабы аплаты і адрасы з Google Pay.</translation>
 <translation id="5553089923092577885">Супастаўленні палітык сертыфікатаў</translation>
 <translation id="5554240068773209752">Каб наладзіць элементы кіравання, націсніце тут</translation>
 <translation id="5554403733534868102">Пасля не трэба будзе чакаць, пакуль спампуюцца абнаўленні</translation>
@@ -6606,6 +6617,7 @@
 <translation id="560834977503641186">Сінхранізацыя параметраў Wi-Fi, даведацца больш</translation>
 <translation id="5608580678041221894">Каб змяніць або перамясціць вобласць абрэзкі, выкарыстоўвайце наступныя клавішы</translation>
 <translation id="5609231933459083978">Здаецца, праграма недапушчальная.</translation>
+<translation id="5610759359710387751">Персаналізацыя Chrome</translation>
 <translation id="5610867721023328944">Паўтарыце спробу або выберыце адну з даступных тэм ніжэй.</translation>
 <translation id="5611398002774823980">Захаваць ва ўліковым запісе</translation>
 <translation id="5611399285717843500">Дапамагаць паляпшаць функцыі і прадукцыйнасць Chrome і ChromeOS. Асабістая інфармацыя пры гэтым збірацца не будзе.</translation>
@@ -7232,6 +7244,7 @@
 <translation id="606449270532897041">Кіраваць данымі сайтаў</translation>
 <translation id="6064764629679333574">Палепшыце якасць гуку Bluetooth-мікрафона, змяніўшы раздзяляльнасць аўдыя з нізкай на высокую.</translation>
 <translation id="6065289257230303064">Атрыбуты каталога суб’ектаў сертыфіката</translation>
+<translation id="6066649679804058181">Пераўтварыць групу ў папку закладак</translation>
 <translation id="6066794465984119824">Хэш відарыса не зададзены</translation>
 <translation id="6069464830445383022">Выкарыстоўвайце для ўваходу ў Chromebook свой Уліковы запіс Google</translation>
 <translation id="6071181508177083058">пацвердзіце пароль</translation>
@@ -8952,6 +8965,7 @@
 <translation id="7292067737327289208">Вашым <ph name="BEGIN_LINK" />браўзерам кіруе<ph name="END_LINK" /> ваша арганізацыя, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Папрасі бацькоў адкрыць у Наладах доступ</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">Гісторыю пошуку, гісторыю ўзаемадзеяння з Gemini і паролі можна выдаліць у наладах кіравання імі</translation>
 <translation id="7295614427631867477">Заўважце, што сістэма Android, крама Play і звязаныя з імі праграмы рэгулююцца ўласнымі палітыкамі збору і выкарыстання даных.</translation>
 <translation id="7296503797589217366">Выберыце папку <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Цёмна-зялёны</translation>
@@ -9747,6 +9761,7 @@
 <translation id="7830276128493844263">Геалакацыя выключана ў сістэмных наладах</translation>
 <translation id="7830833461614351956">Скапіраваць файлы (<ph name="NUM_OF_FILES" />) у сэрвіс "<ph name="CLOUD_PROVIDER" />" перад адкрыццём?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">Змяніць для мяне</translation>
 <translation id="7833720883933317473">Дададзеныя карыстальнікам словы, якія былі захаваны, з’явяцца тут</translation>
 <translation id="7834832693620032149">Каб абагуліць аўдыя, абагульце ўкладку ці акно</translation>
 <translation id="7836577093182643605">Спіс заблакіраваных вамі тэм, якія вы не хочаце абагульваць з сайтамі</translation>
@@ -10018,6 +10033,7 @@
 <translation id="8008704580256716350">Падазроны файл заблакіраваны</translation>
 <translation id="8009196983040865987">Калі вы выкарыстоўваеце функцыю ўпарадкавання ўкладак, назвы і URL-адрасы адкрытых укладак адпраўляюцца ў Google для стварэння прапанаваных груп укладак</translation>
 <translation id="8009225694047762179">Кіраваць паролямі</translation>
+<translation id="8010312870936510509">Даныя былі зашыфраваны <ph name="TIME" /> з дапамогай фразы-пароля для сінхранізацыі. Шыфраванне не распаўсюджваецца на спосабы аплаты і адрасы з Google Pay.</translation>
 <translation id="8011372169388649948">Закладка "<ph name="BOOKMARK_TITLE" />" перамешчана.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">Падрабязныя звесткі пра імгненны хот-спот</translation>

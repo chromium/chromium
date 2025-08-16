@@ -700,6 +700,7 @@
 <translation id="2154484045852737596">Modifier la carte</translation>
 <translation id="2154739667870063220">Redémarrer</translation>
 <translation id="2155260325161282517">5 po x 7 po</translation>
+<translation id="2156467141257470387">Vous pouvez utiliser les adresses enregistrées avec tous les produits Google. Votre adresse professionnelle actuelle ne sera pas modifiée. Elle sera enregistrée dans votre compte Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Notifications de suivi de prix</translation>
 <translation id="21613918653299710">Galeries d'images en ligne</translation>
 <translation id="2161656808144014275">Texte</translation>
@@ -2997,6 +2998,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5984570616552610254">Humidité de la chambre</translation>
 <translation id="598637245381783098">Impossible d'ouvrir l'application de paiement</translation>
 <translation id="5989320800837274978">Aucun serveur mandataire fixe ni URL de script .pac indiqué.</translation>
+<translation id="5989917734461988169">Vous pouvez utiliser les adresses enregistrées avec tous les produits Google. Votre adresse personnelle actuelle ne sera pas modifiée. Elle sera enregistrée dans votre compte Google, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Technique de pli en Z</translation>
 <translation id="5992805036496113940">Afficher les renseignements utilisés pour la présentation des publicités</translation>
 <translation id="5995727681868049093">Gérer vos renseignements, la confidentialité et la sécurité de votre compte Google</translation>
@@ -4897,6 +4899,7 @@ Détails supplémentaires :
 <translation id="9139318394846604261">Magasinage</translation>
 <translation id="9140198744651252040">Le navigateur Chrome souhaite utiliser l'empreinte digitale pour remplir automatiquement les mots de passe</translation>
 <translation id="9141013498910525015">Gérer les adresses</translation>
+<translation id="9141435142213469335">Enregistrez l'adresse avec plus de renseignements</translation>
 <translation id="9141672681283222114">RA autorisée cette fois</translation>
 <translation id="9143898823728499852">Vous pouvez remplir automatiquement cette carte, car votre compte <ph name="CARD_ISSUER_NAME" /> est associé à Google Pay.</translation>
 <translation id="9144951720726881238">Date d'expiration :</translation>

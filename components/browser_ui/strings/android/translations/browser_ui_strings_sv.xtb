@@ -310,6 +310,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="443121186588148776">Serieport</translation>
 <translation id="4434045419905280838">Popup-fönster och omdirigeringar</translation>
 <translation id="443552056913301231">Om du gör detta raderas all lokal data, inklusive cookies, och alla behörigheter för <ph name="ORIGIN" /> återställs</translation>
+<translation id="4441527683895888777">Ark på nedre delen av skärmen för Chrome-färger har öppnats över hela skärmen</translation>
 <translation id="4468959413250150279">Stäng av ljudet för en webbplats.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Gör det enklare att anpassa zoomen för olika webbplatser</translation>
@@ -345,6 +346,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="4953688446973710931">När detta är aktiverat kan webbplatser be om att ladda ned flera filer automatiskt. När detta är inaktiverat får webbplatser inte ladda ned flera filer automatiskt.</translation>
 <translation id="4962975101802056554">Återkalla alla behörigheter för enheten</translation>
 <translation id="4972737347717125191">Webbplatser får begära tillstånd att använda VR-enheter och VR-data</translation>
+<translation id="4973805849704516244">Ark på nedre delen av skärmen för Chrome-färger</translation>
 <translation id="497421865427891073">Fortsätt</translation>
 <translation id="4976702386844183910">Besöktes senast <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Läs mer om Förslag-flödet</translation>

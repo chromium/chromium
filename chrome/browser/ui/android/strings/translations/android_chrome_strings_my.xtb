@@ -200,7 +200,7 @@
 <translation id="1957557050935255529">PDF ဖွင့်နေသည်…</translation>
 <translation id="1959679933317802873">အကြောင်းအရာကို စောင့်နေသည်</translation>
 <translation id="1960290143419248813">Chrome အပ်ဒိတ်များကို ဤ Android ဗားရှင်းတွင် ပံ့ပိုးထားခြင်း မရှိတော့ပါ</translation>
-<translation id="1963056249988316027">‘မည်သူမည်ဝါဖြစ်ကြောင်း စစ်ဆေးခြင်း’ ဖွင့်ထားပြီး သင်ဖြစ်ကြောင်း အတည်ပြု၍မရပါ</translation>
+<translation id="1963056249988316027">Identity Check ဖွင့်ထားပြီး သင်ဖြစ်ကြောင်း အတည်ပြု၍မရပါ</translation>
 <translation id="1963976881984600709">ပုံမှန်ကာကွယ်မှု</translation>
 <translation id="1966710179511230534">ကျေးဇူးပြု၍ သင်၏ လက်မှတ်ထိုးဝင်ရောက်မှု အသေးစိတ်ကို မွမ်းမံပါ။</translation>
 <translation id="1969037871259811890">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်ခြင်းဖြင့် Google Account မှ ထွက်မည်မဟုတ်ပါ။ ထိုသို့ပြုလုပ်ရန်အတွက် <ph name="BEGIN_LINK1" />Chrome မှထွက်ရန်<ph name="END_LINK1" />။</translation>
@@ -552,7 +552,7 @@
 <translation id="3623464286911819905">စာဖတ်မုဒ်ကို မရနိုင်ပါ</translation>
 <translation id="3625870480639975468">ဇူးမ် ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> သို့ မျှဝေနေသည်</translation>
-<translation id="363484704507524488">‘မည်သူမည်ဝါဖြစ်ကြောင်း စစ်ဆေးခြင်း’ ကို ခိုးယူမှုမှ ကာကွယ်ခြင်း ဆက်တင်များတွင် စီမံနိုင်သည်။ <ph name="BEGIN_LINK" />ဆက်တင်များသို့ သွားရန်<ph name="END_LINK" /></translation>
+<translation id="363484704507524488">Identity Check ကို ခိုးယူမှုမှ ကာကွယ်ခြင်း ဆက်တင်များတွင် စီမံနိုင်သည်။ <ph name="BEGIN_LINK" />ဆက်တင်များသို့ သွားရန်<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">သင်စကားဝှက်များကို သိမ်းသည့်အခါ Chrome က၎င်းတို့ကို စစ်ဆေးနိုင်သည်</translation>
 <translation id="3636940436873918441">ဦးစားပေး ဘာသာစကားများ</translation>
 <translation id="3637744895182738742">သင့်စကားဝှက်စာ မေ့သွားပါက (သို့) ဤဆက်တင်ကို ပြောင်းလိုပါက <ph name="BEGIN_LINK" />သင့်အကောင့်ရှိ Chrome ဒေတာကို ဖျက်ပါ<ph name="END_LINK" />။</translation>

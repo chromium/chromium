@@ -1636,6 +1636,7 @@
 <translation id="2110941575868943054">Bluetooth төхөөрөмж хайхыг зөвшөөрсөн</translation>
 <translation id="211144231511833662">Төхөөрөмжийн төрлүүдийг арилгах</translation>
 <translation id="2111670510994270194">Шинэ табыг баруун тийш нь</translation>
+<translation id="2111778868023567359">Та Табын бүлгийг энэ хуудсан дээрээс дахин харахгүй</translation>
 <translation id="2112554630428445878">Тавтай морилно уу, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Цонхыг урд талд гаргах</translation>
 <translation id="2113479184312716848">Файлыг &amp; нээх ...</translation>
@@ -2047,6 +2048,7 @@
 <translation id="2392369802118427583">Идэвхжүүлэх</translation>
 <translation id="2393136602862631930"><ph name="APP_NAME" />-г Chromebook дээрээ тохируулна уу</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex-н нөхцөлийн агуулга</translation>
+<translation id="2393944685985256805"><ph name="MODULE_NAME" />-г нуусан</translation>
 <translation id="2395616325548404795">Таны <ph name="DEVICE_TYPE" />-г байгууллагын удирдлагад амжилттай бүртгэсэн хэдий ч үүний өмч болон байршлын мэдээллийг илгээж чадсангүй. Энэ мэдээллийг админ консолоосоо төхөөрөмжид гараар оруулна уу.</translation>
 <translation id="2396783860772170191">4 оронтой пинг (0000-9999) оруулна уу</translation>
 <translation id="2398546389094871088">Төхөөрөмжөө Powerwash хийх нь таны eSIM профайлуудыг хасахгүй. Эдгээр профайлыг гар аргаар хасахын тулд <ph name="LINK_BEGIN" />Мобайл тохиргоо<ph name="LINK_END" /> руу очно уу.</translation>
@@ -2653,6 +2655,7 @@
 <translation id="2794522004398861033">eSIM тохируулахын тулд Wi-Fi эсвэл Этернэтэд холбогдоно уу</translation>
 <translation id="2794977172822818797">Одоогийн сайтуудыг нэмэх</translation>
 <translation id="2795716239552913152">Сайтууд ихэвчлэн таны байршлыг орон нутгийн мэдээ, ойролцоох дэлгүүр зэрэг хамааралтай онцлогууд эсвэл мэдээлэлд зориулж ашигладаг</translation>
+<translation id="2797712124653482791"><ph name="DISMISS_DAYS" /> хоногийн турш нуух</translation>
 <translation id="2798347533012571708">Шинэчлэлтийг хадгалах</translation>
 <translation id="2799162042226656283">Таны Chrome</translation>
 <translation id="2799223571221894425">Дахин эхлүүлэх</translation>
@@ -4077,6 +4080,10 @@
 <translation id="3800764353337460026">Бэлгэ тэмдгийн загвар</translation>
 <translation id="3800828618615365228">Google Chrome болон ChromeOS-н нэмэлт нөхцөл</translation>
 <translation id="3800898876950197674">Энэ өргөтгөлийг зөвшөөрөхийн тулд нууц үгээ оруулна уу.</translation>
+<translation id="3801131837165361989">Та Chrome-г хэрхэн хувийн болгох, өдөр тутмын хэрэглээндээ зориулж илүү хүчирхэг болгох талаарх зөвлөмжийг харж байна.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Та картын цэсээс тохиргоог удирдах эсвэл Chrome-г тусгайлан өөрчлөх хэсгээс бусад сонголтыг харах боломжтой.</translation>
 <translation id="3801449494961771207">Бичвэрийг ярианд хувиргах системийн дуу хоолой</translation>
 <translation id="3802486193901166966">Энэ өргөтгөлд ямар ч тусгай зөвшөөрөл шаардлагагүй бөгөөд сайтын нэмэлт хандалт байхгүй</translation>
 <translation id="380329542618494757">Нэр</translation>
@@ -4962,6 +4969,7 @@
 <translation id="4415815425191869676">Эдгээр сайтыг үргэлж идэвхтэй байлгах</translation>
 <translation id="4416582610654027550">Хүчинтэй URL оруулна уу</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Энэ табыг түр зогсоох}other{Эдгээр табыг түр зогсоох}}</translation>
+<translation id="4419287616181386201">Нууц үгийг удирдлагын тохиргооноос нь устгаж болно</translation>
 <translation id="4421932172707401417">Бичих зөвлөмжийг таны заавар, веб хуудасны контентод тулгуурладаг</translation>
 <translation id="4421932782753506458">Найдваргүй</translation>
 <translation id="4423376891418188461">Тохиргоог сэргээх</translation>
@@ -5853,6 +5861,7 @@
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> профайлыг нээнэ үү. Энэ профайлыг таны эцэг эх удирддаг.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS-н тохиргоо хэсэгт Аюулгүй DNS-г удирдана уу</translation>
+<translation id="5066523884829290323">Үүнийг сайт дээр өөрчлөх</translation>
 <translation id="5066534201484101197">Хуудаснуудын хооронд шилжихийн тулд хэтрүүлж гүйлгэх</translation>
 <translation id="5067399438976153555">Үргэлж асаалттай</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> таны микрофонд хандахыг хүсвэл асуу</translation>
@@ -6473,6 +6482,7 @@
 <translation id="5496730470963166430">Попап илгээх эсвэл дахин чиглүүлэлт ашиглахыг зөвшөөрөөгүй</translation>
 <translation id="5497250476399536588">Та үүнийг хаяг болон бусад хэсгээсээ олох боломжтой</translation>
 <translation id="5497251278400702716">Энэ файл</translation>
+<translation id="549762298434242239">Энэ өргөтгөлийг Сайжруулсан аюулгүй хөтөч итгэмжлээгүй. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome энэ суулгалтын багцыг баталгаажуулж чадсангүй</translation>
 <translation id="5498967291577176373">Нэр, хаяг эсвэл утасны дугаараа мөрөн дэх зөвлөмжүүдийн тусламжтайгаар илүү хурдан бичээрэй</translation>
 <translation id="5499211612787418966">Энэ харилцаг яриаг одоогоор сонгоогүй байна. Энэ харилцан яриаг сонгохын тулд Alt-Shift дээр дарна уу.</translation>
@@ -6534,6 +6544,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Тохируулгаа сонгоно уу</translation>
 <translation id="5551573675707792127">Гар болон текстийн оролт</translation>
+<translation id="5551753770140674714">Өгөгдлийг таны синкийн нэвтрэх үгээр шифрлэдэг. Үүнд Google Pay-н төлбөрийн хэрэгсэл, хаяг багтдаггүй.</translation>
 <translation id="5553089923092577885">Гэрчилгээний бодлогын зураглал</translation>
 <translation id="5554240068773209752">Тохиргоог өөрчлөхийн тулд энд товшино уу</translation>
 <translation id="5554403733534868102">Үүнээс хойш шинэчлэлт хийхийн тулд хүлээх шаардлагагүй болно</translation>
@@ -6838,6 +6849,7 @@
 <translation id="5780973441651030252">Боловсруулалтын тэргүүлэх чиглэл</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" />-р синк хийх</translation>
 <translation id="5781120434102258025">Сургуулийн бүртгэлийн өгөгдлөө хувийн бүртгэл рүүгээ зөөнө үү</translation>
+<translation id="5781244749114921664">Табын бүлгийг нуусан</translation>
 <translation id="5782227691023083829">Орчуулж байна...</translation>
 <translation id="5783346913439924978">Толгойн хяналт</translation>
 <translation id="57838592816432529">Дууг хаах</translation>
@@ -8954,6 +8966,7 @@
 <translation id="7292067737327289208">Танай байгууллага таны <ph name="BEGIN_LINK" />хөтчийг удирддаг<ph name="END_LINK" /> бөгөөд <ph name="PROFILE_DOMAIN" /> таны <ph name="BEGIN_LINK" />профайлыг удирддаг<ph name="END_LINK" /></translation>
 <translation id="7292147651179697920">Эцэг эхээсээ Тохиргооны хандалтыг зөвшөөрөхийг хүснэ үү</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">Хайлтын түүх, Gemini-н түүх, нууц үгийг удирдлагын тохиргооноос нь устгаж болно</translation>
 <translation id="7295614427631867477">Android, Play болон холбоотой аппууд нь өөрсдийн өгөгдлийн цуглуулга болон ашиглалтын удирдамжид захирагддаг болохыг анхаарна уу.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> фолдерыг сонгох</translation>
 <translation id="7297726121602187087">Бараан ногоон</translation>
@@ -9748,6 +9761,7 @@
 <translation id="7830276128493844263">Байршлыг системийн тохиргоонд унтраасан</translation>
 <translation id="7830833461614351956">Нээхийн тулд <ph name="NUM_OF_FILES" /> файлыг <ph name="CLOUD_PROVIDER" /> руу хуулах уу?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">Миний өмнөөс үүнийг өөрчил</translation>
 <translation id="7833720883933317473">Тохируулсан үгс энд харагдана</translation>
 <translation id="7834832693620032149">Аудио хуваалцахын тулд оронд нь таб эсвэл цонх хуваалцана уу</translation>
 <translation id="7836577093182643605">Таны сайтуудтай хуваалцахыг хүсэхгүй байгаа блоклосон сэдвүүдийн жагсаалт</translation>
@@ -10018,6 +10032,7 @@
 <translation id="8008704580256716350">Сэжигтэй файлыг блоклосон</translation>
 <translation id="8009196983040865987">Таныг таб цэгцлэхийг ашиглахад таны нээлттэй табын нэр, URL-г санал болгосон табын бүлгийг үүсгэхийн тулд Google-д илгээдэг</translation>
 <translation id="8009225694047762179">Нууц үгийг удирдах</translation>
+<translation id="8010312870936510509">Өгөгдлийг <ph name="TIME" />-д таны синкийн нэвтрэх үгээр шифрлэсэн. Үүнд Google Pay-н төлбөрийн хэрэгсэл, хаяг багтдаггүй.</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />'-г зөөсөн.</translation>
 <translation id="8012188750847319132">том үсгийн горим</translation>
 <translation id="8012463809859447963">Шуурхай сүлжээний цэгийн дэлгэрэнгүй</translation>

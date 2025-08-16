@@ -2050,6 +2050,7 @@
 <translation id="2392369802118427583">యాక్టివేట్ చేయండి</translation>
 <translation id="2393136602862631930">మీ Chromebookలో <ph name="APP_NAME" />ను సెటప్ చేయండి</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex నియమాల కంటెంట్‌లు</translation>
+<translation id="2393944685985256805"><ph name="MODULE_NAME" />‌ను దాచారు</translation>
 <translation id="2395616325548404795">మీ <ph name="DEVICE_TYPE" /> ఎంటర్‌ప్రైజ్ నిర్వహణ కోసం విజయవంతంగా నమోదు చేయబడింది, కానీ దాని లక్షణ మరియు స్థాన సమాచారాన్ని పంపడంలో విఫలమైంది. దయచేసి ఈ పరికరం కోసం ఈ సమాచారాన్ని మీ నిర్వాహక కన్సోల్ నుండి మాన్యువల్‌గా నమోదు చేయండి.</translation>
 <translation id="2396783860772170191">4 అంకెల పిన్ (0000-9999) నమోదు చేయండి</translation>
 <translation id="2398546389094871088">మీ పరికరాన్ని పవర్‌వాష్ చేయడం ద్వారా మీ eSIM ప్రొఫైళ్లు తీసివేయబడవు. ఈ ప్రొఫైళ్లను మాన్యువల్‌గా తీసివేయడానికి <ph name="LINK_BEGIN" />మొబైల్ సెట్టింగ్‌ల<ph name="LINK_END" />కు వెళ్ళండి.</translation>
@@ -2656,6 +2657,7 @@
 <translation id="2794522004398861033">eSIMను సెటప్ చేయడానికి Wi-Fi లేదా ఈథర్‌నెట్‌కు కనెక్ట్ చేయండి</translation>
 <translation id="2794977172822818797">ప్రస్తుత సైట్‌లను జోడించండి</translation>
 <translation id="2795716239552913152">స్థానిక వార్తలు లేదా సమీపంలోని షాప్‌లు వంటి సందర్భోచిత ఫీచర్‌ల కోసం సాధారణంగా సైట్‌లు లొకేషన్‌ను ఉపయోగించుకుంటాయి</translation>
+<translation id="2797712124653482791"><ph name="DISMISS_DAYS" /> రోజుల వరకు దాచి పెట్టారు</translation>
 <translation id="2798347533012571708">అప్‌డేట్‌లను ఉంచుకోండి</translation>
 <translation id="2799162042226656283">మీ Chrome</translation>
 <translation id="2799223571221894425">మళ్లీ ప్రారంభించండి</translation>
@@ -4080,6 +4082,10 @@
 <translation id="3800764353337460026">చిహ్నం శైలి</translation>
 <translation id="3800828618615365228">Google Chrome, ChromeOS అదనపు నియమాలు</translation>
 <translation id="3800898876950197674">ఈ ఎక్స్‌టెన్షన్‌ను అనుమతించడానికి, మీ పాస్‌వర్డ్‌ను ఎంటర్ చేయండి.</translation>
+<translation id="3801131837165361989">Chromeను వ్యక్తిగతీకరించడం, మీ రోజువారీ అవసరాలకు దానిని మరింత శక్తివంతం చేయడం ఎలాగో మీకు సూచనలు కనిపిస్తున్నాయి.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        మీరు కార్డ్ మెనూ నుండి సెట్టింగ్‌లను మేనేజ్ చేయవచ్చు లేదా, అనుకూలంగా మార్చిన Chromeలో మరిన్ని ఆప్షన్‌లను చూడండి.</translation>
 <translation id="3801449494961771207">సిస్టమ్ టెక్స్ట్-టు-స్పీచ్ వాయిస్</translation>
 <translation id="3802486193901166966">ఈ ఎక్స్‌టెన్షన్‌కు ప్రత్యేక అనుమతులు ఏవీ అవసరం లేదు, అలాగే అదనపు సైట్ యాక్సెస్ కూడా లేదు</translation>
 <translation id="380329542618494757">పేరు</translation>
@@ -4966,6 +4972,7 @@
 <translation id="4415815425191869676">ఈ సైట్‌లను ఎల్లప్పుడూ యాక్టివ్‌గా ఉంచుకోండి</translation>
 <translation id="4416582610654027550">చెల్లుబాటు అయ్యే URLను టైప్ చేయండి</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{ఈ ట్యాబ్‌ను పాజ్ చేయండి}other{ఈ ట్యాబ్‌లను పాజ్ చేయండి}}</translation>
+<translation id="4419287616181386201">పాస్‌వర్డ్‌లను వాటి మేనేజ్‌మెంట్ సెట్టింగ్‌ల్లో తొలగించవచ్చు</translation>
 <translation id="4421932172707401417">టెక్స్ట్ సూచనలు అనేవి మీ ప్రాంప్ట్‌లపై, అలాగే వెబ్ పేజీలోని కంటెంట్‌పై ఆధారపడి ఉంటాయి</translation>
 <translation id="4421932782753506458">ఫ్లఫ్ఫీ</translation>
 <translation id="4423376891418188461">సెట్టింగ్‌లను పునరుద్ధరించు</translation>
@@ -5857,6 +5864,7 @@
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> ప్రొఫైల్‌ను తెరవండి. ఈ ప్రొఫైల్‌ను మీ తల్లి/తండ్రి మేనేజ్ చేస్తున్నారు.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS సెట్టింగ్‌లలో సురక్షిత DNSను మేనేజ్ చేయండి</translation>
+<translation id="5066523884829290323">సైట్‌లో దాన్ని మార్చండి</translation>
 <translation id="5066534201484101197">ఒక పేజీ నుండి మరొక దానికి నావిగేట్ అవ్వడానికి ఓవర్‌స్క్రోల్ చేయండి</translation>
 <translation id="5067399438976153555">ఎల్లప్పుడూ ఆన్ చేయి</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> మీ మైక్రోఫోన్‌ను యాక్సెస్ చేయాలనుకుంటే నాకు తెలియజేయి</translation>
@@ -6538,6 +6546,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">మీ సెటప్‌ను ఎంచుకోండి</translation>
 <translation id="5551573675707792127">కీబోర్డ్ మరియు వచన ఇన్‌పుట్</translation>
+<translation id="5551753770140674714">మీ సింక్ రహస్య పదబంధంతో డేటా ఎన్‌క్రిప్ట్ అవుతుంది. Google Payలోని పేమెంట్ ఆప్షన్‌లు, అడ్రస్‌లు ఇందులో ఉండవు.</translation>
 <translation id="5553089923092577885">సర్టిఫికెట్ విధాన మ్యాపింగ్‌లు</translation>
 <translation id="5554240068773209752">కంట్రోల్స్‌ను అనుకూలంగా మార్చడానికి ఇక్కడ క్లిక్ చేయండి</translation>
 <translation id="5554403733534868102">దీని తర్వాత, అప్‌డేట్‌ల కోసం వేచి ఉండాల్సిన అవసరం లేదు</translation>
@@ -8960,6 +8969,7 @@
 <translation id="7292067737327289208">మీ <ph name="BEGIN_LINK" />బ్రౌజర్ మేనేజ్‌మెంట్<ph name="END_LINK" /> మీ సంస్థ ద్వారా జరుగుతోంది, మీ <ph name="BEGIN_LINK" />ప్రొఫైల్ మేనేజ్‌మెంట్<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> ద్వారా జరుగుతోంది</translation>
 <translation id="7292147651179697920">సెట్టింగ్‌లలో యాక్సెస్‌ను అనుమతించమని మీ పేరెంట్‌ను అడగండి</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">సెర్చ్ హిస్టరీని, Gemini హిస్టరీని, పాస్‌వర్డ్‌లను వాటి మేనేజ్‌మెంట్ సెట్టింగ్‌ల్లో తొలగించవచ్చు</translation>
 <translation id="7295614427631867477">Android, Play, అనుబంధిత యాప్‌లు వాటి స్వంత డేటా సేకరణ, వినియోగ విధానాల ప్రకారం పర్యవేక్షించబడతాయి.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="7297726121602187087">ముదురు ఆకుపచ్చ రంగు</translation>
@@ -9754,6 +9764,7 @@
 <translation id="7830276128493844263">సిస్టమ్ సెట్టింగ్‌ల్లో లొకేషన్ ఆఫ్ చేసి ఉంది</translation>
 <translation id="7830833461614351956">తెరవడానికి <ph name="NUM_OF_FILES" /> ఫైల్స్‌ను <ph name="CLOUD_PROVIDER" />కి కాపీ చేయాలా?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">నా కోసం దాన్ని మార్చండి</translation>
 <translation id="7833720883933317473">సేవ్ చేసిన అనుకూల పదాలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="7834832693620032149">ఆడియోను షేర్ చేయడానికి, బదులుగా ట్యాబ్ లేదా విండోను షేర్ చేయండి</translation>
 <translation id="7836577093182643605">సైట్‌లతో షేర్ చేయకూడదు అనే ఉద్దేశ్యంతో మీరు బ్లాక్ చేసిన టాపిక్‌ల యొక్క లిస్ట్</translation>
@@ -10022,6 +10033,7 @@
 <translation id="8008704580256716350">అనుమానాస్పద ఫైల్ బ్లాక్ చేయబడింది</translation>
 <translation id="8009196983040865987">మీరు ట్యాబ్‌లను ఆర్గనైజ్ చేయండి బటన్‌ను ఉపయోగించినప్పుడు, సూచించిన ట్యాబ్ గ్రూప్‌లను జెనెరేట్ చేయడానికి మీరు తెరిచిన ట్యాబ్‌ల టైటిల్స్, URLలు Google పంపబడతాయి</translation>
 <translation id="8009225694047762179">పాస్‌వర్డ్‌లను నిర్వహించండి</translation>
+<translation id="8010312870936510509"><ph name="TIME" />లో సింక్ రహస్య పదబంధంతో డేటా ఎన్‌క్రిప్ట్ అయ్యింది. Google Payలోని పేమెంట్ ఆప్షన్‌లు, అడ్రస్‌లు ఇందులో ఉండవు.</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' తరలించబడింది.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">ఇన్‌స్టంట్ హాట్‌స్పాట్ వివరాలు</translation>

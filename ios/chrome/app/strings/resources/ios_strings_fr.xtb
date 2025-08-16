@@ -507,6 +507,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2931440415625410757">Afficher les instructions</translation>
 <translation id="2952278131021475699">Recherche Lens avec l'appareil photo</translation>
 <translation id="2962516096219646456">Voir toutes les données de saisie automatique</translation>
+<translation id="2965594942405840553">Cette action est irréversible</translation>
 <translation id="2969979262385602596">Échec de la connexion. Veuillez réessayer plus tard.</translation>
 <translation id="2975761176769946178">Veuillez saisir une URL</translation>
 <translation id="297667759942911166">Collaborez dans des groupes d'onglets</translation>
@@ -657,6 +658,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3595252146048399851">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3602260545951981695">Sélectionnez "Protection renforcée"</translation>
 <translation id="3610041351087301930">Masquer le lecteur</translation>
+<translation id="3610866916973186448">Oui, supprimer</translation>
 <translation id="3622175633937495219">Rechercher dans l'historique (nombre de résultats : <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Vous pouvez balayer l'écran à partir du bord pour revenir en arrière.</translation>
 <translation id="362709345066740529">Personnalisez ici vos cartes, votre flux et plus</translation>
@@ -854,6 +856,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4430277756566635951">Actuellement sélectionné : <ph name="EMAIL" />. Choisissez un compte.</translation>
 <translation id="4430505936695785931">Accédez aux mots de passe enregistrés dans d'autres applis</translation>
 <translation id="4431224949908513835">Sélectionnez un mode de paiement à renseigner.</translation>
+<translation id="4432122368769493392">Paramètres…</translation>
 <translation id="4442550905108052454">Accédez aux <ph name="BEGIN_BOLD" />Réglages<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Plus d'options pour <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Vous pouvez balayer l'écran à partir du bord pour revenir en arrière ou avancer.</translation>
@@ -1950,6 +1953,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8561999115126307258">{count,plural, =1{{count} option de mot de passe disponible au-dessus de votre clavier.}one{{count} option de mot de passe disponible au-dessus de votre clavier.}other{{count} options de mot de passe disponibles au-dessus de votre clavier.}}</translation>
 <translation id="8564894539416715395">Page Nouvel onglet</translation>
 <translation id="8569721750632860947">Quelle URL souhaitez-vous ajouter à votre liste de lecture ?</translation>
+<translation id="8571019948162152515">Supprimer "<ph name="FILENAME" />" ?</translation>
 <translation id="8571213806525832805">4 dernières semaines</translation>
 <translation id="8577056989960190117">Saisir automatiquement l'année d'expiration <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Éteinte</translation>

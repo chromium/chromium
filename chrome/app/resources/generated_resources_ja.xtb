@@ -1627,6 +1627,7 @@
 <translation id="2110941575868943054">Bluetooth デバイスの検出が許可されているサイト</translation>
 <translation id="211144231511833662">タイプの選択をすべて解除</translation>
 <translation id="2111670510994270194">右隣に新しいタブを開く</translation>
+<translation id="2111778868023567359">今後このページでタブグループは表示されません</translation>
 <translation id="2112554630428445878">ようこそ、<ph name="USERNAME" /> さん</translation>
 <translation id="21133533946938348">タブを固定</translation>
 <translation id="2113479184312716848">ファイルを開く（&amp;F）...</translation>
@@ -2033,6 +2034,7 @@
 <translation id="2392369802118427583">有効にする</translation>
 <translation id="2393136602862631930">Chromebook で <ph name="APP_NAME" /> を設定</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex 利用規約コンテンツ</translation>
+<translation id="2393944685985256805"><ph name="MODULE_NAME" /> を非表示にしました</translation>
 <translation id="2395616325548404795">この <ph name="DEVICE_TYPE" /> は組織の管理対象として登録されましたが、アセットと位置情報を送信できませんでした。このデバイスの管理コンソールで、この情報を手動で入力してください。</translation>
 <translation id="2396783860772170191">4 桁の PIN（0000～9999）を入力してください</translation>
 <translation id="2398546389094871088">デバイスで Powerwash を実行しても eSIM プロファイルは削除されません。[<ph name="LINK_BEGIN" />モバイル設定<ph name="LINK_END" />] で次のプロファイルを手動で削除してください。</translation>
@@ -2638,6 +2640,7 @@
 <translation id="2794522004398861033">eSIM を設定するには Wi-Fi またはイーサネットに接続してください</translation>
 <translation id="2794977172822818797">現在のサイトを追加</translation>
 <translation id="2795716239552913152">多くのサイトは、ローカル ニュースや近くのお店の情報などを取得するためにユーザーの位置情報を使用します。</translation>
+<translation id="2797712124653482791"><ph name="DISMISS_DAYS" /> 日間表示しない</translation>
 <translation id="2798347533012571708">常に更新</translation>
 <translation id="2799162042226656283">Chrome</translation>
 <translation id="2799223571221894425">再起動</translation>
@@ -4059,6 +4062,10 @@
 <translation id="3800764353337460026">記号のスタイル</translation>
 <translation id="3800828618615365228">Google Chrome および ChromeOS 追加利用規約</translation>
 <translation id="3800898876950197674">この拡張機能を許可するには、パスワードを入力してください。</translation>
+<translation id="3801131837165361989">Chrome をパーソナライズして、日々のニーズに合わせて最大限に活用するための提案が表示されています。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="3801449494961771207">システムのテキスト読み上げの音声</translation>
 <translation id="3802486193901166966">この拡張機能では、特別な権限は必要なく、追加のサイトアクセスは行われません</translation>
 <translation id="380329542618494757">名前</translation>
@@ -4944,6 +4951,7 @@
 <translation id="4415815425191869676">常にアクティブにするサイト</translation>
 <translation id="4416582610654027550">有効な URL を入力してください</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{このタブを一時停止}other{これらのタブを一時停止}}</translation>
+<translation id="4419287616181386201">パスワードは管理設定で削除できます</translation>
 <translation id="4421932172707401417">プロンプトとウェブページのコンテンツに基づく文章作成の提案が表示されます</translation>
 <translation id="4421932782753506458">フワフワ</translation>
 <translation id="4423376891418188461">設定を元に戻す</translation>
@@ -5833,6 +5841,7 @@
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> のプロフィールを開きます。このプロフィールは保護者によって管理されています。</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS の設定でセキュア DNS を管理する</translation>
+<translation id="5066523884829290323">サイトで変更</translation>
 <translation id="5066534201484101197">オーバースクロールしてページ間を移動する</translation>
 <translation id="5067399438976153555">常にオン</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> がマイクへのアクセスを必要としているときは確認画面を表示する</translation>
@@ -6449,6 +6458,7 @@
 <translation id="5496730470963166430">ポップアップの送信やリダイレクトの使用を許可しないサイト</translation>
 <translation id="5497250476399536588">[住所やその他の情報] で確認できます</translation>
 <translation id="5497251278400702716">このファイル</translation>
+<translation id="549762298434242239">この拡張機能は、セーフ ブラウジング保護強化機能で信頼されていません。<ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome でこのインストール バンドルを確認できませんでした</translation>
 <translation id="5498967291577176373">名前や住所、電話番号が候補として表示され、すばやく入力できます</translation>
 <translation id="5499211612787418966">このダイアログは現在フォーカスされていません。このダイアログをフォーカスするには Alt+Shift+A キーを押してください。</translation>
@@ -6510,6 +6520,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">設定の選択</translation>
 <translation id="5551573675707792127">キーボードとテキスト入力</translation>
+<translation id="5551753770140674714">データは同期パスフレーズで暗号化されています。暗号化の対象に Google Pay のお支払い方法と住所は含まれません。</translation>
 <translation id="5553089923092577885">証明書ポリシーのマッピング</translation>
 <translation id="5554240068773209752">コントロールをカスタマイズするにはここをクリックしてください</translation>
 <translation id="5554403733534868102">今後アップデートを待つ必要はありません</translation>
@@ -6813,6 +6824,7 @@
 <translation id="5780973441651030252">プロセスの優先値</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> として同期</translation>
 <translation id="5781120434102258025">学校用アカウントのデータを個人アカウントに移動します</translation>
+<translation id="5781244749114921664">タブグループを非表示にしました</translation>
 <translation id="5782227691023083829">翻訳しています...</translation>
 <translation id="5783346913439924978">ヘッド トラッキング</translation>
 <translation id="57838592816432529">ミュート</translation>
@@ -8929,6 +8941,7 @@
 <translation id="7292067737327289208">お使いの<ph name="BEGIN_LINK" />ブラウザは組織<ph name="END_LINK" />によって、<ph name="BEGIN_LINK" />プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理<ph name="END_LINK" />されています</translation>
 <translation id="7292147651179697920">保護者の方に [設定] でアクセスを許可してもらってください</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" />（<ph name="VARIANT" />）</translation>
+<translation id="7293774463163321848">検索履歴、Gemini の履歴、パスワードは管理設定で削除できます</translation>
 <translation id="7295614427631867477">なお、Android、Play、および関連付けられているアプリには、それぞれ独自のデータ収集と使用のポリシーが適用されます。</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> フォルダを選択</translation>
 <translation id="7297726121602187087">暗い緑</translation>
@@ -9723,6 +9736,7 @@
 <translation id="7830276128493844263">システム設定で位置情報がオフになっています</translation>
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> 個のファイルを <ph name="CLOUD_PROVIDER" /> にコピーして開きますか？</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">自動で変更</translation>
 <translation id="7833720883933317473">保存したカスタムの単語がここに表示されます</translation>
 <translation id="7834832693620032149">音声を共有するには、タブまたはウィンドウを共有してください</translation>
 <translation id="7836577093182643605">サイトと共有しないようブロックしたトピックのリスト</translation>
@@ -9994,6 +10008,7 @@
 <translation id="8008704580256716350">不審なファイルをブロックしました</translation>
 <translation id="8009196983040865987">タブの整理機能を使用すると、開いているタブのタイトルと URL が Google に送信され、タブグループの候補が生成されます</translation>
 <translation id="8009225694047762179">パスワードを管理</translation>
+<translation id="8010312870936510509">データは <ph name="TIME" /> に同期パスフレーズで暗号化されています。暗号化の対象に Google Pay のお支払い方法と住所は含まれません。</translation>
 <translation id="8011372169388649948">「<ph name="BOOKMARK_TITLE" />」を移動しました。</translation>
 <translation id="8012188750847319132">CapsLock</translation>
 <translation id="8012463809859447963">インスタント アクセス ポイントの詳細</translation>

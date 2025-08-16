@@ -1631,6 +1631,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2110941575868943054">Pot căuta dispozitive Bluetooth</translation>
 <translation id="211144231511833662">Șterge tipurile</translation>
 <translation id="2111670510994270194">Filă nouă la dreapta</translation>
+<translation id="2111778868023567359">Nu vei mai vedea cardul Grupuri de file în această pagină</translation>
 <translation id="2112554630428445878">Bun venit, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fixează fila</translation>
 <translation id="2113479184312716848">Deschide &amp;fișierul...</translation>
@@ -2039,6 +2040,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2392369802118427583">Activează</translation>
 <translation id="2393136602862631930">Instalează <ph name="APP_NAME" /> pe Chromebook</translation>
 <translation id="2393313392064891208">Conținutul condițiilor pentru sistemul de operare Chrome Flex</translation>
+<translation id="2393944685985256805"><ph name="MODULE_NAME" /> ascuns</translation>
 <translation id="2395616325548404795">Dispozitivul <ph name="DEVICE_TYPE" /> a fost înscris pentru gestionarea de întreprindere, dar nu a putut trimite informațiile despre locație și articol. Introdu manual aceste informații din consola de administrare pentru acest dispozitiv.</translation>
 <translation id="2396783860772170191">Introdu codul PIN de 4 cifre (0000 – 9999)</translation>
 <translation id="2398546389094871088">Rularea funcției Powerwash a dispozitivului nu va elimina profilurile eSIM. Accesează <ph name="LINK_BEGIN" />Setările pentru date mobile<ph name="LINK_END" /> ca să elimini manual aceste profiluri.</translation>
@@ -2645,6 +2647,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2794522004398861033">Conectează-te la Wi-Fi sau Ethernet pentru a configura cardul eSIM</translation>
 <translation id="2794977172822818797">Adaugă site-uri actuale</translation>
 <translation id="2795716239552913152">Site-urile folosesc de obicei locația pentru funcții sau informații relevante, cum ar fi știri locale sau magazine din apropiere</translation>
+<translation id="2797712124653482791">Ascunde pentru <ph name="DISMISS_DAYS" /> zile</translation>
 <translation id="2798347533012571708">Menține actualizările activate</translation>
 <translation id="2799162042226656283">Browserul tău Chrome</translation>
 <translation id="2799223571221894425">Repornește</translation>
@@ -4068,6 +4071,10 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3800764353337460026">Stilul simbolurilor</translation>
 <translation id="3800828618615365228">Condițiile suplimentare pentru Google Chrome și sistemul de operare Chrome</translation>
 <translation id="3800898876950197674">Introdu parola pentru a permite această extensie.</translation>
+<translation id="3801131837165361989">Vezi sugestii despre cum să personalizezi Chrome și să-l faci mai eficient pentru nevoile tale zilnice.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Poți să gestionezi setările din meniul cardului sau să afișezi mai multe opțiuni în Personalizează Chrome.</translation>
 <translation id="3801449494961771207">Vocea sistemului de redare vocală a textului</translation>
 <translation id="3802486193901166966">Această extensie nu necesită permisiuni speciale și nu are acces suplimentar la site-uri</translation>
 <translation id="380329542618494757">Nume</translation>
@@ -4954,6 +4961,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4415815425191869676">Menține întotdeauna active aceste site-uri</translation>
 <translation id="4416582610654027550">Introdu o adresă URL validă</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Întrerupe această filă}few{Întrerupe aceste file}other{Întrerupe aceste file}}</translation>
+<translation id="4419287616181386201">Parolele se pot șterge din setările de gestionare</translation>
 <translation id="4421932172707401417">Sugestiile de scris se bazează pe solicitările tale și pe conținutul paginii web</translation>
 <translation id="4421932782753506458">Pufoșel</translation>
 <translation id="4423376891418188461">Restabilește setările</translation>
@@ -5844,6 +5852,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5064921774605267982">Deschide profilul <ph name="PROFILE_NAME" />. Profilul este gestionat de unul dintre părinți.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gestionează DNS-ul securizat în setările sistemului de operare Chrome</translation>
+<translation id="5066523884829290323">Modific-o pe site</translation>
 <translation id="5066534201484101197">Derulează pentru a naviga între pagini</translation>
 <translation id="5067399438976153555">Activat permanent</translation>
 <translation id="5067867186035333991">Întreabă dacă <ph name="HOST" /> solicită acces la microfon</translation>
@@ -6463,6 +6472,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5496730470963166430">Nu au permisiunea de a afișa ferestre pop-up sau de a folosi redirecționări</translation>
 <translation id="5497250476399536588">O poți găsi în Adrese și Mai multe</translation>
 <translation id="5497251278400702716">Acest fișier</translation>
+<translation id="549762298434242239">Navigarea sigură îmbunătățită nu are încredere în această extensie. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome nu a putut verifica acest pachet de instalare</translation>
 <translation id="5498967291577176373">Scrii mai rapid cu ajutorul sugestiilor inline pentru nume, adresă sau numărul de telefon</translation>
 <translation id="5499211612787418966">Acest dialog nu este focalizat. Apasă pe Alt-Shift A pentru a focaliza dialogul.</translation>
@@ -6524,6 +6534,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Alege configurația</translation>
 <translation id="5551573675707792127">Tastatură și introducerea textului</translation>
+<translation id="5551753770140674714">Toate datele sunt criptate cu expresia ta de acces pentru sincronizare. Acest lucru nu este valabil și pentru metodele de plată și adresele din Google Pay.</translation>
 <translation id="5553089923092577885">Mapări de certificate de politică</translation>
 <translation id="5554240068773209752">Dă clic aici pentru a personaliza comenzile</translation>
 <translation id="5554403733534868102">În viitor nu vei mai aștepta actualizări</translation>
@@ -6827,6 +6838,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5780973441651030252">Prioritatea procesului</translation>
 <translation id="5781092003150880845">Sincronizează ca <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Mută datele din contul școlar în contul personal</translation>
+<translation id="5781244749114921664">Cardul Grupuri de file a fost ascuns</translation>
 <translation id="5782227691023083829">Se traduce...</translation>
 <translation id="5783346913439924978">Urmărirea mișcărilor capului</translation>
 <translation id="57838592816432529">Dezactivează sunetul</translation>
@@ -8947,6 +8959,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Browserul este gestionat<ph name="END_LINK" /> de organizația ta, iar <ph name="BEGIN_LINK" />profilul este gestionat<ph name="END_LINK" /> de <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Cere-i părintelui să permită accesul la Setări</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">Istoricul căutărilor, istoricul Gemini și parolele se pot șterge din setările de gestionare</translation>
 <translation id="7295614427631867477">Reține că Android, Play și aplicațiile asociate sunt guvernate de propriile politici privind colectarea și utilizarea datelor.</translation>
 <translation id="7296503797589217366">Selectează dosarul <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verde închis</translation>
@@ -9742,6 +9755,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7830276128493844263">Locația este dezactivată din setările de sistem</translation>
 <translation id="7830833461614351956">Copiezi <ph name="NUM_OF_FILES" /> fișiere în <ph name="CLOUD_PROVIDER" /> pentru a le deschide?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">Schimb-o pentru mine</translation>
 <translation id="7833720883933317473">Cuvintele personalizate salvate vor fi afișate aici</translation>
 <translation id="7834832693620032149">Pentru a trimite conținut audio, permite accesul la o filă sau la o fereastră</translation>
 <translation id="7836577093182643605">Lista de subiecte blocate pe care nu vrei să le trimiți la site-uri</translation>
@@ -10013,6 +10027,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8008704580256716350">Fișierul suspect a fost blocat</translation>
 <translation id="8009196983040865987">Când folosești Organizatorul de file, titlurile și adresele URL ale filelor deschise sunt trimise la Google pentru a genera grupuri de file sugerate</translation>
 <translation id="8009225694047762179">Gestionează parolele</translation>
+<translation id="8010312870936510509">Datele au fost criptate cu expresia de acces pentru sincronizare pe <ph name="TIME" />. Acest lucru nu este valabil pentru metodele de plată și adresele din Google Pay.</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />” a fost mutat.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Detalii despre hotspotul instantaneu</translation>

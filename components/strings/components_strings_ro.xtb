@@ -700,6 +700,7 @@
 <translation id="2154484045852737596">Editează cardul</translation>
 <translation id="2154739667870063220">Repornește</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
+<translation id="2156467141257470387">Poți folosi adresele salvate în toate produsele Google. Această acțiune nu va modifica adresa de serviciu existentă. Adresa se va salva în Contul tău Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Notificări privind urmărirea prețurilor</translation>
 <translation id="21613918653299710">Galerii de imagini online</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -2997,6 +2998,7 @@
 <translation id="5984570616552610254">Umiditatea camerei</translation>
 <translation id="598637245381783098">Nu se poate deschide aplicația de plată</translation>
 <translation id="5989320800837274978">Nu sunt specificate nici servere proxy fixe și nici o adresă URL pentru scripturi .pac.</translation>
+<translation id="5989917734461988169">Poți folosi adresele salvate în toate produsele Google. Această acțiune nu va modifica adresa de acasă existentă. Adresa se va salva în Contul tău Google, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Îndoire în Z pentru inginerie</translation>
 <translation id="5992805036496113940">Vezi informațiile folosite pentru a-ți afișa anunțuri</translation>
 <translation id="5995727681868049093">Gestionează-ți informațiile, confidențialitatea și securitatea Contului Google</translation>
@@ -4899,6 +4901,7 @@ Detalii suplimentare:
 <translation id="9139318394846604261">Cumpărături</translation>
 <translation id="9140198744651252040">Browserul Chrome dorește să folosească amprenta pentru a completa automat parolele</translation>
 <translation id="9141013498910525015">Gestionează adresele</translation>
+<translation id="9141435142213469335">Salvează adresa cu mai multe informații</translation>
 <translation id="9141672681283222114">RA este permisă de data aceasta</translation>
 <translation id="9143898823728499852">Poți completa automat acest card deoarece contul <ph name="CARD_ISSUER_NAME" /> este conectat la Google Pay</translation>
 <translation id="9144951720726881238">Data expirării:</translation>

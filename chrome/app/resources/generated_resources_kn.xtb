@@ -4966,6 +4966,7 @@
 <translation id="4415815425191869676">ಈ ಸೈಟ್‌ಗಳನ್ನು ಯಾವಾಗಲೂ ಸಕ್ರಿಯವಾಗಿರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="4416582610654027550">ಮಾನ್ಯವಾದ URL ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{ಈ ಟ್ಯಾಬ್ ಅನ್ನು ವಿರಾಮಗೊಳಿಸಿ}one{ಈ ಟ್ಯಾಬ್‌ಗಳನ್ನು ವಿರಾಮಗೊಳಿಸಿ}other{ಈ ಟ್ಯಾಬ್‌ಗಳನ್ನು ವಿರಾಮಗೊಳಿಸಿ}}</translation>
+<translation id="4419287616181386201">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಅವುಗಳ ನಿರ್ವಹಣಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಅಳಿಸಬಹುದು</translation>
 <translation id="4421932172707401417">ಬರವಣಿಗೆಯ ಸಲಹೆಗಳು ನಿಮ್ಮ ಪ್ರಾಂಪ್ಟ್‌ಗಳು ಮತ್ತು ವೆಬ್ ಪುಟದ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಆಧರಿಸಿವೆ</translation>
 <translation id="4421932782753506458">ಫ್ಲುಫಿ</translation>
 <translation id="4423376891418188461">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸು</translation>
@@ -5857,6 +5858,7 @@
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> ಪ್ರೊಫೈಲ್ ಅನ್ನು ತೆರೆಯಿರಿ. ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿನ ಸುರಕ್ಷಿತ DNS ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="5066523884829290323">ಸೈಟ್‌ನಲ್ಲಿ ಅದನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="5066534201484101197">ಪುಟಗಳ ನಡುವೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಓವರ್‌ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="5067399438976153555">ಯಾವಾಗಲೂ ಆನ್</translation>
 <translation id="5067867186035333991">ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಬಯಸುತ್ತದೆಯೇ ಎಂಬುದನ್ನು ಕೇಳಿ</translation>
@@ -8965,6 +8967,7 @@
 <translation id="7292067737327289208">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ<ph name="END_LINK" />ಮತ್ತು <ph name="PROFILE_DOMAIN" /> ಮೂಲಕ <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ<ph name="END_LINK" /></translation>
 <translation id="7292147651179697920">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಅನುಮತಿಸುವಂತೆ ನಿಮ್ಮ ಪೋಷಕರನ್ನು ಕೇಳಿ</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">ಹುಡುಕಾಟ ಇತಿಹಾಸ, Gemini ಇತಿಹಾಸ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಅವುಗಳ ನಿರ್ವಹಣಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಅಳಿಸಬಹುದು</translation>
 <translation id="7295614427631867477">Android, Play ಮತ್ತು ಸಂಬಂಧಿಸಿದ ಆ್ಯಪ್‌ಗಳು, ಅವುಗಳ ಸ್ವಂತ ಡೇಟಾ ಸಂಗ್ರಹಣೆ ಮತ್ತು ಬಳಕೆ ಕಾರ್ಯನೀತಿಗಳ ಮೂಲಕ ನಿಯಂತ್ರಣಗೊಳ್ಳುತ್ತವೆ ಎಂಬುದನ್ನು ಗಮನಿಸಿ.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ಫೋಲ್ಡರ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7297726121602187087">ಗಾಢ ಹಸಿರು</translation>
@@ -9758,6 +9761,7 @@
 <translation id="7830276128493844263">ಸಿಸ್ಟಂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸ್ಥಳವನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7830833461614351956">ತೆರೆಯಲು <ph name="NUM_OF_FILES" /> ಫೈಲ್‌ಗಳನ್ನು <ph name="CLOUD_PROVIDER" /> ಗೆ ಕಾಪಿ ಮಾಡಬೇಕೆ?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">ನನಗಾಗಿ ಇದನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="7833720883933317473">ಉಳಿಸಲಾದ ಕಸ್ಟಮ್ ಪದಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="7834832693620032149">ಆಡಿಯೋ ಹಂಚಿಕೊಳ್ಳಲು, ಬದಲಿಗೆ ಟ್ಯಾಬ್ ಅಥವಾ ವಿಂಡೋ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="7836577093182643605">ನೀವು ಸೈಟ್‌ಗಳೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸದ, ನೀವು ನಿರ್ಬಂಧಿಸಿರುವ ವಿಷಯಗಳ ಪಟ್ಟಿ</translation>

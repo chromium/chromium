@@ -700,6 +700,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2154484045852737596">Editar cartão</translation>
 <translation id="2154739667870063220">Reinicializar</translation>
 <translation id="2155260325161282517">5 x 7 pol.</translation>
+<translation id="2156467141257470387">Os endereços salvos podem ser usados em vários produtos do Google. Isso não vai mudar seu endereço de trabalho atual. Ele será salvo na sua Conta do Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Notificações de monitoramento de preço</translation>
 <translation id="21613918653299710">Galerias de imagens on-line</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -2997,6 +2998,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5984570616552610254">Umidade da câmara</translation>
 <translation id="598637245381783098">Não foi possível abrir app de pagamento</translation>
 <translation id="5989320800837274978">Nem os servidores proxy fixos nem o URL de script .pac foram especificados.</translation>
+<translation id="5989917734461988169">Os endereços salvos podem ser usados em vários produtos do Google. Isso não vai mudar seu endereço de casa atual. Ele será salvo na sua Conta do Google, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Dobra sanfona</translation>
 <translation id="5992805036496113940">Consultar informações usadas para mostrar anúncios</translation>
 <translation id="5995727681868049093">Gerenciar suas informações, sua privacidade e sua segurança na Conta do Google.</translation>
@@ -4900,6 +4902,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9139318394846604261">Compras</translation>
 <translation id="9140198744651252040">O navegador Chrome quer usar a impressão digital para preencher senhas automaticamente</translation>
 <translation id="9141013498910525015">Gerenciar endereços</translation>
+<translation id="9141435142213469335">Salvar endereço com mais informações</translation>
 <translation id="9141672681283222114">RA permitida apenas desta vez</translation>
 <translation id="9143898823728499852">Você pode preencher automaticamente as informações deste cartão porque sua conta do <ph name="CARD_ISSUER_NAME" /> está vinculada ao Google Pay</translation>
 <translation id="9144951720726881238">Data de validade:</translation>

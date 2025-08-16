@@ -700,6 +700,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2154484045852737596">Úprava karty</translation>
 <translation id="2154739667870063220">Reštartovať</translation>
 <translation id="2155260325161282517">5 × 7 palcov</translation>
+<translation id="2156467141257470387">V službách Googlu môžete používať uložené adresy. Vaša existujúca adresa práce sa nezmení. Bude uložené vo vašom účte Google <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Upozornenia sledovania cien</translation>
 <translation id="21613918653299710">Online galérie obrázkov</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -2993,6 +2994,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5984570616552610254">Vlhkosť komory</translation>
 <translation id="598637245381783098">Nie je možné otvoriť platobnú aplikáciu</translation>
 <translation id="5989320800837274978">Nie sú určené pevne dané servery proxy ani skript PAC webovej adresy.</translation>
+<translation id="5989917734461988169">V službách Googlu môžete používať uložené adresy. Vaša existujúca adresa domova sa nezmení. Bude uložené vo vašom účte Google <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Inžiniersky záhyb v tvare písmena Z</translation>
 <translation id="5992805036496113940">Zobraziť informácie, pomocou ktorých sa vám zobrazujú reklamy</translation>
 <translation id="5995727681868049093">Spravovať v účte Google informácie, ochranu súkromia a zabezpečenie</translation>
@@ -4894,6 +4896,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9139318394846604261">Nákupy</translation>
 <translation id="9140198744651252040">Prehliadač Chrome chce pomocou odtlačku prsta automaticky dopĺňať heslá</translation>
 <translation id="9141013498910525015">Spravovať adresy</translation>
+<translation id="9141435142213469335">Uloženie adresy s ďalšími informáciami</translation>
 <translation id="9141672681283222114">Režim RR je momentálne povolený</translation>
 <translation id="9143898823728499852">Túto kartu môžete automaticky doplniť, pretože váš účet <ph name="CARD_ISSUER_NAME" /> je prepojený so službou Google Pay</translation>
 <translation id="9144951720726881238">Dátum ukončenia platnosti:</translation>

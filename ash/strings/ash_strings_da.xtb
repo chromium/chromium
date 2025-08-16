@@ -1370,6 +1370,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="5429993543155113935">Inkognitovinduer understøttes ikke i øjeblikket</translation>
 <translation id="5431318178759467895">Farve</translation>
 <translation id="5433020815079095860">Lydindgang</translation>
+<translation id="543584294741034249">Du kan tilslutte op til <ph name="DISPLAY_LIMIT" /> eksterne skærme.</translation>
 <translation id="544691375626129091">Alle tilgængelige brugere er allerede blevet føjet til denne session.</translation>
 <translation id="54609108002486618">Administreret</translation>
 <translation id="5460938382730614333">Tuschen er aktiveret.</translation>
@@ -2052,7 +2053,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7684531502177797067">Kamerainput er indstillet til <ph name="CAMERA_NAME" />.</translation>
 <translation id="7687172143976244806">Åbnet af dig</translation>
 <translation id="7689817529363080918">Dette giver <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle andre apps samt websites med mikrofontilladelse adgang til mikrofonen</translation>
-<translation id="7704000866383261579">Annuller fortryd for den seneste handling</translation>
+<translation id="7704000866383261579">Annuller fortrydelse for den seneste handling</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Opretter gif</translation>
 <translation id="7714767791242455379">Tilføj et mobilnetværk</translation>

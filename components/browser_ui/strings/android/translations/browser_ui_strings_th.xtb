@@ -310,6 +310,7 @@
 <translation id="443121186588148776">พอร์ตอนุกรม</translation>
 <translation id="4434045419905280838">ป๊อปอัปและการเปลี่ยนเส้นทาง</translation>
 <translation id="443552056913301231">การดำเนินการนี้จะลบข้อมูลในเครื่องและคุกกี้ทั้งหมด รวมถึงรีเซ็ตสิทธิ์ทั้งหมดสำหรับ <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Bottom Sheet สีของ Chrome เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="4468959413250150279">ปิดเสียงไซต์ที่ต้องการ</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{คุกกี้ # รายการ}other{คุกกี้ # รายการ}}</translation>
 <translation id="4478158430052450698">ปรับแต่งการซูมของเว็บไซต์ต่างๆ ได้ง่ายขึ้น</translation>
@@ -345,6 +346,7 @@
 <translation id="4953688446973710931">เมื่อเปิด เว็บไซต์จะขอดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติได้ เมื่อปิด เว็บไซต์จะดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติไม่ได้</translation>
 <translation id="4962975101802056554">เพิกถอนสิทธิ์ทั้งหมดสำหรับอุปกรณ์</translation>
 <translation id="4972737347717125191">เว็บไซต์ขอใช้อุปกรณ์และข้อมูล Virtual Reality ได้</translation>
+<translation id="4973805849704516244">Bottom Sheet สีของ Chrome</translation>
 <translation id="497421865427891073">ไปข้างหน้า</translation>
 <translation id="4976702386844183910">เข้าชมล่าสุด <ph name="DATE" /></translation>
 <translation id="4978178243417029856">ดูข้อมูลเพิ่มเติมเกี่ยวกับฟีดสำรวจ</translation>

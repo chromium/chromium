@@ -700,6 +700,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2154484045852737596">Kartı düzenle</translation>
 <translation id="2154739667870063220">Yeniden başlat</translation>
 <translation id="2155260325161282517">5 x 7 inç</translation>
+<translation id="2156467141257470387">Kayıtlı adresleri tüm Google ürünlerinde kullanabilirsiniz. Bu işlem, mevcut iş adresinizi değiştirmez. Adres, Google Hesabınıza (<ph name="ACCOUNT" />) kaydedilir.</translation>
 <translation id="2157640075051554492">Fiyat takibi bildirimleri</translation>
 <translation id="21613918653299710">Çevrimiçi Resim Galerileri</translation>
 <translation id="2161656808144014275">Metin</translation>
@@ -2997,6 +2998,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5984570616552610254">Oda nemi</translation>
 <translation id="598637245381783098">Ödeme uygulaması açılamıyor</translation>
 <translation id="5989320800837274978">Sabit proxy sunucular veya bir .pac komut dosyası URL'si belirtilmedi.</translation>
+<translation id="5989917734461988169">Kayıtlı adresleri tüm Google ürünlerinde kullanabilirsiniz. Bu işlem, mevcut ev adresinizi değiştirmez. Adres, Google Hesabınıza (<ph name="ACCOUNT" />) kaydedilir.</translation>
 <translation id="5992691462791905444">Yarım Z katlama</translation>
 <translation id="5992805036496113940">Size reklam göstermek için kullanılan bilgilere göz atın</translation>
 <translation id="5995727681868049093">Google Hesabınızda bilgilerinizi, gizliliğinizi ve güvenliğinizi yönetin</translation>
@@ -3578,7 +3580,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6921197121276419421">Web uygulamalarının yüklenmesine izin verildi</translation>
 <translation id="69238565902785824">Hesabınız bağlı olduğunda <ph name="BNPL_ISSUER_NAME" /> ile daha hızlı ödeme yapabilirsiniz, ancak bağlantısını kaldırmak isterseniz <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> adresine gidebilirsiniz.</translation>
 <translation id="6924013822850225188">Ödeme sırasında kart avantajlarınızı görüp görmeyeceğinizi seçin (banka şartları geçerlidir)</translation>
-<translation id="6924933062125062950">Kimlik kartını silin</translation>
+<translation id="6924933062125062950">Kimlik kartını sil</translation>
 <translation id="6925267999184670015">Kuzey Amerika B+</translation>
 <translation id="6926216138694948720">Beden Sanatı</translation>
 <translation id="692638818576287323">Ticari Araçlar</translation>
@@ -4899,6 +4901,7 @@ Ek ayrıntılar:
 <translation id="9139318394846604261">Alışveriş</translation>
 <translation id="9140198744651252040">Chrome tarayıcı, şifreleri otomatik olarak doldurmak için parmak izi kullanılmasını istiyor</translation>
 <translation id="9141013498910525015">Adresleri yönet</translation>
+<translation id="9141435142213469335">Adresi daha fazla bilgiyle kaydedin</translation>
 <translation id="9141672681283222114">Artırılmış gerçekliğe (AR) bu sefer izin verildi</translation>
 <translation id="9143898823728499852"><ph name="CARD_ISSUER_NAME" /> hesabınız Google Pay'e bağlı olduğu için bu kartı otomatik olarak doldurabilirsiniz.</translation>
 <translation id="9144951720726881238">Son kullanma tarihi:</translation>

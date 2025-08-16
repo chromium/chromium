@@ -1133,6 +1133,7 @@
 <translation id="1768212860412467516">გამოგვეხმაურეთ, როგორია <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">გახსენით ბმულები ახალ &amp;ფანჯარაში</translation>
 <translation id="1769157454356586138">სკანირება ვერ მოხერხდა. ეს ფაილი დაბლოკილია თქვენი ადმინისტრატორის მიერ</translation>
+<translation id="176920518817780870">ჯგუფის გარდაქმნა სანიშნეების საქაღალდედ</translation>
 <translation id="1770407692401984718">ჩავლებით გადმოიტანეთ სურათი აქ ან</translation>
 <translation id="177053719077591686">Android აპების სარეზერვო ასლების შექმნა Google Drive-ზე.</translation>
 <translation id="1773329206876345543">შექმენით Wi‑Fi უსადენო ქსელი თქვენი <ph name="DEVICE_TYPE" />-ის მობილური ინტერნეტის მეშვეობით, რათა სხვა მოწყობილობებს გაუზიაროთ ინტერნეტი. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4961,6 +4962,7 @@
 <translation id="4415815425191869676">ამ საიტების ყოველთვის აქტიურად შენარჩუნება</translation>
 <translation id="4416582610654027550">აკრიფეთ სწორი URL</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{ამ ჩანართის დაპაუზება}other{ამ ჩანართების დაპაუზება}}</translation>
+<translation id="4419287616181386201">პაროლების წაშლა შესაძლებელია პაროლების მართვის პარამეტრებიდან</translation>
 <translation id="4421932172707401417">შემოთავაზებების დაწერა ეფუძნება თქვენს მოთხოვნებსა და ვებგვერდის შიგთავსს</translation>
 <translation id="4421932782753506458">ბუსუსი</translation>
 <translation id="4423376891418188461">პარამეტრების აღდგენა</translation>
@@ -5283,6 +5285,7 @@
 <translation id="4653116291358041820">პატარა ჩრდილი</translation>
 <translation id="4653405415038586100">შეცდომა Linux-ის კონფიგურაციისას</translation>
 <translation id="4654236001025007561">გაუზიარეთ ფაილები ახლომდებარე Chromebook-ებსა და Android მოწყობილობებს</translation>
+<translation id="4654801841330730814">ყველა</translation>
 <translation id="4657810666108475055">ჩანართებში ძიება</translation>
 <translation id="4657914796247705218">TrackPoint-ის სიჩქარე</translation>
 <translation id="4658285806588491142">შეინარჩუნეთ თქვენი ეკრანის კონფიდენციალურობა</translation>
@@ -5852,6 +5855,7 @@
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" />-ის პროფილის გახსნა. ამ პროფილს მართავს თქვენი ორგანიზაცია.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">მართეთ დაცული DNS ChromeOS-ის პარამეტრებიდან</translation>
+<translation id="5066523884829290323">საიტზე შეცვლა</translation>
 <translation id="5066534201484101197">საზღვრის მიღმა გადაადგილდით გვერდებს შორის ნავიგაციისთვის</translation>
 <translation id="5067399438976153555">ყოველთვის ჩართული</translation>
 <translation id="5067867186035333991">იკითხეთ, თუ <ph name="HOST" />-ს სურს თქვენს მიკროფონზე წვდომა</translation>
@@ -7242,6 +7246,7 @@
 <translation id="606449270532897041">საიტების მონაცემების მართა</translation>
 <translation id="6064764629679333574">გააუმჯობესეთ Bluetooth მიკროფონის ხმის ხარისხი. შეცვალეთ აუდიოს დაბალი გარჩევადობა მაღლით.</translation>
 <translation id="6065289257230303064">სერტიფიკატის სუბიექტის დირექტორიის ატრიბუტები</translation>
+<translation id="6066649679804058181">ჯგუფის გარდაქმნა სანიშნეების საქაღალდედ</translation>
 <translation id="6066794465984119824">სურათის ჰეში დაუყენებელია</translation>
 <translation id="6069464830445383022">შედით Chromebook-ში თქვენი Google ანგარიშით</translation>
 <translation id="6071181508177083058">დაადასტურეთ პაროლი</translation>
@@ -8956,6 +8961,7 @@
 <translation id="7292067737327289208">თქვენს <ph name="BEGIN_LINK" />ბრაუზერს მართავს<ph name="END_LINK" /> თქვენი ორგანიზაცია, თქვენს <ph name="BEGIN_LINK" />პროფილს<ph name="END_LINK" /> კი — <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">სთხოვეთ მშობლებს პარამეტრებიდან წვდომის დაშვება</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">ძიების ისტორიის, Gemini ისტორიისა და პაროლების წაშლა შესაძლებელია მათი მართვის პარამეტრებიდან</translation>
 <translation id="7295614427631867477">გაითვალისწინეთ, რომ Android-ზე, Play-სა და დაკავშირებულ აპებზე ვრცელდება მონაცემთა შეგროვებისა და გამოყენების საკუთარი წესები.</translation>
 <translation id="7296503797589217366">აირჩეს საქაღალდე <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">მუქი მწვანე</translation>
@@ -9750,6 +9756,7 @@
 <translation id="7830276128493844263">მდებარეობაზე წვდომა გამორთულია სისტემის პარამეტრებიდან</translation>
 <translation id="7830833461614351956">დაკოპირდეს <ph name="NUM_OF_FILES" /> ფაილი <ph name="CLOUD_PROVIDER" />-ში გასახსნელად?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">შემიცვალე</translation>
 <translation id="7833720883933317473">შენახული მორგებული სიტყვები აქ გამოჩნდება</translation>
 <translation id="7834832693620032149">აუდიოს გასაზიარებლად გააზიარეთ ჩანართი ან ფანჯარა</translation>
 <translation id="7836577093182643605">თქვენ მიერ დაბლოკილი იმ თემების სია, რომლებიც არ გსურთ, გაზიარდეს საიტებთან</translation>

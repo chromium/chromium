@@ -2146,6 +2146,7 @@ Als je het beleid niet toepast, wordt de functie voor contentcodering met <ph na
 <translation id="2522304491589804974">Toelatingslijst voor installatie van extensies configureren</translation>
 <translation id="2523511232831599126">Snelkoppelingen voor toegankelijkheid op het inlogscherm aanzetten</translation>
 <translation id="252742292004421898">Direct Sockets API toestaan op deze sites</translation>
+<translation id="2528762900096510743">Service voor automatisch uitloggen aanzetten</translation>
 <translation id="2529880111512635313">De lijst met automatisch geïnstalleerde apps en extensies configureren</translation>
 <translation id="253135976343875019">Inactieve waarschuwingsvertraging wanneer op netstroom wordt gewerkt</translation>
 <translation id="2532480434098051405">Inline afbeelding toestaan en AI-modellen verbeteren.</translation>
@@ -2276,6 +2277,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
       Als je het beleid instelt op AlleenGebruiker (waarde 1), kunnen gebruikers gebruikerscertificaten beheren, maar niet alle certificaten op het apparaat.</translation>
 <translation id="2593762551209145088">Safe Browsing is nooit actief.</translation>
 <translation id="2594773358911436070">WebRTC-instellingen</translation>
+<translation id="2600005880585324062">Laat <ph name="PRODUCT_NAME" /> beslissen welke oorsprongen moeten worden geïsoleerd van andere oorsprongen van dezelfde site.</translation>
 <translation id="26023406105317310">Kerberos-accounts configureren</translation>
 <translation id="2603237557651009842">WebPrinting API blokkeren op deze sites</translation>
 <translation id="2603382859270873566">Ondersteuning aanzetten voor de PPB_VideoDecoder(Dev) API.</translation>
@@ -2471,6 +2473,7 @@ Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar htt
 <translation id="2753637905605932878">Het bereik beperken van lokale UDP-poorten die door WebRTC worden gebruikt</translation>
 <translation id="2755847332939882873">Verzameling van prestatietracering voor het hele systeem toestaan</translation>
 <translation id="2757054304033424106">Typen extensies/apps die mogen worden geïnstalleerd</translation>
+<translation id="275769337615229465">De meeste oorsprongen worden geïsoleerd van andere oorsprongen op dezelfde site.</translation>
 <translation id="2759224876420453487">Het gebruikersgedrag beheren in een multiprofielsessie</translation>
 <translation id="2760947619380644513">Toestaan dat gebruikers met externe toegang URL's aan de hostzijde openen in hun lokale clientbrowser</translation>
 <translation id="2761483219396643566">Inactieve waarschuwingsvertraging wanneer op de batterij wordt gewerkt</translation>
@@ -2677,6 +2680,19 @@ Als je het beleid instelt op 2, wordt voorkomen dat afgedwongen geïnstalleerde 
 
       Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="2943242293289396843">Verouderde verpakte-app</translation>
+<translation id="2946332292553068214">Afhankelijk van het bord en de patches voor kritieke kwetsbaarheden kunnen <ph name="PRODUCT_OS_NAME" />-mijlpalen op de kernel gebaseerde stappen omvatten die niet compatibel zijn met eerdere mijlpalen.
+
+Op consumentenapparaten worden deze stappen toegepast zodra een release met de stap is geïnstalleerd. In de geverifieerde modus voorkomt dit dat je teruggaat naar oudere versies die de stap niet hebben.
+
+Op ingeschreven apparaten bepaalt dit beleid wanneer de stap wordt toegepast: de stap kan maximaal 4 mijlpalen (ongeveer 4 maanden) worden uitgesteld nadat de eerste mijlpaal met de verhoging is vrijgegeven op het Stabiele kanaal. Zo kunnen bedrijven de rollbackbeveiliging gedurende die tijd uitstellen.
+
+De standaardwaarde is 4 voor ingeschreven apparaten.
+
+Als je de waarde instelt op 0, wordt hetzelfde gedrag afgedwongen als op consumentenapparaten.
+
+Als je dit beleid instelt op een lagere waarde, kan dit een permanent effect hebben: zodra de stap is toegepast op het apparaat, kan het apparaat niet terugkeren naar een mijlpaal met een lagere op de kernel gebaseerde versie.
+
+Dit kan niet ongedaan worden gemaakt door het beleid later in te stellen op een hogere waarde.</translation>
 <translation id="2947111924404450461">Met dit beleid worden bedrijfsprinters ingesteld. De indeling komt overeen met de dictionary <ph name="NATIVE_PRINTERS_POLICY_NAME" />, waarbij voor elke printer ook een veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> verplicht is voor de toelatingslijst of weigeringslijst. Bestanden moeten een json-indeling hebben en mogen maximaal 5 MB zijn. In een bestand van 5 MB kunnen ongeveer 21.000 printers staan. De cryptografische hash wordt gebruikt om de integriteit van de download te verifiëren. Het bestand wordt gedownload, gecachet en opnieuw gedownload als de URL of de hash wordt gewijzigd. <ph name="PRODUCT_OS_NAME" /> downloadt het bestand voor printerconfiguraties en maakt printers beschikbaar in overeenstemming met <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> en <ph name="BULK_PRINTERS_BLACKLIST" />.
 
       Dit beleid is niet van invloed op de mogelijkheid van gebruikers om printers op afzonderlijke apparaten in te stellen. Het is bedoeld als aanvulling op de printerinstellingen van afzonderlijke gebruikers.
@@ -3200,6 +3216,7 @@ Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart Outlook n
 <translation id="3263892501786842604">Toestaan dat de <ph name="GOOGLE_LENS_PRODUCT_NAME" />-knop wordt getoond in het zoekvak op de pagina Nieuw tabblad, als dit wordt ondersteund.</translation>
 <translation id="3264793472749429012">Coderingen voor standaardzoekprovider</translation>
 <translation id="3265952988644972779">Enquêtes in het product uitzetten</translation>
+<translation id="3268090369868832496">Gebruiker alleen uitloggen van vorige sessie bij inloggen op nieuw apparaat als vensters of cookies zijn gesynchroniseerd</translation>
 <translation id="3269198556438453775">Verbindingen voor externe support van bedrijfsbeheerders met deze machine voorkomen</translation>
 <translation id="3271741247922321334">Hiermee kun je een lijst met URL-patronen instellen van sites waarop blokkeerbare (actieve) gemengde content (zoals HTTP-content op HTTPS-sites) niet mag worden weergegeven en waarvoor optioneel blokkeerbare (passieve) gemengde content wordt geüpgraded.
 
@@ -4948,6 +4965,7 @@ Een apparaat wordt als beheerd beschouwd als er een zakelijke versie van het OS 
       Als dit beleid niet is ingesteld, kan de gebruiker alle op het systeem geïnstalleerde plug-ins uitzetten.</translation>
 <translation id="4549695018986780856">Manifest v2 staat aan</translation>
 <translation id="4549729301485728119">De standaardinstelling wordt bepaald door andere factoren</translation>
+<translation id="4554429681167460828">Er worden geen oorsprongen geïsoleerd van andere oorsprongen op dezelfde site, tenzij de oorsprong expliciet heeft gevraagd om deze te isoleren.</translation>
 <translation id="4554651132977135445">Loopback-verwerkingsmodus voor gebruikersbeleid</translation>
 <translation id="4554991346503872538">Nooit een vertaling aanbieden</translation>
 <translation id="4555850956567117258">Externe bevestiging van gebruiker aanzetten</translation>
@@ -6801,6 +6819,15 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="5728154254076636808">Aanmaak van roaming-exemplaren voor <ph name="PRODUCT_NAME" />-profielgegevens aanzetten</translation>
 <translation id="5729308727912841256">Kerberos-wachtwoord. De tijdelijke aanduiding <ph name="PASSWORD_PLACEHOLDER" /> wordt vervangen door het wachtwoord voor inloggen.</translation>
 <translation id="5730610899971390601">Just Works-koppelingsverzoeken voor bluetooth weigeren</translation>
+<translation id="5731898940174379509">Door het beleid in te stellen worden maximaal 10 aangepaste snelkoppelingen vooraf ingesteld op de pagina Nieuw tabblad van <ph name="PRODUCT_NAME" />.
+
+Als het beleid is ingesteld, zien gebruikers deze snelkoppelingen standaard. Gebruikers kunnen wisselen tussen Mijn snelkoppelingen, Meest bezochte sites en Snelkoppelingen van mijn organisatie in het deelvenster Chrome aanpassen. Als het beleid leeg is of niet is ingesteld, kan de gebruiker alleen wisselen tussen Mijn snelkoppelingen en Meest bezochte sites in het deelvenster Chrome aanpassen.
+
+Snelkoppelings-URL's moeten uniek zijn.
+
+Als <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> is ingesteld op waar, kunnen gebruikers de naam van de snelkoppeling wijzigen. Als je dit beleid instelt op onwaar of niet instelt, kunnen gebruikers de naam niet bewerken.
+
+Als <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> is ingesteld op waar, kunnen gebruikers de snelkoppeling verwijderen. Als je het beleid instelt op onwaar of niet instelt, kunnen gebruikers de snelkoppeling niet verwijderen.</translation>
 <translation id="5732972008943405952">Formuliergegevens voor Automatisch invullen importeren uit standaardbrowser bij eerste uitvoering</translation>
 <translation id="5733040281451845496">Als je het beleid toepast, gaan de perioden voor stroombeheer en voor de maximale sessielengte pas in zodra de eerste gebruikersactiviteit plaatsvindt in een sessie.
 
@@ -8147,7 +8174,9 @@ Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bij
 <translation id="66265932317331474">CPU-info melden</translation>
 <translation id="6628120204569232711">Opslagstatus rapporteren</translation>
 <translation id="662991036483361836">Niet toestaan dat gebruikers Dichtbij delen aanzetten</translation>
+<translation id="6630693609822689611">Zet op oorsprong gebaseerde procesisolatie standaard aan.</translation>
 <translation id="663685822663765995">Afdrukken in kleurenmodus beperken</translation>
+<translation id="6639163415220949156">Gebruiker uitloggen van vorige sessie bij inloggen op een nieuw apparaat</translation>
 <translation id="6640355849038068978">Als deze instelling aanstaat, kunnen gebruikers de Eche-app starten, bijvoorbeeld door op een Telefoonhub-melding te klikken.
 
       Staat deze instelling uit, dan kunnen gebruikers de Eche-app niet starten.
@@ -8240,6 +8269,7 @@ Als deze functie aanstaat, brengt de GREASE-updatefunctie voor User-Agent Client
 De geüpdatete specificaties kunnen ervoor zorgen dat sommige websites niet meer werken die het aantal tekens beperken dat een verzoek mag bevatten. Bekijk de specificaties voor meer informatie: https://wicg.github.io/ua-client-hints/#grease
 Dit beleid wordt in een toekomstige release verwijderd.</translation>
 <translation id="6682305153467826752">Rapportage van informatie over machine-identificatie aanzetten</translation>
+<translation id="6684842561251679182">Aantal mijlpalen voor op de kernel gebaseerde stappen worden uitgesteld</translation>
 <translation id="6685903773201985073">Ambient-verificatie in normale en gastsessies aanzetten.</translation>
 <translation id="6687291630099400188">Systeemgegevens niet weergeven op het inlogscherm</translation>
 <translation id="6689343802305995925">Er wordt geen actie uitgevoerd.</translation>
@@ -8477,6 +8507,11 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 <translation id="6850300477973481112">Instellingen voor bureauconnector</translation>
 <translation id="6851199885688265233">Toegankelijkheidsfunctie voor cursormarkering aanzetten</translation>
 <translation id="6851315055469993882">HTTP auth-cache met wereldwijd bereik aanzetten</translation>
+<translation id="6851788229123189909">Met dit beleid bepaal je of een gebruiker automatisch wordt uitgelogd van de vorige sessie als die inlogt op een nieuw <ph name="PRODUCT_OS_NAME" />-apparaat.
+
+Als je het beleid toepast, wordt de gebruiker uitgelogd van de vorige sessie als die inlogt op een nieuw <ph name="PRODUCT_OS_NAME" />-apparaat.
+
+Als je het beleid niet toepast of niet instelt, wordt de gebruiker alleen uitgelogd van de vorige sessie als het beleid <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> of <ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME" /> wordt toegepast.</translation>
 <translation id="6854767649023671426">Als je het beleid toepast of niet instelt, wordt gebruikers in een prompt om toegang tot video-opnamen gevraagd, met uitzondering van de URL's die zijn ingesteld in de lijst VideoCaptureAllowedUrls.
 
       Als je het beleid niet toepast, worden prompts uitgezet en zijn video-opnamen alleen beschikbaar voor URL's die zijn ingesteld in de lijst VideoCaptureAllowedUrls.
@@ -8490,6 +8525,7 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 Als het beleid is ingesteld op False of niet is ingesteld, is de indeling niet beschikbaar. Hiervoor moet opnieuw worden opgestart.</translation>
 <translation id="685769593149966548">Strenge 'Beperkte modus' voor YouTube afdwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 of later</translation>
+<translation id="6863927303509860338">Snelkoppelingen instellen op de pagina Nieuw tabblad</translation>
 <translation id="6866755486434471318">Toestaan dat <ph name="PEPPER_NAME" /> gedeelde afbeeldingen gebruikt voor videodecodering.</translation>
 <translation id="6878757724611298427">Gebruikers toestaan Android-apps te gebruiken op niet-aangesloten apparaten</translation>
 <translation id="6881397131210596522">Als je het beleid instelt op 2, wordt automatisch voorkomen dat sites de WebPrinting API gebruiken.
@@ -8890,6 +8926,19 @@ Als je dit beleid niet toepast, worden wachtwoorden nooit onthouden en worden al
     Als je het beleid instelt op True, wordt het scherm van de sensor voor menselijke aanwezigheid wel getoond.
     Als je het beleid niet instelt, geldt de standaardwaarde False voor beheerde zakelijke gebruikers en wordt de waarde True gebruikt voor niet-beheerde gebruikers.</translation>
 <translation id="7127980134843952133">Downloadgeschiedenis</translation>
+<translation id="7128472920253801502">Dit beleid is beëindigd omdat Tabbladorganisator als functie is beëindigd.
+
+Tabbladorganisator is een op AI gebaseerde tool die automatisch tabbladgroepen maakt op basis van de geopende tabbladen van een gebruiker. Suggesties zijn gebaseerd op geopende tabbladen (maar niet op paginacontent).
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="7128513247945602297">Automatisch upgraden van gemengde content aanzetten op HTTPS-sites</translation>
 <translation id="712963038874313213">Hiermee wordt een Ansible-playbook geboden dat moet worden uitgevoerd in de standaard Crostini-container.
 
@@ -9141,6 +9190,15 @@ Als je dit beleid niet toepast of niet instelt, staan de instellingen voor Kerbe
 <translation id="7313672174502374994">De SHA-256-hash van de achtergrondafbeelding.</translation>
 <translation id="7317472245305274219">Bepalen of het maken van toegangssleutels standaard wordt ingesteld op iCloud Sleutelhanger.</translation>
 <translation id="7318503436349210241">Aangezet: css-zoom voldoet aan de standaardspecificatie.</translation>
+<translation id="7321519702919205928">Met dit beleid configureer je één globaal cachegeheugen per profiel met HTTP-serververificatiegegevens.
+
+      Als je dit beleid niet instelt of niet toepast, gebruikt de browser het standaardgedrag van verificatie voor meerdere sites (cross-site auth), die HTTP-serververificatiegegevens per site op het hoogste niveau in kaart brengt. Dit betekent dat als twee sites bronnen van hetzelfde verificatiedomein gebruiken, de verificatiegegevens onafhankelijk van elkaar moeten worden doorgegeven binnen de context van beide sites. Proxygegevens in het cachegeheugen worden hergebruikt op de andere sites.
+
+      Als je het beleid toepast, worden HTTP-verificatiegegevens die binnen de context van één site worden ingevoerd, automatisch gebruikt binnen de context van een andere site.
+
+      Als je dit beleid toepast, blijven sites blootstaan aan bepaalde typen cross-site aanvallen en kunnen gebruikers ook zonder gebruik van cookies van site naar site worden gevolgd door het toevoegen van items aan het HTTP-verificatiecachegeheugen via gegevens die zijn ingesloten in URL's.
+
+Dit beleid is bedoeld om bedrijven die afhankelijk zijn van het oude gedrag in de gelegenheid te stellen hun inlogprocedures te updaten. Het beleid wordt in de toekomst verwijderd.</translation>
 <translation id="7322825363493984512">Het wachtwoord om systeemservices te verifiëren bij de externe webproxy.</translation>
 <translation id="7323773727263636287">Zet de toegankelijkheidsfunctie voor kleurcorrectie aan.
 
@@ -9668,6 +9726,13 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 <translation id="775822241671489040">Bepaalt de instelling De Launcher-/zoektoets gebruiken om het gedrag van functietoetsen te wijzigen</translation>
 <translation id="7758378441185523981">Ambient-verificatie voor profieltypen aanzetten.</translation>
 <translation id="776110834126722255">Beëindigd</translation>
+<translation id="7761702157788500857">Zet op oorsprong gebaseerde procesisolatie aan voor de meeste pagina's (dat wil zeggen pagina's die standaard zijn toegewezen aan een op oorsprong gebaseerde agentclustering). Hiermee verbeter je de beveiliging, maar verhoog je ook het aantal gemaakte processen. Gebruikers mogen de ingestelde beleidswaarde overschrijven via de opdrachtregelmarkeringen of chrome://flags (beide om deze functie aan of uit te zetten).
+
+Als je het beleid toepast, worden de meeste oorsprongen geïsoleerd, zelfs van andere oorsprongen op dezelfde site. Bekijk ook het beleid <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> en het beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />.
+
+Als je het beleid niet toepast, worden er geen oorsprongen geïsoleerd van de rest van hun site, tenzij een oorsprong hier expliciet om vraagt.
+
+Als je het beleid niet instelt, bepaalt de browser welke oorsprongen moeten worden geïsoleerd en wanneer ze moeten worden geïsoleerd.</translation>
 <translation id="7763614521440615342">Contentsuggesties tonen op de nieuwe tabbladpagina</translation>
 <translation id="7763650553214838209">Het instellen van een sneltoets voor de actie Invoegen staat uit.</translation>
 <translation id="7763655314629932385">Geeft de gewenste versie van de GWA aan. Indien verstrekt, probeert het systeem deze specifieke versie te installeren en blokkeert het systeem verdere updates. Verwijder dit veld om de app los te maken en updates weer aan te zetten. **Belangrijk:** Als de verstrekte versie niet bestaat, blijft de GWA hangen op de op dit moment geïnstalleerde versie. Dit komt doordat vastzetten verdere automatische updates uitzet nadat is geprobeerd (en in dit geval mislukt) te updaten naar de vastgezette versie.</translation>

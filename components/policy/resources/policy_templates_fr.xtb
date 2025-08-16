@@ -2148,6 +2148,7 @@ Si cette règle est désactivée, la fonctionnalité d'encodage de contenu <ph n
 <translation id="2522304491589804974">Configurer la liste d'autorisation concernant l'installation des extensions</translation>
 <translation id="2523511232831599126">Activer les raccourcis d'accessibilité sur l'écran de connexion</translation>
 <translation id="252742292004421898">Autoriser l'API Direct Sockets sur ces sites</translation>
+<translation id="2528762900096510743">Activer le service de déconnexion automatique</translation>
 <translation id="2529880111512635313">Configurer la liste des applications et des extensions dont l'installation est forcée</translation>
 <translation id="253135976343875019">Délai d'inactivité avant l'affichage d'un avertissement (en cas de connexion secteur)</translation>
 <translation id="2532480434098051405">Autoriser Inline Image et améliorer les modèles d'IA.</translation>
@@ -2278,6 +2279,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
       Si cette règle est définie sur "UserOnly" (valeur 1), les utilisateurs peuvent gérer les certificats utilisateur, mais pas ceux au niveau de l'appareil.</translation>
 <translation id="2593762551209145088">La navigation sécurisée n'est jamais active.</translation>
 <translation id="2594773358911436070">Paramètres WebRTC</translation>
+<translation id="2600005880585324062">Laisser <ph name="PRODUCT_NAME" /> décider quelles origines isoler des autres origines provenant du même site.</translation>
 <translation id="26023406105317310">Configurer les comptes Kerberos</translation>
 <translation id="2603237557651009842">Bloquer l'API WebPrinting sur ces sites</translation>
 <translation id="2603382859270873566">Activer la prise en charge de l'API PPB_VideoDecoder(Dev).</translation>
@@ -2473,6 +2475,7 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
 <translation id="2753637905605932878">Restreindre la portée des ports UDP locaux utilisés par WebRTC</translation>
 <translation id="2755847332939882873">Autoriser la collecte d'une trace des performances au niveau du système</translation>
 <translation id="2757054304033424106">Types d'extensions ou d'applications autorisés à être installés</translation>
+<translation id="275769337615229465">La plupart des origines seront isolées des autres origines provenant du même site.</translation>
 <translation id="2759224876420453487">Contrôler le comportement de l'utilisateur lors d'une session à plusieurs profils</translation>
 <translation id="2760947619380644513">Autoriser les utilisateurs connectés à distance à ouvrir des URL côté hôte dans leur navigateur client local</translation>
 <translation id="2761483219396643566">Délai d'inactivité avant l'affichage d'un avertissement (en cas d'utilisation de la batterie)</translation>
@@ -2679,6 +2682,19 @@ Si cette règle est définie sur "2", les applis Web isolées installées d'off
 
       Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="2943242293289396843">Ancienne application empaquetée</translation>
+<translation id="2946332292553068214">En fonction de l'appareil et des correctifs de failles critiques, les versions intermédiaires de <ph name="PRODUCT_OS_NAME" /> peuvent inclure des incréments de clé de noyau incompatibles avec les versions précédentes.
+
+Sur les appareils grand public, ces incréments sont appliqués dès qu'une version avec l'incrément est installée. En mode validé, cela empêche de revenir à des versions antérieures qui ne disposent pas de l'incrément.
+
+Sur les appareils enregistrés, cette règle contrôle quand l'incrément est appliqué : il peut être retenu pendant quatre versions intermédiaires maximum (environ quatre mois) après la sortie de la première version stable. Cela permet aux entreprises de reporter la protection contre le rollback pendant cette même durée.
+
+La valeur par défaut est de 4 pour les appareils enregistrés.
+
+Si vous définissez la valeur sur 0, le comportement est le même que sur les appareils grand public.
+
+Si vous définissez une valeur inférieure pour cette règle, cela peut avoir un impact permanent : une fois l'incrément appliqué sur l'appareil, celui-ci ne peut pas revenir à une version intermédiaire avec une version de clé de noyau inférieure.
+
+Vous ne pourrez pas annuler cette opération en définissant une valeur plus élevée pour la règle par la suite.</translation>
 <translation id="2947111924404450461">La définition de cette règle permet de configurer les imprimantes d'entreprise. Son format correspond au dictionnaire <ph name="NATIVE_PRINTERS_POLICY_NAME" />, avec un champ supplémentaire <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> obligatoire pour chaque imprimante à ajouter à la liste d'autorisation ou à la liste de refus. Le fichier est au format JSON et sa taille ne peut pas dépasser 5 Mo. Un fichier encodé de 5 Mo peut contenir environ 21 000 imprimantes. Le hachage cryptographique permet de valider l'intégrité du téléchargement. Le fichier est téléchargé, mis en cache, puis téléchargé à nouveau à chaque modification de l'URL ou du hachage. <ph name="PRODUCT_OS_NAME" /> télécharge le fichier des configurations d'imprimante et rend les imprimantes accessibles avec <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> et <ph name="BULK_PRINTERS_BLACKLIST" />.
 
       Cette règle n'a aucune incidence sur la capacité des utilisateurs à configurer ou non des imprimantes sur chaque appareil. Elle est destinée à compléter la configuration des imprimantes effectuée par les différents utilisateurs.
@@ -3203,6 +3219,7 @@ Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte Outlook ne s'affiche 
 <translation id="3263892501786842604">Autoriser l'affichage du bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le champ de recherche de la page "Nouvel onglet", s'il est disponible.</translation>
 <translation id="3264793472749429012">Codages du moteur de recherche par défaut</translation>
 <translation id="3265952988644972779">Désactiver les enquêtes intégrées au produit</translation>
+<translation id="3268090369868832496">Déconnecter l'utilisateur de sa session précédente lors de la connexion au nouvel appareil uniquement si les fenêtres ou les cookies sont synchronisés</translation>
 <translation id="3269198556438453775">Empêcher les connexions d'assistance à distance des administrateurs d'entreprise à cet ordinateur</translation>
 <translation id="3271741247922321334">Permet de lister les formats d'URL indiquant quels sites ne sont pas autorisés à afficher du contenu mixte (contenu HTTP affiché sur des sites HTTPS) blocable (actif), et pour lesquels le contenu mixte blocable de manière facultative (passif) est mis à niveau.
 
@@ -4429,6 +4446,13 @@ Si la règle n'est pas configurée, son comportement est déterminé par la règ
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas configurée, la mise en surbrillance du curseur de saisie est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
+<translation id="4182333458177354245">Configurez la manière dont <ph name="PRODUCT_NAME" /> télécharge le modèle de fondation de l'IA générative et l'utilise pour l'inférence en local.
+
+Si cette règle est définie sur "Autorisé" (0) ou qu'elle n'est pas configurée, le modèle est téléchargé automatiquement et est utilisé pour l'inférence.
+
+Si elle est définie sur "Désactivé" (1), le modèle n'est pas téléchargé.
+
+Le téléchargement du modèle peut également être désactivé par <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="4182348537826882258">Si vous définissez la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />, les pages Web dont les URL sont interdites ne peuvent pas se charger. Les administrateurs peuvent spécifier la liste des formats d'URL à bloquer. Si cette règle n'est pas configurée, aucune URL n'est bloquée dans le navigateur. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />. Découvrez les formats d'URL à respecter (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
 
 Remarque : Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages dont les données sont chargées dynamiquement. Si vous bloquez example.com/abc, example.com pourra toujours la charger à l'aide de XMLHTTPRequest. En outre, cette règle n'empêche pas les pages Web de remplacer l'URL affichée dans l'omnibox par une URL bloquée à l'aide de l'API JavaScript History.
@@ -4947,6 +4971,7 @@ Un appareil est considéré comme géré s'il utilise une version d'entreprise d
       Si cette règle n'est pas configurée, l'utilisateur peut désactiver n'importe quel plug-in installé sur le système.</translation>
 <translation id="4549695018986780856">Manifest V2 est activé</translation>
 <translation id="4549729301485728119">La valeur par défaut est déterminée par d'autres facteurs</translation>
+<translation id="4554429681167460828">Aucune origine ne sera isolée des autres origines provenant du même site, sauf si l'origine a explicitement demandé à être isolée.</translation>
 <translation id="4554651132977135445">Mode de traitement du bouclage pour les règles relatives aux utilisateurs</translation>
 <translation id="4554991346503872538">Ne jamais proposer de traduction</translation>
 <translation id="4555850956567117258">Activer l'attestation à distance pour l'utilisateur</translation>
@@ -6828,6 +6853,15 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="5728154254076636808">Permet de créer des copies itinérantes pour les données de profil <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Mot de passe Kerberos. L'espace réservé <ph name="PASSWORD_PLACEHOLDER" /> est remplacé par le mot de passe de connexion.</translation>
 <translation id="5730610899971390601">Refuser les demandes d'association Bluetooth "Just Works"</translation>
+<translation id="5731898940174379509">Cette règle permet de préconfigurer jusqu'à 10 raccourcis personnalisés sur la page "Nouvel onglet" de <ph name="PRODUCT_NAME" />.
+
+Si elle est configurée, les utilisateurs verront ces raccourcis par défaut. Ils pourront passer de "Mes raccourcis" à "Sites les plus consultés" ou "Raccourcis de mon organisation" dans le panneau "Personnaliser Chrome". Si elle est vide ou n'est pas définie, l'utilisateur ne pourra basculer qu'entre "Mes raccourcis" et "Sites les plus consultés" dans le panneau "Personnaliser Chrome".
+
+Les URL de raccourci doivent être uniques.
+
+Si <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> est défini sur "True", les utilisateurs peuvent modifier le nom du raccourci. Si la valeur est définie sur "False" ou n'est pas configurée, les utilisateurs ne peuvent pas modifier le nom.
+
+Si <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> est défini sur "True", les utilisateurs peuvent supprimer le raccourci. Si la valeur est définie sur "False" ou n'est pas configurée, les utilisateurs ne peuvent pas supprimer le raccourci.</translation>
 <translation id="5732972008943405952">Importer les données de saisie automatique du navigateur par défaut à la première exécution</translation>
 <translation id="5733040281451845496">Si cette règle est activée, les délais liés à la gestion de l'alimentation et les limites relatives à la durée de session ne sont activés que lorsque l'utilisateur a effectué une première activité au cours d'une session.
 
@@ -8184,7 +8218,9 @@ Pour que les modifications apportées à cette règle puissent être appliquées
 <translation id="66265932317331474">Transmettre les informations concernant le ou les processeurs</translation>
 <translation id="6628120204569232711">Envoyer des rapports sur l'état du stockage</translation>
 <translation id="662991036483361836">Empêcher les utilisateurs d'activer le Partage à proximité</translation>
+<translation id="6630693609822689611">Activer l'isolation des processus selon l'origine par défaut.</translation>
 <translation id="663685822663765995">Limiter l'impression en mode couleur</translation>
+<translation id="6639163415220949156">Déconnecter l'utilisateur de sa session précédente lors de la connexion à un nouvel appareil</translation>
 <translation id="6640355849038068978">Si ce paramètre est activé, les utilisateurs pourront lancer l'application Eche, par exemple en cliquant sur une notification Phone Hub.
 
       S'il est désactivé, ils ne pourront pas lancer cette application.
@@ -8278,6 +8314,7 @@ Lorsqu'elle est activée, la fonctionnalité de mise à jour GREASE User-Agent C
      Les caractéristiques mises à jour peuvent entraîner un dysfonctionnement de certains sites qui appliquent des restrictions concernant les caractères que peuvent contenir les requêtes. Pour en savoir plus, consultez les caractéristiques : https://wicg.github.io/ua-client-hints/#grease
      Cette règle sera supprimée dans une prochaine version.</translation>
 <translation id="6682305153467826752">Activer les rapports sur les informations d'identification de l'ordinateur</translation>
+<translation id="6684842561251679182">Nombre d'incréments de clé du kernel des versions intermédiaires retenus</translation>
 <translation id="6685903773201985073">Activer l'authentification ambiante pour les sessions Invité et standards.</translation>
 <translation id="6687291630099400188">Ne pas afficher les informations système sur l'écran de connexion</translation>
 <translation id="6689343802305995925">Aucune action ne se produit.</translation>
@@ -8515,6 +8552,11 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="6850300477973481112">Paramètres du connecteur de bureau</translation>
 <translation id="6851199885688265233">Activer la fonctionnalité d'accessibilité de mise en surbrillance du curseur</translation>
 <translation id="6851315055469993882">Permet d'activer un cache d'authentification HTTP à portée globale</translation>
+<translation id="6851788229123189909">Cette règle détermine si un utilisateur est automatiquement déconnecté de sa session précédente lorsqu'il se connecte à un nouvel appareil <ph name="PRODUCT_OS_NAME" />.
+
+Si cette règle est activée, l'utilisateur est déconnecté de sa session précédente lorsqu'il se connecte à un nouvel appareil <ph name="PRODUCT_OS_NAME" />.
+
+Si elle est désactivée ou n'est pas configurée, l'utilisateur est déconnecté de sa session précédente uniquement si les règles <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> ou <ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME" /> sont activées.</translation>
 <translation id="6854767649023671426">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur est invité à autoriser ou non l'accès à la capture vidéo, sauf si l'URL concernée figure dans la liste VideoCaptureAllowedUrls.
 
       Si cette règle est désactivée, aucune invite ne s'affiche à ce sujet, et la capture vidéo n'est possible que si l'URL concernée figure dans la liste VideoCaptureAllowedUrls.
@@ -8528,6 +8570,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 Si la règle est définie sur "false" ou si elle n'est pas configurée, cette disposition de clavier n'est pas disponible. Un redémarrage est nécessaire pour que la règle soit prise en compte.</translation>
 <translation id="685769593149966548">Appliquer le mode restreint strict sur YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
+<translation id="6863927303509860338">Définir des raccourcis sur la page "Nouvel onglet"</translation>
 <translation id="6866755486434471318">Autorise <ph name="PEPPER_NAME" /> à utiliser des images partagées pour le décodage vidéo.</translation>
 <translation id="6878757724611298427">Autoriser les utilisateurs à se servir d'applis Android sur des appareils non affiliés</translation>
 <translation id="6881397131210596522">Si cette règle est définie sur "2", cela empêche automatiquement les sites d'utiliser l'API WebPrinting.
@@ -8931,6 +8974,19 @@ Si cette règle est désactivée, les mots de passe ne sont jamais mémorisés e
     Si cette règle est définie sur "True", l'écran est affiché.
     Si cette règle n'est pas configurée, la valeur par défaut "False" s'applique pour les utilisateurs gérés par l'entreprise et la valeur par défaut "True" pour les utilisateurs non gérés.</translation>
 <translation id="7127980134843952133">Historique des téléchargements</translation>
+<translation id="7128472920253801502">Cette règle est obsolète, car l'organisateur d'onglets a été supprimé en tant que fonctionnalité.
+
+L'organisateur d'onglets est un outil basé sur l'IA qui crée automatiquement des groupes d'onglets en fonction des onglets ouverts par un utilisateur. Les suggestions dépendent des onglets ouverts (mais pas du contenu des pages).
+
+0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. Elles pourront également être examinées par des réviseurs humains afin d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les prompts, les entrées, les sorties, les sources et les retours écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Ne pas autoriser la fonctionnalité.
+
+Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7128513247945602297">Activer la mise à niveau automatique du contenu mixte sur les sites HTTPS</translation>
 <translation id="712963038874313213">Fournit un playbook Ansible à exécuter dans le conteneur Crostini par défaut.
 
@@ -9181,6 +9237,15 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de co
 <translation id="7313672174502374994">Hachage SHA-256 du fond d'écran.</translation>
 <translation id="7317472245305274219">Contrôler si la création de clés d'accès se fera par défaut dans le trousseau iCloud.</translation>
 <translation id="7318503436349210241">Activé : le zoom CSS suit la spécification standard.</translation>
+<translation id="7321519702919205928">Cette règle permet de définir un cache unique global pour chaque profil avec des identifiants d'authentification de serveur HTTP.
+
+      Si cette règle n'est pas définie ou si elle est désactivée, le navigateur applique le comportement par défaut pour l'authentification sur plusieurs sites. Ce comportement par défaut consiste à limiter la portée des identifiants d'authentification de serveur HTTP au site de premier niveau. Autrement dit, si deux sites utilisent des ressources en provenance d'un même domaine d'authentification, des identifiants devront être fournis séparément pour chaque site. Les identifiants de proxy mis en cache sont réutilisés sur tous les sites.
+
+      Si cette règle est définie, les identifiants d'authentification HTTP saisis pour un site donné seront automatiquement utilisés dans le contexte d'un autre site.
+
+      Si vous activez cette règle, vous exposez les sites à certaines attaques ciblant plusieurs sites et autorisez le suivi des utilisateurs d'un site à l'autre même sans cookies, grâce à l'ajout d'entrées au cache d'authentification HTTP par le biais d'identifiants intégrés aux URL.
+
+      Cette règle a pour but de donner l'opportunité aux entreprises tributaires de l'ancien comportement de mettre à jour leur processus de connexion. Elle sera prochainement supprimée.</translation>
 <translation id="7322825363493984512">Mot de passe pour authentifier les services système auprès du proxy Web à distance.</translation>
 <translation id="7323773727263636287">Activer la fonctionnalité d'accessibilité de correction des couleurs.
 
@@ -9710,6 +9775,13 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 <translation id="775822241671489040">Contrôle le paramètre "Utiliser la touche du Lanceur d'applications/de recherche pour modifier le comportement des touches de fonction"</translation>
 <translation id="7758378441185523981">Activer l'authentification ambiante en fonction du type de profil.</translation>
 <translation id="776110834126722255">Obsolète</translation>
+<translation id="7761702157788500857">Active l'isolation des processus selon l'origine pour la plupart des pages (c'est-à-dire celles qui sont attribuées par défaut à un cluster d'agents selon l'origine). Cela améliore la sécurité, mais augmente aussi le nombre de processus créés. Les utilisateurs sont autorisés à ignorer la valeur de règle définie via les flags de ligne de commande ou chrome://flags (pour activer ou désactiver cette fonctionnalité).
+
+Si cette règle est activée, la plupart des origines sont isolées, même des autres origines provenant du même site. Voir également les règles <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> et <ph name="SITE_PER_PROCESS_POLICY_NAME" />.
+
+Si cette règle est désactivée, aucune origine n'est isolée du reste de son site, sauf si une origine le demande explicitement.
+
+Si cette règle n'est pas configurée, le navigateur détermine les origines à isoler et le moment où il doit procéder à l'isolation.</translation>
 <translation id="7763614521440615342">Afficher des recommandations de contenus sur la page "Nouvel onglet"</translation>
 <translation id="7763650553214838209">La définition d'un raccourci pour l'action "Insérer" est désactivée.</translation>
 <translation id="7763655314629932385">Spécifie la version souhaitée de l'AWI. Si vous en fournissez une, le système tentera d'installer cette version spécifique, puis bloquera toutes les mises à jour suivantes. Pour retirer l'épingle de l'appli et réactiver les mises à jour, supprimez ce champ. **Important** : Si la version fournie n'existe pas, l'AWI restera bloquée sur la version actuellement installée. En effet, après avoir tenté (et échoué, dans ce cas) de mettre à jour vers la version épinglée, l'épinglage désactive toutes les mises à jour automatiques ultérieures.</translation>

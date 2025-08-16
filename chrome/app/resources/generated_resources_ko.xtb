@@ -2054,6 +2054,7 @@
 <translation id="2392369802118427583">활성화</translation>
 <translation id="2393136602862631930">Chromebook에 <ph name="APP_NAME" /> 설정</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex 약관 내용</translation>
+<translation id="2393944685985256805"><ph name="MODULE_NAME" /> 숨겨짐</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> 기기가 엔터프라이즈 관리용으로 등록되었지만 애셋과 위치 정보를 전송하지 못했습니다. 기기의 관리 콘솔에서 애셋과 위치 정보를 직접 입력하세요.</translation>
 <translation id="2396783860772170191">4자리 PIN(0000~9999) 입력</translation>
 <translation id="2398546389094871088">기기를 파워워시해도 eSIM 프로필이 삭제되지는 않습니다. <ph name="LINK_BEGIN" />모바일 설정<ph name="LINK_END" />으로 이동하여 프로필을 직접 삭제하세요.</translation>
@@ -2660,6 +2661,7 @@
 <translation id="2794522004398861033">Wi-Fi 또는 이더넷에 연결하여 eSIM 설정</translation>
 <translation id="2794977172822818797">현재 사이트 추가</translation>
 <translation id="2795716239552913152">사이트에서는 일반적으로 현지 뉴스 또는 주변 상점 같은 관련 기능이나 정보에 위치를 사용합니다.</translation>
+<translation id="2797712124653482791"><ph name="DISMISS_DAYS" />일 동안 숨기기</translation>
 <translation id="2798347533012571708">업데이트 유지</translation>
 <translation id="2799162042226656283">내 Chrome</translation>
 <translation id="2799223571221894425">다시 시작</translation>
@@ -4084,6 +4086,10 @@
 <translation id="3800764353337460026">기호 스타일</translation>
 <translation id="3800828618615365228">Chrome 및 ChromeOS 추가 약관</translation>
 <translation id="3800898876950197674">이 확장 프로그램을 허용하려면 비밀번호를 입력하세요.</translation>
+<translation id="3801131837165361989">Chrome을 맞춤설정하고 일상에서 더 유용하게 활용하는 방법에 대한 추천이 표시됩니다.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="3801449494961771207">시스템 TTS(텍스트 음성 변환) 음성</translation>
 <translation id="3802486193901166966">이 확장 프로그램은 추가적인 사이트 액세스 권한이 없고 특별한 권한이 필요하지 않습니다.</translation>
 <translation id="380329542618494757">이름</translation>
@@ -4968,6 +4974,7 @@
 <translation id="4415815425191869676">다음 사이트를 항상 활성 상태로 유지</translation>
 <translation id="4416582610654027550">유효한 URL을 입력하세요.</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{이 탭 일시중지}other{이 탭 일시중지}}</translation>
+<translation id="4419287616181386201">관리 설정에서 비밀번호를 삭제할 수 있습니다.</translation>
 <translation id="4421932172707401417">작성 제안은 사용자의 프롬프트와 웹페이지의 콘텐츠를 기반으로 합니다.</translation>
 <translation id="4421932782753506458">복실이</translation>
 <translation id="4423376891418188461">설정 복원</translation>
@@ -5860,6 +5867,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" />님의 프로필을 엽니다. 부모님이 관리하는 프로필입니다.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS 설정에서 보안 DNS 관리</translation>
+<translation id="5066523884829290323">사이트에서 변경</translation>
 <translation id="5066534201484101197">오버스크롤하여 페이지 간 이동</translation>
 <translation id="5067399438976153555">항상 사용</translation>
 <translation id="5067867186035333991"><ph name="HOST" />에서 마이크에 액세스하려는 경우 메시지 표시</translation>
@@ -6542,6 +6550,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">설정 선택</translation>
 <translation id="5551573675707792127">키보드 및 텍스트 입력</translation>
+<translation id="5551753770140674714">모든 데이터가 동기화 암호로 암호화되어 있습니다. Google Pay의 결제 수단 및 주소는 암호화되지 않습니다.</translation>
 <translation id="5553089923092577885">인증서 정책 매핑</translation>
 <translation id="5554240068773209752">여기를 클릭하여 제어 기능을 맞춤설정하세요.</translation>
 <translation id="5554403733534868102">다음부터는 업데이트를 기다리지 않아도 됩니다</translation>
@@ -8964,6 +8973,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7292067737327289208">조직에서 <ph name="BEGIN_LINK" />브라우저를 관리<ph name="END_LINK" />하고 <ph name="PROFILE_DOMAIN" />에서 <ph name="BEGIN_LINK" />프로필을 관리<ph name="END_LINK" />합니다.</translation>
 <translation id="7292147651179697920">부모님께 설정에서 액세스 권한을 부여해 달라고 요청하세요</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" />(<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">관리 설정에서 Google 검색 기록, Gemini 기록, 비밀번호를 삭제할 수 있습니다.</translation>
 <translation id="7295614427631867477">Android, Play 및 관련 앱은 각각의 데이터 수집 및 이용 정책을 따릅니다.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> 폴더 선택</translation>
 <translation id="7297726121602187087">진한 녹색</translation>
@@ -9758,6 +9768,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7830276128493844263">시스템 설정에서 위치가 사용 중지됨</translation>
 <translation id="7830833461614351956">파일 <ph name="NUM_OF_FILES" />개를 <ph name="CLOUD_PROVIDER" />에 복사하여 여시겠습니까?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">자동 변경</translation>
 <translation id="7833720883933317473">저장한 맞춤 단어가 여기에 표시됩니다.</translation>
 <translation id="7834832693620032149">오디오를 공유하려면 탭이나 창을 대신 공유하세요.</translation>
 <translation id="7836577093182643605">사이트와 공유하지 않으려는 차단된 주제 목록</translation>
@@ -10030,6 +10041,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8008704580256716350">의심스러운 파일이 차단됨</translation>
 <translation id="8009196983040865987">탭 정리를 사용하면 추천 탭 그룹 생성을 위해 열린 탭의 제목과 URL이 Google로 전송됩니다.</translation>
 <translation id="8009225694047762179">비밀번호 관리</translation>
+<translation id="8010312870936510509"><ph name="TIME" />에 데이터가 동기화 암호로 암호화되었습니다. Google Pay의 결제 수단 및 주소는 암호화되지 않습니다.</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' 항목을 이동했습니다.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">인스턴트 핫스팟 세부정보</translation>

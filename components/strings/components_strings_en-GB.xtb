@@ -700,6 +700,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2154484045852737596">Edit card</translation>
 <translation id="2154739667870063220">Reboot</translation>
 <translation id="2155260325161282517">5 in x 7 in</translation>
+<translation id="2156467141257470387">You can use saved addresses across Google products. This won't change your existing work address. It'll be saved in your Google Account, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Price tracking notifications</translation>
 <translation id="21613918653299710">Online image galleries</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -2997,6 +2998,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5984570616552610254">Chamber humidity</translation>
 <translation id="598637245381783098">Can’t open payment app</translation>
 <translation id="5989320800837274978">Neither fixed proxy servers nor a .pac script URL are specified.</translation>
+<translation id="5989917734461988169">You can use saved addresses across Google products. This won't change your existing home address. It'll be saved in your Google Account, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Engineering Z-fold</translation>
 <translation id="5992805036496113940">See info used to show you ads</translation>
 <translation id="5995727681868049093">Manage your info, privacy and security in your Google Account</translation>
@@ -4898,6 +4900,7 @@ Additional details:
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Chrome browser would like to use fingerprint to autofill passwords</translation>
 <translation id="9141013498910525015">Manage addresses</translation>
+<translation id="9141435142213469335">Save address with more info</translation>
 <translation id="9141672681283222114">AR allowed this time</translation>
 <translation id="9143898823728499852">You can autofill this card because your <ph name="CARD_ISSUER_NAME" /> account is linked to Google Pay</translation>
 <translation id="9144951720726881238">Expiry date:</translation>

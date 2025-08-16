@@ -1370,6 +1370,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5429993543155113935">No momento, não há suporte para janelas anônimas</translation>
 <translation id="5431318178759467895">Colorido</translation>
 <translation id="5433020815079095860">Entrada de áudio</translation>
+<translation id="543584294741034249">Você pode conectar até <ph name="DISPLAY_LIMIT" /> telas externas.</translation>
 <translation id="544691375626129091">Todos os usuários disponíveis já foram adicionados a esta sessão.</translation>
 <translation id="54609108002486618">Gerenciado</translation>
 <translation id="5460938382730614333">O marcador está ativado.</translation>
@@ -1500,7 +1501,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5842553299352339114">O ponto de acesso do <ph name="DEVICE_NAME" /> está ativado. Nenhum dispositivo conectado</translation>
 <translation id="584525477304726060">Para maximizar a janela, mantenha-a pressionada</translation>
 <translation id="5856638668464565213">A rede <ph name="NETWORK_NAME" /> não está ativada.</translation>
-<translation id="5860033963881614850">Desativado</translation>
+<translation id="5860033963881614850">Desativada</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5864691701242730005">Mostrar configurações do Quick Share. Visibilidade <ph name="VISIBILITY" /> selecionada</translation>
 <translation id="5864748620896638071">Bateria em <ph name="BATTERY_PERCENTAGE" />%</translation>

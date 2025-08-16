@@ -67,6 +67,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{‏ينصح Chrome بإيقاف علامة التبويب التي تبطئ المتصفّح مؤقتًا}zero{‏ينصح Chrome بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}two{‏ينصح Chrome بإيقاف علامتَي التبويب اللتين تبطئان المتصفّح مؤقتًا}few{‏ينصح Chrome بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}many{‏ينصح Chrome بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}other{‏ينصح Chrome بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}}</translation>
 <translation id="1832046143430087831">‏يعمل هذا الإعداد على زيادة سرعة المواقع الإلكترونية باستخدام محرّك V8 في Chrome، مع تقليل قدرة Chrome على مقاومة الهجمات قليلاً. هذا الإعداد غير مفعَّل.</translation>
 <translation id="1838374766361614909">محو البحث</translation>
+<translation id="1849248141818021764">‏لا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. وفي حال نسيتها أو أردت تغيير هذه الإعدادات، يجب <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="1873233029667955273">‏Google Chrome ليس متصفحك التلقائي.</translation>
 <translation id="1874309113135274312">‏الإصدار التجريبي من Google Chrome‏ (mDNS-In)</translation>
@@ -126,7 +127,6 @@
 <translation id="2569974318947988067">‏سيحاول Chrome ترقية عمليات الانتقال إلى بروتوكول HTTPS.</translation>
 <translation id="2571392474191184472">‏تدير مؤسستك متصفِّح Chrome</translation>
 <translation id="2574930892358684005">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chrome. للحصول على تجربة تصفّح منفصلة، يمكن لمتصفِّح Chrome إنشاء ملف شخصي خاص بك.</translation>
-<translation id="2579190314336775785">‏لا يمكن حذف كلمات المرور إلا خارج Chrome</translation>
 <translation id="2580411288591421699">‏لا يمكن تثبيت نفس الإصدار المثبت من Google Chrome والذي يتم تشغيله حاليًا. يُرجى إغلاق Google Chrome وإعادة المحاولة.</translation>
 <translation id="2586406160782125153">‏سيؤدي هذا إلى حذف بيانات التصفح من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">تعذَّر إجراء تخزين مؤقت للمثبّت الذي تم تنزيله. الخطأ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -179,6 +179,7 @@
 <translation id="306179102415443347">‏استخدِم هذا الاختصار للوصول بسرعة إلى "مدير كلمات المرور في Google". بإمكانك نقل هذا الاختصار إلى الشاشة الرئيسية أو مشغِّل التطبيقات في جهاز الكمبيوتر.</translation>
 <translation id="3065168410429928842">‏علامة تبويب Chrome</translation>
 <translation id="3080151273017101988">‏استمرار تشغيل تطبيقات الخلفية عند إغلاق Google Chrome</translation>
+<translation id="308397506772922478">‏إذا نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">‏تسمية ملفك الشخصى على Chrome</translation>
 <translation id="310459126943037700">تعذَّر إنهاء المهام.</translation>
 <translation id="3112458742631356345">‏حَظَر Chrome عملية التنزيل هذه لأن الملف لا يتم تنزيله عادةً، وقد يكون خطيرًا.</translation>
@@ -619,6 +620,7 @@
 <translation id="8533056045953418157">‏ضبط Google Chrome كعارض PDF التلقائي</translation>
 <translation id="8555465886620020932">حدث خطأ في الخدمة: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">البحث في قائمة اللغات</translation>
+<translation id="8575047640889685742">‏لتشفير جميع بيانات Chrome في حسابك على Google، يمكنك استخدام <ph name="BEGIN_LINK" />عبارة المرور الخاصة بك<ph name="END_LINK" />. لن يتم تشفير طُرق الدفع والعناوين من Google Pay. ولن تتم مزامنة سجلّ التصفُّح من Chrome.</translation>
 <translation id="8601359445272098721">ميزة جديدة: يمكنك ترجمة النص والصور على الشاشة من خلال النقر على زر "ترجمة محتوى الشاشة"</translation>
 <translation id="8614913330719544658">‏لا يستجيب Google Chrome. هل تريد إعادة التشغيل الآن؟</translation>
 <translation id="861702415419836452">‏يحتاج متصفِّح Chrome إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك.</translation>

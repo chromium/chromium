@@ -700,6 +700,7 @@
 <translation id="2154484045852737596">カードを編集</translation>
 <translation id="2154739667870063220">再起動</translation>
 <translation id="2155260325161282517">5x7 インチ（2L 判）</translation>
+<translation id="2156467141257470387">保存した住所は Google サービス全体で使用できます。既存の職場の住所は変更されません。この住所は Google アカウント（<ph name="ACCOUNT" />）に保存されます。</translation>
 <translation id="2157640075051554492">価格トラッキングの通知</translation>
 <translation id="21613918653299710">オンライン画像集</translation>
 <translation id="2161656808144014275">テキスト</translation>
@@ -2997,6 +2998,7 @@
 <translation id="5984570616552610254">チャンバーの湿度</translation>
 <translation id="598637245381783098">お支払いアプリを開けません</translation>
 <translation id="5989320800837274978">固定プロキシ サーバーと .pac スクリプト URL のどちらも指定されていません。</translation>
+<translation id="5989917734461988169">保存した住所は Google サービス全体で使用できます。既存の自宅の住所は変更されません。この住所は Google アカウント（<ph name="ACCOUNT" />）に保存されます。</translation>
 <translation id="5992691462791905444">工学 Z 折り</translation>
 <translation id="5992805036496113940">広告の表示に使用される情報を表示します</translation>
 <translation id="5995727681868049093">Google アカウントで情報、プライバシー、セキュリティを管理します</translation>
@@ -4900,6 +4902,7 @@
 <translation id="9139318394846604261">ショッピング</translation>
 <translation id="9140198744651252040">Chrome ブラウザが指紋認証を使用してパスワードを自動入力しようとしています</translation>
 <translation id="9141013498910525015">住所を管理</translation>
+<translation id="9141435142213469335">詳細情報を入力して住所を保存</translation>
 <translation id="9141672681283222114">一時的に AR を許可しました</translation>
 <translation id="9143898823728499852"><ph name="CARD_ISSUER_NAME" /> アカウントが Google Pay にリンクされているため、このカードを自動入力できます</translation>
 <translation id="9144951720726881238">有効期限:</translation>

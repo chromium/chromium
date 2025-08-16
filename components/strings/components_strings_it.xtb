@@ -700,6 +700,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2154484045852737596">Modifica la carta</translation>
 <translation id="2154739667870063220">Riavvia</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
+<translation id="2156467141257470387">Puoi usare gli indirizzi salvati in tutti i prodotti Google. L'indirizzo di lavoro esistente non verrà modificato. Il nuovo indirizzo verrà salvato nel tuo Account Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Notifiche per il monitoraggio dei prezzi</translation>
 <translation id="21613918653299710">Gallerie di immagini online</translation>
 <translation id="2161656808144014275">Testo</translation>
@@ -2994,6 +2995,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5984570616552610254">Umidità della camera</translation>
 <translation id="598637245381783098">Impossibile aprire l'app per i pagamenti</translation>
 <translation id="5989320800837274978">Non sono stati specificati né server proxy fissi né un URL script .pac.</translation>
+<translation id="5989917734461988169">Puoi usare gli indirizzi salvati in tutti i prodotti Google. L'indirizzo di casa esistente non verrà modificato. Il nuovo indirizzo verrà salvato nel tuo Account Google, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Piegatura a Z</translation>
 <translation id="5992805036496113940">Visualizza le informazioni usate per mostrarti annunci</translation>
 <translation id="5995727681868049093">Gestisci le tue informazioni, la privacy e la sicurezza nel tuo Account Google</translation>
@@ -4894,6 +4896,7 @@ Ulteriori dettagli:
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Il browser Chrome vorrebbe usare l'impronta per compilare automaticamente le password</translation>
 <translation id="9141013498910525015">Gestisci gli indirizzi</translation>
+<translation id="9141435142213469335">Salva l'indirizzo con le informazioni aggiuntive</translation>
 <translation id="9141672681283222114">AR consentita questa volta</translation>
 <translation id="9143898823728499852">Puoi usare la compilazione automatica per questa carta perché il tuo account <ph name="CARD_ISSUER_NAME" /> è collegato a Google Pay</translation>
 <translation id="9144951720726881238">Data di scadenza:</translation>

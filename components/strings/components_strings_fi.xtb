@@ -700,6 +700,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2154484045852737596">Muokkaa korttia</translation>
 <translation id="2154739667870063220">Käynnistä uudelleen</translation>
 <translation id="2155260325161282517">5 x 7 tuumaa</translation>
+<translation id="2156467141257470387">Voit käyttää tallennettuja osoitteita kaikissa Googlen tuotteissa. Tämä ei muuta nykyistä työosoitettasi. Se tallennetaan Google-tilillesi (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Hintaseurannan ilmoitukset</translation>
 <translation id="21613918653299710">Kuvagalleriat verkossa</translation>
 <translation id="2161656808144014275">Teksti</translation>
@@ -2998,6 +2999,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5984570616552610254">Huoneen kosteus</translation>
 <translation id="598637245381783098">Maksusovelluksen avaaminen ei onnistu.</translation>
 <translation id="5989320800837274978">Kiinteitä välityspalvelimia tai .pac-URL-osoitetta ei ole määritetty.</translation>
+<translation id="5989917734461988169">Voit käyttää tallennettuja osoitteita kaikissa Googlen tuotteissa. Tämä ei muuta nykyistä kotiosoitettasi. Se tallennetaan Google-tilillesi (<ph name="ACCOUNT" />).</translation>
 <translation id="5992691462791905444">Kolmoistaite (engineering)</translation>
 <translation id="5992805036496113940">Näet tietoja, joiden perusteella sinulle näytetään mainoksia</translation>
 <translation id="5995727681868049093">Ylläpidä tietojasi, yksityisyyttäsi ja tietoturvaasi Google-tilillä</translation>
@@ -4900,6 +4902,7 @@ Lisätietoja:
 <translation id="9139318394846604261">Ostokset</translation>
 <translation id="9140198744651252040">Chrome-selain haluaa käyttää sormenjälkeä salasanojen automaattiseen täyttöön</translation>
 <translation id="9141013498910525015">Ylläpidä osoitteita</translation>
+<translation id="9141435142213469335">Tallenna osoite ja lisätietoja</translation>
 <translation id="9141672681283222114">AR sallittu tällä kertaa</translation>
 <translation id="9143898823728499852">Voit täyttää kortin automaattisesti, koska <ph name="CARD_ISSUER_NAME" />-tilisi on linkitetty Google Payhin</translation>
 <translation id="9144951720726881238">Vanhenemispäivämäärä:</translation>

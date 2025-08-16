@@ -507,6 +507,7 @@
 <translation id="2931440415625410757">Нускамаларды көрсөтүү</translation>
 <translation id="2952278131021475699">Lens аркылуу издөө</translation>
 <translation id="2962516096219646456">Автотолтуруунун бардык маалыматын көрүү</translation>
+<translation id="2965594942405840553">Бул аракет артка кайтарылбайт</translation>
 <translation id="2969979262385602596">Кире албай калдңз. Бир аздн кийн аракт кылп көрңз.</translation>
 <translation id="2975761176769946178">URL талап кылынат</translation>
 <translation id="297667759942911166">Өтмөктөр тобунда кызматташуу</translation>
@@ -657,6 +658,7 @@
 <translation id="3595252146048399851">Эмнени шайкештирүү керек экенин ар дайым <ph name="BEGIN_LINK" />параметрлерден<ph name="END_LINK" /> тандай аласыз. Google таржымалыңыздын негизинде Издөөнү жана башка кызматтарды жекелештириши мүмкүн.</translation>
 <translation id="3602260545951981695">Мыктылап коргоону тандаңыз</translation>
 <translation id="3610041351087301930">Окурман режимин жашыруу</translation>
+<translation id="3610866916973186448">Ооба, өчүрүү</translation>
 <translation id="3622175633937495219">Издөө таржымалы (<ph name="COUNT" /> табылды)</translation>
 <translation id="3625008969091706597">Артка кайтуу үчүн кырын сүрүп коюңуз.</translation>
 <translation id="362709345066740529">Карталарды, түрмөктү жана башкаларды бул жерде ыңгайлаштырыңыз</translation>
@@ -854,6 +856,7 @@
 <translation id="4430277756566635951">Учурда <ph name="EMAIL" /> тандалды. Аккаунт тандаңыз.</translation>
 <translation id="4430505936695785931">Башка колдонмолордо сакталган сырсөздөрдү алуу</translation>
 <translation id="4431224949908513835">Толтуруу үчүн төлөм ыкмасын тандаңыз.</translation>
+<translation id="4432122368769493392">Параметрлер…</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Параметрлерди<ph name="END_BOLD" /> ачыңыз</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />: башка параметрлери</translation>
 <translation id="4455710003856931944">Артка жана алдыга өтүү үчүн кырын сүрүп коюңуз.</translation>
@@ -1950,6 +1953,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8561999115126307258">{count,plural, =1{Сырсөздүн {count} варианты баскычтоптун өйдө жагында жеткиликтүү.}other{Сырсөздүн {count} варианты баскычтоптун өйдө жагында жеткиликтүү.}}</translation>
 <translation id="8564894539416715395">Жаңы өтмөк бети</translation>
 <translation id="8569721750632860947">Окуу тизмеңизге кайсы URL'ди кошкуңуз келет?</translation>
+<translation id="8571019948162152515">"<ph name="FILENAME" />" өчүрүлсүнбү?</translation>
 <translation id="8571213806525832805">Акыркы 4 апта</translation>
 <translation id="8577056989960190117">Мөөнөтү аяктоочу жылды <ph name="YEAR" /> автотолтуруу</translation>
 <translation id="8588404856427128947">Өчүк</translation>

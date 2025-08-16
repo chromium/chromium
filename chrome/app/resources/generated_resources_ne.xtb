@@ -1627,6 +1627,7 @@
 <translation id="2110941575868943054">ब्लुटुथ डिभाइसहरू खोज्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="211144231511833662">प्रकारहरू हटाउनुहोस्</translation>
 <translation id="2111670510994270194">दायाँपट्टि नयाँ ट्याब</translation>
+<translation id="2111778868023567359">तपाईंले फेरि यो पेजमा ट्याब समूहहरू देख्नु हुने छैन</translation>
 <translation id="2112554630428445878">स्वागत छ, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">ट्याबलाई पिन गर्नुहोस्</translation>
 <translation id="2113479184312716848">&amp;फाइल खोल्नुहोस्...</translation>
@@ -2035,6 +2036,7 @@
 <translation id="2392369802118427583">सक्रिय</translation>
 <translation id="2393136602862631930">आफ्नो Chromebook मा <ph name="APP_NAME" /> सेटअप गर्नुहोस्</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex का सर्तहरूमा भएको सामग्री</translation>
+<translation id="2393944685985256805"><ph name="MODULE_NAME" /> लुकाइएको छ</translation>
 <translation id="2395616325548404795">तपाईँको <ph name="DEVICE_TYPE" /> लाई सफलतापूर्वक इन्टरप्राइज व्यवस्थापनमा दर्ता गरिएको छ तर यसको सम्पत्ति र स्थान जानकारी पठाउन सकिएन। कृपया यस यन्त्रको तपाईँको प्रशासकीय कन्सोलबाट यो जानकारी म्यानुअल तरिकाले प्रविष्टि गर्नुहोस्।</translation>
 <translation id="2396783860772170191">चार अङ्कको पिन (००००-९९९९) प्रविष्टि गर्नुहोस्</translation>
 <translation id="2398546389094871088">तपाईंले आफ्नो डिभाइस पावरवास गर्नुभयो भने तपाईंका eSIM प्रोफाइलहरू हट्ने छैनन्। यी प्रोफाइलहरू म्यानुअल रूपमा हटाउन <ph name="LINK_BEGIN" />मोबाइल सेटिङ<ph name="LINK_END" />मा जानुहोस्।</translation>
@@ -2641,6 +2643,7 @@
 <translation id="2794522004398861033">eSIM सेटअप गर्न Wi-Fi वा इथरनेटमा कनेक्ट गर्नहोस्</translation>
 <translation id="2794977172822818797">हालका साइटहरू हाल्नुहोस्</translation>
 <translation id="2795716239552913152">साइटहरूले सान्दर्भिक सुविधा वा स्थानीय समाचार वा नजिकैका पसलहरू जस्ता कुराहरूको जानकारी प्रदान गर्न सामान्यतया तपाईंको स्थानसम्बन्धी जानकारी प्रयोग गर्छन्</translation>
+<translation id="2797712124653482791"><ph name="DISMISS_DAYS" /> दिनका लागि लुकाउनुहोस्</translation>
 <translation id="2798347533012571708">स्वतः अपडेट गरिराखियोस्</translation>
 <translation id="2799162042226656283">तपाईंको Chrome</translation>
 <translation id="2799223571221894425">पुन: सुरुवात गर्नुहोस्</translation>
@@ -4064,6 +4067,10 @@
 <translation id="3800764353337460026">सङ्केत शैली</translation>
 <translation id="3800828618615365228">Google Chrome र ChromeOS का अतिरिक्त सर्तहरू</translation>
 <translation id="3800898876950197674">यो एक्स्टेन्सनलाई अनुमति दिन पासवर्ड हाल्नुहोस्।</translation>
+<translation id="3801131837165361989">तपाईं Chrome पर्सनलाइज गर्ने र यसलाई आफ्ना दैनिक आवश्यकताअनुसार अझ उत्कृष्ट बनाउने सुझावहरू देख्दै हुनुहुन्छ।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        तपाईं कार्ड मेनुमार्फत सेटिङ मिलाउन वा "Chrome कस्टमाइज गर्नुहोस्" मा गई थप विकल्पहरू हेर्न सक्नुहुन्छ।</translation>
 <translation id="3801449494961771207">सिस्टम टेक्स्ट-टू-स्पिच भ्वाइस</translation>
 <translation id="3802486193901166966">यो एक्स्टेन्सनलाई कुनै विशेष अनुमति दिनु पर्दैन र यसलाई साइटसम्बन्धी थप अनुमति दिइएको छैन</translation>
 <translation id="380329542618494757">नाम</translation>
@@ -4949,6 +4956,7 @@
 <translation id="4415815425191869676">यी साइटहरू सधैँ सक्रिय राख्नुहोस्</translation>
 <translation id="4416582610654027550">कुनै मान्य URL टाइप गर्नुहोस्</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{यो ट्याब पज गर्नुहोस्}other{यी ट्याबहरू पज गर्नुहोस्}}</translation>
+<translation id="4419287616181386201">सम्बन्धित सेवाको व्यवस्थापनसम्बन्धी सेटिङमा गई पासवर्डहरू मेटाउन सकिन्छ</translation>
 <translation id="4421932172707401417">लेखनसम्बन्धी सुझावहरू तपाईंका प्रम्प्ट र वेबपेजमा भएको सामग्रीमा आधारित हुन्छन्</translation>
 <translation id="4421932782753506458">फ्लफी</translation>
 <translation id="4423376891418188461">सेटिङहरूलाई पुनर्स्थापना गर्नुहोस्</translation>
@@ -5840,6 +5848,7 @@
 <translation id="5064921774605267982">"<ph name="PROFILE_NAME" />" प्रोफाइल खोल्नुहोस्। तपाईंको सङ्गठनले यो प्रोफाइल व्यवस्थापन गर्छ।</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS का सेटिङमा गई Secure DNS व्यवस्थापन गर्नुहोस्</translation>
+<translation id="5066523884829290323">साइटमा गई पासवर्ड परिवर्तन गर्नुहोस्</translation>
 <translation id="5066534201484101197">एक पेजबाट अर्को पेजमा जान ओभरस्क्रोल गर्नुहोस्</translation>
 <translation id="5067399438976153555">सधैं सक्रिय</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> तपाईंको माइक्रोफोनको पहुँच गर्न चाहन्छ कि चाहँदैन भनि सोध्नुहोस्</translation>
@@ -6460,6 +6469,7 @@
 <translation id="5496730470963166430">पप-अपहरू पठाउन वा रिडिरेक्टहरू प्रयोग गर्नेे अनुमति नदिइएका साइटहरू</translation>
 <translation id="5497250476399536588">तपाईं "ठेगाना र थप जानकारी" मा गई यो ठेगाना एक्सेस गर्न सक्नुहुन्छ</translation>
 <translation id="5497251278400702716">यो फाइल</translation>
+<translation id="549762298434242239">परिष्कृत सुरक्षित ब्राउजिङका अनुसार यो एक्स्टेन्सन विश्वसनीय छैन। <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome ले यो इन्स्टलेसन बन्डल पुष्टि गर्न सकेन</translation>
 <translation id="5498967291577176373">तपाईंको नाम, ठेगाना वा फोन नम्बर स्वतः टाइप गरिदिने सुविधाको सहयोगले गरेर अझ छिटो लेख्नुहोस्</translation>
 <translation id="5499211612787418966">हाल यो डायलगमा फोकस गरिएको छैन। यो डायलगमा फोकस गर्न Alt-Shift A थिच्नुहोस्।</translation>
@@ -6521,6 +6531,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">आफ्नो सेटअप छनौट गर्नुहोस्</translation>
 <translation id="5551573675707792127">किबोर्ड र पाठ इनपुट</translation>
+<translation id="5551753770140674714">तपाईंको सिंक पासफ्रेज प्रयोग गरेर डेटा इन्क्रिप्ट गरिन्छ। यसमा Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्।</translation>
 <translation id="5553089923092577885">प्रमाणपत्र नीति मानचित्रहरू</translation>
 <translation id="5554240068773209752">कन्ट्रोलहरू कस्टमाइज गर्न यहाँ क्लिक गर्नुहोस्</translation>
 <translation id="5554403733534868102">यसपछि सफ्टवेयर अपडेट गर्नका निम्ति पर्खनु पर्दैन</translation>
@@ -6824,6 +6835,7 @@
 <translation id="5780973441651030252">प्रक्रिया प्राथमिकता</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> का रूपमा सिंक गर्नुहोस्</translation>
 <translation id="5781120434102258025">आफ्नो विद्यालयको खातामा भण्डारण गरिएको जानकारी आफ्नो व्यक्तिगत खातामा सार्नुहोस्</translation>
+<translation id="5781244749114921664">ट्याब समूहहरू लुकाइएका छन्</translation>
 <translation id="5782227691023083829">अनुवाद गर्दै...</translation>
 <translation id="5783346913439924978">हेड ट्र्याकिङ</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
@@ -8940,6 +8952,7 @@
 <translation id="7292067737327289208">तपाईंको सङ्गठनले तपाईंको <ph name="BEGIN_LINK" />ब्राउजर व्यवस्थापन गर्छ<ph name="END_LINK" /> र <ph name="PROFILE_DOMAIN" /> ले तपाईंको <ph name="BEGIN_LINK" />प्रोफाइल व्यवस्थापन<ph name="END_LINK" /> गर्छ</translation>
 <translation id="7292147651179697920">आफ्ना अभिभावकलाई सेटिङमा गई एक्सेस दिन आग्रह गर्नुहोस्</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">सम्बन्धित सेवाको व्यवस्थापनसम्बन्धी सेटिङमा गई सर्च हिस्ट्री, Gemini हिस्ट्री र पासवर्डहरू मेटाउन सकिन्छ</translation>
 <translation id="7295614427631867477">Android, Play र सम्बद्ध एपका हकमा उनीहरूको आफ्नै डेटाको सङ्कलन र प्रयोगसम्बन्धी नीतिहरू लागू हुन्छन् भन्ने कुरा ख्याल गर्नुहोस्।</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> फोल्डर चयन गर्नुहोस्</translation>
 <translation id="7297726121602187087">गाढा हरियो</translation>
@@ -9735,6 +9748,7 @@
 <translation id="7830276128493844263">सिस्टम सेटिङमा लोकेसन अफ गरिएको छ</translation>
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> वटा फाइल खोल्नुअघि ती फाइलहरू कपी गरेर <ph name="CLOUD_PROVIDER" /> मा पेस्ट गर्ने हो?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">मेरो तर्फबाट उक्त पासवर्ड परिवर्तन गरिदिनुहोस्</translation>
 <translation id="7833720883933317473">सुरक्षित गरिएका आफू अनुकूलका शब्दहरू यहाँ देखापर्ने छन्</translation>
 <translation id="7834832693620032149">अडियो सेयर गर्न यसको साटो ट्याब वा विन्डो सेयर गर्नुहोस्</translation>
 <translation id="7836577093182643605">साइटहरूसँग सेयर गर्न नचाहेका कारण तपाईंले ब्लक गर्नुभएका विषयहरूको सूची</translation>
@@ -10006,6 +10020,7 @@
 <translation id="8008704580256716350">शङ्कास्पद फाइल ब्लक गरियो</translation>
 <translation id="8009196983040865987">तपाईंले ट्याबहरू व्यवस्थित गर्ने सुविधा प्रयोग गर्दा तपाईंका खुला ट्याबहरूका शीर्षक र URL हरू Google मा पठाइन्छन् र Google ले ती कुराका आधारमा सिफारिस गरिएका ट्याब समूहहरू सिर्जना गर्छ</translation>
 <translation id="8009225694047762179">पासवर्डहरूको व्यवस्थापन गर्नुहोस्</translation>
+<translation id="8010312870936510509">यो डेटा <ph name="TIME" /> मा तपाईंको सिंक पासफ्रेज प्रयोग गरेर इन्क्रिप्ट गरिएको छ। यसमा Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्।</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' सारियो।</translation>
 <translation id="8012188750847319132">क्याप्स लक</translation>
 <translation id="8012463809859447963">इन्स्ट्यान्ट हटस्पटसम्बन्धी विवरणहरू</translation>

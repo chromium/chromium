@@ -642,7 +642,7 @@
 <translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> செயல் அகற்றப்பட்டது</translation>
 <translation id="1439671507542716852">நீண்டகால உதவி</translation>
 <translation id="1440090277117135316">பள்ளிகளுக்குப் பதிவுசெய்தல் நிறைவடைந்தது</translation>
-<translation id="1441971243157709645">நிர்வகிக்கப்படும் பிரிண்ட்டர்</translation>
+<translation id="1441971243157709645">நிர்வகிக்கப்படும் பிரிண்டர்</translation>
 <translation id="1442054921249164535">மற்ற தரவு</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="1442851588227551435">செயலில் உள்ள Kerberos டிக்கெட்டை அமைத்தல்</translation>
@@ -1142,6 +1142,7 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> குறித்துக் கருத்து வழங்குக.</translation>
 <translation id="1769104665586091481">இணைப்பை புதிய &amp;சாளரத்தில் திற</translation>
 <translation id="1769157454356586138">ஸ்கேன் செய்ய முடியவில்லை. இந்த ஃபைலை உங்கள் நிர்வாகி தடுத்துள்ளார்</translation>
+<translation id="176920518817780870">குழுவை புக்மார்க் ஃபோல்டருக்கு மாற்று</translation>
 <translation id="1770407692401984718">படத்தை இங்கே இழுத்து விடவும் அல்லது</translation>
 <translation id="177053719077591686">Android ஆப்ஸை Google Driveவுக்குக் காப்புப் பிரதி எடுத்தல்.</translation>
 <translation id="1773329206876345543">உங்கள் <ph name="DEVICE_TYPE" /> இன் மொபைல் டேட்டாவைப் பயன்படுத்திப் பிற சாதனங்களுக்கு இணைய இணைப்பை வழங்க வைஃபை ஹாட்ஸ்பாட்டைப் பயன்படுத்தலாம். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4974,6 +4975,7 @@
 <translation id="4415815425191869676">எப்போதும் செயல்பாட்டில் வைத்திருக்க வேண்டிய தளங்கள்:</translation>
 <translation id="4416582610654027550">சரியான URLஐ உள்ளிடவும்</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{இந்தப் பக்கத்தை இடைநிறுத்து}other{இந்தப் பக்கங்களை இடைநிறுத்து}}</translation>
+<translation id="4419287616181386201">கடவுச்சொற்களை அவற்றின் நிர்வாக அமைப்புகளில் நீக்கலாம்</translation>
 <translation id="4421932172707401417">எழுதுவதற்கான பரிந்துரைகள், உங்கள் ப்ராம்ப்ட்டுகள் மற்றும் இணையப் பக்கத்தில் உள்ள உள்ளடக்கத்தின் அடிப்படையிலானது</translation>
 <translation id="4421932782753506458">ஃபளஃபி</translation>
 <translation id="4423376891418188461">அமைப்புகளை மீட்டெடு</translation>
@@ -5296,6 +5298,7 @@
 <translation id="4653116291358041820">குறைந்த அளவில் கருமைச் சாயல்</translation>
 <translation id="4653405415038586100">Linuxஸை உள்ளமைக்கும்போது பிழை</translation>
 <translation id="4654236001025007561">உங்களுக்கு அருகிலுள்ள Chromebookகளிலும் Android சாதனங்களிலும் ஃபைல்களைப் பகிரலாம்</translation>
+<translation id="4654801841330730814">எல்லாம்</translation>
 <translation id="4657810666108475055">தாவல் தேடல்</translation>
 <translation id="4657914796247705218">TrackPoint வேகம்</translation>
 <translation id="4658285806588491142">உங்கள் திரையைத் தனிப்பட்டதாக வைத்திருங்கள்</translation>
@@ -5865,6 +5868,7 @@
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> சுயவிவரத்தைத் திறக்கும். இந்தச் சுயவிவரம் உங்கள் பெற்றோரால் நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS அமைப்புகளில் பாதுகாப்பான DNSஸை நிர்வகித்தல்</translation>
+<translation id="5066523884829290323">இதைத் தளத்தில் மாற்று</translation>
 <translation id="5066534201484101197">பக்கங்களுக்கு இடையே மாற ஓவர்-ஸ்க்ரோல் செய்தல்</translation>
 <translation id="5067399438976153555">எப்போதும் இயக்கு</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> உங்கள் மைக்ரோஃபோனை அணுக விரும்புகிறதா எனக் கேட்கவும்</translation>
@@ -7256,6 +7260,7 @@
 <translation id="606449270532897041">தளத் தரவை நிர்வகியுங்கள்</translation>
 <translation id="6064764629679333574">குறைவான ஆடியோ தெளிவுத்திறனை உயர் தெளிவுத்திறனாக அதிகரித்து புளூடூத் மைக் ஒலியின் தரத்தை மேம்படுத்துங்கள்.</translation>
 <translation id="6065289257230303064">சான்றிதழ் பொருள் கோப்பக பண்புக்கூறுகள்</translation>
+<translation id="6066649679804058181">குழுவை புக்மார்க் ஃபோல்டருக்கு மாற்று</translation>
 <translation id="6066794465984119824">படத்தின் ஹேஷ் அமைக்கப்படவில்லை</translation>
 <translation id="6069464830445383022">Chromebookகில் உள்நுழைய Google கணக்கைப் பயன்படுத்துங்கள்</translation>
 <translation id="6071181508177083058">கடவுச்சொல்லை உறுதிசெய்க</translation>
@@ -8971,6 +8976,7 @@
 <translation id="7292067737327289208">உங்கள் நிறுவனம் உங்கள் <ph name="BEGIN_LINK" />உலாவியை நிர்வகிக்கிறது<ph name="END_LINK" />. <ph name="PROFILE_DOMAIN" /> உங்கள் <ph name="BEGIN_LINK" />சுயவிவரத்தை நிர்வகிக்கிறது<ph name="END_LINK" /></translation>
 <translation id="7292147651179697920">அமைப்புகளுக்குச் சென்று அணுகலை வழங்கும்படி உங்கள் பெற்றோரிடம் கேட்கவும்</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">Search பதிவுகள், Gemini பதிவுகள் மற்றும் கடவுச்சொற்களை அவற்றின் நிர்வாக அமைப்புகளில் நீக்கலாம்</translation>
 <translation id="7295614427631867477">கவனத்திற்கு: Android, Play மற்றும் அவற்றுடன் தொடர்புடையை ஆப்ஸ் அவற்றுக்கே உரிய தரவுச் சேகரிப்பு மற்றும் உபயோகக் கொள்கைகள் மூலம் நிர்வகிக்கப்படுகின்றன.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ஃபோல்டரைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="7297726121602187087">அடர் பச்சை</translation>
@@ -9766,6 +9772,7 @@
 <translation id="7830276128493844263">சிஸ்டம் அமைப்புகளில் இருப்பிடம் முடக்கப்பட்டுள்ளது</translation>
 <translation id="7830833461614351956">திறப்பதற்காக <ph name="NUM_OF_FILES" /> ஃபைல்களை <ph name="CLOUD_PROVIDER" />விற்கு நகலெடுக்கவா?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">எனது சார்பாக மாற்று</translation>
 <translation id="7833720883933317473">சேமித்த பிரத்தியேக சொற்கள் இங்கே தோன்றும்</translation>
 <translation id="7834832693620032149">ஆடியோவைப் பகிர, பக்கத்தையோ சாளரத்தையோ பகிரவும்</translation>
 <translation id="7836577093182643605">தளங்களுடன் பகிர விரும்பாமல் நீங்கள் தடுத்துள்ள தலைப்புகளின் பட்டியல்</translation>

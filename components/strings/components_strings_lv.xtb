@@ -700,6 +700,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2154484045852737596">Kartes informācijas rediģēšana</translation>
 <translation id="2154739667870063220">Atkārtoti palaist</translation>
 <translation id="2155260325161282517">5 x 7 collas</translation>
+<translation id="2156467141257470387">Saglabātās adreses varat izmantot dažādos Google produktos. Tādējādi netiks mainīta jūsu esošā darbavietas adrese. Tā tiks saglabāta jūsu Google kontā (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Cenu izsekošanas paziņojumi</translation>
 <translation id="21613918653299710">Tiešsaistes attēlu galerijas</translation>
 <translation id="2161656808144014275">Teksts</translation>
@@ -2995,6 +2996,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5984570616552610254">Mitruma līmenis korpusā</translation>
 <translation id="598637245381783098">Nevar atvērt maksājumu lietotni</translation>
 <translation id="5989320800837274978">Nav norādīti nedz fiksēti starpniekserveri, nedz .pac skripta URL.</translation>
+<translation id="5989917734461988169">Saglabātās adreses varat izmantot dažādos Google produktos. Tādējādi netiks mainīta jūsu esošā mājas adrese. Tā tiks saglabāta jūsu Google kontā (<ph name="ACCOUNT" />).</translation>
 <translation id="5992691462791905444">Inženierijas Z-veida locījums</translation>
 <translation id="5992805036496113940">Skatīt reklāmu rādīšanai izmantoto informāciju</translation>
 <translation id="5995727681868049093">Pārvaldiet savu informāciju, konfidencialitāti un drošību savā Google kontā</translation>
@@ -4897,6 +4899,7 @@ Papildu informācija:
 <translation id="9139318394846604261">Pirkumi</translation>
 <translation id="9140198744651252040">Chrome paroļu automātiskai aizpildei lūdz izmantot pirksta nospiedumu</translation>
 <translation id="9141013498910525015">Pārvaldīt adreses</translation>
+<translation id="9141435142213469335">Adreses saglabāšana ar papildu informāciju</translation>
 <translation id="9141672681283222114">Atļauts šoreiz izmantot PR</translation>
 <translation id="9143898823728499852">Varat automātiski aizpildīt šīs kartes informāciju, jo jūsu <ph name="CARD_ISSUER_NAME" /> konts ir saistīts ar Google Pay.</translation>
 <translation id="9144951720726881238">Derīguma termiņš:</translation>

@@ -700,6 +700,7 @@
 <translation id="2154484045852737596">แก้ไขบัตร</translation>
 <translation id="2154739667870063220">รีบูต</translation>
 <translation id="2155260325161282517">5 x 7 นิ้ว</translation>
+<translation id="2156467141257470387">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ การดำเนินการนี้จะไม่เปลี่ยนที่อยู่ที่ทำงานที่มีอยู่ ระบบจะบันทึกไว้ในบัญชี Google ของคุณ (<ph name="ACCOUNT" />)</translation>
 <translation id="2157640075051554492">การแจ้งเตือนการติดตามราคา</translation>
 <translation id="21613918653299710">แกลเลอรีภาพออนไลน์</translation>
 <translation id="2161656808144014275">ข้อความ</translation>
@@ -2996,6 +2997,7 @@
 <translation id="5984570616552610254">ความชื้นของตู้</translation>
 <translation id="598637245381783098">ไม่สามารถเปิดแอปการชำระเงิน</translation>
 <translation id="5989320800837274978">ไม่มีการระบุทั้งพร็อกซีเซิร์ฟเวอร์แบบคงที่หรือ URL สคริปต์ .pac</translation>
+<translation id="5989917734461988169">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ การดำเนินการนี้จะไม่เปลี่ยนที่อยู่บ้านที่มีอยู่ ระบบจะบันทึกไว้ในบัญชี Google ของคุณ (<ph name="ACCOUNT" />)</translation>
 <translation id="5992691462791905444">พับทบแบบ Engineering รูปตัว Z</translation>
 <translation id="5992805036496113940">ดูข้อมูลที่ใช้เพื่อแสดงโฆษณาแก่คุณ</translation>
 <translation id="5995727681868049093">จัดการข้อมูล ความเป็นส่วนตัว และการรักษาความปลอดภัยในบัญชี Google ของคุณ</translation>
@@ -4898,6 +4900,7 @@
 <translation id="9139318394846604261">ช็อปปิ้ง</translation>
 <translation id="9140198744651252040">เบราว์เซอร์ Chrome ต้องการใช้ลายนิ้วมือเพื่อป้อนรหัสผ่านโดยอัตโนมัติ</translation>
 <translation id="9141013498910525015">จัดการที่อยู่</translation>
+<translation id="9141435142213469335">บันทึกที่อยู่พร้อมข้อมูลเพิ่มเติม</translation>
 <translation id="9141672681283222114">อนุญาต AR ในครั้งนี้</translation>
 <translation id="9143898823728499852">คุณป้อนข้อมูลบัตรนี้โดยอัตโนมัติได้เนื่องจากบัญชี <ph name="CARD_ISSUER_NAME" /> ของคุณลิงก์กับ Google Pay</translation>
 <translation id="9144951720726881238">วันหมดอายุ:</translation>

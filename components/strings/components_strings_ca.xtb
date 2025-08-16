@@ -700,6 +700,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2154484045852737596">Edita la targeta</translation>
 <translation id="2154739667870063220">Reinicia</translation>
 <translation id="2155260325161282517">5 x 7 polzades</translation>
+<translation id="2156467141257470387">Pots utilitzar les adreces desades en tots els productes de Google. Això no canviarà l'adreça de la feina existent. Es desarà al teu Compte de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Notificacions de seguiment de preus</translation>
 <translation id="21613918653299710">Galeries d'imatges en línia</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -2997,6 +2998,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5984570616552610254">Humitat de la sala</translation>
 <translation id="598637245381783098">No es pot obrir l'aplicació de pagaments</translation>
 <translation id="5989320800837274978">No s'especifiquen servidors intermediaris ni URL de script .pac.</translation>
+<translation id="5989917734461988169">Pots utilitzar les adreces desades en tots els productes de Google. Això no canviarà l'adreça de casa existent. Es desarà al teu Compte de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Plegat en Z per a enginyeria</translation>
 <translation id="5992805036496113940">Consulta la informació utilitzada per mostrar-te anuncis</translation>
 <translation id="5995727681868049093">Gestiona la teva informació, privadesa i seguretat al Compte de Google</translation>
@@ -4898,6 +4900,7 @@ Detalls addicionals:
 <translation id="9139318394846604261">Compres</translation>
 <translation id="9140198744651252040">El navegador Chrome vol utilitzar l'empremta digital per emplenar automàticament les contrasenyes</translation>
 <translation id="9141013498910525015">Gestiona les adreces</translation>
+<translation id="9141435142213469335">Desa l'adreça amb més informació</translation>
 <translation id="9141672681283222114">S'ha permès la RA aquesta vegada</translation>
 <translation id="9143898823728499852">Pots emplenar automàticament les dades d'aquesta targeta perquè el teu compte de <ph name="CARD_ISSUER_NAME" /> està enllaçat a Google Pay</translation>
 <translation id="9144951720726881238">Data de caducitat:</translation>

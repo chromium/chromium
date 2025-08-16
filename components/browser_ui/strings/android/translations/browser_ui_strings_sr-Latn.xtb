@@ -310,6 +310,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="443121186588148776">Serijski port</translation>
 <translation id="4434045419905280838">Iskačući prozori i preusmeravanja</translation>
 <translation id="443552056913301231">Ovom radnjom ćete izbrisati sve lokalne podatke, uključujući kolačiće, i resetovati sve dozvole za <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Donja tabela Chrome boja je otvorena na celom ekranu</translation>
 <translation id="4468959413250150279">Isključi zvuk za određeni sajt</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# kolačić}one{# kolačić}few{# kolačića}other{# kolačića}}</translation>
 <translation id="4478158430052450698">Olakšajte prilagođavanje zumiranja za različite sajtove</translation>
@@ -345,6 +346,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="4953688446973710931">Kada je uključeno, sajtovi mogu da traže da automatski preuzimaju više fajlova. Kada je isključeno, sajtovi ne mogu automatski da preuzimaju više fajlova.</translation>
 <translation id="4962975101802056554">Opozovite sve dozvole za uređaj</translation>
 <translation id="4972737347717125191">Sajtovi mogu da traže da koriste uređaje i podatke virtuelne realnosti</translation>
+<translation id="4973805849704516244">Donja tabela Chrome boja</translation>
 <translation id="497421865427891073">Kretanje unapred</translation>
 <translation id="4976702386844183910">Poslednja poseta: <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Saznajte više o Discover fidu</translation>

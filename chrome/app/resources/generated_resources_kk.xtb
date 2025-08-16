@@ -4550,7 +4550,7 @@
 <translation id="4120388883569225797">Қауіпсіздік кілті бастапқы күйге қайтарылмады.</translation>
 <translation id="4120817667028078560">Жол тым ұзын</translation>
 <translation id="4124823734405044952">Қауіпсіздік кілтіңіз бастапқы күйге қайтарылды.</translation>
-<translation id="4124935795427217608">Пырақ</translation>
+<translation id="4124935795427217608">Сыңармүйіз</translation>
 <translation id="4126375522951286587"><ph name="VM_NAME" /> қолданбасын өшіру</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Құрылғы журналы</translation>
@@ -4956,6 +4956,7 @@
 <translation id="4415815425191869676">Осы сайттарды әрдайым қосулы күйде ұстау</translation>
 <translation id="4416582610654027550">URL сілтемесін дұрыс теріңіз</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Осы қойындыны кідірту}other{Осы қойындыларды кідірту}}</translation>
+<translation id="4419287616181386201">Құпия сөздерді олардың басқару параметрлерінде жоюға болады.</translation>
 <translation id="4421932172707401417">Жазу ұсыныстары нұсқауларыңызға және веб-бет контентіне негізделеді.</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">Параметрлерді қалпына келтіру</translation>
@@ -5846,6 +5847,7 @@
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> профилін ашыңыз. Бұл профильді ата-анаңыз басқарады.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS параметрлерінде қауіпсіз DNS функциясын басқару</translation>
+<translation id="5066523884829290323">Оны сайтта өзгерту</translation>
 <translation id="5066534201484101197">Беттен бетке өту үшін соңына дейін айналдырыңыз.</translation>
 <translation id="5067399438976153555">Әрдайым қосулы</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> микрофоныңызды пайдаланғысы келсе, сұрау</translation>
@@ -8946,6 +8948,7 @@
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Браузеріңізді<ph name="END_LINK" /> ұйымыңыз басқарады және <ph name="BEGIN_LINK" />профиліңізді<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> басқарады.</translation>
 <translation id="7292147651179697920">Ата-анаңыздан параметрлерге кіріп, рұқсат бергенін сұраңыз.</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">Іздеу тарихы, Gemini тарихы мен құпия сөздерді олардың басқару параметрлерінде жоюға болады.</translation>
 <translation id="7295614427631867477">Android, Play және оларға қатысты қолданбалар өздеріне тиесілі деректерді жинау және қолдану саясаттары арқылы басқарылатынын ескеріңіз.</translation>
 <translation id="7296503797589217366">"<ph name="FOLDER_TITLE" />" қалтасын таңдау</translation>
 <translation id="7297726121602187087">Қою жасыл</translation>
@@ -9740,6 +9743,7 @@
 <translation id="7830276128493844263">Жүйе параметрлерінде локацияны пайдалану рұқсаты өшірілген</translation>
 <translation id="7830833461614351956">Ашу үшін <ph name="NUM_OF_FILES" /> файлды <ph name="CLOUD_PROVIDER" /> қызметіне көшіру керек пе?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">Менің орныма өзгертсін</translation>
 <translation id="7833720883933317473">Сақталған арнаулы сөздер осы жерге шығады</translation>
 <translation id="7834832693620032149">Аудионы бөлісу үшін оның орнына қойындыны немесе терезені бөлісіңіз</translation>
 <translation id="7836577093182643605">Сіз блоктаған және сайттарға көрсетілмесін деген тақырыптар тізімі</translation>

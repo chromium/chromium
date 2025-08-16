@@ -2055,6 +2055,7 @@
 <translation id="2392369802118427583">Активувати</translation>
 <translation id="2393136602862631930">Налаштуйте додаток "<ph name="APP_NAME" />" на Chromebook</translation>
 <translation id="2393313392064891208">Зміст Умов використання ОС Google Chrome Flex</translation>
+<translation id="2393944685985256805">Модуль "<ph name="MODULE_NAME" />" сховано</translation>
 <translation id="2395616325548404795">Ваш пристрій <ph name="DEVICE_TYPE" /> зареєстровано для корпоративного керування, однак ми не отримали інформацію про його об’єкти та місцезнаходження. Введіть ці дані вручну на Консолі адміністратора.</translation>
 <translation id="2396783860772170191">Введіть 4-значний PIN-код (0000–9999)</translation>
 <translation id="2398546389094871088">Під час виконання Powerwash на пристрої профілі eSIM-карти не видаляються. Це можна зробити вручну в розділі <ph name="LINK_BEGIN" />налаштування мобільних пристроїв<ph name="LINK_END" />.</translation>
@@ -2661,6 +2662,7 @@
 <translation id="2794522004398861033">Щоб налаштувати eSIM-карту, підключіться до Wi-Fi або Ethernet</translation>
 <translation id="2794977172822818797">Додати поточні сайти</translation>
 <translation id="2795716239552913152">Сайти зазвичай використовують геодані для роботи пов'язаних функцій чи показу відомостей, як-от місцеві новини або дані про магазини поблизу</translation>
+<translation id="2797712124653482791">Сховати на <ph name="DISMISS_DAYS" /> дн.</translation>
 <translation id="2798347533012571708">Оновлювати автоматично</translation>
 <translation id="2799162042226656283">Ваш вебпереглядач Chrome</translation>
 <translation id="2799223571221894425">Перезапустити</translation>
@@ -4085,6 +4087,10 @@
 <translation id="3800764353337460026">Стиль символів</translation>
 <translation id="3800828618615365228">Додаткові умови використання Google Chrome і ОС Chrome</translation>
 <translation id="3800898876950197674">Щоб дозволити це розширення, введіть пароль.</translation>
+<translation id="3801131837165361989">Тут ви знайдете поради, як персоналізувати Chrome і зробити його потужнішим для щоденних потреб.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Ви можете керувати налаштуваннями в меню картки або переглянути інші опції в розділі "Налаштувати Chrome".</translation>
 <translation id="3801449494961771207">Системний голос для синтезу мовлення</translation>
 <translation id="3802486193901166966">Для цього розширення не потрібні спеціальні дозволи, і воно не має додаткового доступу до сайтів</translation>
 <translation id="380329542618494757">Повне ім’я</translation>
@@ -4971,6 +4977,7 @@
 <translation id="4415815425191869676">Ніколи не деактивувати ці сайти</translation>
 <translation id="4416582610654027550">Введіть дійсну URL-адресу</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Призупинити цю вкладку}one{Призупинити ці вкладки}few{Призупинити ці вкладки}many{Призупинити ці вкладки}other{Призупинити ці вкладки}}</translation>
+<translation id="4419287616181386201">Ви можете видаляти паролі у відповідному розділі налаштувань</translation>
 <translation id="4421932172707401417">Пропозиції надаються на основі ваших запитів і вмісту вебсторінки</translation>
 <translation id="4421932782753506458">Киця</translation>
 <translation id="4423376891418188461">Відновити налаштування</translation>
@@ -5861,6 +5868,7 @@
 <translation id="5064921774605267982">Відкрити профіль <ph name="PROFILE_NAME" />. Цим профілем керує один із батьків.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Керувати захищеним DNS-сервером у налаштуваннях ChromeOS</translation>
+<translation id="5066523884829290323">Змінити на сайті</translation>
 <translation id="5066534201484101197">Використовувати надмірне прокручування, щоб переходити між сторінками</translation>
 <translation id="5067399438976153555">Завжди ввімкнено</translation>
 <translation id="5067867186035333991">Запитувати, якщо хост <ph name="HOST" /> хоче отримати доступ до вашого мікрофона</translation>
@@ -6542,6 +6550,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Виберіть налаштування</translation>
 <translation id="5551573675707792127">Клавіатура й введення тексту</translation>
+<translation id="5551753770140674714">Усі дані шифруються за допомогою вашої парольної фрази для синхронізації. Це не стосується способів оплати й адрес із Google Pay.</translation>
 <translation id="5553089923092577885">Зіставлення політик сертифікатів</translation>
 <translation id="5554240068773209752">Натисніть тут, щоб налаштувати елементи керування</translation>
 <translation id="5554403733534868102">Ви востаннє чекаєте, поки пристрій оновиться</translation>
@@ -8967,6 +8976,7 @@
 <translation id="7292067737327289208">Вашим <ph name="BEGIN_LINK" />веб-переглядачем керує<ph name="END_LINK" /> організація, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Попроси батьків надати доступ у налаштуваннях</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">Ви можете видаляти історію пошуку, історію Gemini і паролі у відповідному розділі налаштувань</translation>
 <translation id="7295614427631867477">Зауважте, що Android, Play і пов’язані додатки керуються власними правилами щодо збору й використання даних.</translation>
 <translation id="7296503797589217366">Вибрати папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="7297726121602187087">Темно-зелений</translation>
@@ -9761,6 +9771,7 @@
 <translation id="7830276128493844263">Доступ до геоданих вимкнено в налаштуваннях системи</translation>
 <translation id="7830833461614351956">Скопіювати файли (<ph name="NUM_OF_FILES" />) у сервіс <ph name="CLOUD_PROVIDER" />, щоб відкрити їх?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">Змінити пароль</translation>
 <translation id="7833720883933317473">Тут відображатимуться збережені спеціальні слова</translation>
 <translation id="7834832693620032149">Щоб надати доступ до аудіо, натомість поділіться вкладкою або вікном</translation>
 <translation id="7836577093182643605">Список заблокованих тем, до яких ви не хочете надавати сайтам доступ</translation>
@@ -10032,6 +10043,7 @@
 <translation id="8008704580256716350">Підозрілий файл заблоковано</translation>
 <translation id="8009196983040865987">Коли ви використовуєте функцію впорядкування вкладок, назви і URL-адреси відкритих вкладок надсилаються в Google, щоб пропонувати групи</translation>
 <translation id="8009225694047762179">Керувати паролями</translation>
+<translation id="8010312870936510509">Дані зашифровано за допомогою парольної фрази для синхронізації <ph name="TIME" />. Це не стосується способів оплати й адрес із Google Pay.</translation>
 <translation id="8011372169388649948">Закладку "<ph name="BOOKMARK_TITLE" />" переміщено.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Відомості про миттєву точку доступу</translation>

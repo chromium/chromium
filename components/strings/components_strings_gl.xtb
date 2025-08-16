@@ -700,6 +700,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2154484045852737596">Editar tarxeta</translation>
 <translation id="2154739667870063220">Reiniciar</translation>
 <translation id="2155260325161282517">5 x 7 polgadas</translation>
+<translation id="2156467141257470387">Podes usar os enderezos gardados nos produtos de Google. Isto non cambiará o teu enderezo actual do traballo, que se gardará na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Notificacións de seguimento de prezos</translation>
 <translation id="21613918653299710">Galerías de imaxes en liña</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -1672,6 +1673,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3744899669254331632">Non se pode visitar <ph name="SITE" /> nestes momentos porque o sitio web enviou credenciais codificadas que Chromium non pode procesar. Os erros e ataques da rede normalmente son temporais, polo que é probable que esta páxina funcione máis tarde.</translation>
 <translation id="3745599309295009257">O teu texto, así como o contido e URL da páxina na que estás escribindo, enviarase a Google. Esa información someterase a un proceso de revisión humana e usarase para mellorar a función. Non inclúas información persoal (como datos médicos ou financeiros) nin utilices esta ferramenta en sitios que conteñan datos privados ou confidenciais.</translation>
 <translation id="3748009735914587286">Metal (alto brillo)</translation>
+<translation id="3749600200023337912">O método de pago automático que teñas gardado pode usarse para este pagamento. Para desactivar os moedeiros electrónicos ou a aplicación para pagos en Chrome, vai á <ph name="BEGIN_LINK1" />configuración de pago<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Queres gardar o enderezo na conta?</translation>
 <translation id="3752543821772132562">Ignórase porque non se configurou <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Saír do modo de pantalla superposta</translation>
@@ -2996,6 +2998,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5984570616552610254">Humidade da cámara</translation>
 <translation id="598637245381783098">Non se pode abrir a aplicación para pagos</translation>
 <translation id="5989320800837274978">Non se especificaron nin servidores proxy fixos nin un URL de script .pac.</translation>
+<translation id="5989917734461988169">Podes usar os enderezos gardados nos produtos de Google. Isto non cambiará o teu enderezo particular actual, que se gardará na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5992691462791905444">Dobrez en Z para enxeñaría</translation>
 <translation id="5992805036496113940">Ver que información se usa para mostrarche anuncios</translation>
 <translation id="5995727681868049093">Xestionar a información, a privacidade e a seguranza na túa Conta de Google</translation>
@@ -3559,6 +3562,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6890956352250146925">Opcións para cookies e datos dos sitios</translation>
 <translation id="6891596781022320156">O nivel da política non é compatible.</translation>
 <translation id="6893057134494550310">Papel para laminar</translation>
+<translation id="6893204630281237373">Para desactivar a aplicación para pagos en Chrome, vai á <ph name="BEGIN_LINK1" />configuración de pago<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Confirmouse a túa tarxeta</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897140037006041989">Axente de usuario</translation>
@@ -4895,6 +4899,7 @@ Detalles adicionais:
 <translation id="9139318394846604261">Compras</translation>
 <translation id="9140198744651252040">O navegador Chrome quere usar a túa impresión dixital para autocompletar contrasinais</translation>
 <translation id="9141013498910525015">Xestionar enderezos</translation>
+<translation id="9141435142213469335">Garda o enderezo con máis información</translation>
 <translation id="9141672681283222114">Permitiuse a realidade aumentada neste momento</translation>
 <translation id="9143898823728499852">Podes autocompletar esta tarxeta porque a túa conta <ph name="CARD_ISSUER_NAME" /> está vinculada a Google Pay</translation>
 <translation id="9144951720726881238">Data de vencemento:</translation>

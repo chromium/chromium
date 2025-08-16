@@ -310,6 +310,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="443121186588148776">Serial port</translation>
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
 <translation id="443552056913301231">This action will delete all local data, including cookies, and reset all permissions for <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Chrome colours bottom sheet opened at full height</translation>
 <translation id="4468959413250150279">Mute sound for a specific site.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Make it easier to customise zoom for different sites</translation>
@@ -345,6 +346,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="4953688446973710931">When on, sites can ask to download multiple files automatically. When off, sites can't download multiple files automatically.</translation>
 <translation id="4962975101802056554">Revoke all permissions for device</translation>
 <translation id="4972737347717125191">Sites can ask to use virtual reality devices and data</translation>
+<translation id="4973805849704516244">Chrome colours bottom sheet</translation>
 <translation id="497421865427891073">go forward</translation>
 <translation id="4976702386844183910">Last visited <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Learn more about Discover feed</translation>

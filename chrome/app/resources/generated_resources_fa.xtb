@@ -2049,6 +2049,7 @@
 <translation id="2392369802118427583">فعالسازی</translation>
 <translation id="2393136602862631930">‏راه‌اندازی <ph name="APP_NAME" /> در Chromebook</translation>
 <translation id="2393313392064891208">‏محتوای «شرایط Google ChromeOS Flex»</translation>
+<translation id="2393944685985256805">‫<ph name="MODULE_NAME" /> پنهان شده است</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> شما باموفقیت برای مدیریت شرکت ثبت شد اما نتوانست اطلاعات مکان و دارایی‌اش را ارسال کند. لطفاً این اطلاعات را به‌صورت دستی از کنسول سرپرستتان برای این دستگاه وارد کنید.</translation>
 <translation id="2396783860772170191">پین ۴ رقمی را وارد کنید (۹۹۹۹-۰۰۰۰)</translation>
 <translation id="2398546389094871088">‏پس‌از Powerwash دستگاه، نمایه‌های سیم‌کارت داخلی برداشته نخواهد شد. برای برداشتن دستی این نمایه‌ها، به <ph name="LINK_BEGIN" />تنظیمات تلفن همراه<ph name="LINK_END" /> بروید.</translation>
@@ -2655,6 +2656,7 @@
 <translation id="2794522004398861033">‏برای راه‌اندازی سیم‌کارت داخلی به Wi-Fi یا اترنت متصل شوید</translation>
 <translation id="2794977172822818797">اضافه کردن سایت‌های فعلی</translation>
 <translation id="2795716239552913152">سایت‌ها معمولاً از مکان شما برای ارائه ویژگی‌ها یا اطلاعات مرتبط، مانند اخبار محلی یا فروشگاه‌های نزدیک، استفاده می‌کنند</translation>
+<translation id="2797712124653482791">به‌مدت <ph name="DISMISS_DAYS" /> روز پنهان شود</translation>
 <translation id="2798347533012571708">حفظ به‌روزرسانی‌ها</translation>
 <translation id="2799162042226656283">‏‫Chrome شما</translation>
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
@@ -2913,7 +2915,7 @@
 <translation id="2985348301114641460">می‌خواهید برای نصب «<ph name="EXTENSION_NAME" />»، درخواستی برای سرپرستتان ارسال کنید؟</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> برنامه‌ای را حذف نصب کرد}one{<ph name="APP_NAME" /> # برنامه را حذف نصب کرد}other{<ph name="APP_NAME" /> # برنامه را حذف نصب کرد}}</translation>
 <translation id="2987620471460279764">نوشتار هم‌رسانی‌شده از دستگاه دیگر</translation>
-<translation id="2988018669686457659">تولیدکننده فرعی تصویر</translation>
+<translation id="2988018669686457659">ارائه‌دهنده ذخیره</translation>
 <translation id="2988328607561082373">از هیچ‌کدام از گذرواژه‌هایتان دوباره استفاده نکرده‌اید</translation>
 <translation id="2989123969927553766">شتاب پیمایش موشواره</translation>
 <translation id="2989177286941477290">{NUM_OF_FILES,plural, =1{برای انتقال این فایل در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}one{برای انتقال این فایل در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}other{برای انتقال این فایل‌ها در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}}</translation>
@@ -4079,6 +4081,10 @@
 <translation id="3800764353337460026">شیوه نماد</translation>
 <translation id="3800828618615365228">‏شرایط تکمیلی Google Chrome و ChromeOS</translation>
 <translation id="3800898876950197674">برای مجاز کردن این افزونه، گذرواژه‌تان را وارد کنید.</translation>
+<translation id="3801131837165361989">‏درحال دیدن پیشنهادهایی برای شخصی‌سازی Chrome و قدرتمندتر کردن آن برای نیازهای روزمره‌تان هستید.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        از منو کارت می‌توانید تنظیمات را مدیریت کنید یا در «سفارشی‌سازی کردن Chrome» گزینه‌های بیشتری ببینید.</translation>
 <translation id="3801449494961771207">صدای سیستم نوشتار به گفتار</translation>
 <translation id="3802486193901166966">این افزونه به اجازه خاصی نیاز ندارد و هیچ‌گونه دسترسی اضافی به سایت ندارد</translation>
 <translation id="380329542618494757">نام</translation>
@@ -4965,6 +4971,7 @@
 <translation id="4415815425191869676">این سایت‌ها همیشه فعال نگه داشته شود</translation>
 <translation id="4416582610654027550">نشانی وب معتبری تایپ کنید</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{توقف موقت این زبانه}one{توقف موقت این زبانه}other{توقف موقت این زبانه‌ها}}</translation>
+<translation id="4419287616181386201">گذرواژه‌ها را می‌توان در تنظیمات مدیریت آن‌ها حذف کرد</translation>
 <translation id="4421932172707401417">پیشنهادهای نوشتاری براساس پیام‌واره‌های شما و محتوای صفحه وب است</translation>
 <translation id="4421932782753506458">پشمالو</translation>
 <translation id="4423376891418188461">بازیابی تنظیمات</translation>
@@ -5856,6 +5863,7 @@
 <translation id="5064921774605267982">نمایه <ph name="PROFILE_NAME" /> باز می‌شود. این نمایه را ولی‌تان مدیریت می‌کند.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">‏مدیریت ساناد امن در تنظیمات ChromeOS</translation>
+<translation id="5066523884829290323">تغییر دادن در سایت</translation>
 <translation id="5066534201484101197">پیمایش بیش‌ازحد برای جابه‌جایی بین صفحه‌ها</translation>
 <translation id="5067399438976153555">همیشه روشن</translation>
 <translation id="5067867186035333991">اگر <ph name="HOST" /> می‌خواهد به میکروفن شما دسترسی داشته باشد از من سوال شود</translation>
@@ -6372,7 +6380,7 @@
 <translation id="5430931332414098647">اشتراک‌گذاری اینترنت فوری</translation>
 <translation id="5431318178759467895">رنگ</translation>
 <translation id="5432145523462851548">نمایش <ph name="FILE_NAME" /> در پوشه</translation>
-<translation id="5432223177001837288">برای هم‌رسانی صدا، درعوض برگه‌ای را هم‌رسانی کنید</translation>
+<translation id="5432223177001837288">برای هم‌رسانی صدا، درعوض زبانه‌ای را هم‌رسانی کنید</translation>
 <translation id="5432872710261597882">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما این مورد را می‌پسندید.</translation>
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
 <translation id="5433865420958136693">درصورت امکان از شتاب گرافیکی استفاده شود</translation>
@@ -6528,7 +6536,7 @@
 <translation id="5542949973455282971">درحال اتصال به <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">در حال بررسی وضعیت...</translation>
 <translation id="5544482392629385159">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" /></translation>
-<translation id="554517701842997186">تولیدکننده تصویر</translation>
+<translation id="554517701842997186">ارائه‌دهنده</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{افزودن برگه به گروه}one{افزودن برگه‌ها به گروه}other{افزودن برگه‌ها به گروه}}</translation>
 <translation id="554535686826424776">یافتن کوپن</translation>
 <translation id="5546865291508181392">یافتن</translation>
@@ -6538,6 +6546,7 @@
 <translation id="554903022911579950">کربرس</translation>
 <translation id="5549511085333906441">انتخاب تنظیمات</translation>
 <translation id="5551573675707792127">صفحه‌کلید و ورودی نوشتاری</translation>
+<translation id="5551753770140674714">‏داده‌ها بااستفاده از گذرعبارت همگام‌سازی‌تان رمزگذاری شده‌اند. این شامل روش‌های پرداخت و نشانی‌های موجود در Google Pay نمی‌شود.</translation>
 <translation id="5553089923092577885">نگاشتهای سیاست گواهی</translation>
 <translation id="5554240068773209752">برای سفارشی کردن کنترل‌ها، اینجا را کلیک کنید</translation>
 <translation id="5554403733534868102">پس از این، نیازی نیست برای به‌روزرسانی‌ها صبر کنید</translation>
@@ -8962,6 +8971,7 @@
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />مرورگرتان تحت مدیریت<ph name="END_LINK" /> سازمانتان و <ph name="BEGIN_LINK" />نمایه‌تان تحت مدیریت<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> است</translation>
 <translation id="7292147651179697920">از ولی‌تان بخواهید دسترسی را در «تنظیمات» مجاز کند</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">‏سابقه جستجو، سابقه Gemini، و گذرواژه‌ها را می‌توان در تنظیمات مدیریت آن‌ها حذف کرد</translation>
 <translation id="7295614427631867477">‏توجه داشته باشید Android، ‏Play و برنامه‌های مرتبط تحت‌کنترل خط‌مشی‌های جمع‌آوری و استفاده داده مربوط به خودشان هستند.</translation>
 <translation id="7296503797589217366">پوشه <ph name="FOLDER_TITLE" /> را انتخاب کنید</translation>
 <translation id="7297726121602187087">سبز تیره</translation>
@@ -9756,6 +9766,7 @@
 <translation id="7830276128493844263">مکان در تنظیمات سیستم خاموش است</translation>
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> فایل برای باز شدن در <ph name="CLOUD_PROVIDER" /> کپی شود؟</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">تغییر دادن</translation>
 <translation id="7833720883933317473">کلمات سفارشی ذخیره‌شده در اینجا نشان داده خواهند شد</translation>
 <translation id="7834832693620032149">برای هم‌رسانی کردن صدا، زبانه یا پنجره‌ای را هم‌رسانی کنید</translation>
 <translation id="7836577093182643605">فهرست موضوعاتی که مسدود کرده‌اید و نمی‌خواهید با سایت‌ها هم‌رسانی شود</translation>
@@ -9912,7 +9923,7 @@
 <translation id="7940265372707990269">به‌ترتیب <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">آمادگی برای اشتراک‌گذاری اینترنت:</translation>
 <translation id="7942349550061667556">قرمز</translation>
-<translation id="7942846369224063421">تولیدکننده تصویر واسط کاربر ازپیش‌بارگیری‌شده</translation>
+<translation id="7942846369224063421">ارائه‌دهنده تصویر واسط کاربر ازپیش‌بارگیری‌شده</translation>
 <translation id="7943368935008348579">‏بارگیری فایل‌های PDF</translation>
 <translation id="7943837619101191061">انتخاب پوشه برای افزودن...</translation>
 <translation id="7944173382284143968">این وب‌سایت برای ذخیره کردن گذرواژه جدید به تأیید گذرواژه یکبارمصرف نیاز دارد. لطفاً برای تکمیل تغییر، روند را به‌صورت دستی تحت‌کنترل بگیرید.</translation>
@@ -10027,6 +10038,7 @@
 <translation id="8008704580256716350">فایل مشکوک مسدود شد</translation>
 <translation id="8009196983040865987">‏وقتی از سازمان‌دهی برگه‌ها استفاده می‌کنید، عنوان و نشانی وب برگه‌های باز شما برای تولید گروه‌های برگه پیشنهادی به Google ارسال می‌شود</translation>
 <translation id="8009225694047762179">مدیریت گذرواژه</translation>
+<translation id="8010312870936510509">‏داده‌ها بااستفاده از گذرعبارت همگام‌سازی‌تان در تاریخ <ph name="TIME" /> رمزگذاری شدند. این شامل روش‌های پرداخت و نشانی‌های موجود در Google Pay نمی‌شود.</translation>
 <translation id="8011372169388649948">«<ph name="BOOKMARK_TITLE" />» منتقل شد.</translation>
 <translation id="8012188750847319132">قفل تبدیل</translation>
 <translation id="8012463809859447963">جزئیات «نقطه اتصال فوری»</translation>

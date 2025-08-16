@@ -700,6 +700,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2154484045852737596">Redigera kortet</translation>
 <translation id="2154739667870063220">Starta om</translation>
 <translation id="2155260325161282517">5 x 7 tum</translation>
+<translation id="2156467141257470387">Du kan använda sparade adresser i Googles produkter. Detta ändrar inte din befintliga jobbadress. Den sparas i ditt Google-konto, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Aviseringar för prisbevakningar</translation>
 <translation id="21613918653299710">Bildgallerier online</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -2997,6 +2998,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5984570616552610254">Luftfuktighet i kammare</translation>
 <translation id="598637245381783098">Det gick inte att öppna betalningsappen</translation>
 <translation id="5989320800837274978">Varken fasta proxyservrar eller en webbadress med PAC-skript har angetts.</translation>
+<translation id="5989917734461988169">Du kan använda sparade adresser i Googles produkter. Detta ändrar inte din befintliga hemadress. Den sparas i ditt Google-konto, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Förskjuten Z-falsning</translation>
 <translation id="5992805036496113940">Se vilken information som används för att visa annonser</translation>
 <translation id="5995727681868049093">Hantera uppgifter, integritet och säkerhet i Google-kontot</translation>
@@ -4899,6 +4901,7 @@ Mer information:
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Chrome-webbläsaren vill använda fingeravtryck för att autofylla lösenord</translation>
 <translation id="9141013498910525015">Hantera adresser</translation>
+<translation id="9141435142213469335">Spara adressen med mer information</translation>
 <translation id="9141672681283222114">AR tillåts den här gången</translation>
 <translation id="9143898823728499852">Du kan fylla i det här kortet automatiskt eftersom ditt <ph name="CARD_ISSUER_NAME" />-konto är länkat till Google Pay</translation>
 <translation id="9144951720726881238">Utgångsdatum:</translation>

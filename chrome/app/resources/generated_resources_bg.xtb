@@ -1138,6 +1138,7 @@
 <translation id="1768212860412467516">Изпращане на отзиви за „<ph name="EXPERIMENT_NAME" />“.</translation>
 <translation id="1769104665586091481">Отваряне на връзката в нов &amp;прозорец</translation>
 <translation id="1769157454356586138">Сканирането не бе успешно. Този файл е блокиран от администратора ви</translation>
+<translation id="176920518817780870">Преобразуване на групата в папка с отметки</translation>
 <translation id="1770407692401984718">Плъзнете изображение тук или</translation>
 <translation id="177053719077591686">Създаване в Google Диск на резервно копие на приложенията за Android.</translation>
 <translation id="1773329206876345543">Създайте точка за достъп до Wi-Fi, като използвате мобилните данни на <ph name="DEVICE_TYPE" />, за да предоставите достъп до интернет на други устройства. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -2048,6 +2049,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2392369802118427583">Активиране</translation>
 <translation id="2393136602862631930">Настройте <ph name="APP_NAME" /> на своя Chromebook</translation>
 <translation id="2393313392064891208">Съдържание на Общите условия на Google ChromeOS Flex</translation>
+<translation id="2393944685985256805">Модулът „<ph name="MODULE_NAME" />“ бе скрит</translation>
 <translation id="2395616325548404795">Устройството ви <ph name="DEVICE_TYPE" /> е успешно записано за корпоративно управление, но не успя да изпрати идентификатора на актива и информацията за местоположението си. Моля, въведете ръчно съответните данни от Admin Console.</translation>
 <translation id="2396783860772170191">Въведете 4-цифрен ПИН (0000 – 9999)</translation>
 <translation id="2398546389094871088">Извършването на Powerwash на устройството ви няма да премахне потребителските профили за електронната SIM карта. За да ги премахнете ръчно, отворете <ph name="LINK_BEGIN" />Настройки за мобилни устройства<ph name="LINK_END" />.</translation>
@@ -2654,6 +2656,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2794522004398861033">Свържете се с Wi-Fi или Ethernet, за да настроите електронна SIM карта</translation>
 <translation id="2794977172822818797">Добавяне на текущите сайтове</translation>
 <translation id="2795716239552913152">Сайтовете обикновено използват местоположението ви за осигуряване на подходящи функции или информация, като например местни новини или магазини в района</translation>
+<translation id="2797712124653482791">Да се скрие ли за <ph name="DISMISS_DAYS" /> дни?</translation>
 <translation id="2798347533012571708">Получаване на актуализациите</translation>
 <translation id="2799162042226656283">Вашият Chrome</translation>
 <translation id="2799223571221894425">Стартиране отново</translation>
@@ -4078,6 +4081,10 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3800764353337460026">Стил на символите</translation>
 <translation id="3800828618615365228">Допълнителни общи условия на Google Chrome и Chrome OS</translation>
 <translation id="3800898876950197674">За да разрешите това разширение, въведете паролата си.</translation>
+<translation id="3801131837165361989">Виждате предложения как да персонализирате Chrome и да направите браузъра по-мощен за ежедневните си нужди.
+        <ph name="BREAK" />
+<ph name="BREAK" />
+Можете да управлявате настройките от менюто на картата или да видите още опции в „Персонализиране на Chrome“.</translation>
 <translation id="3801449494961771207">Системен глас за синтезиран говор</translation>
 <translation id="3802486193901166966">Това разширение не изисква специални разрешения и няма допълнителен достъп до сайтовете</translation>
 <translation id="380329542618494757">Име</translation>
@@ -4965,6 +4972,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4415815425191869676">Сайтове, които да са винаги активни</translation>
 <translation id="4416582610654027550">Въведете валиден URL адрес</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Поставяне на пауза на този раздел}other{Поставяне на пауза на тези раздели}}</translation>
+<translation id="4419287616181386201">Паролите могат да бъдат изтрити от съответните настройки за управление</translation>
 <translation id="4421932172707401417">Предложенията за текст са въз основа на подканите ви и съдържанието на уеб страницата</translation>
 <translation id="4421932782753506458">Пухчо</translation>
 <translation id="4423376891418188461">Възстановяване на настройките</translation>
@@ -5287,6 +5295,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4653116291358041820">Малка сянка</translation>
 <translation id="4653405415038586100">Грешка при конфигурирането на Linux</translation>
 <translation id="4654236001025007561">Споделяйте файлове с устройства Chromebook и такива с Android в близост до вас</translation>
+<translation id="4654801841330730814">Всички</translation>
 <translation id="4657810666108475055">Търсене на раздели</translation>
 <translation id="4657914796247705218">Скорост на TrackPoint</translation>
 <translation id="4658285806588491142">Ограничаване на видимостта на екрана</translation>
@@ -5856,6 +5865,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5064921774605267982">Отваряне на потребителския профил <ph name="PROFILE_NAME" />. Той се управлява от родителя ви.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Управление на опциите за сигурен DNS в настройките на Chrome OS</translation>
+<translation id="5066523884829290323">Промяна на сайта</translation>
 <translation id="5066534201484101197">Продължаващо превъртане за навигиране между страниците</translation>
 <translation id="5067399438976153555">Винаги включено</translation>
 <translation id="5067867186035333991">Да се получава запитване, ако <ph name="HOST" /> иска достъп до микрофона ви</translation>
@@ -6538,6 +6548,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Избиране на настройки</translation>
 <translation id="5551573675707792127">Клавиатура и въвеждане на текст</translation>
+<translation id="5551753770140674714">Данните са шифровани с пропуска ви за синхронизиране. Това не включва начините на плащане и адресите от Google Pay.</translation>
 <translation id="5553089923092577885">Съответствия на правилата за сертификата</translation>
 <translation id="5554240068773209752">Кликнете тук за персонализиране на контролите</translation>
 <translation id="5554403733534868102">Повече няма да чакате актуализации</translation>
@@ -7246,6 +7257,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="606449270532897041">Управление на данните за сайтовете</translation>
 <translation id="6064764629679333574">Подобрете качеството на звука от микрофона с Bluetooth, като увеличите разделителната способност на звука.</translation>
 <translation id="6065289257230303064">Атрибути за директорията на субекта на сертификата</translation>
+<translation id="6066649679804058181">Преобразуване на групата в папка с отметки</translation>
 <translation id="6066794465984119824">Хеш стойността на изображението не е зададена</translation>
 <translation id="6069464830445383022">Влизате в Chromebook с профила си в Google</translation>
 <translation id="6071181508177083058">потвърждаване на паролата</translation>
@@ -8961,6 +8973,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Браузърът ви се управлява<ph name="END_LINK" /> от организацията ви, а <ph name="BEGIN_LINK" />потребителският ви профил<ph name="END_LINK" /> – от <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Помолете родителя си да разреши достъпа от настройките</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7293774463163321848">Историята в Търсене, историята в Gemini и паролите могат да бъдат изтрити от съответните настройки за управление</translation>
 <translation id="7295614427631867477">Обърнете внимание, че Android, Google Play и свързаните с тях приложения се управляват от своите собствени правила за събиране и използване на данни.</translation>
 <translation id="7296503797589217366">Избиране на папката „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="7297726121602187087">Тъмнозелено</translation>
@@ -9756,6 +9769,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7830276128493844263">Местоположението е изключено от системните настройки</translation>
 <translation id="7830833461614351956">Искате ли да копирате <ph name="NUM_OF_FILES" /> файла в <ph name="CLOUD_PROVIDER" />, за да ги отворите?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
+<translation id="7833184285837312660">Променете вместо мен</translation>
 <translation id="7833720883933317473">Тук ще се покажат запазените персонализирани думи</translation>
 <translation id="7834832693620032149">За да споделите звук, трябва да споделите раздел или прозорец</translation>
 <translation id="7836577093182643605">Списък с темите, които сте блокирали и които не искате да споделяте със сайтовете</translation>
@@ -10027,6 +10041,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8008704580256716350">Блокиран е подозрителен файл</translation>
 <translation id="8009196983040865987">Когато използвате функцията за организиране на разделите, заглавията и URL адресите на отворените ви раздели се изпращат до Google, за да се генерират предложени групи раздели</translation>
 <translation id="8009225694047762179">Управление на паролите</translation>
+<translation id="8010312870936510509">Данните са шифровани с пропуска ви за синхронизиране на <ph name="TIME" />. Това не включва начините на плащане и адресите от Google Pay.</translation>
 <translation id="8011372169388649948">Преместихте „<ph name="BOOKMARK_TITLE" />“.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Подробности за мигновената точка за достъп</translation>

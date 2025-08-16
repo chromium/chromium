@@ -700,6 +700,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2154484045852737596">Úprava karty</translation>
 <translation id="2154739667870063220">Restartovat</translation>
 <translation id="2155260325161282517">5 × 7″</translation>
+<translation id="2156467141257470387">Uložené adresy můžete používat ve službách Google. Vaše stávající adresa do práce se nezmění. Uloží se do vašeho účtu Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Oznámení ohledně sledování cen</translation>
 <translation id="21613918653299710">Online obrázkové galerie</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -2993,6 +2994,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5984570616552610254">Vlhkost komory</translation>
 <translation id="598637245381783098">Platební aplikaci nelze otevřít</translation>
 <translation id="5989320800837274978">Nejsou určeny pevně dané servery proxy ani adresa URL skriptu PAC.</translation>
+<translation id="5989917734461988169">Uložené adresy můžete používat ve službách Google. Vaše stávající adresa domů se nezmění. Uloží se do vašeho účtu Google, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Technické přeložení do Z</translation>
 <translation id="5992805036496113940">Zobrazit informace používané k zobrazování reklam</translation>
 <translation id="5995727681868049093">Správa údajů, ochrany soukromí a zabezpečení v účtu Google</translation>
@@ -4893,6 +4895,7 @@ Další podrobnosti:
 <translation id="9139318394846604261">Nákupy</translation>
 <translation id="9140198744651252040">Prohlížeč Chrome by chtěl k automatickému vyplňování hesel používat otisk prstu</translation>
 <translation id="9141013498910525015">Spravovat adresy</translation>
+<translation id="9141435142213469335">Uložení adresy s dalšími informacemi</translation>
 <translation id="9141672681283222114">AR pro tentokrát povolena</translation>
 <translation id="9143898823728499852">Tuto kartu můžete vyplnit automaticky, protože váš účet <ph name="CARD_ISSUER_NAME" /> je propojen s Google Pay</translation>
 <translation id="9144951720726881238">Datum konce platnosti:</translation>
