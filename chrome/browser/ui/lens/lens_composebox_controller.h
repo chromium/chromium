@@ -39,6 +39,9 @@ class LensComposeboxController {
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler);
 
+  // Cleans up any any state associated with this UI instance.
+  void CloseUI();
+
  private:
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;
