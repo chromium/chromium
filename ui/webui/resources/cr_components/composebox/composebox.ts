@@ -417,6 +417,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected onKeydown_(e: KeyboardEvent) {
     if (e.key === 'Escape' && this.composeboxCloseByEscape_) {
       this.closeComposebox_();
+      e.preventDefault();
     }
   }
 
@@ -425,6 +426,7 @@ export class ComposeboxElement extends I18nMixinLit
 
     if (this.isCollapsible) {
       this.expanded_ = false;
+      this.$.input.blur();
     }
   }
 

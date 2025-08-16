@@ -27,6 +27,49 @@
   --standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
   --gradient-curve: cubic-bezier(0.2, 0, 0, 1);
   --emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --emphasized-curve: linear(
+    0,
+    0.002,
+    0.01 3.6%,
+    0.02 4.9%,
+    0.034,
+    0.053,
+    0.074,
+    0.1,
+    0.128,
+    0.16,
+    0.194 13.4%,
+    0.271 15%,
+    0.344 16.1%,
+    0.477 17.5%,
+    0.544 18.3%,
+    0.607,
+    0.66 20.6%,
+    0.717 22.4%,
+    0.742,
+    0.765,
+    0.788,
+    0.808,
+    0.827,
+    0.845 30.4%,
+    0.865 32.6%,
+    0.866,
+    0.865 32.7%,
+    0.869 33.1%,
+    0.883 35.1%,
+    0.9 37.7%,
+    0.916 40.6%,
+    0.929 43.8%,
+    0.942 47.2%,
+    0.953 51%,
+    0.963 55%,
+    0.972 59.3%,
+    0.979 64%,
+    0.986 69%,
+    0.991 74.4%,
+    0.998 86.4%,
+    1
+  );
 
   --start-angle-open: 30deg;
   --end-angle-open: 245deg;
@@ -40,19 +83,34 @@
   --expand-ease-in-duration: 400ms;
   --expand-delay: 300ms;
   --expand-ease-out-duration: 300ms;
-  --expand-duration: calc(var(--expand-ease-in-duration) + var(--expand-delay) + var(--expand-ease-out-duration));
+  --expand-duration: calc(
+    var(--expand-ease-in-duration) + var(--expand-delay) +
+      var(--expand-ease-out-duration)
+  );
+  --collapse-ease-in-duration: 100ms;
+  --collapse-ease-out-duration: 500ms;
+  --collapse-duration: calc(
+    var(--collapse-ease-in-duration) + var(--collapse-ease-out-duration)
+  );
 
-  --icon-entry-transition: opacity var(--expand-ease-out-duration)
-    linear 800ms;
-  --icon-exit-transition: opacity var(--expand-ease-in-duration)
+  --icon-entry-transition: opacity var(--expand-ease-out-duration) linear 800ms;
+  --icon-exit-transition: opacity var(--collapse-ease-in-duration)
     var(--emphasized-accelerate);
 
   --height-expand-duration: 600ms;
   --submit-enabled-transition: opactiy 255ms;
 
-  border-radius: 24px;
+  --border-radius-transition: border-radius var(--collapse-duration)
+    var(--emphasized-curve);
+
+  border-radius: 30px;
   font-size: var(--cr-composebox-font-size, 18px);
+  transition: var(--border-radius-transition);
   width: var(--ntp-composebox-width, 337px);
+}
+
+:host([expanded_]) {
+  border-radius: 24px;
 }
 
 #errorScrim {
@@ -100,8 +158,10 @@
 }
 
 :host([is-collapsible]) #composebox {
-  transition: min-height var(--height-expand-duration) var(--standard-curve),
-              max-height var(--height-expand-duration) var(--standard-curve);
+  transition:
+    min-height var(--emphasized-curve),
+    max-height var(--emphasized-curve);
+  transition-duration: var(--collapse-duration);
   min-height: 60px;
   max-height: 60px;
 }
@@ -110,12 +170,13 @@
   /* If the composebox is not expandable, meaning expanded_ is always true,
    * then the above transition will never be triggered. Instead, manually
    * start the animation so it expands as soon as it is rendered */
-    animation: var(--height-expand-duration) slide-down var(--standard-curve);
+  animation: var(--height-expand-duration) slide-down var(--standard-curve);
 }
 
 :host([expanded_]) #composebox {
   min-height: 136px;
   max-height: 254px;
+  transition-duration: var(--expand-duration);
 }
 
 @keyframes slide-down {
@@ -124,7 +185,7 @@
     max-height: 60px;
   }
 
-  to{
+  to {
     min-height: 136px;
     max-height: 136px;
   }
