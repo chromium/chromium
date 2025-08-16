@@ -1618,7 +1618,7 @@ AutocompleteResult::GetMatchComparisonFields(const AutocompleteMatch& match) {
   } else if (match.type == ACMatchType::CALCULATOR) {
     type = AutocompleteMatchDedupeType::kCalculator;
   } else if (match.IsSearchAimSuggestion() &&
-             omnibox_feature_configs::AiModeEchoMatch::Get()
+             omnibox_feature_configs::AiMode::Get()
                  .do_not_dedupe_aim_suggestions) {
     type = AutocompleteMatchDedupeType::kAiMode;
   } else {
