@@ -25,6 +25,16 @@ enum class FacilitatedPaymentsType {
   kPix = 1,
 };
 
+// Different types of payment link fop selector option available.
+enum class PaymentLinkFopSelectorTypes {
+  // Only eWallets are available.
+  kEwalletOnly = 0,
+  // Only A2A payment methods are available.
+  kA2AOnly = 1,
+  // Both eWallets and A2A payment methods are available.
+  kEwalletAndA2A = 2
+};
+
 // Available ewallet accounts type for this current profile. Indicates the count
 // of available eWallets and whether they’re device bound or not.
 enum class AvailableEwalletsConfiguration {
@@ -295,6 +305,17 @@ void LogUiScreenShown(
 // and should not be `kInvalid`.
 void LogFopSelectorShownLatency(
     FacilitatedPaymentsType payment_type,
+    base::TimeDelta latency,
+    std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
+
+// Logs the latency for displaying the payment link FOP selector
+//   - EwalletAndA2A: Latency when both eWallet and
+//     payment app are available.
+//   - A2AOnly: Latency when only payment app is available.
+//   - EwalletOnly: Latency when only eWallet is
+//   available.
+void LogPaymentLinkFopSelectorShownLatency(
+    PaymentLinkFopSelectorTypes payment_link_fop_selector_type,
     base::TimeDelta latency,
     std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 

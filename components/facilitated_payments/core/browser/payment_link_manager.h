@@ -20,6 +20,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/strike_databases/payment_link_suggestion_strike_database.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
@@ -152,6 +153,10 @@ class PaymentLinkManager {
   // nullptr so check before using.
   PaymentLinkSuggestionStrikeDatabase* GetOrCreateStrikeDatabase();
 
+  // Returns payment link FOP selector type based on the availability of payment
+  // apps and eWallets.
+  PaymentLinkFopSelectorTypes GetPaymentLinkFopSelectorType();
+
   // A list of eWallets that support the payment link provided in
   // TriggerPaymentLinkPushPayment().
   //
@@ -204,6 +209,14 @@ class PaymentLinkManager {
   // True indicates that the eWallet selected by the user is bound to the
   // device. This field is used for logging purposes.
   bool is_device_bound_for_logging_ = false;
+
+  // True indicates that there is at least one payment app that is available for
+  // payment.
+  bool is_payment_app_available_ = false;
+
+  // True indicates that there is at least one eWallet that is available for
+  // payment.
+  bool is_ewallet_available_ = false;
 
   // A timer to make UI changes.
   base::OneShotTimer ui_timer_;

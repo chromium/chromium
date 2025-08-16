@@ -1005,6 +1005,16 @@ TEST_F(PaymentLinkManagerTest,
       "LatencyAfterDetectingPaymentLink.ShopeePay",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletOnly.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletOnly.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::kEntryName,
       {ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::kShownName,
@@ -1603,8 +1613,10 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
       ukm::UkmRecorder::GetNewSourceID());
 }
 
-// A2A payment prompt is shown.
+// A2A payment prompt is shown and latency metrics are logged.
 TEST_F(PaymentLinkManagerTestForA2AFlow, A2APaymentPromptShown) {
+  base::HistogramTester histogram_tester;
+
   feature_list_.InitAndEnableFeature(
       payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL supported_payment_link(
@@ -1616,10 +1628,29 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, A2APaymentPromptShown) {
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
+
+  // Fully mocked time, does not advance by itself.
+  FastForwardBy(base::Seconds(2));
+
+  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2AOnly.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2AOnly.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink.PromptPay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
-// Payment prompt is shown with A2A and eWallet options.
+// Payment prompt is shown with A2A and eWallet options and latency metrics are
+// logged.
 TEST_F(PaymentLinkManagerTestForA2AFlow, PaymentPromptShown_A2AAndEwallet) {
+  base::HistogramTester histogram_tester;
+
   feature_list_.InitAndEnableFeature(
       payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   autofill::Ewallet supported_ewallet(
@@ -1646,6 +1677,22 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, PaymentPromptShown_A2AAndEwallet) {
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
+
+  // Fully mocked time, does not advance by itself.
+  FastForwardBy(base::Seconds(2));
+
+  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // A2A payment prompt is shown for websites in the allolwist.

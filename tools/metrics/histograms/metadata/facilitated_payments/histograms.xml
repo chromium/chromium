@@ -24,15 +24,6 @@ reviewer.
   <variant name="Success" summary="success"/>
 </variants>
 
-<variants name="EwalletScheme">
-  <variant name="DuitNow"
-      summary="Scheme DuitNow that supports eWallet payflow."/>
-  <variant name="Momo" summary="Scheme Momo that supports eWallet payflow."/>
-  <variant name="ShopeePay"
-      summary="Scheme ShopeePay that supports eWallet payflow."/>
-  <variant name="Tngd" summary="Scheme Tngd that supports eWallet payflow."/>
-</variants>
-
 <!-- Note: Update the histogram summaries when adding a new variant.-->
 
 <variants name="FacilitatedPaymentsTypes">
@@ -40,6 +31,24 @@ reviewer.
       summary="Facilitate an eWallet based payment using Google Pay."/>
   <variant name="Pix"
       summary="Facilitate a Pix based payment using Google Pay."/>
+</variants>
+
+<variants name="PaymentLinkFopSelectorTypes">
+  <variant name="A2AOnly" summary="Only A2A payment methods are available."/>
+  <variant name="EwalletAndA2A"
+      summary="Both eWallets and A2A payment methods are available."/>
+  <variant name="EwalletOnly" summary="Only eWallets are available."/>
+</variants>
+
+<variants name="PaymentLinkScheme">
+  <variant name="DuitNow"
+      summary="Scheme DuitNow that supports eWallet payflow."/>
+  <variant name="Momo" summary="Scheme Momo that supports eWallet payflow."/>
+  <variant name="PromptPay"
+      summary="Scheme PromptPay that supports payment link payflow."/>
+  <variant name="ShopeePay"
+      summary="Scheme ShopeePay that supports eWallet payflow."/>
+  <variant name="Tngd" summary="Scheme Tngd that supports eWallet payflow."/>
 </variants>
 
 <variants name="PurchaseActionResult">
@@ -105,7 +114,7 @@ reviewer.
     is triggered at most once per page load. [Trigger] The histogram is logged
     when the eWallet FOP selector is shown.
   </summary>
-  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 <histogram
@@ -122,7 +131,7 @@ reviewer.
     {Result} is the token fetch result. The payment is supported by {Scheme}.
   </summary>
   <token key="Result" variants="BooleanResult"/>
-  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Ewallet.InitiatePayment.Attempt.{Scheme}"
@@ -137,7 +146,7 @@ reviewer.
     [Frequency] Logged at most once per eWallet flow. [Trigger] User selects an
     eWallet payment from the list of options shown in the eWallet UI.
   </summary>
-  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 <histogram
@@ -153,7 +162,7 @@ reviewer.
     page-load. The result is {Result}. The payment is supported by {Scheme}.
   </summary>
   <token key="Result" variants="BooleanResult"/>
-  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 <histogram
@@ -171,7 +180,7 @@ reviewer.
     in the eWallet UI and the backend returns the instruction to trigger the
     purchase action flow.
   </summary>
-  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 <histogram
@@ -190,7 +199,7 @@ reviewer.
     from the list of options shown in the eWallet UI.
   </summary>
   <token key="Result" variants="PurchaseActionResult"/>
-  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
   <token key="IsDeviceBound">
     <variant name="DeviceBound"
         summary="The chosen payment FOP is bound to the device"/>
@@ -214,7 +223,7 @@ reviewer.
     Chrome can offer to facilitate the payment using Google Pay.
   </summary>
   <token key="Result" variants="BooleanResult"/>
-  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 <histogram
@@ -232,7 +241,7 @@ reviewer.
     load.
   </summary>
   <token key="Result" variants="BooleanResult"/>
-  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Ewallet.PayflowExitedReason"
@@ -261,7 +270,7 @@ reviewer.
     the payflow was exited. The payment is supported by {Scheme}. [Trigger]
     Payflow was exited early. [Frequency] Logged at most once per payflow.
   </summary>
-  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Ewallet.PaymentLinkDetected"
@@ -291,7 +300,7 @@ reviewer.
     gets signal that a {Scheme} payment link exists on the page, and the user
     clicks on the UI screens to proceed with payment.
   </summary>
-  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.AccountLinking.FlowExitedReason"
@@ -688,6 +697,46 @@ reviewer.
     page, and the user clicks on the UI screens to proceed with payment.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{PaymentLinkFopSelectorTypes}.FopSelectorShown.LatencyAfterDetectingPaymentLink"
+    units="ms" expires_after="2026-06-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>tushartushar@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the latency for
+    seeing the {PaymentLinkFopSelectorTypes} since a payment link was detected.
+    [Frequency] Logged once per payflow. Payment link payflow is triggered at
+    most once per page load. [Trigger] The histogram is logged when the payment
+    link FOP selector is shown.
+  </summary>
+  <token key="PaymentLinkFopSelectorTypes"
+      variants="PaymentLinkFopSelectorTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{PaymentLinkFopSelectorTypes}.FopSelectorShown.LatencyAfterDetectingPaymentLink.{Scheme}"
+    units="ms" expires_after="2026-06-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>tushartushar@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the latency for
+    seeing the {PaymentLinkFopSelectorTypes} FOP selector since a payment link
+    was detected. The payment is supported by {Scheme}. [Frequency] Logged once
+    per payflow. Payment link payflow is triggered at most once per page load.
+    [Trigger] The histogram is logged when the payment link FOP selector is
+    shown.
+  </summary>
+  <token key="PaymentLinkFopSelectorTypes"
+      variants="PaymentLinkFopSelectorTypes"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 </histograms>
