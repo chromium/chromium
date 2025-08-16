@@ -40,6 +40,23 @@ TEST(PdfRectTest, WritableAccessors) {
   EXPECT_EQ(8.0f, rect.top());
 }
 
+TEST(PdfRectTest, IsEmpty) {
+  PdfRect rect(1.0f, 2.0f, 3.0f, 5.0f);
+  EXPECT_FALSE(rect.IsEmpty());
+
+  // Zero width.
+  rect = PdfRect(1.0f, 2.0f, 1.0f, 5.0f);
+  EXPECT_TRUE(rect.IsEmpty());
+
+  // Zero height.
+  rect = PdfRect(1.0f, 2.0f, 3.0f, 2.0f);
+  EXPECT_TRUE(rect.IsEmpty());
+
+  // Default constructed.
+  rect = PdfRect();
+  EXPECT_TRUE(rect.IsEmpty());
+}
+
 TEST(PdfRectTest, Normalize) {
   PdfRect rect(3.0f, 4.0f, 1.0f, 2.0f);
   rect.Normalize();

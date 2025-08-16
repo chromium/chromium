@@ -34,6 +34,8 @@ class PdfRect {
   float width() const { return right_ - left_; }
   float height() const { return top_ - bottom_; }
 
+  bool IsEmpty() const { return !width() || !height(); }
+
   // When a PdfRect has top < bottom, or right < left, the values should be
   // swapped.
   void Normalize();
