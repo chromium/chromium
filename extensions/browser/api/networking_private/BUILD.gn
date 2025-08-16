@@ -7,6 +7,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
+assert(!is_fuchsia, "Fuchsia does not support extensions.")
 
 import("//build/config/features.gni")
 
@@ -53,7 +54,7 @@ source_set("networking_private") {
       "//components/dbus",
       "//dbus",
     ]
-  } else if (is_win || is_mac || is_fuchsia) {
+  } else if (is_win || is_mac) {
     sources = default_sources + [
                 "networking_private_event_router_nonchromeos.cc",
                 "networking_private_service_client.cc",

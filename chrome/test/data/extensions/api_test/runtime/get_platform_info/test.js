@@ -5,7 +5,7 @@
 // These are found here:
 //   https://developer.chrome.com/extensions/runtime#type-PlatformOs
 let platformOsList =
-    ['mac', 'win', 'android', 'cros', 'linux', 'openbsd', 'fuchsia'];
+    ['mac', 'win', 'android', 'cros', 'linux', 'openbsd'];
 let platformArchList =
   ['arm', 'arm64', 'x86-32', 'x86-64', 'mips', 'mips64', 'riscv64'];
 let platformNaclArchList = ['arm', 'x86-32', 'x86-64', 'mips', 'mips64'];

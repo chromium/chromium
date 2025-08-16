@@ -742,8 +742,7 @@ TEST_F(APIBindingUnittest, TestProperties) {
       "  'notLinux': {"
       "    'value': 'nonlinux',"
       "    'type': 'string',"
-      "    'platforms': ["
-      "       'win', 'mac', 'chromeos', 'fuchsia', 'desktop_android']"
+      "    'platforms': ['win', 'mac', 'chromeos', 'desktop_android']"
       "  }"
       "}");
   InitializeBinding();
