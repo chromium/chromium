@@ -94,6 +94,10 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      hideFileInputs: {
+        reflect: true,
+        type: Boolean,
+      },
       result_: {type: Object},
       submitEnabled_: {
         reflect: true,
@@ -131,6 +135,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor expanded_: boolean;
   protected accessor input_: string = '';
   protected accessor inputsDisabled_: boolean = false;
+  // When enabled, the file input buttons will not be rendered.
+  protected accessor hideFileInputs: boolean = false;
   protected accessor submitEnabled_: boolean = false;
   protected accessor submitting_: boolean = false;
   protected accessor showErrorScrim_: boolean = false;
