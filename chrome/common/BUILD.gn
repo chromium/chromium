@@ -540,6 +540,12 @@ static_library("constants") {
     "pref_font_webkit_names.h",
     "pref_names.h",
   ]
+
+  sources += [
+    "intentive/intentive_features.cc",
+    "intentive/intentive_features.h",
+  ]
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [

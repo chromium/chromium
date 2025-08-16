@@ -349,3 +349,7 @@ third_party/rust/target/
 
 # Trace files created when using --trace-startup.
 **/chrometrace.log
+
+# local keys
+.gitkey*
+gitkey*

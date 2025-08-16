@@ -67,6 +67,12 @@ source_set("toolbar") {
     "toolbar_view.cc",
     "toolbar_view.h",
   ]
+
+  sources += [
+    "../intentive/intentive_chat_overlay.cc",
+    "../intentive/intentive_chat_overlay.h",
+  ]
+  
   public_deps = [
     "//base",
     "//build:buildflag_header_h",

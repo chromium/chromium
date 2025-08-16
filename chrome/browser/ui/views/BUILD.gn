@@ -57,8 +57,9 @@ component("views") {
     ]
   }
 
-  deps += [ "//chrome/browser/ui/views/intentive:intentive_views" ]
-
+  deps += [
+    "//chrome/common/intentive:intentive_common",
+  ]
 }
 
 source_set("test_support") {
