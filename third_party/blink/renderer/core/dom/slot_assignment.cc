@@ -252,8 +252,9 @@ void SlotAssignment::RecalcAssignment() {
     // during slot reassignment, so call ChildrenChanged() on all of them.
     AXObjectCache* cache = owner_->GetDocument().ExistingAXObjectCache();
     if (cache) {
-      for (Member<HTMLSlotElement> slot : Slots())
+      for (Member<HTMLSlotElement>& slot : Slots()) {
         cache->SlotAssignmentWillChange(slot);
+      }
     }
 
     FlatTreeTraversalForbiddenScope forbid_flat_tree_traversal(
@@ -264,8 +265,9 @@ void SlotAssignment::RecalcAssignment() {
     }
     needs_assignment_recalc_ = false;
 
-    for (Member<HTMLSlotElement> slot : Slots())
+    for (Member<HTMLSlotElement>& slot : Slots()) {
       slot->WillRecalcAssignedNodes();
+    }
 
     if (owner_->IsManualSlotting()) {
       // |children_to_clear| starts with the list of all light-dom children of
@@ -278,7 +280,7 @@ void SlotAssignment::RecalcAssignment() {
         children_to_clear.insert(&child);
       }
 
-      for (Member<HTMLSlotElement> slot : Slots()) {
+      for (Member<HTMLSlotElement>& slot : Slots()) {
         for (Node* slottable : slot->ManuallyAssignedNodes()) {
           // Some of the manually assigned nodes might have been moved
           // to other trees or documents. In that case, don't assign them
@@ -363,7 +365,7 @@ void SlotAssignment::RecalcAssignment() {
   }
 }
 
-const HeapVector<Member<HTMLSlotElement>>& SlotAssignment::Slots() {
+HeapVector<Member<HTMLSlotElement>>& SlotAssignment::Slots() {
   if (needs_collect_slots_)
     CollectSlots();
   return slots_;
