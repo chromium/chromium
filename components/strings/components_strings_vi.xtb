@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Thông tin chi tiết về công cụ tìm kiếm</translation>
+<translation id="1068467933609179019">Chế độ cài đặt dịch vụ tự động điền</translation>
 <translation id="1068672505746868501">Không bao giờ dịch các trang viết bằng <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Kim loại (Bóng)</translation>
 <translation id="1070901266639972381">Đêm</translation>
@@ -317,7 +318,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1521655867290435174">Google Trang tính</translation>
 <translation id="1524669537550112617">Nhà cho thuê có sẵn đồ đạc</translation>
 <translation id="1527263332363067270">Đang chờ kết nối…</translation>
-<translation id="1527490370616010873">Google không phải là nhà cung cấp dịch vụ tự động điền của bạn. Để bật các chế độ cài đặt này và sử dụng thông tin thanh toán trong Tài khoản Google của bạn, hãy truy cập vào phần <ph name="BEGIN_LINK" />Cài đặt dịch vụ tự động điền<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Kết nối bị chặn vì do một trang công khai khởi tạo để kết nối với các thiết bị hoặc máy chủ trên mạng riêng của bạn. Hãy tải lại trang này để cho phép kết nối.</translation>
 <translation id="1529789484829130889">Khay 8</translation>
 <translation id="1530707389502320859">Có vẻ như trang web bạn vừa cố truy cập là giả mạo. Kẻ tấn công đôi khi bắt chước các trang web bằng cách thực hiện các thay đổi nhỏ, khó phát hiện đối với URL.</translation>
@@ -4368,6 +4368,7 @@ Thông tin chi tiết bổ sung:
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Nhiệt độ bệ máy</translation>
 <translation id="8233773197406738106">Đang chuẩn bị tệp</translation>
+<translation id="823490921909113114">Để bật các chế độ cài đặt này và sử dụng thông tin thanh toán trong Tài khoản Google của bạn, hãy truy cập vào phần chế độ cài đặt dịch vụ tự động điền.</translation>
 <translation id="8238188918340945316">28 x 40 inch</translation>
 <translation id="8238581221633243064">Mở trang trong thẻ Ẩn danh mới</translation>
 <translation id="8241707690549784388">Trang mà bạn đang tìm sử dụng thông tin bạn đã nhập vào. Việc quay lại trang đó có thể lặp lại bất kỳ tác vụ nào bạn đã thực hiện. Bạn có muốn tiếp tục không?</translation>
@@ -4952,6 +4953,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9218430445555521422">Đặt làm mặc định</translation>
 <translation id="9219103736887031265">Hình ảnh</translation>
 <translation id="922152298093051471">Tuỳ chỉnh Chrome</translation>
+<translation id="9221566509053798696">Google không phải là nhà cung cấp dịch vụ tự động điền của bạn</translation>
 <translation id="9222403027701923763">Học tiểu học và trung học (K-12)</translation>
 <translation id="9222463428840654067">Số thẻ không hợp lệ</translation>
 <translation id="922849469395748170">Thẻ khách hàng thân thiết</translation>

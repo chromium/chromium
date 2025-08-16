@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Detalii privind motorul de căutare</translation>
+<translation id="1068467933609179019">Setări pentru serviciile de completare automată</translation>
 <translation id="1068672505746868501">Nu traduce niciodată paginile în <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metal (lucios)</translation>
 <translation id="1070901266639972381">Noapte</translation>
@@ -317,7 +318,6 @@
 <translation id="1521655867290435174">Foi de calcul Google</translation>
 <translation id="1524669537550112617">Proprietăți de închiriat mobilate</translation>
 <translation id="1527263332363067270">Se așteaptă conectarea…</translation>
-<translation id="1527490370616010873">Google nu este furnizorul tău de completare automată. Pentru a activa aceste setări și a folosi informațiile de plată din Contul Google, accesează <ph name="BEGIN_LINK" />Setările serviciilor de completare automată<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Conexiunea este blocată deoarece a fost inițiată de o pagină publică pentru conectarea la dispozitive sau servere din rețeaua ta privată. Reîncarcă această pagină pentru a permite conexiunea.</translation>
 <translation id="1529789484829130889">Tava 8</translation>
 <translation id="1530707389502320859">Site-ul pe care ai încercat să-l accesezi pare fals. Uneori, atacatorii imită site-uri aducând modificări mici, greu de observat, adresei URL.</translation>
@@ -4368,6 +4368,7 @@ Detalii suplimentare:
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Temperatura platformei</translation>
 <translation id="8233773197406738106">Se pregătește fișierul</translation>
+<translation id="823490921909113114">Pentru a activa aceste setări și a folosi informațiile de plată din Contul Google, accesează Setările serviciilor de completare automată.</translation>
 <translation id="8238188918340945316">28 x 40 in</translation>
 <translation id="8238581221633243064">Deschide pagina într-o filă incognito nouă</translation>
 <translation id="8241707690549784388">Pagina pe care o cauți a utilizat informațiile pe care le-ai introdus. Întoarcerea la acea pagină ar putea face ca orice acțiune să fie repetată. Vrei să continui?</translation>
@@ -4952,6 +4953,7 @@ Detalii suplimentare:
 <translation id="9218430445555521422">Setează ca prestabilit</translation>
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="922152298093051471">Personalizează Chrome</translation>
+<translation id="9221566509053798696">Google nu este furnizorul tău de completare automată</translation>
 <translation id="9222403027701923763">Școală primară și secundară (grădiniță – clasa a 12-a)</translation>
 <translation id="9222463428840654067">Numărul de card nu este valid</translation>
 <translation id="922849469395748170">Carduri de fidelitate</translation>

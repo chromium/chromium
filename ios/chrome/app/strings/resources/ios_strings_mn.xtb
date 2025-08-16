@@ -513,6 +513,7 @@
 <translation id="2931440415625410757">Зааварчилгааг харуулах</translation>
 <translation id="2952278131021475699">Lens-н Камерын хайлт</translation>
 <translation id="2962516096219646456">Автоматаар бөглөх бүх өгөгдлийг харах</translation>
+<translation id="2965594942405840553">Энэ үйлдлийг буцаах боломжгүй</translation>
 <translation id="2969979262385602596">Нэвтэрч чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="2975761176769946178">URL шаардлагатай</translation>
 <translation id="297667759942911166">Табын бүлэгт хамтран ажиллах</translation>
@@ -664,6 +665,7 @@
 <translation id="3596414637720633074">Нууцлалтай горимд гуравдагч талын күүкиг блоклох</translation>
 <translation id="3602260545951981695">"Сайжруулсан хамгаалалт"-ыг сонгоно уу</translation>
 <translation id="3610041351087301930">Уншигч горимыг нуух</translation>
+<translation id="3610866916973186448">Тийм, устгая</translation>
 <translation id="3622175633937495219">Хайлтын түүх (<ph name="COUNT" /> олдсон)</translation>
 <translation id="3625008969091706597">Та буцахын тулд ирмэгээс шудрах боломжтой.</translation>
 <translation id="362709345066740529">Карт, хангамж болон бусад зүйлээ энд өөрчилнө үү</translation>
@@ -1973,6 +1975,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8561999115126307258">{count,plural, =1{Таны гарын дээр нууц үгний {count} сонголт боломжтой байна.}other{Таны гарын дээр нууц үгний {count} сонголт боломжтой байна.}}</translation>
 <translation id="8564894539416715395">Шинэ таб хуудас</translation>
 <translation id="8569721750632860947">Та унших жагсаалтдаа ямар URL нэмэх хүсэлтэй байна вэ?</translation>
+<translation id="8571019948162152515">"<ph name="FILENAME" />"-г устгах уу?</translation>
 <translation id="8571213806525832805">Сүүлийн 4 долоо хоног</translation>
 <translation id="8577056989960190117">Дуусах жилийг буюу <ph name="YEAR" />-г автоматаар бөглөх</translation>
 <translation id="8588404856427128947">Унтраах</translation>

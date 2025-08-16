@@ -513,6 +513,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2931440415625410757">Rādīt norādījumus</translation>
 <translation id="2952278131021475699">Meklēšana ar Lens kameru</translation>
 <translation id="2962516096219646456">Skatīt visus automātiskās aizpildes datus</translation>
+<translation id="2965594942405840553">Šo darbību nevar atsaukt.</translation>
 <translation id="2969979262385602596">Neizdevās pierakstīties. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="2975761176769946178">Jānorāda URL.</translation>
 <translation id="297667759942911166">Sadarbība ciļņu grupās</translation>
@@ -664,6 +665,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3596414637720633074">Inkognito režīmā bloķēt trešo pušu sīkfailus</translation>
 <translation id="3602260545951981695">Atlasiet vienumu “Uzlabota aizsardzība”.</translation>
 <translation id="3610041351087301930">Paslēpt lasītāju</translation>
+<translation id="3610866916973186448">Jā, dzēst</translation>
 <translation id="3622175633937495219">Meklēšanas vēsture (atrasti rezultāti: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Varat vilkt no malas, lai pārietu atpakaļ.</translation>
 <translation id="362709345066740529">Šeit varat pielāgot kartītes, plūsmu un citu saturu.</translation>
@@ -1973,6 +1975,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8561999115126307258">{count,plural, =1{Virs tastatūras ir pieejams {count} paroles variants.}zero{Virs tastatūras ir pieejami {count} paroles varianti.}one{Virs tastatūras ir pieejams {count} paroles variants.}other{Virs tastatūras ir pieejami {count} paroles varianti.}}</translation>
 <translation id="8564894539416715395">Jaunas cilnes lapa</translation>
 <translation id="8569721750632860947">Kuru URL vēlaties pievienot savam lasīšanas sarakstam?</translation>
+<translation id="8571019948162152515">Vai dzēst failu “<ph name="FILENAME" />”?</translation>
 <translation id="8571213806525832805">Pēdējās 4 nedēļas</translation>
 <translation id="8577056989960190117">Automātiski aizpildīt derīguma termiņa gadu: <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Izslēgts</translation>

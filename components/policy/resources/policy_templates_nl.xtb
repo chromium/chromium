@@ -2276,6 +2276,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
       Als je het beleid instelt op AlleenGebruiker (waarde 1), kunnen gebruikers gebruikerscertificaten beheren, maar niet alle certificaten op het apparaat.</translation>
 <translation id="2593762551209145088">Safe Browsing is nooit actief.</translation>
 <translation id="2594773358911436070">WebRTC-instellingen</translation>
+<translation id="2600005880585324062">Laat <ph name="PRODUCT_NAME" /> beslissen welke oorsprongen moeten worden geïsoleerd van andere oorsprongen van dezelfde site.</translation>
 <translation id="26023406105317310">Kerberos-accounts configureren</translation>
 <translation id="2603237557651009842">WebPrinting API blokkeren op deze sites</translation>
 <translation id="2603382859270873566">Ondersteuning aanzetten voor de PPB_VideoDecoder(Dev) API.</translation>
@@ -2471,6 +2472,7 @@ Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar htt
 <translation id="2753637905605932878">Het bereik beperken van lokale UDP-poorten die door WebRTC worden gebruikt</translation>
 <translation id="2755847332939882873">Verzameling van prestatietracering voor het hele systeem toestaan</translation>
 <translation id="2757054304033424106">Typen extensies/apps die mogen worden geïnstalleerd</translation>
+<translation id="275769337615229465">De meeste oorsprongen worden geïsoleerd van andere oorsprongen op dezelfde site.</translation>
 <translation id="2759224876420453487">Het gebruikersgedrag beheren in een multiprofielsessie</translation>
 <translation id="2760947619380644513">Toestaan dat gebruikers met externe toegang URL's aan de hostzijde openen in hun lokale clientbrowser</translation>
 <translation id="2761483219396643566">Inactieve waarschuwingsvertraging wanneer op de batterij wordt gewerkt</translation>
@@ -4949,6 +4951,7 @@ Een apparaat wordt als beheerd beschouwd als er een zakelijke versie van het OS 
       Als dit beleid niet is ingesteld, kan de gebruiker alle op het systeem geïnstalleerde plug-ins uitzetten.</translation>
 <translation id="4549695018986780856">Manifest v2 staat aan</translation>
 <translation id="4549729301485728119">De standaardinstelling wordt bepaald door andere factoren</translation>
+<translation id="4554429681167460828">Er worden geen oorsprongen geïsoleerd van andere oorsprongen op dezelfde site, tenzij de oorsprong expliciet heeft gevraagd om deze te isoleren.</translation>
 <translation id="4554651132977135445">Loopback-verwerkingsmodus voor gebruikersbeleid</translation>
 <translation id="4554991346503872538">Nooit een vertaling aanbieden</translation>
 <translation id="4555850956567117258">Externe bevestiging van gebruiker aanzetten</translation>
@@ -8159,6 +8162,7 @@ Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bij
 <translation id="66265932317331474">CPU-info melden</translation>
 <translation id="6628120204569232711">Opslagstatus rapporteren</translation>
 <translation id="662991036483361836">Niet toestaan dat gebruikers Dichtbij delen aanzetten</translation>
+<translation id="6630693609822689611">Zet op oorsprong gebaseerde procesisolatie standaard aan.</translation>
 <translation id="663685822663765995">Afdrukken in kleurenmodus beperken</translation>
 <translation id="6640355849038068978">Als deze instelling aanstaat, kunnen gebruikers de Eche-app starten, bijvoorbeeld door op een Telefoonhub-melding te klikken.
 
@@ -9680,6 +9684,13 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 <translation id="775822241671489040">Bepaalt de instelling De Launcher-/zoektoets gebruiken om het gedrag van functietoetsen te wijzigen</translation>
 <translation id="7758378441185523981">Ambient-verificatie voor profieltypen aanzetten.</translation>
 <translation id="776110834126722255">Beëindigd</translation>
+<translation id="7761702157788500857">Zet op oorsprong gebaseerde procesisolatie aan voor de meeste pagina's (dat wil zeggen pagina's die standaard zijn toegewezen aan een op oorsprong gebaseerde agentclustering). Hiermee verbeter je de beveiliging, maar verhoog je ook het aantal gemaakte processen. Gebruikers mogen de ingestelde beleidswaarde overschrijven via de opdrachtregelmarkeringen of chrome://flags (beide om deze functie aan of uit te zetten).
+
+Als je het beleid toepast, worden de meeste oorsprongen geïsoleerd, zelfs van andere oorsprongen op dezelfde site. Bekijk ook het beleid <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> en het beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />.
+
+Als je het beleid niet toepast, worden er geen oorsprongen geïsoleerd van de rest van hun site, tenzij een oorsprong hier expliciet om vraagt.
+
+Als je het beleid niet instelt, bepaalt de browser welke oorsprongen moeten worden geïsoleerd en wanneer ze moeten worden geïsoleerd.</translation>
 <translation id="7763614521440615342">Contentsuggesties tonen op de nieuwe tabbladpagina</translation>
 <translation id="7763650553214838209">Het instellen van een sneltoets voor de actie Invoegen staat uit.</translation>
 <translation id="7763655314629932385">Geeft de gewenste versie van de GWA aan. Indien verstrekt, probeert het systeem deze specifieke versie te installeren en blokkeert het systeem verdere updates. Verwijder dit veld om de app los te maken en updates weer aan te zetten. **Belangrijk:** Als de verstrekte versie niet bestaat, blijft de GWA hangen op de op dit moment geïnstalleerde versie. Dit komt doordat vastzetten verdere automatische updates uitzet nadat is geprobeerd (en in dit geval mislukt) te updaten naar de vastgezette versie.</translation>

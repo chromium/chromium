@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Søkemotordetaljer</translation>
+<translation id="1068467933609179019">Innstillinger for autofylltjenester</translation>
 <translation id="1068672505746868501">Oversett aldri sider på <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metall (glans)</translation>
 <translation id="1070901266639972381">Natt</translation>
@@ -317,7 +318,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1521655867290435174">Google Regneark</translation>
 <translation id="1524669537550112617">Møblerte leiligheter</translation>
 <translation id="1527263332363067270">Venter på tilkobling …</translation>
-<translation id="1527490370616010873">Google er ikke leverandøren din av autofyll. For å slå på disse innstillingene og bruke betalingsopplysninger fra Google-kontoen din, gå til <ph name="BEGIN_LINK" />innstillingene for autofylltjenester<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Tilkoblingen er blokkert fordi den ble startet av en offentlig side for å koble til enheter eller tjenere på det private nettverket ditt. Last inn denne siden på nytt for å tillate tilkoblingen.</translation>
 <translation id="1529789484829130889">Skuff 8</translation>
 <translation id="1530707389502320859">Nettstedet du nettopp prøvde å besøke, ser falskt ut. Noen ganger etterligner angripere nettsteder ved å gjøre små endringer som er vanskelige å se, i nettadressen.</translation>
@@ -4367,6 +4367,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Plattformtemperatur</translation>
 <translation id="8233773197406738106">Forbereder filen</translation>
+<translation id="823490921909113114">For å slå på disse innstillingene og bruke betalingsopplysninger fra Google-kontoen din, gå til innstillingene for autofylltjenester.</translation>
 <translation id="8238188918340945316">28 x 40 tommer</translation>
 <translation id="8238581221633243064">Åpne siden i et nytt inkognitovindu</translation>
 <translation id="8241707690549784388">Siden du ser etter, brukte informasjon som du anga. Hvis du går tilbake til denne siden, kan det føre til at handlinger som er utført, blir gjentatt. Vil du fortsette?</translation>
@@ -4950,6 +4951,7 @@ Mer informasjon:
 <translation id="9218430445555521422">Angi som standard</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="922152298093051471">Tilpass Chrome</translation>
+<translation id="9221566509053798696">Google er ikke leverandøren din av autofyll</translation>
 <translation id="9222403027701923763">Grunnskole og videregående skole (K-12)</translation>
 <translation id="9222463428840654067">Kortnummeret er ugyldig</translation>
 <translation id="922849469395748170">Stamkundekort</translation>

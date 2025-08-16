@@ -513,6 +513,7 @@
 <translation id="2931440415625410757">सूचना दाखवा</translation>
 <translation id="2952278131021475699">Lens कॅमेरा वापरून शोध</translation>
 <translation id="2962516096219646456">ऑटोफिलसंबंधित सर्व डेटा पहा</translation>
+<translation id="2965594942405840553">ही कृती पहिल्यासारखी केली जाऊ शकत नाही</translation>
 <translation id="2969979262385602596">साइन इन करण्यात अयशस्वी. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2975761176769946178">URL आवश्यक आहे</translation>
 <translation id="297667759942911166">टॅब गटांमध्ये सहयोग करा</translation>
@@ -664,6 +665,7 @@
 <translation id="3596414637720633074">तृतीय पक्ष कुकी गुप्त मोडमध्ये ब्लॉक करा</translation>
 <translation id="3602260545951981695">"वर्धित संरक्षण" निवडा</translation>
 <translation id="3610041351087301930">रीडर लपवा</translation>
+<translation id="3610866916973186448">होय, हटवा</translation>
 <translation id="3622175633937495219">शोध इतिहास (<ph name="COUNT" /> आढळले)</translation>
 <translation id="3625008969091706597">तुम्ही मागे जाण्यासाठी कडेवर स्‍वाइप करू शकता.</translation>
 <translation id="362709345066740529">इथे तुमची कार्ड, फीड आणि आणखी बरेच काही कस्टमाइझ करा</translation>
@@ -1974,6 +1976,7 @@
 <translation id="8561999115126307258">{count,plural, =1{तुमच्या कीबोर्डच्या वरती पासवर्डचा {count} पर्याय उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती पासवर्डचे {count} पर्याय उपलब्ध आहेत.}}</translation>
 <translation id="8564894539416715395">नवीन टॅब पेज</translation>
 <translation id="8569721750632860947">तुम्हाला तुमच्या वाचन सूचीमध्ये कोणती URL जोडायची आहे?</translation>
+<translation id="8571019948162152515">"<ph name="FILENAME" />" हटवायचे आहे का?</translation>
 <translation id="8571213806525832805">मागील 4 आठवड्यांमधील</translation>
 <translation id="8577056989960190117">एक्स्पायरीचे वर्ष <ph name="YEAR" /> ऑटोफिल करा</translation>
 <translation id="8588404856427128947">बंद करा</translation>

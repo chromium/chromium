@@ -513,6 +513,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="2931440415625410757">Talimatları göster</translation>
 <translation id="2952278131021475699">Lens Kamera ile Arama</translation>
 <translation id="2962516096219646456">Tüm otomatik doldurma verilerini göster</translation>
+<translation id="2965594942405840553">Bu işlem geri alınamaz</translation>
 <translation id="2969979262385602596">Oturum açılamadı. Daha sonra tekrar deneyin.</translation>
 <translation id="2975761176769946178">URL girilmesi zorunludur</translation>
 <translation id="297667759942911166">Sekme gruplarında ortak çalışma yapın</translation>
@@ -664,6 +665,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3596414637720633074">Gizli modda üçüncü taraf çerezlerini engelle</translation>
 <translation id="3602260545951981695">"Gelişmiş Koruma"yı seçin</translation>
 <translation id="3610041351087301930">Okuyucu'yu gizle</translation>
+<translation id="3610866916973186448">Evet, sil</translation>
 <translation id="3622175633937495219">Geçmişte arayın (<ph name="COUNT" /> sonuç)</translation>
 <translation id="3625008969091706597">Geri gitmek için kenarı kaydırabilirsiniz.</translation>
 <translation id="362709345066740529">Kartlarınızı, feed'inizi ve diğer öğelerinizi burada özelleştirebilirsiniz</translation>
@@ -1973,6 +1975,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8561999115126307258">{count,plural, =1{Klavyenizin üzerinde {count} tane şifre seçeneği mevcut.}other{Klavyenizin üzerinde {count} tane şifre seçeneği mevcut.}}</translation>
 <translation id="8564894539416715395">Yeni sekme sayfası</translation>
 <translation id="8569721750632860947">Okuma listenize hangi URL'yi eklemek istiyorsunuz?</translation>
+<translation id="8571019948162152515">"<ph name="FILENAME" />" silinsin mi?</translation>
 <translation id="8571213806525832805">Son 4 hafta</translation>
 <translation id="8577056989960190117">Son kullanma tarihinin yıl kısmını (<ph name="YEAR" />) otomatik doldur</translation>
 <translation id="8588404856427128947">Kapalı</translation>

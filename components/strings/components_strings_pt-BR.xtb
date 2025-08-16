@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Detalhes do mecanismo de pesquisa</translation>
+<translation id="1068467933609179019">Configurações do preenchimento automático</translation>
 <translation id="1068672505746868501">Nunca traduzir páginas em <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metal (brilhante)</translation>
 <translation id="1070901266639972381">Noite</translation>
@@ -317,7 +318,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1521655867290435174">Planilhas Google</translation>
 <translation id="1524669537550112617">Aluguel de imóveis mobiliados</translation>
 <translation id="1527263332363067270">Aguardando conexão...</translation>
-<translation id="1527490370616010873">O Google não é seu provedor de preenchimento automático. Para ativar essas configurações e usar as informações de pagamento da sua Conta do Google, acesse as <ph name="BEGIN_LINK" />configurações de preenchimentos automáticos<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">A conexão está bloqueada porque foi iniciada por uma página pública para se conectar a dispositivos ou servidores na sua rede particular. Atualize esta página para permitir a conexão.</translation>
 <translation id="1529789484829130889">Bandeja 8</translation>
 <translation id="1530707389502320859">O site que você tentou acessar parece falso. Os invasores às vezes imitam sites fazendo pequenas alterações quase imperceptíveis no URL.</translation>
@@ -4368,6 +4368,7 @@ Mais detalhes:
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Temperatura da plataforma</translation>
 <translation id="8233773197406738106">Preparando o arquivo</translation>
+<translation id="823490921909113114">Para ativar essas configurações e usar as informações de pagamento da sua Conta do Google, acesse as configurações do preenchimento automático.</translation>
 <translation id="8238188918340945316">28 x 40 pol.</translation>
 <translation id="8238581221633243064">Abrir página em uma nova guia anônima</translation>
 <translation id="8241707690549784388">A página que você está procurando usou as informações inseridas. Voltar à essa página poderá fazer com que todas as ações realizadas antes sejam repetidas. Quer continuar?</translation>
@@ -4953,6 +4954,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9218430445555521422">Definir como padrão</translation>
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="922152298093051471">Personalizar o Chrome</translation>
+<translation id="9221566509053798696">O Google não é seu provedor de preenchimento automático.</translation>
 <translation id="9222403027701923763">Educação primária e secundária (K-12)</translation>
 <translation id="9222463428840654067">O número do cartão é inválido</translation>
 <translation id="922849469395748170">Cartões fidelidade</translation>

@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Informatie over de zoekmachine</translation>
+<translation id="1068467933609179019">Instellingen voor services voor automatisch invullen</translation>
 <translation id="1068672505746868501">Pagina's in het <ph name="SOURCE_LANGUAGE" /> nooit vertalen</translation>
 <translation id="1070333806075222467">Metaal (glanzend)</translation>
 <translation id="1070901266639972381">Nacht</translation>
@@ -317,7 +318,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1521655867290435174">Google Spreadsheets</translation>
 <translation id="1524669537550112617">Gemeubileerde huurwoningen</translation>
 <translation id="1527263332363067270">Wachten op verbinding...</translation>
-<translation id="1527490370616010873">Google is niet je provider voor automatisch invullen. Ga naar de <ph name="BEGIN_LINK" />instellingen voor services voor automatisch invullen<ph name="END_LINK" /> om deze instellingen aan te zetten en betalingsgegevens uit je Google-account te gebruiken.</translation>
 <translation id="1528311629279578926">De verbinding is geblokkeerd omdat deze is gestart door een openbare pagina om verbinding te maken met apparaten of servers in je privénetwerk. Laad deze pagina opnieuw om de verbinding toe te staan.</translation>
 <translation id="1529789484829130889">Lade 8</translation>
 <translation id="1530707389502320859">De site die je zojuist probeerde te bezoeken, lijkt nep te zijn. Aanvallers maken sites soms na door kleine wijzigingen in de URL aan te brengen die je moeilijk kunt zien.</translation>
@@ -4361,6 +4361,7 @@ Aanvullende informatie:
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Temperatuur van plateau</translation>
 <translation id="8233773197406738106">Bestand voorbereiden</translation>
+<translation id="823490921909113114">Ga naar de instellingen voor services voor automatisch invullen om deze instellingen aan te zetten en betalingsgegevens uit je Google-account te gebruiken.</translation>
 <translation id="8238188918340945316">28 x 40 inch</translation>
 <translation id="8238581221633243064">Pagina openen op een nieuw incognitotabblad</translation>
 <translation id="8241707690549784388">De pagina die je zoekt, heeft informatie gebruikt die je hebt opgegeven Als je terugkeert naar deze pagina, worden acties die je hebt uitgevoerd, mogelijk herhaald. Wil je doorgaan?</translation>
@@ -4943,6 +4944,7 @@ Aanvullende informatie:
 <translation id="9218430445555521422">Instellen als standaard</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>
 <translation id="922152298093051471">Chrome aanpassen</translation>
+<translation id="9221566509053798696">Google is niet je provider voor automatisch invullen.</translation>
 <translation id="9222403027701923763">Basisonderwijs en voortgezet onderwijs</translation>
 <translation id="9222463428840654067">Kaartnummer is ongeldig</translation>
 <translation id="922849469395748170">Klantenkaarten</translation>

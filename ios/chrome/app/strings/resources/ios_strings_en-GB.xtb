@@ -513,6 +513,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2931440415625410757">Show instructions</translation>
 <translation id="2952278131021475699">Lens Camera Search</translation>
 <translation id="2962516096219646456">See all autofill data</translation>
+<translation id="2965594942405840553">This action can't be undone</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
 <translation id="2975761176769946178">A URL is required</translation>
 <translation id="297667759942911166">Collaborate in tab groups</translation>
@@ -664,6 +665,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3596414637720633074">Block third-party cookies in Incognito</translation>
 <translation id="3602260545951981695">Choose 'Enhanced protection'</translation>
 <translation id="3610041351087301930">Hide reader</translation>
+<translation id="3610866916973186448">Yes, delete</translation>
 <translation id="3622175633937495219">Search history (<ph name="COUNT" /> found)</translation>
 <translation id="3625008969091706597">You can swipe the edge to go back.</translation>
 <translation id="362709345066740529">Customise your cards, feed and more here</translation>
@@ -1973,6 +1975,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8561999115126307258">{count,plural, =1{{count} option for password available above your keyboard.}other{{count} options for password available above your keyboard.}}</translation>
 <translation id="8564894539416715395">New tab page</translation>
 <translation id="8569721750632860947">What URL would you like to add to your reading list?</translation>
+<translation id="8571019948162152515">Delete '<ph name="FILENAME" />'?</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8577056989960190117">Autofill the expiry year <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Off</translation>

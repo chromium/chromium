@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">تفاصيل محرّك البحث</translation>
+<translation id="1068467933609179019">إعدادات خدمات الملء التلقائي</translation>
 <translation id="1068672505746868501">عدم ترجمة الصفحات باللغة <ph name="SOURCE_LANGUAGE" /> مُطلقًا</translation>
 <translation id="1070333806075222467">معدن (لامع)</translation>
 <translation id="1070901266639972381">مساءً</translation>
@@ -317,7 +318,6 @@
 <translation id="1521655867290435174">‏جداول بيانات Google</translation>
 <translation id="1524669537550112617">أماكن مجهَّزة للاستئجار</translation>
 <translation id="1527263332363067270">في انتظار الاتصال بالإنترنت…</translation>
-<translation id="1527490370616010873">‏مقدّم خدمة الملء التلقائي على جهازك ليس Google. لتفعيل هذه الإعدادات واستخدام معلومات الدفع من حسابك على Google، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />إعدادات خدمات الملء التلقائي<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">تم حظر الاتصال لأنّه تم بدؤه من خلال صفحة عامة للاتصال بالأجهزة أو الخوادم على شبكتك الخاصة. يُرجى إعادة تحميل هذه الصفحة للسماح بالاتصال.</translation>
 <translation id="1529789484829130889">الدُرج 8</translation>
 <translation id="1530707389502320859">‏يبدو الموقع الإلكتروني الذي حاولت الانتقال إليه مزيفًا. يحاكي المهاجمون أحيانًا المواقع الإلكترونية من خلال إجراء تغييرات بسيطة يصعب رؤيتها على عنوان URL.</translation>
@@ -684,7 +684,7 @@
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">تظهر محركات البحث هذه بترتيب عشوائي. ويمكنك تغيير خيارك التلقائي في أي وقت.</translation>
 <translation id="2137891579555018930">في انتظار الحصول على الإذن...</translation>
-<translation id="213826338245044447">الإشارات المرجعية على الجوّال</translation>
+<translation id="213826338245044447">الإشارات المرجعية للجوّال</translation>
 <translation id="2141000681034340397">تعديل الإدخال</translation>
 <translation id="2144171668675205303">ما مِن مواضيع نشِطة</translation>
 <translation id="2145193671493396738">أخبار عن الاقتصاد</translation>
@@ -4371,6 +4371,7 @@
 <translation id="822964464349305906"><ph name="TYPE_1" />، <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">درجة حرارة النظام الأساسي</translation>
 <translation id="8233773197406738106">جارٍ تحضير الملف</translation>
+<translation id="823490921909113114">‏لتفعيل هذه الإعدادات واستخدام معلومات الدفع من حسابك على Google، يُرجى الانتقال إلى إعدادات خدمات الملء التلقائي.</translation>
 <translation id="8238188918340945316">28 × 40 بوصة</translation>
 <translation id="8238581221633243064">يمكنك فتح الصفحة في علامة تبويب جديدة للتصفح المتخفي</translation>
 <translation id="8241707690549784388">استخدمت الصفحة التي تبحث عنها المعلومات التي أدخلتها وقد يؤدّي الرجوع إليها  إلى تكرار  جميع الإجراءات السابقة. هل تريد المتابعة؟</translation>
@@ -4956,6 +4957,7 @@
 <translation id="9218430445555521422">الضبط كخيار تلقائي</translation>
 <translation id="9219103736887031265">الصور</translation>
 <translation id="922152298093051471">‏تخصيص Chrome</translation>
+<translation id="9221566509053798696">‏مقدّم خدمة الملء التلقائي على جهازك ليس Google</translation>
 <translation id="9222403027701923763">الدراسة الابتدائية والثانوية (التعليم المدرسي)</translation>
 <translation id="9222463428840654067">رقم البطاقة غير صالح</translation>
 <translation id="922849469395748170">بطاقات الولاء</translation>

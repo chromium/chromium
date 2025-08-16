@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Išsami paieškos variklio informacija</translation>
+<translation id="1068467933609179019">Automatinio pildymo paslaugų nustatymai</translation>
 <translation id="1068672505746868501">Niekada neversti puslapių, parašytų <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metalas (blizgus)</translation>
 <translation id="1070901266639972381">Naktis</translation>
@@ -317,7 +318,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1521655867290435174">„Google“ skaičiuoklės</translation>
 <translation id="1524669537550112617">Patalpų su baldais nuoma</translation>
 <translation id="1527263332363067270">Laukiama ryšio…</translation>
-<translation id="1527490370616010873">„Google“ nėra jūsų automatinio pildymo teikėjas. Jei norite įgalinti šiuos nustatymus ir naudoti mokėjimo informaciją iš „Google“ paskyros, eikite į <ph name="BEGIN_LINK" />automatinio pildymo paslaugų nustatymus<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Ryšys užblokuotas, nes jį inicijavo viešas puslapis, skirtas prisijungti prie privataus tinklo įrenginių ar serverių. Įkelkite šį puslapį iš naujo, kad leistumėte prisijungti.</translation>
 <translation id="1529789484829130889">8 dėklas</translation>
 <translation id="1530707389502320859">Svetainė, kurioje ką tik bandėte apsilankyti, atrodo kaip suklastota svetainė. Užpuolėjai kartais sukuria svetainių kopijas ir atlieka nedidelius, sunkiai pastebimus URL pakeitimus.</translation>
@@ -4369,6 +4369,7 @@ Papildoma išsami informacija:
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Platformos temperatūra</translation>
 <translation id="8233773197406738106">Ruošiamas failas</translation>
+<translation id="823490921909113114">Jei norite įgalinti šiuos nustatymus ir naudoti mokėjimo informaciją iš „Google“ paskyros, eikite į automatinio pildymo paslaugų nustatymus.</translation>
 <translation id="8238188918340945316">28 × 40 col.</translation>
 <translation id="8238581221633243064">Atidarykite puslapį naujame inkognito skirtuke</translation>
 <translation id="8241707690549784388">Jūsų ieškomas puslapis ieškojo informacijos, kurią įvedėte. Grįžus į tą puslapį bet kokie jūsų atliekami veiksmai gali būti kartojami. Ar norite tęsti?</translation>
@@ -4953,6 +4954,7 @@ Papildoma išsami informacija:
 <translation id="9218430445555521422">Nustatyti kaip numatytąjį</translation>
 <translation id="9219103736887031265">Vaizdai</translation>
 <translation id="922152298093051471">Tinkinti „Chrome“</translation>
+<translation id="9221566509053798696">„Google“ nėra jūsų automatinio pildymo teikėjas</translation>
 <translation id="9222403027701923763">Pradinis ir vidurinis išsilavinimas (K-12)</translation>
 <translation id="9222463428840654067">Netinkamas kortelės numeris</translation>
 <translation id="922849469395748170">Lojalumo kortelės</translation>

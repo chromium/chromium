@@ -10042,7 +10042,7 @@
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Вы открывали 0 дней назад}=1{Вы открывали 1 день назад}one{Вы открывали # день назад}few{Вы открывали # дня назад}many{Вы открывали # дней назад}other{Вы открывали # дня назад}}</translation>
 <translation id="8028060951694135607">Восстановление ключей Microsoft</translation>
 <translation id="8028803902702117856">Скачивание файла <ph name="FILE_NAME" /> (<ph name="SIZE" />)</translation>
-<translation id="8028993641010258682">Толщина</translation>
+<translation id="8028993641010258682">Размер</translation>
 <translation id="8029349782735515147">Показывать субтитры для Gemini Live</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Список для чтения}=1{Список для чтения ({SELECTED_ITEMS})}one{Список для чтения ({SELECTED_ITEMS})}few{Список для чтения ({SELECTED_ITEMS})}many{Список для чтения ({SELECTED_ITEMS})}other{Список для чтения ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – требуется разрешение. Нажмите ⌘ + Option + Стрелка вверх, чтобы ответить.</translation>
@@ -10696,7 +10696,7 @@
 <translation id="8472623782143987204">требуется оборудование</translation>
 <translation id="8473540203671727883">Произносить текст под указателем мыши</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
-<translation id="847433688444405067">Нужные страницы на всех устройствах</translation>
+<translation id="847433688444405067">Всё нужное всегда под рукой</translation>
 <translation id="8474378002946546633">Разрешить оповещения</translation>
 <translation id="8474561048882755118">Позволяет размещать похожие товары рядом и сравнивать их по важным для вас критериям.</translation>
 <translation id="8475313423285172237">Одна из программ на вашем компьютере установила расширение, которое может влиять на работу Chrome.</translation>

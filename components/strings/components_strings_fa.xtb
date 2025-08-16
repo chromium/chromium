@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">جزئیات موتور جستجو</translation>
+<translation id="1068467933609179019">تنظیمات سرویس تکمیل خودکار</translation>
 <translation id="1068672505746868501">هرگز صفحه‌های <ph name="SOURCE_LANGUAGE" /> ترجمه نشوند</translation>
 <translation id="1070333806075222467">فلز (براق)</translation>
 <translation id="1070901266639972381">شب</translation>
@@ -317,7 +318,6 @@
 <translation id="1521655867290435174">‏کاربرگ‌نگار Google</translation>
 <translation id="1524669537550112617">اقامتگاه اجاره‌ای مبله</translation>
 <translation id="1527263332363067270">درانتظار برقراری اتصال…‏</translation>
-<translation id="1527490370616010873">‏‫Google ارائه‌دهنده تکمیل خودکار شما نیست. برای فعال کردن این تنظیمات و استفاده از اطلاعات پرداخت «حساب Google» خود، به <ph name="BEGIN_LINK" />تنظیمات سرویس تکمیل خودکار<ph name="END_LINK" /> مراجعه کنید.</translation>
 <translation id="1528311629279578926">اتصال مسدود شده است زیرا توسط صفحه‌ای عمومی برای متصل شدن به دستگاه‌ها یا سرورهای شبکه خصوصی شما آغاز شده است. برای مجاز کردن اتصال، صفحه را مجدداً بار کنید.</translation>
 <translation id="1529789484829130889">سینی ۸</translation>
 <translation id="1530707389502320859">سایتی که لحظاتی پیش تلاش کردید از آن بازدید کنید، جعلی به‌نظر می‌رسد. گاهی‌اوقات حمله‌کنندگان با ایجاد تغییرات کوچک در نشانی وب که به‌آسانی قابل‌دیدن نیست، سایت‌ها را جعل می‌کنند.</translation>
@@ -2121,7 +2121,7 @@
 <translation id="4480760608050410381">‏ویدیو MP4</translation>
 <translation id="448363931695049633">پیتزا فروشی</translation>
 <translation id="4489023393592172404">پاکت کاکو ۴</translation>
-<translation id="4489977488133295402">برای تکمیل خودکار روش‌های پرداخت، هویت خود را درستی‌سنجی کنید</translation>
+<translation id="4489977488133295402">درستی‌سنجی هویت برای تکمیل خودکار روش‌های پرداخت</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">‏رمزگذاری گذرواژه‌های همگام‌سازی‌شده با «حساب Google» شما</translation>
 <translation id="4493480324863638523">‏نشانی وب نامعتبر است. باید نشانی وبی با طرحی استاندارد مانند http://example.com یا https://example.com باشد.</translation>
@@ -3286,7 +3286,7 @@
 <translation id="6424600253695044005">فضای ذخیره‌سازی ابری</translation>
 <translation id="6425092077175753609">سه‌بعدی</translation>
 <translation id="6427730057873428458">تاخوردگی دروازه‌ای</translation>
-<translation id="6428450836711225518">به‌تأیید رساندن شماره تلفن</translation>
+<translation id="6428450836711225518">درستی‌سنجی کردن شماره تلفن</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">‏تغییر گذرواژه Google</translation>
 <translation id="6432297414176614592">اطلاعات بیشتر درباره موضوع‌های آگهی</translation>
@@ -4368,6 +4368,7 @@
 <translation id="822964464349305906"><ph name="TYPE_1" />،‏ <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">دمای پلتفورم</translation>
 <translation id="8233773197406738106">درحال آماده کردن فایل</translation>
+<translation id="823490921909113114">‏برای فعال کردن این تنظیمات و استفاده از اطلاعات پرداخت «حساب Google» خود، به تنظیمات سرویس تکمیل خودکار مراجعه کنید.</translation>
 <translation id="8238188918340945316">۴۰ × ۲۸ اینچ</translation>
 <translation id="8238581221633243064">صفحه را در برگه «ناشناس» جدیدی باز کنید</translation>
 <translation id="8241707690549784388">صفحه‌ای که جستجو می‌کنید از اطلاعاتی استفاده می‌کند که شما وارد کرده‌اید. بازگشت به آن صفحه ممکن است باعث شود اقدامی را که قبلاً انجام دادید دوباره تکرار کنید. آیا می‌خواهید ادامه دهید؟</translation>
@@ -4951,6 +4952,7 @@
 <translation id="9218430445555521422">تنظیم به‌عنوان پیش‌فرض</translation>
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="922152298093051471">‏سفارشی‌سازی Chrome</translation>
+<translation id="9221566509053798696">‏‫Google ارائه‌دهنده تکمیل خودکار شما نیست</translation>
 <translation id="9222403027701923763">‏تحصیلات ابتدایی و متوسطه (K-12)</translation>
 <translation id="9222463428840654067">شماره کارت نامعتبر است</translation>
 <translation id="922849469395748170">کارت‌های وفاداری</translation>

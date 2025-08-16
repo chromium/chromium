@@ -2389,6 +2389,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
       Se a política for definida como "Somente usuário" (valor 1), os usuários poderão gerenciar os próprios certificados, mas não os do dispositivo.</translation>
 <translation id="2593762551209145088">O "Navegação segura" nunca está ativado.</translation>
 <translation id="2594773358911436070">Configurações do WebRTC</translation>
+<translation id="2600005880585324062">Permitir que o <ph name="PRODUCT_NAME" /> decida quais origens isolar de outras origens do mesmo site.</translation>
 <translation id="26023406105317310">Configurar contas do Kerberos</translation>
 <translation id="2603237557651009842">Bloquear a API WebPrinting nestes sites</translation>
 <translation id="2603382859270873566">Ativar suporte para a API PPB_VideoDecoder(Dev).</translation>
@@ -2597,6 +2598,7 @@ Se a política for definida como desativada ou não for definida, o usuário pod
 <translation id="2753637905605932878">Restringir o alcance das portas UDP locais usadas por WebRTC</translation>
 <translation id="2755847332939882873">Permite a coleta do rastreamento de desempenho do sistema</translation>
 <translation id="2757054304033424106">Tipos de extensões/aplicativos que podem ser instalados</translation>
+<translation id="275769337615229465">A maioria das origens será isolada de outras no mesmo site.</translation>
 <translation id="2759224876420453487">Controla o comportamento do usuário em uma sessão de diversos perfis</translation>
 <translation id="2760947619380644513">Permitir que usuários de acesso remoto abram URLs do lado do host no navegador cliente local</translation>
 <translation id="2761483219396643566">Intervalo da advertência de inatividade no funcionamento com energia da bateria</translation>
@@ -5159,6 +5161,7 @@ Um dispositivo será considerado gerenciado se uma versão corporativa do SO for
       Se esta política não for definida, o usuário poderá desativar qualquer plug-in instalado no sistema.</translation>
 <translation id="4549695018986780856">O Manifest v2 está ativado</translation>
 <translation id="4549729301485728119">O padrão é determinado por outros fatores</translation>
+<translation id="4554429681167460828">Nenhuma origem será isolada de outra no mesmo site, a menos que tenha solicitado explicitamente o isolamento.</translation>
 <translation id="4554651132977135445">Modo de processamento loopback da política do usuário</translation>
 <translation id="4554991346503872538">Nunca oferecer tradução</translation>
 <translation id="4555850956567117258">Ativar declaração remota para o usuário</translation>
@@ -8557,6 +8560,7 @@ Mudanças na política são aplicadas apenas enquanto o ARC não está em execu�
 <translation id="66265932317331474">Enviar informações da CPU</translation>
 <translation id="6628120204569232711">Informa o status de armazenamento</translation>
 <translation id="662991036483361836">Impedir que os usuários ativem o recurso "Compartilhar por proximidade"</translation>
+<translation id="6630693609822689611">Ativar o isolamento de processos com origin-key por padrão.</translation>
 <translation id="663685822663765995">Restringir o modo de cor de impressão</translation>
 <translation id="6640355849038068978">Se esta configuração estiver ativada, os usuários vão poder abrir o app Eche, por exemplo, clicando na notificação do recurso Seu smartphone.
 
@@ -10134,6 +10138,13 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
 <translation id="775822241671489040">Controla a configuração "Usar a tecla de acesso rápido/pesquisa para mudar o comportamento das teclas de função"</translation>
 <translation id="7758378441185523981">Ativar a autenticação pelo SO para tipos de perfil.</translation>
 <translation id="776110834126722255">Obsoleta</translation>
+<translation id="7761702157788500857">Ativa o isolamento de processos com origin-key para a maioria das páginas (por exemplo, aquelas atribuídas a um cluster de agente com origin-key por padrão). Isso melhora a segurança, mas aumenta o número de processos criados. Os usuários podem substituir o valor da política definida usando flags de linha de comando ou chrome://flags, tanto para ativar quanto desativar o recurso.
+
+Se a política for ativada, a maioria das origens será isolada, inclusive de outras origens no mesmo site. Consulte também as políticas <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> e <ph name="SITE_PER_PROCESS_POLICY_NAME" />.
+
+Se a política for desativada, nenhuma origem será isolada do restante do site, a menos que uma origem peça explicitamente por isso.
+
+Se a política não for definida, o navegador vai determinar quais origens isolar e quando fará isso.</translation>
 <translation id="7763614521440615342">Mostrar sugestões de conteúdo na página "Nova guia"</translation>
 <translation id="7763650553214838209">Não é possível definir um atalho para a ação "Insert".</translation>
 <translation id="7763655314629932385">Especifica a versão desejada do AIW. Se ela for fornecida, o sistema tentará instalar essa versão específica e, em seguida, bloquear outras atualizações. Para remover o app e ativar as atualizações de novo, remova este campo. **Importante:** se a versão fornecida não existir, o AIW ficará com a instalada no momento. Isso acontece porque, depois de tentar (e, neste caso, não conseguir) atualizar para a versão fixada, a fixação desativa todas as atualizações automáticas.</translation>

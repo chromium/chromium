@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">I-A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Imininingwane yenjini yokusesha</translation>
+<translation id="1068467933609179019">Amasethingi womsebenzi wokuzigcwalisela</translation>
 <translation id="1068672505746868501">Ungahumushi amakhasi ngesi-<ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Insimbi (i-Glossy)</translation>
 <translation id="1070901266639972381">Ebusuku</translation>
@@ -317,7 +318,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="1521655867290435174">Amashidi we-Google</translation>
 <translation id="1524669537550112617">Ukuqashwa Okunemfenisha</translation>
 <translation id="1527263332363067270">Ilinde uxhumano...</translation>
-<translation id="1527490370616010873">IGoogle ayiyena umhlinzeki wakho wokuzigcwalisela. Ukuze usebenzise la masethingi futhi usebenzise ulwazi lokukhokha oluvela kuGoogle Account yakho, vakashela <ph name="BEGIN_LINK" />Amasethingi omsebenzi wokuzigcwalisela<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Uxhumo luvinjiwe ngoba luqalwe yikhasi lasesidlangalaleni ukuze lixhume kumadivayisi noma amaseva kunethiwekhi yakho egodliwe. Layisha kabusha leli khasi ukuze uvumele uxhumo.</translation>
 <translation id="1529789484829130889">Ithileyi elingu-8</translation>
 <translation id="1530707389502320859">Isayithi osanda kuzama ukulivakashela libonakala liyimbumbulu. Abahlaseli kwesinye isikhathi balingisa amasayithi ngokwenza ushintsho oluncane, olubonakala kanzima ku-URL.</translation>
@@ -4364,6 +4364,7 @@ Imininingwane engeziwe:
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Ithempelesha yenkundla</translation>
 <translation id="8233773197406738106">Ilungiselela ifayela</translation>
+<translation id="823490921909113114">Ukuze usebenzise lawa masethingi futhi usebenzise ulwazi lokukhokha oluvela kuGoogle Account yakho, vakashela amasethingi omsebenzi wokuzigcwalisela.</translation>
 <translation id="8238188918340945316">U-28 x 40 phakathi</translation>
 <translation id="8238581221633243064">Vula ikhasi kuthebhu entsha ye-incognito</translation>
 <translation id="8241707690549784388">Ikhasi olifunayo lisebenzise ulwazi olifakile. Ukubuyela kulelo khasi kungabangela noma yisiphi isenzo osenzile ukuthi siphindwe. Ingabe ufuna ukuqhubeka?</translation>
@@ -4947,6 +4948,7 @@ Imininingwane engeziwe:
 <translation id="9218430445555521422">Setha njengokuzenzakalelayo</translation>
 <translation id="9219103736887031265">Izithombe</translation>
 <translation id="922152298093051471">Yenza i-Chrome ngokwezifiso</translation>
+<translation id="9221566509053798696">IGoogle ayiyena umhlinzeki wakho wokuzigcwalisela</translation>
 <translation id="9222403027701923763">Isikole Sebanga Eliphansi Neliphezulu (K-12)</translation>
 <translation id="9222463428840654067">Inombolo yekhadi ayivumelekile</translation>
 <translation id="922849469395748170">Amakhadi obuqotho</translation>

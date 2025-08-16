@@ -513,6 +513,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="2931440415625410757">Zobraziť pokyny</translation>
 <translation id="2952278131021475699">Vyhľadávanie kamerou pomocou funkcie Lens</translation>
 <translation id="2962516096219646456">Zobraziť všetky údaje automatického dopĺňania</translation>
+<translation id="2965594942405840553">Táto akcia sa nedá vrátiť späť</translation>
 <translation id="2969979262385602596">Prihlásenie zlyhalo. Skúste to neskôr.</translation>
 <translation id="2975761176769946178">Vyžaduje sa webová adresa</translation>
 <translation id="297667759942911166">Spolupracujte na skupinách kariet</translation>
@@ -664,6 +665,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3596414637720633074">Blokovať súbory cookie tretích strán v režime inkognito</translation>
 <translation id="3602260545951981695">Vyberte položku Rozšírená ochrana</translation>
 <translation id="3610041351087301930">Skryť čitateľa</translation>
+<translation id="3610866916973186448">Áno, odstrániť</translation>
 <translation id="3622175633937495219">Hľadať v histórii (nájdené: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Potiahnutím po okraji sa vrátite späť.</translation>
 <translation id="362709345066740529">Tu si môžete prispôsobiť karty, feed a ďalšie položky</translation>
@@ -1973,6 +1975,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8561999115126307258">{count,plural, =1{Nad klávesnicou je k dispozícii {count} možnosť hesla.}few{Nad klávesnicou sú k dispozícii {count} možnosti hesla.}many{{count} options for password available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} možností hesla.}}</translation>
 <translation id="8564894539416715395">Stránka na novej karte</translation>
 <translation id="8569721750632860947">Ktorú webovú adresu chcete pridať do svojho čitateľského zoznamu?</translation>
+<translation id="8571019948162152515">Chcete odstrániť súbor <ph name="FILENAME" />?</translation>
 <translation id="8571213806525832805">Posledné 4 týždne</translation>
 <translation id="8577056989960190117">Automaticky doplniť rok vypršania <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Vypnúť</translation>

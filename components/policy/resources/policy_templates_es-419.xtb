@@ -2389,6 +2389,7 @@ Para obtener más información sobre el manejo de datos de las funciones potenci
       Si la estableces en "UserOnly" (valor 1), los usuarios podrán administrar sus certificados de usuario, pero no certificados para todo el dispositivo.</translation>
 <translation id="2593762551209145088">La Navegación segura nunca está activa.</translation>
 <translation id="2594773358911436070">Configuración de WebRtc</translation>
+<translation id="2600005880585324062">Permitir que <ph name="PRODUCT_NAME" /> decida qué orígenes aislar de otros orígenes del mismo sitio.</translation>
 <translation id="26023406105317310">Configura las cuentas de Kerberos</translation>
 <translation id="2603237557651009842">Bloquear la API de WebPrinting en estos sitios</translation>
 <translation id="2603382859270873566">Habilitar la compatibilidad con la API de PPB_VideoDecoder(Dev)</translation>
@@ -2595,6 +2596,7 @@ Si la inhabilitas o no la estableces, los usuarios podrán transferir archivos a
 <translation id="2753637905605932878">Restringir el intervalo de puertos UDP locales que usa WebRTC</translation>
 <translation id="2755847332939882873">Permite registrar el rendimiento de todo el sistema</translation>
 <translation id="2757054304033424106">Tipos de extensiones o aplicaciones que se pueden instalar</translation>
+<translation id="275769337615229465">La mayoría de los orígenes quedarán aislados de otros orígenes del mismo sitio.</translation>
 <translation id="2759224876420453487">Controlar el comportamiento del usuario en una sesión de varios perfiles</translation>
 <translation id="2760947619380644513">Permitir que los usuarios con acceso remoto abran las URLs del host en el navegador de su cliente local</translation>
 <translation id="2761483219396643566">Demora para la advertencia de inactividad cuando el dispositivo está funcionando a batería</translation>
@@ -5159,6 +5161,7 @@ Un dispositivo se considera administrado si se utiliza una versión empresarial 
       Si no se configura esta política, el usuario podrá inhabilitar cualquier complemento instalado en el sistema.</translation>
 <translation id="4549695018986780856">Habilitar Manifest v2</translation>
 <translation id="4549729301485728119">El valor predeterminado se determina en función de otros factores</translation>
+<translation id="4554429681167460828">No se aislará ningún origen de otros orígenes en el mismo sitio, a menos que el origen solicite explícitamente que se lo aísle.</translation>
 <translation id="4554651132977135445">Modo de procesamiento de bucle invertido de la política del usuario</translation>
 <translation id="4554991346503872538">Nunca ofrecer la traducción</translation>
 <translation id="4555850956567117258">Habilita la atestación remota para el usuario.</translation>
@@ -8568,6 +8571,7 @@ Los cambios que se realicen en la política solo se aplicarán cuando ARC no se 
 <translation id="66265932317331474">Envía información de la CPU</translation>
 <translation id="6628120204569232711">Informar el estado de almacenamiento</translation>
 <translation id="662991036483361836">Impedir que los usuarios habiliten Compartir con Nearby</translation>
+<translation id="6630693609822689611">Habilitar el aislamiento de procesos con clave de origen de forma predeterminada.</translation>
 <translation id="663685822663765995">Restringir el modo de impresión a color</translation>
 <translation id="6640355849038068978">Si habilitas esta configuración, los usuarios podrán iniciar la aplicación Eche, por ejemplo, haciendo clic en una notificación de Phone Hub.
 
@@ -10152,6 +10156,13 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
 <translation id="775822241671489040">Controlar el parámetro de configuración "Usar el Selector o la tecla de búsqueda para cambiar el comportamiento de las teclas de función"</translation>
 <translation id="7758378441185523981">Permite la autenticación ambiental para tipos de perfiles.</translation>
 <translation id="776110834126722255">Obsoleto</translation>
+<translation id="7761702157788500857">Habilita el aislamiento de procesos con clave de origen para la mayoría de las páginas (es decir, las que se asignan a un clúster de agentes con clave de origen de forma predeterminada). Esta política mejora la seguridad, pero también aumenta la cantidad de procesos creados. Los usuarios pueden anular el valor de la política establecida a través de la función experimental de línea de comandos o chrome://flags (para activar o desactivar esta función).
+
+Si habilitas la política, la mayoría de los orígenes quedarán aislados, incluso de otros orígenes del mismo sitio. Consulta también las políticas <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> y <ph name="SITE_PER_PROCESS_POLICY_NAME" />.
+
+Si inhabilitas la política, los orígenes no quedarán aislados del resto de su sitio, a menos que un origen lo solicite de forma explícita.
+
+Si no estableces la política, el navegador determinará qué orígenes aislar y cuándo hacerlo.</translation>
 <translation id="7763614521440615342">Mostrar sugerencias de contenido en la página Nueva pestaña</translation>
 <translation id="7763650553214838209">Inhabilitar la configuración de un acceso directo para la acción "Insertar"</translation>
 <translation id="7763655314629932385">Especifica la versión deseada de la IWA. Si se proporciona, el sistema intentará instalar esta versión específica y, luego, bloqueará cualquier actualización posterior. Para dejar de fijar la app y volver a habilitar las actualizaciones, quita este campo. **Importante:** Si la versión proporcionada no existe, la IWA se quedará atascada en la versión instalada actualmente. Esto se debe a que, después de intentar (y, en este caso, no poder) actualizar a la versión fijada, la fijación inhabilita las actualizaciones automáticas posteriores.</translation>

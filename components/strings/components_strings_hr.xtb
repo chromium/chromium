@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Pojedinosti o tražilici</translation>
+<translation id="1068467933609179019">Postavke usluga automatskog popunjavanja</translation>
 <translation id="1068672505746868501">Nikad ne prevodi <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metal (sjajni)</translation>
 <translation id="1070901266639972381">Noć</translation>
@@ -317,7 +318,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1521655867290435174">Google tablice</translation>
 <translation id="1524669537550112617">Namještene nekretnine za unajmljivanje</translation>
 <translation id="1527263332363067270">Čekanje na uspostavu veze…</translation>
-<translation id="1527490370616010873">Google nije vaš davatelj usluga automatskog popunjavanja. Da biste omogućili te postavke i upotrebljavali podatke o plaćanju sa svog Google računa, otvorite <ph name="BEGIN_LINK" />postavke usluga automatskog popunjavanja<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Povezivanje je blokirano jer ga je pokrenula javna stranica radi povezivanja s uređajima ili poslužiteljima na vašoj privatnoj mreži. Ponovno učitajte ovu stranicu da biste omogućili povezivanje.</translation>
 <translation id="1529789484829130889">Ladica 8</translation>
 <translation id="1530707389502320859">Web-lokacija koju ste upravo pokušali posjetiti izgleda lažno. Napadači ponekad oponašaju web-lokacije sitnim izmjenama URL-a.</translation>
@@ -4367,6 +4367,7 @@ Dodatne pojedinosti:
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Temperatura platforme</translation>
 <translation id="8233773197406738106">Priprema datoteke</translation>
+<translation id="823490921909113114">Da biste omogućili te postavke i upotrebljavali podatke o plaćanju sa svog Google računa, otvorite postavke usluga automatskog popunjavanja.</translation>
 <translation id="8238188918340945316">28 x 40 inča</translation>
 <translation id="8238581221633243064">Otvorite stranicu u novoj anonimnoj kartici</translation>
 <translation id="8241707690549784388">Stranica koju ste tražili koristila je podatke koje ste unijeli. Vraćanje na tu stranicu može dovesti do ponavljanja poduzete radnje. Želite li nastaviti?</translation>
@@ -4951,6 +4952,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9218430445555521422">Postavi kao zadano</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="922152298093051471">Prilagodite Chrome</translation>
+<translation id="9221566509053798696">Google nije vaš davatelj usluga automatskog popunjavanja</translation>
 <translation id="9222403027701923763">Osnovno i srednje obrazovanje (K-12)</translation>
 <translation id="9222463428840654067">Broj kartice nije važeći</translation>
 <translation id="922849469395748170">Kartice vjernosti</translation>

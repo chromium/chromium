@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Podrobnosti o vyhledávači</translation>
+<translation id="1068467933609179019">Nastavení služeb automatického vyplňování</translation>
 <translation id="1068672505746868501">Stránky v jazyce <ph name="SOURCE_LANGUAGE" /> nikdy nepřekládat</translation>
 <translation id="1070333806075222467">Kov (lesklý)</translation>
 <translation id="1070901266639972381">Noc</translation>
@@ -317,7 +318,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1521655867290435174">Tabulky Google</translation>
 <translation id="1524669537550112617">Pronájmy vybavených bytů</translation>
 <translation id="1527263332363067270">Čeká se na připojení…</translation>
-<translation id="1527490370616010873">Vaším poskytovatelem automatického vyplňování není Google. Pokud chcete zapnout tato nastavení a používat platební údaje ze svého účtu Google, přejděte do <ph name="BEGIN_LINK" />nastavení služeb automatického vyplňování<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Připojení je blokováno, protože bylo zahájeno veřejnou stránkou za účelem připojení k zařízením nebo serverům ve vaší privátní síti. Pokud ho chcete povolit, načtěte tuto stránku znovu.</translation>
 <translation id="1529789484829130889">Přihrádka 8</translation>
 <translation id="1530707389502320859">Web, který se pokoušíte navštívit, vypadá falešný. Útočníci někdy weby napodobují tak, že v adrese URL provádějí drobné, obtížně odhalitelné změny.</translation>
@@ -4362,6 +4362,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Teplota platformy</translation>
 <translation id="8233773197406738106">Příprava souboru</translation>
+<translation id="823490921909113114">Pokud chcete zapnout tato nastavení a používat platební údaje ze svého účtu Google, přejděte do nastavení služeb automatického vyplňování.</translation>
 <translation id="8238188918340945316">28 × 40 palců</translation>
 <translation id="8238581221633243064">Otevřete stránku na nové anonymní kartě</translation>
 <translation id="8241707690549784388">Stránka, kterou hledáte, používala vámi zadané informace. Návrat na tuto stránku by mohl způsobit, že akce, kterou jste provedli, bude opakována. Přejete si pokračovat?</translation>
@@ -4945,6 +4946,7 @@ Další podrobnosti:
 <translation id="9218430445555521422">Nastavit jako výchozí</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="922152298093051471">Přizpůsobit Chrome</translation>
+<translation id="9221566509053798696">Vaším poskytovatelem automatického vyplňování není Google</translation>
 <translation id="9222403027701923763">Mateřské, základní a střední školy</translation>
 <translation id="9222463428840654067">Číslo karty není platné</translation>
 <translation id="922849469395748170">Věrnostní karty</translation>

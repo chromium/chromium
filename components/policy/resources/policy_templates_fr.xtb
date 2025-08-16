@@ -2278,6 +2278,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
       Si cette règle est définie sur "UserOnly" (valeur 1), les utilisateurs peuvent gérer les certificats utilisateur, mais pas ceux au niveau de l'appareil.</translation>
 <translation id="2593762551209145088">La navigation sécurisée n'est jamais active.</translation>
 <translation id="2594773358911436070">Paramètres WebRTC</translation>
+<translation id="2600005880585324062">Laisser <ph name="PRODUCT_NAME" /> décider quelles origines isoler des autres origines provenant du même site.</translation>
 <translation id="26023406105317310">Configurer les comptes Kerberos</translation>
 <translation id="2603237557651009842">Bloquer l'API WebPrinting sur ces sites</translation>
 <translation id="2603382859270873566">Activer la prise en charge de l'API PPB_VideoDecoder(Dev).</translation>
@@ -2473,6 +2474,7 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
 <translation id="2753637905605932878">Restreindre la portée des ports UDP locaux utilisés par WebRTC</translation>
 <translation id="2755847332939882873">Autoriser la collecte d'une trace des performances au niveau du système</translation>
 <translation id="2757054304033424106">Types d'extensions ou d'applications autorisés à être installés</translation>
+<translation id="275769337615229465">La plupart des origines seront isolées des autres origines provenant du même site.</translation>
 <translation id="2759224876420453487">Contrôler le comportement de l'utilisateur lors d'une session à plusieurs profils</translation>
 <translation id="2760947619380644513">Autoriser les utilisateurs connectés à distance à ouvrir des URL côté hôte dans leur navigateur client local</translation>
 <translation id="2761483219396643566">Délai d'inactivité avant l'affichage d'un avertissement (en cas d'utilisation de la batterie)</translation>
@@ -4957,6 +4959,7 @@ Un appareil est considéré comme géré s'il utilise une version d'entreprise d
       Si cette règle n'est pas configurée, l'utilisateur peut désactiver n'importe quel plug-in installé sur le système.</translation>
 <translation id="4549695018986780856">Manifest V2 est activé</translation>
 <translation id="4549729301485728119">La valeur par défaut est déterminée par d'autres facteurs</translation>
+<translation id="4554429681167460828">Aucune origine ne sera isolée des autres origines provenant du même site, sauf si l'origine a explicitement demandé à être isolée.</translation>
 <translation id="4554651132977135445">Mode de traitement du bouclage pour les règles relatives aux utilisateurs</translation>
 <translation id="4554991346503872538">Ne jamais proposer de traduction</translation>
 <translation id="4555850956567117258">Activer l'attestation à distance pour l'utilisateur</translation>
@@ -8205,6 +8208,7 @@ Pour que les modifications apportées à cette règle puissent être appliquées
 <translation id="66265932317331474">Transmettre les informations concernant le ou les processeurs</translation>
 <translation id="6628120204569232711">Envoyer des rapports sur l'état du stockage</translation>
 <translation id="662991036483361836">Empêcher les utilisateurs d'activer le Partage à proximité</translation>
+<translation id="6630693609822689611">Activer l'isolation des processus selon l'origine par défaut.</translation>
 <translation id="663685822663765995">Limiter l'impression en mode couleur</translation>
 <translation id="6640355849038068978">Si ce paramètre est activé, les utilisateurs pourront lancer l'application Eche, par exemple en cliquant sur une notification Phone Hub.
 
@@ -9731,6 +9735,13 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 <translation id="775822241671489040">Contrôle le paramètre "Utiliser la touche du Lanceur d'applications/de recherche pour modifier le comportement des touches de fonction"</translation>
 <translation id="7758378441185523981">Activer l'authentification ambiante en fonction du type de profil.</translation>
 <translation id="776110834126722255">Obsolète</translation>
+<translation id="7761702157788500857">Active l'isolation des processus selon l'origine pour la plupart des pages (c'est-à-dire celles qui sont attribuées par défaut à un cluster d'agents selon l'origine). Cela améliore la sécurité, mais augmente aussi le nombre de processus créés. Les utilisateurs sont autorisés à ignorer la valeur de règle définie via les flags de ligne de commande ou chrome://flags (pour activer ou désactiver cette fonctionnalité).
+
+Si cette règle est activée, la plupart des origines sont isolées, même des autres origines provenant du même site. Voir également les règles <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> et <ph name="SITE_PER_PROCESS_POLICY_NAME" />.
+
+Si cette règle est désactivée, aucune origine n'est isolée du reste de son site, sauf si une origine le demande explicitement.
+
+Si cette règle n'est pas configurée, le navigateur détermine les origines à isoler et le moment où il doit procéder à l'isolation.</translation>
 <translation id="7763614521440615342">Afficher des recommandations de contenus sur la page "Nouvel onglet"</translation>
 <translation id="7763650553214838209">La définition d'un raccourci pour l'action "Insérer" est désactivée.</translation>
 <translation id="7763655314629932385">Spécifie la version souhaitée de l'AWI. Si vous en fournissez une, le système tentera d'installer cette version spécifique, puis bloquera toutes les mises à jour suivantes. Pour retirer l'épingle de l'appli et réactiver les mises à jour, supprimez ce champ. **Important** : Si la version fournie n'existe pas, l'AWI restera bloquée sur la version actuellement installée. En effet, après avoir tenté (et échoué, dans ce cas) de mettre à jour vers la version épinglée, l'épinglage désactive toutes les mises à jour automatiques ultérieures.</translation>

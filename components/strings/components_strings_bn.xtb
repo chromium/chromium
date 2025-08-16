@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">সার্চ ইঞ্জিনের বিবরণ</translation>
+<translation id="1068467933609179019">অটোফিল পরিষেবা সেটিংস</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠার অনুবাদ কখনও দেখতে চাই না</translation>
 <translation id="1070333806075222467">মেটাল (গ্লসি)</translation>
 <translation id="1070901266639972381">রাত</translation>
@@ -317,7 +318,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">সুসজ্জিত ভাড়ায় নেওয়া প্রপার্টি</translation>
 <translation id="1527263332363067270">সংযোগের জন্য অপেক্ষা করা হচ্ছে...</translation>
-<translation id="1527490370616010873">Google আপনার অটোফিল করার সুবিধা প্রদানকারী নয়। আপনার Google অ্যাকাউন্ট থেকে এইসব সেটিংস চালু ও পেমেন্টের তথ্য ব্যবহার করতে, <ph name="BEGIN_LINK" />অটোফিল পরিষেবা সেটিংস<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="1528311629279578926">কানেকশনটি ব্লক করা হয়েছে, কারণ কোনও সর্বজনীন পৃষ্ঠা থেকে আপনার প্রাইভেট নেটওয়ার্কের ডিভাইস বা পরিষেবায় কানেক্ট করার জন্য প্রসেসটি শুরু করা হয়েছিল। কানেকশনকে অনুমতি দিতে এই পৃষ্ঠা রিলোড করুন।</translation>
 <translation id="1529789484829130889">ট্রে ৮</translation>
 <translation id="1530707389502320859">এখন যে সাইট দেখার চেষ্টা করছেন তা নকল বলে মনে হচ্ছে। ইউআরএলে সামান্য বা সহজে দেখা যায় না এমন পরিবর্তন করে আক্রমণকারীরা সাইট নকল করে।</translation>
@@ -4368,6 +4368,7 @@
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">প্ল্যাটফর্মের তাপমাত্রা</translation>
 <translation id="8233773197406738106">ফাইল প্রস্তুত করা হচ্ছে</translation>
+<translation id="823490921909113114">আপনার Google অ্যাকাউন্ট থেকে এইসব সেটিংস চালু ও পেমেন্টের তথ্য ব্যবহার করতে, অটোফিল পরিষেবা সেটিংস দেখুন।</translation>
 <translation id="8238188918340945316">২৮ x ৪০ ইঞ্চি</translation>
 <translation id="8238581221633243064">নতুন ছদ্মবেশী ট্যাবে একটি পৃষ্ঠা খুলুন</translation>
 <translation id="8241707690549784388">আপনি যে পৃষ্ঠাটি খুঁজছেন সেটি আপনার দেওয়া তথ্য ব্যবহার করছে৷ এই পৃষ্ঠাতে ফিরে এলে কোনো অ্যাকশন আবার করতে হতে পারে৷ আপনি কি চালিয়ে যেতে চান?</translation>
@@ -4951,6 +4952,7 @@
 <translation id="9218430445555521422">ডিফল্ট হিসেবে সেট করুন</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome কাস্টমাইজ করুন</translation>
+<translation id="9221566509053798696">Google আপনার অটোফিল করার সুবিধা প্রদানকারী নয়।</translation>
 <translation id="9222403027701923763">প্রাথমিক ও সেকেন্ডারি স্কুল (K-12)</translation>
 <translation id="9222463428840654067">কার্ডের নম্বরটি সঠিক নয়</translation>
 <translation id="922849469395748170">লয়ালটি কার্ড</translation>

@@ -2278,6 +2278,7 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
       Wenn die Richtlinie auf „UserOnly“ (Nur Nutzer) (Wert 1) gesetzt ist, können Nutzer Nutzerzertifikate, aber keine Zertifikate für das gesamte Gerät verwalten.</translation>
 <translation id="2593762551209145088">Safe Browsing ist nie aktiv.</translation>
 <translation id="2594773358911436070">WebRTC-Einstellungen</translation>
+<translation id="2600005880585324062"><ph name="PRODUCT_NAME" /> soll entscheiden, welche Ursprünge von anderen SameSite-Ursprüngen isoliert werden sollen.</translation>
 <translation id="26023406105317310">Kerberos-Konten konfigurieren</translation>
 <translation id="2603237557651009842">WebPrinting API auf diesen Websites blockieren</translation>
 <translation id="2603382859270873566">Unterstützung für die PPB_VideoDecoder(Dev) API aktivieren.</translation>
@@ -2473,6 +2474,7 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer Date
 <translation id="2753637905605932878">Den von WebRTC verwendeten Bereich lokaler UDP-Ports einschränken</translation>
 <translation id="2755847332939882873">Speichern einer systemweiten Leistungs-Trace erlauben</translation>
 <translation id="2757054304033424106">Typen von Erweiterungen bzw. Apps, die installiert werden können</translation>
+<translation id="275769337615229465">Die meisten Ursprünge werden von anderen Ursprüngen auf derselben Website isoliert.</translation>
 <translation id="2759224876420453487">Nutzerverhalten in Mehrfachprofil-Sitzung steuern</translation>
 <translation id="2760947619380644513">Nutzern mit Remote-Zugriff erlauben, URLs auf Hostseite in ihrem lokalen Clientbrowser zu öffnen</translation>
 <translation id="2761483219396643566">Inaktivitätsspanne bis zur Warnung im Akkubetrieb</translation>
@@ -4957,6 +4959,7 @@ Ein Gerät gilt als verwaltet, wenn eine Unternehmensversion des Betriebssystems
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer beliebige auf dem System installierte Plug-ins deaktivieren.</translation>
 <translation id="4549695018986780856">Manifest V2 ist aktiviert</translation>
 <translation id="4549729301485728119">Die Standardeinstellung wird durch andere Faktoren bestimmt</translation>
+<translation id="4554429681167460828">Es werden keine Ursprünge von anderen Ursprüngen auf derselben Website isoliert, es sei denn, dies wurde vom Ursprung ausdrücklich gefordert.</translation>
 <translation id="4554651132977135445">Loopback-Verarbeitungsmodus der Nutzerrichtlinien</translation>
 <translation id="4554991346503872538">Nie Übersetzung anbieten</translation>
 <translation id="4555850956567117258">Remote-Bescheinigung (Remote Attestation) für den Nutzer aktivieren</translation>
@@ -8193,6 +8196,7 @@ Hinweis: Durch einen Neustart oder eine Abmeldung wird der Cache geleert.</trans
 <translation id="66265932317331474">CPU-Informationen ausgeben</translation>
 <translation id="6628120204569232711">Speicherstatus melden</translation>
 <translation id="662991036483361836">Nutzer dürfen Nearby Share nicht aktivieren</translation>
+<translation id="6630693609822689611">Die an Ursprünge gebundene Prozessisolierung wird standardmäßig aktiviert.</translation>
 <translation id="663685822663765995">Farbdruck einschränken</translation>
 <translation id="6640355849038068978">Wenn diese Einstellung aktiviert ist, können Nutzer die App „Eche“ starten, z. B. mit einem Klick auf eine Phone Hub-Benachrichtigung.
 
@@ -9714,6 +9718,13 @@ werden abgelehnt.</translation>
 <translation id="775822241671489040">Steuert die Einstellung „Mit der Launcher-Taste/Suchtaste kannst du das Verhalten der Funktionstasten ändern“</translation>
 <translation id="7758378441185523981">Aktiviert die passive Authentifizierung für Profiltypen.</translation>
 <translation id="776110834126722255">Eingestellt</translation>
+<translation id="7761702157788500857">Aktiviert die an Ursprünge gebundene Prozessisolierung für die meisten Seiten (d. h. für die, die standardmäßig einem an Ursprünge gebundenen Agent-Cluster zugewiesen sind). Dies verbessert die Sicherheit, erhöht aber auch die Anzahl der erstellten Prozesse. Nutzer können den festgelegten Richtlinienwert über die Befehlszeilen-Flags oder chrome://flags überschreiben (sowohl zum Aktivieren als auch zum Deaktivieren dieser Funktion).
+
+Wenn die Richtlinie aktiviert ist, werden die meisten Ursprünge isoliert, auch von anderen Ursprüngen auf derselben Website. Siehe auch die Richtlinien „<ph name="ISOLATE_ORIGINS_POLICY_NAME" />“ und „<ph name="SITE_PER_PROCESS_POLICY_NAME" />“.
+
+Wenn die Richtlinie deaktiviert ist, werden keine Ursprünge vom Rest der Website isoliert, es sei denn, dies wird von einem Ursprung ausdrücklich gefordert.
+
+Wird die Richtlinie nicht konfiguriert, legt der Browser fest, welche Ursprünge wann isoliert werden.</translation>
 <translation id="7763614521440615342">Inhaltsvorschläge auf der "Neuer Tab"-Seite anzeigen</translation>
 <translation id="7763650553214838209">Festlegen einer Tastenkombination für die Aktion „Einfügen“ ist deaktiviert.</translation>
 <translation id="7763655314629932385">Gibt die gewünschte Version der IWA an. Wenn eine angegeben ist, versucht das System, diese Version zu installieren, und blockiert anschließend alle weiteren Updates. Wenn du die App wieder loslösen und Updates aktivieren möchtest, entferne dieses Feld. **Wichtig:** Wenn die angegebene Version nicht vorhanden ist, bleibt die IWA auf der aktuell installierten Version und kann nicht mehr geändert werden. Das liegt daran, dass beim Anpinnen weitere automatische Updates deaktiviert werden, und in diesem Fall versucht wurde, ein Update auf die angepinnte Version vorzunehmen, was aber nicht funktioniert hat.</translation>

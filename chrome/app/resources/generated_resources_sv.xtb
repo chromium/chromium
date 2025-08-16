@@ -289,7 +289,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1184037892196730210">Det gick inte att casta skärmen</translation>
 <translation id="1185924365081634987">Du kan också försöka lösa nätverksproblemet genom att <ph name="GUEST_SIGNIN_LINK_START" />surfa som gäst<ph name="GUEST_SIGNIN_LINK_END" />.</translation>
 <translation id="1187214683155615962">Avisering om prestandaproblem</translation>
-<translation id="1187722533808055681">Antal gånger som systemets vänteprocess har väckts</translation>
+<translation id="1187722533808055681">Aktivering efter inaktivitet</translation>
 <translation id="1188807932851744811">Loggen har inte laddats upp.</translation>
 <translation id="1190086046506744802">Mycket stort</translation>
 <translation id="1190155014618058972">Skapa anpassad tangentkombination</translation>
@@ -5663,7 +5663,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4907129260985716018">Välj när det här tillägget kan läsa och ändra webbplatsdata</translation>
 <translation id="4908811072292128752">Öppna en ny flik om du vill surfa på två webbplatser samtidigt</translation>
 <translation id="4910241725741323970">Appen har redan installerats</translation>
-<translation id="4912643508233590958">Antal gånger som systemets vänteprocess har väckts</translation>
+<translation id="4912643508233590958">Aktivering efter inaktivitet</translation>
 <translation id="4913209098186576320">Den här filen kan vara farlig<ph name="LINE_BREAK" />Kontrollen tar längre tid än vanligt …</translation>
 <translation id="4913695564084524048">Det gick inte att hitta appdata</translation>
 <translation id="4915961947098019832">Får visa bilder</translation>

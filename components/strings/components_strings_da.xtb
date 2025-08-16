@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Oplysninger om søgemaskine</translation>
+<translation id="1068467933609179019">Indstillinger for tjenester til autofyld</translation>
 <translation id="1068672505746868501">Oversæt aldrig sider på <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metal (blankt)</translation>
 <translation id="1070901266639972381">Nat</translation>
@@ -317,7 +318,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Møblerede lejeboliger</translation>
 <translation id="1527263332363067270">Venter på forbindelse…</translation>
-<translation id="1527490370616010873">Google er ikke din udbyder af autofyld. Hvis du vil aktivere disse indstillinger og bruge betalingsoplysninger fra din Google-konto, skal du gå til <ph name="BEGIN_LINK" />indstillingerne for tjenester til autofyld<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Forbindelsen er blokeret, fordi den blev startet af en offentlig side med henblik på at oprette forbindelse til enheder eller servere på dit private netværk. Genindlæs denne side for at tillade forbindelsen.</translation>
 <translation id="1529789484829130889">Bakke 8</translation>
 <translation id="1530707389502320859">Det website, du netop forsøgte at gå til, ser ud til at være falsk. Svindlere efterligner nogle gange websites ved at lave små ændringer af webadressen, som er svære at se.</translation>
@@ -3367,7 +3367,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6549443526281184652">Kostumer</translation>
 <translation id="6550245281449521513">Lås af musen er ikke tilladt</translation>
 <translation id="6554732001434021288">Senest besøgt for <ph name="NUM_DAYS" /> dage siden</translation>
-<translation id="6556866813142980365">Annuller fortryd</translation>
+<translation id="6556866813142980365">Annuller fortrydelse</translation>
 <translation id="6557715786897013164">14 x 17 tommer</translation>
 <translation id="6560786330438719938">Apps, der er installeret eller afinstalleret, og hvor ofte de bruges</translation>
 <translation id="6567832540451970450">Din administrator tillader <ph name="PERMISSION" /> for dette website</translation>
@@ -4368,6 +4368,7 @@ Yderligere oplysninger:
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Platformstemperatur</translation>
 <translation id="8233773197406738106">Forbereder fil</translation>
+<translation id="823490921909113114">Hvis du vil aktivere disse indstillinger og bruge betalingsoplysninger fra din Google-konto, skal du gå til indstillingerne for tjenester til autofyld.</translation>
 <translation id="8238188918340945316">28 x 40 tommer</translation>
 <translation id="8238581221633243064">Åbn siden på en ny inkognitofane</translation>
 <translation id="8241707690549784388">Siden, du søger, benyttede oplysninger, du har indtastet. Vender du tilbage til denne side kan det betyde, at enhver handling, du har foretaget, skal gentages. Vil du fortsætte?</translation>
@@ -4952,6 +4953,7 @@ Yderligere oplysninger:
 <translation id="9218430445555521422">Angiv som standard</translation>
 <translation id="9219103736887031265">Billeder</translation>
 <translation id="922152298093051471">Tilpas Chrome</translation>
+<translation id="9221566509053798696">Google er ikke din udbyder af autofyld</translation>
 <translation id="9222403027701923763">Primær og sekundær skoleuddannelse (K-12)</translation>
 <translation id="9222463428840654067">Kortnummeret er ugyldigt</translation>
 <translation id="922849469395748170">Loyalitetskort</translation>

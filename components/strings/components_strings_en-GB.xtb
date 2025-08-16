@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3 x 5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Search engine details</translation>
+<translation id="1068467933609179019">Autofill services settings</translation>
 <translation id="1068672505746868501">Never translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metal (glossy)</translation>
 <translation id="1070901266639972381">Night</translation>
@@ -317,7 +318,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Furnished Rentals</translation>
 <translation id="1527263332363067270">Waiting for connection…</translation>
-<translation id="1527490370616010873">Google isn't your autofill provider. To enable these settings and use payment info from your Google Account, visit <ph name="BEGIN_LINK" />Autofill services settings<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">The connection is blocked because it was initiated by a public page to connect to devices or servers on your private network. Reload this page to allow the connection.</translation>
 <translation id="1529789484829130889">Tray 8</translation>
 <translation id="1530707389502320859">The site that you just tried to visit looks fake. Attackers sometimes mimic sites by making small, hard-to-see changes to the URL.</translation>
@@ -4368,6 +4368,7 @@ Additional details:
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Platform temperature</translation>
 <translation id="8233773197406738106">Preparing file</translation>
+<translation id="823490921909113114">To enable these settings and use payment info from your Google Account, visit Autofill services settings.</translation>
 <translation id="8238188918340945316">28 x 40 in</translation>
 <translation id="8238581221633243064">Open page in a new Incognito tab</translation>
 <translation id="8241707690549784388">The page that you're looking for used information that you entered. Returning to that page might cause any action that you took to be repeated. Do you want to continue?</translation>
@@ -4951,6 +4952,7 @@ Additional details:
 <translation id="9218430445555521422">Set as default</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Customise Chrome</translation>
+<translation id="9221566509053798696">Google isn't your autofill provider</translation>
 <translation id="9222403027701923763">Primary and Secondary Schooling (Key Stage 1-5)</translation>
 <translation id="9222463428840654067">Card number is invalid</translation>
 <translation id="922849469395748170">Loyalty cards</translation>

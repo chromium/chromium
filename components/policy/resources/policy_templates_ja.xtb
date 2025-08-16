@@ -2195,6 +2195,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       このポリシーを「UserOnly」（値 1）に設定した場合、ユーザーはユーザー証明書を管理できますが、デバイス全体の証明書を管理することはできません。</translation>
 <translation id="2593762551209145088">セーフ ブラウジングを常に無効にする。</translation>
 <translation id="2594773358911436070">WebRTC 設定</translation>
+<translation id="2600005880585324062"><ph name="PRODUCT_NAME" /> で同じサイトの他のオリジンから分離するオリジンを決定する。</translation>
 <translation id="26023406105317310">Kerberos アカウントを設定する</translation>
 <translation id="2603237557651009842">WebPrinting API をブロックするサイトを指定する</translation>
 <translation id="2603382859270873566">PPB_VideoDecoder(Dev) API のサポートを有効にします。</translation>
@@ -2383,6 +2384,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="2753637905605932878">WebRTC が使用するローカル UDP ポートの範囲を制限する</translation>
 <translation id="2755847332939882873">システム全体のパフォーマンス トレースの収集を許可します</translation>
 <translation id="2757054304033424106">インストールが許可されている拡張機能/アプリのタイプ</translation>
+<translation id="275769337615229465">ほとんどのオリジンを同じサイトの他のオリジンから分離する。</translation>
 <translation id="2759224876420453487">マルチプロフィール セッションでのユーザーの動作を制御する</translation>
 <translation id="2760947619380644513">リモート アクセスのユーザーがローカルのクライアント ブラウザでホスト側の URL を開けるようにする</translation>
 <translation id="2761483219396643566">警告を表示するまでのアイドル待機時間（バッテリー電源での実行時）</translation>
@@ -4830,6 +4832,7 @@ WebSQL は M112 で削除されました。</translation>
       このポリシーを設定しない場合、ユーザーはシステムにインストールされたどのプラグインも無効にできます。</translation>
 <translation id="4549695018986780856">Manifest V2 を有効にする</translation>
 <translation id="4549729301485728119">他の要素によって決定される（デフォルト）</translation>
+<translation id="4554429681167460828">オリジンが明示的に分離を要求しない限り、同じサイトの他のオリジンから分離しない。</translation>
 <translation id="4554651132977135445">ユーザー ポリシーのループバック処理モード</translation>
 <translation id="4554991346503872538">翻訳の確認をしない</translation>
 <translation id="4555850956567117258">ユーザーのリモート認証を有効にする</translation>
@@ -7906,6 +7909,7 @@ URL が <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> の URL パターンと競
 <translation id="66265932317331474">CPU 情報を報告する</translation>
 <translation id="6628120204569232711">ストレージの状態を報告する</translation>
 <translation id="662991036483361836">ニアバイシェアの有効化をユーザーに許可しない</translation>
+<translation id="6630693609822689611">オリジンキー プロセス分離をデフォルトで有効にする。</translation>
 <translation id="663685822663765995">カラー印刷モードを制限</translation>
 <translation id="6640355849038068978">この設定が有効な場合、ユーザーはスマートフォン ハブの通知をクリックするなどして Eche アプリを起動できます。
 
@@ -9344,6 +9348,13 @@ Kyber の提供には下位互換性があります。既存の TLS サーバー
 <translation id="775822241671489040">[ランチャー（または検索キー）を使用してファンクション キーの動作を変更する] 設定を管理する</translation>
 <translation id="7758378441185523981">アンビエント認証をプロフィールのタイプ別に有効にします。</translation>
 <translation id="776110834126722255">廃止</translation>
+<translation id="7761702157788500857">ほとんどのページ（デフォルトでオリジンキー エージェント クラスタに割り当てられているページなど）に対して、オリジンキー プロセス分離を有効にします。これによりセキュリティは向上しますが、作成されるプロセスの数も増加します。ユーザーは、コマンドライン フラグまたは chrome://flags を使用して、設定されたポリシーの値をオーバーライドし、この機能をオンまたはオフにできます。
+
+このポリシーを有効に設定した場合、ほとんどのオリジンが分離され、同じサイトの他のオリジンからも分離されます。<ph name="ISOLATE_ORIGINS_POLICY_NAME" /> ポリシーと <ph name="SITE_PER_PROCESS_POLICY_NAME" /> ポリシーもご覧ください。
+
+このポリシーを無効に設定した場合、オリジンが明示的に要求しない限り、オリジンはサイトの他の部分から分離されません。
+
+このポリシーを設定しない場合、どのオリジンをいつ分離するかはブラウザによって決定されます。</translation>
 <translation id="7763614521440615342">[新しいタブ] ページにおすすめのコンテンツを表示します</translation>
 <translation id="7763650553214838209">Insert キー操作のショートカットの設定は無効。</translation>
 <translation id="7763655314629932385">使用する IWA のバージョンを指定します。指定した場合、システムでは該当のバージョンのインストールを試行し、それ以降の更新をブロックします。アプリの固定を解除して更新を再度有効にするには、このフィールドを削除します。**重要:** 指定したバージョンが存在しない場合、IWA は現在インストールされているバージョンのままになります。これは、固定したバージョンへの更新を試行し（その結果失敗した）後は、固定によってそれ以降の自動更新が無効になるためです。</translation>

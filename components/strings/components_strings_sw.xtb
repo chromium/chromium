@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Maelezo ya mtambo wa kutafuta</translation>
+<translation id="1068467933609179019">Mipangilio ya huduma za kujaza kiotomatiki</translation>
 <translation id="1068672505746868501">Usiwahi kutafsiri kurasa katika lugha ya <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Chuma (Mng'ao)</translation>
 <translation id="1070901266639972381">Usiku</translation>
@@ -317,7 +318,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1521655867290435174">Majedwali ya Google</translation>
 <translation id="1524669537550112617">Nyumba za kukodi zilizo na Samani</translation>
 <translation id="1527263332363067270">Inasubiri muunganisho...</translation>
-<translation id="1527490370616010873">Google si mtoa huduma wako wa kujaza kiotomatiki. Ili uwezeshe mipangilio hii na utumie maelezo ya malipo katika Akaunti yako ya Google, tembelea <ph name="BEGIN_LINK" />mipangilio ya huduma ya Kujaza Kiotomatiki<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Muunganisho umezuiliwa kwa sababu ulianzishwa na ukurasa wa umma ili kuunganisha vifaa au seva kwenye mtandao wako binafsi. Pakia upya ukurasa huu ili uruhusu muunganisho.</translation>
 <translation id="1529789484829130889">Trei ya nane</translation>
 <translation id="1530707389502320859">Tovuti ambayo umejaribu kutembelea inaonekana kuwa bandia. Wakati mwingine, wadukuzi wanaweza kuiga tovuti kwa kufanya mabadiliko madogo na yasiyoonekana kwa urahisi kwenye URL.</translation>
@@ -4366,6 +4366,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Halijoto ya mfumo</translation>
 <translation id="8233773197406738106">Inatayarisha faili</translation>
+<translation id="823490921909113114">Ili uwashe mipangilio hii na utumie maelezo ya malipo kutoka kwenye Akaunti yako ya Google, tembelea mipangilio ya huduma za kujaza kiotomatiki.</translation>
 <translation id="8238188918340945316">Inchi 28 x 40</translation>
 <translation id="8238581221633243064">Fungua ukurasa kwenye kichupo fiche kipya</translation>
 <translation id="8241707690549784388">Ukurasa unaotafuta ulitumia maelezo uliyoyaingiza. Kurudi kwenye ukurasa huo huenda kukasababisha tendo lolote ulilofanya lirudiwe. Je, ungependa kuendelea?</translation>
@@ -4948,6 +4949,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="9218430445555521422">Weka iwe chaguomsingi</translation>
 <translation id="9219103736887031265">Picha</translation>
 <translation id="922152298093051471">Weka mipangilio ya Chrome upendavyo</translation>
+<translation id="9221566509053798696">Google si mtoa huduma wako wa kujaza kiotomatiki</translation>
 <translation id="9222403027701923763">Elimu ya Msingi na Sekondari (K-12)</translation>
 <translation id="9222463428840654067">Namba ya kadi si sahihi</translation>
 <translation id="922849469395748170">Kadi za kutuza uaminifu</translation>

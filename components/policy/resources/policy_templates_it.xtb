@@ -2341,6 +2341,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
       Se la policy viene impostata su "UserOnly" (valore 1), gli utenti possono gestire i certificati a livello di utente, ma non quelli a livello di dispositivo.</translation>
 <translation id="2593762551209145088">Navigazione sicura non è mai attiva.</translation>
 <translation id="2594773358911436070">Impostazioni WebRTC</translation>
+<translation id="2600005880585324062">Consenti a <ph name="PRODUCT_NAME" /> di decidere quali origini isolare da altre origini nello stesso sito.</translation>
 <translation id="26023406105317310">Configura account Kerberos</translation>
 <translation id="2603237557651009842">Blocca l'API WebPrinting su questi siti</translation>
 <translation id="2603382859270873566">Attiva il supporto dell'API PPB_VideoDecoder(Dev).</translation>
@@ -2536,6 +2537,7 @@ Se la policy viene disattivata o se non viene configurata, gli utenti possono tr
 <translation id="2753637905605932878">Limita l'intervallo di porte UDP locali utilizzato da WebRTC</translation>
 <translation id="2755847332939882873">Consenti la raccolta di dati di rilevamento del rendimento a livello di sistema</translation>
 <translation id="2757054304033424106">Tipi di estensioni/app che possono essere installati</translation>
+<translation id="275769337615229465">La maggior parte delle origini verrà isolata dalle altre origini nello stesso sito.</translation>
 <translation id="2759224876420453487">Controlla il comportamento dell'utente in una sessione profilo multiplo</translation>
 <translation id="2760947619380644513">Consenti agli utenti che accedono da remoto di aprire gli URL lato host nel browser client locale</translation>
 <translation id="2761483219396643566">Ritardo avviso inattività in caso di utilizzo della batteria</translation>
@@ -5056,6 +5058,7 @@ Un dispositivo è considerato gestito utilizza una versione aziendale del sistem
       Se la policy non è impostata, l'utente può disattivare qualsiasi plug-in installato sul sistema.</translation>
 <translation id="4549695018986780856">Manifest v2 abilitato</translation>
 <translation id="4549729301485728119">Il valore predefinito è determinato da altri fattori</translation>
+<translation id="4554429681167460828">Nessuna origine verrà isolata da altre origini nello stesso sito, a meno che l'origine non abbia richiesto esplicitamente di essere isolata.</translation>
 <translation id="4554651132977135445">Modalità di elaborazione loopback delle policy relative agli utenti</translation>
 <translation id="4554991346503872538">Non offrire mai la traduzione</translation>
 <translation id="4555850956567117258">Attivazione dell'attestazione da remoto per l'utente</translation>
@@ -8348,6 +8351,7 @@ Le modifiche alla policy vengono applicate solo mentre ARC non è in esecuzione,
 <translation id="66265932317331474">Segnala informazioni sulla CPU</translation>
 <translation id="6628120204569232711">Segnala lo stato di archiviazione</translation>
 <translation id="662991036483361836">Impedisci agli utenti di attivare la Condivisione nelle vicinanze</translation>
+<translation id="6630693609822689611">Attiva per impostazione predefinita l'isolamento dei processi in base all'origine.</translation>
 <translation id="663685822663765995">Limita la modalità di stampa a colori</translation>
 <translation id="6640355849038068978">Se questa impostazione viene attivata, gli utenti potranno avviare l'applicazione Eche, ad esempio facendo clic su una notifica di Phone Hub.
 
@@ -9891,6 +9895,13 @@ Se questa policy non viene impostata, il renderer del PDF viene scelto dal brows
 <translation id="775822241671489040">Consente di controllare l'impostazione "Usa l'Avvio app/il tasto Ricerca per modificare il comportamento dei tasti funzione"</translation>
 <translation id="7758378441185523981">Attiva l'autenticazione ambientale in base ai tipi di profilo.</translation>
 <translation id="776110834126722255">Deprecata</translation>
+<translation id="7761702157788500857">Abilita l'isolamento dei processi in base all'origine per la maggior parte delle pagine (ovvero quelle assegnate per impostazione predefinita a un clustering degli agenti in base all'origine). Ciò migliora la sicurezza, ma aumenta anche il numero di processi creati. Gli utenti possono ignorare il valore della policy impostata tramite i flag della riga di comando o la pagina chrome://flags (per attivare o disattivare questa funzionalità).
+
+Se la policy viene attivata, la maggior parte delle origini viene isolata, anche da altre origini nello stesso sito. Consulta anche le policy <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> e <ph name="SITE_PER_PROCESS_POLICY_NAME" />.
+
+Se la policy viene disattivata, nessuna origine viene isolata dal resto del sito, a meno che un'origine non lo richieda esplicitamente.
+
+Se la policy non viene configurata, il browser determina quali origini isolare e quando isolarle.</translation>
 <translation id="7763614521440615342">Mostra suggerimenti di contenuti nella pagina Nuova scheda</translation>
 <translation id="7763650553214838209">L'impostazione di una scorciatoia per l'azione "Inserisci" è disattivata.</translation>
 <translation id="7763655314629932385">Specifica la versione che vuoi dell'IWA. Se viene fornita, il sistema tenterà di installare questa versione specifica e successivamente bloccherà eventuali ulteriori aggiornamenti. Per sbloccare l'app e abilitare nuovamente gli aggiornamenti, rimuovi questo campo. **Importante:** se la versione fornita non esiste, l'IWA rimane bloccata sulla versione installata al momento. Questo perché dopo aver tentato (e in questo caso senza successo) di eseguire l'aggiornamento alla versione bloccata, la limitazione degli aggiornamenti disabilita ulteriori aggiornamenti automatici.</translation>

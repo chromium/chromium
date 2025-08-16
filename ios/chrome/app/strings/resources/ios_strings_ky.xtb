@@ -513,6 +513,7 @@
 <translation id="2931440415625410757">Нускамаларды көрсөтүү</translation>
 <translation id="2952278131021475699">Lens аркылуу издөө</translation>
 <translation id="2962516096219646456">Автотолтуруунун бардык маалыматын көрүү</translation>
+<translation id="2965594942405840553">Бул аракет артка кайтарылбайт</translation>
 <translation id="2969979262385602596">Кире албай калдңз. Бир аздн кийн аракт кылп көрңз.</translation>
 <translation id="2975761176769946178">URL талап кылынат</translation>
 <translation id="297667759942911166">Өтмөктөр тобунда кызматташуу</translation>
@@ -664,6 +665,7 @@
 <translation id="3596414637720633074">Жашыруун режимде үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
 <translation id="3602260545951981695">Мыктылап коргоону тандаңыз</translation>
 <translation id="3610041351087301930">Окурман режимин жашыруу</translation>
+<translation id="3610866916973186448">Ооба, өчүрүү</translation>
 <translation id="3622175633937495219">Издөө таржымалы (<ph name="COUNT" /> табылды)</translation>
 <translation id="3625008969091706597">Артка кайтуу үчүн кырын сүрүп коюңуз.</translation>
 <translation id="362709345066740529">Карталарды, түрмөктү жана башкаларды бул жерде ыңгайлаштырыңыз</translation>
@@ -1973,6 +1975,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8561999115126307258">{count,plural, =1{Сырсөздүн {count} варианты баскычтоптун өйдө жагында жеткиликтүү.}other{Сырсөздүн {count} варианты баскычтоптун өйдө жагында жеткиликтүү.}}</translation>
 <translation id="8564894539416715395">Жаңы өтмөк бети</translation>
 <translation id="8569721750632860947">Окуу тизмеңизге кайсы URL'ди кошкуңуз келет?</translation>
+<translation id="8571019948162152515">"<ph name="FILENAME" />" өчүрүлсүнбү?</translation>
 <translation id="8571213806525832805">Акыркы 4 апта</translation>
 <translation id="8577056989960190117">Мөөнөтү аяктоочу жылды <ph name="YEAR" /> автотолтуруу</translation>
 <translation id="8588404856427128947">Өчүк</translation>

@@ -513,6 +513,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2931440415625410757">Anleitung einblenden</translation>
 <translation id="2952278131021475699">Lens-Kamerasuche</translation>
 <translation id="2962516096219646456">Alle Autofill-Daten ansehen</translation>
+<translation id="2965594942405840553">Diese Aktion kann nicht rückgängig gemacht werden</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
 <translation id="2975761176769946178">Es ist eine URL erforderlich</translation>
 <translation id="297667759942911166">In Tabgruppen gemeinsam arbeiten</translation>
@@ -664,6 +665,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3596414637720633074">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="3602260545951981695">Wähle „Erweiterter Schutz“ aus</translation>
 <translation id="3610041351087301930">Reader ausblenden</translation>
+<translation id="3610866916973186448">Ja, löschen</translation>
 <translation id="3622175633937495219">Suchverlauf (<ph name="COUNT" /> gefunden)</translation>
 <translation id="3625008969091706597">Du kannst über den Rand wischen, um zurückzugehen.</translation>
 <translation id="362709345066740529">Hier kannst du deine Karten, deinen Feed und mehr anpassen</translation>
@@ -1973,6 +1975,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8561999115126307258">{count,plural, =1{{count} Passwort oben auf der Tastatur verfügbar.}other{{count} verschiedene Passwörter oben auf der Tastatur verfügbar.}}</translation>
 <translation id="8564894539416715395">Seite „Neuer Tab“</translation>
 <translation id="8569721750632860947">Welche URL möchtest du deiner Leseliste hinzufügen?</translation>
+<translation id="8571019948162152515">„<ph name="FILENAME" />“ löschen?</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
 <translation id="8577056989960190117"><ph name="YEAR" /> als Ablaufjahr automatisch ausfüllen</translation>
 <translation id="8588404856427128947">Aus</translation>

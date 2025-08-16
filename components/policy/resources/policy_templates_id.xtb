@@ -2396,6 +2396,7 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
       Jika kebijakan disetel ke 'UserOnly' (nilai 1), pengguna akan dapat mengelola sertifikat pengguna, tetapi bukan sertifikat di seluruh perangkat.</translation>
 <translation id="2593762551209145088">Safe Browsing selalu tidak aktif.</translation>
 <translation id="2594773358911436070">Setelan WebRtc</translation>
+<translation id="2600005880585324062">Biarkan <ph name="PRODUCT_NAME" /> menentukan origin mana yang akan diisolasi dari origin lain di situs yang sama.</translation>
 <translation id="26023406105317310">Konfigurasikan akun Kerberos</translation>
 <translation id="2603237557651009842">Memblokir WebPrinting API di situs ini</translation>
 <translation id="2603382859270873566">Mengaktifkan dukungan untuk PPB_VideoDecoder(Dev) API.</translation>
@@ -2604,6 +2605,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentr
 <translation id="2753637905605932878">Membatasi rentang port UDP lokal yang digunakan oleh WebRTC</translation>
 <translation id="2755847332939882873">Mengizinkan pengumpulan jejak performa di seluruh sistem</translation>
 <translation id="2757054304033424106">Ketik ekstensi/aplikasi yang diizinkan untuk dipasang</translation>
+<translation id="275769337615229465">Sebagian besar origin akan diisolasi dari origin lain di situs yang sama.</translation>
 <translation id="2759224876420453487">Mengontrol perilaku pengguna pada sesi multiprofil</translation>
 <translation id="2760947619380644513">Mengizinkan pengguna akses jarak jauh untuk membuka URL sisi host di browser klien lokal mereka</translation>
 <translation id="2761483219396643566">Menunda peringatan waktu menganggur saat menggunakan daya baterai</translation>
@@ -5170,6 +5172,7 @@ Perangkat dianggap terkelola jika OS versi perusahaan digunakan, atau jika ada k
       Jika kebijakan ini tidak ditetapkan, pengguna dapat menonaktifkan plugin apa pun yang diinstal pada sistem.</translation>
 <translation id="4549695018986780856">Manifes v2 diaktifkan</translation>
 <translation id="4549729301485728119">Default ditentukan oleh faktor lain</translation>
+<translation id="4554429681167460828">Tidak ada origin yang akan diisolasi dari origin lain di situs yang sama, kecuali jika origin tersebut secara eksplisit meminta untuk diisolasi.</translation>
 <translation id="4554651132977135445">Mode pemrosesan loopback kebijakan pengguna</translation>
 <translation id="4554991346503872538">Jangan pernah tawarkan terjemahan</translation>
 <translation id="4555850956567117258">Mengaktifkan pengesahan jarak jauh bagi pengguna</translation>
@@ -8577,6 +8580,7 @@ Perubahan kebijakan hanya berlaku saat ARC tidak berjalan, misalnya saat memulai
 <translation id="66265932317331474">Melaporkan info CPU</translation>
 <translation id="6628120204569232711">Laporkan status penyimpanan</translation>
 <translation id="662991036483361836">Cegah pengguna mengaktifkan Berbagi Langsung</translation>
+<translation id="6630693609822689611">Mengaktifkan isolasi proses sesuai origin secara default.</translation>
 <translation id="663685822663765995">Batasi mode warna pencetakan</translation>
 <translation id="6640355849038068978">Jika setelan ini diaktifkan, pengguna akan dapat meluncurkan aplikasi Eche, misalnya dengan mengklik notifikasi Phone Hub.
 
@@ -10162,6 +10166,13 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
 <translation id="775822241671489040">Mengontrol setelan "Gunakan tombol peluncur/penelusuran untuk mengubah perilaku tombol fungsi"</translation>
 <translation id="7758378441185523981">Mengaktifkan Autentikasi Pasif untuk jenis profil.</translation>
 <translation id="776110834126722255">Tidak digunakan lagi</translation>
+<translation id="7761702157788500857">Mengaktifkan isolasi proses sesuai origin untuk sebagian besar halaman (misalnya, halaman yang secara default ditetapkan ke kelompok agen sesuai origin). Tindakan ini meningkatkan keamanan, tetapi juga menambah jumlah proses yang dibuat. Pengguna diizinkan untuk mengganti nilai kebijakan yang ditetapkan melalui tanda command line atau chrome://flags (baik untuk mengaktifkan maupun menonaktifkan fitur ini).
+
+Jika kebijakan ini disetel ke Aktif, sebagian besar origin akan diisolasi, bahkan dari origin lain di situs yang sama. Lihat juga kebijakan <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> dan <ph name="SITE_PER_PROCESS_POLICY_NAME" />.
+
+Jika kebijakan ini disetel ke Nonaktif, tidak ada origin yang diisolasi dari bagian situs lainnya, kecuali jika origin tersebut secara eksplisit memintanya.
+
+Jika kebijakan ini tidak disetel, browser akan menentukan origin mana yang akan diisolasi dan kapan origin tersebut akan diisolasi.</translation>
 <translation id="7763614521440615342">Tampilkan saran konten di halaman Tab Baru</translation>
 <translation id="7763650553214838209">Menyetel pintasan untuk tindakan "Insert" dinonaktifkan.</translation>
 <translation id="7763655314629932385">Menentukan versi IWA yang diinginkan. Jika disediakan, sistem akan mencoba menginstal versi tertentu ini dan kemudian memblokir update lebih lanjut. Untuk membatalkan penyematan aplikasi dan mengaktifkan update lagi, hapus kolom ini. **Penting:** Jika versi yang diberikan tidak ada, IWA akan tetap menggunakan versi yang saat ini diinstal. Hal ini terjadi karena setelah mencoba (dan gagal dalam hal ini) mengupdate ke versi yang disematkan, penyematan akan menonaktifkan update otomatis lebih lanjut.</translation>

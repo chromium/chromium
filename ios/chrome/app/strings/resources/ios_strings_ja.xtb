@@ -513,6 +513,7 @@
 <translation id="2931440415625410757">手順を表示</translation>
 <translation id="2952278131021475699">レンズでカメラ検索</translation>
 <translation id="2962516096219646456">自動入力データをすべて表示</translation>
+<translation id="2965594942405840553">この操作は元に戻せません</translation>
 <translation id="2969979262385602596">ログインできません。後でもう一度お試しください。</translation>
 <translation id="2975761176769946178">URL を入力してください</translation>
 <translation id="297667759942911166">タブグループでの共同作業</translation>
@@ -664,6 +665,7 @@
 <translation id="3596414637720633074">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="3602260545951981695">[保護強化機能] を選択</translation>
 <translation id="3610041351087301930">リーダーを非表示</translation>
+<translation id="3610866916973186448">はい、削除します</translation>
 <translation id="3622175633937495219">履歴を検索（<ph name="COUNT" /> 件見つかりました）</translation>
 <translation id="3625008969091706597">端をスワイプすると戻れます。</translation>
 <translation id="362709345066740529">カードやフィードなどをここでカスタマイズできます</translation>
@@ -1973,6 +1975,7 @@
 <translation id="8561999115126307258">{count,plural, =1{キーボードの上部に利用可能なパスワードの候補が {count} 件表示されています。}other{キーボードの上部に利用可能なパスワードの候補が {count} 件表示されています。}}</translation>
 <translation id="8564894539416715395">新しいタブページ</translation>
 <translation id="8569721750632860947">どの URL をリーディング リストに追加しますか？</translation>
+<translation id="8571019948162152515">「<ph name="FILENAME" />」を削除しますか？</translation>
 <translation id="8571213806525832805">過去 4 週間</translation>
 <translation id="8577056989960190117">有効期限（年）「<ph name="YEAR" />」を自動入力する</translation>
 <translation id="8588404856427128947">オフ</translation>

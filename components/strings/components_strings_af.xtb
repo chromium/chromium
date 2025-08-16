@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Soekenjinbesonderhede</translation>
+<translation id="1068467933609179019">Outovuldienste-instellings</translation>
 <translation id="1068672505746868501">Moet nooit bladsye in <ph name="SOURCE_LANGUAGE" /> vertaal nie</translation>
 <translation id="1070333806075222467">Metaal (glans)</translation>
 <translation id="1070901266639972381">Nag</translation>
@@ -317,7 +318,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1521655867290435174">Google Blaaie</translation>
 <translation id="1524669537550112617">Gemeubileerde huurplekke</translation>
 <translation id="1527263332363067270">Wag tans vir verbinding …</translation>
-<translation id="1527490370616010873">Google is nie jou outovulverskaffer nie. Besoek <ph name="BEGIN_LINK" />Instellings vir outovuldiens<ph name="END_LINK" /> om hierdie instellings te aktiveer en betaalinligting uit jou Google-rekening te gebruik.</translation>
 <translation id="1528311629279578926">Die verbinding is geblokkeer omdat dit deur ’n publieke bladsy geïnisieer is om aan toestelle of bedieners in jou privaat netwerk te koppel. Herlaai hierdie bladsy om die verbinding toe te laat.</translation>
 <translation id="1529789484829130889">Laai 8</translation>
 <translation id="1530707389502320859">Die werf wat jy so pas probeer besoek het, lyk vals. Aanvallers boots soms werwe na deur klein veranderinge wat moeilik sigbaar is aan die URL te maak.</translation>
@@ -4367,6 +4367,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Platformtemperatuur</translation>
 <translation id="8233773197406738106">Berei tans lêer voor</translation>
+<translation id="823490921909113114">Besoek outovuldienste-instellings om hierdie instellings te aktiveer en betaalinligting uit jou Google-rekening te gebruik.</translation>
 <translation id="8238188918340945316">28x40 dm.</translation>
 <translation id="8238581221633243064">Maak bladsy in nuwe incognito-oortjie oop</translation>
 <translation id="8241707690549784388">Die bladsy wat jy soek, het inligting gebruik wat jy ingevoer het. As jy na daardie bladsy terugkeer, kan van die handelinge wat jy uitgevoer het, herhaal word. Wil jy voortgaan?</translation>
@@ -4950,6 +4951,7 @@ Bykomende besonderhede:
 <translation id="9218430445555521422">Stel as verstek</translation>
 <translation id="9219103736887031265">Prente</translation>
 <translation id="922152298093051471">Pasmaak Chrome</translation>
+<translation id="9221566509053798696">Google is nie jou outovulverskaffer nie</translation>
 <translation id="9222403027701923763">Primêre en sekondêre skoolopleiding (GRAAD R-12)</translation>
 <translation id="9222463428840654067">Kaartnommer is ongeldig</translation>
 <translation id="922849469395748170">Lojaliteitskaarte</translation>

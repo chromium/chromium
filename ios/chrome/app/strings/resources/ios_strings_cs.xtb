@@ -513,6 +513,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2931440415625410757">Zobrazit pokyny</translation>
 <translation id="2952278131021475699">Vyhledávání Lens fotoaparátem</translation>
 <translation id="2962516096219646456">Zobrazit všechna data automatického vyplňování</translation>
+<translation id="2965594942405840553">Tuto akci nebude možné vrátit zpět</translation>
 <translation id="2969979262385602596">Přihlášení se nezdařilo. Zkuste to znovu později.</translation>
 <translation id="2975761176769946178">Adresa URL je povinná</translation>
 <translation id="297667759942911166">Spolupracujte ve skupinách karet</translation>
@@ -664,6 +665,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3596414637720633074">V anonymním režimu blokovat soubory cookie třetích stran</translation>
 <translation id="3602260545951981695">Vyberte Vylepšená ochrana</translation>
 <translation id="3610041351087301930">Skrýt čtenáře</translation>
+<translation id="3610866916973186448">Ano, smazat</translation>
 <translation id="3622175633937495219">Historie vyhledávání (nalezeno: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Přejetím přes okraj se můžete vrátit zpět.</translation>
 <translation id="362709345066740529">Tady si můžete přizpůsobit své karty, feed a další věci</translation>
@@ -1973,6 +1975,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8561999115126307258">{count,plural, =1{Nad klávesnicí je k dispozici {count} možnost hesla.}few{Nad klávesnicí jsou k dispozici {count} možnosti hesel.}many{Nad klávesnicí je k dispozici {count} možnosti hesla.}other{Nad klávesnicí je k dispozici {count} možností hesel.}}</translation>
 <translation id="8564894539416715395">Stránka Nová karta</translation>
 <translation id="8569721750632860947">Jakou adresu URL chcete přidat do seznamu četby?</translation>
+<translation id="8571019948162152515">Smazat certifikát <ph name="FILENAME" />?</translation>
 <translation id="8571213806525832805">Poslední 4 týdny</translation>
 <translation id="8577056989960190117">Automaticky vyplnit rok vypršení platnosti <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Vypnuto</translation>

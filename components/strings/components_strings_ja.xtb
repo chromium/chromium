@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">検索エンジンの詳細</translation>
+<translation id="1068467933609179019">自動入力サービスの設定</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" />のページを翻訳しない</translation>
 <translation id="1070333806075222467">金属（光沢）</translation>
 <translation id="1070901266639972381">夜間</translation>
@@ -317,7 +318,6 @@
 <translation id="1521655867290435174">Google スプレッドシート</translation>
 <translation id="1524669537550112617">家具付き賃貸物件</translation>
 <translation id="1527263332363067270">接続を待機しています…</translation>
-<translation id="1527490370616010873">Google は自動入力プロバイダとして設定されていません。これらの設定を有効にして Google アカウントのお支払い情報を使用するには、<ph name="BEGIN_LINK" />自動入力サービスの設定<ph name="END_LINK" />にアクセスしてください。</translation>
 <translation id="1528311629279578926">公開ページでプライベート ネットワーク上のデバイスまたはサーバーへの接続が開始されたため、接続がブロックされています。接続を許可するには、このページを再読み込みしてください。</translation>
 <translation id="1529789484829130889">トレイ 8</translation>
 <translation id="1530707389502320859">アクセスしようとしたサイトは偽装サイトのようです。不正なユーザーが URL のごく一部を一目ではわからないように改変してサイトを偽装する場合があります。</translation>
@@ -4369,6 +4369,7 @@
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">プラットフォームの温度</translation>
 <translation id="8233773197406738106">ファイルを準備しています</translation>
+<translation id="823490921909113114">これらの設定を有効にして Google アカウントのお支払い情報を使用するには、自動入力サービスの設定にアクセスしてください。</translation>
 <translation id="8238188918340945316">28x40 インチ</translation>
 <translation id="8238581221633243064">ページを新しいシークレット タブで開く</translation>
 <translation id="8241707690549784388">検索しているページは、入力した情報を使用しています。このページに戻った場合、操作のやり直しが発生する可能性があります。続行しますか？</translation>
@@ -4952,6 +4953,7 @@
 <translation id="9218430445555521422">デフォルトに設定</translation>
 <translation id="9219103736887031265">画像</translation>
 <translation id="922152298093051471">Chrome をカスタマイズ</translation>
+<translation id="9221566509053798696">Google は自動入力プロバイダとして設定されていません</translation>
 <translation id="9222403027701923763">小、中、高等学校</translation>
 <translation id="9222463428840654067">カード番号が無効です</translation>
 <translation id="922849469395748170">ポイントカード</translation>

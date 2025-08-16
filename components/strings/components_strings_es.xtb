@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Detalles del buscador</translation>
+<translation id="1068467933609179019">Configuración de los servicios de autocompletado</translation>
 <translation id="1068672505746868501">No traducir nunca las páginas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metal (brillante)</translation>
 <translation id="1070901266639972381">Noche</translation>
@@ -317,7 +318,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1521655867290435174">Hojas de cálculo de Google</translation>
 <translation id="1524669537550112617">Alquiler de viviendas amuebladas</translation>
 <translation id="1527263332363067270">Esperando conexión…</translation>
-<translation id="1527490370616010873">Google no es tu proveedor de autocompletado. Si quieres habilitar estos ajustes y usar la información para pagos de tu cuenta de Google, ve a <ph name="BEGIN_LINK" />Configuración de los servicios de autocompletado<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">La conexión está bloqueada porque la ha iniciado una página pública para conectarse a dispositivos o servidores de tu red privada. Vuelve a cargar esta página para permitir la conexión.</translation>
 <translation id="1529789484829130889">Bandeja 8</translation>
 <translation id="1530707389502320859">El sitio web al que estás intentando acceder parece falso. Los atacantes suelen imitar los sitios haciendo pequeños cambios en la URL que son difíciles de ver.</translation>
@@ -4368,6 +4368,7 @@ Más información:
 <translation id="822964464349305906"><ph name="TYPE_1" /> o <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Temperatura de plataforma</translation>
 <translation id="8233773197406738106">Preparando archivo</translation>
+<translation id="823490921909113114">Si quieres habilitar estos ajustes y usar la información para pagos de tu cuenta de Google, ve a la configuración de los servicios de autocompletado.</translation>
 <translation id="8238188918340945316">28x40 pulgadas</translation>
 <translation id="8238581221633243064">Abre una página en una nueva pestaña de Incógnito</translation>
 <translation id="8241707690549784388">La página que buscas ha utilizado la información que has especificado. Volver a la página podría provocar la repetición de alguna acción. ¿Quieres continuar?</translation>
@@ -4951,6 +4952,7 @@ Más información:
 <translation id="9218430445555521422">Establecer como predeterminado</translation>
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
+<translation id="9221566509053798696">Google no es tu proveedor de autocompletado</translation>
 <translation id="9222403027701923763">Educación primaria y secundaria</translation>
 <translation id="9222463428840654067">El número de tarjeta no es válido</translation>
 <translation id="922849469395748170">Tarjetas de fidelización</translation>

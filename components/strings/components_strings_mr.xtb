@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">शोध इंजीनचे तपशील</translation>
+<translation id="1068467933609179019">ऑटोफिल सेवा सेटिंग्ज</translation>
 <translation id="1068672505746868501">पेज <ph name="SOURCE_LANGUAGE" /> मध्ये कधीही भाषांतरित करू नका</translation>
 <translation id="1070333806075222467">मेटल (ग्लॉसी)</translation>
 <translation id="1070901266639972381">रात्रीपर्यंत</translation>
@@ -317,7 +318,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">फर्निश केलेली रेंटल</translation>
 <translation id="1527263332363067270">कनेक्शनची वाट पाहत आहे...</translation>
-<translation id="1527490370616010873">Google तुमचा ऑटोफिल पुरवठादार नाही. ही सेटिंग्ज सुरू करण्यासाठी आणि तुमच्या Google खाते मधील पेमेंट माहिती वापरण्यासाठी, <ph name="BEGIN_LINK" />ऑटोफिल सेवा सेटिंग्ज<ph name="END_LINK" /> ला भेट द्या.</translation>
 <translation id="1528311629279578926">कनेक्शन ब्लॉक केले आहे, कारण ते तुमच्या खाजगी नेटवर्कवरील डिव्हाइस किंवा सर्व्हरशी कनेक्ट करण्यासाठी सार्वजनिक पेजवरून सुरू केले होते. कनेक्शनची अनुमती देण्यासाठी हे पेज रीलोड करा.</translation>
 <translation id="1529789484829130889">ट्रे ८</translation>
 <translation id="1530707389502320859">तुम्ही नुकतेच भेट देण्याचा प्रयत्न करत असलेली साइट बनावट असल्याची दिसते. आक्रमणकर्ते काहीवेळा URL मध्ये छोटे व पाहण्यासाठी कठीण असलेले बदल करून बनावट साइट बनवतात.</translation>
@@ -4368,6 +4368,7 @@
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">प्लॅटफॉर्मचे तापमान</translation>
 <translation id="8233773197406738106">फाइल तयार करत आहे</translation>
+<translation id="823490921909113114">ही सेटिंग्ज सुरू करण्यासाठी आणि तुमच्या Google खाते मधील पेमेंट माहिती वापरण्यासाठी, ऑटोफिल सेवा सेटिंग्जला भेट द्या.</translation>
 <translation id="8238188918340945316">28 x 40 in</translation>
 <translation id="8238581221633243064">पेज नवीन गुप्त टॅबमध्ये उघडा</translation>
 <translation id="8241707690549784388">तुम्ही जे पेज शोधत आहत ते तुम्ही एंटर केलेली माहिती वापरत आहे. त्या पेजकडे परत गेल्यास कदाचित तुम्ही केलेल्या कोणत्याही क्रियेची पुनरावृत्ती होईल. तुम्ही सुरू ठेवू इच्छिता?</translation>
@@ -4951,6 +4952,7 @@
 <translation id="9218430445555521422">डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="922152298093051471">Chrome कस्टमाइझ करा</translation>
+<translation id="9221566509053798696">Google तुमचा ऑटोफिल पुरवठादार नाही</translation>
 <translation id="9222403027701923763">प्राथमिक आणि माध्‍यमिक शिक्षण (K-12)</translation>
 <translation id="9222463428840654067">कार्डचा नंबर चुकीचा आहे</translation>
 <translation id="922849469395748170">लॉयल्‍टी कार्ड</translation>

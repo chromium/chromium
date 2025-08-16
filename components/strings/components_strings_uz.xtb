@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Qidiruv tizimi tafsilotlari</translation>
+<translation id="1068467933609179019">Avtomatik kiritish xizmati sozlamalari</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> tilidagi sahifalar hech qachon tarjima qilinmasin</translation>
 <translation id="1070333806075222467">Metall (yaltiroq)</translation>
 <translation id="1070901266639972381">Tun</translation>
@@ -317,7 +318,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Mebel ijarasi</translation>
 <translation id="1527263332363067270">Aloqa kutilmoqda…</translation>
-<translation id="1527490370616010873">Google avtomatik kirituvchi provayder emas. Bu sozlamalarni yoqib, Google hisobingizdagi toʻlov axborotidan foydalanish uchun <ph name="BEGIN_LINK" />Avtomatik kiritish xizmati sozlamalariga<ph name="END_LINK" /> kiring.</translation>
 <translation id="1528311629279578926">Ulanish bloklangan, chunki xususiy tarmoqdagi qurilma yoki serverlarga ulanish uchun ochiq sahifa tomonidan boshlangan. Ulanishga ruxsat berish uchun bu sahifani qayta yuklang.</translation>
 <translation id="1529789484829130889">Tarnov 8</translation>
 <translation id="1530707389502320859">Hozirgina ochilgan sayt soxta shekilli. Odatda shubhali kimsalar URL manzilda kichik oʻzgarishlar kiritib, saytlarga soxta nusxalar yasaydi.</translation>
@@ -4361,6 +4361,7 @@ Batafsil axborot:
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Platforma harorati</translation>
 <translation id="8233773197406738106">Fayl tayyorlanmoqda</translation>
+<translation id="823490921909113114">Bu sozlamalarni yoqib, Google hisobingizdagi toʻlov axborotidan foydalanish uchun avtomatik kiritish xizmati sozlamalariga kiring.</translation>
 <translation id="8238188918340945316">28 x 40 in</translation>
 <translation id="8238581221633243064">Sahifani yangi inkognito varaqda ochish</translation>
 <translation id="8241707690549784388">Siz qidirayotgan sahifada o‘zingiz kiritgan ma’lumotlardan foydalanilgan. Unga qaytib borsangiz, u yerda bajargan amallaringiz takrorlanishi mumkin. Davom etasizmi?</translation>
@@ -4944,6 +4945,7 @@ Batafsil axborot:
 <translation id="9218430445555521422">Birlamchi qilish</translation>
 <translation id="9219103736887031265">Rasmlar</translation>
 <translation id="922152298093051471">Chromeni moslash</translation>
+<translation id="9221566509053798696">Avtomatik kiritish xizmatingiz Google emas.</translation>
 <translation id="9222403027701923763">Boshlangʻich va oʻrta taʼlim (K-12)</translation>
 <translation id="9222463428840654067">Karta raqami xato</translation>
 <translation id="922849469395748170">Sodiq mijoz kartalari</translation>

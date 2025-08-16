@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">검색엔진 세부정보</translation>
+<translation id="1068467933609179019">자동 완성 서비스 설정</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" />로 된 페이지는 번역하지 않음</translation>
 <translation id="1070333806075222467">금속(유광)</translation>
 <translation id="1070901266639972381">밤</translation>
@@ -317,7 +318,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">풀옵션 임대</translation>
 <translation id="1527263332363067270">연결 대기 중...</translation>
-<translation id="1527490370616010873">Google은 자동 완성 제공업체가 아닙니다. 이 설정을 사용 설정하고 Google 계정의 결제 정보를 사용하려면 <ph name="BEGIN_LINK" />자동 완성 서비스 설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="1528311629279578926">공개 페이지에서 비공개 네트워크에 있는 기기나 서버에 연결하려 했기 때문에 연결이 차단되었습니다. 연결을 허용하려면 이 페이지를 새로고침하세요.</translation>
 <translation id="1529789484829130889">트레이 8</translation>
 <translation id="1530707389502320859">방문하려고 한 사이트가 허위 사이트로 보입니다. 일부 공격자는 사이트의 URL을 알아채기 어려울 정도로 약간 변경하여 다른 사이트를 모방합니다.</translation>
@@ -4367,6 +4367,7 @@
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">플랫폼 온도</translation>
 <translation id="8233773197406738106">파일 준비 중</translation>
+<translation id="823490921909113114">이 설정을 사용 설정하고 Google 계정의 결제 정보를 사용하려면 자동 완성 서비스 설정으로 이동하세요.</translation>
 <translation id="8238188918340945316">28x40인치</translation>
 <translation id="8238581221633243064">새 시크릿 창에서 페이지 열기</translation>
 <translation id="8241707690549784388">찾고 있는 페이지에서 사용자가 입력한 정보를 사용했습니다. 해당 페이지로 돌아가면 기존 작업을 반복할 수 있습니다. 계속하시겠습니까?</translation>
@@ -4949,6 +4950,7 @@
 <translation id="9218430445555521422">기본값으로 설정</translation>
 <translation id="9219103736887031265">이미지</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>
+<translation id="9221566509053798696">Google은 자동 완성 제공업체가 아닙니다.</translation>
 <translation id="9222403027701923763">초중고교(K-12)</translation>
 <translation id="9222463428840654067">카드 번호가 잘못됨</translation>
 <translation id="922849469395748170">포인트 카드</translation>

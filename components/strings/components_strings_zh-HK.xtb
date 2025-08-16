@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">搜尋引擎詳情</translation>
+<translation id="1068467933609179019">自動填入服務設定</translation>
 <translation id="1068672505746868501">永不翻譯來源語言為<ph name="SOURCE_LANGUAGE" />的網頁</translation>
 <translation id="1070333806075222467">金屬 (光面)</translation>
 <translation id="1070901266639972381">晚上</translation>
@@ -317,7 +318,6 @@
 <translation id="1521655867290435174">Google 試算表</translation>
 <translation id="1524669537550112617">傢俱齊備的租盤</translation>
 <translation id="1527263332363067270">正在等待連線…</translation>
-<translation id="1527490370616010873">Google 並非你的自動填入服務供應商。如要啟用這些設定並使用 Google 帳戶中的付款資料，請前往「<ph name="BEGIN_LINK" />自動填入服務設定<ph name="END_LINK" />」。</translation>
 <translation id="1528311629279578926">由於公開頁面要連線至私人網絡上的裝置或伺服器，因此系統封鎖連線。請重新載入此頁面以允許連線。</translation>
 <translation id="1529789484829130889">紙匣 8</translation>
 <translation id="1530707389502320859">您剛才嘗試前往的網站可能是假網站。攻擊者有時會在網址中加入難以辨識的細微變更來仿冒網站。</translation>
@@ -4367,6 +4367,7 @@
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">平台溫度</translation>
 <translation id="8233773197406738106">正在準備檔案</translation>
+<translation id="823490921909113114">如要啟用這些設定並使用 Google 帳戶中的付款資料，請前往自動填入服務設定。</translation>
 <translation id="8238188918340945316">28 x 40 吋</translation>
 <translation id="8238581221633243064">在新無痕式分頁中開啟網頁</translation>
 <translation id="8241707690549784388">您尋找的網頁使用了您輸入的資料。返回該頁會重複您剛才的動作。您確定要繼續嗎？</translation>
@@ -4949,6 +4950,7 @@
 <translation id="9218430445555521422">設定為預設</translation>
 <translation id="9219103736887031265">圖片</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
+<translation id="9221566509053798696">Google 並非你的自動填入服務供應商</translation>
 <translation id="9222403027701923763">小學和中學</translation>
 <translation id="9222463428840654067">卡號無效</translation>
 <translation id="922849469395748170">會員卡</translation>

@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Bilatzailearen xehetasunak</translation>
+<translation id="1068467933609179019">Automatikoki betetzeko zerbitzuen ezarpenak</translation>
 <translation id="1068672505746868501">Ez itzuli inoiz <ph name="SOURCE_LANGUAGE" /> darabilten orriak</translation>
 <translation id="1070333806075222467">Metala (distiratsua)</translation>
 <translation id="1070901266639972381">Gaua</translation>
@@ -317,7 +318,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1521655867290435174">Google Kalkulu-orriak</translation>
 <translation id="1524669537550112617">Altzariz hornitutako jabetzen alokairua</translation>
 <translation id="1527263332363067270">Konektatzeko zain…</translation>
-<translation id="1527490370616010873">Google ez da pasahitzaren eremua automatikoki betetzeko zerbitzuaren hornitzailea. Ezarpen hauek gaitu eta Google-ko kontuko ordainketa-informazioa erabiltzeko, joan <ph name="BEGIN_LINK" />automatikoki betetzeko zerbitzuaren ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Konexioa blokeatuta dago, orri publiko batek abiarazi duelako zure sare pribatuko gailu edo zerbitzarietara konektatzeko helburuarekin. Konektatzeko baimena emateko, kargatu orria berriro.</translation>
 <translation id="1529789484829130889">8. erretilua</translation>
 <translation id="1530707389502320859">Bisitatzen saiatu zaren webguneak faltsua dirudi. Batzuetan, erasotzaileek webgune ofizialen plantak egiten dituzte URLari aldaketa oso txikiak eginda.</translation>
@@ -4362,6 +4362,7 @@ Xehetasun gehiago:
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Plataformaren tenperatura</translation>
 <translation id="8233773197406738106">Fitxategia prestatzen</translation>
+<translation id="823490921909113114">Ezarpen hauek gaitu eta Google-ko kontuko ordainketa-informazioa erabiltzeko, joan automatikoki betetzeko zerbitzuen ezarpenetara.</translation>
 <translation id="8238188918340945316">28 × 40 in</translation>
 <translation id="8238581221633243064">Ireki orria ezkutuko moduko fitxa berri batean</translation>
 <translation id="8241707690549784388">Bilatzen ari zaren orriak idatzi duzun informazioa erabili du. Orrira itzultzen bazara, baliteke egin dituzun ekintzak errepikatzea. Jarraitu nahi duzu?</translation>
@@ -4944,6 +4945,7 @@ Xehetasun gehiago:
 <translation id="9218430445555521422">Ezarri lehenetsi gisa</translation>
 <translation id="9219103736887031265">Irudiak</translation>
 <translation id="922152298093051471">Pertsonalizatu Chrome</translation>
+<translation id="9221566509053798696">Google ez da automatikoki betetzeko zerbitzuen hornitzailea</translation>
 <translation id="9222403027701923763">Lehen eta bigarren hezkuntza</translation>
 <translation id="9222463428840654067">Txartel-zenbakiak ez du balio</translation>
 <translation id="922849469395748170">Fideltasun-txartelak</translation>

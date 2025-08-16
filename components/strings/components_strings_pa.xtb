@@ -40,6 +40,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">ਖੋਜ ਇੰਜਣ ਸੰਬੰਧੀ ਵੇਰਵੇ</translation>
+<translation id="1068467933609179019">ਆਟੋਫਿਲ ਸੇਵਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="1068672505746868501">ਕਦੇ ਵੀ ਪੰਨਿਆਂ ਦਾ ਅਨੁਵਾਦ <ph name="SOURCE_LANGUAGE" /> ਵਿੱਚ ਨਾ ਕਰੋ</translation>
 <translation id="1070333806075222467">ਧਾਤ (ਗਲੋਸੀ)</translation>
 <translation id="1070901266639972381">ਰਾਤ</translation>
@@ -317,7 +318,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">ਫ਼ਰਨੀਚਰ ਸਮੇਤ ਕਿਰਾਏ 'ਤੇ ਘਰ</translation>
 <translation id="1527263332363067270">ਕਨੈਕਸ਼ਨ ਦੀ ਉਡੀਕ ਹੋ ਰਹੀ ਹੈ...</translation>
-<translation id="1527490370616010873">Google ਤੁਹਾਡਾ ਆਟੋਫਿਲ ਪ੍ਰਦਾਨਕ ਨਹੀਂ ਹੈ। ਇਨ੍ਹਾਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਚਾਲੂ ਕਰਨ ਵਾਸਤੇ ਅਤੇ ਆਪਣੇ Google ਖਾਤੇ ਤੋਂ ਭੁਗਤਾਨ ਜਾਣਕਾਰੀ ਵਰਤਣ ਲਈ, <ph name="BEGIN_LINK" />ਆਟੋਫਿਲ ਸੇਵਾਵਾਂ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="1528311629279578926">ਨਿੱਜੀ ਨੈੱਟਵਰਕ 'ਤੇ ਡੀਵਾਈਸਾਂ ਜਾਂ ਸਰਵਰਾਂ ਨਾਲ ਕੁਨੈਕਟ ਕਰਨ ਲਈ ਜਨਤਕ ਪੰਨੇ ਵੱਲੋਂ ਸ਼ੁਰੂਆਤ ਕਰ ਦਿੱਤੇ ਜਾਣ ਕਰਕੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਕਨੈਕਸ਼ਨ ਨੂੰ ਆਗਿਆ ਦੇਣ ਲਈ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ।</translation>
 <translation id="1529789484829130889">ਟ੍ਰੇਅ 8</translation>
 <translation id="1530707389502320859">ਜਿਸ ਸਾਈਟ 'ਤੇ ਤੁਸੀਂ ਹੁਣੇ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਉਹ ਨਕਲੀ ਲੱਗਦੀ ਹੈ। ਹਮਲਾਵਰ ਕਦੇ-ਕਦਾਈ URL ਵਿੱਚ ਮੁਸ਼ਕਲ ਨਾਲ ਪਤਾ ਲੱਗਣ ਵਾਲੀਆਂ ਨਿੱਕੀਆਂ ਤਬਦੀਲੀਆਂ ਕਰਕੇ ਸਾਈਟਾਂ ਦੀ ਨਕਲ ਤਿਆਰ ਕਰਦੇ ਹਨ।</translation>
@@ -4363,6 +4363,7 @@
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">ਪਲੇਟਫਾਰਮ ਦਾ ਤਾਪਮਾਨ</translation>
 <translation id="8233773197406738106">ਫ਼ਾਈਲ ਨੂੰ ਤਿਆਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="823490921909113114">ਇਨ੍ਹਾਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਚਾਲੂ ਕਰਨ ਵਾਸਤੇ ਅਤੇ ਆਪਣੇ Google ਖਾਤੇ ਤੋਂ ਭੁਗਤਾਨ ਜਾਣਕਾਰੀ ਵਰਤਣ ਲਈ, ਆਟੋਫਿਲ ਸੇਵਾਵਾਂ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="8238188918340945316">28 x 40 ਇੰਚ</translation>
 <translation id="8238581221633243064">ਕਿਸੇ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਵਿੱਚ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="8241707690549784388">ਪੰਨਾ ਜੋ ਤੁਸੀਂ ਵਰਤੀ ਗਈ ਜਾਣਕਾਰੀ ਲਈ ਖੋਜ ਰਹੇ ਹੋ, ਉਹ ਤੁਸੀਂ ਦਰਜ ਕੀਤਾ ਸੀ। ਉਸ ਪੰਨਾ 'ਤੇ ਵਾਪਸ ਜਾਣ ਨਾਲ ਤੁਹਾਡੇ ਵੱਲੋਂ ਕੀਤੀ ਗਈ ਕੋਈ ਵੀ ਕਾਰਵਾਈ ਦੁਹਰਾਈ ਜਾ ਸਕਦੀ ਹੈ। ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
@@ -4946,6 +4947,7 @@
 <translation id="9218430445555521422">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="9219103736887031265">ਚਿੱਤਰ</translation>
 <translation id="922152298093051471">Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
+<translation id="9221566509053798696">Google ਤੁਹਾਡਾ ਆਟੋਫਿਲ ਪ੍ਰਦਾਨਕ ਨਹੀਂ ਹੈ</translation>
 <translation id="9222403027701923763">ਪ੍ਰਾਇਮਰੀ ਅਤੇ ਸੈਕੰਡਰੀ ਸਕੂਲ (K-12)</translation>
 <translation id="9222463428840654067">ਕਾਰਡ ਨੰਬਰ ਅਵੈਧ ਹੈ</translation>
 <translation id="922849469395748170">ਵਫ਼ਾਦਾਰੀ ਕਾਰਡ</translation>

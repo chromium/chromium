@@ -513,6 +513,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2931440415625410757">Shfaq udhëzimet</translation>
 <translation id="2952278131021475699">Kërkimi me kamerën e "Lentes"</translation>
 <translation id="2962516096219646456">Shiko të gjitha të dhënat për plotësimin automatik</translation>
+<translation id="2965594942405840553">Ky veprim nuk mund të zhbëhet</translation>
 <translation id="2969979262385602596">Nuk mund të identifikohej. Provo përsëri.</translation>
 <translation id="2975761176769946178">Kërkohet një URL</translation>
 <translation id="297667759942911166">Bashkëpuno në grupet e skedave</translation>
@@ -664,6 +665,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3596414637720633074">Blloko kukit e palëve të treta në modalitetin "I fshehtë"</translation>
 <translation id="3602260545951981695">Zgjidh "Mbrojtjen e përmirësuar"</translation>
 <translation id="3610041351087301930">Fshih lexuesin</translation>
+<translation id="3610866916973186448">Po, fshije</translation>
 <translation id="3622175633937495219">Historiku i kërkimeve (u gjetën <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Mund të rrëshqasësh shpejt anash për të kaluar pas.</translation>
 <translation id="362709345066740529">Personalizo kartat, furnizimin dhe më shumë këtu</translation>
@@ -1973,6 +1975,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8561999115126307258">{count,plural, =1{{count} opsion për fjalëkalimin është i disponueshëm mbi tastierën tënde.}other{{count} opsione për fjalëkalimin janë të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="8564894539416715395">Faqja e skedës së re</translation>
 <translation id="8569721750632860947">Cilën URL dëshiron të shtosh te lista e leximit?</translation>
+<translation id="8571019948162152515">Të fshihet "<ph name="FILENAME" />"?</translation>
 <translation id="8571213806525832805">4 javët e fundit</translation>
 <translation id="8577056989960190117">Plotëso automatikisht vitin e skadimit: <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Joaktiv</translation>
