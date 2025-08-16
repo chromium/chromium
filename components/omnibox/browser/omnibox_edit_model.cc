@@ -1798,6 +1798,11 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   // Special case for applying focus to the AIM button.
   if (popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
     view_->ApplyFocusRingToAimButton(true);
+    // Without this, focus indicators may appear stale (see crbug.com/1369229).
+    // Specifically, if the last suggestion in the list has one or more buttons,
+    // the focus ring will remain around the last one when focus wraps back
+    // around to the AIM button in the zero-input state.
+    popup_view_->UpdatePopupAppearance();
     return;
   }
 
@@ -2084,6 +2089,7 @@ OmniboxEditModel::MaybeGetPopupAccessibilityLabelForIPHSuggestion() {
       // Iff the next selection (the next time the user presses tab) is the
       // remove suggestion button for the IPH row, also append its a11y label.
       auto next_selection = popup_selection_.GetNextSelection(
+          autocomplete_controller()->input(),
           autocomplete_controller()->result(),
           controller_->client()->GetTemplateURLService(),
           OmniboxPopupSelection::kForward, OmniboxPopupSelection::kStateOrLine);
@@ -2251,7 +2257,7 @@ void OmniboxEditModel::StepPopupSelection(
   // wrong suggestion when stepping backwards.
   const OmniboxPopupSelection old_selection = GetPopupSelection();
   OmniboxPopupSelection new_selection = old_selection.GetNextSelection(
-      autocomplete_controller()->result(),
+      autocomplete_controller()->input(), autocomplete_controller()->result(),
       controller_->client()->GetTemplateURLService(), direction, step);
   if (kIsDesktop) {
     if (old_selection.IsChangeToKeyword(new_selection)) {

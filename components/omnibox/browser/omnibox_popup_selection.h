@@ -6,9 +6,12 @@
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_SELECTION_H_
 
 #include <stddef.h>
+
+#include <tuple>
 #include <vector>
 
 class AutocompleteResult;
+class AutocompleteInput;
 class TemplateURLService;
 
 struct OmniboxPopupSelection {
@@ -103,25 +106,15 @@ struct OmniboxPopupSelection {
 
   // Special handling is required for ordering, since `kNoMatch` can have an
   // associated `FOCUSED_BUTTON_AIM` state and we need `kNoMatch` to be treated
-  // as the smallest value.
+  // as the smallest value while it is being represented as the maximum value of
+  // size_t (static_cast<size_t>(-1)).
   friend std::strong_ordering operator<=>(const OmniboxPopupSelection& a,
                                           const OmniboxPopupSelection& b) {
-    // `kNoMatch` is the is always less than other values.
-    if (a.line == kNoMatch && b.line != kNoMatch) {
-      return std::strong_ordering::less;
-    }
-    if (a.line != kNoMatch && b.line == kNoMatch) {
-      return std::strong_ordering::greater;
-    }
-
-    // If both or neither have kNoMatch, proceed with member-wise comparison.
-    if (auto cmp = a.line <=> b.line; cmp != 0) {
-      return cmp;
-    }
-    if (auto cmp = a.state <=> b.state; cmp != 0) {
-      return cmp;
-    }
-    return a.action_index <=> b.action_index;
+    auto sort_key = [](const OmniboxPopupSelection& selection) {
+      return std::make_tuple(selection.line == kNoMatch ? 0 : 1, selection.line,
+                             selection.state, selection.action_index);
+    };
+    return sort_key(a) <=> sort_key(b);
   }
 
   // Returns true if going to this selection from given `from` selection
@@ -140,6 +133,7 @@ struct OmniboxPopupSelection {
 
   // Returns the next selection after this one in given `result`.
   OmniboxPopupSelection GetNextSelection(
+      const AutocompleteInput& input,
       const AutocompleteResult& result,
       TemplateURLService* template_url_service,
       Direction direction,
@@ -147,10 +141,11 @@ struct OmniboxPopupSelection {
 
  private:
   //  This is a utility function to support `GetNextSelection`.
-  std::vector<OmniboxPopupSelection> GetAllAvailableSelectionsSorted(
+  static std::vector<OmniboxPopupSelection> GetAllAvailableSelectionsSorted(
+      const AutocompleteInput& input,
       const AutocompleteResult& result,
       TemplateURLService* template_url_service,
-      Step step) const;
+      Step step);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_SELECTION_H_
