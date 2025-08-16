@@ -1411,8 +1411,7 @@
     "name": "calculate-native-win-occlusion",
     "owners": [ "davidbienvenu@chromium.org", "fdoray@chromium.org" ],
     "expiry_milestone": 130
-  },
-  {
+  },  {
     "name": "camera-mic-effects",
     "owners": [
       "bryantchandler@chromium.org",
@@ -2845,6 +2844,11 @@
       "chominskib@google.com",
       "lt-web-apps-team@google.com"
     ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "enable-annotated-page-contents-for-virtual-structure",
+    "owners": ["ssid@chromium.org", "salg@google.com"],
     "expiry_milestone": 150
   },
   {

@@ -7913,6 +7913,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          safe_browsing::kGlobalCacheListForGatingNotificationProtections)},
 
+    {"enable-annotated-page-contents-for-virtual-structure",
+     flag_descriptions::kAnnotatedPageContentsForVirtualStructureName,
+     flag_descriptions::kAnnotatedPageContentsForVirtualStructureDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kAnnotatedPageContentsVirtualStructure)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"report-notification-content-detection-data",

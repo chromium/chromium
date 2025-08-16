@@ -3375,6 +3375,13 @@ const char kGlobalCacheListForGatingNotificationProtectionsDescription[] =
     "Enables using the global cache list, rather than using the Safe Browsing "
     "allowlist, to gate notification content warnings and behavior-based "
     "telemetry.";
+
+const char kAnnotatedPageContentsForVirtualStructureName[] =
+    "Use annotated page contents to populate virtual structure";
+const char kAnnotatedPageContentsForVirtualStructureDescription[] =
+    "Use annotated page content proto instead of accessibility snapshot to "
+    "populate virtual structure on tabbed activity.";
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kPowerBookmarkBackendName[] = "Power bookmark backend";

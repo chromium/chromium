@@ -9270,6 +9270,8 @@ from previous Chrome versions.
   <int value="-1784452112" label="ReplaceSyncPromosWithSignInPromos:enabled"/>
   <int value="-1783790234"
       label="AutofillEnableOfferNotificationCrossTabTracking:enabled"/>
+  <int value="-1782989640"
+      label="AnnotatedPageContentsVirtualStructure:disabled"/>
   <int value="-1782853869"
       label="WebAppSyncGeneratedIconRetroactiveFix:enabled"/>
   <int value="-1782684481"
@@ -17615,6 +17617,8 @@ from previous Chrome versions.
   <int value="1259798038" label="AllowAmbientEQ:disabled"/>
   <int value="1260186484" label="spurious-power-button-screen-accel"/>
   <int value="1260234477" label="(Obsolete) ExplicitLanguageAsk:enabled"/>
+  <int value="1260878896"
+      label="AnnotatedPageContentsVirtualStructure:enabled"/>
   <int value="1261379424" label="DecodeLossyWebPImagesToYUV:disabled"/>
   <int value="1261620998" label="IntentPickerPWAPersistence:disabled"/>
   <int value="1261713150" label="ChromeHomeOptOutSnackbar:disabled"/>
