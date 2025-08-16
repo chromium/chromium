@@ -629,10 +629,10 @@ void RenderThreadImpl::Init() {
   // been initialized by the Zygote before this instance became a Renderer.
   media::InitializeMediaLibrary();
 
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
-      base::BindRepeating(&RenderThreadImpl::OnMemoryPressure,
-                          base::Unretained(this)));
+  memory_pressure_listener_ =
+      std::make_unique<base::AsyncMemoryPressureListener>(
+          FROM_HERE, base::BindRepeating(&RenderThreadImpl::OnMemoryPressure,
+                                         base::Unretained(this)));
   // In tests or in single-process mode, the render thread does not live on the
   // main thread of the process, so we can't register a sync listener.
   if (base::SingleThreadTaskRunner::GetMainThreadDefault()
