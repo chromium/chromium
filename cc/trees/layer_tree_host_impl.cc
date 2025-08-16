@@ -524,9 +524,10 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableLayerTreeHostMemoryPressure)) {
-    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-        FROM_HERE, base::BindRepeating(&LayerTreeHostImpl::OnMemoryPressure,
-                                       base::Unretained(this)));
+    memory_pressure_listener_ =
+        std::make_unique<base::AsyncMemoryPressureListener>(
+            FROM_HERE, base::BindRepeating(&LayerTreeHostImpl::OnMemoryPressure,
+                                           base::Unretained(this)));
   }
 
   SetDebugState(settings.initial_debug_state);
