@@ -120,16 +120,15 @@ struct CalcProvider : Config<CalcProvider> {
 
 // AIM related omnibox features.
 struct AiMode : Config<AiMode> {
-  DECLARE_FEATURE(kAiModeEchoMatchTweaks);
+  DECLARE_FEATURE(kAllowAiModeMatches);
   DECLARE_FEATURE(kAiModeEligibility);
 
   AiMode();
 
-  // Chromium-side tweaks to accommodate AI mode echo matches from the server.
-  // Disabling this won't actually disable AI mode echo matches altogether;
-  // that's controlled server side. This just changes client side behavior to
-  // allow them to work well.
-  bool ai_mode_echo_match_tweaks;
+  // Chromium-side guard for AI matches from the search server. Enabling this
+  // won't guarantee AI mode matches are shown; that mostly depends on server
+  // side. But disabling this will hide the server echo matches.
+  bool allow_ai_mode_matches;
 
   // Deduping doesn't consider extra query params like `udm=50`.
   // `google.com/?q=query&udm=50` and `google.com/?q=query` would usually be

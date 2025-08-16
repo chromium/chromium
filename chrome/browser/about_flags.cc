@@ -6957,6 +6957,11 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxToolbeltVariations,
          "OmniboxToolbelt")},
 
+    {"omnibox-allow-ai-mode-matches",
+     flag_descriptions::kOmniboxAllowAiModeMatchesName,
+     flag_descriptions::kOmniboxAllowAiModeMatchesDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::AiMode::kAllowAiModeMatches)},
+
     {"omnibox-drive-suggestions-no-sync-requirement",
      flag_descriptions::kOmniboxDriveSuggestionsNoSyncRequirementName,
      flag_descriptions::kOmniboxDriveSuggestionsNoSyncRequirementDescription,

@@ -2799,6 +2799,10 @@ const char kOmniboxAdjustIndentationDescription[] =
     "Adjusts the indentation of the omnibox and the suggestions to eliminate "
     "the visual shift when the popup opens.";
 
+const char kOmniboxAllowAiModeMatchesName[] = "Omnibox Allow AI Mode Matches";
+const char kOmniboxAllowAiModeMatchesDescription[] =
+    "Allow showing AI mode matches if returned from the search server.";
+
 const char kOmniboxAnswerActionsName[] = "Answer Actions";
 const char kOmniboxAnswerActionsDescription[] =
     "Answer Actions attaches related Action Chips to Answer suggestions.";
