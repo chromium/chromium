@@ -4,10 +4,9 @@
 
 #include "pdf/pdfium/pdfium_ink_transform.h"
 
-#include "base/check.h"
 #include "pdf/pdf_ink_transform.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_rotation.h"
-#include "third_party/pdfium/public/fpdfview.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
@@ -17,10 +16,8 @@ gfx::Transform GetCanonicalToPdfTransformForPage(FPDF_PAGE page) {
 
   // Get the intersection between the page's MediaBox and CropBox, to find
   // the translation offset for the shapes' transform.
-  FS_RECTF bounding_box;
-  bool result = FPDF_GetPageBoundingBox(page, &bounding_box);
-  CHECK(result);
-  const gfx::Vector2dF offset(bounding_box.left, bounding_box.bottom);
+  const PdfRect bounding_box = GetPageBoundingBox(page).value();
+  const gfx::Vector2dF offset(bounding_box.left(), bounding_box.bottom());
 
   return GetCanonicalToPdfTransform(
       {FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page)},

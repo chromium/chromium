@@ -157,6 +157,14 @@ std::optional<PdfRect> GetAnnotRect(FPDF_ANNOTATION annot) {
   return rect;
 }
 
+std::optional<PdfRect> GetPageBoundingBox(FPDF_PAGE page) {
+  PdfRect rect;
+  if (!FPDF_GetPageBoundingBox(page, &FsRectFFromPdfRect(rect))) {
+    return std::nullopt;
+  }
+  return rect;
+}
+
 std::optional<PdfRect> GetPageObjectBounds(FPDF_PAGEOBJECT page_object) {
   PdfRect rect;
   if (!FPDFPageObj_GetBounds(page_object, rect.writable_left(),

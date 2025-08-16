@@ -3586,27 +3586,26 @@ gfx::Rect PDFiumEngine::GetScreenRect(const gfx::Rect& rect) const {
 
 std::vector<gfx::Rect> PDFiumEngine::GetNoTextPageScreenRectsForCaret(
     PDFiumPage* page) const {
-  FS_RECTF page_bounds;
-  auto result = FPDF_GetPageBoundingBox(page->GetPage(), &page_bounds);
-  CHECK(result);
-
   // TODO(crbug.com/437807125): Determine default caret offset and height.
   static constexpr float kCaretOffset = 10.0f;
   static constexpr float kCaretHeight = 12.0f;
 
-  const float caret_left = page_bounds.left + kCaretOffset;
-  const float caret_top = page_bounds.top - kCaretOffset;
-  const float caret_right = caret_left + PdfCaret::kCaretWidth;
-  const float caret_bottom = caret_top - kCaretHeight;
+  const PdfRect page_bounds = GetPageBoundingBox(page->GetPage()).value();
+  const float caret_left = page_bounds.left() + kCaretOffset;
+  const float caret_top = page_bounds.top() - kCaretOffset;
+  const PdfRect caret_rect(/*left=*/caret_left,
+                           /*bottom=*/caret_top - kCaretHeight,
+                           /*right=*/caret_left + PdfCaret::kCaretWidth,
+                           /*top=*/caret_top);
 
   // The PDF page is too small to display the default caret size.
-  if (caret_right >= page_bounds.right || caret_top >= page_bounds.top) {
+  if (caret_rect.right() >= page_bounds.right() ||
+      caret_rect.top() >= page_bounds.top()) {
     return {};
   }
 
   return {page->PageToScreen(GetVisibleRect().origin(), current_zoom_,
-                             caret_left, caret_top, caret_right, caret_bottom,
-                             GetCurrentOrientation())};
+                             caret_rect, GetCurrentOrientation())};
 }
 
 void PDFiumEngine::Highlight(const RegionData& region,

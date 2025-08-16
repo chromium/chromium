@@ -394,10 +394,10 @@ gfx::RectF GetEffectiveCropBox(FPDF_PAGE page,
                                PageRotation rotation,
                                const gfx::SizeF& page_size) {
   gfx::RectF effective_crop_box;
-  FS_RECTF effective_crop_bounds;
-  if (FPDF_GetPageBoundingBox(page, &effective_crop_bounds)) {
-    effective_crop_box =
-        GetRotatedRectF(rotation, page_size, effective_crop_bounds);
+  const std::optional<PdfRect> maybe_crop_bounds = GetPageBoundingBox(page);
+  if (maybe_crop_bounds.has_value()) {
+    effective_crop_box = GetRotatedRectF(
+        rotation, page_size, FsRectFFromPdfRect(maybe_crop_bounds.value()));
   }
 
   if (effective_crop_box.IsEmpty()) {
@@ -793,18 +793,15 @@ gfx::RectF PDFiumPage::GetCharBounds(int char_index) {
 
 gfx::RectF PDFiumPage::GetCroppedRect() {
   FPDF_PAGE page = GetPage();
-  FS_RECTF raw_rect;
-  if (!FPDF_GetPageBoundingBox(page, &raw_rect))
+  std::optional<PdfRect> maybe_cropped_bounds = GetPageBoundingBox(page);
+  if (!maybe_cropped_bounds.has_value()) {
     return gfx::RectF();
+  }
 
-  if (raw_rect.right < raw_rect.left)
-    std::swap(raw_rect.right, raw_rect.left);
-  if (raw_rect.bottom > raw_rect.top)
-    std::swap(raw_rect.bottom, raw_rect.top);
-
-  gfx::RectF rect(raw_rect.left, raw_rect.bottom,
-                  raw_rect.right - raw_rect.left,
-                  raw_rect.top - raw_rect.bottom);
+  PdfRect& cropped_bounds = maybe_cropped_bounds.value();
+  cropped_bounds.Normalize();
+  gfx::RectF rect(cropped_bounds.left(), cropped_bounds.bottom(),
+                  cropped_bounds.width(), cropped_bounds.height());
   return FloatPageRectToPixelRect(page, rect);
 }
 

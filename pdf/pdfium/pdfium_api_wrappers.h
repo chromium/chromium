@@ -45,6 +45,10 @@ ScopedFPDFDocument LoadPdfDataWithPassword(base::span<const uint8_t> pdf_data,
 // std::nullopt on failure.
 std::optional<PdfRect> GetAnnotRect(FPDF_ANNOTATION annot);
 
+// Wrapper around FPDF_GetPageBoundingBox(). Returns the bounds for `page`, or
+// std::nullopt on failure.
+std::optional<PdfRect> GetPageBoundingBox(FPDF_PAGE page);
+
 // Wrapper around FPDFPageObj_GetBounds(). Returns the bounds for `page_object`,
 // or std::nullopt on failure.
 std::optional<PdfRect> GetPageObjectBounds(FPDF_PAGEOBJECT page_object);
