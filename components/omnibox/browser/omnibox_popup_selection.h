@@ -10,6 +10,7 @@
 #include <tuple>
 #include <vector>
 
+class AutocompleteProviderClient;
 class AutocompleteResult;
 class AutocompleteInput;
 class TemplateURLService;
@@ -136,6 +137,7 @@ struct OmniboxPopupSelection {
       const AutocompleteInput& input,
       const AutocompleteResult& result,
       TemplateURLService* template_url_service,
+      const AutocompleteProviderClient* client,
       Direction direction,
       Step step) const;
 
@@ -145,6 +147,7 @@ struct OmniboxPopupSelection {
       const AutocompleteInput& input,
       const AutocompleteResult& result,
       TemplateURLService* template_url_service,
+      const AutocompleteProviderClient* client,
       Step step);
 };
 

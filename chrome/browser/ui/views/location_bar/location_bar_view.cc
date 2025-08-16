@@ -432,10 +432,27 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
   params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
 
-  if (browser_ && lens::features::IsOmniboxEntryPointEnabled()) {
+  auto* autocomplete_provider_client = omnibox_view_->controller()
+                                           ->autocomplete_controller()
+                                           ->autocomplete_provider_client();
+  bool is_aim_page_action_enabled =
+      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
+          autocomplete_provider_client);
+  if (browser_ && is_aim_page_action_enabled) {
+    // Position in the leading position, like the entrypoint for
+    // kLensOverlayHomework below. While both chips may be enabled, they will
+    // not appear at the same time due to different focus behavior.
+    params.types_enabled.insert(params.types_enabled.begin(),
+                                PageActionIconType::kAiMode);
+  }
+
+  if (browser_ && lens::features::IsOmniboxEntryPointEnabled() &&
+      !is_aim_page_action_enabled) {
     // The persistent compact entrypoint should be positioned directly before
     // the star icon and the prominent expanding entrypoint should be
-    // positioned in the leading position.
+    // positioned in the leading position. This entrypoint will be suppressed
+    // if the AIM page action is enabled, since we want to avoid both showing
+    // up when the user focuses the Omnibox.
     if (lens::features::IsOmniboxEntrypointAlwaysVisible()) {
       params.types_enabled.push_back(PageActionIconType::kLensOverlay);
     } else {
@@ -450,19 +467,6 @@ void LocationBarView::Init() {
     // at the same time due to different focus behavior.
     params.types_enabled.insert(params.types_enabled.begin(),
                                 PageActionIconType::kLensOverlayHomework);
-  }
-
-  // - Restricted to DSE Google.
-  // - Restricted to locale EN.
-  // - Restricted to when `kAIModeSettings` policy is enabled.
-  OmniboxClient* client = omnibox_view_->controller()->client();
-  if (browser_ &&
-      base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint) &&
-      search::DefaultSearchProviderIsGoogle(client->GetTemplateURLService()) &&
-      l10n_util::GetLanguage(g_browser_process->GetApplicationLocale()) ==
-          "en" &&
-      omnibox::IsAimAllowedByPolicy(client->GetPrefs())) {
-    params.types_enabled.push_back(PageActionIconType::kAiMode);
   }
 
   if (browser_ && tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {

@@ -701,6 +701,33 @@ bool IsDeterministicAimActionInTypedStateEnabled(AutocompleteProviderClient* cli
   return base::FeatureList::IsEnabled(omnibox::kOmniboxAimShortcutTypedState);
 }
 
+bool IsAimOmniboxEntrypointEnabled(const AutocompleteProviderClient* client) {
+  // If the generic entrypoint feature is overridden to be false, return false.
+  auto* feature_list = base::FeatureList::GetInstance();
+  if (feature_list &&
+      feature_list->IsFeatureOverridden(
+          omnibox::kAiModeOmniboxEntryPoint.name) &&
+      !base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint)) {
+    return false;
+  }
+
+  const auto* aim_eligibility_service = client->GetAimEligibilityService();
+  // If the server eligibility is enabled, check overall eligibility alone.
+  // The service will control locale rollout so there's no need to check locale
+  // or the state of kAiModeOmniboxEntryPoint below.
+  if (aim_eligibility_service->IsServerEligibilityEnabled()) {
+    return aim_eligibility_service->IsAimEligible();
+  }
+
+  // If not locally eligible, return false.
+  if (!aim_eligibility_service->IsAimLocallyEligible()) {
+    return false;
+  }
+
+  // Otherwise, check the generic entrypoint feature.
+  return base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
+}
+
 // Rich autocompletion.
 
 bool IsRichAutocompletionEnabled() {

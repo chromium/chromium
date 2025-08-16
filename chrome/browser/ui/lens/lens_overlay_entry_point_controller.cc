@@ -161,8 +161,7 @@ bool LensOverlayEntryPointController::IsEnabled() const {
 }
 
 bool LensOverlayEntryPointController::AreVisible() const {
-  return IsEnabled() && !IsOverlayActive() &&
-         !base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
+  return IsEnabled() && !IsOverlayActive();
 }
 
 void LensOverlayEntryPointController::UpdateEntryPointsState(

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 MockAimEligibilityService::MockAimEligibilityService(

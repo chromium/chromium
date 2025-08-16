@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -65,6 +66,7 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
     const AutocompleteInput& input,
     const AutocompleteResult& result,
     TemplateURLService* template_url_service,
+    const AutocompleteProviderClient* client,
     Direction direction,
     Step step) const {
   if (result.empty()) {
@@ -82,7 +84,7 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
   // easy to reason about.
   std::vector<OmniboxPopupSelection> all_available_selections =
       GetAllAvailableSelectionsSorted(input, result, template_url_service,
-                                      step);
+                                      client, step);
 
   if (all_available_selections.empty()) {
     return *this;
@@ -135,6 +137,7 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     const AutocompleteInput& input,
     const AutocompleteResult& result,
     TemplateURLService* template_url_service,
+    const AutocompleteProviderClient* client,
     Step step) {
   // First enumerate all the accessible states based on `direction` and `step`,
   // as well as enabled feature flags. This doesn't mean each match will have
@@ -165,7 +168,7 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
 
   std::vector<OmniboxPopupSelection> available_selections;
   const bool aim_button_enabled =
-      base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
+      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(client);
   // The AIM button is included as a special case selection on the `kNoMatch`
   // line if:
   // - The AIM button is enabled,
