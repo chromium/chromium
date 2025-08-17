@@ -65,6 +65,13 @@ content::NavigationThrottle::ThrottleCheckResult
 SSLErrorNavigationThrottle::WillFailRequest() {
   content::NavigationHandle* handle = navigation_handle();
 
+  // Check if this is a .dapp domain - skip SSL interstitials for .dapp domains
+  std::string hostname = handle->GetURL().host();
+  if (hostname.size() >= 5 && 
+      hostname.substr(hostname.size() - 5) == ".dapp") {
+    return content::NavigationThrottle::PROCEED;
+  }
+
   // Check the network error code in case we are here due to a non-ssl related
   // error. SSLInfo also needs to be checked to cover cases where an SSL error
   // does not trigger an interstitial, such as chrome://network-errors.
@@ -105,6 +112,14 @@ SSLErrorNavigationThrottle::WillFailRequest() {
 content::NavigationThrottle::ThrottleCheckResult
 SSLErrorNavigationThrottle::WillProcessResponse() {
   content::NavigationHandle* handle = navigation_handle();
+  
+  // Check if this is a .dapp domain - skip SSL interstitials for .dapp domains
+  std::string hostname = handle->GetURL().host();
+  if (hostname.size() >= 5 && 
+      hostname.substr(hostname.size() - 5) == ".dapp") {
+    return content::NavigationThrottle::PROCEED;
+  }
+  
   // If there was no certificate error, SSLInfo will be empty.
   const net::SSLInfo info = handle->GetSSLInfo().value_or(net::SSLInfo());
   int cert_status = info.cert_status;

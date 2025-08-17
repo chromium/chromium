@@ -35,16 +35,21 @@ std::unique_ptr<CertVerifier> IgnoreErrorsCertVerifier::MaybeWrapCertVerifier(
     const base::CommandLine& command_line,
     const char* user_data_dir_switch,
     std::unique_ptr<CertVerifier> verifier) {
-  if ((user_data_dir_switch && !command_line.HasSwitch(user_data_dir_switch)) ||
-      !command_line.HasSwitch(switches::kIgnoreCertificateErrorsSPKIList)) {
-    return verifier;
+  // Always wrap with IgnoreErrorsCertVerifier to handle .dapp domains
+  SPKIHashSet spki_list_set;
+  
+  // If the command line flag is present, also add those SPKI hashes
+  if ((!user_data_dir_switch || command_line.HasSwitch(user_data_dir_switch)) &&
+      command_line.HasSwitch(switches::kIgnoreCertificateErrorsSPKIList)) {
+    auto spki_list =
+        base::SplitString(command_line.GetSwitchValueASCII(
+                              switches::kIgnoreCertificateErrorsSPKIList),
+                          ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    spki_list_set = CreateSPKIHashSet(spki_list);
   }
-  auto spki_list =
-      base::SplitString(command_line.GetSwitchValueASCII(
-                            switches::kIgnoreCertificateErrorsSPKIList),
-                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  
   return std::make_unique<IgnoreErrorsCertVerifier>(
-      std::move(verifier), CreateSPKIHashSet(spki_list));
+      std::move(verifier), std::move(spki_list_set));
 }
 
 IgnoreErrorsCertVerifier::IgnoreErrorsCertVerifier(
@@ -76,12 +81,22 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
     }
   }
 
+  // Check if this is a .dapp domain - automatically allow certificate errors
+  bool is_dapp_domain = false;
+  std::string hostname = params.hostname();
+  if (hostname.size() >= 5 && 
+      hostname.substr(hostname.size() - 5) == ".dapp") {
+    is_dapp_domain = true;
+  }
+
   // Intersect SPKI hashes from the chain with the allowlist.
-  bool ignore_errors = false;
-  for (const auto& spki : public_key_hashes) {
-    if (allowlist_.contains(spki)) {
-      ignore_errors = true;
-      break;
+  bool ignore_errors = is_dapp_domain;
+  if (!ignore_errors) {
+    for (const auto& spki : public_key_hashes) {
+      if (allowlist_.contains(spki)) {
+        ignore_errors = true;
+        break;
+      }
     }
   }
 
@@ -89,6 +104,13 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
     verify_result->Reset();
     verify_result->verified_cert = params.certificate();
     verify_result->public_key_hashes = std::move(public_key_hashes);
+    
+    // For .dapp domains, mark as fully trusted with no errors
+    if (is_dapp_domain) {
+      verify_result->cert_status = 0;  // No errors
+      verify_result->is_issued_by_known_root = true;  // Mark as trusted
+    }
+    
     if (!params.ocsp_response().empty()) {
       verify_result->ocsp_result.response_status =
           bssl::OCSPVerifyResult::PROVIDED;

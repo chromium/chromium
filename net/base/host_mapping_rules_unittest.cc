@@ -189,6 +189,35 @@ TEST(HostMappingRulesTest, NotFoundIgnoredAsInvalidUrl) {
   EXPECT_EQ(url, GURL("http://initial.test"));
 }
 
+TEST(HostMappingRulesTest, DappDomainMapping) {
+  HostMappingRules rules;
+  
+  // Test .dapp domain mapping to localhost:10422
+  HostPortPair host_port("example.dapp", 80);
+  EXPECT_TRUE(rules.RewriteHost(&host_port));
+  EXPECT_EQ("localhost", host_port.host());
+  EXPECT_EQ(10422u, host_port.port());
+
+  // Test subdomain .dapp domain mapping
+  host_port = HostPortPair("subdomain.example.dapp", 443);
+  EXPECT_TRUE(rules.RewriteHost(&host_port));
+  EXPECT_EQ("localhost", host_port.host());
+  EXPECT_EQ(10422u, host_port.port());
+
+  // Test that non-.dapp domains are not affected
+  host_port = HostPortPair("example.com", 80);
+  EXPECT_FALSE(rules.RewriteHost(&host_port));
+  EXPECT_EQ("example.com", host_port.host());
+  EXPECT_EQ(80u, host_port.port());
+
+  // Test .dapp URL rewriting
+  GURL url("https://test.dapp/path");
+  EXPECT_EQ(HostMappingRules::RewriteResult::kRewritten, rules.RewriteUrl(url));
+  EXPECT_EQ("localhost", url.host());
+  EXPECT_EQ(10422, url.EffectiveIntPort());
+  EXPECT_EQ("https", url.scheme());
+}
+
 }  // namespace
 
 }  // namespace net

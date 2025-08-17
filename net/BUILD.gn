@@ -936,6 +936,8 @@ component("net") {
     "shared_dictionary/shared_dictionary_network_transaction_factory.h",
     "socket/client_socket_factory.cc",
     "socket/client_socket_factory.h",
+    "socket/fake_ssl_client_socket.cc",
+    "socket/fake_ssl_client_socket.h",
     "socket/client_socket_handle.cc",
     "socket/client_socket_handle.h",
     "socket/client_socket_pool.cc",

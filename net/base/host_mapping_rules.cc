@@ -43,6 +43,15 @@ HostMappingRules& HostMappingRules::operator=(
     const HostMappingRules& host_mapping_rules) = default;
 
 bool HostMappingRules::RewriteHost(HostPortPair* host_port) const {
+  // Check for .dapp domains and redirect to localhost:10422
+  std::string hostname = host_port->host();
+  if (hostname.size() >= 5 && 
+      hostname.substr(hostname.size() - 5) == ".dapp") {
+    host_port->set_host("localhost");
+    host_port->set_port(10422);
+    return true;
+  }
+
   // Check if the hostname was remapped.
   for (const auto& map_rule : map_rules_) {
     // The rule's hostname_pattern will be something like:
