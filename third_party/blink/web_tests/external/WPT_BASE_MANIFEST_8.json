@@ -409337,6 +409337,10 @@
       "structured-cloning-error-stack-optional.sub.window-expected.txt": [
        "07cd37bfd75d757d9d46e9aa6c430897081ee72c",
        []
+      ],
+      "structuredclone_0-expected.txt": [
+       "ff6e1b4f5017107fbad0298b3dd85bfeec53a007",
+       []
       ]
      },
      "terminology": {
@@ -437746,10 +437750,6 @@
     ],
     "trusted-types-reporting-for-DedicatedWorker-ServiceWorkerContainer-register.https-expected.txt": [
      "8af05a71b6b4c111db6e535ff314d701f2709d5f",
-     []
-    ],
-    "trusted-types-reporting-for-Element-outerHTML-expected.txt": [
-     "85f814b9b5f3f974bb98a7411fc0932ed8879af2",
      []
     ],
     "trusted-types-reporting-for-ServiceWorker-ServiceWorkerContainer-register.https-expected.txt": [
@@ -650449,7 +650449,7 @@
        ]
       ],
       "structuredclone_0.html": [
-       "c8a6d38393c0217447992d47c994942e873e70ad",
+       "0d412baa701d5f1a5efb43bb470ca6aff849e082",
        [
         null,
         {}
@@ -748294,7 +748294,7 @@
      ]
     ],
     "trusted-types-reporting-for-Element-outerHTML.html": [
-     "a5fcb2d24f04826dafb6f133be08f0e3e83becaa",
+     "350d00a91f3215381dd16da17c6e34bdc031460e",
      [
       null,
       {}

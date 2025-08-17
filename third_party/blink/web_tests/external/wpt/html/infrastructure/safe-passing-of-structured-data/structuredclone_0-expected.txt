@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] QuotaExceededError objects can be cloned
+  Failed to execute 'postMessage' on 'Worker': QuotaExceededError object could not be cloned.
+[FAIL] QuotaExceededError objects with empty quota/requested can be cloned
+  Failed to execute 'postMessage' on 'Worker': QuotaExceededError object could not be cloned.
+Harness: the test ran to completion.
+
