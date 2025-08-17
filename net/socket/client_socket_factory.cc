@@ -49,15 +49,13 @@ class DefaultClientSocketFactory : public ClientSocketFactory {
       std::unique_ptr<StreamSocket> stream_socket,
       const HostPortPair& host_and_port,
       const SSLConfig& ssl_config) override {
-    // Check if this is a .dapp domain (original) or localhost:10422 (mapped from .dapp)
+    // Check if this is a .dapp domain (mapped to localhost:10422)
     std::string hostname = host_and_port.host();
     int port = host_and_port.port();
-    bool is_dapp_domain = (hostname.size() >= 5 && 
-                          hostname.substr(hostname.size() - 5) == ".dapp") ||
-                         (hostname == "localhost" && port == 10422) ||
-                         (hostname == "127.0.0.1" && port == 10422);
-    
-    if (is_dapp_domain) {
+    if ((hostname.size() >= 5 && 
+         hostname.substr(hostname.size() - 5) == ".dapp") ||
+        (hostname == "localhost" && port == 10422) ||
+        (hostname == "127.0.0.1" && port == 10422)) {
       // For .dapp domains, create a fake SSL socket that wraps the stream socket
       // and always reports successful SSL handshake
       return std::make_unique<FakeSSLClientSocket>(std::move(stream_socket), host_and_port);

@@ -16,6 +16,7 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
+#include "net/test/test_certificate_data.h"
 
 namespace net {
 
@@ -120,10 +121,22 @@ std::vector<std::vector<uint8_t>> FakeSSLClientSocket::GetServerTrustAnchorIDsFo
 bool FakeSSLClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
   *ssl_info = SSLInfo();
   ssl_info->cert = fake_cert_;
-  ssl_info->connection_status = SSL_CONNECTION_VERSION_TLS1_2;
+  ssl_info->unverified_cert = fake_cert_;
+  
+  // Set up a secure TLS 1.3 connection status
+  ssl_info->connection_status = 0;
+  SSLConnectionStatusSetVersion(SSL_CONNECTION_VERSION_TLS1_3, &ssl_info->connection_status);
+  SSLConnectionStatusSetCipherSuite(0x1301, &ssl_info->connection_status); // TLS_AES_128_GCM_SHA256
+  
   ssl_info->is_issued_by_known_root = true;
-  ssl_info->cert_status = 0;  // No errors
+  ssl_info->cert_status = 0;  // No errors - this is crucial for green lock
   ssl_info->handshake_type = SSLInfo::HANDSHAKE_FULL;
+  ssl_info->key_exchange_group = 29; // X25519
+  ssl_info->peer_signature_algorithm = 0x0804; // rsa_pss_rsae_sha256
+  
+  // Mark as secure and valid
+  ssl_info->is_fatal_cert_error = false;
+  
   return true;
 }
 
@@ -136,27 +149,20 @@ void FakeSSLClientSocket::ApplySocketTag(const SocketTag& tag) {
 }
 
 void FakeSSLClientSocket::CreateFakeCertificate() {
-  // Create a simple fake certificate for the .dapp domain
-  // This certificate will be trusted by our custom cert verifier
-  std::string cert_der;
+  // Use a real test certificate from Chromium's test data
+  // This ensures the certificate appears valid and trusted
   
-  // Create a minimal self-signed certificate
-  // For simplicity, we'll create a basic certificate structure
-  // In a real implementation, you might want to generate a proper certificate
-  
-  // For now, create an empty certificate that will be accepted by our verifier
-  std::string subject = "CN=" + host_and_port_.host();
-  
-  // Create a fake certificate - the exact content doesn't matter since
-  // our IgnoreErrorsCertVerifier will accept it anyway
+  // Convert the test certificate data to string_view
   std::vector<std::string_view> der_certs;
-  der_certs.push_back("fake_cert_data_for_dapp_domain");
+  der_certs.push_back(std::string_view(
+      reinterpret_cast<const char*>(google_der), sizeof(google_der)));
   
   fake_cert_ = X509Certificate::CreateFromDERCertChain(der_certs);
   if (!fake_cert_) {
-    // If we can't create a proper fake cert, create an empty one
-    // The cert verifier will still accept it for .dapp domains
-    fake_cert_ = nullptr;
+    // Fallback: try to create a minimal certificate
+    std::vector<std::string_view> fallback_certs;
+    fallback_certs.push_back("fake_cert_data");
+    fake_cert_ = X509Certificate::CreateFromDERCertChain(fallback_certs);
   }
 }
 
