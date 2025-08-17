@@ -16,7 +16,7 @@ namespace blink {
 
 namespace {
 
-typedef WTF::HashMap<String, unsigned> NameToAssignedNumberMap;
+typedef HashMap<String, unsigned> NameToAssignedNumberMap;
 
 enum class GATTAttribute { kService, kCharacteristic, kDescriptor };
 

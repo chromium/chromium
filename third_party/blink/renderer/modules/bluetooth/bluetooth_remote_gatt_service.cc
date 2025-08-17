@@ -126,9 +126,9 @@ BluetoothRemoteGATTService::getCharacteristic(
   auto quantity = mojom::blink::WebBluetoothGATTQueryQuantity::SINGLE;
   service->RemoteServiceGetCharacteristics(
       service_->instance_id, quantity, characteristic_uuid,
-      WTF::BindOnce(&BluetoothRemoteGATTService::GetCharacteristicsCallback,
-                    WrapPersistent(this), service_->instance_id,
-                    characteristic_uuid, quantity, WrapPersistent(resolver)));
+      BindOnce(&BluetoothRemoteGATTService::GetCharacteristicsCallback,
+               WrapPersistent(this), service_->instance_id, characteristic_uuid,
+               quantity, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -187,9 +187,9 @@ BluetoothRemoteGATTService::GetCharacteristicsImpl(
   auto quantity = mojom::blink::WebBluetoothGATTQueryQuantity::MULTIPLE;
   service->RemoteServiceGetCharacteristics(
       service_->instance_id, quantity, characteristics_uuid,
-      WTF::BindOnce(&BluetoothRemoteGATTService::GetCharacteristicsCallback,
-                    WrapPersistent(this), service_->instance_id,
-                    characteristics_uuid, quantity, WrapPersistent(resolver)));
+      BindOnce(&BluetoothRemoteGATTService::GetCharacteristicsCallback,
+               WrapPersistent(this), service_->instance_id,
+               characteristics_uuid, quantity, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

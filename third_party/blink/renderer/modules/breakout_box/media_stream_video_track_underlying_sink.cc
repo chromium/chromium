@@ -252,7 +252,7 @@ MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12MappableVideoFrame(
 
   auto resolver = WrapPersistent(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state));
-  auto convert_done_callback = WTF::BindOnce(
+  auto convert_done_callback = blink::BindOnce(
       &MediaStreamVideoTrackUnderlyingSink::ConvertDone, WrapPersistent(this),
       resolver, video_frame, estimated_capture_time);
   const bool success = accelerated_frame_pool_->ConvertVideoFrame(

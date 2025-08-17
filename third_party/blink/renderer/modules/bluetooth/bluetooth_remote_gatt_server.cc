@@ -138,8 +138,8 @@ ScriptPromise<BluetoothRemoteGATTServer> BluetoothRemoteGATTServer::connect(
 
   service->RemoteServerConnect(
       device_->GetDevice()->id, std::move(client),
-      WTF::BindOnce(&BluetoothRemoteGATTServer::ConnectCallback,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&BluetoothRemoteGATTServer::ConnectCallback,
+               WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
@@ -302,9 +302,9 @@ void BluetoothRemoteGATTServer::GetPrimaryServicesImpl(
       device_->GetBluetooth()->Service();
   service->RemoteServerGetPrimaryServices(
       device_->GetDevice()->id, quantity, services_uuid,
-      WTF::BindOnce(&BluetoothRemoteGATTServer::GetPrimaryServicesCallback,
-                    WrapPersistent(this), services_uuid, quantity,
-                    WrapPersistent(resolver)));
+      BindOnce(&BluetoothRemoteGATTServer::GetPrimaryServicesCallback,
+               WrapPersistent(this), services_uuid, quantity,
+               WrapPersistent(resolver)));
 }
 
 }  // namespace blink

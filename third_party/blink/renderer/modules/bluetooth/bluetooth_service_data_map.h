@@ -18,7 +18,7 @@ class BluetoothServiceDataMap final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using MapType = HashMap<String, WTF::Vector<uint8_t>>;
+  using MapType = HashMap<String, Vector<uint8_t>>;
 
   explicit BluetoothServiceDataMap(const MapType&);
 

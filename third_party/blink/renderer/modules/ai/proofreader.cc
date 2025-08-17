@@ -56,9 +56,9 @@ Proofreader::Proofreader(
 
   if (create_abort_signal_) {
     CHECK(!create_abort_signal_->aborted());
-    create_abort_handle_ = create_abort_signal_->AddAlgorithm(WTF::BindOnce(
-        &Proofreader::OnCreateAbortSignalAborted, WrapWeakPersistent(this),
-        WrapWeakPersistent(script_state)));
+    create_abort_handle_ = create_abort_signal_->AddAlgorithm(
+        BindOnce(&Proofreader::OnCreateAbortSignalAborted,
+                 WrapWeakPersistent(this), WrapWeakPersistent(script_state)));
   }
 }
 

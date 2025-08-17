@@ -334,9 +334,9 @@ ScriptPromise<IDLBoolean> Bluetooth::getAvailability(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   service_->GetAvailability(
-      WTF::BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
-                       bool result) { resolver->Resolve(result); },
-                    WrapPersistent(resolver)));
+      BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
+                  bool result) { resolver->Resolve(result); },
+               WrapPersistent(resolver)));
   return promise;
 }
 
@@ -404,9 +404,9 @@ ScriptPromise<IDLSequence<BluetoothDevice>> Bluetooth::getDevices(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  service_->GetDevices(WTF::BindOnce(&Bluetooth::GetDevicesCallback,
-                                     WrapPersistent(this),
-                                     WrapPersistent(resolver)));
+  service_->GetDevices(BindOnce(&Bluetooth::GetDevicesCallback,
+                                WrapPersistent(this),
+                                WrapPersistent(resolver)));
   return promise;
 }
 
@@ -461,8 +461,8 @@ ScriptPromise<BluetoothDevice> Bluetooth::requestDevice(
 
   service_->RequestDevice(
       std::move(device_options),
-      WTF::BindOnce(&Bluetooth::RequestDeviceCallback, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&Bluetooth::RequestDeviceCallback, WrapPersistent(this),
+               WrapPersistent(resolver)));
   return promise;
 }
 
@@ -582,9 +582,8 @@ ScriptPromise<BluetoothLEScan> Bluetooth::requestLEScan(
   auto scan_options_copy = scan_options->Clone();
   service_->RequestScanningStart(
       std::move(client), std::move(scan_options),
-      WTF::BindOnce(&Bluetooth::RequestScanningCallback, WrapPersistent(this),
-                    WrapPersistent(resolver), id,
-                    std::move(scan_options_copy)));
+      BindOnce(&Bluetooth::RequestScanningCallback, WrapPersistent(this),
+               WrapPersistent(resolver), id, std::move(scan_options_copy)));
 
   return promise;
 }

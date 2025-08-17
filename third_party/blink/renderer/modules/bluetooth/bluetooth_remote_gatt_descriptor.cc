@@ -70,8 +70,8 @@ ScriptPromise<NotShared<DOMDataView>> BluetoothRemoteGATTDescriptor::readValue(
   GetGatt()->AddToActiveAlgorithms(resolver);
   GetBluetooth()->Service()->RemoteDescriptorReadValue(
       descriptor_->instance_id,
-      WTF::BindOnce(&BluetoothRemoteGATTDescriptor::ReadValueCallback,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      blink::BindOnce(&BluetoothRemoteGATTDescriptor::ReadValueCallback,
+                      WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
@@ -141,9 +141,9 @@ ScriptPromise<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
   GetGatt()->AddToActiveAlgorithms(resolver);
   GetBluetooth()->Service()->RemoteDescriptorWriteValue(
       descriptor_->instance_id, value,
-      WTF::BindOnce(&BluetoothRemoteGATTDescriptor::WriteValueCallback,
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    WrapPersistent(new_value.Get())));
+      BindOnce(&BluetoothRemoteGATTDescriptor::WriteValueCallback,
+               WrapPersistent(this), WrapPersistent(resolver),
+               WrapPersistent(new_value.Get())));
 
   return promise;
 }

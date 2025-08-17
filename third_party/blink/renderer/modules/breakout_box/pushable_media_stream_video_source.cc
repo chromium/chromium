@@ -186,7 +186,7 @@ media::VideoCaptureFeedbackCB
 PushableMediaStreamVideoSource::GetFeedbackCallback() const {
   return base::BindPostTask(
       GetTaskRunner(),
-      WTF::BindRepeating(
+      blink::BindRepeating(
           &PushableMediaStreamVideoSource::ProcessFeedbackInternal,
           weak_factory_.GetMutableWeakPtr()));
 }
