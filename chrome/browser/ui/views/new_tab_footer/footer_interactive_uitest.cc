@@ -137,7 +137,7 @@ class FooterInteractiveTestBase
     return browser()
         ->GetBrowserView()
         .GetActiveContentsContainerView()
-        ->GetNewTabFooterView();
+        ->new_tab_footer_view();
   }
 
  protected:
@@ -576,7 +576,7 @@ class FooterSideBySideInteractiveTest : public FooterInteractiveTest {
               multi_contents_view->contents_container_views();
           EXPECT_LT(content_container_index, contents_container_views.size());
           return contents_container_views[content_container_index]
-                     ->GetNewTabFooterView()
+                     ->new_tab_footer_view()
                      ->GetVisible() == is_footer_visible;
         });
   }

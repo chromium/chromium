@@ -238,7 +238,7 @@ TEST_F(BrowserViewTest, DISABLED_BrowserViewLayout) {
       browser_view()->GetContentsContainerForTest();
   views::WebView* contents_web_view = browser_view()->contents_web_view();
   views::WebView* devtools_web_view =
-      browser_view()->GetActiveContentsContainerView()->GetDevtoolsWebView();
+      browser_view()->GetActiveContentsContainerView()->devtools_web_view();
 
   // Start with a single tab open to a normal page.
   AddTab(browser, GURL("about:blank"));

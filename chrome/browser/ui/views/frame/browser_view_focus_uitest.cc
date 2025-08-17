@@ -190,8 +190,7 @@ class BrowserViewFocusSideBySideTest : public BrowserViewFocusTest {
     // Start from the view prior to the left contents web view in the focus
     // order. This should be somewhere outside of the contents container, but
     // where it is depends on the platform.
-    focus_manager->SetFocusedView(
-        contents_container_views[0]->GetContentsView());
+    focus_manager->SetFocusedView(contents_container_views[0]->contents_view());
     focus_manager->AdvanceFocus(true);
     views::View* start_view = focus_manager->GetFocusedView();
     ASSERT_FALSE(
@@ -201,11 +200,11 @@ class BrowserViewFocusSideBySideTest : public BrowserViewFocusTest {
     focus_manager->AdvanceFocus(false);
     EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
     EXPECT_EQ(focus_manager->GetFocusedView(),
-              contents_container_views[0]->GetContentsView());
+              contents_container_views[0]->contents_view());
 
     focus_manager->AdvanceFocus(false);
     EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
-    EXPECT_TRUE(contents_container_views[0]->GetMiniToolbar()->Contains(
+    EXPECT_TRUE(contents_container_views[0]->mini_toolbar()->Contains(
         focus_manager->GetFocusedView()));
 
     focus_manager->AdvanceFocus(false);
@@ -219,11 +218,11 @@ class BrowserViewFocusSideBySideTest : public BrowserViewFocusTest {
     focus_manager->AdvanceFocus(false);
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
     EXPECT_EQ(focus_manager->GetFocusedView(),
-              contents_container_views[1]->GetContentsView());
+              contents_container_views[1]->contents_view());
 
     focus_manager->AdvanceFocus(false);
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-    EXPECT_TRUE(contents_container_views[1]->GetMiniToolbar()->Contains(
+    EXPECT_TRUE(contents_container_views[1]->mini_toolbar()->Contains(
         focus_manager->GetFocusedView()));
 
     // Focus has advanced past the right tab's mini toolbar button. This should
@@ -237,13 +236,13 @@ class BrowserViewFocusSideBySideTest : public BrowserViewFocusTest {
     // Start advancing focus backwards.
     focus_manager->AdvanceFocus(true);
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-    EXPECT_TRUE(contents_container_views[1]->GetMiniToolbar()->Contains(
+    EXPECT_TRUE(contents_container_views[1]->mini_toolbar()->Contains(
         focus_manager->GetFocusedView()));
 
     focus_manager->AdvanceFocus(true);
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
     EXPECT_EQ(focus_manager->GetFocusedView(),
-              contents_container_views[1]->GetContentsView());
+              contents_container_views[1]->contents_view());
 
     focus_manager->AdvanceFocus(true);
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
@@ -258,13 +257,13 @@ class BrowserViewFocusSideBySideTest : public BrowserViewFocusTest {
     // mini toolbar in reverse, so we have not yet focused the left contents web
     // view.
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-    EXPECT_TRUE(contents_container_views[0]->GetMiniToolbar()->Contains(
+    EXPECT_TRUE(contents_container_views[0]->mini_toolbar()->Contains(
         focus_manager->GetFocusedView()));
 
     focus_manager->AdvanceFocus(true);
     EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
     EXPECT_EQ(focus_manager->GetFocusedView(),
-              contents_container_views[0]->GetContentsView());
+              contents_container_views[0]->contents_view());
 
     focus_manager->AdvanceFocus(true);
     EXPECT_EQ(0, browser()->tab_strip_model()->active_index());

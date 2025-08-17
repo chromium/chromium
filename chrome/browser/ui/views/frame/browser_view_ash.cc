@@ -52,8 +52,8 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
     side_panel->SetBackgroundRadii(side_panel_radii);
   }
 
-  views::WebView* devtools_webview =
-      GetActiveContentsContainerView()->GetDevtoolsWebView();
+  views::WebView *devtools_webview =
+      GetActiveContentsContainerView()->devtools_web_view();
   CHECK(devtools_webview);
   CHECK(devtools_webview->holder());
 
@@ -72,7 +72,7 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
   }
 
   const ContentsContainerView::DevToolsDockedPlacement devtools_placement =
-      GetActiveContentsContainerView()->GetDevtoolsDockedPlacement();
+      GetActiveContentsContainerView()->devtools_docked_placement();
   CHECK_NE(devtools_placement,
            ContentsContainerView::DevToolsDockedPlacement::kUnknown);
 
@@ -143,8 +143,8 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
 
   // Ensure that browser scrims are rounded as well.
   window_scrim_view()->SetRoundedCorners(window_radii);
-  GetActiveContentsContainerView()->GetContentsScrimView()->SetRoundedCorners(
+  GetActiveContentsContainerView()->contents_scrim_view()->SetRoundedCorners(
       contents_webview_radii);
-  GetActiveContentsContainerView()->GetDevtoolsScrimView()->SetRoundedCorners(
+  GetActiveContentsContainerView()->devtools_scrim_view()->SetRoundedCorners(
       devtools_webview_radii);
 }

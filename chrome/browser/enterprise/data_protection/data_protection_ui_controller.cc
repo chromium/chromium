@@ -32,8 +32,7 @@ DataProtectionUIController::ContentsViewDataProtectionController::
     : owner_(owner),
       contents_container_view_(contents_container_view),
       prefs_(prefs) {
-  ContentsWebView* contents_web_view =
-      contents_container_view->GetContentsView();
+  ContentsWebView* contents_web_view = contents_container_view->contents_view();
   web_contents_attached_subscription_ =
       contents_web_view->AddWebContentsAttachedCallback(base::BindRepeating(
           &ContentsViewDataProtectionController::OnWebContentsAttached,
@@ -110,12 +109,12 @@ bool DataProtectionUIController::ContentsViewDataProtectionController::
   // during reversing of splits since the webcontents could be detached from one
   // of the views.
   if (!contents_container_view_->GetVisible() ||
-      !contents_container_view_->GetContentsView()->web_contents()) {
+      !contents_container_view_->contents_view()->web_contents()) {
     return true;
   }
 
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(
-      contents_container_view_->GetContentsView()->web_contents());
+      contents_container_view_->contents_view()->web_contents());
 
   enterprise_data_protection::DataProtectionNavigationController* controller =
       tab->GetTabFeatures()->data_protection_controller();

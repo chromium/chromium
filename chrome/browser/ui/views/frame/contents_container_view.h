@@ -67,27 +67,32 @@ class ContentsContainerView : public views::View,
   // pane traversal.
   std::vector<views::View*> GetAccessiblePanes();
 
-  ContentsWebView* GetContentsView() { return contents_view_; }
-  MultiContentsViewMiniToolbar* GetMiniToolbar() { return mini_toolbar_; }
-  ScrimView* GetContentsScrimView() { return contents_scrim_view_; }
-  views::WebView* GetDevtoolsWebView() { return devtools_web_view_; }
-  ScrimView* GetDevtoolsScrimView() { return devtools_scrim_view_; }
-  DevToolsDockedPlacement GetDevtoolsDockedPlacement() {
+  ContentsWebView* contents_view() { return contents_view_; }
+  MultiContentsViewMiniToolbar* mini_toolbar() { return mini_toolbar_; }
+  ScrimView* contents_scrim_view() { return contents_scrim_view_; }
+  views::WebView* devtools_web_view() { return devtools_web_view_; }
+  ScrimView* devtools_scrim_view() { return devtools_scrim_view_; }
+  DevToolsDockedPlacement devtools_docked_placement() {
     return current_devtools_docked_placement_;
   }
-  views::View* GetActorOverlayView() { return actor_overlay_view_; }
-  glic::GlicBorderView* GetGlicBorderView() { return glic_border_; }
-  new_tab_footer::NewTabFooterWebView* GetNewTabFooterView() {
+  views::View* actor_overlay_view() { return actor_overlay_view_; }
+  glic::GlicBorderView* glic_border_view() { return glic_border_; }
+  new_tab_footer::NewTabFooterWebView* new_tab_footer_view() {
     return new_tab_footer_view_;
   }
-  ScrimView* GetInactiveSplitScrimView() { return inactive_split_scrim_view_; }
-
-  views::Widget* GetCaptureContentsBorderWidget() {
+  ScrimView* inactive_split_scrim_view() { return inactive_split_scrim_view_; }
+  views::Widget* capture_contents_border_widget() {
     return capture_contents_border_widget_.get();
   }
-
-  enterprise_watermark::WatermarkView* GetWatermarkView() {
+  enterprise_watermark::WatermarkView* watermark_view() {
     return watermark_view_;
+  }
+
+  // Sets the contents resizing strategy.
+  void SetContentsResizingStrategy(
+      const DevToolsContentsResizingStrategy& strategy);
+  DevToolsContentsResizingStrategy& contents_resizing_strategy() {
+    return strategy_;
   }
 
   void ApplyWatermarkSettings(const std::string& watermark_text,
@@ -98,13 +103,6 @@ class ContentsContainerView : public views::View,
   void UpdateBorderAndOverlay(bool is_in_split,
                               bool is_active,
                               bool show_scrim);
-
-  // Sets the contents resizing strategy.
-  void SetContentsResizingStrategy(
-      const DevToolsContentsResizingStrategy& strategy);
-  DevToolsContentsResizingStrategy& contents_resizing_strategy() {
-    return strategy_;
-  }
 
   void ShowCaptureContentsBorder(std::optional<gfx::Rect> border_location);
   void HideCaptureContentsBorder();
@@ -170,6 +168,7 @@ class ContentsContainerView : public views::View,
   raw_ptr<glic::GlicBorderView> glic_border_ = nullptr;
 
   raw_ptr<MultiContentsViewMiniToolbar> mini_toolbar_ = nullptr;
+
   std::unique_ptr<views::Widget> capture_contents_border_widget_;
   std::optional<gfx::Rect> dynamic_capture_content_border_bounds_;
 

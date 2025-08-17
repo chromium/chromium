@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, BorderResize) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
   StartBorderAnimation();
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, Visibility) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   EXPECT_FALSE(border->GetVisible());
 
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
 
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateResetOnShutdown) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
 
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabDestroyed) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MAYBE_FocusedWindowChange) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MAYBE_FocusedWindowChange) {
   GlicBorderView* border2 = browser2->window()
                                 ->AsBrowserView()
                                 ->GetActiveContentsContainerView()
-                                ->GetGlicBorderView();
+                                ->glic_border_view();
   auto* tester2 = static_cast<TesterImpl*>(border2->tester());
 
   // Start the animation in the first browser window.
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -720,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringOpacityRampUp) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -776,7 +776,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -825,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -853,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChangeEffectTime) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   EXPECT_FALSE(border->GetVisible());
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
@@ -952,7 +952,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewFeatureDisabledBrowserTest, NoBorder) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   EXPECT_FALSE(border);
 }
 
@@ -979,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -1053,7 +1053,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -1122,7 +1122,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewWithoutHardwareAccelerationUiTest,
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
@@ -1202,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MinimizeRestore) {
                      ->window()
                      ->AsBrowserView()
                      ->GetActiveContentsContainerView()
-                     ->GetGlicBorderView();
+                     ->glic_border_view();
   ASSERT_TRUE(border);
   EXPECT_FALSE(border->GetVisible());
 
@@ -1253,10 +1253,10 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewSideBySideUiTest, BasicVisiblity) {
       browser()->window()->AsBrowserView()->GetContentsContainerViews();
   ASSERT_EQ(2U, content_containers.size());
 
-  auto* border1 = content_containers[0]->GetGlicBorderView();
+  auto* border1 = content_containers[0]->glic_border_view();
   ASSERT_TRUE(border1);
 
-  auto* border2 = content_containers[1]->GetGlicBorderView();
+  auto* border2 = content_containers[1]->glic_border_view();
   ASSERT_TRUE(border2);
 
   // Add a second tab and create a split

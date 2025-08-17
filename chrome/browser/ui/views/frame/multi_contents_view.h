@@ -149,7 +149,7 @@ class MultiContentsView : public views::View,
   }
 
   ContentsWebView* start_contents_view_for_testing() const {
-    return contents_container_views_[0]->GetContentsView();
+    return contents_container_views_[0]->contents_view();
   }
 
   MultiContentsResizeArea* resize_area_for_testing() const {
@@ -157,11 +157,11 @@ class MultiContentsView : public views::View,
   }
 
   ContentsWebView* end_contents_view_for_testing() const {
-    return contents_container_views_[1]->GetContentsView();
+    return contents_container_views_[1]->contents_view();
   }
 
   MultiContentsViewMiniToolbar* mini_toolbar_for_testing(int index) const {
-    return contents_container_views_[index]->GetMiniToolbar();
+    return contents_container_views_[index]->mini_toolbar();
   }
 
  private:

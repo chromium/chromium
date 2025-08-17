@@ -81,7 +81,7 @@ gfx::Insets GetContentsBorderInsets(BrowserView& browser_view,
   gfx::Insets insets_for_contents_border;
   auto* const contents_border =
       browser_view.GetContentsContainerViewFor(web_contents)
-          ->GetCaptureContentsBorderWidget();
+          ->capture_contents_border_widget();
   if (contents_border && contents_border->IsVisible()) {
     auto* contents_border_view = contents_border->GetContentsView();
     if (contents_border_view && contents_border_view->GetBorder()) {

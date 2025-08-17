@@ -43,7 +43,7 @@ DevtoolsUIController::DevtoolsWebViewController::DevtoolsWebViewController(
     ContentsContainerView* contents_container_view)
     : contents_container_view_(contents_container_view) {
   ContentsWebView* contents_web_view =
-      contents_container_view_->GetContentsView();
+      contents_container_view_->contents_view();
   web_contents_attached_subscription_ =
       contents_web_view->AddWebContentsAttachedCallback(
           base::BindRepeating(&DevtoolsWebViewController::OnWebContentsAttached,
@@ -60,7 +60,7 @@ DevtoolsUIController::DevtoolsWebViewController::~DevtoolsWebViewController() =
 
 void DevtoolsUIController::DevtoolsWebViewController::OnWebContentsAttached(
     views::WebView* web_view) {
-  UpdateDevtools(contents_container_view_->GetContentsView()->web_contents(),
+  UpdateDevtools(contents_container_view_->contents_view()->web_contents(),
                  true);
 }
 
@@ -72,9 +72,9 @@ void DevtoolsUIController::DevtoolsWebViewController::OnWebContentsDetached(
 bool DevtoolsUIController::DevtoolsWebViewController::UpdateDevtools(
     content::WebContents* web_contents,
     bool update_devtools_web_contents) {
-  ContentsWebView* contents_view = contents_container_view_->GetContentsView();
+  ContentsWebView* contents_view = contents_container_view_->contents_view();
   views::WebView* devtools_web_view =
-      contents_container_view_->GetDevtoolsWebView();
+      contents_container_view_->devtools_web_view();
   DevToolsContentsResizingStrategy strategy;
   content::WebContents* devtools =
       DevToolsWindow::GetInTabWebContents(web_contents, &strategy);

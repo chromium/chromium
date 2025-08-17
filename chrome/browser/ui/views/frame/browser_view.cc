@@ -980,7 +980,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   } else {
     contents_container_view_ = contents_container->AddChildView(
         std::make_unique<ContentsContainerView>(this));
-    auto* contents_web_view = contents_container_view_->GetContentsView();
+    auto* contents_web_view = contents_container_view_->contents_view();
     contents_web_view->set_is_primary_web_contents_for_window(true);
     contents_view = contents_container_view_;
   }
@@ -1244,7 +1244,7 @@ ContentsContainerView* BrowserView::GetContentsContainerViewFor(
     return multi_contents_view_->GetContentsContainerViewFor(web_contents);
   }
 
-  if (contents_container_view_->GetContentsView()->GetWebContents() ==
+  if (contents_container_view_->contents_view()->GetWebContents() ==
       web_contents) {
     return contents_container_view_;
   }
@@ -1887,7 +1887,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
             contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
           }));
     } else {
-      contents_container_view_->GetContentsView()
+      contents_container_view_->contents_view()
           ->GetWebContentsCloseHandler()
           ->ActiveTabChanged();
     }
@@ -1982,7 +1982,7 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
           contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
         }));
   } else {
-    contents_container_view_->GetContentsView()
+    contents_container_view_->contents_view()
         ->GetWebContentsCloseHandler()
         ->ActiveTabChanged();
   }
@@ -2364,14 +2364,14 @@ void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
 
 void BrowserView::SetContentScrimVisibility(bool visible) {
   if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
-    GetActiveContentsContainerView()->GetContentsScrimView()->SetVisible(
+    GetActiveContentsContainerView()->contents_scrim_view()->SetVisible(
         visible);
   }
 }
 
 void BrowserView::SetDevToolsScrimVisibility(bool visible) {
   if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
-    GetActiveContentsContainerView()->GetDevtoolsScrimView()->SetVisible(
+    GetActiveContentsContainerView()->devtools_scrim_view()->SetVisible(
         visible);
   }
 }
@@ -2752,7 +2752,7 @@ views::WebView* BrowserView::GetContentsWebView() {
   if (multi_contents_view_) {
     return multi_contents_view_->GetActiveContentsView();
   } else {
-    return contents_container_view_->GetContentsView();
+    return contents_container_view_->contents_view();
   }
 }
 
@@ -3778,7 +3778,7 @@ void BrowserView::OnTabStripModelChanged(
             contents_view->GetWebContentsCloseHandler()->TabInserted();
           }));
     } else {
-      contents_container_view_->GetContentsView()
+      contents_container_view_->contents_view()
           ->GetWebContentsCloseHandler()
           ->TabInserted();
     }
@@ -3801,7 +3801,7 @@ void BrowserView::WillCloseAllTabs(TabStripModel* tab_strip_model) {
           contents_view->GetWebContentsCloseHandler()->WillCloseAllTabs();
         }));
   } else {
-    contents_container_view_->GetContentsView()
+    contents_container_view_->contents_view()
         ->GetWebContentsCloseHandler()
         ->WillCloseAllTabs();
   }
@@ -3818,7 +3818,7 @@ void BrowserView::CloseAllTabsStopped(TabStripModel* tab_strip_model,
           contents_view->GetWebContentsCloseHandler()->CloseAllTabsCanceled();
         }));
   } else {
-    contents_container_view_->GetContentsView()
+    contents_container_view_->contents_view()
         ->GetWebContentsCloseHandler()
         ->CloseAllTabsCanceled();
   }
@@ -4367,7 +4367,7 @@ views::View* BrowserView::GetContentsView() {
   if (multi_contents_view_) {
     return multi_contents_view_->GetActiveContentsView();
   } else {
-    return contents_container_view_->GetContentsView();
+    return contents_container_view_->contents_view();
   }
 }
 
@@ -4736,7 +4736,7 @@ std::vector<ContentsWebView*> BrowserView::GetAllVisibleContentsWebViews() {
       contents_views.push_back(inactive_contents_view);
     }
   } else {
-    contents_views.push_back(contents_container_view_->GetContentsView());
+    contents_views.push_back(contents_container_view_->contents_view());
   }
   return contents_views;
 }

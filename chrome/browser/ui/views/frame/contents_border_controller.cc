@@ -40,14 +40,14 @@ ContentsBorderController::ContentsContainerViewBorderController::
     : contents_container_view_(contents_container_view),
       browser_view_(browser_view) {
   web_contents_attached_subscription_ =
-      contents_container_view_->GetContentsView()
-          ->AddWebContentsAttachedCallback(base::BindRepeating(
+      contents_container_view_->contents_view()->AddWebContentsAttachedCallback(
+          base::BindRepeating(
               &ContentsContainerViewBorderController::OnWebContentsAttached,
               base::Unretained(this)));
 
   web_contents_detached_subscription_ =
-      contents_container_view_->GetContentsView()
-          ->AddWebContentsDetachedCallback(base::BindRepeating(
+      contents_container_view_->contents_view()->AddWebContentsDetachedCallback(
+          base::BindRepeating(
               &ContentsContainerViewBorderController::OnWebContentsDetached,
               base::Unretained(this)));
 }

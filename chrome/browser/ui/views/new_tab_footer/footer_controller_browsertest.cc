@@ -171,7 +171,7 @@ class FooterControllerExtensionTestBase
   new_tab_footer::NewTabFooterWebView* footer() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->GetActiveContentsContainerView()
-        ->GetNewTabFooterView();
+        ->new_tab_footer_view();
   }
 
  protected:

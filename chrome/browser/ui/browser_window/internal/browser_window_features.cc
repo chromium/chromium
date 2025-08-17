@@ -561,7 +561,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
           GetUserDataFactory().CreateInstance<ActorOverlayWindowController>(
               *browser_, browser_,
               browser_view->GetActiveContentsContainerView()
-                  ->GetActorOverlayView());
+                  ->actor_overlay_view());
     }
 
     data_protection_ui_controller_ =

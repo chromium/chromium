@@ -731,7 +731,7 @@ class MultiContentsViewInactiveScrimUiTest : public MultiContentsViewUiTest {
                        EXPECT_LT(content_container_index,
                                  contents_container_views.size());
                        return contents_container_views[content_container_index]
-                                  ->GetInactiveSplitScrimView()
+                                  ->inactive_split_scrim_view()
                                   ->GetVisible() == is_inactive_scrim_visible;
                      });
   }

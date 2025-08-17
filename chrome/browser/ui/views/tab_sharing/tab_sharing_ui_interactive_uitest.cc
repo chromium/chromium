@@ -86,7 +86,7 @@ class TabSharingMultiContentsViewTest
               multi_contents_view
                   ->contents_container_views()[contents_container_index];
           views::Widget* const border_widget =
-              contents_container_view->GetCaptureContentsBorderWidget();
+              contents_container_view->capture_contents_border_widget();
           return border_widget ? border_widget->IsVisible() : false;
         },
         should_show);

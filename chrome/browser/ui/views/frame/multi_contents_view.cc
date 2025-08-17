@@ -46,7 +46,7 @@ MultiContentsView::MultiContentsView(
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(browser_view_)));
   contents_container_views_[0]
-      ->GetContentsView()
+      ->contents_view()
       ->set_is_primary_web_contents_for_window(true);
 
   resize_area_ = AddChildView(std::make_unique<MultiContentsResizeArea>(this));
@@ -58,14 +58,13 @@ MultiContentsView::MultiContentsView(
 
   for (auto* contents_container_view : contents_container_views_) {
     web_contents_focused_subscriptions_.push_back(
-        contents_container_view->GetContentsView()
-            ->AddWebContentsFocusedCallback(
-                base::BindRepeating(&MultiContentsView::OnWebContentsFocused,
-                                    base::Unretained(this))));
+        contents_container_view->contents_view()->AddWebContentsFocusedCallback(
+            base::BindRepeating(&MultiContentsView::OnWebContentsFocused,
+                                base::Unretained(this))));
 
-    if (contents_container_view->GetNewTabFooterView()) {
+    if (contents_container_view->new_tab_footer_view()) {
       ntp_footer_focused_subscriptions_.push_back(
-          contents_container_view->GetNewTabFooterView()
+          contents_container_view->new_tab_footer_view()
               ->AddWebContentsFocusedCallback(
                   base::BindRepeating(&MultiContentsView::OnNtpFooterFocused,
                                       base::Unretained(this))));
@@ -93,11 +92,11 @@ MultiContentsView::~MultiContentsView() {
 }
 
 ContentsWebView* MultiContentsView::GetActiveContentsView() {
-  return GetActiveContentsContainerView()->GetContentsView();
+  return GetActiveContentsContainerView()->contents_view();
 }
 
 ContentsWebView* MultiContentsView::GetInactiveContentsView() {
-  return GetInactiveContentsContainerView()->GetContentsView();
+  return GetInactiveContentsContainerView()->contents_view();
 }
 
 ContentsContainerView* MultiContentsView::GetActiveContentsContainerView() {
@@ -111,7 +110,7 @@ ContentsContainerView* MultiContentsView::GetInactiveContentsContainerView() {
 ContentsContainerView* MultiContentsView::GetContentsContainerViewFor(
     content::WebContents* web_contents) {
   for (auto* container_view : contents_container_views_) {
-    if (container_view->GetContentsView()->web_contents() == web_contents) {
+    if (container_view->contents_view()->web_contents() == web_contents) {
       return container_view;
     }
   }
@@ -126,7 +125,7 @@ void MultiContentsView::SetWebContentsAtIndex(
     content::WebContents* web_contents,
     int index) {
   CHECK(index >= 0 && index < 2);
-  contents_container_views_[index]->GetContentsView()->SetWebContents(
+  contents_container_views_[index]->contents_view()->SetWebContents(
       web_contents);
 
   if (index == 1 && !contents_container_views_[1]->GetVisible()) {
@@ -176,7 +175,7 @@ void MultiContentsView::CloseSplitView() {
 
     active_index_ = 0;
   }
-  contents_container_views_[1]->GetContentsView()->SetWebContents(nullptr);
+  contents_container_views_[1]->contents_view()->SetWebContents(nullptr);
   contents_container_views_[1]->SetVisible(false);
   resize_area_->SetVisible(false);
   UpdateContentsBorderAndOverlay();
@@ -214,7 +213,7 @@ void MultiContentsView::ExecuteOnEachVisibleContentsView(
     base::RepeatingCallback<void(ContentsWebView*)> callback) {
   for (auto* contents_container_view : contents_container_views_) {
     if (contents_container_view->GetVisible()) {
-      callback.Run(contents_container_view->GetContentsView());
+      callback.Run(contents_container_view->contents_view());
     }
   }
 }
@@ -312,9 +311,10 @@ void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
 void MultiContentsView::OnNtpFooterFocused(views::WebView* web_view) {
   if (IsInSplitView() && GetWidget()->IsVisible()) {
     for (auto* contents_container_view : contents_container_views_) {
-      if (contents_container_view->GetNewTabFooterView() == web_view &&
+      if (contents_container_view->new_tab_footer_view() &&
+          contents_container_view->new_tab_footer_view() == web_view &&
           GetInactiveContentsView() ==
-              contents_container_view->GetContentsView()) {
+              contents_container_view->contents_view()) {
         return delegate_->WebContentsFocused(
             GetInactiveContentsView()->web_contents());
       }
@@ -435,7 +435,7 @@ MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
 void MultiContentsView::UpdateContentsBorderAndOverlay() {
   for (auto* contents_container_view : contents_container_views_) {
     const bool is_active =
-        contents_container_view->GetContentsView() == GetActiveContentsView();
+        contents_container_view->contents_view() == GetActiveContentsView();
     contents_container_view->UpdateBorderAndOverlay(IsInSplitView(), is_active,
                                                     show_inactive_scrim_);
   }

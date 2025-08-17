@@ -105,7 +105,7 @@ class BrowserViewTest : public InProcessBrowserTest {
   views::WebView* devtools_web_view() {
     return browser_view()
         ->GetActiveContentsContainerView()
-        ->GetDevtoolsWebView();
+        ->devtools_web_view();
   }
 
   ContentsContainerView* contents_container_view() {
@@ -123,7 +123,7 @@ class BrowserViewTest : public InProcessBrowserTest {
   ScrimView* active_contents_scrim_view() {
     return browser_view()
         ->GetActiveContentsContainerView()
-        ->GetContentsScrimView();
+        ->contents_scrim_view();
   }
 
   SidePanel* side_panel() { return browser_view()->unified_side_panel(); }
@@ -773,47 +773,47 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
 
   // Verify neither devtools is visible.
   EXPECT_FALSE(
-      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      active_contents_container_view()->devtools_web_view()->GetVisible());
   EXPECT_FALSE(
-      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      inactive_contents_container_view()->devtools_web_view()->GetVisible());
 
   // Open devtools for the active side of the split and verify it exists only
   // for the active side.
   DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), true);
   EXPECT_TRUE(
-      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      active_contents_container_view()->devtools_web_view()->GetVisible());
   EXPECT_FALSE(
-      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      inactive_contents_container_view()->devtools_web_view()->GetVisible());
 
   // Activate to the inactive side and verify it stayed open on the appropriate
   // side of the split.
   browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_FALSE(
-      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      active_contents_container_view()->devtools_web_view()->GetVisible());
   EXPECT_TRUE(
-      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      inactive_contents_container_view()->devtools_web_view()->GetVisible());
 
   // Activate to the other split and verify no devtools are seen.
   browser()->tab_strip_model()->ActivateTabAt(2);
   EXPECT_FALSE(
-      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      active_contents_container_view()->devtools_web_view()->GetVisible());
   EXPECT_FALSE(
-      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      inactive_contents_container_view()->devtools_web_view()->GetVisible());
 
   // Switch back to the split where devtools is open and verify is is still
   // visible.
   browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_FALSE(
-      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      active_contents_container_view()->devtools_web_view()->GetVisible());
   EXPECT_TRUE(
-      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      inactive_contents_container_view()->devtools_web_view()->GetVisible());
 
   // Verify two devtools can be seen at once (one for each side of a split).
   DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), true);
   EXPECT_TRUE(
-      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      active_contents_container_view()->devtools_web_view()->GetVisible());
   EXPECT_TRUE(
-      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      inactive_contents_container_view()->devtools_web_view()->GetVisible());
 }
 
 // Verifies that page and devtools WebViews are being correctly laid out
@@ -834,16 +834,16 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
   // for the active side.
   DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), true);
   EXPECT_TRUE(
-      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      active_contents_container_view()->devtools_web_view()->GetVisible());
   EXPECT_FALSE(
-      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      inactive_contents_container_view()->devtools_web_view()->GetVisible());
 
   // Reverse the split and verify the correct side has devtools.
   browser_view()->multi_contents_view()->OnSwap();
   EXPECT_TRUE(
-      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      active_contents_container_view()->devtools_web_view()->GetVisible());
   EXPECT_FALSE(
-      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+      inactive_contents_container_view()->devtools_web_view()->GetVisible());
 }
 
 // TODO(crbug.com/425715421): Re-enable when wayland supports drag and drop
@@ -1053,7 +1053,7 @@ class BrowserViewScrimPixelTest : public UiBrowserTest {
     browser()->window()->Show();
     BrowserView::GetBrowserViewForBrowser(browser())
         ->GetActiveContentsContainerView()
-        ->GetContentsScrimView()
+        ->contents_scrim_view()
         ->SetVisible(true);
   }
 

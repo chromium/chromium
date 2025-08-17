@@ -43,14 +43,14 @@ class ActorOverlayTest : public InProcessBrowserTest {
   bool IsActorOverlayVisible(Browser* browser) const {
     return browser->GetBrowserView()
         .GetActiveContentsContainerView()
-        ->GetActorOverlayView()
+        ->actor_overlay_view()
         ->GetVisible();
   }
 
   unsigned int NumActorOverlayChildren(Browser* browser) const {
     return browser->GetBrowserView()
         .GetActiveContentsContainerView()
-        ->GetActorOverlayView()
+        ->actor_overlay_view()
         ->children()
         .size();
   }
@@ -60,7 +60,7 @@ class ActorOverlayTest : public InProcessBrowserTest {
         << "Child 0 is not present or extra children are present";
     return browser->GetBrowserView()
         .GetActiveContentsContainerView()
-        ->GetActorOverlayView()
+        ->actor_overlay_view()
         ->children()[0]
         ->GetVisible();
   }
@@ -322,14 +322,14 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
   // destroy it or remove it from the view hierarchy.
   ASSERT_EQ(target_browser->GetBrowserView()
                 .GetActiveContentsContainerView()
-                ->GetActorOverlayView()
+                ->actor_overlay_view()
                 ->children()
                 .size(),
             1u);
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return !target_browser->GetBrowserView()
                 .GetActiveContentsContainerView()
-                ->GetActorOverlayView()
+                ->actor_overlay_view()
                 ->children()[0]
                 ->GetVisible();
   }));
