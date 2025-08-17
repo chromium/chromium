@@ -41,7 +41,7 @@ found in the LICENSE file.
           android:background="?attr/selectableItemBackground"
           android:contentDescription="@string/bookmark_bar_overflow_button_content_description"
           android:scaleType="fitCenter"
-          android:src="@drawable/ic_keyboard_double_arrow_right_24dp"
+          android:src="@drawable/outline_chevron_right_24dp"
           app:tint="@color/default_icon_color_tint_list" />
 
       <View

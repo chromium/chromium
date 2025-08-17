@@ -132,8 +132,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         mAllBookmarksButtonModel.set(
                 BookmarkBarButtonProperties.ICON_SUPPLIER,
                 LazyOneshotSupplier.fromValue(
-                        AppCompatResources.getDrawable(
-                                mActivity, R.drawable.ic_folder_outline_24dp)));
+                        AppCompatResources.getDrawable(mActivity, R.drawable.star_outline_24dp)));
         mAllBookmarksButtonModel.set(
                 BookmarkBarButtonProperties.ICON_TINT_LIST_ID,
                 R.color.default_icon_color_tint_list);
