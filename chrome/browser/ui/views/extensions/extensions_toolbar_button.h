@@ -8,9 +8,12 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
@@ -75,6 +78,13 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
   // TODO(crbug.com/40811196): Remove this disclaimer once feature is rolled
   // out.
   const raw_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
+
+  // The button's menu widget.
+  base::WeakPtr<views::Widget> extensions_menu_widget_;
+
+  // Observation over the menu widget.
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      extension_menu_observation_{this};
 
   // The type for the button icon.
   State state_ = State::kDefault;

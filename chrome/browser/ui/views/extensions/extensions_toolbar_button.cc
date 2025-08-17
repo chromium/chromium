@@ -107,7 +107,9 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
 }
 
 ExtensionsToolbarButton::~ExtensionsToolbarButton() {
-  CHECK(!IsInObserverList());
+  if (extensions_menu_widget_) {
+    extensions_menu_widget_->CloseNow();
+  }
 }
 
 gfx::Size ExtensionsToolbarButton::CalculatePreferredSize(
@@ -162,7 +164,7 @@ void ExtensionsToolbarButton::UpdateState(State state) {
 }
 
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
-  widget->RemoveObserver(this);
+  extension_menu_observation_.Reset();
   pressed_lock_.reset();
   extensions_container_->OnMenuClosed();
 }
@@ -197,7 +199,8 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
     menu =
         ExtensionsMenuView::ShowBubble(this, browser_, extensions_container_);
   }
-  menu->AddObserver(this);
+  extensions_menu_widget_ = menu->GetWeakPtr();
+  extension_menu_observation_.Observe(menu);
 }
 
 bool ExtensionsToolbarButton::GetExtensionsMenuShowing() const {
