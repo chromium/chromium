@@ -1141,6 +1141,7 @@
 <translation id="1768212860412467516">שליחת משוב בנושא <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">פתיחת קישור &amp;בחלון חדש</translation>
 <translation id="1769157454356586138">הסריקה נכשלה. לפי הגדרת האדמין, הקובץ הזה חסום.</translation>
+<translation id="176920518817780870">המרת הקבוצה לתיקיית סימניות</translation>
 <translation id="1770407692401984718">אפשר לגרור לכאן תמונה או</translation>
 <translation id="177053719077591686">‏גיבוי אפליקציות ל-Android ב-Google Drive.</translation>
 <translation id="1773329206876345543">‏אפשר ליצור נקודת Wi-Fi לשיתוף אינטרנט שמשתמשת בחבילת הגלישה של <ph name="DEVICE_TYPE" /> כדי לספק אינטרנט למכשירים אחרים. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5296,6 +5297,7 @@
 <translation id="4653116291358041820">צל קטן</translation>
 <translation id="4653405415038586100">‏שגיאה במהלך ההגדרה של Linux</translation>
 <translation id="4654236001025007561">‏שיתוף קבצים עם מכשירי Chromebook ו-Android בסביבה</translation>
+<translation id="4654801841330730814">הכול</translation>
 <translation id="4657810666108475055">חיפוש בכרטיסייה</translation>
 <translation id="4657914796247705218">‏מהירות TrackPoint</translation>
 <translation id="4658285806588491142">שמירה על פרטיות המסך</translation>
@@ -7255,6 +7257,7 @@
 <translation id="606449270532897041">ניהול הנתונים מאתרים</translation>
 <translation id="6064764629679333574">‏אפשר לשפר את איכות הצליל של מיקרופון ה-Bluetooth באמצעות שינוי הרזולוציה מנמוכה לגבוהה.</translation>
 <translation id="6065289257230303064">תכונות ספרייה של נושא אישור</translation>
+<translation id="6066649679804058181">המרת הקבוצה לתיקיית סימניות</translation>
 <translation id="6066794465984119824">‏לא הוגדר גיבוב (hash) של תמונה</translation>
 <translation id="6069464830445383022">‏הכניסה ל-Chromebook תתבצע באמצעות חשבון Google</translation>
 <translation id="6071181508177083058">אישור סיסמה</translation>

@@ -1143,6 +1143,7 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> के लिए सुझाव, शिकायत या राय भेजें.</translation>
 <translation id="1769104665586091481">नई &amp;विंडो में लिंक खोलें</translation>
 <translation id="1769157454356586138">स्कैन नहीं किया जा सका. आपके एडमिन ने इस फ़ाइल को ब्लॉक किया है</translation>
+<translation id="176920518817780870">टैब ग्रुप को बुकमार्क फ़ोल्डर में बदलें</translation>
 <translation id="1770407692401984718">किसी इमेज को खींचें और यहां छोड़ें या</translation>
 <translation id="177053719077591686">Google Drive पर Android ऐप्लिकेशन का बैक अप लें.</translation>
 <translation id="1773329206876345543">अन्य डिवाइसों को इंटरनेट से कनेक्ट करने के लिए, अपने <ph name="DEVICE_TYPE" /> के मोबाइल डेटा का इस्तेमाल करके वाई-फ़ाई हॉटस्पॉट कॉन्फ़िगर करें. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5297,6 +5298,7 @@
 <translation id="4653116291358041820">छोटा शैडो</translation>
 <translation id="4653405415038586100">Linux को कॉन्फ़िगर करने में गड़बड़ी हुई</translation>
 <translation id="4654236001025007561">अपने आस-पास मौजूद Chromebook और Android डिवाइस के साथ फ़ाइलें शेयर करें</translation>
+<translation id="4654801841330730814">सभी पेज</translation>
 <translation id="4657810666108475055">टैब की खोज</translation>
 <translation id="4657914796247705218">TrackPoint की रफ़्तार</translation>
 <translation id="4658285806588491142">अपनी स्क्रीन को निजी रखें</translation>
@@ -7255,6 +7257,7 @@
 <translation id="606449270532897041">साइट डेटा मैनेज करें</translation>
 <translation id="6064764629679333574">ब्लूटूथ वाले माइक की साउंड क्वालिटी को बेहतर बनाएं. इसके लिए, कम क्वालिटी वाले ऑडियो को अच्छी क्वालिटी वाले ऑडियो में बदलने की सुविधा चालू करें.</translation>
 <translation id="6065289257230303064">प्रमाणपत्र विषय निर्देशिका विशेषताएं</translation>
+<translation id="6066649679804058181">टैब ग्रुप को बुकमार्क फ़ोल्डर में बदलें</translation>
 <translation id="6066794465984119824">इमेज हैश सेट नहीं किया गया है</translation>
 <translation id="6069464830445383022">आपको Chromebook में Google खाते से साइन इन करना होगा</translation>
 <translation id="6071181508177083058">पासवर्ड की पुष्‍टि करें</translation>

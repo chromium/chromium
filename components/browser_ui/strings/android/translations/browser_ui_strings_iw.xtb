@@ -311,6 +311,7 @@
 <translation id="443121186588148776">יציאה טורית</translation>
 <translation id="4434045419905280838">חלונות קופצים והפניות אוטומטיות</translation>
 <translation id="443552056913301231">‏יימחקו כל הנתונים המקומיים, כולל קובצי cookie, ויתאפסו כל ההרשאות של <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">‏הגיליון התחתון של צבעי Chrome נפתח בגובה מלא</translation>
 <translation id="4468959413250150279">השתקת צלילים באתר ספציפי.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{‏קובץ cookie אחד}one{‏# קובצי cookie}two{‏# קובצי cookie}other{‏# קובצי cookie}}</translation>
 <translation id="4478158430052450698">אפשרות פשוטה יותר להתאים אישית את מרחק התצוגה באתרים שונים</translation>
@@ -346,6 +347,7 @@
 <translation id="4953688446973710931">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להוריד מספר קבצים באופן אוטומטי. כשהאפשרות מושבתת, אתרים לא יכולים להוריד מספר קבצים באופן אוטומטי.</translation>
 <translation id="4962975101802056554">ביטול כל ההרשאות בשביל המכשיר</translation>
 <translation id="4972737347717125191">אתרים יכולים לבקש הרשאה להשתמש בנתונים ובמכשירים של מציאות מדומה</translation>
+<translation id="4973805849704516244">‏הגיליון התחתון של צבעי Chrome</translation>
 <translation id="497421865427891073">ניווט קדימה</translation>
 <translation id="4976702386844183910">הכניסה האחרונה: <ph name="DATE" /></translation>
 <translation id="4978178243417029856">‏מידע נוסף על פיד Discover</translation>

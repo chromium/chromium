@@ -1135,6 +1135,7 @@
 <translation id="1768212860412467516">Կարծիք հայտնեք «<ph name="EXPERIMENT_NAME" />» գործառույթի մասին։</translation>
 <translation id="1769104665586091481">Բացել հղումը նոր &amp;պատուհանով</translation>
 <translation id="1769157454356586138">Չհաջողվեց սկանավորել։ Ադմինիստրատորն արգելափակել է այս ֆայլը։</translation>
+<translation id="176920518817780870">Խումբը դարձնել էջանիշների պանակ</translation>
 <translation id="1770407692401984718">Քաշեք պատկերն այստեղ կամ</translation>
 <translation id="177053719077591686">Android-ի հավելվածների պահուստավորումը Google Drive-ում</translation>
 <translation id="1773329206876345543">Այլ սարքերի ինտերնետով ապահովելու համար ստեղծեք Wi-Fi թեժ կետ՝ օգտագործելով ձեր <ph name="DEVICE_TYPE" />-ի բջջային ինտերնետը։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5282,6 +5283,7 @@
 <translation id="4653116291358041820">Փոքր շողք</translation>
 <translation id="4653405415038586100">Չհաջողվեց կարգավորել Լինուքսը</translation>
 <translation id="4654236001025007561">Կիսվեք ֆայլերով մոտակայքում գտնվող Chromebook և Android սարքերի հետ</translation>
+<translation id="4654801841330730814">Բոլորը</translation>
 <translation id="4657810666108475055">Ներդիրների որոնում</translation>
 <translation id="4657914796247705218">TrackPoint-ի արագությունը</translation>
 <translation id="4658285806588491142">Պաշտպանեք էկրանի բովանդակությունը հետաքրքրասեր աչքերից</translation>
@@ -7238,6 +7240,7 @@
 <translation id="606449270532897041">Կառավարել կայքերի տվյալները</translation>
 <translation id="6064764629679333574">Բարելավեք Bluetooth խոսափողի ձայնի որակը՝ աուդիոյի լուծաչափը ցածրից դարձնելով բարձր։</translation>
 <translation id="6065289257230303064">Վկայագրի սուբյեկտի գրացուցակի հատկանիշներ</translation>
+<translation id="6066649679804058181">Խումբը դարձնել էջանիշների պանակ</translation>
 <translation id="6066794465984119824">Պատկերի հեշը կարգավորված չէ</translation>
 <translation id="6069464830445383022">Մուտք գործեք Google հաշվով</translation>
 <translation id="6071181508177083058">հաստատեք գաղտնաբառը</translation>
