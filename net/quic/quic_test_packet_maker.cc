@@ -4,10 +4,10 @@
 
 #include "net/quic/quic_test_packet_maker.h"
 
+#include <algorithm>
 #include <list>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -392,15 +392,15 @@ QuicTestPacketMaker::MakeStatelessResetPacket() {
 void QuicTestPacketMaker::RemoveSavedStreamFrames(
     quic::QuicStreamId stream_id) {
   for (auto& kv : connection_state_.saved_frames) {
-    auto* it = kv.second.begin();
-    while (it != kv.second.end()) {
-      if (it->type == quic::STREAM_FRAME &&
-          it->stream_frame.stream_id == stream_id) {
-        it = kv.second.erase(it);
-      } else {
-        UNSAFE_TODO(++it);
-      }
-    }
+    // Since this is an absl::InlinedVector, it doesn't support erase_if().
+    // Instead, have to use erase() and remove_if().
+    kv.second.erase(std::remove_if(kv.second.begin(), kv.second.end(),
+                                   [stream_id](const quic::QuicFrame& frame) {
+                                     return frame.type == quic::STREAM_FRAME &&
+                                            frame.stream_frame.stream_id ==
+                                                stream_id;
+                                   }),
+                    kv.second.end());
   }
 }
 
