@@ -17,6 +17,10 @@ namespace gfx {
 struct VectorIcon;
 }
 
+namespace ui {
+class KeyEvent;
+}
+
 namespace views {
 class BubbleDialogDelegate;
 }
@@ -36,6 +40,9 @@ class AiModePageActionIconView : public PageActionIconView {
   views::BubbleDialogDelegate* GetBubble() const override;
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
+
+  // views::View:
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   void ExecuteWithKeyboardSourceForTesting();
 

@@ -24,6 +24,7 @@
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/event.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -74,6 +75,27 @@ views::BubbleDialogDelegate* AiModePageActionIconView::GetBubble() const {
 
 const gfx::VectorIcon& AiModePageActionIconView::GetVectorIcon() const {
   return omnibox::kSearchSparkIcon;
+}
+
+// This event handler exists because, on Mac, the <return> key doesn't activate
+// buttons in the omnibox or on the toolbelt. However, this page action is
+// designed to act like part of the popup when the popup is open and <return>
+// activates it in that state. In order to have consistent behavior, this event
+// handler ensures that <return> still activates the behavior when the popup
+// *isn't* open.
+//
+// Other platforms don't require this, so it could be guarded by an IS_MAC build
+// flag. However, using this same code path on all platforms may help avoid
+// platform-specific bugs.
+bool AiModePageActionIconView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::VKEY_RETURN) {
+    OmniboxView* omnibox_view = GetOmniboxView();
+    CHECK(omnibox_view);
+    omnibox_view->model()->OpenAiMode();
+    return true;
+  }
+
+  return PageActionIconView::OnKeyPressed(event);
 }
 
 void AiModePageActionIconView::ExecuteWithKeyboardSourceForTesting() {
