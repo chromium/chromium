@@ -10,8 +10,12 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_observer.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -25,6 +29,16 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "url/gurl.h"
+
+BASE_FEATURE(kAimEnabled, "AimEnabled", base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAimServerEligibilityEnabled,
+             "AimServerEligibilityEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAimServerEligibilityEnabledEn,
+             "AimServerEligibilityEnabledEn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -41,6 +55,14 @@ std::string GetCountryCode() {
     }
   }
   return country_code;
+}
+
+// Returns the locale from the browser process.
+std::string GetLocale() {
+  return g_browser_process ? g_browser_process->GetFeatures()
+                                 ->application_locale_storage()
+                                 ->Get()
+                           : "";
 }
 
 static constexpr char kGwsRequestEndpoint[] =
@@ -102,6 +124,20 @@ AimEligibilityService::AimEligibilityService(
 
 AimEligibilityService::~AimEligibilityService() = default;
 
+// static
+bool AimEligibilityService::IsCountry(const std::string& country) {
+  // Country codes are in lowercase ISO 3166-1 alpha-2 format; e.g., us, br, in.
+  // See components/variations/service/variations_service.h
+  return GetCountryCode() == country;
+}
+
+// static
+bool AimEligibilityService::IsLanguage(const std::string& language) {
+  // Locale follows BCP 47 format; e.g., en-US, fr-FR, ja-JP.
+  // See ui/base/l10n/l10n_util.h
+  return base::StartsWith(GetLocale(), language, base::CompareCase::SENSITIVE);
+}
+
 void AimEligibilityService::AddObserver(
     AimEligibilityServiceObserver* observer) {
   observers_.AddObserver(observer);
@@ -112,30 +148,39 @@ void AimEligibilityService::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-// static
-bool AimEligibilityService::IsCountryAndLocale(const std::string& country,
-                                               const std::string& locale) {
-  return g_browser_process &&
-         g_browser_process->GetApplicationLocale() == locale &&
-         GetCountryCode() == country;
+bool AimEligibilityService::IsServerEligibilityEnabled() const {
+  return base::FeatureList::IsEnabled(kAimServerEligibilityEnabled) ||
+         (base::FeatureList::IsEnabled(kAimServerEligibilityEnabledEn) &&
+          IsLanguage("en"));
 }
 
-bool AimEligibilityService::IsAimEligible() {
-  // TODO(crbug.com/436901669): Conditionally check
-  //   `most_recent_response_.is_eligible()` and `IsCountryAndLocale()`
-  //   depending on feature param state.
-  StartGwsRequest();
+bool AimEligibilityService::IsAimLocallyEligible() const {
+  // Kill switch: If AIM is completely disabled, return false.
+  if (!base::FeatureList::IsEnabled(kAimEnabled)) {
+    return false;
+  }
 
-  const bool client_locale_eligible =
-      !omnibox_feature_configs::AiMode::Get().check_ai_locale_client_side ||
-      IsCountryAndLocale("us", "en-*");
-  const bool server_locale_eligible =
-      !omnibox_feature_configs::AiMode::Get().check_ai_eligibility_gws_side ||
-      most_recent_response_.is_eligible();
-  const bool locale_eligible = client_locale_eligible || server_locale_eligible;
+  // Always check Google DSE and Policy requirements.
+  if (!search::DefaultSearchProviderIsGoogle(&template_url_service_.get()) ||
+      !omnibox::IsAimAllowedByPolicy(&pref_service_.get())) {
+    return false;
+  }
 
-  return search::DefaultSearchProviderIsGoogle(&template_url_service_.get()) &&
-         locale_eligible && omnibox::IsAimAllowedByPolicy(&pref_service_.get());
+  return true;
+}
+
+bool AimEligibilityService::IsAimEligible() const {
+  // Check local eligibility first.
+  if (!IsAimLocallyEligible()) {
+    return false;
+  }
+
+  // Conditionally check server response eligibility requirement.
+  if (IsServerEligibilityEnabled()) {
+    return most_recent_response_.is_eligible();
+  }
+
+  return true;
 }
 
 void AimEligibilityService::NotifyObservers() const {
@@ -168,6 +213,12 @@ void AimEligibilityService::ReadFromPref() {
 }
 
 void AimEligibilityService::StartGwsRequest() {
+  // Don't make server requests if AIM or server requests are disabled.
+  if (!base::FeatureList::IsEnabled(kAimEnabled) ||
+      !IsServerEligibilityEnabled()) {
+    return;
+  }
+
   std::unique_ptr<network::ResourceRequest> request =
       std::make_unique<network::ResourceRequest>();
   request->url = GURL{kGwsRequestEndpoint};

@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_COMPOSEBOX_VARIATIONS_COMPOSEBOX_FIELDTRIAL_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_COMPOSEBOX_VARIATIONS_COMPOSEBOX_FIELDTRIAL_H_
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chrome/browser/browser_process.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "third_party/omnibox_proto/ntp_composebox_config.pb.h"
 
@@ -14,11 +14,6 @@ namespace ntp_composebox {
 
 inline constexpr char kConfigParamParseSuccessHistogram[] =
     "NewTabPage.Composebox.ConfigParseSuccess";
-
-BASE_DECLARE_FEATURE(kNtpSearchboxComposeEntrypoint);
-BASE_DECLARE_FEATURE(kNtpSearchboxComposeEntrypointEnglishUS);
-
-bool IsNtpSearchboxComposeEntrypointEnabled(BrowserProcess* browser_process);
 
 BASE_DECLARE_FEATURE(kNtpComposebox);
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
@@ -18,6 +19,15 @@ class AimEligibilityServiceObserver;
 class PrefRegistrySimple;
 class PrefService;
 class TemplateURLService;
+
+// If disabled, AIM is completely turned off (kill switch).
+BASE_DECLARE_FEATURE(kAimEnabled);
+
+// If enabled, uses the server response for AIM eligibility.
+BASE_DECLARE_FEATURE(kAimServerEligibilityEnabled);
+
+// If enabled, uses the server response for AIM eligibility for English locales.
+BASE_DECLARE_FEATURE(kAimServerEligibilityEnabledEn);
 
 namespace network {
 class SimpleURLLoader;
@@ -39,18 +49,27 @@ class AimEligibilityService : public KeyedService {
   AimEligibilityService(const AimEligibilityService&) = delete;
   AimEligibilityService& operator=(const AimEligibilityService&) = delete;
 
+  // Checks if the application country matches the given country.
+  static bool IsCountry(const std::string& country);
+  // Checks if the application language matches the given language.
+  static bool IsLanguage(const std::string& language);
+
   // Register observers to notify when eligibility may have changed. Eligibility
   // is re-checked periodically.
   void AddObserver(AimEligibilityServiceObserver* observer);
   void RemoveObserver(AimEligibilityServiceObserver* observer);
 
-  // Verifies country and locale.
-  static bool IsCountryAndLocale(const std::string& country,
-                                 const std::string& locale);
+  // Checks if server eligibility checking is enabled.
+  // Virtual for testing purposes.
+  virtual bool IsServerEligibilityEnabled() const;
 
-  // Checks if user is eligible for AI mode e.g. in the omnibox or
-  // chrome://settings/searchEngines.
-  bool IsAimEligible();
+  // Checks if user is locally eligible for AI mode (excludes server checks).
+  // Virtual for testing purposes.
+  virtual bool IsAimLocallyEligible() const;
+
+  // Checks if user is eligible for AI mode (includes server checks).
+  // Virtual for testing purposes.
+  virtual bool IsAimEligible() const;
 
  private:
   // Notify `observers_` ineligibles may have changed.
