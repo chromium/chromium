@@ -9131,6 +9131,7 @@ CSSValue* ConsumePositionArea(CSSParserTokenStream& stream) {
 
 bool IsRepeatedPositionAreaValue(CSSValueID value_id) {
   switch (value_id) {
+    case CSSValueID::kSpanAll:
     case CSSValueID::kCenter:
     case CSSValueID::kStart:
     case CSSValueID::kEnd:

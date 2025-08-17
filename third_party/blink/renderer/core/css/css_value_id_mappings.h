@@ -587,6 +587,66 @@ inline CSSValueID PlatformEnumToCSSValueID(FlexWrapMode v) {
   }
 }
 
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(PositionAreaRegion v) {
+  switch (v) {
+    case PositionAreaRegion::kNone:
+      return CSSValueID::kNone;
+    case PositionAreaRegion::kAll:
+      return CSSValueID::kSpanAll;
+    case PositionAreaRegion::kCenter:
+      return CSSValueID::kCenter;
+    case PositionAreaRegion::kStart:
+      return CSSValueID::kStart;
+    case PositionAreaRegion::kEnd:
+      return CSSValueID::kEnd;
+    case PositionAreaRegion::kSelfStart:
+      return CSSValueID::kSelfStart;
+    case PositionAreaRegion::kSelfEnd:
+      return CSSValueID::kSelfEnd;
+    case PositionAreaRegion::kInlineStart:
+      return CSSValueID::kInlineStart;
+    case PositionAreaRegion::kInlineEnd:
+      return CSSValueID::kInlineEnd;
+    case PositionAreaRegion::kSelfInlineStart:
+      return CSSValueID::kSelfInlineStart;
+    case PositionAreaRegion::kSelfInlineEnd:
+      return CSSValueID::kSelfInlineEnd;
+    case PositionAreaRegion::kBlockStart:
+      return CSSValueID::kBlockStart;
+    case PositionAreaRegion::kBlockEnd:
+      return CSSValueID::kBlockEnd;
+    case PositionAreaRegion::kSelfBlockStart:
+      return CSSValueID::kSelfBlockStart;
+    case PositionAreaRegion::kSelfBlockEnd:
+      return CSSValueID::kSelfBlockEnd;
+    case PositionAreaRegion::kTop:
+      return CSSValueID::kTop;
+    case PositionAreaRegion::kBottom:
+      return CSSValueID::kBottom;
+    case PositionAreaRegion::kLeft:
+      return CSSValueID::kLeft;
+    case PositionAreaRegion::kRight:
+      return CSSValueID::kRight;
+    case PositionAreaRegion::kXStart:
+      return CSSValueID::kXStart;
+    case PositionAreaRegion::kXEnd:
+      return CSSValueID::kXEnd;
+    case PositionAreaRegion::kYStart:
+      return CSSValueID::kYStart;
+    case PositionAreaRegion::kYEnd:
+      return CSSValueID::kYEnd;
+    case PositionAreaRegion::kXSelfStart:
+      return CSSValueID::kXSelfStart;
+    case PositionAreaRegion::kXSelfEnd:
+      return CSSValueID::kXSelfEnd;
+    case PositionAreaRegion::kYSelfStart:
+      return CSSValueID::kYSelfStart;
+    case PositionAreaRegion::kYSelfEnd:
+      return CSSValueID::kYSelfEnd;
+  }
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_ID_MAPPINGS_H_
