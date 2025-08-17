@@ -199,7 +199,7 @@ export class GameOverPanel {
     let restartSourceWidth = dimensions.restartWidth;
     let restartSourceHeight = dimensions.restartHeight;
     const restartTargetX =
-        (this.canvasDimensions.width / 2) - (dimensions.restartHeight / 2);
+        (this.canvasDimensions.width / 2) - (dimensions.restartWidth / 2);
     const restartTargetY = this.canvasDimensions.height / 2;
 
     if (IS_HIDPI) {
