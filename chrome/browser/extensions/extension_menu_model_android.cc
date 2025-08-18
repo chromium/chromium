@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extension_menu_delegate_android.h"
+#include "extension_menu_model_android.h"
 
 #include <algorithm>
 #include <map>
@@ -32,48 +32,44 @@ using blink::mojom::ContextMenuDataMediaType;
 
 namespace extensions {
 
-ExtensionMenuDelegate::ExtensionMenuDelegate(
+ExtensionMenuModel::ExtensionMenuModel(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
-    : browser_context_(render_frame_host.GetBrowserContext()),
+    : ui::SimpleMenuModel(this),
+      browser_context_(render_frame_host.GetBrowserContext()),
       web_contents_(
           content::WebContents::FromRenderFrameHost(&render_frame_host)),
       rfh_ptr_(&render_frame_host),
       params_(params),
-      model_(this),
       matcher_(browser_context_,
-               this,     // Delegate for SimpleMenuModel
-               &model_,  // The model to populate
+               this,  // Delegate for SimpleMenuModel
+               this,  // The model to populate
                base::BindRepeating(context_menu_helpers::MenuItemMatchesParams,
                                    params_)) {  // Filter
   CHECK(browser_context_);
   CHECK(web_contents_);
 }
 
-ExtensionMenuDelegate::~ExtensionMenuDelegate() = default;
+ExtensionMenuModel::~ExtensionMenuModel() = default;
 
-void ExtensionMenuDelegate::PopulateModel() {
+void ExtensionMenuModel::PopulateModel() {
   context_menu_helpers::PopulateExtensionItems(browser_context_, params_,
                                                matcher_);
 }
 
-ui::SimpleMenuModel* ExtensionMenuDelegate::GetModel() {
-  return &model_;
-}
-
-bool ExtensionMenuDelegate::IsCommandIdChecked(int command_id) const {
+bool ExtensionMenuModel::IsCommandIdChecked(int command_id) const {
   return matcher_.IsCommandIdChecked(command_id);
 }
 
-bool ExtensionMenuDelegate::IsCommandIdEnabled(int command_id) const {
+bool ExtensionMenuModel::IsCommandIdEnabled(int command_id) const {
   return matcher_.IsCommandIdEnabled(command_id);
 }
 
-bool ExtensionMenuDelegate::IsCommandIdVisible(int command_id) const {
+bool ExtensionMenuModel::IsCommandIdVisible(int command_id) const {
   return matcher_.IsCommandIdVisible(command_id);
 }
 
-void ExtensionMenuDelegate::ExecuteCommand(int command_id, int event_flags) {
+void ExtensionMenuModel::ExecuteCommand(int command_id, int event_flags) {
   // Ensure rfh_ptr_ is valid before use.
   if (rfh_ptr_ && rfh_ptr_->IsRenderFrameLive()) {
     matcher_.ExecuteCommand(command_id, web_contents_, rfh_ptr_, params_);
