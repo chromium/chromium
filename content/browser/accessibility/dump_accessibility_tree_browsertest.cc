@@ -4867,8 +4867,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithMaterialDesignTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithMaterialDesignTest,
-                       MaterialDesignDialogs) {
-  RunMaterialDesignTest(FILE_PATH_LITERAL("dialogs.html"));
+                       MaterialDesignDialog) {
+  RunMaterialDesignTest(FILE_PATH_LITERAL("dialog.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithMaterialDesignTest,
+                       MaterialDesignDialogAlert) {
+  RunMaterialDesignTest(FILE_PATH_LITERAL("dialog-alert.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithMaterialDesignTest,

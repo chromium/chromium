@@ -1,0 +1,16 @@
+[document web] name='Material Web Alert Dialog'
+++[alert] name='Alert Dialog' labelled-by=[heading]
+++++[section]
+++++++[section]
+++++++++[heading] name='Alert Dialog' label-for=[alert]
+++++++++++[static] name='Alert Dialog'
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[paragraph]
+++++++++++++[static] name='Alert Ready'
+++++++++[section]
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[push button] name='OK'

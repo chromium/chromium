@@ -6151,9 +6151,12 @@ data/accessibility/material-design/chips-input.html
 data/accessibility/material-design/chips-suggestion-expected-auralinux.txt
 data/accessibility/material-design/chips-suggestion-expected-blink.txt
 data/accessibility/material-design/chips-suggestion.html
-data/accessibility/material-design/dialogs-expected-auralinux.txt
-data/accessibility/material-design/dialogs-expected-blink.txt
-data/accessibility/material-design/dialogs.html
+data/accessibility/material-design/dialog-alert-expected-auralinux.txt
+data/accessibility/material-design/dialog-alert-expected-blink.txt
+data/accessibility/material-design/dialog-alert.html
+data/accessibility/material-design/dialog-expected-auralinux.txt
+data/accessibility/material-design/dialog-expected-blink.txt
+data/accessibility/material-design/dialog.html
 data/accessibility/material-design/fab-expected-auralinux.txt
 data/accessibility/material-design/fab-expected-blink.txt
 data/accessibility/material-design/fab.html
