@@ -1581,21 +1581,19 @@ void PDFiumPage::PopulateHighlight(FPDF_ANNOTATION annot) {
   DCHECK(annot);
   DCHECK_EQ(FPDFAnnot_GetSubtype(annot), FPDF_ANNOT_HIGHLIGHT);
 
-  const std::optional<PdfRect> maybe_rect = GetAnnotRect(annot);
+  std::optional<PdfRect> maybe_rect = GetAnnotRect(annot);
   if (!maybe_rect.has_value()) {
     return;
   }
 
-  const auto& rect = maybe_rect.value();
+  auto& rect = maybe_rect.value();
   Highlight highlight;
   // We use the bounding box of the highlight as the bounding rect.
   highlight.bounding_rect =
       PageToScreen(gfx::Point(), 1.0, rect, PageOrientation::kOriginal);
-  // TODO(thestig): Check to see if std::abs() calls should be removed in favor
-  // of using PdfRect::Normalize().
+  rect.Normalize();
   GetUnderlyingTextRangeForRect(
-      gfx::RectF(rect.left(), rect.bottom(), std::abs(rect.width()),
-                 std::abs(rect.height())),
+      gfx::RectF(rect.left(), rect.bottom(), rect.width(), rect.height()),
       &highlight.start_char_index, &highlight.char_count);
 
   // Retrieve the color of the highlight.
