@@ -391,6 +391,14 @@ void CrabbyAVIFImageDecoder::DecodeToYUV() {
       const uint8_t* src = UNSAFE_TODO(image->yuvPlanes[plane_index]);
       uint8_t* dst = static_cast<uint8_t*>(image_planes_->Plane(plane));
       libyuv::CopyPlane(src, src_row_bytes, dst, dst_row_bytes, width, height);
+    } else if (image_planes_->SupportsUnscaledOutput()) {
+      DCHECK_GT(bit_depth_, 8u);
+      DCHECK_LE(bit_depth_, 16u);
+      DCHECK_EQ(image_planes_->color_type(), kA16_unorm_SkColorType);
+      const uint8_t* src = UNSAFE_TODO(image->yuvPlanes[plane_index]);
+      uint8_t* dst = static_cast<uint8_t*>(image_planes_->Plane(plane));
+      libyuv::CopyPlane(src, src_row_bytes, dst, dst_row_bytes, width * 2,
+                        height);
     } else {
       DCHECK_GT(bit_depth_, 8u);
       DCHECK_LE(bit_depth_, 16u);

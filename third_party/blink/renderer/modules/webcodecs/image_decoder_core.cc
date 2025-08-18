@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/image_decoder_core.h"
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -24,20 +25,47 @@ namespace blink {
 
 namespace {
 
+// TODO(crbug.com/40215121): Remove this after M144.
+BASE_FEATURE(WebCodecsImageDecoderHighBitDepthYUV,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 media::VideoPixelFormat YUVSubsamplingToMediaPixelFormat(
     cc::YUVSubsampling sampling,
     int depth) {
-  // TODO(crbug.com/1073995): Add support for high bit depth format.
-  if (depth != 8)
-    return media::PIXEL_FORMAT_UNKNOWN;
-
   switch (sampling) {
     case cc::YUVSubsampling::k420:
-      return media::PIXEL_FORMAT_I420;
+      switch (depth) {
+        case 8:
+          return media::PIXEL_FORMAT_I420;
+        case 10:
+          return media::PIXEL_FORMAT_YUV420P10;
+        case 12:
+          return media::PIXEL_FORMAT_YUV420P12;
+        default:
+          return media::PIXEL_FORMAT_UNKNOWN;
+      }
     case cc::YUVSubsampling::k422:
-      return media::PIXEL_FORMAT_I422;
+      switch (depth) {
+        case 8:
+          return media::PIXEL_FORMAT_I422;
+        case 10:
+          return media::PIXEL_FORMAT_YUV422P10;
+        case 12:
+          return media::PIXEL_FORMAT_YUV422P12;
+        default:
+          return media::PIXEL_FORMAT_UNKNOWN;
+      }
     case cc::YUVSubsampling::k444:
-      return media::PIXEL_FORMAT_I444;
+      switch (depth) {
+        case 8:
+          return media::PIXEL_FORMAT_I444;
+        case 10:
+          return media::PIXEL_FORMAT_YUV444P10;
+        case 12:
+          return media::PIXEL_FORMAT_YUV444P12;
+        default:
+          return media::PIXEL_FORMAT_UNKNOWN;
+      }
     default:
       return media::PIXEL_FORMAT_UNKNOWN;
   }
@@ -464,8 +492,14 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
   DCHECK(!have_completed_rgb_decode_);
   DCHECK(!have_completed_yuv_decode_);
 
+  const uint8_t bit_depth = decoder_->GetYUVBitDepth();
+  if (bit_depth > 8 &&
+      !base::FeatureList::IsEnabled(kWebCodecsImageDecoderHighBitDepthYUV)) {
+    return;
+  }
+
   const auto format = YUVSubsamplingToMediaPixelFormat(
-      decoder_->GetYUVSubsampling(), decoder_->GetYUVBitDepth());
+      decoder_->GetYUVSubsampling(), bit_depth);
   if (format == media::PIXEL_FORMAT_UNKNOWN)
     return;
 
@@ -502,15 +536,17 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
       static_cast<wtf_size_t>(yuv_frame_->stride(1)),
       static_cast<wtf_size_t>(yuv_frame_->stride(2))};
 
-  // TODO(crbug.com/1073995): Add support for high bit depth format.
-  const auto color_type = kGray_8_SkColorType;
+  const auto color_type =
+      bit_depth > 8 ? kA16_unorm_SkColorType : kGray_8_SkColorType;
 
-  auto image_planes =
-      std::make_unique<ImagePlanes>(planes, row_bytes, color_type);
+  auto image_planes = std::make_unique<ImagePlanes>(
+      planes, row_bytes, color_type,
+      ImagePlanes::HighBitDepthOutputType::kUnscaled);
   decoder_->SetImagePlanes(std::move(image_planes));
   decoder_->DecodeToYUV();
-  if (decoder_->Failed() || !decoder_->HasDisplayableYUVData())
+  if (decoder_->Failed() || !decoder_->HasDisplayableYUVData()) {
     return;
+  }
 
   have_completed_yuv_decode_ = true;
 

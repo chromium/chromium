@@ -1002,8 +1002,9 @@ ImagePlanes::ImagePlanes() {
 ImagePlanes::ImagePlanes(
     base::span<void*, cc::kNumYUVPlanes> planes,
     base::span<const wtf_size_t, cc::kNumYUVPlanes> row_bytes,
-    SkColorType color_type)
-    : color_type_(color_type) {
+    SkColorType color_type,
+    HighBitDepthOutputType hbd_output_type)
+    : color_type_(color_type), hbd_output_type_(hbd_output_type) {
   base::span(planes_).copy_from(planes);
   base::span(row_bytes_).copy_from(row_bytes);
 }

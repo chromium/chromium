@@ -975,6 +975,111 @@ TEST_F(ImageDecoderTest, DecodeYuv) {
   }
 }
 
+TEST_F(ImageDecoderTest, DecodeYuv10Bit) {
+  if (!HasAv1Decoder()) {
+    GTEST_SKIP() << "AV1 decoder required for this test.";
+  }
+
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/avif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  auto* decoder = CreateDecoder(
+      &v8_scope, "images/resources/avif/red-full-range-420-10bpc.avif",
+      kImageType);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  const auto& tracks = decoder->tracks();
+  ASSERT_EQ(tracks.length(), 1u);
+  EXPECT_EQ(tracks.AnonymousIndexedGetter(0)->animated(), false);
+  EXPECT_EQ(tracks.selectedTrack()->animated(), false);
+
+  EXPECT_EQ(decoder->type(), kImageType);
+  EXPECT_EQ(tracks.selectedTrack()->frameCount(), 1u);
+  EXPECT_EQ(tracks.selectedTrack()->repetitionCount(), 0);
+  EXPECT_EQ(decoder->complete(), true);
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->format(), V8VideoPixelFormat::Enum::kI420P10);
+    EXPECT_EQ(frame->timestamp(), 0u);
+    EXPECT_EQ(frame->duration(), std::nullopt);
+    EXPECT_EQ(frame->displayWidth(), 3u);
+    EXPECT_EQ(frame->displayHeight(), 3u);
+    EXPECT_EQ(frame->frame()->ColorSpace(),
+              gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                              gfx::ColorSpace::TransferID::SRGB,
+                              gfx::ColorSpace::MatrixID::BT709,
+                              gfx::ColorSpace::RangeID::FULL));
+  }
+}
+
+TEST_F(ImageDecoderTest, DecodeYuv12Bit) {
+  if (!HasAv1Decoder()) {
+    GTEST_SKIP() << "AV1 decoder required for this test.";
+  }
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/avif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  auto* decoder = CreateDecoder(
+      &v8_scope, "images/resources/avif/red-full-range-420-12bpc.avif",
+      kImageType);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  const auto& tracks = decoder->tracks();
+  ASSERT_EQ(tracks.length(), 1u);
+  EXPECT_EQ(tracks.AnonymousIndexedGetter(0)->animated(), false);
+  EXPECT_EQ(tracks.selectedTrack()->animated(), false);
+
+  EXPECT_EQ(decoder->type(), kImageType);
+  EXPECT_EQ(tracks.selectedTrack()->frameCount(), 1u);
+  EXPECT_EQ(tracks.selectedTrack()->repetitionCount(), 0);
+  EXPECT_EQ(decoder->complete(), true);
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->format(), V8VideoPixelFormat::Enum::kI420P12);
+    EXPECT_EQ(frame->timestamp(), 0u);
+    EXPECT_EQ(frame->duration(), std::nullopt);
+    EXPECT_EQ(frame->displayWidth(), 3u);
+    EXPECT_EQ(frame->displayHeight(), 3u);
+    EXPECT_EQ(frame->frame()->ColorSpace(),
+              gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                              gfx::ColorSpace::TransferID::SRGB,
+                              gfx::ColorSpace::MatrixID::BT709,
+                              gfx::ColorSpace::RangeID::FULL));
+  }
+}
+
 TEST_F(ImageDecoderTest, DecodeYuvCustomColorProfile) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/jpeg";
