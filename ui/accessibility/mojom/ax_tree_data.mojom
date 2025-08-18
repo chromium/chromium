@@ -27,6 +27,5 @@ struct AXTreeData {
   int32 sel_focus_offset;
   ax.mojom.TextAffinity sel_focus_affinity;
   int32 root_scroller_id;
-  // TODO(436483211): Make this non-optional if possible.
-  array<string>? metadata;
+  array<string>? metadata;  // Only included when AXMode::kHTMLMetadata is set.
 };

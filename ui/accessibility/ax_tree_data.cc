@@ -71,10 +71,11 @@ std::string AXTreeData::ToString() const {
     result += " sel_focus_affinity=";
     result += ui::ToString(sel_focus_affinity);
   }
-  if (!metadata.empty()) {
+  if (metadata.has_value() && !metadata->empty()) {
     result += "\n<head>\n";
-    for (const auto& str : metadata)
+    for (const auto& str : *metadata) {
       result += "  " + str + "\n";
+    }
     result += "</head>\n";
   }
 

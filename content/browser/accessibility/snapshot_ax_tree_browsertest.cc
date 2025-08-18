@@ -762,8 +762,9 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Metadata) {
       /* timeout= */ {}, WebContents::AXTreeSnapshotPolicy::kAll);
   waiter.Wait();
 
+  ASSERT_TRUE(waiter.snapshot().tree_data.metadata.has_value());
   EXPECT_THAT(
-      waiter.snapshot().tree_data.metadata,
+      *waiter.snapshot().tree_data.metadata,
       testing::ElementsAre(
           "<title>Hello World</title>", "<meta charset=\"utf-8\"></meta>",
           "<link ref=\"canonical\" href=\"https://abc.com\"></link>",

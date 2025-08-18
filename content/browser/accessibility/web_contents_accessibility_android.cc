@@ -2362,10 +2362,10 @@ void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
   // Add tree-level (root only) data to Java-side tree (e.g. HTML metadata).
   const auto& metadata_strings =
       GetRootBrowserAccessibilityManager()->GetMetadataForTree();
-  if (!metadata_strings.empty()) {
+  if (metadata_strings.has_value() && !metadata_strings->empty()) {
     Java_AssistDataBuilder_populateHTMLMetadataProperties(
         env, obj, view_structure_root,
-        base::android::ToJavaArrayOfStrings(env, metadata_strings));
+        base::android::ToJavaArrayOfStrings(env, *metadata_strings));
   }
 
   // We have fulfilled the request for an accessibility tree snapshot, so we can

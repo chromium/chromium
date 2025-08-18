@@ -178,11 +178,12 @@ void AddTreeLevelDataToViewStructure(
     const JavaRef<jobject>& view_structure_builder,
     const ui::AXTreeUpdate& ax_tree_update) {
   const auto& metadata_strings = ax_tree_update.tree_data.metadata;
-  if (metadata_strings.empty())
+  if (!metadata_strings.has_value() || metadata_strings->empty()) {
     return;
+  }
 
   ScopedJavaLocalRef<jobjectArray> j_metadata_strings =
-      ToJavaArrayOfStrings(env, metadata_strings);
+      ToJavaArrayOfStrings(env, *metadata_strings);
   ViewStructureBuilder_setViewStructureNodeHtmlMetadata(
       env, view_structure_builder, view_structure_root, j_metadata_strings);
 }

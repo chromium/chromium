@@ -506,8 +506,10 @@ void PopulateAXTreeData(const ui::AXTreeData& source,
   destination->set_sel_focus_affinity(
       TextAffinityToProto(source.sel_focus_affinity));
   destination->set_root_scroller_id(source.root_scroller_id);
-  for (const auto& metadata : source.metadata) {
-    *destination->add_metadata() = metadata;
+  if (source.metadata.has_value()) {
+    for (const auto& metadata : *source.metadata) {
+      *destination->add_metadata() = metadata;
+    }
   }
 }
 
