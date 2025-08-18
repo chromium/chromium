@@ -947,6 +947,12 @@ BASE_FEATURE(kAutofillThirdPartyModeContentProvider,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Defines if the "Your Saved Info" page is eligible to be shown in Chrome
+// settings.
+BASE_FEATURE(kYourSavedInfoSettingsPage,
+             "YourSavedInfoSettingsPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace test {
 
 // Testing tool that collects metrics during a run of the captured site tests

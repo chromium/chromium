@@ -349,6 +349,8 @@ COMPONENT_EXPORT(AUTOFILL)
 bool IsMacViewsAutofillPopupExperimentEnabled();
 #endif  // BUILDFLAG(IS_APPLE)
 
+COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPage);
+
 // The features in this namespace contains are not meant to be rolled out. They
 // are are only intended for manual testing purposes.
 namespace test {
