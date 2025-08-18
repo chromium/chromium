@@ -103,55 +103,6 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     chrome.test.succeed();
   },
-  // <if expr="enable_ink">
-  // Test that the original Ink annotation bar is not used.
-  async function testInkAnnotationBarNotVisible() {
-    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
-
-    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
-    await microtasksFinished();
-
-    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
-    chrome.test.assertTrue(
-        !viewerToolbar.shadowRoot.querySelector('viewer-annotations-bar'));
-
-    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
-    await microtasksFinished();
-
-    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
-    chrome.test.assertTrue(
-        !viewerToolbar.shadowRoot.querySelector('viewer-annotations-bar'));
-    chrome.test.succeed();
-  },
-  // Ink1 disables some toolbar buttons when in annotation mode, but Ink2 does
-  // not have the same limitations. Test that these buttons are still enabled in
-  // Ink2 annotation mode.
-  async function testInk1DisabledButtonsAreEnabled() {
-    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
-
-    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
-    await microtasksFinished();
-
-    const rotationButton =
-        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#rotate');
-    const twoPageViewButton = getRequiredElement<HTMLButtonElement>(
-        viewerToolbar, '#two-page-view-button');
-
-    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
-    chrome.test.assertFalse(viewerToolbar.$.sidenavToggle.disabled);
-    chrome.test.assertFalse(rotationButton.disabled);
-    chrome.test.assertFalse(twoPageViewButton.disabled);
-
-    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
-    await microtasksFinished();
-
-    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
-    chrome.test.assertFalse(viewerToolbar.$.sidenavToggle.disabled);
-    chrome.test.assertFalse(rotationButton.disabled);
-    chrome.test.assertFalse(twoPageViewButton.disabled);
-    chrome.test.succeed();
-  },
-  // </if>
   // Test that toggling annotation mode does not affect displaying annotations.
   async function testTogglingAnnotationModeDoesNotAffectDisplayAnnotations() {
     // The menu needs to be open to check for visible menu elements.

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <if expr="enable_pdf_ink2 or enable_ink">
+// <if expr="enable_pdf_ink2">
 export enum AnnotationMode {
   OFF = 'off',
   DRAW = 'draw',
-  // <if expr="enable_pdf_ink2">
   TEXT = 'text',
-  // </if>
 }
-// </if>
 
-// <if expr="enable_pdf_ink2">
 // The different types of annotation brushes.
 export enum AnnotationBrushType {
   ERASER = 'eraser',
@@ -84,7 +80,7 @@ export interface TextBoxRect {
   locationY: number;
   width: number;
 }
-// </if>
+// </if> enable_pdf_ink2
 
 export interface Attachment {
   name: string;

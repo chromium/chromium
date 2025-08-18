@@ -168,7 +168,7 @@ cr-progress,
   visibility: visible;
 }
 
-<if expr="enable_ink or enable_pdf_ink2">
+<if expr="enable_pdf_ink2">
 .annotate-button {
   margin-inline-end: 4px;
 }

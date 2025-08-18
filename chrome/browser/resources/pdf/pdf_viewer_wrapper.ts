@@ -5,9 +5,6 @@
 // clang-format off
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-// <if expr="enable_ink">
-export {AnnotationTool} from './annotation_tool.js';
-// </if>
 // <if expr="enable_pdf_ink2">
 export {BeforeUnloadProxy, BeforeUnloadProxyImpl} from './before_unload_proxy.js';
 // </if>
@@ -16,7 +13,7 @@ export {BrowserApi, ZoomBehavior} from './browser_api.js';
 // <if expr="enable_pdf_ink2">
 export {AnnotationBrush, AnnotationBrushType, Color, TextAlignment, TextAnnotation, TextAttributes, TextStyle, TextTypeface} from './constants.js';
 // </if>
-// <if expr="enable_pdf_ink2 or enable_ink">
+// <if expr="enable_pdf_ink2">
 export {AnnotationMode} from './constants.js';
 // </if>
 export {Attachment, FittingType, FormFieldFocusType, Point, Rect} from './constants.js';
@@ -45,9 +42,6 @@ export {ViewerBottomToolbarDropdownElement} from './elements/viewer_bottom_toolb
 export {ChangePageAndXyDetail, ChangePageDetail, ChangePageOrigin, ChangeZoomDetail, NavigateDetail, ViewerBookmarkElement} from './elements/viewer_bookmark.js';
 export {ViewerDocumentOutlineElement} from './elements/viewer_document_outline.js';
 export {ViewerDownloadControlsElement} from './elements/viewer_download_controls.js';
-// <if expr="enable_ink">
-export {ViewerInkHostElement} from './elements/viewer_ink_host.js';
-// </if>
 export {ViewerPageSelectorElement} from './elements/viewer_page_selector.js';
 export {ViewerPasswordDialogElement} from './elements/viewer_password_dialog.js';
 export {ViewerPdfSidenavElement} from './elements/viewer_pdf_sidenav.js';
@@ -63,9 +57,6 @@ export {ViewerTextBottomToolbarElement} from './elements/viewer_text_bottom_tool
 export {PAINTED_ATTRIBUTE, ViewerThumbnailElement} from './elements/viewer_thumbnail.js';
 export {ViewerThumbnailBarElement} from './elements/viewer_thumbnail_bar.js';
 export {ViewerToolbarElement} from './elements/viewer_toolbar.js';
-// <if expr="enable_ink">
-export {ViewerToolbarDropdownElement} from './elements/viewer_toolbar_dropdown.js';
-// </if>
 export {GestureDetector, PinchEventDetail} from './gesture_detector.js';
 // <if expr="enable_pdf_ink2">
 export {DEFAULT_TEXTBOX_WIDTH, Ink2Manager, MIN_TEXTBOX_SIZE_PX, TextBoxInit} from './ink2_manager.js';
