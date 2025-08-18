@@ -15,7 +15,7 @@
 
 namespace glic {
 
-class GlicWindowController;
+class GlicWidget;
 class GlicWindowAnimator;
 
 // This class controls the animation of the glic window from one size to
@@ -30,7 +30,7 @@ class GlicWindowAnimator;
 class GlicWindowResizeAnimation : public gfx::LinearAnimation,
                                   public gfx::AnimationDelegate {
  public:
-  GlicWindowResizeAnimation(GlicWindowController* window_controller,
+  GlicWindowResizeAnimation(base::WeakPtr<GlicWidget> widget,
                             GlicWindowAnimator* window_animator,
                             const gfx::Rect& target_bounds,
                             base::TimeDelta duration,
@@ -55,7 +55,7 @@ class GlicWindowResizeAnimation : public gfx::LinearAnimation,
  private:
   // GlicWindowAnimator owns GlicWindowResizeAnimation
   // and will outlive it
-  const raw_ptr<GlicWindowController> window_controller_;
+  base::WeakPtr<GlicWidget> widget_;
   const raw_ptr<GlicWindowAnimator> glic_window_animator_;
   const gfx::Rect initial_bounds_;
   gfx::Rect new_bounds_;

@@ -73,8 +73,9 @@ class GlicWindowResizeAnimationTest : public test::InteractiveGlicTest {
                 base::TimeDelta duration,
                 base::OnceClosure callback) {
     auto animation = std::make_unique<GlicWindowResizeAnimation>(
-        &window_controller(), window_controller().window_animator(),
-        target_bounds, duration, std::move(callback));
+        window_controller().GetGlicWidget()->GetWeakPtr(),
+        window_controller().window_animator(), target_bounds, duration,
+        std::move(callback));
     auto test_api = std::make_unique<gfx::AnimationTestApi>(animation.get());
     test_api->SetStartTime(animation_creation_time_);
     return {std::move(animation), std::move(test_api)};

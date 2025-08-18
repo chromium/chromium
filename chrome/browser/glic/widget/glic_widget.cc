@@ -202,6 +202,10 @@ gfx::Rect GlicWidget::WidgetToVisibleBounds(gfx::Rect widget_bounds) {
   return widget_bounds;
 }
 
+base::WeakPtr<GlicWidget> GlicWidget::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 ui::ColorProviderKey GlicWidget::GetColorProviderKey() const {
   ui::ColorProviderKey key = Widget::GetColorProviderKey();
 

@@ -637,7 +637,6 @@ void GlicWindowControllerImpl::Show(Browser* browser,
     return;
   }
 
-  glic_window_animator_ = std::make_unique<GlicWindowAnimator>(this);
   SetWindowState(State::kWaitingForGlicToLoad);
 
   glic_service_->metrics()->OnGlicWindowOpen(/*attached=*/browser, source);
@@ -649,6 +648,11 @@ void GlicWindowControllerImpl::Show(Browser* browser,
   host().NotifyWindowIntentToShow();
 
   SetupGlicWidget(browser);
+
+  glic_window_animator_ = std::make_unique<GlicWindowAnimator>(
+      glic_widget_->GetWeakPtr(),
+      base::BindRepeating(&GlicWindowControllerImpl::MaybeSetWidgetCanResize,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   // Notify the web client that the panel will open, and wait for the response
   // to actually show the window. Note that we have to call
@@ -1170,6 +1174,7 @@ void GlicWindowControllerImpl::HandleWindowDragWithOffset(
   // This code isn't set up to handle nested run loops. Nested run loops will
   // lead to crashes.
   if (!in_move_loop_) {
+    glic_window_animator_->CancelAnimation();
     in_move_loop_ = true;
 #if BUILDFLAG(IS_MAC)
     GetGlicWidget()->SetCapture(nullptr);
