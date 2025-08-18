@@ -504,6 +504,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   std::vector<gfx::Rect> GetScreenRectsForCaret(
       const PageCharacterIndex& index) const override;
   void InvalidateRect(const gfx::Rect& rect) override;
+  bool PageIndexInBounds(int index) const override;
 
   // `PdfAnnotationAgent::Container`:
   bool FindAndHighlightTextFragments(
@@ -963,7 +964,6 @@ class PDFiumEngine : public DocumentLoader::Client,
   bool IsAnnotationAnEditableFormTextArea(FPDF_ANNOTATION annot,
                                           int form_type) const;
 
-  bool PageIndexInBounds(int index) const;
   bool IsPageCharacterIndexInBounds(const PageCharacterIndex& index) const;
 
   void ScheduleTouchTimer(const blink::WebTouchEvent& event);

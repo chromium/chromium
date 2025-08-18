@@ -965,6 +965,10 @@ void PDFiumEngine::InvalidateRect(const gfx::Rect& rect) {
   client_->Invalidate(rect);
 }
 
+bool PDFiumEngine::PageIndexInBounds(int index) const {
+  return index >= 0 && index < static_cast<int>(pages_.size());
+}
+
 void PDFiumEngine::FinishLoadingDocument() {
   // Note that doc_loader_->IsDocumentComplete() may not be true here if
   // called via `OnDocumentCanceled()`.
@@ -1915,6 +1919,10 @@ bool PDFiumEngine::OnKeyDown(const blink::WebKeyboardEvent& event) {
 
   if (!PageIndexInBounds(last_focused_page_))
     return false;
+
+  if (caret_ && caret_->OnKeyDown(event)) {
+    return true;
+  }
 
   bool rv = !!FORM_OnKeyDown(form(), pages_[last_focused_page_]->GetPage(),
                              event.windows_key_code, event.GetModifiers());
@@ -4056,10 +4064,6 @@ void PDFiumEngine::ScheduleTouchTimer(const blink::WebTouchEvent& event) {
 
 void PDFiumEngine::KillTouchTimer() {
   touch_timer_.Stop();
-}
-
-bool PDFiumEngine::PageIndexInBounds(int index) const {
-  return index >= 0 && index < static_cast<int>(pages_.size());
 }
 
 bool PDFiumEngine::IsPageCharacterIndexInBounds(

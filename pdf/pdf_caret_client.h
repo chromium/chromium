@@ -33,6 +33,9 @@ class PdfCaretClient {
 
   // Notifies the client to invalidate `rect` for the caret.
   virtual void InvalidateRect(const gfx::Rect& rect) {}
+
+  // Returns whether `index` is a valid 0-based page index.
+  virtual bool PageIndexInBounds(int index) const = 0;
 };
 
 }  // namespace chrome_pdf

@@ -11,7 +11,9 @@
 #include "pdf/page_character_index.h"
 #include "pdf/pdf_caret_client.h"
 #include "pdf/region_data.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/events/keycodes/keyboard_codes_win.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
@@ -88,6 +90,19 @@ void PdfCaret::OnGeometryChanged() {
   caret_screen_rect_ = GetScreenRectForCaret();
   if (!caret_screen_rect_.IsEmpty()) {
     client_->InvalidateRect(caret_screen_rect_);
+  }
+}
+
+bool PdfCaret::OnKeyDown(const blink::WebKeyboardEvent& event) {
+  switch (event.windows_key_code) {
+    case ui::KeyboardCode::VKEY_LEFT:
+      MoveToNextChar(/*move_right=*/false);
+      return true;
+    case ui::KeyboardCode::VKEY_RIGHT:
+      MoveToNextChar(/*move_right=*/true);
+      return true;
+    default:
+      return false;
   }
 }
 
@@ -175,6 +190,44 @@ void PdfCaret::Draw(const RegionData& region, const gfx::Rect& rect) const {
       }
     }
   }
+}
+
+void PdfCaret::MoveToNextChar(bool move_right) {
+  if (!WillCaretExitPage(move_right)) {
+    const int delta = move_right ? 1 : -1;
+    // TODO(crbug.com/427139500): Skip newlines.
+    SetChar({index_.page_index, index_.char_index + delta});
+    return;
+  }
+
+  uint32_t page_index = index_.page_index;
+
+  // If `move_right` is true, move one page to the right if possible.
+  if (move_right) {
+    ++page_index;
+    if (!client_->PageIndexInBounds(page_index)) {
+      // There is no next page. Stay at current position.
+      return;
+    }
+    SetChar({page_index, 0});
+    return;
+  }
+
+  // Otherwise, move one page to the left if possible.
+  if (page_index == 0) {
+    // There is no previous page. Stay at current position.
+    return;
+  }
+
+  --page_index;
+  SetChar({page_index, client_->GetCharCount(page_index)});
+}
+
+bool PdfCaret::WillCaretExitPage(bool move_right) const {
+  if (move_right) {
+    return index_.char_index == client_->GetCharCount(index_.page_index);
+  }
+  return index_.char_index == 0;
 }
 
 }  // namespace chrome_pdf
