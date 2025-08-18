@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tab_ui.VersionUpdateIphHandler.maybeShowVersioningIph;
+import static org.chromium.chrome.browser.data_sharing.ui.versioning.VersionUpdateIphHandler.maybeShowVersioningIph;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -362,8 +362,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             maybeShowVersioningIph(
                     mUserEducationHelper,
                     anchorView,
-                    mTabGroupModelFilterSupplier.get(),
-                    /* expectsAutoOpen= */ true);
+                    mProfileProvider.getOriginalProfile(),
+                    /* requiresAutoOpenSettingEnabled= */ false);
         }
 
         IphCommand command =

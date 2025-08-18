@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.tab_ui.VersionUpdateIphHandler.maybeShowVersioningIph;
+import static org.chromium.chrome.browser.data_sharing.ui.versioning.VersionUpdateIphHandler.maybeShowVersioningIph;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -29,12 +29,12 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -318,17 +318,13 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
     void handlePageLoadFinished() {
         if (!mToggleTabStackButton.isShown()) return;
 
-        TabGroupModelFilter tabGroupModelFilter =
-                mTabModelSelectorSupplier
-                        .get()
-                        .getTabGroupModelFilterProvider()
-                        .getCurrentTabGroupModelFilter();
-        if (tabGroupModelFilter != null) {
+        Profile profile = mTabModelSelectorSupplier.get().getCurrentModel().getProfile();
+        if (profile != null) {
             maybeShowVersioningIph(
                     mUserEducationHelper,
                     mToggleTabStackButton,
-                    tabGroupModelFilter,
-                    /* expectsAutoOpen= */ false);
+                    profile,
+                    /* requiresAutoOpenSettingEnabled= */ true);
         }
 
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
