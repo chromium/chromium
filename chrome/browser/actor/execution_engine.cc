@@ -20,6 +20,7 @@
 #include "base/notimplemented.h"
 #include "base/state_transitions.h"
 #include "base/types/id_type.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/browser_action_util.h"
@@ -157,6 +158,20 @@ std::string ExecutionEngine::StateToString(State state) {
     case State::kComplete:
       return "COMPLETE";
   }
+}
+
+bool ExecutionEngine::ShouldGateNavigation(
+    content::NavigationHandle& navigation_handle) {
+  if (!base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {
+    return false;
+  }
+
+  const GURL& navigation_url = navigation_handle.GetURL();
+  const std::optional<url::Origin>& initiator_origin =
+      navigation_handle.GetInitiatorOrigin();
+
+  return initiator_origin &&
+         !initiator_origin->IsSameOriginWith(navigation_url);
 }
 
 void ExecutionEngine::RegisterWithProfile(Profile* profile) {

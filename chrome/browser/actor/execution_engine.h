@@ -24,6 +24,7 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class Profile;
@@ -110,6 +111,8 @@ class ExecutionEngine : public ToolDelegate {
       ToolDelegate::CredentialSelectedCallback callback) override;
 
   static std::string StateToString(State state);
+
+  bool ShouldGateNavigation(content::NavigationHandle& navigation_handle);
 
  private:
   class NewTabWebContentsObserver;

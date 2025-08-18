@@ -35,4 +35,8 @@ BASE_FEATURE(kGlicActionUseOptimizationGuide,
              "GlicActionUseOptimizationGuide",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicCrossOriginNavigationGating,
+             "GlicCrossOriginNavigationGating",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace actor

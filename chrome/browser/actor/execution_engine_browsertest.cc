@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
@@ -357,6 +358,47 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
 
   EXPECT_FALSE(browser_client().external_protocol_result().value());
 }
+
+class ExecutionEngineOriginGatingBrowserTest
+    : public ExecutionEngineBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExecutionEngineOriginGatingBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(kGlicCrossOriginNavigationGating,
+                                              origin_gating_enabled());
+  }
+
+  bool origin_gating_enabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       GateCrossOriginNavigations) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL second_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", second_url)));
+
+  ClickTarget("#link",
+              origin_gating_enabled()
+                  ? mojom::ActionResultCode::kTriggeredNavigationBlocked
+                  : mojom::ActionResultCode::kOk);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionEngineOriginGatingBrowserTest,
+                         testing::Bool());
 
 }  // namespace
 

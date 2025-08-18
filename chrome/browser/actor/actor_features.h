@@ -20,6 +20,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kAllowlistOnly);
 
 BASE_DECLARE_FEATURE(kGlicActionUseOptimizationGuide);
 
+BASE_DECLARE_FEATURE(kGlicCrossOriginNavigationGating);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_FEATURES_H_

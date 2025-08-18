@@ -78,6 +78,28 @@ ActorNavigationThrottle::WillRedirectRequest() {
 }
 
 content::NavigationThrottle::ThrottleCheckResult
+ActorNavigationThrottle::WillProcessResponse() {
+  if (!execution_engine_->ShouldGateNavigation(*navigation_handle())) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  AggregatedJournal& journal = GetJournal();
+  journal.Log(navigation_handle()->GetURL(), task_id_,
+              mojom::JournalTrack::kActor, "NavThrottle",
+              "Cancel: Do not navigate cross origin");
+  // If the navigation we're about to cancel is attributable to the actor's
+  // tool usage, consider the action a failure. But we don't consider
+  // canceled prerenders to be an error.
+  if (navigation_handle()->IsInPrimaryMainFrame()) {
+    execution_engine_->FailCurrentTool(
+        mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  } else {
+    CHECK(navigation_handle()->IsInPrerenderedMainFrame());
+  }
+  return content::NavigationThrottle::CANCEL_AND_IGNORE;
+}
+
+content::NavigationThrottle::ThrottleCheckResult
 ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   const GURL& navigation_url = navigation_handle()->GetURL();
   const std::optional<url::Origin>& initiator_origin =
