@@ -224,10 +224,10 @@ def _RunLint(custom_lint_jar_path,
     # Generating new baselines is only done locally, and requires more memory to
     # avoid OOMs.
     creating_baseline = True
-    lint_xmx = '4G'
+    lint_xmx = '6G'
   else:
     creating_baseline = False
-    lint_xmx = '3G'
+    lint_xmx = '4G'
 
   # Lint requires this directory to exist and be cleared.
   # See b/324598620
