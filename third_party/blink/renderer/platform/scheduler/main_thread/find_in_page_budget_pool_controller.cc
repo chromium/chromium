@@ -30,15 +30,7 @@ const TaskPriority
 
 FindInPageBudgetPoolController::FindInPageBudgetPoolController(
     MainThreadSchedulerImpl* scheduler)
-    : scheduler_(scheduler),
-      best_effort_budget_experiment_enabled_(
-          base::FeatureList::IsEnabled(kBestEffortPriorityForFindInPage)) {
-  if (best_effort_budget_experiment_enabled_) {
-    task_priority_ = TaskPriority::kBestEffortPriority;
-  } else {
-    task_priority_ = kFindInPageBudgetNotExhaustedPriority;
-  }
-
+    : scheduler_(scheduler) {
   base::TimeTicks now = scheduler_->GetTickClock()->NowTicks();
   find_in_page_budget_pool_ = std::make_unique<CPUTimeBudgetPool>(
       "FindInPageBudgetPool", &scheduler_->tracing_controller_, now);
@@ -52,8 +44,9 @@ FindInPageBudgetPoolController::~FindInPageBudgetPoolController() = default;
 void FindInPageBudgetPoolController::OnTaskCompleted(
     MainThreadTaskQueue* queue,
     TaskQueue::TaskTiming* task_timing) {
-  if (!queue || best_effort_budget_experiment_enabled_)
+  if (!queue) {
     return;
+  }
   DCHECK(find_in_page_budget_pool_);
   if (queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kFindInPage) {

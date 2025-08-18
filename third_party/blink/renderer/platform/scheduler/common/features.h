@@ -17,10 +17,6 @@ BASE_FEATURE(kDedicatedWorkerThrottling,
              "BlinkSchedulerWorkerThrottling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBestEffortPriorityForFindInPage,
-             "BlinkSchedulerBestEffortPriorityForFindInPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable setting high priority database task type from field trial parameters.
 BASE_FEATURE(kHighPriorityDatabaseTaskType,
              "HighPriorityDatabaseTaskType",
