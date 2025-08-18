@@ -104,11 +104,11 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
   }
 }
 
-bool ScrollMarkerGroupPseudoElement::SetSelected(
+void ScrollMarkerGroupPseudoElement::SetSelected(
     ScrollMarkerPseudoElement& scroll_marker,
     bool apply_snap_alignment) {
-  return scroll_marker_group_data_->SetSelected(&scroll_marker,
-                                                apply_snap_alignment);
+  return scroll_marker_group_data_->SetPendingSelectedMarker(
+      &scroll_marker, apply_snap_alignment);
 }
 
 ScrollMarkerPseudoElement* ScrollMarkerGroupPseudoElement::Selected() const {
@@ -154,7 +154,8 @@ void ScrollMarkerGroupPseudoElement::Dispose() {
   }
   if (ScrollMarkerPseudoElement* selected = Selected()) {
     selected->SetSelected(false);
-    scroll_marker_group_data_->SetSelected(nullptr);
+    scroll_marker_group_data_->SetPendingSelectedMarker(
+        nullptr, /*apply_snap_alignment=*/true);
   }
   scroll_marker_group_data_->ClearFocusGroup();
   if (GetLayoutBox() && GetLayoutBox()->GetFrameView()) {
@@ -189,7 +190,8 @@ void ScrollMarkerGroupPseudoElement::DetachLayoutTree(
     To<ScrollMarkerPseudoElement>(scroll_marker)
         ->DetachLayoutTree(performing_reattach);
   }
-  scroll_marker_group_data_->SetSelected(nullptr);
+  scroll_marker_group_data_->SetPendingSelectedMarker(
+      nullptr, /*apply_snap_alignment=*/true);
   scroll_marker_group_data_->ClearFocusGroup();
   PseudoElement::DetachLayoutTree(performing_reattach);
 }

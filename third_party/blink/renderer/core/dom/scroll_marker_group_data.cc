@@ -303,20 +303,16 @@ void ScrollMarkerGroupData::RemoveFromFocusGroup(Element& scroll_marker) {
 }
 
 void ScrollMarkerGroupData::ClearFocusGroup() {
-  if (selected_marker_.Get() &&
-      selected_marker_->HasTagName(html_names::kATag)) {
-    SetSelected(nullptr);
-  }
-  pending_selected_marker_.Clear();
+  SetPendingSelectedMarker(nullptr, /*apply_snap_alignment=*/true);
   focus_group_.clear();
 }
 
-bool ScrollMarkerGroupData::SetSelected(Element* scroll_marker,
-                                        bool apply_snap_alignment) {
-  if (selected_marker_ == scroll_marker) {
-    return false;
+void ScrollMarkerGroupData::ApplyPendingScrollMarker() {
+  if (!selected_marker_is_invalid_) {
+    return;
   }
-  pending_selected_marker_.Clear();
+  selected_marker_is_invalid_ = false;
+  // Notify the currently selected marker before updating it.
   if (auto* scroll_marker_pseudo =
           DynamicTo<ScrollMarkerPseudoElement>(selected_marker_.Get())) {
     scroll_marker_pseudo->SetSelected(false);
@@ -325,28 +321,45 @@ bool ScrollMarkerGroupData::SetSelected(Element* scroll_marker,
     // new active marker.
     if (scroll_marker_pseudo->IsFocused()) {
       scroll_marker_pseudo->GetDocument().SetFocusedElement(
-          scroll_marker, FocusParams(SelectionBehaviorOnFocus::kNone,
-                                     mojom::blink::FocusType::kNone,
-                                     /*capabilities=*/nullptr));
+          pending_selected_marker_, FocusParams(SelectionBehaviorOnFocus::kNone,
+                                                mojom::blink::FocusType::kNone,
+                                                /*capabilities=*/nullptr));
     }
+  }
+  if (auto* anchor_scroll_marker =
+          DynamicTo<HTMLAnchorElement>(selected_marker_.Get())) {
+    anchor_scroll_marker->PseudoStateChanged(
+        CSSSelector::PseudoType::kPseudoTargetCurrent);
+  }
+  selected_marker_ = pending_selected_marker_;
+
+  // Notify the newly selected marker.
+  if (auto* scroll_marker_pseudo =
+          DynamicTo<ScrollMarkerPseudoElement>(selected_marker_.Get())) {
+    scroll_marker_pseudo->SetSelected(true, apply_snap_alignment_);
   }
   if (auto* anchor_scroll_marker =
           DynamicTo<HTMLAnchorElement>(selected_marker_.Get())) {
     anchor_scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
   }
-  selected_marker_ = scroll_marker;
-  if (!scroll_marker) {
-    return true;
+  apply_snap_alignment_ = false;
+  pending_selected_marker_.Clear();
+}
+
+void ScrollMarkerGroupData::SetPendingSelectedMarker(
+    Element* scroll_marker,
+    bool apply_snap_alignment) {
+  // Don't invalidate currently selected marker if it is pinned.
+  // However, if the pending selection is null, but we are pinned,
+  // we should update make pending scroll marker the selected one,
+  // as it means that we just received a targeted scroll, that got
+  // us pinned and is setting the pending scroll marker.
+  if (selected_marker_is_pinned_) {
+    return;
   }
-  if (auto* scroll_marker_pseudo =
-          DynamicTo<ScrollMarkerPseudoElement>(scroll_marker)) {
-    scroll_marker_pseudo->SetSelected(true, apply_snap_alignment);
-  }
-  if (auto* anchor_scroll_marker =
-          DynamicTo<HTMLAnchorElement>(scroll_marker)) {
-    anchor_scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
-  }
-  return true;
+  selected_marker_is_invalid_ = true;
+  pending_selected_marker_ = scroll_marker;
+  apply_snap_alignment_ = apply_snap_alignment;
 }
 
 Element* ScrollMarkerGroupData::Selected() const {
@@ -519,7 +532,7 @@ void ScrollMarkerGroupData::UpdateSelectedScrollMarker() {
     // We avoid calling ScrollMarkerPseudoElement::SetSelected here so as not to
     // cause style to be dirty right after layout, which might violate lifecycle
     // expectations.
-    pending_selected_marker_ = selected;
+    SetPendingSelectedMarker(selected, /*apply_snap_alignment=*/true);
   }
 }
 
@@ -559,8 +572,9 @@ Element* ScrollMarkerGroupData::FindPreviousScrollMarker(
 }
 
 bool ScrollMarkerGroupData::UpdateSnapshot() {
-  if (pending_selected_marker_) {
-    return SetSelected(pending_selected_marker_);
+  if (selected_marker_is_invalid_) {
+    ApplyPendingScrollMarker();
+    return true;
   }
   return false;
 }
