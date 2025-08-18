@@ -37,11 +37,11 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(ENABLE_PDF_INK2)
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 namespace pdf_extension_util {
 
@@ -146,7 +146,7 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
        IDS_SAVE_TO_DRIVE_DIALOG_UPLOADING_TITLE},
       {"tooltipSaveToDrive", IDS_PDF_TOOLTIP_SAVE_TO_DRIVE},
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(ENABLE_PDF_INK2)
       {"tooltipAnnotate", IDS_PDF_ANNOTATION_ANNOTATE},
       {"annotationDocumentTooLarge", IDS_PDF_ANNOTATION_DOCUMENT_TOO_LARGE},
       {"annotationDocumentProtected", IDS_PDF_ANNOTATION_DOCUMENT_PROTECTED},
@@ -199,8 +199,6 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
       {"annotationSize12", IDS_PDF_ANNOTATION_SIZE12},
       {"annotationSize16", IDS_PDF_ANNOTATION_SIZE16},
       {"annotationSize20", IDS_PDF_ANNOTATION_SIZE20},
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
-#if BUILDFLAG(ENABLE_PDF_INK2)
       {"ink2Draw", IDS_PDF_INK2_DRAW},
       {"ink2Tool", IDS_PDF_INK2_ANNOTATION_TOOL},
       {"ink2Size", IDS_PDF_INK2_ANNOTATION_SIZE},
@@ -251,11 +249,11 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
   for (const auto& resource : kPdfResources)
     dict->Set(resource.name, l10n_util::GetStringUTF16(resource.id));
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(ENABLE_PDF_INK2)
   std::u16string edit_string = l10n_util::GetStringUTF16(IDS_EDIT);
   std::erase(edit_string, '&');
   dict->Set("editButton", edit_string);
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  dict);
@@ -269,20 +267,14 @@ bool IsPrintingEnabled(content::BrowserContext* context) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(ENABLE_PDF_INK2)
 bool IsPdfAnnotationsEnabledByPolicy(content::BrowserContext* context) {
   PrefService* prefs =
       context ? Profile::FromBrowserContext(context)->GetPrefs() : nullptr;
   return !prefs || !prefs->IsManagedPreference(prefs::kPdfAnnotationsEnabled) ||
          prefs->GetBoolean(prefs::kPdfAnnotationsEnabled);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
-
-#if BUILDFLAG(IS_CHROMEOS)
-bool IsPdfInk1AnnotationsEnabled(content::BrowserContext* context) {
-  return IsPdfAnnotationsEnabledByPolicy(context);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 bool IsPdfInk2AnnotationsEnabled(content::BrowserContext* context) {
@@ -328,10 +320,6 @@ void AddAdditionalData(content::BrowserContext* context,
   // replacements. The i18n string resources should be added using AddStrings()
   // above instead.
   dict->Set("printingEnabled", IsPrintingEnabled(context));
-
-#if BUILDFLAG(IS_CHROMEOS)
-  dict->Set("pdfInk1AnnotationsEnabled", IsPdfInk1AnnotationsEnabled(context));
-#endif
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
   const bool use_ink2 = IsPdfInk2AnnotationsEnabled(context);
