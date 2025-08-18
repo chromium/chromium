@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
@@ -381,9 +382,11 @@ public class WebsitePreferenceBridge {
         return WebsitePreferenceBridgeJni.get().getLocationAllowedByPolicy(browserContextHandle);
     }
 
-    /** @return Whether location is enabled system-wide and the Chrome location setting is enabled. */
+    /**
+     * @return Whether location is enabled system-wide and the Chrome location setting is enabled.
+     */
     public static boolean areAllLocationSettingsEnabled(BrowserContextHandle browserContextHandle) {
-        return isContentSettingEnabled(browserContextHandle, ContentSettingsType.GEOLOCATION)
+        return isContentSettingEnabled(browserContextHandle, getGeolocationType())
                 && LocationUtils.getInstance().isSystemLocationSettingEnabled();
     }
 

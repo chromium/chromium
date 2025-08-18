@@ -509,17 +509,23 @@ ContentSettingsForOneType HostContentSettingsMap::GetSettingsForOneType(
 void HostContentSettingsMap::SetDefaultContentSetting(
     ContentSettingsType content_type,
     ContentSetting setting) {
-  base::Value value;
+  std::optional<PermissionSetting> value;
   // A value of CONTENT_SETTING_DEFAULT implies deleting the content setting.
   if (setting != CONTENT_SETTING_DEFAULT) {
     DCHECK(content_settings::ContentSettingsRegistry::GetInstance()
                ->Get(content_type)
                ->IsDefaultSettingValid(setting));
-    value = base::Value(setting);
+    value = setting;
   }
-  SetWebsiteSettingCustomScope(ContentSettingsPattern::Wildcard(),
-                               ContentSettingsPattern::Wildcard(), content_type,
-                               std::move(value));
+  SetDefaultPermissionSetting(content_type, std::move(value));
+}
+
+void HostContentSettingsMap::SetDefaultPermissionSetting(
+    ContentSettingsType content_type,
+    std::optional<PermissionSetting> setting) {
+  SetPermissionSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                  ContentSettingsPattern::Wildcard(),
+                                  content_type, setting);
 }
 
 void HostContentSettingsMap::SetWebsiteSettingDefaultScope(

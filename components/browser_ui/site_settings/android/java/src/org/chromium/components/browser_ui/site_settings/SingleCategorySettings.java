@@ -11,6 +11,7 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
 import static org.chromium.components.content_settings.PrefNames.ENABLE_QUIET_NOTIFICATION_PERMISSION_UI;
 import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
 import android.content.Context;
 import android.content.Intent;
@@ -341,13 +342,19 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private boolean isOnBlockList(WebsitePreference website) {
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
-        @ContentSettingValues
-        Integer contentSetting =
-                website.site()
-                        .getContentSetting(
-                                browserContextHandle, mCategory.getContentSettingsType());
-        if (contentSetting != null) {
-            return ContentSettingValues.BLOCK == contentSetting;
+        @ContentSettingsType.EnumType int type = mCategory.getContentSettingsType();
+        if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+            PermissionInfo permissionInfo = website.site().getPermissionInfo(type);
+            if (permissionInfo != null) {
+                return permissionInfo.getGeolocationSetting(browserContextHandle).mApproximate
+                        == ContentSettingValues.BLOCK;
+            }
+        } else {
+            @ContentSettingValues
+            Integer contentSetting = website.site().getContentSetting(browserContextHandle, type);
+            if (contentSetting != null) {
+                return ContentSettingValues.BLOCK == contentSetting;
+            }
         }
         return false;
     }
@@ -1689,7 +1696,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 getSiteSettingsDelegate().getBrowserContextHandle();
         Boolean categoryEnabled =
                 WebsitePreferenceBridge.isCategoryEnabled(
-                        browserContextHandle, ContentSettingsType.GEOLOCATION);
+                        browserContextHandle, getGeolocationType());
         if (getSiteSettingsDelegate().isPermissionDedicatedCpssSettingAndroidFeatureEnabled()) {
             if (categoryEnabled) {
                 getPreferenceScreen().addPreference(mLocationTriStatePref);

@@ -330,7 +330,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_file_editing_ask,
                         R.string.website_settings_file_editing_block);
 
-            case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                 return new ResourceItem(
                         R.drawable.gm_filled_location_on_24,
                         R.string.website_settings_device_location,
@@ -1078,7 +1078,7 @@ public class ContentSettingsResources {
                 case ContentSettingsType.NOTIFICATIONS:
                     return R.string
                             .permissions_notification_not_allowed_confirmation_screenreader_announcement;
-                case ContentSettingsType.GEOLOCATION:
+                case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                     return R.string
                             .permissions_geolocation_not_allowed_confirmation_screenreader_announcement;
                 case ContentSettingsType.MEDIASTREAM_CAMERA:
@@ -1090,7 +1090,7 @@ public class ContentSettingsResources {
             }
         } else if (value == ContentSettingValues.SESSION_ONLY) {
             switch (contentSettingsType) {
-                case ContentSettingsType.GEOLOCATION:
+                case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                     return R.string
                             .permissions_geolocation_allowed_once_confirmation_screenreader_announcement;
                 case ContentSettingsType.MEDIASTREAM_CAMERA:
@@ -1105,7 +1105,7 @@ public class ContentSettingsResources {
                 case ContentSettingsType.NOTIFICATIONS:
                     return R.string
                             .permissions_notification_allowed_confirmation_screenreader_announcement;
-                case ContentSettingsType.GEOLOCATION:
+                case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                     return R.string
                             .permissions_geolocation_allowed_confirmation_screenreader_announcement;
                 case ContentSettingsType.MEDIASTREAM_CAMERA:

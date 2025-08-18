@@ -319,14 +319,11 @@ bool GetBooleanForContentSetting(
     ContentSettingsType type) {
   HostContentSettingsMap* content_settings =
       GetHostContentSettingsMap(jbrowser_context_handle);
-  switch (content_settings->GetDefaultContentSetting(type, nullptr)) {
-    case CONTENT_SETTING_BLOCK:
-      return false;
-    case CONTENT_SETTING_ALLOW:
-    case CONTENT_SETTING_ASK:
-    default:
-      return true;
-  }
+  auto* info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
+
+  return !info->delegate().IsBlocked(
+      content_settings->GetDefaultPermissionSetting(type, nullptr));
 }
 
 content_settings::SettingSource GetDefaultContentSettingProviderSource(
@@ -335,7 +332,7 @@ content_settings::SettingSource GetDefaultContentSettingProviderSource(
   HostContentSettingsMap* content_settings =
       GetHostContentSettingsMap(jbrowser_context_handle);
   content_settings::ProviderType provider_type;
-  content_settings->GetDefaultContentSetting(
+  content_settings->GetDefaultPermissionSetting(
       static_cast<ContentSettingsType>(content_settings_type), &provider_type);
   return content_settings::GetSettingSourceFromProviderType(provider_type);
 }
@@ -346,7 +343,8 @@ bool IsContentSettingUserModifiable(
   HostContentSettingsMap* content_settings =
       GetHostContentSettingsMap(jbrowser_context_handle);
   content_settings::ProviderType provider;
-  content_settings->GetDefaultContentSetting(content_settings_type, &provider);
+  content_settings->GetDefaultPermissionSetting(content_settings_type,
+                                                &provider);
   return provider >= content_settings::ProviderType::kPrefProvider;
 }
 
@@ -370,7 +368,7 @@ PermissionOption ToPermissionOption(ContentSetting setting) {
     case CONTENT_SETTING_ASK:
       return PermissionOption::kAsk;
     default:
-      NOTREACHED();
+      NOTREACHED() << setting;
   }
 }
 
@@ -981,7 +979,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
     }
   }
 
-  ContentSetting value = CONTENT_SETTING_BLOCK;
+  PermissionSetting value = CONTENT_SETTING_BLOCK;
   if (allow) {
     switch (type) {
       case ContentSettingsType::AR:
@@ -1020,13 +1018,26 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
       case ContentSettingsType::SOUND:
         value = CONTENT_SETTING_ALLOW;
         break;
+      case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
+        value =
+            GeolocationSetting{PermissionOption::kAsk, PermissionOption::kAsk};
+        break;
       default:
         NOTREACHED() << static_cast<int>(type);  // Not supported on Android.
+    }
+  } else {
+    switch (type) {
+      case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
+        value = GeolocationSetting{PermissionOption::kDenied,
+                                   PermissionOption::kDenied};
+        break;
+      default:  // All other settings use BLOCK.
+        break;
     }
   }
 
   GetHostContentSettingsMap(jbrowser_context_handle)
-      ->SetDefaultContentSetting(type, value);
+      ->SetDefaultPermissionSetting(type, value);
 }
 
 static void JNI_WebsitePreferenceBridge_SetContentSettingDefaultScope(
@@ -1162,20 +1173,36 @@ static jint JNI_WebsitePreferenceBridge_GetDefaultContentSetting(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     int content_settings_type) {
+  auto type = static_cast<ContentSettingsType>(content_settings_type);
+  if (type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+    GeolocationSetting setting = std::get<GeolocationSetting>(
+        GetHostContentSettingsMap(jbrowser_context_handle)
+            ->GetDefaultPermissionSetting(type));
+    DCHECK_EQ(setting.precise, setting.approximate);
+    return ToContentSetting(setting.precise);
+  }
   return GetHostContentSettingsMap(jbrowser_context_handle)
-      ->GetDefaultContentSetting(
-          static_cast<ContentSettingsType>(content_settings_type), nullptr);
+      ->GetDefaultContentSetting(type);
 }
 
 static void JNI_WebsitePreferenceBridge_SetDefaultContentSetting(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     int content_settings_type,
-    int setting) {
+    int content_setting) {
+  auto type = static_cast<ContentSettingsType>(content_settings_type);
+  auto setting = static_cast<ContentSetting>(content_setting);
+  if (type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+    std::optional<PermissionSetting> geo_setting;
+    if (setting != CONTENT_SETTING_DEFAULT) {
+      geo_setting = GeolocationSetting{ToPermissionOption(setting),
+                                       ToPermissionOption(setting)};
+    }
+    GetHostContentSettingsMap(jbrowser_context_handle)
+        ->SetDefaultPermissionSetting(type, geo_setting);
+  }
   GetHostContentSettingsMap(jbrowser_context_handle)
-      ->SetDefaultContentSetting(
-          static_cast<ContentSettingsType>(content_settings_type),
-          static_cast<ContentSetting>(setting));
+      ->SetDefaultContentSetting(type, setting);
 }
 
 static jboolean JNI_WebsitePreferenceBridge_IsContentSettingUserModifiable(
@@ -1204,9 +1231,12 @@ static jboolean JNI_WebsitePreferenceBridge_GetLocationAllowedByPolicy(
       content_settings::SettingSource::kPolicy) {
     return false;
   }
-  return GetHostContentSettingsMap(jbrowser_context_handle)
-             ->GetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
-                                        nullptr) == CONTENT_SETTING_ALLOW;
+  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+      permissions::PermissionUtil::GetGeolocationType());
+  return info->delegate().IsAnyPermissionAllowed(
+      GetHostContentSettingsMap(jbrowser_context_handle)
+          ->GetDefaultPermissionSetting(ContentSettingsType::GEOLOCATION,
+                                        nullptr));
 }
 
 static ScopedJavaLocalRef<jstring>

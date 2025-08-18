@@ -202,6 +202,13 @@ class HostContentSettingsMap : public content_settings::Observer,
   void SetDefaultContentSetting(ContentSettingsType content_type,
                                 ContentSetting setting);
 
+  // Sets the permission setting for a particular content type. This method must
+  // not be invoked on an incognito map.
+  //
+  // This should only be called on the UI thread.
+  void SetDefaultPermissionSetting(ContentSettingsType content_type,
+                                   std::optional<PermissionSetting> setting);
+
   // Sets the content |setting| for the given patterns and|content_type|
   // applying any provided |constraints|. Setting the value to
   // CONTENT_SETTING_DEFAULT causes the default setting for that type to be used

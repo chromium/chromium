@@ -101,8 +101,7 @@ public class PermissionInfo implements Serializable {
     }
 
     /** Returns the Geolocation permission value for this origin. */
-    public @Nullable GeolocationSetting getGeolocationSetting(
-            BrowserContextHandle browserContextHandle) {
+    public GeolocationSetting getGeolocationSetting(BrowserContextHandle browserContextHandle) {
         assert mContentSettingsType == ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
         assert PermissionsAndroidFeatureMap.isEnabled(
                 PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);

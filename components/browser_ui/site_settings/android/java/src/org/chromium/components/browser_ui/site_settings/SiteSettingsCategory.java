@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.site_settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
 import android.content.Context;
 import android.content.Intent;
@@ -237,7 +238,7 @@ public class SiteSettingsCategory {
             case Type.REQUEST_DESKTOP_SITE:
                 return ContentSettingsType.REQUEST_DESKTOP_SITE;
             case Type.DEVICE_LOCATION:
-                return ContentSettingsType.GEOLOCATION;
+                return getGeolocationType();
             case Type.FILE_EDITING:
                 return ContentSettingsType.FILE_SYSTEM_WRITE_GUARD;
             case Type.FEDERATED_IDENTITY_API:

@@ -36,6 +36,7 @@ import static org.mockito.ArgumentMatchers.refEq;
 import static org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
@@ -481,7 +482,7 @@ public class SiteSettingsTest {
         new TwoStatePermissionTestCaseWithToggle(
                         "Location",
                         SiteSettingsCategory.Type.DEVICE_LOCATION,
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         true)
                 .run();
         ThreadUtils.runOnUiThreadBlocking(
@@ -515,7 +516,7 @@ public class SiteSettingsTest {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "Location",
                         SiteSettingsCategory.Type.DEVICE_LOCATION,
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         true)
                 .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
@@ -549,7 +550,7 @@ public class SiteSettingsTest {
         new TwoStatePermissionTestCaseWithToggle(
                         "Location",
                         SiteSettingsCategory.Type.DEVICE_LOCATION,
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         false)
                 .run();
         ThreadUtils.runOnUiThreadBlocking(
@@ -581,7 +582,7 @@ public class SiteSettingsTest {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "Location",
                         SiteSettingsCategory.Type.DEVICE_LOCATION,
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         false)
                 .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
@@ -2743,7 +2744,7 @@ public class SiteSettingsTest {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "Geolocation",
                         SiteSettingsCategory.Type.DEVICE_LOCATION,
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         true)
                 .withExpectedPrefKeys(SingleCategorySettings.LOCATION_TRI_STATE_PREF_KEY)
                 .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
@@ -2758,7 +2759,7 @@ public class SiteSettingsTest {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "Geolocation",
                         SiteSettingsCategory.Type.DEVICE_LOCATION,
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         false)
                 .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
