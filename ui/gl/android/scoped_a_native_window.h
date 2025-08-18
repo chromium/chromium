@@ -18,7 +18,13 @@ class ScopedJavaSurface;
 
 class GL_EXPORT ScopedANativeWindow {
  public:
+  // Wraps a native window, and increments its reference count.
   static ScopedANativeWindow Wrap(ANativeWindow* a_native_window);
+
+  // Adopts a native window, taking ownership of it without incrementing the
+  // reference count.
+  static ScopedANativeWindow Adopt(ANativeWindow* a_native_window);
+
   constexpr ScopedANativeWindow() = default;
   constexpr ScopedANativeWindow(std::nullptr_t) {}
   explicit ScopedANativeWindow(const ScopedJavaSurface& surface);

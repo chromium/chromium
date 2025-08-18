@@ -173,6 +173,8 @@ component("gpu") {
       "android/video_frame_factory.h",
       "android/video_frame_factory_impl.cc",
       "android/video_frame_factory_impl.h",
+      "android/video_frame_gl_surface_renderer.cc",
+      "android/video_frame_gl_surface_renderer.h",
     ]
     if (proprietary_codecs) {
       sources += [
@@ -594,6 +596,7 @@ source_set("android_video_decode_accelerator_unittests") {
       "android/promotion_hint_aggregator_impl_unittest.cc",
       "android/surface_chooser_helper_unittest.cc",
       "android/video_frame_factory_impl_unittest.cc",
+      "android/video_frame_gl_surface_renderer_test.cc",
     ]
     deps = [
       ":gpu",
@@ -604,6 +607,7 @@ source_set("android_video_decode_accelerator_unittests") {
       "//media:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//third_party/libvpx",
       "//third_party/libyuv",
       "//ui/gl",
       "//ui/gl/init",

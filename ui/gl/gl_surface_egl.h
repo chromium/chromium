@@ -70,7 +70,8 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
 #if BUILDFLAG(IS_ANDROID)
   NativeViewGLSurfaceEGL(GLDisplayEGL* display,
                          ScopedANativeWindow scoped_window,
-                         std::unique_ptr<gfx::VSyncProvider> vsync_provider);
+                         std::unique_ptr<gfx::VSyncProvider> vsync_provider,
+                         bool video_encoder_input = false);
 #else
   NativeViewGLSurfaceEGL(GLDisplayEGL* display,
                          EGLNativeWindowType window,
@@ -117,6 +118,11 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
                                         uint32_t* presentation_flags,
                                         int frame_id) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  EGLConfig GetConfig() override;
+  void SetPresentationTimestamp(base::TimeTicks presentation_time);
+#endif
+
   // Takes care of the platform dependant bits, of any, for creating the window.
   virtual bool InitializeNativeWindow();
 
@@ -125,6 +131,7 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
 
 #if BUILDFLAG(IS_ANDROID)
   ScopedANativeWindow scoped_window_;
+  bool video_encoder_input_ = false;
 #endif
   EGLNativeWindowType window_ = 0;
   gfx::Size size_ = gfx::Size(1, 1);

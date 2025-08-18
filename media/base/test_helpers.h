@@ -263,6 +263,11 @@ CreateMockDemuxerStream(DemuxerStream::Type type, bool encrypted);
 void FillFourColors(VideoFrame& dest_frame,
                     std::optional<uint32_t> xor_mask = std::nullopt);
 
+// Counts the number of pixels that are different between two video frames.
+int CountDifferentPixels(const VideoFrame& frame1,
+                         const VideoFrame& frame2,
+                         int tolerance);
+
 // Convert RGB color to YUV.
 std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> RGBToYUV(uint32_t argb);
 

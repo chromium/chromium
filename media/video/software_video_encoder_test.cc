@@ -248,43 +248,6 @@ class SoftwareVideoEncoderTest
     run_loop.Run(location);
   }
 
-  int CountDifferentPixels(VideoFrame& frame1, VideoFrame& frame2) {
-    int diff_cnt = 0;
-    uint8_t tolerance = 10;
-
-    if (frame1.format() != frame2.format() ||
-        frame1.visible_rect().size() != frame2.visible_rect().size()) {
-      return frame1.coded_size().GetArea();
-    }
-
-    VideoPixelFormat format = frame1.format();
-    size_t num_planes = VideoFrame::NumPlanes(format);
-    gfx::Size visible_size = frame1.visible_rect().size();
-    for (size_t plane = 0; plane < num_planes; ++plane) {
-      int stride1 = frame1.stride(plane);
-      int stride2 = frame2.stride(plane);
-      size_t rows = VideoFrame::Rows(plane, format, visible_size.height());
-      size_t row_bytes =
-          VideoFrame::RowBytes(plane, format, visible_size.width());
-      auto data1 = frame1.GetVisiblePlaneData(plane);
-      auto data2 = frame2.GetVisiblePlaneData(plane);
-
-      for (size_t r = 0; r < rows; ++r) {
-        auto row1 = data1.subspan(stride1 * r, row_bytes);
-        auto row2 = data2.subspan(stride2 * r, row_bytes);
-        for (size_t c = 0; c < row_bytes; ++c) {
-          uint8_t b1 = row1[c];
-          uint8_t b2 = row2[c];
-          uint8_t diff = std::max(b1, b2) - std::min(b1, b2);
-          if (diff > tolerance) {
-            ++diff_cnt;
-          }
-        }
-      }
-    }
-    return diff_cnt;
-  }
-
   VideoPixelFormat GetExpectedOutputPixelFormat(VideoCodecProfile profile) {
     switch (profile) {
       case VP9PROFILE_PROFILE1:
@@ -565,7 +528,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
         EXPECT_EQ(decoded_frame->format(),
                   GetExpectedOutputPixelFormat(profile_));
         if (decoded_frame->format() == original_frame->format()) {
-          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame),
+          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame, 10),
                     original_frame->visible_rect().width());
         }
         ++total_decoded_frames;
@@ -656,7 +619,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecodeWithEnablingDrop) {
         EXPECT_EQ(decoded_frame->format(),
                   GetExpectedOutputPixelFormat(profile_));
         if (decoded_frame->format() == original_frame->format()) {
-          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame),
+          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame, 10),
                     original_frame->visible_rect().width());
         }
         ++total_decoded_frames;
@@ -1172,7 +1135,7 @@ TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
                   .is_ok());
           original_frame = i420_frame;
         }
-        EXPECT_LE(CountDifferentPixels(*frame, *original_frame),
+        EXPECT_LE(CountDifferentPixels(*frame, *original_frame, 10),
                   original_frame->visible_rect().width());
         ++total_decoded_frames;
       });

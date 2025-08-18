@@ -140,6 +140,8 @@ component("gl") {
     "scoped_binders.h",
     "scoped_egl_image.cc",
     "scoped_egl_image.h",
+    "scoped_gl_texture.cc",
+    "scoped_gl_texture.h",
     "scoped_make_current.cc",
     "scoped_make_current.h",
     "scoped_make_current_unsafe.cc",
