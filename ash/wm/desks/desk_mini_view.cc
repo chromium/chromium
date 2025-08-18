@@ -236,7 +236,7 @@ DeskMiniView::DeskMiniView(
     const ui::ColorId background_color_id =
         chromeos::features::IsSystemBlurEnabled()
             ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
-            : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+            : cros_tokens::kCrosSysSystemOnBaseOpaque;
     desk_shortcut_view_->SetBackground(
         views::CreateSolidBackground(background_color_id));
 

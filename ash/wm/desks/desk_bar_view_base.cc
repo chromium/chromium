@@ -140,7 +140,7 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
   const ui::ColorId background_color_id =
       chromeos::features::IsSystemBlurEnabled()
           ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+          : cros_tokens::kCrosSysSystemOnBaseOpaque;
   view->SetBackground(views::CreateSolidBackground(background_color_id));
 }
 

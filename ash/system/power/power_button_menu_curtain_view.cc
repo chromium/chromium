@@ -85,7 +85,7 @@ PowerButtonMenuCurtainView::PowerButtonMenuCurtainView() {
   const ui::ColorId background_color_id =
       chromeos::features::IsSystemBlurEnabled()
           ? static_cast<ui::ColorId>(kPowerButtonMenuBackgroundColorId)
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+          : cros_tokens::kCrosSysSystemOnBaseOpaque;
   SetBackground(views::CreateSolidBackground(background_color_id));
 
   layer()->SetRoundedCornerRadius(

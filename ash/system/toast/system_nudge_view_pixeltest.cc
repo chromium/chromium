@@ -95,7 +95,7 @@ TEST_P(SystemNudgeViewPixelTest, TextOnly) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       GetContentsView()));
 }
 
@@ -109,7 +109,7 @@ TEST_P(SystemNudgeViewPixelTest, TextOnly_LongText) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       GetContentsView()));
 }
 
@@ -125,7 +125,7 @@ TEST_P(SystemNudgeViewPixelTest, WithButtons) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       GetContentsView()));
 }
 
@@ -143,7 +143,7 @@ TEST_P(SystemNudgeViewPixelTest, TitleAndLeadingImage) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       GetContentsView()));
 }
 
@@ -163,7 +163,7 @@ TEST_P(SystemNudgeViewPixelTest, TitleAndLeadingImageWithButtons) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       GetContentsView()));
 }
 
@@ -181,7 +181,7 @@ TEST_P(SystemNudgeViewPixelTest, AnchoredNudgeWithPointyCorner) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       GetContentsView()));
 }
 
