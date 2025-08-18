@@ -215,8 +215,9 @@ void BackForwardCacheMetrics::DidCommitNavigation(
       SCOPED_CRASH_KEY_STRING256(
           "BFCacheMismatch", "previous_url",
           navigation->GetPreviousPrimaryMainFrameURL().spec());
-      // TODO(https://crbug.com/40229455): Remove this and the debugging above.
-      base::debug::DumpWithoutCrashing();
+      // TODO(https://crbug.com/40229455): Reenable this when known cases are
+      // fixed.
+      // base::debug::DumpWithoutCrashing();
     }
 
     TRACE_EVENT1("navigation", "HistoryNavigationOutcome", "outcome",
