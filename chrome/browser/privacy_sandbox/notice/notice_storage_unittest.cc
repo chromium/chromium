@@ -11,8 +11,8 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
-#include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_catalog.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -38,7 +38,7 @@ using ::testing::ValuesIn;
 
 using EventTimePair = NoticeEventTimestampPair;
 
-// Feature providing the storage name for the default notice in the catalog.
+// Feature providing the storage name for the default notices.
 BASE_FEATURE(kTestFeature1,
              "Notice1StorageName",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -47,14 +47,10 @@ BASE_FEATURE(kTestFeature2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Notice ID for the default notice in the catalog.
-constexpr NoticeId kNotice1InCatalog = {
-    PrivacySandboxNotice::kTopicsConsentNotice, SurfaceType::kDesktopNewTab};
-constexpr NoticeId kNotice2InCatalog = {
-    PrivacySandboxNotice::kTopicsConsentNotice, SurfaceType::kClankCustomTab};
-
-// A notice ID *not* expected in the default catalog.
-constexpr NoticeId kNoticeIdNotInCatalog = {
-    PrivacySandboxNotice::kMeasurementNotice, SurfaceType::kClankCustomTab};
+constexpr NoticeId kNotice1 = {PrivacySandboxNotice::kTopicsConsentNotice,
+                               SurfaceType::kDesktopNewTab};
+constexpr NoticeId kNotice2 = {PrivacySandboxNotice::kTopicsConsentNotice,
+                               SurfaceType::kClankCustomTab};
 
 std::unique_ptr<Notice> MakeNoticeWithFeature(NoticeId id,
                                               const base::Feature& feature) {
@@ -88,29 +84,20 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
   PrivacySandboxNoticeStorageTest()
       : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     PrivacySandboxNoticeStorage::RegisterProfilePrefs(prefs()->registry());
-    catalog_ = std::make_unique<MockNoticeCatalog>();
-    notice_storage_ =
-        std::make_unique<PrivacySandboxNoticeStorage>(prefs(), catalog_.get());
+    notice_storage_ = std::make_unique<PrivacySandboxNoticeStorage>(prefs());
     scoped_feature_list_.InitAndEnableFeature(
         kPrivacySandboxMigratePrefsToSchemaV2);
-
-    ON_CALL(*mock_catalog(), GetNotices())
-        .WillByDefault(Return(base::span(notices_)));
-    ON_CALL(*mock_catalog(), GetNotice(kNotice1InCatalog))
-        .WillByDefault(Return(notice_1_.get()));
-    ON_CALL(*mock_catalog(), GetNotice(kNotice2InCatalog))
-        .WillByDefault(Return(notice_2_.get()));
-    ON_CALL(*mock_catalog(), GetNotice(kNoticeIdNotInCatalog))
-        .WillByDefault(Return(nullptr));
   }
 
   PrivacySandboxNoticeStorage* notice_storage() {
     return notice_storage_.get();
   }
 
-  MockNoticeCatalog* mock_catalog() { return catalog_.get(); }
-
   TestingPrefServiceSimple* prefs() { return &prefs_; }
+
+  const Notice& notice_1() { return *notice_1_.get(); }
+
+  const Notice& notice_2() const { return *notice_2_.get(); }
 
  protected:
   void SetNoticeStateFromJSON(const std::string& notice_name,
@@ -129,27 +116,21 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_env_;
   TestingPrefServiceSimple prefs_;
-  std::unique_ptr<MockNoticeCatalog> catalog_;
   std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   // Notices
   std::unique_ptr<Notice> notice_1_ =
-      MakeNoticeWithFeature(kNotice1InCatalog, kTestFeature1);
+      MakeNoticeWithFeature(kNotice1, kTestFeature1);
   std::unique_ptr<Notice> notice_2_ =
-      MakeNoticeWithFeature(kNotice2InCatalog, kTestFeature2);
+      MakeNoticeWithFeature(kNotice2, kTestFeature2);
   std::vector<Notice*> notices_{notice_1_.get(), notice_2_.get()};
 };
 
 TEST_F(PrivacySandboxNoticeStorageTest, NoticePathNotFound) {
   const auto actual = notice_storage()->ReadNoticeData("Notice1StorageName");
   EXPECT_FALSE(actual.has_value());
-}
-
-TEST_F(PrivacySandboxNoticeStorageTest, NoNoticeNameExpectCrash) {
-  EXPECT_DEATH(notice_storage()->RecordEvent(kNoticeIdNotInCatalog, kShown),
-               "");
 }
 
 const auto kStartupTestValues =
@@ -170,7 +151,7 @@ class PrivacySandboxNoticeStorageStartupTest
 TEST_P(PrivacySandboxNoticeStorageStartupTest, StartupStateEmitsSuccessfully) {
   auto [events, expected] = GetParam();
   for (auto event : events) {
-    notice_storage()->RecordEvent(kNotice1InCatalog, event);
+    notice_storage()->RecordEvent(notice_1(), event);
     AdvanceMs(10);
   }
 
@@ -192,7 +173,7 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeStorageStartupTest,
                          ValuesIn(kStartupTestValues));
 
 TEST_F(PrivacySandboxNoticeStorageTest, EventShownHistogramsEmitSuccessfully) {
-  notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
+  notice_storage()->RecordEvent(notice_1(), kShown);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeShown.Notice1StorageName", true, 1);
   histogram_tester_.ExpectBucketCount(
@@ -200,9 +181,9 @@ TEST_F(PrivacySandboxNoticeStorageTest, EventShownHistogramsEmitSuccessfully) {
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, ActionEventHistogramsEmitSuccessfully) {
-  notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
+  notice_storage()->RecordEvent(notice_1(), kShown);
   AdvanceMs(10);
-  notice_storage()->RecordEvent(kNotice1InCatalog, kAck);
+  notice_storage()->RecordEvent(notice_1(), kAck);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeEvent.Notice1StorageName", kAck, 1);
   histogram_tester_.ExpectBucketCount(
@@ -241,7 +222,7 @@ TEST_P(PrivacySandboxNoticeStorageEventPopulationTest, SetsEventsAndReadsData) {
   std::vector<testing::Matcher<const std::unique_ptr<EventTimePair>&>> expected;
   for (auto event : events) {
     base::Time timestamp = base::Time::Now();
-    notice_storage()->RecordEvent(kNotice1InCatalog, event);
+    notice_storage()->RecordEvent(notice_1(), event);
     expected.emplace_back(Pointee(Eq(EventTimePair{event, timestamp})));
     AdvanceMs(10);
   }
@@ -270,9 +251,9 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeStorageEventPopulationTest,
 TEST_F(PrivacySandboxNoticeStorageTest, ReActionRegistersAndEmitsHistogram) {
   base::Time t0, t1, t2;
   t0 = base::Time::Now();
-  notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
+  notice_storage()->RecordEvent(notice_1(), kShown);
   t1 = AdvanceMs(100);
-  notice_storage()->RecordEvent(kNotice1InCatalog, kSettings);
+  notice_storage()->RecordEvent(notice_1(), kSettings);
 
   NoticeStorageData expected;
   expected.schema_version = 2;
@@ -292,7 +273,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, ReActionRegistersAndEmitsHistogram) {
 
   t2 = AdvanceMs(50);
 
-  notice_storage()->RecordEvent(kNotice1InCatalog, kAck);
+  notice_storage()->RecordEvent(notice_1(), kAck);
   actual = notice_storage()->ReadNoticeData("Notice1StorageName");
   ASSERT_TRUE(actual.has_value());
 
@@ -315,9 +296,9 @@ TEST_F(PrivacySandboxNoticeStorageTest, ReActionRegistersAndEmitsHistogram) {
 TEST_F(PrivacySandboxNoticeStorageTest,
        MultipleNoticeShownValuesRegisterSuccessfully) {
   base::Time t0 = base::Time::Now();
-  notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
+  notice_storage()->RecordEvent(notice_1(), kShown);
   base::Time t1 = AdvanceMs(100);
-  notice_storage()->RecordEvent(kNotice1InCatalog, kSettings);
+  notice_storage()->RecordEvent(notice_1(), kSettings);
 
   auto actual = notice_storage()->ReadNoticeData("Notice1StorageName");
   ASSERT_TRUE(actual.has_value());
@@ -345,7 +326,7 @@ TEST_F(PrivacySandboxNoticeStorageTest,
 
   // Set notice shown value again.
   base::Time t2 = AdvanceMs(50);
-  notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
+  notice_storage()->RecordEvent(notice_1(), kShown);
   actual = notice_storage()->ReadNoticeData("Notice1StorageName");
   ASSERT_TRUE(actual.has_value());
 
@@ -364,17 +345,17 @@ TEST_F(PrivacySandboxNoticeStorageTest,
 
 TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
   // Notice data 1.
-  notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
+  notice_storage()->RecordEvent(notice_1(), kShown);
   AdvanceMs(100);
-  notice_storage()->RecordEvent(kNotice1InCatalog, kSettings);
+  notice_storage()->RecordEvent(notice_1(), kSettings);
   const auto actual_notice1 =
       notice_storage()->ReadNoticeData("Notice1StorageName");
   ASSERT_TRUE(actual_notice1.has_value());
 
   // Notice data 2.
-  notice_storage()->RecordEvent(kNotice2InCatalog, kShown);
+  notice_storage()->RecordEvent(notice_2(), kShown);
   AdvanceMs(20);
-  notice_storage()->RecordEvent(kNotice2InCatalog, kAck);
+  notice_storage()->RecordEvent(notice_2(), kAck);
   const auto actual_notice2 =
       notice_storage()->ReadNoticeData("Notice2StorageName");
   ASSERT_TRUE(actual_notice2.has_value());

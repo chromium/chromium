@@ -173,10 +173,10 @@ void PrivacySandboxNoticeService::Shutdown() {
 void PrivacySandboxNoticeService::EventOccurred(
     NoticeId notice_id,
     PrivacySandboxNoticeEvent event) {
-  notice_storage()->RecordEvent(notice_id, event);
-
   Notice* notice = catalog_->GetNotice(notice_id);
   CHECK(notice);
+
+  notice_storage()->RecordEvent(*notice, event);
 
   // Refresh fulfillment status after an event has occurred.
   notice->RefreshFulfillmentStatus(*notice_storage());

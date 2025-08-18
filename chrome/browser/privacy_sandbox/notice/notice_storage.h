@@ -19,8 +19,8 @@ class PrefService;
 
 namespace privacy_sandbox {
 
+class Notice;
 enum class SurfaceType;
-class NoticeCatalog;
 
 // TODO(crbug.com/392088228): Remove this once all values are migrated and
 // histograms are migrated to use UA. This is deprecated and should only be used
@@ -125,15 +125,13 @@ class NoticeStorage {
   virtual void RecordStartupHistograms() const = 0;
 
   // Records a Notice Event.
-  virtual void RecordEvent(
-      std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType> notice_id,
-      notice::mojom::PrivacySandboxNoticeEvent event) = 0;
+  virtual void RecordEvent(const Notice& notice,
+                           notice::mojom::PrivacySandboxNoticeEvent event) = 0;
 };
 
 class PrivacySandboxNoticeStorage : public NoticeStorage {
  public:
-  PrivacySandboxNoticeStorage(PrefService* pref_service,
-                              NoticeCatalog* catalog);
+  explicit PrivacySandboxNoticeStorage(PrefService* pref_service);
   ~PrivacySandboxNoticeStorage() override;
   PrivacySandboxNoticeStorage(const PrivacySandboxNoticeStorage&) = delete;
   PrivacySandboxNoticeStorage& operator=(const PrivacySandboxNoticeStorage&) =
@@ -146,9 +144,8 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
 
   void RecordStartupHistograms() const override;
 
-  void RecordEvent(
-      std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType> notice_id,
-      notice::mojom::PrivacySandboxNoticeEvent event) override;
+  void RecordEvent(const Notice& notice,
+                   notice::mojom::PrivacySandboxNoticeEvent event) override;
 
   // Migration functions.
 
@@ -162,7 +159,6 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
 
  private:
   raw_ptr<PrefService> pref_service_;
-  raw_ptr<NoticeCatalog> catalog_;
 };
 
 }  // namespace privacy_sandbox

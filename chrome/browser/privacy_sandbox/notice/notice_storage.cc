@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_catalog.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -128,12 +127,6 @@ base::DictValue BuildDictEntryEvent(Event event,
 base::DictValue BuildDictEntryEvent(NoticeEventTimestampPair* pair) {
   CHECK(pair);
   return BuildDictEntryEvent(pair->event, pair->timestamp);
-}
-
-const Notice& FindNotice(NoticeId notice_id, NoticeCatalog* catalog) {
-  Notice* notice = catalog->GetNotice(notice_id);
-  CHECK(notice);
-  return *notice;
 }
 
 bool MaybeValueToTime(const base::Value* value, base::Time* time) {
@@ -442,11 +435,9 @@ void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
 NoticeStorage::~NoticeStorage() = default;
 
 PrivacySandboxNoticeStorage::PrivacySandboxNoticeStorage(
-    PrefService* pref_service,
-    NoticeCatalog* catalog)
-    : pref_service_(pref_service), catalog_(catalog) {
+    PrefService* pref_service)
+    : pref_service_(pref_service) {
   CHECK(pref_service_);
-  CHECK(catalog_);
 }
 
 PrivacySandboxNoticeStorage::~PrivacySandboxNoticeStorage() = default;
@@ -469,9 +460,8 @@ std::optional<NoticeStorageData> PrivacySandboxNoticeStorage::ReadNoticeData(
   return ConvertTo<NoticeStorageData>(pref_data.FindDict(notice));
 }
 
-void PrivacySandboxNoticeStorage::RecordEvent(NoticeId notice_id, Event event) {
-  const Notice& notice = FindNotice(notice_id, catalog_);
-
+void PrivacySandboxNoticeStorage::RecordEvent(const Notice& notice,
+                                              Event event) {
   EmitNewEventHistograms(ReadNoticeData(notice.GetStorageName()),
                          notice.GetStorageName(), event);
 

@@ -11,6 +11,8 @@
 
 namespace privacy_sandbox {
 
+class Notice;
+
 class MockNoticeStorage : public NoticeStorage {
  public:
   MockNoticeStorage();
@@ -18,8 +20,8 @@ class MockNoticeStorage : public NoticeStorage {
 
   MOCK_METHOD(void,
               RecordEvent,
-              ((std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType>),
-               notice::mojom::PrivacySandboxNoticeEvent),
+              (const Notice& notice,
+               notice::mojom::PrivacySandboxNoticeEvent event),
               (override));
 
   MOCK_METHOD(std::optional<NoticeStorageData>,
