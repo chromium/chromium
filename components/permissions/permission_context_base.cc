@@ -738,14 +738,9 @@ void PermissionContextBase::UpdateSetting(
   }
   PermissionsClient::Get()
       ->GetSettingsMap(browser_context())
-      ->SetWebsiteSettingDefaultScope(
+      ->SetPermissionSettingDefaultScope(
           request_data.requesting_origin, request_data.embedding_origin,
-          content_settings_type(),
-          content_settings::PermissionSettingsRegistry::GetInstance()
-              ->Get(content_settings_type())
-              ->delegate()
-              .ToValue(setting),
-          constraints);
+          content_settings_type(), setting, constraints);
 }
 
 bool PermissionContextBase::PermissionAllowedByPermissionsPolicy(

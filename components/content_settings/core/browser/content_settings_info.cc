@@ -136,6 +136,9 @@ base::Value ContentSettingsInfo::Delegate::ToValue(
 
 std::optional<PermissionSetting> ContentSettingsInfo::Delegate::FromValue(
     const base::Value& value) const {
+  if (value.is_none()) {
+    return std::nullopt;
+  }
   return ParseContentSettingValue(value);
 }
 

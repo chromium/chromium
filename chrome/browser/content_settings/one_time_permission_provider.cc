@@ -18,6 +18,7 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -87,19 +88,19 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
     return false;
   }
 
-  if (!content_settings::ContentSettingsRegistry::GetInstance()->Get(
-          content_settings_type)) {
-    // Object permissions cannot be mapped to a ContentSetting and thus cannot
-    // be handled by this provider.
+  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+      content_settings_type);
+  if (!info) {
+    // Object permissions cannot be mapped to a PermissionSetting and thus
+    // cannot be handled by this provider.
     return false;
   }
 
-  auto content_setting = content_settings::ValueToContentSetting(value);
+  auto setting = info->delegate().FromValue(value);
 
   // For transitions to block and resetting to default, clear the grant and let
   // the pref provider handle the permission as usual.
-  if (content_setting == CONTENT_SETTING_DEFAULT ||
-      content_setting == CONTENT_SETTING_BLOCK) {
+  if (!setting || info->delegate().IsBlocked(*setting)) {
     {
       base::AutoLock lock(value_map_.GetLock());
       auto* previous_one_time_grant = value_map_.GetValue(
@@ -128,7 +129,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
 
   if (constraints.session_model() !=
       content_settings::mojom::SessionModel::ONE_TIME) {
-    if (content_setting == CONTENT_SETTING_ALLOW) {
+    if (setting && info->delegate().IsAnyPermissionAllowed(*setting)) {
       // Transition from Allow once to Allow. Delete setting and let the pref
       // provider handle it.
       base::AutoLock lock(value_map_.GetLock());
@@ -138,9 +139,6 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
 
     return false;
   }
-
-  DCHECK_EQ(content_settings::ValueToContentSetting(value),
-            CONTENT_SETTING_ALLOW);
 
   base::Time now = clock_->Now();
   content_settings::RuleMetaData metadata;
