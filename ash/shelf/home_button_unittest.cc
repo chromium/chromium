@@ -220,6 +220,11 @@ class HomeButtonWithQuickAppAccess : public HomeButtonTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class HomeButtonNoSessionTest : public HomeButtonTest {
+ public:
+  HomeButtonNoSessionTest() { set_start_session(false); }
+};
+
 // Test that setting an existing app item as the quick app shows a working
 // clickable quick app button.
 TEST_F(HomeButtonWithQuickAppAccess, Basic) {
@@ -684,6 +689,7 @@ class HomeButtonVisibilityWithAccessibilityFeaturesTest
 // The parameter indicates whether the kHideShelfControlsInTabletMode feature
 // is enabled.
 INSTANTIATE_TEST_SUITE_P(All, HomeButtonTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, HomeButtonNoSessionTest, testing::Bool());
 
 // Tests that the shelf navigation widget clip rect is not clipping the intended
 // home button bounds.
@@ -1028,7 +1034,7 @@ TEST_F(HomeButtonAnimationTest, NonAnimatedLayoutDuringAnimation) {
 
 inline constexpr LoginInfo k2ndRegularUserLoginInfo = {"user1@tray"};
 
-TEST_P(HomeButtonTest, LongPressGestureSunfishScanner) {
+TEST_P(HomeButtonNoSessionTest, LongPressGestureSunfishScanner) {
   // Simulate two users with primary user as active.
   auto primary = SimulateUserLogin(kRegularUserLoginInfo);
   SimulateUserLogin(k2ndRegularUserLoginInfo);
@@ -1063,10 +1069,10 @@ TEST_P(HomeButtonTest, LongPressGestureSunfishScanner) {
             BehaviorType::kSunfish);
 }
 
-TEST_P(HomeButtonTest, LongPressGestureInTabletModeSunfishScanner) {
+TEST_P(HomeButtonNoSessionTest, LongPressGestureInTabletModeSunfishScanner) {
   // Simulate two users with primary user as active.
-  auto primary = SimulateUserLogin({kDefaultUserEmail});
-  SimulateUserLogin({kDefaultUserEmail});
+  auto primary = SimulateUserLogin(kRegularUserLoginInfo);
+  SimulateUserLogin(k2ndRegularUserLoginInfo);
   SwitchActiveUser(primary);
 
   // Sunfish / Scanner should already be enabled.
