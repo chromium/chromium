@@ -5,3 +5,28 @@
 source_set("local_state_delegate") {
   sources = [ "safe_browsing_local_state_delegate.h" ]
 }
+
+source_set("util") {
+  sources = [
+    "safe_browsing_ui_util.cc",
+    "safe_browsing_ui_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/common/proto:connectors_proto_extras",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser:referring_app_info",
+    "//components/safe_browsing/core/browser/db:hit_report",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto_extras",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto_extras",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto_extras",
+    "//components/safe_browsing/core/common/proto:webui_proto",
+    "//components/sync/protocol",
+  ]
+}

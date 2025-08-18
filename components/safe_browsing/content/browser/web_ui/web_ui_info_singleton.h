@@ -4,11 +4,11 @@
 
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui_util.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
+#include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_WEB_UI_INFO_SINGLETON_H_

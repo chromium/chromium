@@ -15,7 +15,6 @@ static_library("web_ui") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    ":util",
     "//base",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:connectors_proto_extras",
@@ -32,6 +31,7 @@ static_library("web_ui") {
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/browser/web_ui:local_state_delegate",
+    "//components/safe_browsing/core/browser/web_ui:util",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:csd_proto",
@@ -50,33 +50,6 @@ static_library("web_ui") {
   ]
 
   public_deps = [ "//components/safe_browsing/core/common/proto:webui_proto" ]
-}
-
-source_set("util") {
-  sources = [
-    "safe_browsing_ui_util.cc",
-    "safe_browsing_ui_util.h",
-  ]
-
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//components/enterprise/common/proto:connectors_proto",
-    "//components/enterprise/common/proto:connectors_proto_extras",
-    "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/core/browser:referring_app_info",
-    "//components/safe_browsing/core/browser/db:hit_report",
-    "//components/safe_browsing/core/common/proto:csd_proto",
-    "//components/safe_browsing/core/common/proto:csd_proto_extras",
-    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
-    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
-    "//components/safe_browsing/core/common/proto:realtimeapi_proto_extras",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto_extras",
-    "//components/safe_browsing/core/common/proto:webui_proto",
-    "//components/sync/protocol",
-  ]
 }
 
 source_set("unit_tests") {
