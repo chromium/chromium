@@ -189,9 +189,8 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
       Do([&]() {
         delegate.ShowJoinDialog(token, preview_data, callback.Get());
       }),
-      WaitForShow(kDataSharingBubbleElementId), Do([&]() {
-        browser()->GetFeatures().data_sharing_bubble_controller()->Close();
-      }));
+      WaitForShow(kDataSharingBubbleElementId),
+      Do([&]() { DataSharingBubbleController::From(browser())->Close(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
@@ -211,8 +210,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
       }),
       WaitForShow(kDataSharingBubbleElementId), Do([&]() {
         // Close join dialog and show the error dialog.
-        auto* controller =
-            browser()->GetFeatures().data_sharing_bubble_controller();
+        auto* controller = DataSharingBubbleController::From(browser());
         controller->Close();
         controller->ShowErrorDialog(
             static_cast<int>(absl::StatusCode::kUnknown));
@@ -232,8 +230,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
       Do([&]() { delegate.ShowShareDialog(group_id, callback.Get()); }),
       WaitForShow(kDataSharingBubbleElementId), Do([&]() {
         // Close the dialog before the callback runs out of scope.
-        auto* controller =
-            browser()->GetFeatures().data_sharing_bubble_controller();
+        auto* controller = DataSharingBubbleController::From(browser());
         controller->Close();
       }));
 }

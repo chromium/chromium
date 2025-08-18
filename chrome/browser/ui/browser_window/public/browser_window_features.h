@@ -395,10 +395,6 @@ class BrowserWindowFeatures {
   // Returns true if a FindBarController exists for this browser window.
   bool HasFindBarController() const;
 
-  DataSharingBubbleController* data_sharing_bubble_controller() {
-    return data_sharing_bubble_controller_.get();
-  }
-
   ExclusiveAccessManager* exclusive_access_manager() {
     return exclusive_access_manager_.get();
   }

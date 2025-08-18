@@ -20,6 +20,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "net/base/url_util.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -94,6 +95,8 @@ views::View* GetAnchorViewForShare(const BrowserView* browser_view,
 }
 
 }  // namespace
+
+DEFINE_USER_DATA(DataSharingBubbleController);
 
 DataSharingBubbleController::~DataSharingBubbleController() = default;
 
@@ -276,4 +279,10 @@ DataSharingBubbleController::DataSharingBubbleController(
     TabStripModel* tab_strip_model)
     : browser_(CHECK_DEREF(browser)),
       profile_(CHECK_DEREF(profile)),
-      tab_strip_model_(CHECK_DEREF(tab_strip_model)) {}
+      tab_strip_model_(CHECK_DEREF(tab_strip_model)),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {}
+
+DataSharingBubbleController* DataSharingBubbleController::From(
+    BrowserWindowInterface* browser_window_interface) {
+  return Get(browser_window_interface->GetUnownedUserDataHost());
+}
