@@ -96,18 +96,18 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   // The location bar background doubles as the anonymize layer -- it just
   // needs to be drawn on top of the toolbar bitmap.
   int background_layer_index = GetIndexOfLayer(toolbar_background_layer_);
-
+  scoped_refptr<cc::slim::Layer> parent = ToolbarParentLayer();
   bool needs_move_to_front =
-      anonymize && layer_->children().back() != url_bar_background_layer_;
+      anonymize && parent->children().back() != url_bar_background_layer_;
   bool needs_move_to_back =
       !anonymize &&
-      layer_->children()[background_layer_index] != url_bar_background_layer_;
+      parent->children()[background_layer_index] != url_bar_background_layer_;
 
   // If the layer needs to move, remove and re-add it.
   if (needs_move_to_front) {
-    layer_->AddChild(url_bar_background_layer_);
+    parent->AddChild(url_bar_background_layer_);
   } else if (needs_move_to_back) {
-    layer_->InsertChild(url_bar_background_layer_, background_layer_index + 1);
+    parent->InsertChild(url_bar_background_layer_, background_layer_index + 1);
   }
 
   debug_layer_->SetBounds(resource->size());
@@ -120,15 +120,30 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   layer_->SetPosition(
       gfx::PointF(x_offset, content_offset - layer_->bounds().height()));
 
-  layer_->SetOffsetTag(offset_tag);
+  if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+    toolbar_layers_->SetOffsetTag(offset_tag);
+  } else {
+    layer_->SetOffsetTag(offset_tag);
+  }
 }
 
 int ToolbarLayer::GetIndexOfLayer(scoped_refptr<cc::slim::Layer> layer) {
-  for (unsigned int i = 0; i < layer_->children().size(); ++i) {
-    if (layer_->children()[i] == layer)
+  scoped_refptr<cc::slim::Layer> parent = ToolbarParentLayer();
+  for (unsigned int i = 0; i < parent->children().size(); ++i) {
+    if (parent->children()[i] == layer) {
       return i;
+    }
   }
+
   return -1;
+}
+
+scoped_refptr<cc::slim::Layer> ToolbarLayer::ToolbarParentLayer() {
+  if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+    return toolbar_layers_;
+  } else {
+    return layer_;
+  }
 }
 
 void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
@@ -151,6 +166,7 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
   bool is_progress_bar_visible = SkColorGetA(progress_bar_background_color);
   if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
     is_progress_bar_visible = visible;
+    progress_bar_layers_->SetOffsetTag(offset_tag);
   }
 
   progress_bar_background_layer_->SetHideLayerAndSubtree(!is_progress_bar_visible);
@@ -158,7 +174,6 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
   progress_bar_static_background_layer_->SetHideLayerAndSubtree(
       !(is_progress_bar_visible && progress_bar_visual_update_available));
 
-  // TODO(https://crbug.com/434769434) Reorganize layers and set OffsetTag.
   if (is_progress_bar_visible) {
     progress_bar_background_layer_->SetPosition(
         gfx::PointF(progress_bar_background_x, progress_bar_background_y));
@@ -204,34 +219,67 @@ void ToolbarLayer::SetOpacity(float opacity) {
 ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
     : resource_manager_(resource_manager),
       layer_(cc::slim::Layer::Create()),
+      toolbar_layers_(cc::slim::Layer::Create()),
+      progress_bar_layers_(cc::slim::Layer::Create()),
       toolbar_background_layer_(cc::slim::SolidColorLayer::Create()),
       url_bar_background_layer_(cc::slim::NinePatchLayer::Create()),
       bitmap_layer_(cc::slim::UIResourceLayer::Create()),
       progress_bar_layer_(cc::slim::SolidColorLayer::Create()),
       progress_bar_background_layer_(cc::slim::SolidColorLayer::Create()),
-      progress_bar_static_background_layer_(cc::slim::SolidColorLayer::Create()),
+      progress_bar_static_background_layer_(
+          cc::slim::SolidColorLayer::Create()),
       debug_layer_(cc::slim::SolidColorLayer::Create()) {
-  toolbar_background_layer_->SetIsDrawable(true);
-  layer_->AddChild(toolbar_background_layer_);
+  if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+    // Parents are drawn before children. Children added first are drawn first.
+    // Layers that are drawn later will cover all layers drawn before it.
+    toolbar_background_layer_->SetIsDrawable(true);
+    toolbar_layers_->AddChild(toolbar_background_layer_);
 
-  url_bar_background_layer_->SetIsDrawable(true);
-  url_bar_background_layer_->SetFillCenter(true);
-  layer_->AddChild(url_bar_background_layer_);
+    url_bar_background_layer_->SetIsDrawable(true);
+    url_bar_background_layer_->SetFillCenter(true);
+    toolbar_layers_->AddChild(url_bar_background_layer_);
 
-  bitmap_layer_->SetIsDrawable(true);
-  layer_->AddChild(bitmap_layer_);
+    bitmap_layer_->SetIsDrawable(true);
+    toolbar_layers_->AddChild(bitmap_layer_);
 
-  progress_bar_static_background_layer_->SetIsDrawable(true);
-  progress_bar_static_background_layer_->SetHideLayerAndSubtree(true);
-  layer_->AddChild(progress_bar_static_background_layer_);
+    progress_bar_static_background_layer_->SetIsDrawable(true);
+    progress_bar_static_background_layer_->SetHideLayerAndSubtree(true);
+    toolbar_layers_->AddChild(progress_bar_static_background_layer_);
 
-  progress_bar_background_layer_->SetIsDrawable(true);
-  progress_bar_background_layer_->SetHideLayerAndSubtree(true);
-  layer_->AddChild(progress_bar_background_layer_);
+    layer_->AddChild(toolbar_layers_);
 
-  progress_bar_layer_->SetIsDrawable(true);
-  progress_bar_layer_->SetHideLayerAndSubtree(true);
-  layer_->AddChild(progress_bar_layer_);
+    progress_bar_layer_->SetIsDrawable(true);
+    progress_bar_layer_->SetHideLayerAndSubtree(true);
+    progress_bar_layers_->AddChild(progress_bar_layer_);
+
+    progress_bar_background_layer_->SetIsDrawable(true);
+    progress_bar_background_layer_->SetHideLayerAndSubtree(true);
+    progress_bar_layers_->AddChild(progress_bar_background_layer_);
+
+    layer_->AddChild(progress_bar_layers_);
+  } else {
+    toolbar_background_layer_->SetIsDrawable(true);
+    layer_->AddChild(toolbar_background_layer_);
+
+    url_bar_background_layer_->SetIsDrawable(true);
+    url_bar_background_layer_->SetFillCenter(true);
+    layer_->AddChild(url_bar_background_layer_);
+
+    bitmap_layer_->SetIsDrawable(true);
+    layer_->AddChild(bitmap_layer_);
+
+    progress_bar_static_background_layer_->SetIsDrawable(true);
+    progress_bar_static_background_layer_->SetHideLayerAndSubtree(true);
+    layer_->AddChild(progress_bar_static_background_layer_);
+
+    progress_bar_background_layer_->SetIsDrawable(true);
+    progress_bar_background_layer_->SetHideLayerAndSubtree(true);
+    layer_->AddChild(progress_bar_background_layer_);
+
+    progress_bar_layer_->SetIsDrawable(true);
+    progress_bar_layer_->SetHideLayerAndSubtree(true);
+    layer_->AddChild(progress_bar_layer_);
+  }
 
   debug_layer_->SetIsDrawable(true);
   debug_layer_->SetBackgroundColor(SkColors::kGreen);

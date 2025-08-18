@@ -69,9 +69,22 @@ class ToolbarLayer : public Layer {
  private:
   int GetIndexOfLayer(scoped_refptr<cc::slim::Layer> layer);
 
+  scoped_refptr<cc::slim::Layer> ToolbarParentLayer();
+
   raw_ptr<ui::ResourceManager, DanglingUntriaged> resource_manager_;
 
+  // Root layer
   scoped_refptr<cc::slim::Layer> layer_;
+
+  // Layers which are tagged with the toolbar's OffsetTag. These layers only
+  // move vertically.
+  scoped_refptr<cc::slim::Layer> toolbar_layers_;
+
+  // Layer which are tagged ewith the progress bar's OffsetTag. These layers
+  // move with the same vertical movement as the toolbar_layers, but also move
+  // horizontally from load progress updates.
+  scoped_refptr<cc::slim::Layer> progress_bar_layers_;
+
   scoped_refptr<cc::slim::SolidColorLayer> toolbar_background_layer_;
   scoped_refptr<cc::slim::NinePatchLayer> url_bar_background_layer_;
   scoped_refptr<cc::slim::UIResourceLayer> bitmap_layer_;
