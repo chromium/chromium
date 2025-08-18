@@ -22,6 +22,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/barrier_callback.h"
 #include "base/check_is_test.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
@@ -73,20 +74,17 @@ const AccountId& AccountFromSession(const UserSession* session) {
   return session->user_info.account_id;
 }
 
-using SchemeVariant = ui::ColorProviderKey::SchemeVariant;
-
-SchemeVariant ToVariant(style::mojom::ColorScheme scheme) {
-  switch (scheme) {
-    case style::mojom::ColorScheme::kStatic:
-    case style::mojom::ColorScheme::kNeutral:
-      return SchemeVariant::kNeutral;
-    case style::mojom::ColorScheme::kTonalSpot:
-      return SchemeVariant::kTonalSpot;
-    case style::mojom::ColorScheme::kExpressive:
-      return SchemeVariant::kExpressive;
-    case style::mojom::ColorScheme::kVibrant:
-      return SchemeVariant::kVibrant;
-  }
+ui::ColorProviderKey::SchemeVariant ToVariant(
+    style::mojom::ColorScheme scheme) {
+  using CS = style::mojom::ColorScheme;
+  using SV = ui::ColorProviderKey::SchemeVariant;
+  static constexpr auto kSchemeMap =
+      base::MakeFixedFlatMap<CS, SV>({{CS::kStatic, SV::kNeutral},
+                                      {CS::kTonalSpot, SV::kTonalSpot},
+                                      {CS::kNeutral, SV::kNeutral},
+                                      {CS::kExpressive, SV::kExpressive},
+                                      {CS::kVibrant, SV::kVibrant}});
+  return kSchemeMap.at(scheme);
 }
 
 SampleColorScheme GenerateSampleColorScheme(bool dark,

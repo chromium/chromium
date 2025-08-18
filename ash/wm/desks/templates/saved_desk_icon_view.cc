@@ -264,12 +264,11 @@ void SavedDeskRegularIconView::OnIconLoaded(const gfx::ImageSkia& icon) {
 void SavedDeskRegularIconView::LoadDefaultIcon() {
   is_showing_default_icon_ = true;
 
-  const ui::NativeTheme* native_theme =
-      ui::NativeTheme::GetInstanceForNativeUi();
   // Use a higher resolution image as it will look better after resizing.
-  const int resource_id = native_theme && native_theme->ShouldUseDarkColors()
-                              ? IDR_DEFAULT_FAVICON_DARK_64
-                              : IDR_DEFAULT_FAVICON_64;
+  const int resource_id =
+      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+          ? IDR_DEFAULT_FAVICON_DARK_64
+          : IDR_DEFAULT_FAVICON_64;
 
   // `color_provider` only exist when view is created, otherwise it will be a
   // nullptr. This will be called on `OnThemeChanged` again to ensure `SetImage`

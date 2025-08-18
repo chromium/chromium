@@ -108,16 +108,14 @@ class ColorPaletteControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
     ClearLogin();
-    SimulateUserLogin(kAccountId);
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
     color_palette_controller_ = Shell::Get()->color_palette_controller();
 
     dark_light_mode_controller_ = Shell::Get()->dark_light_mode_controller();
-    // Fix dark mode as off.
+    // Fix dark mode as off. There must be an active user to do this.
+    SimulateUserLogin(kAccountId);
     dark_light_mode_controller_->SetDarkModeEnabledForTest(false);
   }
-
-  void TearDown() override { NoSessionAshTestBase::TearDown(); }
 
   ColorPaletteController* color_palette_controller() {
     return color_palette_controller_;
@@ -603,13 +601,13 @@ TEST_F(ColorPaletteControllerTest, GetSampleColorSchemes_WithKMeans) {
 }
 
 TEST_F(ColorPaletteControllerTest, OneNotificationOnActiveUserChange) {
+  // A login should trigger a `ColorPaletteController` update, which in turn
+  // should trigger a `ui::NativeTheme` notification.
   TestObserver observer;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver> observation(
       &observer);
   observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
-
   SimulateUserLogin(kAccountId);
-
   EXPECT_EQ(1, observer.call_count());
 }
 
