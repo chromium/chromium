@@ -25,6 +25,7 @@
 #include "base/notreached.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_group_cell.h"
 
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift_constants_for_objective_c.h"

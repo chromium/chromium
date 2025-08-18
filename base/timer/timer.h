@@ -75,6 +75,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/delay_policy.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"

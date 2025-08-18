@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive/model/test_drive_file_downloader.h"
 
 #import "base/task/single_thread_task_runner.h"
+#import "base/time/time.h"
 
 namespace {
 

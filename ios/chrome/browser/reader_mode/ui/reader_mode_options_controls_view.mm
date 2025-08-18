@@ -7,6 +7,7 @@
 #import <UIKit/UIAccessibility.h>
 
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_mutator.h"
