@@ -1936,6 +1936,18 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                             ::features::kDevToolsAiDebugWithAi.name);
   response_dict.Set("devToolsAiDebugWithAi", std::move(ai_debug_with_ai_dict));
 
+  if (base::FeatureList::IsEnabled(::features::kDevToolsGlobalAiButton)) {
+    base::Value::Dict global_ai_button_dict;
+    global_ai_button_dict.Set(
+        "enabled",
+        base::FeatureList::IsEnabled(::features::kDevToolsGlobalAiButton));
+    global_ai_button_dict.Set(
+        "promotionEnabled",
+        features::kDevToolsGlobalAiButtonPromotionEnabled.Get());
+    response_dict.Set("devToolsGlobalAiButton",
+                      std::move(global_ai_button_dict));
+  }
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
