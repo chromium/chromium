@@ -21,11 +21,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_broker_impl.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
@@ -73,7 +73,7 @@ class ModelController {
 // Controls the lifetime of the on-device model service, loading and unloading
 // of the models, and executing them via the service. There is normally only
 // a single instance of this object.
-class OnDeviceModelServiceController final : public mojom::ModelBroker {
+class OnDeviceModelServiceController final {
  public:
   OnDeviceModelServiceController(
       std::unique_ptr<OnDeviceModelAccessController> access_controller,
@@ -82,7 +82,7 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
           on_device_component_state_manager,
       UsageTracker& usage_tracker,
       base::SafeRef<on_device_model::ServiceClient> service_client);
-  ~OnDeviceModelServiceController() override;
+  ~OnDeviceModelServiceController();
 
   // Initializes OnDeviceModelServiceController. This should be called once
   // after creation.
@@ -136,7 +136,7 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
   MaybeAdaptationMetadata& GetFeatureMetadata(ModelBasedCapabilityKey feature);
 
   void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver) {
-    receivers_.Add(this, std::move(receiver));
+    model_broker_impl_.BindBroker(std::move(receiver));
   }
 
   const SafetyClient& GetSafetyClientForTesting() const {
@@ -147,22 +147,24 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
   // A set of (references to) compatible, versioned dependencies that implement
   // a ModelBasedCapability.
   // e.g. "You can summarize with this model by building the prompt this way."
-  class Solution : public mojom::ModelSolution {
+  class Solution final : public ModelBrokerImpl::Solution {
    public:
     Solution(ModelBasedCapabilityKey feature,
              scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
              base::WeakPtr<ModelController> model_controller,
              std::unique_ptr<SafetyChecker> safety_checker,
              base::SafeRef<OnDeviceModelServiceController> controller);
-    Solution(Solution&&);
     ~Solution() override;
-    Solution& operator=(Solution&&);
+    Solution(Solution&) = delete;
+    Solution(Solution&&) = delete;
+    Solution& operator=(Solution&) = delete;
+    Solution& operator=(Solution&&) = delete;
 
     // Whether all of the dependencies are still available.
-    bool IsValid();
+    bool IsValid() const override;
 
     // Creates a config describing this solution;
-    mojom::ModelSolutionConfigPtr MakeConfig();
+    mojom::ModelSolutionConfigPtr MakeConfig() const override;
 
     const scoped_refptr<const OnDeviceModelFeatureAdapter>& adapter() const {
       return adapter_;
@@ -194,8 +196,7 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
     base::SafeRef<OnDeviceModelServiceController> controller_;
   };
 
-  using MaybeSolution =
-      base::expected<Solution, OnDeviceModelEligibilityReason>;
+  using MaybeSolution = ModelBrokerImpl::MaybeSolution;
 
   // Manages assets and loading of a particular base model and it's adaptations.
   class BaseModelController final : public ModelController {
@@ -289,39 +290,6 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
     base::WeakPtr<OnDeviceModelServiceController> controller_;
     base::WeakPtr<ModelController> model_controller_;
   };
-
-  // Keeps subscribers updated with the current solution.
-  class SolutionProvider final {
-   public:
-    explicit SolutionProvider(
-        ModelBasedCapabilityKey feature,
-        base::SafeRef<OnDeviceModelServiceController> controller);
-    ~SolutionProvider();
-
-    void AddSubscriber(mojo::PendingRemote<mojom::ModelSubscriber> pending);
-    void AddObserver(OnDeviceModelAvailabilityObserver* observer);
-    void RemoveObserver(OnDeviceModelAvailabilityObserver* observer);
-
-    void Update(MaybeSolution solution);
-
-    MaybeSolution& solution() { return solution_; }
-
-   private:
-    void UpdateSubscribers();
-    void UpdateSubscriber(mojom::ModelSubscriber& client);
-    void UpdateObservers();
-
-    ModelBasedCapabilityKey feature_;
-    base::SafeRef<OnDeviceModelServiceController> controller_;
-
-    mojo::RemoteSet<mojom::ModelSubscriber> subscribers_;
-    base::ObserverList<OnDeviceModelAvailabilityObserver> observers_;
-
-    MaybeSolution solution_ =
-        base::unexpected(OnDeviceModelEligibilityReason::kUnknown);
-    mojo::ReceiverSet<mojom::ModelSolution> receivers_;
-  };
-  friend class SolutionProvider;
   friend class OnDeviceModelAdaptationController;
   friend class OnDeviceModelClient;
 
@@ -331,25 +299,11 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
   // Constructs a solution using the currently available dependencies.
   MaybeSolution GetSolution(ModelBasedCapabilityKey feature);
 
-  // Get (or construct) the solution provider for the feature.
-  SolutionProvider& GetSolutionProvider(ModelBasedCapabilityKey feature);
-
-  // Called to update model availability for all features.
   void UpdateSolutionProviders();
-
-  // Called to update the model availability changes for `feature`.
   void UpdateSolutionProvider(ModelBasedCapabilityKey feature);
-
-  // mojom::ModelBroker:
-  void Subscribe(mojom::ModelSubscriptionOptionsPtr opts,
-                 mojo::PendingRemote<mojom::ModelSubscriber> client) override;
-
-  void SubscribeInternal(mojom::ModelSubscriptionOptionsPtr opts,
-                         mojo::PendingRemote<mojom::ModelSubscriber> client);
 
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
-  base::SafeRef<PerformanceClassifier> performance_classifier_;
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
   base::raw_ref<UsageTracker> usage_tracker_;
@@ -360,11 +314,9 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
   AdaptationMetadataMap adaptation_metadata_;
   std::optional<OnDeviceModelMetadataLoader> model_metadata_loader_;
 
-  std::map<ModelBasedCapabilityKey, SolutionProvider> solution_providers_;
-
   std::optional<BaseModelController> base_model_controller_;
 
-  mojo::ReceiverSet<mojom::ModelBroker> receivers_;
+  ModelBrokerImpl model_broker_impl_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

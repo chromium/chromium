@@ -150,12 +150,16 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
     UsageTracker& usage_tracker,
     base::SafeRef<on_device_model::ServiceClient> service_client)
     : access_controller_(std::move(access_controller)),
-      performance_classifier_(std::move(performance_classifier)),
       on_device_component_state_manager_(
           std::move(on_device_component_state_manager)),
       usage_tracker_(usage_tracker),
       service_client_(std::move(service_client)),
-      safety_client_(service_client_->GetWeakPtr()) {
+      safety_client_(service_client_->GetWeakPtr()),
+      model_broker_impl_(
+          *usage_tracker_,
+          base::BindRepeating(
+              &PerformanceClassifier::EnsurePerformanceClassAvailable,
+              performance_classifier)) {
   base_model_controller_.emplace(weak_ptr_factory_.GetSafeRef(), nullptr);
   service_client_->set_on_disconnect_fn(base::BindRepeating(
       &OnDeviceModelServiceController::OnServiceDisconnected,
@@ -173,7 +177,9 @@ void OnDeviceModelServiceController::Init() {
 
 OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     ModelBasedCapabilityKey feature) {
-  return GetSolutionProvider(feature).solution().error_or(
+  // Ensure an initial solution is computed to avoid giving kUnknown error.
+  UpdateSolutionProvider(feature);
+  return model_broker_impl_.GetSolutionProvider(feature).solution().error_or(
       OnDeviceModelEligibilityReason::kSuccess);
 }
 
@@ -183,8 +189,12 @@ OnDeviceModelServiceController::CreateSession(
     ExecuteRemoteFn execute_remote_fn,
     base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
     const std::optional<SessionConfigParams>& config_params) {
-  auto& solution = GetSolutionProvider(feature).solution();
-  auto reason = solution.error_or(OnDeviceModelEligibilityReason::kSuccess);
+  // Ensure an initial solution is computed to avoid giving kUnknown error.
+  UpdateSolutionProvider(feature);
+  auto& maybe_solution =
+      model_broker_impl_.GetSolutionProvider(feature).solution();
+  auto reason =
+      maybe_solution.error_or(OnDeviceModelEligibilityReason::kSuccess);
   LogEligibilityReason(feature, reason);
 
   usage_tracker_->OnDeviceEligibleFeatureUsed(feature);
@@ -194,6 +204,9 @@ OnDeviceModelServiceController::CreateSession(
     VLOG(1) << "Failed to create Session:" << reason;
     return nullptr;
   }
+
+  auto* solution = static_cast<OnDeviceModelServiceController::Solution*>(
+      maybe_solution->get());
 
   CHECK(base_model_controller_->model_metadata());
   CHECK(features::internal::GetOptimizationTargetForCapability(feature));
@@ -324,7 +337,7 @@ void OnDeviceModelServiceController::AddOnDeviceModelAvailabilityChangeObserver(
     ModelBasedCapabilityKey feature,
     OnDeviceModelAvailabilityObserver* observer) {
   DCHECK(features::internal::GetOptimizationTargetForCapability(feature));
-  GetSolutionProvider(feature).AddObserver(observer);
+  model_broker_impl_.GetSolutionProvider(feature).AddObserver(observer);
 }
 
 void OnDeviceModelServiceController::
@@ -332,7 +345,7 @@ void OnDeviceModelServiceController::
         ModelBasedCapabilityKey feature,
         OnDeviceModelAvailabilityObserver* observer) {
   DCHECK(features::internal::GetOptimizationTargetForCapability(feature));
-  GetSolutionProvider(feature).RemoveObserver(observer);
+  model_broker_impl_.GetSolutionProvider(feature).RemoveObserver(observer);
 }
 
 on_device_model::Capabilities
@@ -377,30 +390,15 @@ OnDeviceModelServiceController::GetSolution(ModelBasedCapabilityKey feature) {
     return base::unexpected(reason);
   }
 
-  return Solution(
+  return std::make_unique<Solution>(
       feature, metadata->adapter(),
       base_model_controller_->GetOrCreateFeatureController(feature, *metadata),
       std::move(checker.value()), weak_ptr_factory_.GetSafeRef());
 }
 
-OnDeviceModelServiceController::SolutionProvider&
-OnDeviceModelServiceController::GetSolutionProvider(
-    ModelBasedCapabilityKey feature) {
-  auto it = solution_providers_.find(feature);
-  if (it == solution_providers_.end()) {
-    it = solution_providers_
-             .emplace(
-                 std::piecewise_construct, std::forward_as_tuple(feature),
-                 std::forward_as_tuple(feature, weak_ptr_factory_.GetSafeRef()))
-             .first;
-    it->second.Update(GetSolution(feature));
-  }
-  return it->second;
-}
-
 void OnDeviceModelServiceController::UpdateSolutionProviders() {
-  for (const auto& entry : solution_providers_) {
-    UpdateSolutionProvider(entry.first);
+  for (const auto& feature : model_broker_impl_.GetCapabilityKeys()) {
+    UpdateSolutionProvider(feature);
   }
 }
 
@@ -408,30 +406,7 @@ void OnDeviceModelServiceController::UpdateSolutionProvider(
     ModelBasedCapabilityKey feature) {
   // Note: This always constructs the Solution, even if the provider was not
   // constructed yet, to update supported_adaptation_ranks_ on the base model.
-  MaybeSolution solution = GetSolution(feature);
-  auto entry_it = solution_providers_.find(feature);
-  if (entry_it == solution_providers_.end()) {
-    return;
-  }
-  entry_it->second.Update(std::move(solution));
-}
-
-void OnDeviceModelServiceController::Subscribe(
-    mojom::ModelSubscriptionOptionsPtr opts,
-    mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
-  performance_classifier_->EnsurePerformanceClassAvailable(base::BindOnce(
-      &OnDeviceModelServiceController::SubscribeInternal,
-      weak_ptr_factory_.GetWeakPtr(), std::move(opts), std::move(subscriber)));
-}
-
-void OnDeviceModelServiceController::SubscribeInternal(
-    mojom::ModelSubscriptionOptionsPtr opts,
-    mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
-  auto feature = ToModelBasedCapabilityKey(opts->id);
-  if (opts->mark_used && on_device_component_state_manager_) {
-    usage_tracker_->OnDeviceEligibleFeatureUsed(feature);
-  }
-  GetSolutionProvider(feature).AddSubscriber(std::move(subscriber));
+  model_broker_impl_.GetSolutionProvider(feature).Update(GetSolution(feature));
 }
 
 OnDeviceModelServiceController::BaseModelController::BaseModelController(
@@ -647,69 +622,6 @@ void OnDeviceModelServiceController::BaseModelController::FinishValidation(
 ModelController::ModelController() = default;
 ModelController::~ModelController() = default;
 
-OnDeviceModelServiceController::SolutionProvider::SolutionProvider(
-    ModelBasedCapabilityKey feature,
-    base::SafeRef<OnDeviceModelServiceController> controller)
-    : feature_(feature), controller_(std::move(controller)) {}
-OnDeviceModelServiceController::SolutionProvider::~SolutionProvider() = default;
-
-void OnDeviceModelServiceController::SolutionProvider::AddSubscriber(
-    mojo::PendingRemote<mojom::ModelSubscriber> pending) {
-  auto id = subscribers_.Add(std::move(pending));
-  UpdateSubscriber(*subscribers_.Get(id));
-}
-void OnDeviceModelServiceController::SolutionProvider::AddObserver(
-    OnDeviceModelAvailabilityObserver* observer) {
-  observers_.AddObserver(observer);
-}
-void OnDeviceModelServiceController::SolutionProvider::RemoveObserver(
-    OnDeviceModelAvailabilityObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-void OnDeviceModelServiceController::SolutionProvider::Update(
-    MaybeSolution solution) {
-  if (solution.has_value() && solution_.has_value() && solution_->IsValid()) {
-    // Current solution is still valid, no need to update.
-    return;
-  }
-  receivers_.Clear();
-  solution_ = std::move(solution);
-  UpdateSubscribers();
-  UpdateObservers();
-}
-
-void OnDeviceModelServiceController::SolutionProvider::UpdateSubscribers() {
-  for (auto& subscriber : subscribers_) {
-    UpdateSubscriber(*subscriber);
-  }
-}
-
-void OnDeviceModelServiceController::SolutionProvider::UpdateSubscriber(
-    mojom::ModelSubscriber& subscriber) {
-  if (!solution_.has_value()) {
-    subscriber.Unavailable(
-        *AvailabilityFromEligibilityReason(solution_.error()));
-    return;
-  }
-  if (!solution_->IsValid()) {
-    subscriber.Unavailable(mojom::ModelUnavailableReason::kPendingAssets);
-    return;
-  }
-  auto config = solution_->MakeConfig();
-  mojo::PendingRemote<mojom::ModelSolution> pending;
-  receivers_.Add(&solution_.value(), pending.InitWithNewPipeAndPassReceiver());
-  subscriber.Available(std::move(config), std::move(pending));
-  return;
-}
-
-void OnDeviceModelServiceController::SolutionProvider::UpdateObservers() {
-  for (auto& observer : observers_) {
-    observer.OnDeviceModelAvailabilityChanged(
-        feature_, solution_.error_or(OnDeviceModelEligibilityReason::kSuccess));
-  }
-}
-
 OnDeviceModelServiceController::Solution::Solution(
     ModelBasedCapabilityKey feature,
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
@@ -721,12 +633,9 @@ OnDeviceModelServiceController::Solution::Solution(
       model_controller_(std::move(model_controller)),
       safety_checker_(std::move(safety_checker)),
       controller_(std::move(controller)) {}
-OnDeviceModelServiceController::Solution::Solution(Solution&&) = default;
 OnDeviceModelServiceController::Solution::~Solution() = default;
-OnDeviceModelServiceController::Solution&
-OnDeviceModelServiceController::Solution::operator=(Solution&&) = default;
 
-bool OnDeviceModelServiceController::Solution::IsValid() {
+bool OnDeviceModelServiceController::Solution::IsValid() const {
   return model_controller_ &&
          (!features::ShouldUseTextSafetyClassifierModel() ||
           adapter_->CanSkipTextSafety() || safety_checker_->client());
@@ -734,7 +643,7 @@ bool OnDeviceModelServiceController::Solution::IsValid() {
 
 // Creates a config describing this solution;
 mojom::ModelSolutionConfigPtr
-OnDeviceModelServiceController::Solution::MakeConfig() {
+OnDeviceModelServiceController::Solution::MakeConfig() const {
   auto config = mojom::ModelSolutionConfig::New();
   config->feature_config = mojo_base::ProtoWrapper(adapter_->config());
   config->model_versions = mojo_base::ProtoWrapper(

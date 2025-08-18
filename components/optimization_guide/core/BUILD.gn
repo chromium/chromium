@@ -228,6 +228,8 @@ source_set("model_execution") {
       "model_execution/json_response_parser.h",
       "model_execution/model_broker_client.cc",
       "model_execution/model_broker_client.h",
+      "model_execution/model_broker_impl.cc",
+      "model_execution/model_broker_impl.h",
       "model_execution/model_broker_state.cc",
       "model_execution/model_broker_state.h",
       "model_execution/model_execution_features.cc",
