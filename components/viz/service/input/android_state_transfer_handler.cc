@@ -57,7 +57,13 @@ void AndroidStateTransferHandler::StateOnTouchTransfer(
        (state->down_time_ms <
         pending_transferred_states_.back().transfer_state->down_time_ms));
 
-  CHECK(!state_received_out_of_order);
+  if (state_received_out_of_order) {
+    // We don't expect to receive `StateOnTouchTransfer` mojo calls coming out
+    // of order. But it's possible the timestamps provided by Android platform
+    // are the issue.
+    TRACE_EVENT_INSTANT("viz", "OutOfOrderTransferStateDropped");
+    return;
+  }
 
   MaybeDropEventsFromEarlierSequences(state);
 
