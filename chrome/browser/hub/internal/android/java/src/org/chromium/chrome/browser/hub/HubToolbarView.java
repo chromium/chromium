@@ -49,6 +49,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -469,10 +470,13 @@ public class HubToolbarView extends LinearLayout {
     private void updateSearchBoxElements(boolean isIncognito) {
         Context context = getContext();
         @StringRes
-        int emptyHintRes =
-                isIncognito
-                        ? R.string.hub_search_empty_hint_incognito
+        int regularEmptyHintRes =
+                OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()
+                        ? R.string.hub_search_empty_hint_with_tab_groups
                         : R.string.hub_search_empty_hint;
+        @StringRes
+        int emptyHintRes =
+                isIncognito ? R.string.hub_search_empty_hint_incognito : regularEmptyHintRes;
 
         // Delay the text from changing until the hub search animation is finished to prevent the
         // incorrect text from showing too early on pane toggles.
