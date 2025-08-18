@@ -29,6 +29,7 @@ namespace remoting {
 // needs to set all fields in this struct unless otherwise documented.
 struct ProtobufHttpRequestConfig {
   struct RetryPolicy : public base::RefCountedThreadSafe<RetryPolicy> {
+    RetryPolicy();
     // `backoff_policy` must outlive `this`. In most cases you want to define
     // the policy as a `static constexpr` then set this to point to it.
     raw_ptr<const net::BackoffEntry::Policy> backoff_policy;

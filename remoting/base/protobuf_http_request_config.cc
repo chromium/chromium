@@ -51,4 +51,6 @@ void ProtobufHttpRequestConfig::UseSimpleRetryPolicy() {
   retry_policy = GetSimpleRetryPolicy();
 }
 
+ProtobufHttpRequestConfig::RetryPolicy::RetryPolicy() = default;
+
 }  // namespace remoting
