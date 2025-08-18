@@ -297,4 +297,22 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentialsAndAttemptLogin) {
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
 }
 
+TEST_F(ActorLoginDelegateImplTest,
+       AttemptLoginLeavesServiceAvailableForSynchronousUse) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kActorLogin);
+  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
+
+  SetUpActorCredentialFillerDeps();
+
+  base::test::TestFuture<CredentialsOrError> future;
+  delegate_->AttemptLogin(
+      credential,
+      base::BindLambdaForTesting([&](LoginStatusResultOrError result) {
+        ASSERT_TRUE(result.has_value());
+        delegate_->GetCredentials(future.GetCallback());
+      }));
+  ASSERT_TRUE(future.Get().has_value());
+}
+
 }  // namespace actor_login

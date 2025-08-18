@@ -156,8 +156,8 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
     base::expected<LoginStatusResult, ActorLoginError> result) {
   // There shouldn't be a pending request without a pending callback.
   CHECK(pending_attempt_login_callback_);
-  std::move(pending_attempt_login_callback_).Run(std::move(result));
   credential_filler_.reset();
+  std::move(pending_attempt_login_callback_).Run(std::move(result));
 }
 
 
