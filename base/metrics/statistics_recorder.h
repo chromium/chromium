@@ -26,7 +26,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/ranges_manager.h"
-#include "base/metrics/record_histogram_checker.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
@@ -37,6 +36,7 @@ namespace base {
 
 class BucketRanges;
 class HistogramSnapshotManager;
+class RecordHistogramChecker;
 
 // In-memory recorder of usage statistics (aka metrics, aka histograms).
 //

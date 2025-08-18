@@ -12,7 +12,6 @@
 
 #include "base/base_export.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
@@ -20,6 +19,8 @@
 class AppShimController;
 
 namespace base {
+
+class FieldTrial;
 
 // Keeps track of the parameters of all field trials and ensures access to them
 // is thread-safe.
