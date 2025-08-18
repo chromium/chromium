@@ -674,18 +674,6 @@ class PrerenderBookmarkBarDisabledNavigationTest
             chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar);
   }
 
-  void ClickOnBookmarkBarLink() {
-    views::LabelButton* button = GetBookmarkButton(0);
-
-    gfx::Point center(10, 10);
-    button->OnMousePressed(ui::MouseEvent(
-        ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
-        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-    button->OnMouseReleased(ui::MouseEvent(
-        ui::EventType::kMouseReleased, center, center, ui::EventTimeForNow(),
-        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
@@ -702,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarDisabledNavigationTest,
       http_test_server()->GetURL("/empty.html?bookmarkbar_url");
 
   CreateBookmarkButton(bookmarkbar_url);
-  ClickOnBookmarkBarLink();
+  NavigateToBookmark();
 
   // Navigate away to flush the metrics and check.
   ASSERT_TRUE(
