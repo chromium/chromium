@@ -53,6 +53,10 @@ BASE_FEATURE(kTabGroupShortcuts,
 
 BASE_FEATURE(kVerticalTabs, "VerticalTabs", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabSelectionByPointer,
+             "TabSelectionByPointer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool CanShowTabSearchPositionSetting() {
   // Alternate tab search locations cannot be repositioned.
   if (features::HasTabSearchToolbarButton()) {
