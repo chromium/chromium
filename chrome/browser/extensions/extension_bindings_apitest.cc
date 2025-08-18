@@ -11,8 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
@@ -181,14 +179,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, NoExportOverriding) {
       test_data_dir_.AppendASCII("bindings")
                     .AppendASCII("externally_connectable_everywhere")));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "/extensions/api_test/bindings/override_exports.html")));
+  ASSERT_TRUE(NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL(
+          "/extensions/api_test/bindings/override_exports.html")));
 
   // See chrome/test/data/extensions/api_test/bindings/override_exports.html.
   EXPECT_EQ(
       "success",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(GetActiveWebContents(),
                       "document.getElementById('status').textContent.trim();"));
 }
 
@@ -199,27 +198,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, NoGinDefineOverriding) {
       test_data_dir_.AppendASCII("bindings")
                     .AppendASCII("externally_connectable_everywhere")));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
       embedded_test_server()->GetURL(
           "/extensions/api_test/bindings/override_gin_define.html")));
-  ASSERT_FALSE(
-      browser()->tab_strip_model()->GetActiveWebContents()->IsCrashed());
+  ASSERT_FALSE(web_contents->IsCrashed());
 
   // See chrome/test/data/extensions/api_test/bindings/override_gin_define.html.
   EXPECT_EQ(
       "success",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(web_contents,
                       "document.getElementById('status').textContent.trim();"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, HandlerFunctionTypeChecking) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
       embedded_test_server()->GetURL("/extensions/api_test/bindings/"
                                      "handler_function_type_checking.html")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(web_contents->IsCrashed());
   // See handler_function_type_checking.html.
   EXPECT_EQ(
@@ -236,12 +234,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
       LoadExtension(test_data_dir_.AppendASCII("bindings")
                         .AppendASCII("externally_connectable_everywhere")));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
       embedded_test_server()->GetURL(
           "/extensions/api_test/bindings/function_interceptions.html")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(web_contents->IsCrashed());
   // See function_interceptions.html.
   EXPECT_EQ("success", content::EvalJs(web_contents, "window.testStatus;"));
@@ -283,14 +280,14 @@ IN_PROC_BROWSER_TEST_F(FramesExtensionBindingsApiTest, FramesBeforeNavigation) {
   // Load the web page which tries to impersonate the sender extension via
   // scripting iframes/child windows before they finish navigating to pages
   // within the sender extension.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  auto* web_contents = GetActiveWebContents();
+  // This doesn't reliably return true/false on all bots, so ignore the result.
+  (void)NavigateToURL(
+      web_contents,
       embedded_test_server()->GetURL(
-          "/extensions/api_test/bindings/frames_before_navigation.html")));
+          "/extensions/api_test/bindings/frames_before_navigation.html"));
 
-  EXPECT_EQ(true,
-            content::EvalJs(browser()->tab_strip_model()->GetWebContentsAt(0),
-                            "getResult()"));
+  EXPECT_EQ(true, content::EvalJs(web_contents, "getResult()"));
 
   // Reply to |sender|, causing it to send a message over to |receiver|, and
   // then ask |receiver| for the total message count. It should be 1 since
@@ -304,11 +301,10 @@ IN_PROC_BROWSER_TEST_F(FramesExtensionBindingsApiTest, FramesBeforeNavigation) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, TestFreezingChrome) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "/extensions/api_test/bindings/freeze.html")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            embedded_test_server()->GetURL(
+                                "/extensions/api_test/bindings/freeze.html")));
   ASSERT_FALSE(web_contents->IsCrashed());
 }
 
@@ -320,8 +316,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, TestEventFilterParsing) {
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   ResultCatcher catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(NavigateToURL(
+      GetActiveWebContents(),
       embedded_test_server()->GetURL("example.com", "/title1.html")));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
@@ -334,10 +330,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, ValidationInterception) {
       LoadExtension(test_data_dir_.AppendASCII("bindings")
                         .AppendASCII("externally_connectable_everywhere")));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
       embedded_test_server()->GetURL(
           "/extensions/api_test/bindings/validation_interception.html")));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
@@ -363,10 +358,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   ASSERT_TRUE(extension);
 
   // Navigate current tab to a web URL with a subframe.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/iframe.html")));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            embedded_test_server()->GetURL("/iframe.html")));
 
   // Navigate the subframe to the extension URL, which should activate the
   // extension.
@@ -386,10 +380,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
 
   // Navigate to a web page with an iframe (the iframe is title1.html).
   GURL main_frame_url = embedded_test_server()->GetURL("a.com", "/iframe.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(tab, main_frame_url));
 
   content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
   content::RenderFrameHost* subframe = ChildFrameAt(main_frame, 0);
@@ -523,11 +515,9 @@ IN_PROC_BROWSER_TEST_F(
   // load.
   const GURL page_url = extension->GetResourceURL("page.html");
   NavigateToURLInNewTab(page_url);
-  content::WebContents* first_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* first_tab = GetActiveWebContents();
   NavigateToURLInNewTab(page_url);
-  content::WebContents* second_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* second_tab = GetActiveWebContents();
 
   // Initially, there are no listeners registered.
   EventRouter* event_router = EventRouter::Get(profile());
@@ -555,8 +545,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Open a new tab.
   NavigateToURLInNewTab(GURL("chrome://newtab"));
-  content::WebContents* new_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* new_tab = GetActiveWebContents();
 
   // The extension should have been notified about the new tab, and have
   // recorded the result.
@@ -598,10 +587,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
 
   const GURL url = embedded_test_server()->GetURL(
       "example.com", "/extensions/page_with_button.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(tab, url));
 
   {
     // Passing a message without an active user gesture shouldn't result in a
@@ -646,10 +633,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   ASSERT_TRUE(extension);
 
   const GURL extension_page = extension->GetResourceURL("page.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_page));
-
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(tab, extension_page));
 
   constexpr char kScript[] =
       R"(
@@ -717,12 +702,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "/extensions/api_test/bindings/user_gesture_test.html")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL(
+          "/extensions/api_test/bindings/user_gesture_test.html")));
 
   {
     ExtensionTestMessageListener listener("got reply");
@@ -768,12 +753,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "/extensions/api_test/bindings/user_gesture_test.html")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL(
+          "/extensions/api_test/bindings/user_gesture_test.html")));
 
   {
     ExtensionTestMessageListener listener("got reply");
@@ -877,11 +862,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
 
   // Navigate to a web page and wait for the content script to run and set up.
   ExtensionTestMessageListener content_script_listener("content script ready");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   ASSERT_TRUE(content_script_listener.WaitUntilSatisfied());
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   ResultCatcher result_catcher;
   // Click in the web contents.
   MouseDownInWebContents(web_contents);
@@ -936,14 +920,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   ResultCatcher catcher;
   content::TestNavigationObserver observer(target_url);
   observer.StartWatchingNewWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("opener.html")));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(
+      NavigateToURL(web_contents, extension->GetResourceURL("opener.html")));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents = GetActiveWebContents();
   EXPECT_EQ(target_url, web_contents->GetLastCommittedURL());
 
   // Check whether bindings are available. They should be.
