@@ -102,6 +102,11 @@ std::string SerializeHttpRequestHeaders(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+PrerenderHostId NextPrerenderHostId() {
+  static PrerenderHostId::Generator generator;
+  return generator.GenerateNextId();
+}
+
 }  // namespace
 
 PrerenderHost::PrerenderFrameTreeDelegate::PrerenderFrameTreeDelegate(
@@ -360,6 +365,7 @@ PrerenderHost::PrerenderHost(
     base::WeakPtr<PreloadingAttempt> attempt,
     std::unique_ptr<DevToolsPrerenderAttempt> devtools_attempt)
     : attributes_(attributes),
+      prerender_host_id_(NextPrerenderHostId()),
       metric_suffix_(
           GeneratePrerenderHistogramSuffix(trigger_type(),
                                            embedder_histogram_suffix())),
@@ -659,6 +665,17 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // Observe navigation only in the prerendering frame tree.
   CHECK_EQ(&(navigation_request->frame_tree_node()->frame_tree()),
            GetFrameTree());
+  CHECK(navigation_request->GetPrerenderHostId());
+
+  // TODO(crbug.com/434826191): Remove after fully migrating to PrerenderHostId.
+  // The if clause is added for filtering the DidCommitNavigation
+  // callback called after reusing a PrerenderHost. Currently the
+  // PrerenderHostRegistry finds the PrerenderHost by the FrameTreeNodeId, this
+  // will cause the DidFinishNavigation callback of the previous PrerenderHost
+  // to be sent to the new PrerenderHost.
+  if (prerender_host_id_ != navigation_request->GetPrerenderHostId()) {
+    return;
+  }
 
   const bool is_prerender_main_frame =
       navigation_request->GetFrameTreeNodeId() == frame_tree_node_id_;

@@ -285,6 +285,9 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       const StoragePartition::StorageKeyMatcherFunction& storage_key_filter,
       PrerenderFinalStatus final_status);
 
+  PrerenderHostId GetPrerenderHostIdForNavigation(
+      NavigationRequest* navigation_request);
+
  private:
   // WebContentsObserver implementation:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;

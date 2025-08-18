@@ -1743,7 +1743,9 @@ NavigationRequest::NavigationRequest(
               : std::nullopt),
       embedder_shared_storage_context_(embedder_shared_storage_context),
       has_ad_auction_headers_attribute_(frame_tree_node->ad_auction_headers()),
-      request_method_(common_params_->method) {
+      request_method_(common_params_->method),
+      prerender_host_id_(
+          GetPrerenderHostRegistry().GetPrerenderHostIdForNavigation(this)) {
   TRACE_EVENT_WITH_FLOW1("navigation", "NavigationRequest::NavigationRequest",
                          TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
                                              TRACE_ID_LOCAL(navigation_id_)),
@@ -11898,6 +11900,10 @@ void NavigationRequest::ValidateCommitOrigin(
         << "expected_origin: " << expected_origin
         << ", origin_to_commit: " << origin_to_commit;
   }
+}
+
+PrerenderHostId NavigationRequest::GetPrerenderHostId() const {
+  return prerender_host_id_;
 }
 
 }  // namespace content

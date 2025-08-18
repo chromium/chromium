@@ -1005,8 +1005,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
 
 IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
                        PrewarmPrerenderReuseThenActivate) {
-  base::HistogramTester histogram_tester;
-
   // Navigate to an initial page.
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
@@ -1015,13 +1013,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   auto* prerender_manager =
       PrerenderManager::FromWebContents(GetActiveWebContents());
   EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
-  auto host_id = GetPrewarmSearchResultHost();
+  content::FrameTreeNodeId host_id = GetPrewarmSearchResultHost();
   ASSERT_TRUE(host_id);
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
 
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), host_id);
-  // Trigger a new prerender under the same site
+  // Trigger a new prerender under the same site. The ?1 parameter
+  // is added to create a different URL with the prewarm page.
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html?1");
   prerender_helper().AddPrerender(prerender_url);
   prerender_observer.WaitForDestroyed();
@@ -1036,6 +1035,56 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
       prerender_url, ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK));
   activation_manager.WaitForNavigationFinished();
   EXPECT_TRUE(activation_manager.was_activated());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
+                       PrerenderReusePendingCommitPage) {
+  // Navigate to an initial page.
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Prerender the prewarm page.
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(GetActiveWebContents());
+  content::TestNavigationManager navigation_manager(GetActiveWebContents(),
+                                                    prewarm_url_);
+  EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
+  // Throttle the navigation to the prewarmed paged before commit.
+  EXPECT_TRUE(navigation_manager.WaitForResponse());
+  content::FrameTreeNodeId host_id = GetPrewarmSearchResultHost();
+  ASSERT_TRUE(host_id);
+
+  // Resume the navigation of the previous prewarm page.
+  navigation_manager.ResumeNavigation();
+  // We intentionally do not wait for the navigation to finish here to test the
+  // corner case of reusing a PrerenderHost waiting for the DidCommitNavigation
+  // IPC call from the renderer.
+
+  // Trigger a new prerender under the same site. The ?1 parameter
+  // is added to create a different URL with the prewarm page.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html?1");
+  content::TestNavigationManager new_navigation_manager(GetActiveWebContents(),
+                                                        prerender_url);
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), host_id);
+  std::unique_ptr<content::PrerenderHandle> prerender_handle =
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  EXPECT_TRUE(prerender_handle);
+  prerender_observer.WaitForDestroyed();
+  ASSERT_TRUE(prerender_observer.WasHostReused());
+
+  // Wait for the previous navigation to finish after creating the new
+  // PrerenderHost. Committing the previous navigation should not cause the
+  // current prerender to fail.
+  EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
+  auto reuse_host_id = prerender_helper().GetHostForUrl(prerender_url);
+  ASSERT_EQ(host_id, reuse_host_id);
+
+  EXPECT_TRUE(new_navigation_manager.WaitForNavigationFinished());
 }
 
 }  // namespace
