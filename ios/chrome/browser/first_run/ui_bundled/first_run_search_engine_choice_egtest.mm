@@ -46,6 +46,7 @@
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
   config.additional_args.push_back("true");
+  /// Disable post FRE actions so the test cases could open Settings sooner.
   config.additional_args.push_back(
       "--disable-features=UpdatedFirstRunSequence");
   config.additional_args.push_back(

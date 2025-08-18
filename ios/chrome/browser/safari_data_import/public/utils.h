@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+/// Returns the accessibility identifier for the Safari data entry point landing
+/// page.
+NSString* GetSafariDataEntryPointAccessibilityIdentifier();
+
 /// Returns the accessibility identifier to set on a `SafariDataItemTableView`.
 NSString* GetSafariDataItemTableViewAccessibilityIdentifier();
 

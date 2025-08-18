@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -55,6 +56,7 @@
 
   [[[EarlGrey selectElementWithMatcher:bestFeaturesButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  DismissSafariDataImportEntryPoint(/*verify_visibility=*/false);
 }
 
 #pragma mark - XCTestCase

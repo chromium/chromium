@@ -201,6 +201,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/safari_data_import/test:eg_test_support+eg2",
     "//ios/chrome/browser/search_engine_choice/ui_bundled:constants",
     "//ios/chrome/browser/search_engine_choice/ui_bundled:earl_grey_ui_test_util",
     "//ios/chrome/browser/settings/ui_bundled:constants",

@@ -6,6 +6,7 @@
 
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/safari_data_import/public/ui_utils.h"
+#import "ios/chrome/browser/safari_data_import/public/utils.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -34,6 +35,8 @@
   self.titleView = [[UIView alloc] initWithFrame:CGRectZero];
   self.showDismissBarButton = NO;
   [super viewDidLoad];
+  self.view.accessibilityIdentifier =
+      GetSafariDataEntryPointAccessibilityIdentifier();
   /// Hide the image on compact height.
   self.alwaysShowImage = NO;
   [self updateUIOnTraitChange];

@@ -7,14 +7,17 @@
 namespace {
 
 /// Accessibility identifier prefixes.
-NSString* const kSafariDataItemTableViewAXidPrefix =
-    @"kSafariDataItemTableView";
+NSString* const kSafariDataItemTableViewAXidPrefix = @"SafariDataItemTableView";
 NSString* const kSafariDataImportPasswordConflictResolutionAXidPrefix =
     @"SafariDataImportPasswordConflictResolution";
 NSString* const kSafariDataImportInvalidPasswordsAXidPrefix =
     @"SafariDataImportInvalidPasswords";
 
 }  // namespace
+
+NSString* GetSafariDataEntryPointAccessibilityIdentifier() {
+  return @"SafariDataEntryPointAccessibilityIdentifier";
+}
 
 NSString* GetSafariDataItemTableViewAccessibilityIdentifier() {
   return [NSString stringWithFormat:@"%@%@", kSafariDataItemTableViewAXidPrefix,
