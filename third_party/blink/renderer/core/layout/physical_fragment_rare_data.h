@@ -7,7 +7,7 @@
 
 #include <climits>
 
-#include "third_party/blink/renderer/core/layout/gap/gap_fragment_data.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/table/table_fragment_data.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"

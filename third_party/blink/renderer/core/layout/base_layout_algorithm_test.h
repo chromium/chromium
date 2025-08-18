@@ -7,7 +7,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
-#include "third_party/blink/renderer/core/layout/gap/gap_fragment_data.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"

@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/layout/flex/devtools_flex_info.h"
 #include "third_party/blink/renderer/core/layout/fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
-#include "third_party/blink/renderer/core/layout/gap/gap_fragment_data.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"

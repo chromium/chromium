@@ -10,7 +10,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
-#include "third_party/blink/renderer/core/layout/gap/gap_fragment_data.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
