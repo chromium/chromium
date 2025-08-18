@@ -2517,7 +2517,11 @@ void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
           }
           AutofillAiModelCache* model_cache =
               self->client().GetAutofillAiModelCache();
-          if (!model_cache) {
+          if (!model_cache ||
+              !MayPerformAutofillAiAction(
+                  self->client(),
+                  AutofillAiAction::
+                      kUseCachedServerClassificationModelResults)) {
             return;
           }
           FormStructure* form = self->FindCachedFormById(form_id);
