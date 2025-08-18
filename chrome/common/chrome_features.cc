@@ -142,10 +142,6 @@ BASE_FEATURE(kEnableCertManagementUIV2,
 BASE_FEATURE(kEnableCertManagementUIV2Write,
              "EnableCertManagementUIV2Write_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableCertManagementUIV2EditCerts,
-             "EnableCertManagementUIV2EditCerts_LAUNCHED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

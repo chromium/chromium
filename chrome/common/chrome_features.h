@@ -87,10 +87,6 @@ BASE_DECLARE_FEATURE(kEnableCertManagementUIV2);
 // TODO(crbug.com/390333881): Remove this flag when launch is complete.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableCertManagementUIV2Write);
-
-// TODO(crbug.com/390333881): Remove this flag when launch is complete.
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kEnableCertManagementUIV2EditCerts);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(IS_CHROMEOS)
