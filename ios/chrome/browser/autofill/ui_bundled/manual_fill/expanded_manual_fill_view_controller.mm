@@ -118,10 +118,11 @@ UIImageSymbolConfiguration* GetCloseButtonSymbolConfiguration() {
 }
 
 // Returns the constant to apply to the header view top constraint.
-CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
+CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height,
+                                           bool is_presented_as_popover) {
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
-    if (!is_compact_height) {
+    if (!(is_compact_height || is_presented_as_popover)) {
       return -kHeaderViewTopPadding;
     }
   }
@@ -490,8 +491,9 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
   // If the vertical size class is compact, apply the wide layout. Otherwise,
   // apply the narrow layout.
   bool isCompactHeight = IsCompactHeight(self);
-  _headerViewTopConstraint.constant =
-      GetHeaderViewTopConstraintConstant(isCompactHeight);
+  _headerViewTopConstraint.constant = GetHeaderViewTopConstraintConstant(
+      isCompactHeight,
+      self.modalPresentationStyle == UIModalPresentationPopover);
   if (isCompactHeight) {
     [headerView addSubview:chromeLogo];
     [headerView addSubview:closeButton];
