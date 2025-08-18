@@ -39,6 +39,11 @@ class LensComposeboxController {
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler);
 
+  // Issues a composebox query to the side panel results. If this is called when
+  // the user is in AIM, issues a follow up query. Otherwise, issues a new AIM
+  // session query.
+  void IssueComposeboxQuery(const std::string& query_text);
+
   // Cleans up any any state associated with this UI instance.
   void CloseUI();
 
