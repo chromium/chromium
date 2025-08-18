@@ -19,6 +19,7 @@
 #include "base/strings/string_split.h"
 #include "base/types/optional_util.h"
 #include "net/base/load_flags.h"
+#include "net/base/request_priority.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -279,10 +280,15 @@ std::optional<CorsErrorStatus> CheckRedirectLocation(
   return std::nullopt;
 }
 
-void RecordNetworkLoaderCompletionTime(const char* suffix,
+void RecordNetworkLoaderCompletionTime(const char* source,
+                                       net::RequestPriority priority,
                                        base::TimeDelta elapsed) {
   base::UmaHistogramTimes(
-      base::StrCat({"NetworkService.NetworkLoaderCompletionTime2.", suffix}),
+      base::StrCat({"NetworkService.NetworkLoaderCompletionTime2.", source}),
+      elapsed);
+  base::UmaHistogramTimes(
+      base::StrCat({"NetworkService.NetworkLoaderCompletionTime2.", source, ".",
+                    net::RequestPriorityToString(priority)}),
       elapsed);
 }
 
@@ -1181,9 +1187,10 @@ void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
     base::TimeDelta elapsed =
         status.completion_time - network_loader_start_time_;
     if (status.exists_in_cache) {
-      RecordNetworkLoaderCompletionTime("DiskCache", elapsed);
+      RecordNetworkLoaderCompletionTime("DiskCache", request_.priority,
+                                        elapsed);
     } else {
-      RecordNetworkLoaderCompletionTime("Network", elapsed);
+      RecordNetworkLoaderCompletionTime("Network", request_.priority, elapsed);
     }
   }
 

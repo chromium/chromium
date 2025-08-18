@@ -117,6 +117,19 @@ chromium-metrics-reviews@google.com.
   <variant name="_FullScan" summary="Using WPA_supplicant to scan."/>
 </variants>
 
+<!-- LINT.IfChange(RequestPriority) -->
+
+<variants name="RequestPriority">
+  <variant name="HIGHEST"/>
+  <variant name="IDLE"/>
+  <variant name="LOW"/>
+  <variant name="LOWEST"/>
+  <variant name="MEDIUM"/>
+  <variant name="THROTTLED"/>
+</variants>
+
+<!-- LINT.ThenChange(//net/base/request_priority.cc:RequestPriorityToString) -->
+
 <variants name="RoamSecurityType">
   <variant name=".EAP"
       summary="Records roams in a network using 802.1X authentication without
@@ -5723,7 +5736,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NetworkService.NetworkLoaderCompletionTime2.{Source}"
     units="ms" expires_after="2025-12-28">
-  <owner>bashi@chromium.org</owner>
+  <owner>hayato@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The time taken to finish a network URLLoader to complete. A network
@@ -5737,6 +5750,27 @@ chromium-metrics-reviews@google.com.
     <variant name="DiskCache"/>
     <variant name="Network"/>
   </token>
+</histogram>
+
+<histogram
+    name="NetworkService.NetworkLoaderCompletionTime2.{Source}.{Priority}"
+    units="ms" expires_after="2025-12-28">
+  <owner>hayato@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The time taken to finish a network URLLoader to complete. A network
+    URLLoader is a URLLoader that a CorsURLLoader used internally to load an
+    HTTP response from the underlying layer. The underlying layer serves the
+    response from either the disk cache backend or the network.
+
+    This histogram is recorded for requests of {Priority} priority served from
+    {Source}.
+  </summary>
+  <token key="Source">
+    <variant name="DiskCache"/>
+    <variant name="Network"/>
+  </token>
+  <token key="Priority" variants="RequestPriority"/>
 </histogram>
 
 <histogram name="NetworkService.ParsedHeaders.IPCHandleTime"
