@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 
+#import "components/translate/core/browser/translate_manager.h"
 #import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_tab_helper.h"
@@ -85,6 +86,16 @@ void ReaderModeContentTabHelper::SetFullscreenController(
     return;
   }
   find_tab_helper->SetFullscreenController(fullscreen_controller);
+}
+
+void ReaderModeContentTabHelper::ActivateTranslateOnPage() {
+  ChromeIOSTranslateClient* translateClient =
+      ChromeIOSTranslateClient::FromWebState(web_state());
+  CHECK(translateClient);
+  translate::TranslateManager* translateManager =
+      translateClient->GetTranslateManager();
+  translateManager->ShowTranslateUI(/*auto_translate=*/true,
+                                    /*triggered_from_menu=*/true);
 }
 
 #pragma mark - WebStatePolicyDecider

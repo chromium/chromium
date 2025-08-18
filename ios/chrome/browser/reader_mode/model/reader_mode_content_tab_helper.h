@@ -37,6 +37,8 @@ class ReaderModeContentTabHelper
   void AttachSupportedTabHelpers(web::WebState* web_state);
   // Sets the full screen controller that will passed to the `FindTabHelper`.
   void SetFullscreenController(FullscreenController* fullscreen_controller);
+  // Activates translation on the Reader Mode web state.
+  void ActivateTranslateOnPage();
 
   // WebStatePolicyDecider overrides:
   void ShouldAllowRequest(NSURLRequest* request,

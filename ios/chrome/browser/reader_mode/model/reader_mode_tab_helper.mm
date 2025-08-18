@@ -14,6 +14,7 @@
 #import "base/time/time.h"
 #import "components/dom_distiller/core/extraction_utils.h"
 #import "components/google/core/common/google_util.h"
+#import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -268,6 +270,18 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
   for (auto& observer : observers_) {
     observer.ReaderModeWebStateDidLoadContent(this);
   }
+
+  // Apply translation to the page if it was applied on the original page.
+  if (base::FeatureList::IsEnabled(kEnableReaderModeTranslation)) {
+    ChromeIOSTranslateClient* translate_client =
+        ChromeIOSTranslateClient::FromWebState(web_state_.get());
+    if (translate_client && translate_client->GetTranslateManager()
+                                ->GetLanguageState()
+                                ->IsPageTranslated()) {
+      reader_mode_content_tab_helper->ActivateTranslateOnPage();
+    }
+  }
+
   WebViewProxyTabHelper* tab_helper =
       WebViewProxyTabHelper::FromWebState(web_state_);
   if (tab_helper) {
