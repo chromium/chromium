@@ -261,10 +261,9 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
     // is entered and `InitFromUserPrefs()` triggers `RefreshScheduleTimer()`.
     ash::Shell::Get()->dark_light_mode_controller()->SetClockForTesting(this);
 
-    CreateTestUserSessions();
-
-    // Simulate user 1 login.
-    SimulateNewUserFirstLogin(kUser1Email);
+    SimulateUserLoginWithCustomPrefs(kUser1Email);
+    SimulateUserLoginWithCustomPrefs(kUser2Email);
+    SwitchActiveUser(kUser1Email);
 
     feature_ = std::make_unique<TestScheduledFeature>(
         kTestEnabledPref, kTestScheduleTypePref, kTestCustomStartTimePref,
@@ -297,12 +296,6 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   }
 
   base::TimeTicks NowTicks() const override { return task_runner_->NowTicks(); }
-
-  void CreateTestUserSessions() {
-    ClearLogin();
-    SimulateUserLoginWithCustomPrefs(kUser1Email);
-    SimulateUserLoginWithCustomPrefs(kUser2Email);
-  }
 
   void SimulateUserLoginWithCustomPrefs(std::string_view user_email) {
     auto prefs = std::make_unique<TestingPrefServiceSimple>();
