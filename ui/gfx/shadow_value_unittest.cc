@@ -19,7 +19,7 @@ namespace gfx {
 TEST(ShadowValueTest, GetMargin) {
   struct TestCase {
     Insets expected_margin;
-    std::vector<ShadowValue> shadows;
+    ShadowValues shadows;
   };
   const auto kTestCases = std::to_array<TestCase>({
       {
@@ -61,7 +61,7 @@ TEST(ShadowValueTest, GetMargin) {
   });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    Insets margin = ShadowValue::GetMargin(ShadowValues(kTestCases[i].shadows));
+    Insets margin = ShadowValue::GetMargin(kTestCases[i].shadows);
 
     EXPECT_EQ(kTestCases[i].expected_margin, margin) << " i=" << i;
   }
