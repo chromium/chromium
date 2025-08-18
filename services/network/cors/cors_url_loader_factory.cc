@@ -602,12 +602,36 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     return false;
   }
 
-  // Reject request with trusted params if factory is not for a trusted
-  // consumer.
-  if (request.trusted_params && !is_trusted_) {
-    mojo::ReportBadMessage(
-        "CorsURLLoaderFactory: Untrusted caller making trusted request");
+  // Reject requests with load flags that are only for use internally by the
+  // network service itself.
+  if (request.load_flags &
+      (net::LOAD_CAN_USE_SHARED_DICTIONARY |
+       net::LOAD_DISABLE_SHARED_DICTIONARY_AFTER_CROSS_ORIGIN_REDIRECT)) {
+    mojo::ReportBadMessage("CorsURLLoaderFactory: Internal load flag received");
     return false;
+  }
+
+  // Check if this is an untrusted factory being provided parameters that should
+  // only be passed if it's trusted.
+  if (!is_trusted_) {
+    if (request.trusted_params) {
+      mojo::ReportBadMessage(
+          "CorsURLLoaderFactory: Untrusted caller making trusted request");
+      return false;
+    }
+
+    // Apply allowlist for which flags untrusted factories are allowed to use.
+    if (request.load_flags &
+        ~(net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
+          net::LOAD_SKIP_CACHE_VALIDATION | net::LOAD_ONLY_FROM_CACHE |
+          net::LOAD_DISABLE_CACHE | net::LOAD_PREFETCH |
+          net::LOAD_IGNORE_LIMITS | net::LOAD_DO_NOT_USE_EMBEDDED_IDENTITY |
+          net::LOAD_SUPPORT_ASYNC_REVALIDATION |
+          net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME)) {
+      mojo::ReportBadMessage(
+          "CorsURLLoaderFactory: Untrusted caller using restricted load flag");
+      return false;
+    }
   }
 
   // Reject request if the restricted prefetch load flag is set but the
