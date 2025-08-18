@@ -45,6 +45,12 @@ BASE_FEATURE(kBookmarkTriggerForPreconnect,
              "BookmarkTriggerForPreconnect",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This flag is used for enabling BookmarkBar triggered prefetch.  See
+// crbug.com/413259638 for more details of Bookmark triggered prefetching.
+BASE_FEATURE(kBookmarkTriggerForPrefetch,
+             "BookmarkTriggerForPrefetch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Certificate Transparency on Desktop and Android Browser (CT is
 // disabled in Android Webview, see aw_browser_context.cc).
 // Enabling CT enforcement requires maintaining a log policy, and the ability to
