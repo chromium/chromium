@@ -19,6 +19,12 @@ using base::android::JavaParamRef;
 static void JNI_MemoryPressureListener_OnMemoryPressure(
     JNIEnv* env,
     jint memory_pressure_level) {
+  // Sometimes, early in the process's lifetime, the main thread task runner is
+  // not set yet.
+  if (!base::SingleThreadTaskRunner::HasMainThreadDefault()) {
+    return;
+  }
+
   // Forward the notification to the registry of MemoryPressureListeners.
   base::SingleThreadTaskRunner::GetMainThreadDefault()->PostTask(
       FROM_HERE,
