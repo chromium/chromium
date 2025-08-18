@@ -496,6 +496,23 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kNullishCoalescing:
       webdx_feature = WebDXFeature::kNullishCoalescing;
       break;
+    case v8::Isolate::kRegExpCompile:
+      webdx_feature = WebDXFeature::kRegexpCompile;
+      break;
+    case v8::Isolate::kWithStatement:
+      webdx_feature = WebDXFeature::kWith;
+      break;
+    case v8::Isolate::kHtmlWrapperMethods:
+      webdx_feature = WebDXFeature::kHtmlWrapperMethods;
+      break;
+    case v8::Isolate::kRegExpStaticProperties:
+      webdx_feature = WebDXFeature::kRegexpStaticProperties;
+      break;
+    case v8::Isolate::kRegExpStaticPropertiesWithLastMatch:
+      UseCounter::Count(CurrentExecutionContext(isolate),
+                        WebFeature::kV8RegExpStaticPropertiesWithLastMatch);
+      webdx_feature = WebDXFeature::kRegexpStaticProperties;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

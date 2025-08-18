@@ -451,6 +451,10 @@ enum WebDXFeature {
   kWebglOesDrawBuffersIndexed = 389,
   kWebgl2ColorManagement = 390,
   kWebgl2Desynchronized = 391,
+  kRegexpCompile = 392,
+  kWith = 393,
+  kHtmlWrapperMethods = 394,
+  kRegexpStaticProperties = 395,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

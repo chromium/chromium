@@ -6272,6 +6272,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5638" label="WebkitLineClampWithHeight"/>
   <int value="5639" label="LineClampAuto"/>
   <int value="5640" label="LineClampByLinesAndHeight"/>
+  <int value="5641" label="V8RegExpStaticPropertiesWithLastMatch"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -8404,6 +8405,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="389" label="WebglOesDrawBuffersIndexed"/>
   <int value="390" label="Webgl2ColorManagement"/>
   <int value="391" label="Webgl2Desynchronized"/>
+  <int value="392" label="RegexpCompile"/>
+  <int value="393" label="With"/>
+  <int value="394" label="HtmlWrapperMethods"/>
+  <int value="395" label="RegexpStaticProperties"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
