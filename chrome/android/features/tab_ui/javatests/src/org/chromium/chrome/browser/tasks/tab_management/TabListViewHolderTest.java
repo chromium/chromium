@@ -214,8 +214,8 @@ public class TabListViewHolderTest {
                             Tab.INVALID_TAB_ID, false, false, null));
     private final AtomicInteger mThumbnailFetchedCount = new AtomicInteger();
 
-    private final TabListMediator.TabActionListener mMockCloseListener =
-            new TabListMediator.TabActionListener() {
+    private final TabActionListener mMockCloseListener =
+            new TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                     mCloseClicked.set(true);
@@ -229,8 +229,8 @@ public class TabListViewHolderTest {
     private final AtomicBoolean mCloseClicked = new AtomicBoolean();
     private final AtomicInteger mCloseTabId = new AtomicInteger();
 
-    private final TabListMediator.TabActionListener mMockSelectedListener =
-            new TabListMediator.TabActionListener() {
+    private final TabActionListener mMockSelectedListener =
+            new TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                     mSelectClicked.set(true);
@@ -244,8 +244,8 @@ public class TabListViewHolderTest {
     private final AtomicBoolean mSelectClicked = new AtomicBoolean();
     private final AtomicInteger mSelectTabId = new AtomicInteger();
 
-    private final TabListMediator.TabActionListener mMockCreateGroupButtonListener =
-            new TabListMediator.TabActionListener() {
+    private final TabActionListener mMockCreateGroupButtonListener =
+            new TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                     mCreateGroupButtonClicked.set(true);

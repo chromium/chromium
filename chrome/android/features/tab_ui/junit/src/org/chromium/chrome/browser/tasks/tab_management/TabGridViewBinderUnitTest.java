@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
@@ -167,7 +166,7 @@ public final class TabGridViewBinderUnitTest {
     public void bindClosableTabWithCardWidth_updateNullFetcher() {
         mModel.set(TabProperties.THUMBNAIL_FETCHER, null);
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.THUMBNAIL_FETCHER);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId */ null);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId= */ null);
         verify(mThumbnailView).setImageDrawable(null);
 
         // Update width.
@@ -178,7 +177,7 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView, times(2))
-                .updateThumbnailPlaceholder(false, true, /* colorId */ null);
+                .updateThumbnailPlaceholder(false, true, /* colorId= */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mThumbnailView, times(2)).setImageDrawable(null);
@@ -195,7 +194,7 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId */ null);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId= */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
@@ -271,7 +270,7 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, false, /* colorId */ null);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, false, /* colorId= */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mFetcher).fetch(any(), eq(false), mCallbackCaptor.capture());
@@ -305,7 +304,7 @@ public final class TabGridViewBinderUnitTest {
 
         // Verify.
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId */ null);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId= */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
         verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
 
@@ -339,7 +338,7 @@ public final class TabGridViewBinderUnitTest {
 
         // Verify.
         verify(mViewGroup).setMinimumHeight(updatedCardHeight);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId */ null);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId= */ null);
         assertThat(mLayoutParams.height, equalTo(updatedCardHeight));
         verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
 

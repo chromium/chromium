@@ -1,0 +1,214 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import android.app.Activity;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.Size;
+import android.view.LayoutInflater;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.test.filters.SmallTest;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.RenderTestRule;
+
+/** Render tests for {@link PinnedTabStripItemView}. */
+@RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
+public class PinnedTabStripItemViewTest {
+    private static final int STRIP_ITEM_WIDTH = 500;
+
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    @Rule
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(
+                            RenderTestRule.Component
+                                    .UI_BROWSER_MOBILE_TAB_SWITCHER_PINNED_TABS_STRIP)
+                    .setRevision(1)
+                    .build();
+
+    private Activity mActivity;
+    private PinnedTabStripItemView mView;
+    private TabListFaviconProvider.TabFavicon mTabFavicon;
+    private TabListFaviconProvider.TabFaviconFetcher mFetcher;
+
+    @Before
+    public void setUp() {
+        mActivityTestRule.launchActivity(null);
+        mActivity = mActivityTestRule.getActivity();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mView =
+                            (PinnedTabStripItemView)
+                                    LayoutInflater.from(mActivity)
+                                            .inflate(
+                                                    R.layout.pinned_tab_strip_item,
+                                                    new FrameLayout(mActivity),
+                                                    false);
+                    mActivity.setContentView(mView);
+                });
+
+        mTabFavicon =
+                new TabListFaviconProvider.ResourceTabFavicon(
+                        newDrawable(), TabListFaviconProvider.StaticTabFaviconType.ROUNDED_GLOBE);
+        mFetcher = callback -> callback.onResult(mTabFavicon);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetTitle() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mView.setTitle("Test Title");
+                    TextView titleView = mView.findViewById(R.id.tab_title);
+                    assertEquals("Test Title", titleView.getText().toString());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSetTrailingIcon() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Drawable drawable = new ColorDrawable(android.graphics.Color.RED);
+                    mView.setTrailingIcon(drawable);
+                    ImageView trailingIcon = mView.findViewById(R.id.trailing_icon);
+                    assertEquals(drawable, trailingIcon.getDrawable());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSetFaviconIcon_NullFetcher() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mView.setFaviconIcon(null, false);
+                    ImageView favicon = mView.findViewById(R.id.tab_favicon);
+                    assertNull(favicon.getDrawable());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSetGridCardSize() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Size size = new Size(100, 200);
+                    mView.setGridCardSize(size);
+                    assertEquals(100, mView.getLayoutParams().width);
+                    assertEquals(200, mView.getLayoutParams().height);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSetFaviconIcon_FetcherReturnsNullFavicon() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mFetcher = callback -> callback.onResult(null);
+                    mView.setFaviconIcon(mFetcher, false);
+                    ImageView favicon = mView.findViewById(R.id.tab_favicon);
+                    assertNull(favicon.getDrawable());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSetFaviconIcon_FetcherReturnsValidFavicon_Selected() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mView.setFaviconIcon(mFetcher, true);
+                    ImageView faviconView = mView.findViewById(R.id.tab_favicon);
+                    assertEquals(mTabFavicon.getSelectedDrawable(), faviconView.getDrawable());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSetFaviconIcon_FetcherReturnsValidFavicon_NotSelected() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mView.setFaviconIcon(mFetcher, false);
+                    ImageView faviconView = mView.findViewById(R.id.tab_favicon);
+                    assertEquals(mTabFavicon.getDefaultDrawable(), faviconView.getDrawable());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderView() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mView.setTitle("Test Title");
+                    mView.setFaviconIcon(mFetcher, /* isSelected= */ true);
+                    mView.setSelected(true, false, TabGroupColorId.GREY);
+                    mView.setGridCardSize(new Size(STRIP_ITEM_WIDTH, -1));
+                });
+        mRenderTestRule.render(mView, "pinned_tab_strip_item_view_selected");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderView_NotSelected() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mView.setTitle("Test Title");
+                    mView.setFaviconIcon(mFetcher, /* isSelected= */ true);
+                    mView.setSelected(false, false, TabGroupColorId.GREY);
+                    mView.setGridCardSize(new Size(STRIP_ITEM_WIDTH, -1));
+                });
+        mRenderTestRule.render(mView, "pinned_tab_strip_item_view_not_selected");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderView_Incognito() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mView.setTitle("Test Title");
+                    mView.setFaviconIcon(mFetcher, /* isSelected= */ true);
+                    mView.setSelected(true, true, TabGroupColorId.GREY);
+                    mView.setGridCardSize(new Size(STRIP_ITEM_WIDTH, -1));
+                });
+        mRenderTestRule.render(mView, "pinned_tab_strip_item_view_incognito");
+    }
+
+    private Drawable newDrawable() {
+        Bitmap image = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        return new BitmapDrawable(resources, image);
+    }
+}

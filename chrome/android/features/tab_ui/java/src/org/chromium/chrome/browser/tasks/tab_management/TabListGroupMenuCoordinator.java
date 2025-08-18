@@ -67,12 +67,9 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
         mShouldShowIcons = ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled();
     }
 
-    /**
-     * Creates a {@link TabListMediator.TabActionListener} that creates the menu and shows it when
-     * clicked.
-     */
-    TabListMediator.TabActionListener getTabActionListener() {
-        return new TabListMediator.TabActionListener() {
+    /** Creates a {@link TabActionListener} that creates the menu and shows it when clicked. */
+    TabActionListener getTabActionListener() {
+        return new TabActionListener() {
             @Override
             public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                 @Nullable TabModel tabModel = getTabModel();

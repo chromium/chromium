@@ -173,4 +173,9 @@ found in the LICENSE file.
     <!-- Dimens for hub search tab -->
     <dimen name="hub_search_tab_group_image_span_edge_size">12sp</dimen>
 
+    <!-- Dimens for pinned tab strip -->
+    <dimen name="pinned_tab_strip_item_horizontal_padding">16dp</dimen>
+    <dimen name="pinned_tab_strip_item_bg_radius">16dp</dimen>
+    <dimen name="pinned_tab_strip_item_height">40dp</dimen>
+    <dimen name="pinned_tab_strip_item_icon_size">16dp</dimen>
 </resources>

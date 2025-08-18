@@ -111,7 +111,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Mock private RecyclerView mRecyclerView;
     @Mock private RecyclerView.Adapter mAdapter;
     @Spy private TabModel mTabModel;
-    @Mock private TabListMediator.TabActionListener mTabClosedListener;
+    @Mock private TabActionListener mTabClosedListener;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private TabListMediator.TabGridDialogHandler mTabGridDialogHandler;

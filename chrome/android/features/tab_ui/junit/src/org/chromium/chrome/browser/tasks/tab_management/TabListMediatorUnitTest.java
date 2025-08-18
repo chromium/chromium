@@ -341,7 +341,7 @@ public class TabListMediatorUnitTest {
     @Mock TabFavicon mFavicon;
     @Mock Bitmap mFaviconBitmap;
     @Mock Activity mActivity;
-    @Mock TabListMediator.TabActionListener mOpenGroupActionListener;
+    @Mock TabActionListener mOpenGroupActionListener;
     @Mock GridLayoutManager mGridLayoutManager;
     @Mock GridLayoutManager.SpanSizeLookup mSpanSizeLookup;
     @Mock Profile mProfile;
@@ -4262,7 +4262,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void tabClosure_ignoresUpdateForTabGroup_outsideTabSwitcher() {
         initAndAssertAllProperties();
-        TabListMediator.TabActionListener actionListenerBeforeUpdate =
+        TabActionListener actionListenerBeforeUpdate =
                 mModelList.get(0).model.get(TabProperties.TAB_CLICK_LISTENER);
 
         // Mock that tab1 and tab3 are in the same group and group root id is TAB1_ID.
@@ -4279,7 +4279,7 @@ public class TabListMediatorUnitTest {
 
         assertEquals(1, mModelList.size());
 
-        TabListMediator.TabActionListener actionListenerAfterUpdate =
+        TabActionListener actionListenerAfterUpdate =
                 mModelList.get(0).model.get(TabProperties.TAB_CLICK_LISTENER);
         // The selection listener should remain unchanged, since the property model of the tab group
         // should not get updated when the closure is triggered from outside the tab switcher.
@@ -5288,17 +5288,17 @@ public class TabListMediatorUnitTest {
 
         assertThat(
                 mModelList.get(0).model.get(TabProperties.TAB_CLICK_LISTENER),
-                instanceOf(TabListMediator.TabActionListener.class));
+                instanceOf(TabActionListener.class));
         assertThat(
                 mModelList.get(1).model.get(TabProperties.TAB_CLICK_LISTENER),
-                instanceOf(TabListMediator.TabActionListener.class));
+                instanceOf(TabActionListener.class));
 
         assertThat(
                 mModelList.get(0).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).tabActionListener,
-                instanceOf(TabListMediator.TabActionListener.class));
+                instanceOf(TabActionListener.class));
         assertThat(
                 mModelList.get(1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).tabActionListener,
-                instanceOf(TabListMediator.TabActionListener.class));
+                instanceOf(TabActionListener.class));
     }
 
     private Tab prepareTab(int id, String title, GURL url) {

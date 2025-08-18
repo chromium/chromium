@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
@@ -75,7 +74,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     private final Supplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     private final ObservableSupplierImpl<Integer> mRecentlySwipedTabIdSupplier =
             new ObservableSupplierImpl<>(Tab.INVALID_TAB_ID);
-    private final TabListMediator.TabActionListener mTabClosedListener;
+    private final TabActionListener mTabClosedListener;
     private final String mComponentName;
     private final TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
     private final int mLongPressDpThresholdSquared;

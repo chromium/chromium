@@ -46,6 +46,7 @@ android_resources("java_resources") {
     "java/res/drawable/phone_tab_switcher_empty_state_illustration_cloud_right.xml",
     "java/res/drawable/phone_tab_switcher_empty_state_illustration_static.xml",
     "java/res/drawable/phone_tab_switcher_empty_state_illustration_top_window.xml",
+    "java/res/drawable/pinned_tab_strip_item_background.xml",
     "java/res/drawable/price_card_background.xml",
     "java/res/drawable/price_card_scrim.xml",
     "java/res/drawable/tab_grid_card_background.xml",
@@ -82,6 +83,7 @@ android_resources("java_resources") {
     "java/res/layout/color_picker_item.xml",
     "java/res/layout/dynamic_bottom_tab_strip_toolbar.xml",
     "java/res/layout/large_message_card_item.xml",
+    "java/res/layout/pinned_tab_strip_item.xml",
     "java/res/layout/price_card.xml",
     "java/res/layout/resizable_tab_grid_message_card_item.xml",
     "java/res/layout/strip_drag_shadow_view.xml",
@@ -141,6 +143,7 @@ android_library("unit_device_javatests") {
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogViewTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabListViewHolderTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs_strip/PinnedTabStripItemViewTest.java",
   ]
 
   deps = [
@@ -193,7 +196,6 @@ android_library("unit_device_javatests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/accessibility:ax_base_java",
-    "//ui/android:ui_java_test_support",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_recycler_view_java",

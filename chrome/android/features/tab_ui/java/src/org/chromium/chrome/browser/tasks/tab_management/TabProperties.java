@@ -17,7 +17,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -88,6 +87,8 @@ public class TabProperties {
 
     public static final WritableBooleanPropertyKey IS_HIGHLIGHTED =
             new WritableBooleanPropertyKey();
+
+    public static final WritableBooleanPropertyKey IS_PINNED = new WritableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<TabActionButtonData> TAB_ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey<>();
@@ -212,6 +213,7 @@ public class TabProperties {
                         HAS_NOTIFICATION_BUBBLE,
                         TAB_CARD_LABEL_DATA,
                         IS_HIGHLIGHTED,
+                        IS_PINNED,
                         MEDIA_INDICATOR
                     },
                     COMMON_KEYS_TAB_AND_GROUP_GRID);

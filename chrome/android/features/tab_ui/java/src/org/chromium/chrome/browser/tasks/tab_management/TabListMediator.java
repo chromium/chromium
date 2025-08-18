@@ -31,7 +31,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.Size;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
@@ -200,29 +199,6 @@ class TabListMediator implements TabListNotificationHandler {
          * @return Whether the given action is a reordering action.
          */
         boolean isReorderAction(int action);
-    }
-
-    /** Interface for implementing a generic tab action. */
-    public interface TabActionListener {
-        /**
-         * Runs the action for the given {@code view} and {@code tabId}.
-         *
-         * @param view {@link View} for the tab.
-         * @param tabId ID of the tab.
-         * @param triggeringMotion {@link MotionEventInfo} that triggered the action; it will be
-         *     {@code null} if the action is not a result of direct interpretation of {@link
-         *     MotionEvent}s. For example, this parameter will be {@code null} if the action is run
-         *     by a {@link android.view.View.OnClickListener} where {@link MotionEvent} is not
-         *     available.
-         */
-        void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion);
-
-        /**
-         * Runs the action for the given {@code view} and tab group {@code syncId}.
-         *
-         * @see #run(View, int, MotionEventInfo)
-         */
-        void run(View view, String syncId, @Nullable MotionEventInfo triggeringMotion);
     }
 
     /**
@@ -2012,7 +1988,7 @@ class TabListMediator implements TabListNotificationHandler {
                 TabActionButtonData.TabActionButtonType.CLOSE, mTabClosedListener);
     }
 
-    private TabListMediator.TabActionListener getTabGroupOverflowMenuClickListener() {
+    private TabActionListener getTabGroupOverflowMenuClickListener() {
         if (mTabListGroupMenuCoordinator == null) {
             TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
             boolean isIncognito = tabModel.isIncognitoBranded();
@@ -2033,8 +2009,7 @@ class TabListMediator implements TabListNotificationHandler {
         return mTabListGroupMenuCoordinator.getTabActionListener();
     }
 
-    private TabListMediator.TabActionListener getTabClickListener(
-            Tab tab, @TabActionState int tabActionState) {
+    private TabActionListener getTabClickListener(Tab tab, @TabActionState int tabActionState) {
         if (tabActionState == TabActionState.SELECTABLE) {
             return mSelectableTabOnClickListener;
         } else {
@@ -2053,8 +2028,7 @@ class TabListMediator implements TabListNotificationHandler {
         return mTabListGroupMenuCoordinator;
     }
 
-    private TabListMediator.TabActionListener getTabLongClickListener(
-            @TabActionState int tabActionState) {
+    private TabActionListener getTabLongClickListener(@TabActionState int tabActionState) {
         if (tabActionState == TabActionState.SELECTABLE) {
             return mSelectableTabOnClickListener;
         } else {
