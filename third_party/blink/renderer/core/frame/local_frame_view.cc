@@ -1064,6 +1064,19 @@ void LocalFrameView::RecordNaturalDimensions() {
   natural_height_ = layout_overflow_size_.height();
 }
 
+void LocalFrameView::RequestSameDocumentNavigationPresentationTime(
+    base::OnceCallback<void(const viz::FrameTimingDetails&)> callback) {
+  if (RuntimeEnabledFeatures::RecordSameDocumentPresentationTimeOnceEnabled(
+          GetFrame().DomWindow())) {
+    GetFrame()
+        .LocalFrameRoot()
+        .View()
+        ->same_document_presentation_time_callback_ = std::move(callback);
+  } else if (auto* frame_widget = GetFrame().GetWidgetForLocalRoot()) {
+    frame_widget->NotifyPresentationTime(std::move(callback));
+  }
+}
+
 std::optional<NaturalSizingInfo> LocalFrameView::GetNaturalDimensions() const {
   if (LayoutSVGRoot* content_layout_object = EmbeddedReplacedContent()) {
     return content_layout_object->UnscaledNaturalSizingInfo();
@@ -2080,6 +2093,14 @@ void LocalFrameView::PrepareForLifecycleUpdateRecursive() {
     ForAllChildLocalFrameViews([](LocalFrameView& child) {
       child.PrepareForLifecycleUpdateRecursive();
     });
+  }
+
+  if (same_document_presentation_time_callback_) {
+    if (auto* frame_widget = GetFrame().GetWidgetForLocalRoot()) {
+      frame_widget->NotifyPresentationTime(
+          std::move(same_document_presentation_time_callback_));
+    }
+    same_document_presentation_time_callback_.Reset();
   }
 }
 

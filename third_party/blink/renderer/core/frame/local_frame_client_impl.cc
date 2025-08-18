@@ -467,17 +467,23 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
         }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-        frame_widget->NotifyPresentationTime(WTF::BindOnce(
-            [](base::TimeTicks start,
-               const viz::FrameTimingDetails& frame_timing_details) {
-              base::TimeDelta duration =
-                  frame_timing_details.presentation_feedback.timestamp - start;
-              base::UmaHistogramTimes(
-                  "Navigation."
-                  "MainframeSameDocumentNavigationCommitToPresentFirstFrame",
-                  duration);
-            },
-            base::TimeTicks::Now()));
+        if (LocalFrame* frame = web_frame_->GetFrame();
+            frame && frame->View()) {
+          frame->View()->RequestSameDocumentNavigationPresentationTime(
+              blink::BindOnce(
+                  [](base::TimeTicks start,
+                     const viz::FrameTimingDetails& frame_timing_details) {
+                    base::TimeDelta duration =
+                        frame_timing_details.presentation_feedback.timestamp -
+                        start;
+                    base::UmaHistogramTimes(
+                        "Navigation."
+                        "MainframeSameDocumentNavigationCommitToPresentFirstFra"
+                        "me",
+                        duration);
+                  },
+                  base::TimeTicks::Now()));
+        }
       }
     }
     base::UmaHistogramBoolean("Navigation.SameDocumentNavigationWithScreenshot",

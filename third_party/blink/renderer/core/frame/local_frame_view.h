@@ -82,6 +82,10 @@ namespace ui {
 class Cursor;
 }
 
+namespace viz {
+class FrameTimingDetails;
+}
+
 namespace blink {
 class AXObjectCache;
 class ChromeClient;
@@ -842,6 +846,9 @@ class CORE_EXPORT LocalFrameView final
 
   void RecordNaturalDimensions();
 
+  void RequestSameDocumentNavigationPresentationTime(
+      base::OnceCallback<void(const viz::FrameTimingDetails&)>);
+
  protected:
   void FrameRectsChanged(const gfx::Rect&) override;
   void SelfVisibleChanged() override;
@@ -1293,6 +1300,12 @@ class CORE_EXPORT LocalFrameView final
   // alignment should be used in the scroll.
   Member<GCedHeapHashMap<Member<ScrollMarkerGroupPseudoElement>, bool>>
       pending_scroll_marker_selection_updates_;
+
+  // This is a callback requested when a same document navigation was committed.
+  // We only record this once (if RecordSameDocumentPresentationTimeOnce is
+  // enabled). We do this within the lifecycle before the commit step.
+  base::OnceCallback<void(const viz::FrameTimingDetails&)>
+      same_document_presentation_time_callback_;
 
 #if DCHECK_IS_ON()
   bool is_updating_descendant_dependent_flags_;
