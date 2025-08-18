@@ -39,6 +39,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/common/content_features.h"
 #include "media/audio/audio_features.h"
+#include "media/base/media_switches.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -188,6 +189,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/437004266): Remove when the feature is stable.
   feature_overrides.EnableFeature(
       features::kAlwaysUseAudioManagerOutputFramesPerBuffer);
+  // Enables picture-in-picture in the right-click context menu.
+  // TODO(crbug.com/403851785): Remove when the feature is verified to be stable
+  // on desktop Android.
+  feature_overrides.EnableFeature(media::kContextMenuPictureInPictureAndroid);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
