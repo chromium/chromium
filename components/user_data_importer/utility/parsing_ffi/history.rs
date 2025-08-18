@@ -115,9 +115,21 @@ pub fn parse_safari_history(
                 },
                 /* metadata_only= */ false,
             );
-            return acc && result.is_ok();
+
+            match result {
+                Ok(_) => acc,
+                Err(e) => {
+                    if e.contains("Unexpected data type") {
+                        // This is not a real error, just the wrong data type (e.g., PaymentCards).
+                        acc
+                    } else {
+                        false
+                    }
+                }
+            }
+        } else {
+            acc
         }
-        acc
     });
 
     if result {
