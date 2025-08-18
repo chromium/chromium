@@ -82,7 +82,7 @@ bool ValidateMediaSession(
 }
 
 // Find the media data from the web contents for the given render frame host if
-// there is an active media session in the web page, otherwise return nullopt.
+// the media data exists, otherwise return nullopt.
 std::optional<optimization_guide::proto::MediaData> ComputeMediaData(
     content::RenderFrameHost* render_frame_host) {
   CHECK(render_frame_host);
@@ -97,24 +97,51 @@ std::optional<optimization_guide::proto::MediaData> ComputeMediaData(
     return std::nullopt;
   }
 
+  // Populate the transcripts field in media data if the transcripts exist for
+  // this render frame host. The transcripts could have been generated for
+  // previous media sessions in this render frame host, or are being generated
+  // for the currently active media session. The transcripts will be cleared
+  // when the render frame host changes.
+  std::optional<optimization_guide::proto::MediaData> media_data;
+  if (auto* media_transcript_provider =
+          MediaTranscriptProvider::GetFor(web_contents)) {
+    auto transcripts =
+        media_transcript_provider->GetTranscriptsForFrame(render_frame_host);
+    if (!transcripts.empty()) {
+      media_data.emplace();
+      media_data->mutable_transcripts()->Add(transcripts.begin(),
+                                             transcripts.end());
+    }
+  }
+
+  // If there is an active media session in the web page, we may generate other
+  // fields in media data if the given render frame host controls the media
+  // session.
   auto* media_session = content::MediaSession::GetIfExists(web_contents);
   if (!media_session ||
       (render_frame_host != media_session->GetRoutedFrame())) {
-    return std::nullopt;
+    return media_data;
   }
 
+  // Validate the media data for other fields before populating them.
   auto media_session_info = media_session->GetMediaSessionInfoSync();
   auto media_position = media_session->GetMediaSessionPosition();
   if (!ValidateMediaSession(media_session_info, media_position)) {
-    return std::nullopt;
+    return media_data;
   }
 
-  optimization_guide::proto::MediaData media_data;
-  media_data.set_is_playing(media_session_info->playback_state ==
-                            media_session::mojom::MediaPlaybackState::kPlaying);
-  media_data.set_duration_milliseconds(
+  // Initialize the media data if there are no transcripts so that it was not
+  // initialized before.
+  if (!media_data) {
+    media_data.emplace();
+  }
+
+  media_data->set_is_playing(
+      media_session_info->playback_state ==
+      media_session::mojom::MediaPlaybackState::kPlaying);
+  media_data->set_duration_milliseconds(
       media_position->duration().InMilliseconds());
-  media_data.set_current_position_milliseconds(
+  media_data->set_current_position_milliseconds(
       media_position->GetPosition().InMilliseconds());
 
   // Find the media data type via the audio video states in the media session
@@ -123,12 +150,12 @@ std::optional<optimization_guide::proto::MediaData> ComputeMediaData(
   auto& first_state = media_session_info->audio_video_states->at(0);
   switch (first_state) {
     case media_session::mojom::MediaAudioVideoState::kAudioOnly:
-      media_data.set_media_data_type(
+      media_data->set_media_data_type(
           optimization_guide::proto::MediaDataType::MEDIA_DATA_TYPE_AUDIO);
       break;
     case media_session::mojom::MediaAudioVideoState::kAudioVideo:
     case media_session::mojom::MediaAudioVideoState::kVideoOnly:
-      media_data.set_media_data_type(
+      media_data->set_media_data_type(
           optimization_guide::proto::MediaDataType::MEDIA_DATA_TYPE_VIDEO);
       break;
     case media_session::mojom::MediaAudioVideoState::kDeprecatedUnknown:
@@ -138,18 +165,9 @@ std::optional<optimization_guide::proto::MediaData> ComputeMediaData(
   // Set the media metadata.
   const media_session::MediaMetadata& media_metadata =
       media_session->GetMediaSessionMetadata();
-  media_data.set_title(base::UTF16ToUTF8(media_metadata.title));
-  media_data.set_artist(base::UTF16ToUTF8(media_metadata.artist));
-  media_data.set_album(base::UTF16ToUTF8(media_metadata.album));
-
-  // Add media transcripts if they exist.
-  if (auto* media_transcript_provider =
-          MediaTranscriptProvider::GetFor(web_contents)) {
-    auto transcripts =
-        media_transcript_provider->GetTranscriptsForFrame(render_frame_host);
-    media_data.mutable_transcripts()->Add(transcripts.begin(),
-                                          transcripts.end());
-  }
+  media_data->set_title(base::UTF16ToUTF8(media_metadata.title));
+  media_data->set_artist(base::UTF16ToUTF8(media_metadata.artist));
+  media_data->set_album(base::UTF16ToUTF8(media_metadata.album));
 
   return media_data;
 }

@@ -1244,7 +1244,7 @@ class PageContentProtoProviderBrowserTestMediaData
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
-                       NoDataForEmptyDuration) {
+                       NoMediaData) {
   LoadPage(https_server()->GetURL("/media_data/video.html"));
   EXPECT_FALSE(page_content().main_frame_data().has_media_data());
 }
@@ -1350,6 +1350,31 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
   EXPECT_EQ(media_data.duration_milliseconds(), 10000);
   EXPECT_TRUE(media_data.is_playing());
   EXPECT_EQ(media_data.transcripts().size(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
+                       VideoHasOnlyTranscripts) {
+  LoadPage(https_server()->GetURL("/media_data/video.html"), nullptr);
+
+  auto mock_provider = std::make_unique<MockMediaTranscriptProvider>();
+  proto::MediaTranscript transcript;
+  transcript.set_text("foo");
+  transcript.set_start_timestamp_milliseconds(1000);
+  EXPECT_CALL(*mock_provider, GetTranscriptsForFrame)
+      .WillOnce(
+          testing::Return(std::vector<proto::MediaTranscript>{transcript}));
+  MediaTranscriptProvider::SetFor(web_contents(), std::move(mock_provider));
+
+  LoadData();
+
+  // Check that the main frame has media data with transcripts.
+  EXPECT_TRUE(page_content().main_frame_data().has_media_data());
+  const auto& media_data = page_content().main_frame_data().media_data();
+  EXPECT_EQ(media_data.media_data_type(),
+            optimization_guide::proto::MediaDataType::MEDIA_DATA_TYPE_UNKNOWN);
+  EXPECT_EQ(media_data.transcripts().size(), 1);
+  EXPECT_EQ(media_data.transcripts(0).text(), "foo");
+  EXPECT_EQ(media_data.transcripts(0).start_timestamp_milliseconds(), 1000);
 }
 
 }  // namespace
