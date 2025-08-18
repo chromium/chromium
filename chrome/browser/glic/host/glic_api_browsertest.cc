@@ -936,9 +936,6 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithAllRequestedData) {
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-  GTEST_SKIP() << "skip timeout test for slow binary";
-#endif
   ExecuteJsTest();
 }
 
@@ -1464,8 +1461,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
 }
 
 // TODO(b/431837630): Make this work on mac.
-// Win-asan is flaky.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_testFetchInactiveTabScreenshot \
   DISABLED_testFetchInactiveTabScreenshot
 #else
@@ -1483,8 +1479,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
 }
 
 // TODO(b/431837630): Make this work on mac.
-// Win-asan is flaky.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_testFetchInactiveTabScreenshotWhileMinimized \
   DISABLED_testFetchInactiveTabScreenshotWhileMinimized
 #else
