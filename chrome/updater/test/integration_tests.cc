@@ -507,6 +507,20 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->RunHandoff(app_id);
   }
 
+  void InstallScheduledTask(const std::string& task_name,
+                            bool use_task_subfolders) {
+    test_commands_->InstallScheduledTask(task_name, use_task_subfolders);
+  }
+  void IsScheduledTaskRegisteredFromMedium(const std::string& task_name,
+                                           bool use_task_subfolders) {
+    test_commands_->IsScheduledTaskRegisteredFromMedium(task_name,
+                                                        use_task_subfolders);
+  }
+  void DeleteScheduledTask(const std::string& task_name,
+                           bool use_task_subfolders) {
+    test_commands_->DeleteScheduledTask(task_name, use_task_subfolders);
+  }
+
 #endif  // BUILDFLAG(IS_WIN)
 
   void InstallAppViaService(
@@ -1339,6 +1353,13 @@ TEST_F(IntegrationTest, SelfUpdateAfterEulaAcceptedViaRegistry) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+TEST_F(IntegrationTest, TaskSchedulerHighToMedium) {
+  ASSERT_NO_FATAL_FAILURE(InstallScheduledTask("Task1", true));
+  ASSERT_NO_FATAL_FAILURE(IsScheduledTaskRegisteredFromMedium("Task1", true));
+  ASSERT_NO_FATAL_FAILURE(DeleteScheduledTask("Task1", true));
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_LINUX)

@@ -183,6 +183,13 @@ class IntegrationTestCommands
                                 const base::Version& version) const = 0;
   virtual void RunUninstallCmdLine() const = 0;
   virtual void RunHandoff(const std::string& app_id) const = 0;
+  virtual void InstallScheduledTask(const std::string& task_name,
+                                    bool use_task_subfolders) const = 0;
+  virtual void IsScheduledTaskRegisteredFromMedium(
+      const std::string& task_name,
+      bool use_task_subfolders) const = 0;
+  virtual void DeleteScheduledTask(const std::string& task_name,
+                                   bool use_task_subfolders) const = 0;
 #endif  // BUILDFLAG(IS_WIN)
   virtual void InstallAppViaService(
       const std::string& app_id,

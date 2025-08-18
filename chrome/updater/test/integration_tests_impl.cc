@@ -1256,15 +1256,18 @@ void RunDeElevated(UpdaterScope scope,
                    base::CommandLine command_line,
                    int* exit_code) {
 #if BUILDFLAG(IS_WIN)
-  Run(scope, command_line, exit_code,
-      [](const base::CommandLine& command_line) {
-        auto process = base::win::RunDeElevated(command_line);
-        VPLOG_IF(0, !process->IsValid()) << process.error();
-        return process.has_value() ? process->Duplicate() : base::Process();
-      });
-#else
-  Run(scope, command_line, exit_code);
+  if (IsElevatedWithUACOn()) {
+    Run(scope, command_line, exit_code,
+        [](const base::CommandLine& command_line) {
+          auto process = base::win::RunDeElevated(command_line);
+          VPLOG_IF(0, !process.has_value() || !process->IsValid())
+              << process.error();
+          return process.has_value() ? process->Duplicate() : base::Process();
+        });
+    return;
+  }
 #endif
+  Run(scope, command_line, exit_code);
 }
 
 void ExpectCliResult(base::CommandLine command_line,

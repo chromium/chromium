@@ -2238,4 +2238,38 @@ void ClearAppAllowsUsageStats(UpdaterScope scope,
                            GetAppClientStateKey(identifier).c_str()));
 }
 
+void InstallScheduledTask(UpdaterScope scope,
+                          const std::string& task_name,
+                          bool use_task_subfolders) {
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope, use_task_subfolders);
+  ASSERT_TRUE(task_scheduler);
+
+  EXPECT_TRUE(task_scheduler->RegisterTask(
+      base::UTF8ToWide(task_name), base::UTF8ToWide(task_name),
+      base::CommandLine::FromString(L"C:\\temp\\temp.exe"),
+      TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, false));
+}
+
+void IsScheduledTaskRegisteredFromMedium(UpdaterScope scope,
+                                         const std::string& task_name,
+                                         bool use_task_subfolders) {
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope, use_task_subfolders);
+  ASSERT_TRUE(task_scheduler);
+
+  EXPECT_EQ(task_scheduler->IsTaskRegistered(base::UTF8ToWide(task_name)),
+            !IsSystemInstall(scope) || ::IsUserAnAdmin());
+}
+
+void DeleteScheduledTask(UpdaterScope scope,
+                         const std::string& task_name,
+                         bool use_task_subfolders) {
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope, use_task_subfolders);
+  ASSERT_TRUE(task_scheduler);
+
+  EXPECT_TRUE(task_scheduler->DeleteTask(base::UTF8ToWide(task_name)));
+}
+
 }  // namespace updater::test

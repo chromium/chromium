@@ -402,6 +402,19 @@ void AppTestHelper::FirstTaskRun() {
            WithSystemScope(Wrap(&RunUninstallCmdLine))},
           {"run_handoff",
            WithSwitch("app_id", WithSystemScope(Wrap(&RunHandoff)))},
+          {"install_scheduled_task",
+           WithSwitch("use_task_subfolders",
+                      WithSwitch("task_name",
+                                 WithSystemScope(Wrap(&InstallScheduledTask))))},  // NOLINT
+          {"is_scheduled_task_registered_from_medium",
+           WithSwitch("use_task_subfolders",
+                      WithSwitch("task_name",
+                                 WithSystemScope(
+                                     Wrap(&IsScheduledTaskRegisteredFromMedium))))},  // NOLINT
+          {"delete_scheduled_task",
+           WithSwitch("use_task_subfolders",
+                      WithSwitch("task_name",
+                                 WithSystemScope(Wrap(&DeleteScheduledTask))))},
 #endif  // BUILDFLAG(IS_WIN)
           {"expect_version_active",
            WithSwitch("updater_version",

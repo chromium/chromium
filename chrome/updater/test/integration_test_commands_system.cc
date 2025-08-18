@@ -500,6 +500,29 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void RunHandoff(const std::string& app_id) const override {
     RunCommand("run_handoff", {Param("app_id", app_id)});
   }
+
+  void InstallScheduledTask(const std::string& task_name,
+                            bool use_task_subfolders) const override {
+    RunCommand(
+        "install_scheduled_task",
+        {Param("task_name", task_name),
+         Param("use_task_subfolders", BoolToString(use_task_subfolders))});
+  }
+  void IsScheduledTaskRegisteredFromMedium(
+      const std::string& task_name,
+      bool use_task_subfolders) const override {
+    RunCommandDeElevated(
+        "is_scheduled_task_registered_from_medium",
+        {Param("task_name", task_name),
+         Param("use_task_subfolders", BoolToString(use_task_subfolders))});
+  }
+  void DeleteScheduledTask(const std::string& task_name,
+                           bool use_task_subfolders) const override {
+    RunCommand(
+        "delete_scheduled_task",
+        {Param("task_name", task_name),
+         Param("use_task_subfolders", BoolToString(use_task_subfolders))});
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   void InstallAppViaService(

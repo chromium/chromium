@@ -1331,6 +1331,7 @@ if (is_win || is_mac || is_linux) {
       ":updater_test_sources",
       "//base",
       "//base/test:test_support",
+      "//build/win:default_exe_manifest",
       "//chrome/common:constants",
       "//testing/gtest",
       "//url",

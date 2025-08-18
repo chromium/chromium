@@ -391,6 +391,23 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void RunHandoff(const std::string& app_id) const override {
     updater::test::RunHandoff(updater_scope_, app_id);
   }
+
+  void InstallScheduledTask(const std::string& task_name,
+                            bool use_task_subfolders) const override {
+    updater::test::InstallScheduledTask(updater_scope_, task_name,
+                                        use_task_subfolders);
+  }
+  void IsScheduledTaskRegisteredFromMedium(
+      const std::string& task_name,
+      bool use_task_subfolders) const override {
+    updater::test::IsScheduledTaskRegisteredFromMedium(
+        updater_scope_, task_name, use_task_subfolders);
+  }
+  void DeleteScheduledTask(const std::string& task_name,
+                           bool use_task_subfolders) const override {
+    updater::test::DeleteScheduledTask(updater_scope_, task_name,
+                                       use_task_subfolders);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   void InstallAppViaService(
