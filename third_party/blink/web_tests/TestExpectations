@@ -9735,3 +9735,5 @@ crbug.com/439456643 [ Linux ] external/wpt/content-security-policy/parsing/inval
 crbug.com/428101918 [ Linux ] external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Failure Timeout ]
 crbug.com/395962971 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate_beforeunload.py [ Failure Timeout ]
 crbug.com/439269634 [ Linux ] external/wpt/webdriver/tests/classic/execute_script/arguments.py [ Failure Timeout ]
+crbug.com/439070606 [ Mac12 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-014.html [ Failure Timeout ]
+crbug.com/439070606 [ Mac13 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-014.html [ Failure Timeout ]
