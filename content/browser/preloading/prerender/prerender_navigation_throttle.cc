@@ -89,9 +89,11 @@ PrerenderNavigationThrottle::WillRedirectRequest() {
 PrerenderNavigationThrottle::PrerenderNavigationThrottle(
     NavigationThrottleRegistry& registry)
     : NavigationThrottle(registry),
-      prerender_host_(&PrerenderHost::GetFromFrameTreeNode(
-          *NavigationRequest::From(&registry.GetNavigationHandle())
-               ->frame_tree_node())) {
+      prerender_host_(
+          PrerenderHost::GetFromFrameTreeNode(
+              *NavigationRequest::From(&registry.GetNavigationHandle())
+                   ->frame_tree_node())
+              .GetWeakPtr()) {
   CHECK(prerender_host_);
 
   // This throttle is responsible for setting the initial navigation id on the
@@ -109,6 +111,10 @@ PrerenderNavigationThrottle::PrerenderNavigationThrottle(
 
 NavigationThrottle::ThrottleCheckResult
 PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
+  if (!prerender_host_) {
+    return CANCEL;
+  }
+
   GURL navigation_url = navigation_handle()->GetURL();
   url::Origin navigation_origin = url::Origin::Create(navigation_url);
   url::Origin initial_prerendering_origin =
@@ -229,6 +235,10 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
 
 NavigationThrottle::ThrottleCheckResult
 PrerenderNavigationThrottle::WillProcessResponse() {
+  if (!prerender_host_) {
+    return CANCEL;
+  }
+
   auto* navigation_request = NavigationRequest::From(navigation_handle());
 
   // https://wicg.github.io/nav-speculation/prerendering.html#navigate-fetch-patch
@@ -288,12 +298,16 @@ PrerenderNavigationThrottle::WillProcessResponse() {
 }
 
 bool PrerenderNavigationThrottle::IsInitialNavigation() const {
-  return prerender_host_->IsInitialNavigation(
-      *NavigationRequest::From(navigation_handle()));
+  return prerender_host_ ? prerender_host_->IsInitialNavigation(
+                               *NavigationRequest::From(navigation_handle()))
+                         : false;
 }
 
 void PrerenderNavigationThrottle::CancelPrerendering(
     PrerenderFinalStatus final_status) {
+  if (!prerender_host_) {
+    return;
+  }
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
   CHECK_EQ(frame_tree_node->GetFrameType(), FrameType::kPrerenderMainFrame);
