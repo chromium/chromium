@@ -220,7 +220,56 @@ TEST_F(VisitDatabaseTest, IsKnownToSync) {
   }
 }
 
-// TODO(brettw) write test for GetMostRecentVisitForURL!
+TEST_F(VisitDatabaseTest, GetMostRecentVisitForURL_NoVisits) {
+  const URLID kUrlId = 1U;
+
+  // Should return 0 when there are no visits.
+  VisitRow out_visit;
+  EXPECT_EQ(GetMostRecentVisitForURL(kUrlId, &out_visit), 0U);
+  EXPECT_EQ(out_visit.visit_id, 0U);
+}
+
+TEST_F(VisitDatabaseTest, GetMostRecentVisitForURL_Simple) {
+  const URLID kUrlId = 1U;
+  const base::Time kNow = Time::Now();
+
+  // Add two visits for the same URL ID with different visit times.
+  for (int visit_number = 1; visit_number <= 2; ++visit_number) {
+    VisitRow visit;
+    visit.url_id = kUrlId;
+    visit.visit_id = visit_number;
+    visit.visit_time = kNow - base::Days(visit_number);
+    ASSERT_TRUE(AddVisit(&visit, SOURCE_BROWSED));
+    ASSERT_EQ(visit_number, visit.visit_id);
+  }
+
+  // The more recent visit should be returned.
+  VisitRow out_visit;
+  EXPECT_EQ(GetMostRecentVisitForURL(kUrlId, &out_visit), 1U);
+  EXPECT_EQ(out_visit.visit_time, kNow - base::Days(1));
+}
+
+TEST_F(VisitDatabaseTest, GetMostRecentVisitForURL_Tied) {
+  const URLID kUrlId = 1U;
+  const base::Time kNow = Time::Now();
+
+  // Add two visits for the same URL with the same visit time.
+  for (int visit_number = 1; visit_number <= 2; ++visit_number) {
+    VisitRow visit;
+    visit.url_id = kUrlId;
+    visit.visit_id = visit_number;
+    visit.visit_time = kNow;
+    ASSERT_TRUE(AddVisit(&visit, SOURCE_BROWSED));
+    ASSERT_EQ(visit_number, visit.visit_id);
+  }
+
+  // When more than one visit is tied for most recent, expect the highest visit
+  // ID among the tied visits to be returned consistently. (These expectations
+  // will flake if the tiebreaker isn't consistent.)
+  VisitRow out_visit;
+  EXPECT_EQ(GetMostRecentVisitForURL(kUrlId, &out_visit), 2U);
+  EXPECT_EQ(out_visit.visit_time, kNow);
+}
 
 namespace {
 
