@@ -5929,23 +5929,23 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_SUBTEXT" desc="In Device Settings > Power, description of the behavior of the adaptive charging feature.">
     Extends battery life by keeping your battery around 80%. Battery will fully charge before you typically disconnect from power.
   </message>
-  <message name="IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_LEARN_MORE_ARIA_LABEL" desc="In Device Settings > Power > Optimized Charging > Change, aria label for the learn more link for adaptive charging." translateable="false">
+  <message name="IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_LEARN_MORE_ARIA_LABEL" desc="In Device Settings > Power > Optimized Charging > Change, aria label for the learn more link for adaptive charging.">
     Learn more about Adaptive charging.
   </message>
-  <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_LABEL" desc="In Device Settings > Power, the title of the settings row of the optimized charging feature." translateable="false">
+  <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_LABEL" desc="In Device Settings > Power, the title of the settings row of the optimized charging feature.">
     Optimized charging
   </message>
-  <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_MODE_CHANGE_LABEL" desc="In Device Settings > Power, the text of the optimized charging change mode button, which creates a dialog that allows the user to pick between adaptive charging and a charge limit." translateable="false">
+  <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_MODE_CHANGE_LABEL" desc="In Device Settings > Power, the text of the optimized charging change mode button, which creates a dialog that allows the user to pick between adaptive charging and a charge limit.">
     Change
   </message>
-  <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_MODE_CHANGE_ARIA_LABEL" desc="In Device Settings > Power, aria label for the button which changes the optimized charging strategy." translateable="false">
+  <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_MODE_CHANGE_ARIA_LABEL" desc="In Device Settings > Power, aria label for the button which changes the optimized charging strategy.">
     Change the optimized charging strategy.
   </message>
-  <message name="IDS_SETTINGS_POWER_BATTERY_CHARGE_LIMIT_LABEL" desc="In Device Settings > Power > Optimized Charging > Change, the title of the battery charge limit feature, which explicitly limits the battery charging to 80%." translateable="false">
+  <message name="IDS_SETTINGS_POWER_BATTERY_CHARGE_LIMIT_LABEL" desc="In Device Settings > Power > Optimized Charging > Change, the title of the battery charge limit feature, which explicitly limits the battery charging to 80%.">
     Charge limit
   </message>
-  <message name="IDS_SETTINGS_POWER_BATTERY_CHARGE_LIMIT_SUBTEXT" desc="In Device Settings > Power > Optimized Charging > Change, description of the behavior of the battery charge limit feature." translateable="false">
-    Limits maximum battery charge to 80% to extend battery lifespan.
+  <message name="IDS_SETTINGS_POWER_BATTERY_CHARGE_LIMIT_SUBTEXT" desc="In Device Settings > Power > Optimized Charging > Change, description of the behavior of the battery charge limit feature.">
+    Stops charging at 80% to help your battery last longer.
   </message>
   <message name="IDS_SETTINGS_POWER_IDLE_DISPLAY_OFF_SLEEP" desc="In Device Settings > Power, menu item for idle behavior that turns the screen off and later puts the device to sleep. String must be short enough to fit in a drop-down menu.">
     Sleep
@@ -5980,7 +5980,7 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BATTERY_STATUS_SHORT" desc="In Device Settings > Power, the battery status when the time left cannot be shown.">
     <ph name="percentage">$1<ex>56</ex></ph>%
   </message>
-  <message name="IDS_SETTINGS_BATTERY_STATUS_CHARGING_ON_HOLD" desc="In Device Settings > Power, the battery status while a charger is plugged in, showing the battery power as a percentage and that charging has stopped." translateable="false">
+  <message name="IDS_SETTINGS_BATTERY_STATUS_CHARGING_ON_HOLD" desc="In Device Settings > Power, the battery status while a charger is plugged in, showing the battery power as a percentage and that charging has stopped.">
     <ph name="percentage">$1<ex>80</ex></ph>% - Charging on hold
   </message>
   <message name="IDS_SETTINGS_POWER_BATTERY_SAVER_LABEL" desc="In Device Settings > Power, label for toggling battery saver mode">

@@ -649,10 +649,10 @@
   <message name="IDS_OS_SETTINGS_TAG_POWER_ADAPTIVE_CHARGING" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to enable adaptive charging.">
     Adaptive charging
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_OPTIMIZED_CHARGING" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to enable optimized charging." translateable="false">
+  <message name="IDS_OS_SETTINGS_TAG_POWER_OPTIMIZED_CHARGING" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to enable optimized charging.">
     Optimized charging
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_CHARGE_LIMIT" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to enable a charge limit." translateable="false">
+  <message name="IDS_OS_SETTINGS_TAG_POWER_CHARGE_LIMIT" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to enable a charge limit.">
     Charge limit
   </message>
   <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD" desc="Text for search result item which, when clicked, navigates the user to touchpad settings. Alternate phrase for: 'Trackpad'">

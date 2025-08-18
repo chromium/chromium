@@ -3063,7 +3063,7 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING_CHARGE_LEVEL" desc="The label in the tray dialog indicating that the battery charge level is being calculated.">
         Calculating battery %...
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_ON_HOLD" desc="The label in the tray dialog indicating that charging has paused." translateable="false">
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_ON_HOLD" desc="The label in the tray dialog indicating that charging has paused.">
         Charging on hold
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_TIME_LEFT_SHORT" desc="The label in the tray bubble settings row to show a time estimate until the battery is empty.">
@@ -3090,7 +3090,7 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_BSM_ON_ACCESSIBLE" desc="The message used by accessibility to show battery is being charged with battery saver enabled.">
         Battery at <ph name="percentage">$1<ex>56</ex></ph>% and charging. Battery Saver is on.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ON_HOLD_ACCESSIBLE" desc="The message used by accessibility to show the battery percentage and that charging is currently paused." translateable="false">
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ON_HOLD_ACCESSIBLE" desc="The message used by accessibility to show the battery percentage and that charging is currently paused.">
         Battery at <ph name="percentage">$1<ex>56</ex></ph>%. Charging on hold.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING_ACCESSIBLE" desc="The message used by accessibility to show battery is calculating its time in short message.">
