@@ -47,10 +47,10 @@ gfx::Rect GetPopupSizeForVcn3ds() {
 
 gfx::Rect GetPopupSizeForBnpl() {
   // The first two arguments do not matter as position gets overridden by
-  // the tab modal pop-up code. The 600x640 size of the pop-up was decided as
+  // the tab modal pop-up code. The 600x840 size of the pop-up was decided as
   // the ideal size for user experience. This decision largely factored in how
   // to minimize scrolling while maintaining a presentable pop-up.
-  return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/640);
+  return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/840);
 }
 
 }  // namespace
