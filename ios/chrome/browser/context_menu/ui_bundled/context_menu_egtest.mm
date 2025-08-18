@@ -304,8 +304,7 @@ void ClearContextMenu() {
 
 // Taps on `context_menu_item_button` context menu item.
 void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
-  [[EarlGrey selectElementWithMatcher:context_menu_item_button]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:context_menu_item_button];
   [[EarlGrey selectElementWithMatcher:context_menu_item_button]
       performAction:grey_tap()];
 }
@@ -560,10 +559,6 @@ void RelaunchApp() {
       longPressElementOnWebView:
           [ElementSelector selectorWithElementID:kDestinationPageTextId]];
 
-  // TODO(crbug.com/40191349): Xcode 13 gesture recognizers seem to get stuck
-  // when the user longs presses on plain text.  For this test, disable EG
-  // synchronization.
-  ScopedSynchronizationDisabler disabler;
   // Verify that context menu is not shown.
   [[EarlGrey selectElementWithMatcher:ContextMenuCopyButton()]
       assertWithMatcher:grey_nil()];
@@ -573,11 +568,6 @@ void RelaunchApp() {
       selectElementWithMatcher:grey_allOf(SystemSelectionCalloutCopyButton(),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
-
-  // TODO(crbug.com/40191349): Tap to dismiss the system selection callout
-  // buttons so tearDown doesn't hang when `disabler` goes out of scope.
-  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:grey_tap()];
 }
 
 // Tests cancelling the context menu.
@@ -954,7 +944,11 @@ void RelaunchApp() {
                       grey_accessibilityID(
                           kContextMenuImagePreviewAccessibilityIdentifier)];
 
-  [ChromeEarlGrey verifyShareActionWithURL:shortTitleURL pageTitle:@"Image"];
+  // On iOS 26, the name of the image (chromium_logo.png in this case) is used
+  // as a page title instead of "Image".
+  NSString* pageTitle =
+      base::ios::IsRunningOnIOS26OrLater() ? @"chromium_logo" : @"Image";
+  [ChromeEarlGrey verifyShareActionWithURL:shortTitleURL pageTitle:pageTitle];
   // Ensure that UMA was logged correctly.
   NSError* error = [MetricsAppInterface
        expectCount:1
