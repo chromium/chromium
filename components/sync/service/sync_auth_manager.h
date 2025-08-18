@@ -36,6 +36,9 @@ struct SyncAccountInfo {
   bool is_sync_consented = false;
   signin::AccountManagedStatusFinderOutcome managed_status =
       signin::AccountManagedStatusFinderOutcome::kPending;
+
+  friend bool operator==(const SyncAccountInfo&,
+                         const SyncAccountInfo&) = default;
 };
 
 // SyncAuthManager tracks the account to be used for Sync and its authentication
@@ -140,18 +143,50 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   void ResetRequestAccessTokenBackoffForTest();
 
  private:
+  // Helper class that ensures the account's managed-status gets queried
+  // whenever the account itself changes.
+  class ActiveAccount {
+   public:
+    // The `account_changed_callback` will be called whenever an account's
+    // managed-ness is determined asynchronously.
+    ActiveAccount(signin::IdentityManager* identity_manager,
+                  base::RepeatingClosure account_changed_callback);
+    ~ActiveAccount();
+
+    ActiveAccount(const ActiveAccount&) = delete;
+    ActiveAccount& operator=(const ActiveAccount&) = delete;
+
+    // To be called when the basic account info changes (e.g. sign in or sign
+    // out). Will kick off determining the managed-ness status, which may
+    // complete synchronously or asynchronously.
+    void Set(const SyncAccountInfo& new_account);
+
+    const SyncAccountInfo& Get() const;
+
+   private:
+    // Starts the process of determining the account type (managed or not). This
+    // may be synchronous or asynchronous.
+    void StartDeterminingAccountType();
+    // Callback for the async case.
+    void AccountTypeDeterminedAsynchronously();
+
+    const raw_ptr<signin::IdentityManager> identity_manager_;
+    base::RepeatingClosure account_changed_callback_;
+    SyncAccountInfo account_info_;
+    std::unique_ptr<signin::AccountManagedStatusFinder> managed_status_finder_;
+    base::Time managed_status_finder_start_time_;
+  };
+
   // Updates `sync_account_` to the appropriate account (i.e.
-  // DetermineAccountToUse) if necessary, and notifies observers of any changes
-  // (sign-in/sign-out/"primary" bit change). Note that changing from one
-  // account to another is exposed to observers as a sign-out + sign-in.
+  // DetermineAccountToUse()) if necessary, and notifies observers of any
+  // changes (sign-in/sign-out/"primary" bit change). Note that changing from
+  // one account to another is exposed to observers as a sign-out + sign-in.
   // Returns whether the syncing account was updated.
   bool UpdateSyncAccountIfNecessary();
 
-  // Starts the process of determining the account type (managed or not) of
-  // `sync_account_`. This may be synchronous or asynchronous.
-  void StartDeterminingAccountType();
-  // Callback for the async case.
-  void AccountTypeDetermined();
+  // Called by ActiveAccount when the account's managed-ness has been determined
+  // asynchronously.
+  void AccountManagednessDetermined();
 
   // Invalidates any current access token, which means invalidating it with the
   // IdentityManager and also dropping our own cached copy. Meant to be called
@@ -176,8 +211,6 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   void AccessTokenFetched(GoogleServiceAuthError error,
                           signin::AccessTokenInfo access_token_info);
 
-  void SetSyncAccount(const SyncAccountInfo& new_account);
-
   void SetLastAuthError(const GoogleServiceAuthError& error);
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -191,10 +224,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   // The account which we are using to sync. If this is non-empty, that does
   // *not* necessarily imply that Sync is actually running, e.g. because of
   // delayed startup.
-  SyncAccountInfo sync_account_;
-
-  std::unique_ptr<signin::AccountManagedStatusFinder> managed_status_finder_;
-  base::Time managed_status_finder_start_time_;
+  ActiveAccount sync_account_;
 
   // This is a cache of the last authentication response we received from
   // Chrome's identity/token management system.
