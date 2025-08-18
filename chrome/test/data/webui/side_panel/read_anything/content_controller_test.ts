@@ -157,6 +157,22 @@ suite('ContentController', () => {
       assertArrayEquals([nodeId], readingMode.fetchedImages);
     });
 
+    test('builds a video as a <canvas> tag', () => {
+      const altText = 'Huntrx';
+      chrome.readingMode.imagesEnabled = true;
+      readingMode.getHtmlTag = () => 'video';
+      readingMode.getAltText = () => altText;
+
+      const root = contentController.buildSubtree(nodeId);
+
+      assertTrue(root instanceof HTMLCanvasElement);
+      assertEquals(altText, root.getAttribute('alt'));
+      assertEquals('', root.style.display);
+      assertTrue(nodeStore.hasImagesToFetch());
+      nodeStore.fetchImages();
+      assertArrayEquals([nodeId], readingMode.fetchedImages);
+    });
+
     test('sets text direction', () => {
       readingMode.getHtmlTag = () => 'p';
       readingMode.getTextDirection = () => 'rtl';

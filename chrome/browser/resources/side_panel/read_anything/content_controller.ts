@@ -32,6 +32,10 @@ const TAG_TO_RM_TAG: Map<string, string> = new Map([
   // beneath the details tag so nothing is rendered on reading mode.
   ['details', 'div'],
   ['img', 'canvas'],
+  // Sometimes videos are marked with the role of image, especially if they're
+  // gifs. Draw a still image on the canvas instead of a moving image.
+  // TODO(crbug.com/439634112): Consider a setting to allow moving images.
+  ['video', 'canvas'],
 ]);
 
 // Handles the business logic for the visual content of the Reading mode panel.
