@@ -225,6 +225,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/toolbar/ui_bundled/buttons",
+    "//ios/chrome/browser/toolbar/ui_bundled/fullscreen",
     "//ios/chrome/browser/toolbar/ui_bundled/test",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/test:test_support",

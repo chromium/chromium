@@ -133,6 +133,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/toolbar/ui_bundled/fullscreen",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/providers/partial_translate",

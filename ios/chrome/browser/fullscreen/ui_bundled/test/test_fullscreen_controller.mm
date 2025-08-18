@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model_observer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 
 TestFullscreenController::TestFullscreenController(Browser* browser)
     : FullscreenController(browser),
@@ -24,6 +25,7 @@ TestFullscreenController::~TestFullscreenController() {
 // static
 void TestFullscreenController::CreateForBrowser(Browser* browser) {
   DCHECK(!FullscreenController::FromBrowser(browser));
+  ToolbarsSizeBrowserAgent::CreateForBrowser(browser);
   browser->SetUserData(UserDataKey(),
                        std::make_unique<TestFullscreenController>(browser));
 }
