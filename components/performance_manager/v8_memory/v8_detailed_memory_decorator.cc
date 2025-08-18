@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -35,9 +36,7 @@ using blink::ExecutionContextToken;
 using blink::mojom::PerContextCanvasMemoryUsagePtr;
 using blink::mojom::PerContextV8MemoryUsagePtr;
 
-namespace performance_manager {
-
-namespace v8_memory {
+namespace performance_manager::v8_memory {
 
 class V8DetailedMemoryRequestQueue {
  public:
@@ -486,10 +485,10 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
   // If a frame doesn't have corresponding data in the result, clear any data
   // it may have had. Any datum in the result that doesn't correspond to an
   // existing frame is likewise accrued to detached bytes.
-  uint64_t detached_v8_bytes_used = 0;
-  uint64_t detached_canvas_bytes_used = 0;
-  uint64_t shared_v8_bytes_used = 0;
-  uint64_t blink_bytes_used = 0;
+  base::ByteCount detached_v8_memory_used;
+  base::ByteCount detached_canvas_memory_used;
+  base::ByteCount shared_v8_memory_used;
+  base::ByteCount blink_memory_used;
 
   // Create a mapping from token to execution context usage for the merge below.
   std::vector<std::pair<ExecutionContextToken, PerContextV8MemoryUsagePtr>>
@@ -503,9 +502,9 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
     for (auto& entry : isolate->canvas_contexts) {
       canvas_memory.emplace_back(entry->token, std::move(entry));
     }
-    detached_v8_bytes_used += isolate->detached_bytes_used;
-    shared_v8_bytes_used += isolate->shared_bytes_used;
-    blink_bytes_used += isolate->blink_bytes_used;
+    detached_v8_memory_used += isolate->detached_memory_used;
+    shared_v8_memory_used += isolate->shared_memory_used;
+    blink_memory_used += isolate->blink_memory_used;
   }
 
   size_t v8_frame_count = v8_memory.size();
@@ -547,13 +546,13 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
       DCHECK_CALLED_ON_VALID_SEQUENCE(ec_data->sequence_checker_);
 
       ec_data->data_available_ = true;
-      ec_data->data_.set_v8_bytes_used(it->second->bytes_used);
+      ec_data->data_.set_v8_memory_used(it->second->memory_used);
       ec_data->data_.set_url(std::move(it->second->url));
       // Zero out this datum as its usage has been consumed.
       // We avoid erase() here because it may take O(n) time.
       it->second.reset();
       if (it_canvas != associated_canvas_memory.end()) {
-        ec_data->data_.set_canvas_bytes_used(it_canvas->second->bytes_used);
+        ec_data->data_.set_canvas_memory_used(it_canvas->second->memory_used);
         it_canvas->second.reset();
       }
     }
@@ -565,7 +564,7 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
       continue;
     }
     // Accrue the data for non-existent frames to detached bytes.
-    detached_v8_bytes_used += it.second->bytes_used;
+    detached_v8_memory_used += it.second->memory_used;
   }
 
   for (const auto& it : associated_canvas_memory) {
@@ -574,14 +573,14 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
       continue;
     }
     // Accrue the data for non-existent frames to detached bytes.
-    detached_canvas_bytes_used += it.second->bytes_used;
+    detached_canvas_memory_used += it.second->memory_used;
   }
 
   data_available_ = true;
-  data_.set_detached_v8_bytes_used(detached_v8_bytes_used);
-  data_.set_detached_canvas_bytes_used(detached_canvas_bytes_used);
-  data_.set_shared_v8_bytes_used(shared_v8_bytes_used);
-  data_.set_blink_bytes_used(blink_bytes_used);
+  data_.set_detached_v8_memory_used(detached_v8_memory_used);
+  data_.set_detached_canvas_memory_used(detached_canvas_memory_used);
+  data_.set_shared_v8_memory_used(shared_v8_memory_used);
+  data_.set_blink_memory_used(blink_memory_used);
 
   // Schedule another measurement for this process node unless one is already
   // scheduled.
@@ -704,7 +703,8 @@ base::Value::Dict V8DetailedMemoryDecorator::DescribeFrameNodeData(
     return base::Value::Dict();
 
   base::Value::Dict dict;
-  dict.Set("v8_bytes_used", static_cast<int>(frame_data->v8_bytes_used()));
+  dict.Set("v8_bytes_used",
+           static_cast<int>(frame_data->v8_memory_used().InBytes()));
   return dict;
 }
 
@@ -720,9 +720,9 @@ base::Value::Dict V8DetailedMemoryDecorator::DescribeProcessNodeData(
 
   base::Value::Dict dict;
   dict.Set("detached_v8_bytes_used",
-           static_cast<int>(process_data->detached_v8_bytes_used()));
+           static_cast<int>(process_data->detached_v8_memory_used().InBytes()));
   dict.Set("shared_v8_bytes_used",
-           static_cast<int>(process_data->shared_v8_bytes_used()));
+           static_cast<int>(process_data->shared_v8_memory_used().InBytes()));
   return dict;
 }
 
@@ -966,6 +966,4 @@ void V8DetailedMemoryRequestQueue::ApplyToAllRequests(
   }
 }
 
-}  // namespace v8_memory
-
-}  // namespace performance_manager
+}  // namespace performance_manager::v8_memory

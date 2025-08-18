@@ -8,6 +8,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/byte_count.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -274,19 +275,19 @@ bool ProcessNodeImpl::GetMainThreadTaskLoadIsLow() const {
   return main_thread_task_load_is_low_.value();
 }
 
-uint64_t ProcessNodeImpl::GetPrivateFootprintKb() const {
+base::ByteCount ProcessNodeImpl::GetPrivateFootprint() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_;
+  return private_footprint_;
 }
 
-uint64_t ProcessNodeImpl::GetResidentSetKb() const {
+base::ByteCount ProcessNodeImpl::GetResidentSet() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_;
+  return resident_set_;
 }
 
-uint64_t ProcessNodeImpl::GetPrivateSwapKb() const {
+base::ByteCount ProcessNodeImpl::GetPrivateSwap() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_swap_kb_;
+  return private_swap_;
 }
 
 RenderProcessHostId ProcessNodeImpl::GetRenderProcessHostId() const {
@@ -425,9 +426,9 @@ void ProcessNodeImpl::SetProcessImpl(base::Process process,
 
   // Also clear the measurement data (if any), as it references the previous
   // process.
-  private_footprint_kb_ = 0;
-  resident_set_kb_ = 0;
-  private_swap_kb_ = 0;
+  private_footprint_ = base::ByteCount(0);
+  resident_set_ = base::ByteCount(0);
+  private_swap_ = base::ByteCount(0);
 
   process_id_ = new_pid;
   launch_time_ = launch_time;

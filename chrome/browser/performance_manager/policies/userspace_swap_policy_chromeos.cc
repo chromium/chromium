@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/policies/userspace_swap_policy_chromeos.h"
 
+#include "base/byte_count.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
@@ -17,8 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 
-namespace performance_manager {
-namespace policies {
+namespace performance_manager::policies {
 
 namespace {
 using ::ash::memory::userspace_swap::SwapFile;
@@ -174,8 +174,8 @@ void UserspaceSwapPolicy::SwapNodesOnGraph() {
 }
 
 void UserspaceSwapPolicy::PrintAllSwapMetrics() {
-  uint64_t total_reclaimed = 0;
-  uint64_t total_on_disk = 0;
+  base::ByteCount total_reclaimed;
+  base::ByteCount total_on_disk;
   uint64_t total_renderers = 0;
   for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
     const FrameNode* main_frame_node = page_node->GetMainFrameNode();
@@ -192,51 +192,52 @@ void UserspaceSwapPolicy::PrintAllSwapMetrics() {
           now_ticks - page_node->GetLastVisibilityChangeTime();
       auto url = main_frame_node->GetURL();
 
-      uint64_t memory_reclaimed = GetProcessNodeReclaimedBytes(process_node);
-      uint64_t disk_space_used = GetProcessNodeSwapFileUsageBytes(process_node);
+      base::ByteCount memory_reclaimed =
+          GetProcessNodeReclaimedSpace(process_node);
+      base::ByteCount disk_space_used =
+          GetProcessNodeSwapFileUsage(process_node);
       total_on_disk += disk_space_used;
       total_reclaimed += memory_reclaimed;
       total_renderers++;
 
-      VLOG(1) << "Frame " << url << " visibile: " << is_visible
+      VLOG(1) << "Frame " << url << " visible: " << is_visible
               << " last_chg: " << last_visibility_change
               << " last_swap: " << (now_ticks - GetLastSwapTime(process_node))
-              << " reclaimed: " << (memory_reclaimed >> 10) << "Kb"
-              << " on disk: " << (disk_space_used >> 10) << "Kb";
+              << " reclaimed: " << memory_reclaimed
+              << " on disk: " << disk_space_used;
     }
   }
 
   VLOG(1) << "Swap Summary, Renderers: " << total_renderers
-          << " reclaimed: " << (total_reclaimed >> 10)
-          << "Kb, total on disk: " << (total_on_disk >> 10) << "Kb"
-          << " Backing Store free space: "
-          << (GetSwapDeviceFreeSpaceBytes() >> 10) << "Kb";
+          << " reclaimed: " << total_reclaimed
+          << ", total on disk: " << total_on_disk
+          << " Backing Store free space: " << GetSwapDeviceFreeSpace();
 }
 
 void UserspaceSwapPolicy::SwapProcessNode(const ProcessNode* process_node) {
   performance_manager::mechanism::userspace_swap::SwapProcessNode(process_node);
 }
 
-uint64_t UserspaceSwapPolicy::GetProcessNodeSwapFileUsageBytes(
+base::ByteCount UserspaceSwapPolicy::GetProcessNodeSwapFileUsage(
     const ProcessNode* process_node) {
   return performance_manager::mechanism::userspace_swap::
-      GetProcessNodeSwapFileUsageBytes(process_node);
+      GetProcessNodeSwapFileUsage(process_node);
 }
 
-uint64_t UserspaceSwapPolicy::GetProcessNodeReclaimedBytes(
+base::ByteCount UserspaceSwapPolicy::GetProcessNodeReclaimedSpace(
     const ProcessNode* process_node) {
   return performance_manager::mechanism::userspace_swap::
-      GetProcessNodeReclaimedBytes(process_node);
+      GetProcessNodeReclaimedSpace(process_node);
 }
 
-uint64_t UserspaceSwapPolicy::GetTotalSwapFileUsageBytes() {
+base::ByteCount UserspaceSwapPolicy::GetTotalSwapFileUsage() {
   return performance_manager::mechanism::userspace_swap::
-      GetTotalSwapFileUsageBytes();
+      GetTotalSwapFileUsage();
 }
 
-uint64_t UserspaceSwapPolicy::GetSwapDeviceFreeSpaceBytes() {
+base::ByteCount UserspaceSwapPolicy::GetSwapDeviceFreeSpace() {
   return performance_manager::mechanism::userspace_swap::
-      GetSwapDeviceFreeSpaceBytes();
+      GetSwapDeviceFreeSpace();
 }
 
 bool UserspaceSwapPolicy::IsPageNodeLoadingOrBusy(const PageNode* page_node) {
@@ -306,7 +307,7 @@ bool UserspaceSwapPolicy::IsEligibleToSwap(const ProcessNode* process_node,
   // configured to enforce a swap device minimum.
   if (config_->minimum_swap_disk_space_available > 0) {
     // Check if we can't swap because the device is running low on space.
-    if (GetSwapDeviceFreeSpaceBytes() <
+    if (GetSwapDeviceFreeSpace().InBytesUnsigned() <
         config_->minimum_swap_disk_space_available) {
       return false;
     }
@@ -315,7 +316,7 @@ bool UserspaceSwapPolicy::IsEligibleToSwap(const ProcessNode* process_node,
   // Make sure we're not exceeding the total swap file usage across all
   // renderers.
   if (config_->maximum_swap_disk_space_bytes > 0) {
-    if (GetTotalSwapFileUsageBytes() >=
+    if (GetTotalSwapFileUsage().InBytesUnsigned() >=
         config_->maximum_swap_disk_space_bytes) {
       return false;
     }
@@ -323,7 +324,7 @@ bool UserspaceSwapPolicy::IsEligibleToSwap(const ProcessNode* process_node,
 
   // And make sure we're not exceeding the per-renderer swap file limit.
   if (config_->renderer_maximum_disk_swap_file_size_bytes > 0) {
-    if (GetProcessNodeSwapFileUsageBytes(process_node) >=
+    if (GetProcessNodeSwapFileUsage(process_node).InBytesUnsigned() >=
         config_->renderer_maximum_disk_swap_file_size_bytes) {
       return false;
     }
@@ -337,5 +338,4 @@ bool UserspaceSwapPolicy::UserspaceSwapSupportedAndEnabled() {
   return ash::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
 }
 
-}  // namespace policies
-}  // namespace performance_manager
+}  // namespace performance_manager::policies

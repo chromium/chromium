@@ -117,8 +117,8 @@ void MemoryMeasurementProvider::OnMemorySummary(
       CHECK_LE(result.metadata.measurement_time, now);
       CHECK_EQ(result.metadata.algorithm, algorithm);
     }
-    result.resident_set_size_kb += summary.resident_set_size_kb;
-    result.private_footprint_kb += summary.private_footprint_kb;
+    result.resident_set_size += summary.resident_set_size;
+    result.private_footprint += summary.private_footprint;
     return inserted;
   };
 
@@ -191,9 +191,9 @@ base::Value::Dict MemoryMeasurementProvider::DescribeContextData(
         it->second.memory_summary_result.value();
     dict.Merge(DescribeResultMetadata(result.metadata));
     dict.Set("resident_set_size_kb",
-             base::NumberToString(result.resident_set_size_kb));
+             base::NumberToString(result.resident_set_size.InKiB()));
     dict.Set("private_footprint_kb",
-             base::NumberToString(result.private_footprint_kb));
+             base::NumberToString(result.private_footprint.InKiB()));
   }
   return dict;
 }

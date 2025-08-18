@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -90,12 +91,13 @@ void MemoryMeasurementDelegateImpl::OnMemorySummary(
       // be measured?
       continue;
     }
-    results.emplace(
-        ProcessContext::FromProcessNode(process_node),
-        MemorySummaryMeasurement{
-            .resident_set_size_kb = process_dump.os_dump().resident_set_kb,
-            .private_footprint_kb = process_dump.os_dump().private_footprint_kb,
-        });
+    results.emplace(ProcessContext::FromProcessNode(process_node),
+                    MemorySummaryMeasurement{
+                        .resident_set_size =
+                            base::KiB(process_dump.os_dump().resident_set_kb),
+                        .private_footprint = base::KiB(
+                            process_dump.os_dump().private_footprint_kb),
+                    });
   }
   std::move(callback).Run(std::move(results));
 }

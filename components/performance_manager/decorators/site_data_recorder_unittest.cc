@@ -59,7 +59,7 @@ class LenientMockDataWriter : public SiteDataWriter {
   MOCK_METHOD(void, NotifyUsesAudioInBackground, (), (override));
   MOCK_METHOD(void,
               NotifyLoadTimePerformanceMeasurement,
-              (base::TimeDelta, base::TimeDelta, uint64_t),
+              (base::TimeDelta, base::TimeDelta, base::ByteCount),
               (override));
 
   // Used to record the destruction of this object.

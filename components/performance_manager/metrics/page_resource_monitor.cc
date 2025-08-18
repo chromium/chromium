@@ -181,9 +181,9 @@ void PageResourceMonitor::OnPageResourceUsageResult(
     // Add memory summary, if this page included it.
     if (result.memory_summary_result.has_value()) {
       ukm.SetResidentSetSizeEstimate(
-          result.memory_summary_result->resident_set_size_kb);
+          result.memory_summary_result->resident_set_size.InKiB());
       ukm.SetPrivateFootprintEstimate(
-          result.memory_summary_result->private_footprint_kb);
+          result.memory_summary_result->private_footprint.InKiB());
     }
     ukm.Record(ukm::UkmRecorder::Get());
   }

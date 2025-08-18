@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_SITE_DATA_WRITER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_SITE_DATA_WRITER_H_
 
+#include "base/byte_count.h"
 #include "base/memory/ref_counted.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 
@@ -36,7 +37,7 @@ class SiteDataWriter {
   virtual void NotifyLoadTimePerformanceMeasurement(
       base::TimeDelta load_duration,
       base::TimeDelta cpu_usage_estimate,
-      uint64_t private_footprint_kb_estimate);
+      base::ByteCount private_footprint_estimate);
 
   virtual const url::Origin& Origin() const;
 

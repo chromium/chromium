@@ -117,8 +117,8 @@ class FrameNodeImpl
   bool IsIntersectingLargeArea() const override;
   bool IsImportant() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
-  uint64_t GetResidentSetKbEstimate() const override;
-  uint64_t GetPrivateFootprintKbEstimate() const override;
+  base::ByteCount GetResidentSetEstimate() const override;
+  base::ByteCount GetPrivateFootprintEstimate() const override;
 
   // Getters for const properties.
   FrameNodeImpl* parent_frame_node() const;
@@ -150,8 +150,8 @@ class FrameNodeImpl
   void SetVisibility(Visibility visibility);
   void SetIsIntersectingLargeArea(bool is_intersecting_large_area);
   void SetIsImportant(bool is_important);
-  void SetResidentSetKbEstimate(uint64_t rss_estimate);
-  void SetPrivateFootprintKbEstimate(uint64_t private_footprint_estimate);
+  void SetResidentSetEstimate(base::ByteCount rss_estimate);
+  void SetPrivateFootprintEstimate(base::ByteCount private_footprint_estimate);
 
   // Invoked when a navigation is committed in the frame.
   void OnNavigationCommitted(GURL url,
@@ -334,9 +334,9 @@ class FrameNodeImpl
   // The set of pages that have been embedded by this frame.
   NodeSet embedded_page_nodes_;
 
-  uint64_t resident_set_kb_estimate_ = 0;
+  base::ByteCount resident_set_estimate_;
 
-  uint64_t private_footprint_kb_estimate_ = 0;
+  base::ByteCount private_footprint_estimate_;
 
   // Does *not* change when a navigation is committed.
   ObservedProperty::NotifiesOnlyOnChanges<

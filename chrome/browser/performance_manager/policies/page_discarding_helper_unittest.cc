@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -100,8 +101,8 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidates) {
 
   EXPECT_EQ(kEligible, CanDiscard(page_node2.get(), DiscardReason::URGENT));
 
-  process_node()->set_resident_set_kb(1024);
-  process_node2->set_resident_set_kb(1024);
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(1));
 
   // 2 candidates should both be discarded.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
@@ -128,8 +129,8 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesProtected) {
 
   EXPECT_EQ(kEligible, CanDiscard(page_node2.get(), DiscardReason::URGENT));
 
-  process_node()->set_resident_set_kb(1024);
-  process_node2->set_resident_set_kb(1024);
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(1));
 
   // When discard_protected_tabs is false, it should not discard protected page
   // even with large reclaim_target_kb.
@@ -167,9 +168,9 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesThreeCandidates) {
   page_node3->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
 
-  process_node()->set_resident_set_kb(1024);
-  process_node2->set_resident_set_kb(1024);
-  process_node3->set_resident_set_kb(1024);
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(1));
+  process_node3->set_resident_set(base::MiB(1));
 
   // The 2 candidates with earlier last visible time should be discarded.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
@@ -214,9 +215,9 @@ TEST_F(PageDiscardingHelperTest,
   page_node3->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
 
-  process_node()->set_resident_set_kb(1024);
-  process_node2->set_resident_set_kb(1024);
-  process_node3->set_resident_set_kb(1024);
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(1));
+  process_node3->set_resident_set(base::MiB(1));
 
   // Protected pages should have lower discard priority.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
@@ -241,8 +242,8 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoDiscardable) {
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
 
-  process_node()->set_resident_set_kb(1024);
-  process_node2->set_resident_set_kb(1024);
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(1));
 
   // Discarding failed on all nodes.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
@@ -316,8 +317,8 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidates) {
   EXPECT_LT(page_node()->GetLastVisibilityChangeTime(),
             page_node2->GetLastVisibilityChangeTime());
 
-  process_node()->set_resident_set_kb(1024);
-  process_node2->set_resident_set_kb(2048);
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(2));
 
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
@@ -338,8 +339,8 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesFirstFails) {
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
-  process_node()->set_resident_set_kb(1024);
-  process_node2->set_resident_set_kb(2048);
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(2));
 
   // Pretends that the first discardable page hasn't been discarded
   // successfully, the other one should be discarded in this case.
@@ -366,8 +367,8 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesMultipleFrames) {
   auto page_node1_extra_frame =
       CreateFrameNodeAutoId(process_node2.get(), page_node(), frame_node());
 
-  process_node()->set_resident_set_kb(1024);
-  process_node2->set_resident_set_kb(2048);
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(2));
 
   // The total RSS of |page_node()| should be 1024 + 2048 / 2 = 2048 and the
   // RSS of |page_node2| should be 2048 / 2 = 1024, so |page_node()| will get
@@ -457,7 +458,7 @@ TEST_F(PageDiscardingHelperTest, DiscardingProtectedTabReported) {
   // page_node2.
   page_node()->SetIsVisible(true);
 
-  process_node2->set_resident_set_kb(1024);
+  process_node2->set_resident_set(base::MiB(1));
 
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
       .WillOnce(Return(true));
@@ -477,7 +478,7 @@ TEST_F(PageDiscardingHelperTest, DiscardingProtectedTabReported) {
 TEST_F(PageDiscardingHelperTest, DiscardingUnprotectedTabReported) {
   // By default the primary page node is not protected.
 
-  process_node()->set_resident_set_kb(1024);
+  process_node()->set_resident_set(base::MiB(1));
 
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
@@ -495,7 +496,7 @@ TEST_F(PageDiscardingHelperTest, DiscardingUnprotectedTabReported) {
 }
 
 TEST_F(PageDiscardingHelperTest, DiscardingFocusedTabReported) {
-  process_node()->set_resident_set_kb(1024);
+  process_node()->set_resident_set(base::MiB(1));
   page_node()->SetIsVisible(true);
   page_node()->SetIsFocused(true);
 
@@ -516,7 +517,7 @@ TEST_F(PageDiscardingHelperTest, DiscardingFocusedTabReported) {
 
 TEST_F(PageDiscardingHelperTest, DiscardingUnfocusedTabReported) {
   // Main process node is not focused by default.
-  process_node()->set_resident_set_kb(1024);
+  process_node()->set_resident_set(base::MiB(1));
 
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));

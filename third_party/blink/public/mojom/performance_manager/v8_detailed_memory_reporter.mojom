@@ -4,24 +4,25 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/byte_count.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 struct PerContextV8MemoryUsage {
   // TODO(ulan): Replace this with V8ContextToken once it is hooked up in
   // PerformanceManager.
   ExecutionContextToken token;
-  uint64 bytes_used = 0;
-  // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
-  // the browser does not know URLs of dedicated workers, so we pass them
-  // together with the measurement result.
-  // This field is filled only for dedicated workers and it may be empty
-  // if the URL is too long.
+  mojo_base.mojom.ByteCount memory_used;
+  // TODO(https://crbug.com/400455021): Remove because PlzDedicatedWorker
+  // shipped. Before then, the browser did not know URLs of dedicated workers,
+  // so we passed them together with the measurement result. This field is
+  // filled only for dedicated workers and it may be empty if the URL is too
+  // long.
   string? url;
 };
 
 struct PerContextCanvasMemoryUsage {
   ExecutionContextToken token;
-  uint64 bytes_used = 0;
+  mojo_base.mojom.ByteCount memory_used;
 };
 
 struct PerIsolateV8MemoryUsage {
@@ -29,14 +30,14 @@ struct PerIsolateV8MemoryUsage {
   // likely web application leaks, and their associated byte usage.
   // Such contexts are known as detached contexts.
   uint64 num_detached_contexts;
-  uint64 detached_bytes_used;
+  mojo_base.mojom.ByteCount detached_memory_used;
 
   // Bytes shared across all V8 contexts. These bytes are not attributed
   // to any particular V8 context.
-  uint64 shared_bytes_used;
+  mojo_base.mojom.ByteCount shared_memory_used;
 
   // Bytes used on the Blink heap corresponding to this V8 isolate.
-  uint64 blink_bytes_used;
+  mojo_base.mojom.ByteCount blink_memory_used;
 
   // The V8 memory usage by individual execution contexts in this process.
   array<PerContextV8MemoryUsage> contexts;
@@ -67,4 +68,3 @@ interface V8DetailedMemoryReporter {
   // collection, which can be on the order of 10-20%.
   GetV8MemoryUsage(Mode mode) => (PerProcessV8MemoryUsage memory_usage);
 };
-

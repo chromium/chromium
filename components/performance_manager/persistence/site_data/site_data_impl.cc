@@ -142,13 +142,14 @@ void SiteDataImpl::NotifyUsesAudioInBackground() {
 void SiteDataImpl::NotifyLoadTimePerformanceMeasurement(
     base::TimeDelta load_duration,
     base::TimeDelta cpu_usage_estimate,
-    uint64_t private_footprint_kb_estimate) {
+    base::ByteCount private_footprint_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_dirty_ = true;
 
   load_duration_.AppendDatum(load_duration.InMicroseconds());
   cpu_usage_estimate_.AppendDatum(cpu_usage_estimate.InMicroseconds());
-  private_footprint_kb_estimate_.AppendDatum(private_footprint_kb_estimate);
+  private_footprint_kb_estimate_.AppendDatum(
+      private_footprint_estimate.InKiBF());
 }
 
 void SiteDataImpl::ExpireAllObservationWindowsForTesting() {

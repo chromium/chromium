@@ -96,12 +96,12 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
              page_node_impl->GetResourceContext().ToString());
 
   base::Value::Dict estimates;
-  estimates.Set(
-      "private_footprint_kb",
-      base::NumberToString(page_node_impl->EstimatePrivateFootprintSize()));
+  estimates.Set("private_footprint_kb",
+                base::NumberToString(
+                    page_node_impl->EstimatePrivateFootprintSize().InKiB()));
   estimates.Set(
       "resident_set_size_kb",
-      base::NumberToString(page_node_impl->EstimateResidentSetSize()));
+      base::NumberToString(page_node_impl->EstimateResidentSetSize().InKiB()));
   result.Set("estimates", std::move(estimates));
 
   return result;

@@ -42,8 +42,8 @@ class MemorySaverUnitTestMixin : public T {
     content::WebContents* const contents =
         T::browser()->tab_strip_model()->GetActiveWebContents();
     performance_manager::user_tuning::UserPerformanceTuningManager::
-        PreDiscardResourceUsage::CreateForWebContents(
-            contents, memory_savings.InKiB(), discard_reason);
+        PreDiscardResourceUsage::CreateForWebContents(contents, memory_savings,
+                                                      discard_reason);
   }
 
   void SetTabDiscardState(int tab_index, bool is_discarded) {

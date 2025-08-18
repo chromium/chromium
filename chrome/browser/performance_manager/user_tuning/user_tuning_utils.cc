@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -56,7 +57,7 @@ bool IsBatterySaverModeManagedByOS() {
 #endif
 }
 
-uint64_t GetDiscardedMemoryEstimateForPage(const PageNode* node) {
+base::ByteCount GetDiscardedMemoryEstimateForPage(const PageNode* node) {
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
 
   return node->EstimatePrivateFootprintSize();

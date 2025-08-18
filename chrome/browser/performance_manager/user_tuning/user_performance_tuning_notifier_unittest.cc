@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -66,7 +67,7 @@ class UserPerformanceTuningNotifierTest : public GraphTestHarness {
     receiver_ = receiver.get();
 
     auto notifier = std::make_unique<UserPerformanceTuningNotifier>(
-        std::move(receiver), /*memory_theshold_kb=*/10,
+        std::move(receiver), /*resident_set_threshold=*/base::KiB(10),
         /*tab_count_threshold=*/2);
     graph()->PassToGraph(std::move(notifier));
   }
@@ -112,20 +113,20 @@ TEST_F(UserPerformanceTuningNotifierTest, TestOnlyTabsCount) {
 
 TEST_F(UserPerformanceTuningNotifierTest, TestMemoryThresholdTriggered) {
   auto process1 = CreateNode<ProcessNodeImpl>();
-  process1->set_resident_set_kb(8);
+  process1->set_resident_set(base::KiB(8));
   SystemNodeImpl::FromNode(graph()->GetSystemNode())
       ->OnProcessMemoryMetricsAvailable();
   EXPECT_EQ(0, receiver_->memory_percent_threshold_reached_count_);
 
   auto process2 = CreateNode<ProcessNodeImpl>();
-  process2->set_resident_set_kb(5);
+  process2->set_resident_set(base::KiB(5));
   SystemNodeImpl::FromNode(graph()->GetSystemNode())
       ->OnProcessMemoryMetricsAvailable();
   EXPECT_EQ(1, receiver_->memory_percent_threshold_reached_count_);
 
   // Staying above the threshold doesn't re-trigger it.
   auto process3 = CreateNode<ProcessNodeImpl>();
-  process3->set_resident_set_kb(5);
+  process3->set_resident_set(base::KiB(5));
   SystemNodeImpl::FromNode(graph()->GetSystemNode())
       ->OnProcessMemoryMetricsAvailable();
   EXPECT_EQ(1, receiver_->memory_percent_threshold_reached_count_);

@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -68,17 +69,17 @@ namespace v8_memory {
 //         const V8DetailedMemoryProcessData* data) override {
 //       DCHECK(data);
 //       LOG(INFO) << "Process " << process_node->GetProcessId() <<
-//           " reported " << data->detached_v8_bytes_used() <<
+//           " reported " << data->detached_v8_memory_used() <<
 //           " bytes of V8 memory that wasn't associated with a frame.";
 //       LOG(INFO) << "Process " << process_node->GetProcessId() <<
-//           " reported " << data->shared_v8_bytes_used() <<
+//           " reported " << data->shared_v8_memory_used() <<
 //           " bytes of V8 memory that are shared between all frames";
 //       for (auto* frame_node : process_node->GetFrameNodes()) {
 //         auto* frame_data =
 //             V8DetailedMemoryExecutionContextData::ForFrame(frame_node);
 //         if (frame_data) {
 //           LOG(INFO) << "Frame " << frame_node->GetFrameToken().value() <<
-//               " reported " << frame_data->v8_bytes_used() <<
+//               " reported " << frame_data->v8_memory_used() <<
 //               " bytes of V8 memory in its main world.";
 //         }
 //       }
@@ -133,25 +134,25 @@ class V8DetailedMemoryExecutionContextData {
       V8DetailedMemoryExecutionContextData&&);
 
   bool operator==(const V8DetailedMemoryExecutionContextData& other) const {
-    return v8_bytes_used_ == other.v8_bytes_used_ && url_ == other.url_;
+    return v8_memory_used_ == other.v8_memory_used_ && url_ == other.url_;
   }
 
-  // Returns the number of bytes used by V8 for this frame at the last
+  // Returns memory used by V8 for this frame at the last
   // measurement.
-  uint64_t v8_bytes_used() const { return v8_bytes_used_; }
+  base::ByteCount v8_memory_used() const { return v8_memory_used_; }
 
-  void set_v8_bytes_used(uint64_t v8_bytes_used) {
-    v8_bytes_used_ = v8_bytes_used;
+  void set_v8_memory_used(base::ByteCount v8_memory_used) {
+    v8_memory_used_ = v8_memory_used;
   }
 
-  // Returns the number of bytes used by canvas elements for this frame at the
+  // Returns the memory used by canvas elements for this frame at the
   // last measurement. It is empty if the frame has no canvas elements.
-  std::optional<uint64_t> canvas_bytes_used() const {
-    return canvas_bytes_used_;
+  std::optional<base::ByteCount> canvas_memory_used() const {
+    return canvas_memory_used_;
   }
 
-  void set_canvas_bytes_used(uint64_t canvas_bytes_used) {
-    canvas_bytes_used_ = canvas_bytes_used;
+  void set_canvas_memory_used(base::ByteCount canvas_memory_used) {
+    canvas_memory_used_ = canvas_memory_used;
   }
 
   // TODO(crbug.com/40093136): Remove this once PlzDedicatedWorker ships. Until
@@ -181,8 +182,8 @@ class V8DetailedMemoryExecutionContextData {
  private:
   friend class WebMemoryTestHarness;
 
-  uint64_t v8_bytes_used_ = 0;
-  std::optional<uint64_t> canvas_bytes_used_;
+  base::ByteCount v8_memory_used_;
+  std::optional<base::ByteCount> canvas_memory_used_;
   std::optional<std::string> url_;
 };
 
@@ -192,43 +193,48 @@ class V8DetailedMemoryProcessData {
   virtual ~V8DetailedMemoryProcessData() = default;
 
   bool operator==(const V8DetailedMemoryProcessData& other) const {
-    return detached_v8_bytes_used_ == other.detached_v8_bytes_used_ &&
-           shared_v8_bytes_used_ == other.shared_v8_bytes_used_;
+    return detached_v8_memory_used_ == other.detached_v8_memory_used_ &&
+           shared_v8_memory_used_ == other.shared_v8_memory_used_;
   }
 
-  // Returns the number of bytes used by V8 at the last measurement in this
+  // Returns the memory used by V8 at the last measurement in this process that
+  // could not be attributed to a frame.
+  base::ByteCount detached_v8_memory_used() const {
+    return detached_v8_memory_used_;
+  }
+
+  void set_detached_v8_memory_used(base::ByteCount detached_v8_memory_used) {
+    detached_v8_memory_used_ = detached_v8_memory_used;
+  }
+
+  // Returns the memory used by canvas elements at the last measurement in this
   // process that could not be attributed to a frame.
-  uint64_t detached_v8_bytes_used() const { return detached_v8_bytes_used_; }
-
-  void set_detached_v8_bytes_used(uint64_t detached_v8_bytes_used) {
-    detached_v8_bytes_used_ = detached_v8_bytes_used;
+  base::ByteCount detached_canvas_memory_used() const {
+    return detached_canvas_memory_used_;
   }
 
-  // Returns the number of bytes used by canvas elements at the last
-  // measurement in this process that could not be attributed to a frame.
-  uint64_t detached_canvas_bytes_used() const {
-    return detached_canvas_bytes_used_;
+  void set_detached_canvas_memory_used(
+      base::ByteCount detached_canvas_memory_used) {
+    detached_canvas_memory_used_ = detached_canvas_memory_used;
   }
 
-  void set_detached_canvas_bytes_used(uint64_t detached_canvas_bytes_used) {
-    detached_canvas_bytes_used_ = detached_canvas_bytes_used;
+  // Returns the memory used by V8 at the last measurement in this process that
+  // are shared between all frames.
+  base::ByteCount shared_v8_memory_used() const {
+    return shared_v8_memory_used_;
   }
 
-  // Returns the number of bytes used by V8 at the last measurement in this
-  // process that are shared between all frames.
-  uint64_t shared_v8_bytes_used() const { return shared_v8_bytes_used_; }
-
-  void set_shared_v8_bytes_used(uint64_t shared_v8_bytes_used) {
-    shared_v8_bytes_used_ = shared_v8_bytes_used;
+  void set_shared_v8_memory_used(base::ByteCount shared_v8_memory_used) {
+    shared_v8_memory_used_ = shared_v8_memory_used;
   }
 
-  // Returns the number of bytes used by Blink heaps corresponding to V8
+  // Returns the memory used by Blink heaps corresponding to V8
   // isolates at the last measurement in this process that are shared between
   // all frames.
-  uint64_t blink_bytes_used() const { return blink_bytes_used_; }
+  base::ByteCount blink_memory_used() const { return blink_memory_used_; }
 
-  void set_blink_bytes_used(uint64_t blink_bytes_used) {
-    blink_bytes_used_ = blink_bytes_used;
+  void set_blink_memory_used(base::ByteCount blink_memory_used) {
+    blink_memory_used_ = blink_memory_used;
   }
 
   // Returns process data for the given node, or nullptr if no measurement has
@@ -242,10 +248,10 @@ class V8DetailedMemoryProcessData {
 
   static V8DetailedMemoryProcessData* GetOrCreateForTesting(
       const ProcessNode* node);
-  uint64_t detached_v8_bytes_used_ = 0;
-  uint64_t detached_canvas_bytes_used_ = 0;
-  uint64_t shared_v8_bytes_used_ = 0;
-  uint64_t blink_bytes_used_ = 0;
+  base::ByteCount detached_v8_memory_used_;
+  base::ByteCount detached_canvas_memory_used_;
+  base::ByteCount shared_v8_memory_used_;
+  base::ByteCount blink_memory_used_;
 };
 
 class V8DetailedMemoryObserver : public base::CheckedObserver {

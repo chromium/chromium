@@ -181,10 +181,10 @@ void ScreenAIServiceHandlerBase::OnScreenAIServiceDisconnected() {
   CallPendingStatusRequests(false);
 
   if (resource_monitor_) {
-    if (resource_monitor_->get_max_resident_memory_kb()) {
+    if (!resource_monitor_->get_max_resident_memory().is_zero()) {
       base::UmaHistogramMemoryMB(
           GetMetricFullName("MaxMemoryLoad"),
-          resource_monitor_->get_max_resident_memory_kb() / 1000);
+          resource_monitor_->get_max_resident_memory().InKiB() / 1000);
     }
     resource_monitor_.reset();
 

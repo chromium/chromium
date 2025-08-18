@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -29,8 +30,8 @@ using ::testing::ByMove;
 using ::testing::Return;
 using GlobalMemoryDumpPtr = memory_instrumentation::mojom::GlobalMemoryDumpPtr;
 
-constexpr uint32_t kFakeResidentSetKb = 12345;
-constexpr uint32_t kFakePrivateFootprintKb = 67890;
+constexpr base::ByteCount kFakeResidentSet = base::KiB(12345);
+constexpr base::ByteCount kFakePrivateFootprint = base::KiB(67890);
 
 // Test version of the |ProcessMetricsDecorator| class.
 class LenientTestProcessMetricsDecorator : public ProcessMetricsDecorator {
@@ -65,8 +66,8 @@ void LenientTestProcessMetricsDecorator::RequestProcessesMemoryMetrics(
 
 struct MemoryDumpProcInfo {
   base::ProcessId pid;
-  uint32_t resident_set_kb;
-  uint32_t private_footprint_kb;
+  base::ByteCount resident_set;
+  base::ByteCount private_footprint;
 };
 
 // Generate a GlobalMemoryDumpPtr object based on the data contained in
@@ -78,8 +79,8 @@ GlobalMemoryDumpPtr GenerateMemoryDump(
     auto pmd = memory_instrumentation::mojom::ProcessMemoryDump::New();
     pmd->pid = proc_info.pid;
     pmd->os_dump = memory_instrumentation::mojom::OSMemDump::New();
-    pmd->os_dump->resident_set_kb = proc_info.resident_set_kb;
-    pmd->os_dump->private_footprint_kb = proc_info.private_footprint_kb;
+    pmd->os_dump->resident_set_kb = proc_info.resident_set.InKiB();
+    pmd->os_dump->private_footprint_kb = proc_info.private_footprint.InKiB();
     global_dump->process_dumps.emplace_back(std::move(pmd));
   }
   return global_dump;
@@ -126,83 +127,79 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
   // Returns a default GlobalMemoryDumpPtr suitable for most tests.
   GlobalMemoryDumpPtr DefaultMemoryDump() {
     return GenerateMemoryDump({
-        {mock_graph()->process->GetProcessId(), kFakeResidentSetKb,
-         kFakePrivateFootprintKb},
-        {mock_graph()->other_process->GetProcessId(), kFakeResidentSetKb,
-         kFakePrivateFootprintKb},
-        {mock_utility_process_->GetProcessId(), kFakeResidentSetKb,
-         kFakePrivateFootprintKb},
+        {mock_graph()->process->GetProcessId(), kFakeResidentSet,
+         kFakePrivateFootprint},
+        {mock_graph()->other_process->GetProcessId(), kFakeResidentSet,
+         kFakePrivateFootprint},
+        {mock_utility_process_->GetProcessId(), kFakeResidentSet,
+         kFakePrivateFootprint},
     });
   }
 
-  void ExpectProcessResults(uint64_t resident_set_kb,
-                            uint64_t private_footprint_kb) {
-    EXPECT_EQ(resident_set_kb, mock_graph()->process->GetResidentSetKb());
-    EXPECT_EQ(private_footprint_kb,
-              mock_graph()->process->GetPrivateFootprintKb());
+  void ExpectProcessResults(base::ByteCount resident_set,
+                            base::ByteCount private_footprint) {
+    EXPECT_EQ(resident_set, mock_graph()->process->GetResidentSet());
+    EXPECT_EQ(private_footprint, mock_graph()->process->GetPrivateFootprint());
 
-    EXPECT_EQ(resident_set_kb / 3,
-              mock_graph()->frame->GetResidentSetKbEstimate());
-    EXPECT_EQ(private_footprint_kb / 3,
-              mock_graph()->frame->GetPrivateFootprintKbEstimate());
-    EXPECT_EQ(resident_set_kb / 3,
-              mock_graph()->other_frame->GetResidentSetKbEstimate());
-    EXPECT_EQ(private_footprint_kb / 3,
-              mock_graph()->other_frame->GetPrivateFootprintKbEstimate());
-    EXPECT_EQ(resident_set_kb / 3,
-              mock_graph()->worker->GetResidentSetKbEstimate());
-    EXPECT_EQ(private_footprint_kb / 3,
-              mock_graph()->worker->GetPrivateFootprintKbEstimate());
+    EXPECT_EQ(resident_set / 3, mock_graph()->frame->GetResidentSetEstimate());
+    EXPECT_EQ(private_footprint / 3,
+              mock_graph()->frame->GetPrivateFootprintEstimate());
+    EXPECT_EQ(resident_set / 3,
+              mock_graph()->other_frame->GetResidentSetEstimate());
+    EXPECT_EQ(private_footprint / 3,
+              mock_graph()->other_frame->GetPrivateFootprintEstimate());
+    EXPECT_EQ(resident_set / 3, mock_graph()->worker->GetResidentSetEstimate());
+    EXPECT_EQ(private_footprint / 3,
+              mock_graph()->worker->GetPrivateFootprintEstimate());
   }
 
-  void ExpectOtherProcessResults(uint64_t resident_set_kb,
-                                 uint64_t private_footprint_kb) {
-    EXPECT_EQ(resident_set_kb, mock_graph()->other_process->GetResidentSetKb());
-    EXPECT_EQ(private_footprint_kb,
-              mock_graph()->other_process->GetPrivateFootprintKb());
+  void ExpectOtherProcessResults(base::ByteCount resident_set,
+                                 base::ByteCount private_footprint) {
+    EXPECT_EQ(resident_set, mock_graph()->other_process->GetResidentSet());
+    EXPECT_EQ(private_footprint,
+              mock_graph()->other_process->GetPrivateFootprint());
 
-    EXPECT_EQ(resident_set_kb / 2,
-              mock_graph()->child_frame->GetResidentSetKbEstimate());
-    EXPECT_EQ(private_footprint_kb / 2,
-              mock_graph()->child_frame->GetPrivateFootprintKbEstimate());
-    EXPECT_EQ(resident_set_kb / 2,
-              mock_graph()->other_worker->GetResidentSetKbEstimate());
-    EXPECT_EQ(private_footprint_kb / 2,
-              mock_graph()->other_worker->GetPrivateFootprintKbEstimate());
+    EXPECT_EQ(resident_set / 2,
+              mock_graph()->child_frame->GetResidentSetEstimate());
+    EXPECT_EQ(private_footprint / 2,
+              mock_graph()->child_frame->GetPrivateFootprintEstimate());
+    EXPECT_EQ(resident_set / 2,
+              mock_graph()->other_worker->GetResidentSetEstimate());
+    EXPECT_EQ(private_footprint / 2,
+              mock_graph()->other_worker->GetPrivateFootprintEstimate());
   }
 
-  void ExpectUtilityProcessResults(uint64_t resident_set_kb,
-                                   uint64_t private_footprint_kb) {
-    EXPECT_EQ(resident_set_kb, mock_utility_process_->GetResidentSetKb());
-    EXPECT_EQ(private_footprint_kb,
-              mock_utility_process_->GetPrivateFootprintKb());
+  void ExpectUtilityProcessResults(base::ByteCount resident_set,
+                                   base::ByteCount private_footprint) {
+    EXPECT_EQ(resident_set, mock_utility_process_->GetResidentSet());
+    EXPECT_EQ(private_footprint, mock_utility_process_->GetPrivateFootprint());
     // No frames or workers to measure.
   }
 
   void ResetResults() {
-    mock_graph()->process->set_resident_set_kb(0);
-    mock_graph()->process->set_private_footprint_kb(0);
-    mock_graph()->frame->SetResidentSetKbEstimate(0);
-    mock_graph()->frame->SetPrivateFootprintKbEstimate(0);
-    mock_graph()->other_frame->SetResidentSetKbEstimate(0);
-    mock_graph()->other_frame->SetPrivateFootprintKbEstimate(0);
-    mock_graph()->worker->SetResidentSetKbEstimate(0);
-    mock_graph()->worker->SetPrivateFootprintKbEstimate(0);
-    mock_graph()->other_process->set_resident_set_kb(0);
-    mock_graph()->other_process->set_private_footprint_kb(0);
-    mock_graph()->child_frame->SetResidentSetKbEstimate(0);
-    mock_graph()->child_frame->SetPrivateFootprintKbEstimate(0);
-    mock_graph()->other_worker->SetResidentSetKbEstimate(0);
-    mock_graph()->other_worker->SetPrivateFootprintKbEstimate(0);
-    mock_utility_process_->set_resident_set_kb(0);
-    mock_utility_process_->set_private_footprint_kb(0);
+    mock_graph()->process->set_resident_set(base::ByteCount(0));
+    mock_graph()->process->set_private_footprint(base::ByteCount(0));
+    mock_graph()->frame->SetResidentSetEstimate(base::ByteCount(0));
+    mock_graph()->frame->SetPrivateFootprintEstimate(base::ByteCount(0));
+    mock_graph()->other_frame->SetResidentSetEstimate(base::ByteCount(0));
+    mock_graph()->other_frame->SetPrivateFootprintEstimate(base::ByteCount(0));
+    mock_graph()->worker->SetResidentSetEstimate(base::ByteCount(0));
+    mock_graph()->worker->SetPrivateFootprintEstimate(base::ByteCount(0));
+    mock_graph()->other_process->set_resident_set(base::ByteCount(0));
+    mock_graph()->other_process->set_private_footprint(base::ByteCount(0));
+    mock_graph()->child_frame->SetResidentSetEstimate(base::ByteCount(0));
+    mock_graph()->child_frame->SetPrivateFootprintEstimate(base::ByteCount(0));
+    mock_graph()->other_worker->SetResidentSetEstimate(base::ByteCount(0));
+    mock_graph()->other_worker->SetPrivateFootprintEstimate(base::ByteCount(0));
+    mock_utility_process_->set_resident_set(base::ByteCount(0));
+    mock_utility_process_->set_private_footprint(base::ByteCount(0));
   }
 
-  void ExpectAndResetAllProcessResults(uint64_t resident_set_kb,
-                                       uint64_t private_footprint_kb) {
-    ExpectProcessResults(resident_set_kb, private_footprint_kb);
-    ExpectOtherProcessResults(resident_set_kb, private_footprint_kb);
-    ExpectUtilityProcessResults(resident_set_kb, private_footprint_kb);
+  void ExpectAndResetAllProcessResults(base::ByteCount resident_set,
+                                       base::ByteCount private_footprint) {
+    ExpectProcessResults(resident_set, private_footprint);
+    ExpectOtherProcessResults(resident_set, private_footprint);
+    ExpectUtilityProcessResults(resident_set, private_footprint);
     ResetResults();
   }
 
@@ -221,7 +218,7 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
   graph()->AddSystemNodeObserver(&sys_node_observer);
 
   // There's no data available initially.
-  ExpectAndResetAllProcessResults(0, 0);
+  ExpectAndResetAllProcessResults(base::ByteCount(0), base::ByteCount(0));
 
   // The first measurement should be taken immediately.
   EXPECT_CALL(*decorator(), GetMemoryDump())
@@ -230,7 +227,7 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
 
   auto interest_token =
       ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 
   // Advance the timer, this should trigger a refresh of the metrics.
   EXPECT_CALL(*decorator(), GetMemoryDump())
@@ -238,7 +235,7 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
   EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
 
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 
   // Requesting an immediate measurement partway through the timer period should
   // reset the timer.
@@ -250,23 +247,23 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
 
   task_env().FastForwardBy(delay / 2);
   decorator()->RequestImmediateMetrics();
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 
   // Timer should not fire again until the full `delay` passes.
   task_env().FastForwardBy(delay / 2);
-  ExpectAndResetAllProcessResults(0, 0);
+  ExpectAndResetAllProcessResults(base::ByteCount(0), base::ByteCount(0));
 
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(DefaultMemoryDump())));
   EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
 
   task_env().FastForwardBy(delay / 2);
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 
   // Refreshes should stop when there are no tokens left.
   interest_token.reset();
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
-  ExpectAndResetAllProcessResults(0, 0);
+  ExpectAndResetAllProcessResults(base::ByteCount(0), base::ByteCount(0));
 
   graph()->RemoveSystemNodeObserver(&sys_node_observer);
 }
@@ -274,30 +271,29 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
 TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
   // Only contains the data for one of the three processes.
   EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(Return(ByMove(GenerateMemoryDump(
-          {{mock_graph()->process->GetProcessId(), kFakeResidentSetKb,
-            kFakePrivateFootprintKb}}))));
+      .WillOnce(Return(ByMove(
+          GenerateMemoryDump({{mock_graph()->process->GetProcessId(),
+                               kFakeResidentSet, kFakePrivateFootprint}}))));
 
   auto interest_token =
       ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
 
-  ExpectProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
-  ExpectOtherProcessResults(0, 0);
-  ExpectUtilityProcessResults(0, 0);
+  ExpectProcessResults(kFakeResidentSet, kFakePrivateFootprint);
+  ExpectOtherProcessResults(base::ByteCount(0), base::ByteCount(0));
+  ExpectUtilityProcessResults(base::ByteCount(0), base::ByteCount(0));
 
   // Do another partial refresh but this time for the other process. The
   // data attached to |mock_graph()->process| shouldn't change.
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(GenerateMemoryDump(
-          {{mock_graph()->other_process->GetProcessId(), kFakeResidentSetKb * 2,
-            kFakePrivateFootprintKb * 2}}))));
+          {{mock_graph()->other_process->GetProcessId(), kFakeResidentSet * 2,
+            kFakePrivateFootprint * 2}}))));
 
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
 
-  ExpectProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
-  ExpectOtherProcessResults(kFakeResidentSetKb * 2,
-                            kFakePrivateFootprintKb * 2);
-  ExpectUtilityProcessResults(0, 0);
+  ExpectProcessResults(kFakeResidentSet, kFakePrivateFootprint);
+  ExpectOtherProcessResults(kFakeResidentSet * 2, kFakePrivateFootprint * 2);
+  ExpectUtilityProcessResults(base::ByteCount(0), base::ByteCount(0));
 }
 
 TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
@@ -306,51 +302,51 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
   auto interest_token =
       ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
 
-  ExpectAndResetAllProcessResults(0, 0);
+  ExpectAndResetAllProcessResults(base::ByteCount(0), base::ByteCount(0));
 
   // A failure shouldn't stop the next refresh.
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(GenerateMemoryDump({
-          {mock_graph()->process->GetProcessId(), kFakeResidentSetKb,
-           kFakePrivateFootprintKb},
-          {mock_graph()->other_process->GetProcessId(), kFakeResidentSetKb,
-           kFakePrivateFootprintKb},
-          {mock_utility_process_->GetProcessId(), kFakeResidentSetKb,
-           kFakePrivateFootprintKb},
+          {mock_graph()->process->GetProcessId(), kFakeResidentSet,
+           kFakePrivateFootprint},
+          {mock_graph()->other_process->GetProcessId(), kFakeResidentSet,
+           kFakePrivateFootprint},
+          {mock_utility_process_->GetProcessId(), kFakeResidentSet,
+           kFakePrivateFootprint},
       }))));
 
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
 
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 }
 
 TEST_F(ProcessMetricsDecoratorTest, ImmediateRequestThrottling) {
   // There's no data available initially.
-  ExpectAndResetAllProcessResults(0, 0);
+  ExpectAndResetAllProcessResults(base::ByteCount(0), base::ByteCount(0));
 
   // The first measurement should be taken immediately.
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(DefaultMemoryDump())));
   auto interest_token =
       ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 
   // Immediate measurements should be available immediately after timed
   // measurements.
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(DefaultMemoryDump())));
   decorator()->RequestImmediateMetrics();
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(DefaultMemoryDump())));
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(DefaultMemoryDump())));
   decorator()->RequestImmediateMetrics();
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 
   // Calls to RequestImmediateMetrics should be throttled to
   // kMinImmediateRefreshDelay.
@@ -358,27 +354,28 @@ TEST_F(ProcessMetricsDecoratorTest, ImmediateRequestThrottling) {
       ProcessMetricsDecorator::kMinImmediateRefreshDelay;
   task_env().FastForwardBy(kMinDelay / 2);
   decorator()->RequestImmediateMetrics();
-  ExpectAndResetAllProcessResults(0, 0);
+  ExpectAndResetAllProcessResults(base::ByteCount(0), base::ByteCount(0));
 
   // After the min delay, RequestImmediateMetrics() causes a refresh.
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(DefaultMemoryDump())));
   task_env().FastForwardBy(kMinDelay / 2);
   decorator()->RequestImmediateMetrics();
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 
   // Throttling should compare the request time to the last *successful*
   // immediate refresh, to be sure it measures the freshness of valid data.
   EXPECT_CALL(*decorator(), GetMemoryDump()).WillOnce(Return(ByMove(nullptr)));
   task_env().FastForwardBy(kMinDelay);
   decorator()->RequestImmediateMetrics();
-  ExpectAndResetAllProcessResults(0, 0);  // Failed to get results.
+  ExpectAndResetAllProcessResults(
+      base::ByteCount(0), base::ByteCount(0));  // Failed to get results.
 
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(DefaultMemoryDump())));
   task_env().FastForwardBy(kMinDelay / 2);
   decorator()->RequestImmediateMetrics();
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 
   // Requesting an immediate measurement while a measurement is already in
   // progress should do nothing. (If this fails, GetMemoryDump() will be invoked
@@ -388,7 +385,7 @@ TEST_F(ProcessMetricsDecoratorTest, ImmediateRequestThrottling) {
     return DefaultMemoryDump();
   });
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSet, kFakePrivateFootprint);
 }
 
 TEST_F(ProcessMetricsDecoratorTest, MetricsInterestTokens) {

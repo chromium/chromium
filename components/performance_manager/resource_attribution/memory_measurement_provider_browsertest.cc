@@ -87,14 +87,14 @@ auto MemorySummaryResultIsPositive(MeasurementAlgorithm expected_algorithm) {
 #if BUILDFLAG(IS_IOS)
       // TODO(crbug.com/40947218): iOS doesn't support private_memory_footprint,
       // so it's always 0.
-      Field("private_footprint_kb", &MemorySummaryResult::private_footprint_kb,
-            Eq(0u)),
+      Field("private_footprint_kb", &MemorySummaryResult::private_footprint,
+            Eq(base::ByteCount(0))),
 #else
-      Field("private_footprint_kb", &MemorySummaryResult::private_footprint_kb,
-            Gt(0u)),
+      Field("private_footprint_kb", &MemorySummaryResult::private_footprint,
+            Gt(base::ByteCount(0))),
 #endif
-      Field("resident_set_size_kb", &MemorySummaryResult::resident_set_size_kb,
-            Gt(0u)),
+      Field("resident_set_size_kb", &MemorySummaryResult::resident_set_size,
+            Gt(base::ByteCount(0))),
       ResultMetadataMatches<MemorySummaryResult>(
           expected_measurement_time_matcher, expected_algorithm)));
 }
@@ -147,24 +147,24 @@ IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
       results.at(child_frame_context).memory_summary_result.value();
   const auto process_result =
       results.at(process_context).memory_summary_result.value();
-  EXPECT_LE(main_frame_result.resident_set_size_kb,
-            process_result.resident_set_size_kb);
-  EXPECT_LE(main_frame_result.private_footprint_kb,
-            process_result.private_footprint_kb);
-  EXPECT_LE(child_frame_result.resident_set_size_kb,
-            process_result.resident_set_size_kb);
-  EXPECT_LE(child_frame_result.private_footprint_kb,
-            process_result.private_footprint_kb);
+  EXPECT_LE(main_frame_result.resident_set_size,
+            process_result.resident_set_size);
+  EXPECT_LE(main_frame_result.private_footprint,
+            process_result.private_footprint);
+  EXPECT_LE(child_frame_result.resident_set_size,
+            process_result.resident_set_size);
+  EXPECT_LE(child_frame_result.private_footprint,
+            process_result.private_footprint);
 
   // The page memory should be the sum of all its frames, from any process.
   const auto page_result =
       results.at(page_context).memory_summary_result.value();
-  EXPECT_EQ(page_result.resident_set_size_kb,
-            main_frame_result.resident_set_size_kb +
-                child_frame_result.resident_set_size_kb);
-  EXPECT_EQ(page_result.private_footprint_kb,
-            main_frame_result.private_footprint_kb +
-                child_frame_result.private_footprint_kb);
+  EXPECT_EQ(page_result.resident_set_size,
+            main_frame_result.resident_set_size +
+                child_frame_result.resident_set_size);
+  EXPECT_EQ(page_result.private_footprint,
+            main_frame_result.private_footprint +
+                child_frame_result.private_footprint);
 }
 
 IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
@@ -225,24 +225,24 @@ IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
       results.at(process_a_context).memory_summary_result.value();
   const auto process_b_result =
       results.at(process_b_context).memory_summary_result.value();
-  EXPECT_EQ(main_frame_result.resident_set_size_kb,
-            process_a_result.resident_set_size_kb);
-  EXPECT_EQ(main_frame_result.private_footprint_kb,
-            process_a_result.private_footprint_kb);
-  EXPECT_EQ(child_frame_result.resident_set_size_kb,
-            process_b_result.resident_set_size_kb);
-  EXPECT_EQ(child_frame_result.private_footprint_kb,
-            process_b_result.private_footprint_kb);
+  EXPECT_EQ(main_frame_result.resident_set_size,
+            process_a_result.resident_set_size);
+  EXPECT_EQ(main_frame_result.private_footprint,
+            process_a_result.private_footprint);
+  EXPECT_EQ(child_frame_result.resident_set_size,
+            process_b_result.resident_set_size);
+  EXPECT_EQ(child_frame_result.private_footprint,
+            process_b_result.private_footprint);
 
   // The page memory should be the sum of all its frames, from any process.
   const auto page_result =
       results.at(page_context).memory_summary_result.value();
-  EXPECT_EQ(page_result.resident_set_size_kb,
-            main_frame_result.resident_set_size_kb +
-                child_frame_result.resident_set_size_kb);
-  EXPECT_EQ(page_result.private_footprint_kb,
-            main_frame_result.private_footprint_kb +
-                child_frame_result.private_footprint_kb);
+  EXPECT_EQ(page_result.resident_set_size,
+            main_frame_result.resident_set_size +
+                child_frame_result.resident_set_size);
+  EXPECT_EQ(page_result.private_footprint,
+            main_frame_result.private_footprint +
+                child_frame_result.private_footprint);
 }
 
 }  // namespace

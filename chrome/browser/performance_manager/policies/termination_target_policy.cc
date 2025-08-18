@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "base/byte_count.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "content/public/common/process_type.h"
@@ -14,13 +15,13 @@
 namespace performance_manager {
 
 // Private memory footprint threshold above which a process is considered large.
-constexpr uint64_t kLargeProcessFootprintThresholdKb = 100 * 1024;  // 100 MiB
+constexpr base::ByteCount kLargeProcessFootprintThreshold = base::MiB(100);
 
 namespace {
 
 struct PotentialTerminationTarget {
   raw_ptr<const ProcessNode> process = nullptr;
-  uint64_t private_footprint_kb = 0;
+  base::ByteCount private_footprint;
   bool can_discard = true;
   // Last time a page in the process was visible. `base::TimeTicks::Max()` if
   // currently visible. `base::TimeTicks()` if there is no visible page in the
@@ -41,7 +42,7 @@ struct PotentialTerminationTarget {
   }
 
   bool is_large() const {
-    return private_footprint_kb > kLargeProcessFootprintThresholdKb;
+    return private_footprint > kLargeProcessFootprintThreshold;
   }
 };
 
@@ -121,7 +122,7 @@ void TerminationTargetPolicy::UpdateTerminationTarget(
     targets.emplace_back();
     PotentialTerminationTarget& target = targets.back();
     target.process = process_node;
-    target.private_footprint_kb = process_node->GetPrivateFootprintKb();
+    target.private_footprint = process_node->GetPrivateFootprint();
 
     for (const FrameNode* frame_node : process_node->GetFrameNodes()) {
       const PageNode* page_node = frame_node->GetPageNode();

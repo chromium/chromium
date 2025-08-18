@@ -74,9 +74,9 @@ class TestPageLoadMetricsEmbedder
   page_load_metrics::PageLoadMetricsMemoryTracker memory_tracker_;
 };
 
-class TestMestricsWebContentsObserver : public MetricsWebContentsObserver {
+class TestMetricsWebContentsObserver : public MetricsWebContentsObserver {
  public:
-  TestMestricsWebContentsObserver(
+  TestMetricsWebContentsObserver(
       content::WebContents* web_contents,
       std::unique_ptr<PageLoadMetricsEmbedderInterface> embedder_interface)
       : MetricsWebContentsObserver(web_contents,
@@ -132,9 +132,9 @@ class PageLoadMetricsMemoryTrackerTest
     auto embedder_interface =
         std::make_unique<TestPageLoadMetricsEmbedder>(web_contents());
     embedder_interface_ = embedder_interface.get();
-    observer_ = new TestMestricsWebContentsObserver(
+    observer_ = new TestMetricsWebContentsObserver(
         web_contents(), std::move(embedder_interface));
-    web_contents()->SetUserData(TestMestricsWebContentsObserver::UserDataKey(),
+    web_contents()->SetUserData(TestMetricsWebContentsObserver::UserDataKey(),
                                 base::WrapUnique(observer_.get()));
 
     tracker_ = embedder_interface_->GetMemoryTrackerForBrowserContext(
@@ -191,7 +191,7 @@ class PageLoadMetricsMemoryTrackerTest
     ASSERT_TRUE(process_node);
 
     V8DetailedMemoryExecutionContextData::CreateForTesting(frame_node.get())
-        ->set_v8_bytes_used(bytes);
+        ->set_v8_memory_used(base::ByteCount(bytes));
     V8DetailedMemoryProcessData process_data;
     tracker_->OnV8MemoryMeasurementAvailable(process_node, &process_data);
   }
@@ -207,7 +207,7 @@ class PageLoadMetricsMemoryTrackerTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<TestMestricsWebContentsObserver, DanglingUntriaged> observer_;
+  raw_ptr<TestMetricsWebContentsObserver, DanglingUntriaged> observer_;
   raw_ptr<TestPageLoadMetricsEmbedder, DanglingUntriaged> embedder_interface_;
   PageLoadMetricsTestContentBrowserClient browser_client_;
   raw_ptr<content::ContentBrowserClient> original_browser_client_ = nullptr;

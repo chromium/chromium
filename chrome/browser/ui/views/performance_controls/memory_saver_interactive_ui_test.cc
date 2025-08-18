@@ -419,7 +419,7 @@ class MemorySaverChipInteractiveTest
           performance_manager::user_tuning::UserPerformanceTuningManager::
               PreDiscardResourceUsage::FromWebContents(web_contents);
       pre_discard_resource_usage->UpdateDiscardInfo(
-          usage.InKiB(), ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+          usage, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
     }));
   }
 

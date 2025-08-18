@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -45,7 +46,7 @@ using ::ash::memory::userspace_swap::UserspaceSwapConfig;
 constexpr base::TimeDelta kSwapDeviceAvailableSpaceCheckInterval =
     base::Seconds(30);
 base::TimeTicks g_last_swap_device_free_space_check;
-uint64_t g_swap_device_free_swap_bytes;
+base::ByteCount g_swap_device_free_swap;
 
 // UserspaceSwapMechanismData contains process node specific details and
 // handles.
@@ -133,42 +134,43 @@ bool IsEligibleToSwap(const ProcessNode* process_node) {
   return data->swap_data->SwapAllowed();
 }
 
-uint64_t GetSwapDeviceFreeSpaceBytes() {
+base::ByteCount GetSwapDeviceFreeSpace() {
   auto now_ticks = base::TimeTicks::Now();
   if (now_ticks - g_last_swap_device_free_space_check >
       kSwapDeviceAvailableSpaceCheckInterval) {
     g_last_swap_device_free_space_check = now_ticks;
-    g_swap_device_free_swap_bytes = SwapFile::GetBackingStoreFreeSpaceKB()
-                                    << 10;  // convert to bytes.
+    g_swap_device_free_swap = base::KiB(SwapFile::GetBackingStoreFreeSpaceKB());
   }
 
-  return g_swap_device_free_swap_bytes;
+  return g_swap_device_free_swap;
 }
 
-uint64_t GetProcessNodeSwapFileUsageBytes(const ProcessNode* process_node) {
+base::ByteCount GetProcessNodeSwapFileUsage(const ProcessNode* process_node) {
   auto* data = UserspaceSwapMechanismData::Get(process_node);
   if (!data || !data->swap_data) {
-    return 0;
+    return base::ByteCount(0);
   }
 
-  return data->swap_data->SwapDiskspaceUsedBytes();
+  return base::ByteCount(data->swap_data->SwapDiskspaceUsedBytes());
 }
 
-uint64_t GetProcessNodeReclaimedBytes(const ProcessNode* process_node) {
+base::ByteCount GetProcessNodeReclaimedSpace(const ProcessNode* process_node) {
   auto* data = UserspaceSwapMechanismData::Get(process_node);
   if (!data || !data->swap_data) {
-    return 0;
+    return base::ByteCount(0);
   }
 
-  return data->swap_data->ReclaimedBytes();
+  return base::ByteCount(data->swap_data->ReclaimedBytes());
 }
 
-uint64_t GetTotalSwapFileUsageBytes() {
-  return ash::memory::userspace_swap::GetGlobalSwapDiskspaceUsed();
+base::ByteCount GetTotalSwapFileUsage() {
+  return base::ByteCount(
+      ash::memory::userspace_swap::GetGlobalSwapDiskspaceUsed());
 }
 
-uint64_t GetTotalReclaimedBytes() {
-  return ash::memory::userspace_swap::GetGlobalMemoryReclaimed();
+base::ByteCount GetTotalReclaimedSpace() {
+  return base::ByteCount(
+      ash::memory::userspace_swap::GetGlobalMemoryReclaimed());
 }
 
 void SwapProcessNode(const ProcessNode* process_node) {
@@ -191,27 +193,28 @@ void SwapProcessNode(const ProcessNode* process_node) {
 
   const auto& config = UserspaceSwapConfig::Get();
 
-  uint64_t swap_file_disk_space_used_bytes =
-      swap_data->SwapDiskspaceUsedBytes();
+  base::ByteCount swap_file_disk_space_used_bytes =
+      base::ByteCount::FromUnsigned(swap_data->SwapDiskspaceUsedBytes());
 
   // This renderer can only swap up to what's available in the global swap file
   // limit or what's available in it's own swap file limit.
-  int64_t available_swap_bytes =
-      std::min(config.maximum_swap_disk_space_bytes -
-                   ash::memory::userspace_swap::GetGlobalSwapDiskspaceUsed(),
-               config.renderer_maximum_disk_swap_file_size_bytes -
-                   swap_file_disk_space_used_bytes);
+  base::ByteCount available_swap = std::min(
+      base::ByteCount(
+          config.maximum_swap_disk_space_bytes -
+          ash::memory::userspace_swap::GetGlobalSwapDiskspaceUsed()),
+      base::ByteCount(config.renderer_maximum_disk_swap_file_size_bytes) -
+          swap_file_disk_space_used_bytes);
 
   // We have a configurable limit to the number of regions we will consider per
   // iteration and adjust based on how much disk space is actually
   // available for us which was calculated before.
   // Finally, we know how many regions this renderer is able to swap.
-  int64_t available_swap_regions = available_swap_bytes / kRegionSize;
-  int64_t total_regions_swapable =
+  int64_t available_swap_regions = available_swap.InBytes() / kRegionSize;
+  int64_t total_regions_swappable =
       std::min(static_cast<int64_t>(config.renderer_region_limit_per_swap),
                available_swap_regions);
 
-  if (total_regions_swapable <= 0) {
+  if (total_regions_swappable <= 0) {
     // We don't have enough space available to swap a single region.
     return;
   }
@@ -219,7 +222,7 @@ void SwapProcessNode(const ProcessNode* process_node) {
   // Now we know how many regions this renderer can theoretically swap after
   // enforcing all configurable limits.
   ash::memory::userspace_swap::SwapRenderer(
-      swap_data.get(), total_regions_swapable * kRegionSize);
+      swap_data.get(), total_regions_swappable * kRegionSize);
 }
 
 UserspaceSwapInitializationImpl::UserspaceSwapInitializationImpl(

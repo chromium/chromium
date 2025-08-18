@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -41,16 +42,17 @@ const char kDescriberName[] = "PageDiscardingHelper";
 static const uint64_t kSwapFootprintDiscount = 4;
 #endif
 
-using NodeFootprintMap = base::flat_map<const PageNode*, uint64_t>;
+using NodeFootprintMap = base::flat_map<const PageNode*, base::ByteCount>;
 
 // Returns the mapping from page_node to its memory footprint estimation.
-NodeFootprintMap GetPageNodeFootprintEstimateKb(
+NodeFootprintMap GetPageNodeFootprintEstimate(
     const std::vector<PageNodeSortProxy>& candidates) {
   // Initialize the result map in one shot for time complexity O(n * log(n)).
   NodeFootprintMap::container_type result_container;
   result_container.reserve(candidates.size());
   for (const auto& candidate : candidates) {
-    result_container.emplace_back(candidate.page_node().get(), 0);
+    result_container.emplace_back(candidate.page_node().get(),
+                                  base::ByteCount(0));
   }
   NodeFootprintMap result(std::move(result_container));
 
@@ -75,11 +77,11 @@ NodeFootprintMap GetPageNodeFootprintEstimateKb(
     }
     // Get the footprint of the process and split it equally across its
     // frames.
-    uint64_t footprint_kb = process_node->GetResidentSetKb();
+    base::ByteCount footprint = process_node->GetResidentSet();
 #if BUILDFLAG(IS_CHROMEOS)
-    footprint_kb += process_node->GetPrivateSwapKb() / kSwapFootprintDiscount;
+    footprint += process_node->GetPrivateSwap() / kSwapFootprintDiscount;
 #endif
-    footprint_kb /= process_frames.size();
+    footprint /= process_frames.size();
     for (const FrameNode* frame_node : process_frames) {
       // Check if the frame belongs to a discardable page, if so update the
       // resident set of the page.
@@ -87,7 +89,7 @@ NodeFootprintMap GetPageNodeFootprintEstimateKb(
       if (iter == result.end()) {
         continue;
       }
-      iter->second += footprint_kb;
+      iter->second += footprint;
     }
   }
   return result;
@@ -167,18 +169,19 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
   // Estimate the memory footprint of each candidate to determine when enough
   // candidates have been discarded to reach the `reclaim_target`. This is not
   // needed when there is no `reclaim_target`.
-  NodeFootprintMap page_node_footprint_kb;
+  NodeFootprintMap page_node_footprint;
   if (reclaim_target) {
     // Only compute the estimated memory footprint if needed.
-    page_node_footprint_kb = GetPageNodeFootprintEstimateKb(candidates);
+    page_node_footprint = GetPageNodeFootprintEstimate(candidates);
   }
 
-  uint64_t total_reclaim_kb = 0;
+  base::ByteCount total_reclaim;
   std::optional<base::TimeTicks> first_successful_discard_time;
 
   // Note: If `reclaim_target->target_kb` is zero, this loop is not entered.
   while (!candidates.empty() &&
-         (!reclaim_target || total_reclaim_kb < reclaim_target->target_kb)) {
+         (!reclaim_target ||
+          total_reclaim < base::KiB(reclaim_target->target_kb))) {
     const PageNodeSortProxy candidate = std::move(candidates.back());
     candidates.pop_back();
 
@@ -189,27 +192,27 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
 
     const PageNode* node = candidate.page_node().get();
 
-    std::optional<uint64_t> node_reclaim_kb;
+    std::optional<base::ByteCount> node_reclaim;
     if (reclaim_target) {
-      // TODO(crbug.com/40755583): Use the `estimated_memory_freed_kb` obtained
+      // TODO(crbug.com/40755583): Use the `estimated_memory_freed` obtained
       // from `DiscardPageNode()` below to avoid the need to build
-      // `page_node_footprint_kb`.
+      // `page_node_footprint`.
 
       // The node footprint value is updated by ProcessMetricsDecorator
       // periodically. The footprint value is 0 for nodes that have never been
       // updated, estimate the RSS value to 80 MiB for these nodes. 80 MiB is
       // the average Memory.Renderer.PrivateMemoryFootprint histogram value on
       // Windows in August 2021.
-      node_reclaim_kb = (page_node_footprint_kb[node])
-                            ? page_node_footprint_kb[node]
-                            : 80 * 1024;
+      node_reclaim = page_node_footprint[node].is_zero()
+                         ? base::MiB(80)
+                         : page_node_footprint[node];
 
       LOG(WARNING) << "Queueing discard attempt, type="
                    << performance_manager::PageNode::ToString(node->GetType())
                    << ", flags=[" << (candidate.is_focused() ? " focused" : "")
                    << (candidate.is_protected() ? " protected" : "")
                    << (candidate.is_visible() ? " visible" : "")
-                   << " ] to save " << node_reclaim_kb.value() << " KiB";
+                   << " ] to save " << node_reclaim.value();
     }
 
     // Adorn the PageNode with a discard attempt marker to make sure that we
@@ -219,15 +222,15 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
         PageNodeImpl::FromNode(node));
 
     // Do the discard.
-    std::optional<uint64_t> estimated_memory_freed_kb =
+    std::optional<base::ByteCount> estimated_memory_freed =
         page_discarder_->DiscardPageNode(node, discard_reason);
 
     // If discard is successful:
-    if (estimated_memory_freed_kb.has_value()) {
+    if (estimated_memory_freed.has_value()) {
       const base::TimeTicks discard_time = base::TimeTicks::Now();
 
-      unnecessary_discard_monitor_.OnDiscard(estimated_memory_freed_kb.value(),
-                                             discard_time);
+      unnecessary_discard_monitor_.OnDiscard(
+          estimated_memory_freed.value().InKiB(), discard_time);
 
       RecordDiscardedTabMetrics(candidate);
 
@@ -238,7 +241,7 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
 
       // With a reclaim target: Update the amount of memory reclaimed and the
       // time of the first successful discard, and loop again.
-      total_reclaim_kb += node_reclaim_kb.value();
+      total_reclaim += node_reclaim.value();
       if (!first_successful_discard_time.has_value()) {
         first_successful_discard_time = discard_time;
       }
@@ -254,13 +257,13 @@ bool PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
     const std::vector<const PageNode*>& page_nodes,
     DiscardEligibilityPolicy::DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background) {
-  DiscardEligibilityPolicy* eligiblity_policy =
+  DiscardEligibilityPolicy* eligibility_policy =
       DiscardEligibilityPolicy::GetFromGraph(GetOwningGraph());
-  DCHECK(eligiblity_policy);
+  DCHECK(eligibility_policy);
   std::vector<base::WeakPtr<const PageNode>> eligible_nodes;
   for (const PageNode* node : page_nodes) {
-    if (eligiblity_policy->CanDiscard(node, discard_reason,
-                                      minimum_time_in_background) ==
+    if (eligibility_policy->CanDiscard(node, discard_reason,
+                                       minimum_time_in_background) ==
         CanDiscardResult::kEligible) {
       eligible_nodes.emplace_back(node->GetWeakPtr());
     }

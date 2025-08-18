@@ -31,9 +31,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace performance_manager {
-
-namespace v8_memory {
+namespace performance_manager::v8_memory {
 
 using ::testing::_;
 
@@ -229,13 +227,13 @@ int WebMemoryTestHarness::GetNextUniqueId() {
 FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
     std::optional<std::string> url,
     int browsing_instance_id,
-    Bytes memory_usage,
+    std::optional<base::ByteCount> memory_usage,
     FrameNodeImpl* parent,
     FrameNodeImpl* opener,
     ProcessNodeImpl* process,
     std::optional<std::string> id_attribute,
     std::optional<std::string> src_attribute,
-    Bytes canvas_memory_usage) {
+    std::optional<base::ByteCount> canvas_memory_usage) {
   // If there's an opener, the new frame is also a new page.
   auto* page = pages_.front().get();
   if (opener) {
@@ -267,9 +265,9 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
     auto* data =
         V8DetailedMemoryExecutionContextData::CreateForTesting(frame.get());
     if (memory_usage)
-      data->set_v8_bytes_used(memory_usage.value());
+      data->set_v8_memory_used(memory_usage.value());
     if (canvas_memory_usage)
-      data->set_canvas_bytes_used(canvas_memory_usage.value());
+      data->set_canvas_memory_used(canvas_memory_usage.value());
   }
   frames_.push_back(std::move(frame));
   FrameNodeImpl* frame_impl = frames_.back().get();
@@ -316,7 +314,7 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
 WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNode(
     WorkerNode::WorkerType worker_type,
     std::string script_url,
-    Bytes bytes,
+    std::optional<base::ByteCount> bytes,
     FrameNodeImpl* parent) {
   auto* worker_node = AddWorkerNodeImpl(
       worker_type, parent->GetOrigin().value_or(url::Origin()), script_url,
@@ -337,7 +335,7 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeWithoutData(
 WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNode(
     WorkerNode::WorkerType worker_type,
     std::string script_url,
-    Bytes bytes,
+    std::optional<base::ByteCount> bytes,
     WorkerNodeImpl* parent) {
   auto* worker_node =
       AddWorkerNodeImpl(worker_type, parent->GetOrigin(), script_url, bytes);
@@ -349,7 +347,7 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeImpl(
     WorkerNode::WorkerType worker_type,
     const url::Origin& origin,
     std::string script_url,
-    Bytes bytes) {
+    std::optional<base::ByteCount> bytes) {
   auto worker_token = [worker_type]() -> blink::WorkerToken {
     switch (worker_type) {
       case WorkerNode::WorkerType::kDedicated:
@@ -369,15 +367,16 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeImpl(
   }
   if (bytes) {
     V8DetailedMemoryExecutionContextData::CreateForTesting(worker_node.get())
-        ->set_v8_bytes_used(*bytes);
+        ->set_v8_memory_used(*bytes);
   }
   workers_.push_back(std::move(worker_node));
   return workers_.back().get();
 }
 
-void WebMemoryTestHarness::SetBlinkMemory(Bytes bytes) {
+void WebMemoryTestHarness::SetBlinkMemory(
+    std::optional<base::ByteCount> bytes) {
   V8DetailedMemoryProcessData::GetOrCreateForTesting(process_node())
-      ->set_blink_bytes_used(*bytes);
+      ->set_blink_memory_used(*bytes);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -393,38 +392,36 @@ blink::mojom::PerProcessV8MemoryUsagePtr NewPerProcessV8MemoryUsage(
 }
 
 void AddIsolateMemoryUsage(blink::ExecutionContextToken token,
-                           uint64_t bytes_used,
+                           base::ByteCount memory_used,
                            blink::mojom::PerIsolateV8MemoryUsage* isolate) {
   for (auto& entry : isolate->contexts) {
     if (entry->token == token) {
-      entry->bytes_used = bytes_used;
+      entry->memory_used = memory_used;
       return;
     }
   }
 
   auto context = blink::mojom::PerContextV8MemoryUsage::New();
   context->token = token;
-  context->bytes_used = bytes_used;
+  context->memory_used = memory_used;
   isolate->contexts.push_back(std::move(context));
 }
 
 void AddIsolateCanvasMemoryUsage(
     blink::ExecutionContextToken token,
-    uint64_t bytes_used,
+    base::ByteCount memory_used,
     blink::mojom::PerIsolateV8MemoryUsage* isolate) {
   for (auto& entry : isolate->canvas_contexts) {
     if (entry->token == token) {
-      entry->bytes_used = bytes_used;
+      entry->memory_used = memory_used;
       return;
     }
   }
 
   auto context = blink::mojom::PerContextCanvasMemoryUsage::New();
   context->token = token;
-  context->bytes_used = bytes_used;
+  context->memory_used = memory_used;
   isolate->canvas_contexts.push_back(std::move(context));
 }
 
-}  // namespace v8_memory
-
-}  // namespace performance_manager
+}  // namespace performance_manager::v8_memory

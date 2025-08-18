@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/functional/callback_forward.h"
 
 namespace performance_manager {
@@ -32,14 +33,14 @@ class MemoryMeasurementDelegate {
   // The minimal results returned for a process memory measurement.
   // MemoryMeasurementProvider will wrap this in a full MemorySummaryResult.
   struct MemorySummaryMeasurement {
-    uint64_t resident_set_size_kb = 0;
-    uint64_t private_footprint_kb = 0;
+    base::ByteCount resident_set_size;
+    base::ByteCount private_footprint;
 
     // Division operator required by SplitResourceAmongFramesAndWorkers().
     constexpr MemorySummaryMeasurement operator/(size_t divisor) {
       return MemorySummaryMeasurement{
-          .resident_set_size_kb = resident_set_size_kb / divisor,
-          .private_footprint_kb = private_footprint_kb / divisor};
+          .resident_set_size = resident_set_size / divisor,
+          .private_footprint = private_footprint / divisor};
     }
 
     friend constexpr auto operator<=>(const MemorySummaryMeasurement&,

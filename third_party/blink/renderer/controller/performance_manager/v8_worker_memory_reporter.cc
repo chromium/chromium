@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -39,11 +40,11 @@ const base::TimeDelta V8WorkerMemoryReporter::kTimeout = base::Seconds(60);
 
 namespace {
 
-// TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
-// the browser does not know URLs of dedicated workers, so we pass them
-// together with the measurement result. We limit the max length of the
-// URLs to reduce memory allocations and the traffic between the renderer
-// and the browser processes.
+// TODO(https://crbug.com/400455021): Remove because PlzDedicatedWorker shipped.
+// Before then, the browser did not know URLs of dedicated workers, so we passed
+// them together with the measurement result. We limited the max length of the
+// URLs to reduce memory allocations and the traffic between the renderer and
+// the browser processes.
 constexpr size_t kMaxReportedUrlLength = 2000;
 
 // This delegate is provided to v8::Isolate::MeasureMemory API.
@@ -94,15 +95,16 @@ void WorkerMeasurementDelegate::MeasurementComplete(
   DCHECK(global_scope);
   DCHECK_LE(result.contexts.size(), 1u);
   DCHECK_LE(result.sizes_in_bytes.size(), 1u);
-  size_t bytes = result.unattributed_size_in_bytes;
+  base::ByteCount bytes =
+      base::ByteCount::FromUnsigned(result.unattributed_size_in_bytes);
   for (size_t size : result.sizes_in_bytes) {
-    bytes += size;
+    bytes += base::ByteCount::FromUnsigned(size);
   }
   auto* worker_global_scope = To<WorkerGlobalScope>(global_scope);
   auto memory_usage =
       std::make_unique<V8WorkerMemoryReporter::WorkerMemoryUsage>();
   memory_usage->token = worker_global_scope->GetWorkerToken();
-  memory_usage->bytes = bytes;
+  memory_usage->memory = bytes;
   if (worker_global_scope->IsUrlValid() &&
       worker_global_scope->Url().GetString().length() < kMaxReportedUrlLength) {
     memory_usage->url = worker_global_scope->Url();

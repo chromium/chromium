@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_monitor.h"
@@ -323,7 +324,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
   // early UI code can register observers, but only start them in
   // PreMainMessageLoopRun because they require other systems like the
   // HostFrameSinkManager to exist.
-  int64_t system_memory_kb = base::SysInfo::AmountOfPhysicalMemory().InKiB();
+  base::ByteCount system_memory = base::SysInfo::AmountOfPhysicalMemory();
   user_performance_tuning_manager_ = base::WrapUnique(
       new performance_manager::user_tuning::UserPerformanceTuningManager(
           g_browser_process->local_state(),
@@ -332,7 +333,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
               base::WrapUnique(new performance_manager::user_tuning::
                                    UserPerformanceTuningManager::
                                        UserPerformanceTuningReceiverImpl),
-              /*resident_set_threshold_kb=*/system_memory_kb *
+              /*resident_set_threshold=*/system_memory *
                   performance_manager::user_tuning::
                       UserPerformanceTuningNotifier::
                           kMemoryPercentThresholdForPromo /

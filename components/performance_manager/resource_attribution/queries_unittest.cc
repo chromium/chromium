@@ -63,8 +63,8 @@ constexpr auto kWorkerContextTypeId =
     ResourceContextTypeId::ForType<WorkerContext>();
 
 // Fake memory results.
-constexpr uint64_t kFakeResidentSetSize = 123;
-constexpr uint64_t kFakePrivateFootprint = 456;
+constexpr base::ByteCount kFakeResidentSetSize = base::KiB(123);
+constexpr base::ByteCount kFakePrivateFootprint = base::KiB(456);
 
 class LenientMockQueryResultObserver : public QueryResultObserver {
  public:
@@ -113,8 +113,8 @@ class ResourceAttrQueriesPMTest
     memory_delegate_factory_.memory_summaries()
         [ProcessContext::FromRenderProcessHost(rph).value()] =
         MemoryMeasurementDelegate::MemorySummaryMeasurement{
-            .resident_set_size_kb = kFakeResidentSetSize,
-            .private_footprint_kb = kFakePrivateFootprint,
+            .resident_set_size = kFakeResidentSetSize,
+            .private_footprint = kFakePrivateFootprint,
         };
   }
 
@@ -174,8 +174,8 @@ MemorySummaryResult FakeMemorySummaryResult(
     base::TimeTicks expected_measurement_time = base::TimeTicks::Now()) {
   return {
       .metadata = ResultMetadata(expected_measurement_time, expected_algorithm),
-      .resident_set_size_kb = kFakeResidentSetSize,
-      .private_footprint_kb = kFakePrivateFootprint,
+      .resident_set_size = kFakeResidentSetSize,
+      .private_footprint = kFakePrivateFootprint,
   };
 }
 

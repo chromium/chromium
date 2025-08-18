@@ -285,14 +285,14 @@ const RenderFrameHostProxy& FrameNodeImpl::GetRenderFrameHostProxy() const {
   return render_frame_host_proxy_;
 }
 
-uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
+base::ByteCount FrameNodeImpl::GetResidentSetEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate_;
+  return resident_set_estimate_;
 }
 
-uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
+base::ByteCount FrameNodeImpl::GetPrivateFootprintEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate_;
+  return private_footprint_estimate_;
 }
 
 FrameNodeImpl* FrameNodeImpl::parent_frame_node() const {
@@ -487,15 +487,15 @@ void FrameNodeImpl::SetIsImportant(bool is_important) {
   is_important_.SetAndMaybeNotify(this, is_important);
 }
 
-void FrameNodeImpl::SetResidentSetKbEstimate(uint64_t rss_estimate) {
+void FrameNodeImpl::SetResidentSetEstimate(base::ByteCount rss_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  resident_set_kb_estimate_ = rss_estimate;
+  resident_set_estimate_ = rss_estimate;
 }
 
-void FrameNodeImpl::SetPrivateFootprintKbEstimate(
-    uint64_t private_footprint_estimate) {
+void FrameNodeImpl::SetPrivateFootprintEstimate(
+    base::ByteCount private_footprint_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  private_footprint_kb_estimate_ = private_footprint_estimate;
+  private_footprint_estimate_ = private_footprint_estimate;
 }
 
 void FrameNodeImpl::OnNavigationCommitted(

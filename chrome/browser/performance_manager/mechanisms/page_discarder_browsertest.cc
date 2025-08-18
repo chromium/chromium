@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
@@ -54,7 +55,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscarderBrowserTest, DiscardPageNodes) {
   ASSERT_TRUE(frame_host);
   auto* contents = content::WebContents::FromRenderFrameHost(frame_host);
 
-  uint64_t total = 0;
+  base::ByteCount total;
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
   ASSERT_TRUE(page_node);
@@ -63,13 +64,15 @@ IN_PROC_BROWSER_TEST_P(PageDiscarderBrowserTest, DiscardPageNodes) {
   // this page.
   GraphOperations::VisitFrameTreePreOrder(
       page_node.get(), [&total](const FrameNode* frame_node) {
-        total += 1;
-        FrameNodeImpl::FromNode(frame_node)->SetPrivateFootprintKbEstimate(1);
+        constexpr base::ByteCount kUsage = base::KiB(1);
+        total += kUsage;
+        FrameNodeImpl::FromNode(frame_node)
+            ->SetPrivateFootprintEstimate(kUsage);
         return true;
       });
 
   PageDiscarder discarder;
-  std::optional<uint64_t> estimated_memory_freed_kb =
+  std::optional<base::ByteCount> estimated_memory_freed_kb =
       discarder.DiscardPageNode(page_node.get(), discard_reason);
 
   EXPECT_TRUE(estimated_memory_freed_kb.has_value());
@@ -79,7 +82,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscarderBrowserTest, DiscardPageNodes) {
   auto* pre_discard_resource_usage = user_tuning::UserPerformanceTuningManager::
       PreDiscardResourceUsage::FromWebContents(new_contents);
   EXPECT_TRUE(pre_discard_resource_usage);
-  EXPECT_EQ(total, pre_discard_resource_usage->memory_footprint_estimate_kb());
+  EXPECT_EQ(total, pre_discard_resource_usage->memory_footprint_estimate());
 }
 
 }  // namespace performance_manager

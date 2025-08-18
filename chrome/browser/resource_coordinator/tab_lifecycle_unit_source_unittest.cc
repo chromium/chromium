@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -693,7 +694,8 @@ TEST_F(TabLifecycleUnitSourceTest, UpdateMemorySavingsOnMultipleDiscards) {
       PreDiscardResourceUsage::FromWebContents(
           tab_strip_model_->GetWebContentsAt(1));
   EXPECT_NE(pre_discard_resource_usage, nullptr);
-  EXPECT_EQ(pre_discard_resource_usage->memory_footprint_estimate_kb(), 100u);
+  EXPECT_EQ(pre_discard_resource_usage->memory_footprint_estimate(),
+            base::KiB(100));
 
   // Navigate the tab so that it is no longer discarded.
   EXPECT_CALL(tab_observer_, MockOnLifecycleUnitStateChanged(
@@ -717,7 +719,8 @@ TEST_F(TabLifecycleUnitSourceTest, UpdateMemorySavingsOnMultipleDiscards) {
   pre_discard_resource_usage = PreDiscardResourceUsage::FromWebContents(
       tab_strip_model_->GetWebContentsAt(1));
   EXPECT_NE(pre_discard_resource_usage, nullptr);
-  EXPECT_EQ(pre_discard_resource_usage->memory_footprint_estimate_kb(), 500u);
+  EXPECT_EQ(pre_discard_resource_usage->memory_footprint_estimate(),
+            base::KiB(500));
   ::testing::Mock::VerifyAndClear(&tab_observer_);
 
   // Expect notifications when tabs are closed.

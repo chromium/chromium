@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/check_op.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
@@ -18,10 +19,10 @@ const int UserPerformanceTuningNotifier::kMemoryPercentThresholdForPromo = 70;
 
 UserPerformanceTuningNotifier::UserPerformanceTuningNotifier(
     std::unique_ptr<Receiver> receiver,
-    uint64_t resident_set_threshold_kb,
+    base::ByteCount resident_set_threshold,
     int tab_count_threshold)
     : receiver_(std::move(receiver)),
-      resident_set_threshold_kb_(resident_set_threshold_kb),
+      resident_set_threshold_(resident_set_threshold),
       tab_count_threshold_(tab_count_threshold) {}
 
 UserPerformanceTuningNotifier::~UserPerformanceTuningNotifier() = default;
@@ -67,16 +68,16 @@ void UserPerformanceTuningNotifier::OnTypeChanged(const PageNode* page_node,
 
 void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
     const SystemNode* system_node) {
-  uint64_t total_rss = 0;
+  base::ByteCount total_rss;
   for (const ProcessNode* process_node :
        GetOwningGraph()->GetAllProcessNodes()) {
-    total_rss += process_node->GetResidentSetKb();
+    total_rss += process_node->GetResidentSet();
   }
 
   // Only notify when the threshold is crossed, not if an update keeps the total
   // RSS above the threshold.
-  if (total_rss >= resident_set_threshold_kb_ &&
-      previous_total_rss_ < resident_set_threshold_kb_) {
+  if (total_rss >= resident_set_threshold_ &&
+      previous_total_rss_ < resident_set_threshold_) {
     receiver_->NotifyMemoryThresholdReached();
   }
 

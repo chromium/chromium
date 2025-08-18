@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 
+#include "base/byte_count.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -35,8 +36,6 @@ namespace performance_manager {
 namespace {
 
 MetricsProviderDesktop* g_metrics_provider = nullptr;
-
-uint64_t kBytesPerMb = 1024 * 1024;
 
 #if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 enum class CpuThroughputEstimatedStatus {
@@ -603,22 +602,22 @@ void MetricsProviderDesktop::RecordDiskMetrics() {
     return;
   }
 
-  if (pending_disk_metrics_->free_bytes == -1 ||
-      pending_disk_metrics_->total_bytes == -1) {
+  if (pending_disk_metrics_->free_bytes.is_negative() ||
+      pending_disk_metrics_->total_bytes.is_negative()) {
     return;
   }
 
   base::UmaHistogramCustomCounts(
       "PerformanceManager.DiskStats.UserDataDirFreeSpaceMb",
-      pending_disk_metrics_->free_bytes /
-          kBytesPerMb,  // space_info is bytes, convert to Mb
-      0, 10240,  // It's fine to bucket everything >10Gb as "large enough"
+      pending_disk_metrics_->free_bytes.InMiB(), 0,
+      base::GiB(10)
+          .InMiB(),  // It's fine to bucket everything >10Gb as "large enough"
       100);
   // Also report as a percentage of capacity
   base::UmaHistogramPercentage(
       "PerformanceManager.DiskStats.UserDataDirFreeSpacePercent",
-      pending_disk_metrics_->free_bytes * 100 /
-          pending_disk_metrics_->total_bytes);
+      pending_disk_metrics_->free_bytes.InBytes() * 100 /
+          pending_disk_metrics_->total_bytes.InBytes());
 
   pending_disk_metrics_ = std::nullopt;
 }
@@ -646,8 +645,10 @@ MetricsProviderDesktop::DiskMetrics
 MetricsProviderDesktop::DiskMetricsThreadPoolGetter::ComputeDiskMetrics(
     const base::FilePath& user_data_dir) {
   return {
-      .free_bytes = base::SysInfo::AmountOfFreeDiskSpace(user_data_dir),
-      .total_bytes = base::SysInfo::AmountOfTotalDiskSpace(user_data_dir),
+      .free_bytes =
+          base::ByteCount(base::SysInfo::AmountOfFreeDiskSpace(user_data_dir)),
+      .total_bytes =
+          base::ByteCount(base::SysInfo::AmountOfTotalDiskSpace(user_data_dir)),
   };
 }
 

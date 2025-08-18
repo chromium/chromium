@@ -73,14 +73,14 @@ const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {
   return priority_and_reason_.value();
 }
 
-uint64_t WorkerNodeImpl::GetResidentSetKbEstimate() const {
+base::ByteCount WorkerNodeImpl::GetResidentSetEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate_;
+  return resident_set_estimate_;
 }
 
-uint64_t WorkerNodeImpl::GetPrivateFootprintKbEstimate() const {
+base::ByteCount WorkerNodeImpl::GetPrivateFootprintEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate_;
+  return private_footprint_estimate_;
 }
 
 void WorkerNodeImpl::AddClientFrame(FrameNodeImpl* frame_node) {
@@ -164,14 +164,14 @@ void WorkerNodeImpl::SetPriorityAndReason(
   priority_and_reason_.SetAndMaybeNotify(this, priority_and_reason);
 }
 
-void WorkerNodeImpl::SetResidentSetKbEstimate(uint64_t rss_estimate) {
+void WorkerNodeImpl::SetResidentSetEstimate(base::ByteCount rss_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  resident_set_kb_estimate_ = rss_estimate;
+  resident_set_estimate_ = rss_estimate;
 }
 
-void WorkerNodeImpl::SetPrivateFootprintKbEstimate(uint64_t pmf_estimate) {
+void WorkerNodeImpl::SetPrivateFootprintEstimate(base::ByteCount pmf_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  private_footprint_kb_estimate_ = pmf_estimate;
+  private_footprint_estimate_ = pmf_estimate;
 }
 
 void WorkerNodeImpl::OnFinalResponseURLDetermined(const GURL& url) {

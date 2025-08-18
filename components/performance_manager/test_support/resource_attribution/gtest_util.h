@@ -182,9 +182,9 @@ inline void PrintTo(const CPUTimeResult& result, std::ostream* os) {
 }
 
 inline void PrintTo(const MemorySummaryResult& result, std::ostream* os) {
-  *os << "rss:" << result.resident_set_size_kb
-      << ",pmf:" << result.private_footprint_kb
-      << ",metadata:" << ::testing::PrintToString(result.metadata);
+  *os << "rss:" << result.resident_set_size
+      << ", pmf:" << result.private_footprint
+      << ", metadata:" << ::testing::PrintToString(result.metadata);
 }
 
 // PrintTo() matches the generic std::variant overload before ResourceContext,

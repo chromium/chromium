@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/policies/userspace_swap_policy_chromeos.h"
 
 #include "base/allocator/buildflags.h"
+#include "base/byte_count.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
@@ -25,8 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace performance_manager {
-namespace policies {
+namespace performance_manager::policies {
 
 namespace {
 using ::ash::memory::userspace_swap::UserspaceSwapConfig;
@@ -48,9 +48,10 @@ class MockUserspaceSwapPolicy : public UserspaceSwapPolicy {
   MOCK_METHOD1(InitializeProcessNode, bool(const ProcessNode*));
   MOCK_METHOD2(IsEligibleToSwap, bool(const ProcessNode*, const PageNode*));
   MOCK_METHOD1(SwapProcessNode, void(const ProcessNode*));
-  MOCK_METHOD0(GetSwapDeviceFreeSpaceBytes, uint64_t(void));
-  MOCK_METHOD0(GetTotalSwapFileUsageBytes, uint64_t(void));
-  MOCK_METHOD1(GetProcessNodeSwapFileUsageBytes, uint64_t(const ProcessNode*));
+  MOCK_METHOD0(GetSwapDeviceFreeSpace, base::ByteCount(void));
+  MOCK_METHOD0(GetTotalSwapFileUsage, base::ByteCount(void));
+  MOCK_METHOD1(GetProcessNodeSwapFileUsage,
+               base::ByteCount(const ProcessNode*));
   MOCK_METHOD1(IsPageNodeAudible, bool(const PageNode*));
   MOCK_METHOD1(IsPageNodeVisible, bool(const PageNode*));
   MOCK_METHOD1(IsPageNodeLoading, bool(const PageNode*));
@@ -411,7 +412,7 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenDiskSpaceTooLow) {
   policy()->config().graph_walk_frequency = base::Seconds(1);
   policy()->config().process_swap_frequency = base::Seconds(1);
 
-  policy()->config().minimum_swap_disk_space_available = 1 << 30;  // 1 GB
+  policy()->config().minimum_swap_disk_space_available = base::GiB(1).InBytes();
 
   EXPECT_CALL(*policy(), InitializeProcessNode(process_node().get()))
       .WillOnce(Return(true));
@@ -420,10 +421,10 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenDiskSpaceTooLow) {
   // We will have our mock return that there is only 100MB of disk space
   // available. This should prevent swapping because it's below the minimum
   // value.
-  EXPECT_CALL(*policy(), GetSwapDeviceFreeSpaceBytes())
-      .WillOnce(Return(100 << 20));  // 100MB
+  EXPECT_CALL(*policy(), GetSwapDeviceFreeSpace())
+      .WillOnce(Return(base::MiB(100)));
 
-  // Because GetSwapDeviceFreeSpaceBytes is less than the configured minimum it
+  // Because GetSwapDeviceFreeSpace is less than the configured minimum it
   // should return false.
   EXPECT_FALSE(
       policy()->DefaultIsEligibleToSwap(process_node().get(), nullptr));
@@ -437,7 +438,7 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenPerRendererSwapExceeded) {
   policy()->config().process_swap_frequency = base::Seconds(1);
 
   policy()->config().renderer_maximum_disk_swap_file_size_bytes =
-      128 << 20;  // 128MB
+      base::MiB(128).InBytes();
 
   EXPECT_CALL(*policy(), InitializeProcessNode(process_node().get()))
       .WillOnce(Return(true));
@@ -446,8 +447,8 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenPerRendererSwapExceeded) {
   // We will have our mock return that there is only 100MB of disk space
   // available. This should prevent swapping because it's below the minimum
   // value.
-  EXPECT_CALL(*policy(), GetProcessNodeSwapFileUsageBytes(process_node().get()))
-      .WillOnce(Return(190 << 20));  // 190 MB
+  EXPECT_CALL(*policy(), GetProcessNodeSwapFileUsage(process_node().get()))
+      .WillOnce(Return(base::MiB(190)));
 
   // We're already using 190 MB which is more than the configured 128 MB so it
   // should not be eligible to swap.
@@ -462,7 +463,7 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenTotalRendererSwapExceeded) {
   policy()->config().graph_walk_frequency = base::Seconds(1);
   policy()->config().process_swap_frequency = base::Seconds(1);
 
-  policy()->config().maximum_swap_disk_space_bytes = 1 << 30;  // 1 GB
+  policy()->config().maximum_swap_disk_space_bytes = base::GiB(1).InBytes();
 
   EXPECT_CALL(*policy(), InitializeProcessNode(process_node().get()))
       .WillOnce(Return(true));
@@ -471,9 +472,9 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenTotalRendererSwapExceeded) {
   // We will have our mock return that there is only 100MB of disk space
   // available. This should prevent swapping because it's below the minimum
   // value.
-  EXPECT_CALL(*policy(), GetTotalSwapFileUsageBytes())
-      .WillOnce(Return(500 << 20))    // 500 MB
-      .WillOnce(Return(1200 << 20));  // 1.2 GB
+  EXPECT_CALL(*policy(), GetTotalSwapFileUsage())
+      .WillOnce(Return(base::MiB(500)))
+      .WillOnce(Return(base::GiB(1.2)));
   // Since we're now below the 1GB limit we expect it will succeed.
   EXPECT_TRUE(policy()->DefaultIsEligibleToSwap(process_node().get(), nullptr));
 
@@ -484,5 +485,4 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenTotalRendererSwapExceeded) {
 }
 
 }  // namespace
-}  // namespace policies
-}  // namespace performance_manager
+}  // namespace performance_manager::policies

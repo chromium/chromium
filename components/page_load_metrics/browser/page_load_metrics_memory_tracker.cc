@@ -88,8 +88,8 @@ void PageLoadMetricsMemoryTracker::OnV8MemoryMeasurementAvailable(
       continue;
     }
 
-    int64_t delta_bytes =
-        UpdateMemoryUsageAndGetDelta(rfh, frame_data->v8_bytes_used());
+    int64_t delta_bytes = UpdateMemoryUsageAndGetDelta(
+        rfh, frame_data->v8_memory_used().InBytes());
 
     // Only send updates that are nontrivial.
     if (delta_bytes == 0) {

@@ -9,6 +9,7 @@
 #include <map>
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
@@ -90,8 +91,8 @@ struct CPUTimeResult {
 // Results of a kMemorySummary query.
 struct MemorySummaryResult {
   ResultMetadata metadata;
-  uint64_t resident_set_size_kb = 0;
-  uint64_t private_footprint_kb = 0;
+  base::ByteCount resident_set_size;
+  base::ByteCount private_footprint;
 
   friend constexpr auto operator<=>(const MemorySummaryResult&,
                                     const MemorySummaryResult&) = default;

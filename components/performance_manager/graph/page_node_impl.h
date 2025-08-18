@@ -104,12 +104,12 @@ class PageNodeImpl
   GetNotificationPermissionStatus() const override;
   base::TimeDelta GetTimeSinceLastNavigation() const override;
   const GURL& GetMainFrameUrl() const override;
-  uint64_t EstimateMainFramePrivateFootprintSize() const override;
+  base::ByteCount EstimateMainFramePrivateFootprintSize() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   base::WeakPtr<content::WebContents> GetWebContents() const override;
-  uint64_t EstimateResidentSetSize() const override;
-  uint64_t EstimatePrivateFootprintSize() const override;
+  base::ByteCount EstimateResidentSetSize() const override;
+  base::ByteCount EstimatePrivateFootprintSize() const override;
   base::WeakPtr<PageNode> GetWeakPtr() override;
   base::WeakPtr<const PageNode> GetWeakPtr() const override;
 

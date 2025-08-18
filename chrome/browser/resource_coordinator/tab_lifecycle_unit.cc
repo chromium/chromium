@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -628,10 +629,11 @@ void TabLifecycleUnitSource::TabLifecycleUnit::UpdatePreDiscardResourceUsage(
   if (pre_discard_resource_usage == nullptr) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         PreDiscardResourceUsage::CreateForWebContents(
-            web_contents, tab_memory_footprint_estimate, discard_reason);
+            web_contents, base::KiB(tab_memory_footprint_estimate),
+            discard_reason);
   } else {
-    pre_discard_resource_usage->UpdateDiscardInfo(tab_memory_footprint_estimate,
-                                                  discard_reason);
+    pre_discard_resource_usage->UpdateDiscardInfo(
+        base::KiB(tab_memory_footprint_estimate), discard_reason);
   }
 }
 

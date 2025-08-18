@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/containers/stack.h"
 #include "base/functional/bind.h"
@@ -19,9 +20,7 @@
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "url/gurl.h"
 
-namespace performance_manager {
-
-namespace v8_memory {
+namespace performance_manager::v8_memory {
 
 // A visitor that visits every node that can be aggregated into an aggregation
 // point.
@@ -163,23 +162,25 @@ void AddMemoryBytes(mojom::WebMemoryBreakdownEntry* aggregation_point,
   if (!data) {
     return;
   }
-  if (!aggregation_point->memory) {
-    aggregation_point->memory = mojom::WebMemoryUsage::New();
+  if (!aggregation_point->memory.has_value()) {
+    aggregation_point->memory.emplace();
   }
   // Ensure this frame is actually in the same process as the requesting
   // frame. If not it should be considered to have 0 bytes.
   // (https://github.com/WICG/performance-measure-memory/issues/20).
-  uint64_t bytes_used = is_same_process ? data->v8_bytes_used() : 0;
-  aggregation_point->memory->bytes += bytes_used;
+  base::ByteCount memory_used =
+      is_same_process ? data->v8_memory_used() : base::ByteCount(0);
+  aggregation_point->memory.value() += memory_used;
 
   // Add canvas memory similar to V8 memory above.
-  if (data->canvas_bytes_used()) {
-    uint64_t canvas_bytes_used =
-        is_same_process ? *data->canvas_bytes_used() : 0;
-    if (!aggregation_point->canvas_memory) {
-      aggregation_point->canvas_memory = mojom::WebMemoryUsage::New();
+  if (data->canvas_memory_used()) {
+    base::ByteCount canvas_memory_used =
+        is_same_process ? data->canvas_memory_used().value()
+                        : base::ByteCount(0);
+    if (!aggregation_point->canvas_memory.has_value()) {
+      aggregation_point->canvas_memory.emplace();
     }
-    aggregation_point->canvas_memory->bytes += canvas_bytes_used;
+    aggregation_point->canvas_memory.value() += canvas_memory_used;
   }
 }
 
@@ -408,22 +409,22 @@ namespace {
 double GetBrowsingInstanceV8BytesFraction(
     const ProcessNode* process_node,
     content::BrowsingInstanceId browsing_instance_id) {
-  uint64_t bytes_used = 0;
-  uint64_t total_bytes_used = 0;
+  base::ByteCount memory_used;
+  base::ByteCount total_memory_used;
   for (const FrameNode* frame_node : process_node->GetFrameNodes()) {
     const auto* data =
         V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
     if (data) {
       if (frame_node->GetBrowsingInstanceId() == browsing_instance_id) {
-        bytes_used += data->v8_bytes_used();
+        memory_used += data->v8_memory_used();
       }
-      total_bytes_used += data->v8_bytes_used();
+      total_memory_used += data->v8_memory_used();
     }
   }
-  DCHECK_LE(bytes_used, total_bytes_used);
-  return total_bytes_used == 0
+  DCHECK_LE(memory_used, total_memory_used);
+  return total_memory_used.is_zero()
              ? 1
-             : static_cast<double>(bytes_used) / total_bytes_used;
+             : memory_used.InBytesF() / total_memory_used.InBytesF();
 }
 
 }  // anonymous namespace
@@ -462,19 +463,15 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
     // Shared memory is shared between browsing context groups in the process.
     // We cannot attribute it to a single browsing context group, so we report
     // it as is.
-    aggregation_result->shared_memory = mojom::WebMemoryUsage::New();
-    aggregation_result->shared_memory->bytes =
-        process_data->shared_v8_bytes_used();
+    aggregation_result->shared_memory = process_data->shared_v8_memory_used();
     // As we don't have precise attribution for detached and Blink memory,
     // we approximate it using V8 memory.
     double browsing_instance_factor = GetBrowsingInstanceV8BytesFraction(
         requesting_process_node_, browsing_instance_id_);
-    aggregation_result->detached_memory = mojom::WebMemoryUsage::New();
-    aggregation_result->detached_memory->bytes = static_cast<uint64_t>(
-        process_data->detached_v8_bytes_used() * browsing_instance_factor);
-    aggregation_result->blink_memory = mojom::WebMemoryUsage::New();
-    aggregation_result->blink_memory->bytes = static_cast<uint64_t>(
-        process_data->blink_bytes_used() * browsing_instance_factor);
+    aggregation_result->detached_memory =
+        process_data->detached_v8_memory_used() * browsing_instance_factor;
+    aggregation_result->blink_memory =
+        process_data->blink_memory_used() * browsing_instance_factor;
   }
   return aggregation_result;
 }
@@ -568,6 +565,4 @@ void WebMemoryAggregator::CopyBreakdownAttribution(
   to_attribution->src = from_attribution->src;
 }
 
-}  // namespace v8_memory
-
-}  // namespace performance_manager
+}  // namespace performance_manager::v8_memory

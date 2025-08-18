@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -262,21 +263,22 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
     // Equally split the RSS and PMF of the process to its frames and workers.
     // TODO(anthonyvd): This should be more sophisticated, like attributing the
     // RSS and PMF to each node proportionally to its V8 heap size.
-    uint64_t process_rss = process_dump_iter.os_dump().resident_set_kb;
-    process_node->set_resident_set_kb(process_rss);
+    base::ByteCount process_rss =
+        base::KiB(process_dump_iter.os_dump().resident_set_kb);
+    process_node->set_resident_set(process_rss);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-    process_node->set_private_swap_kb(
-        process_dump_iter.os_dump().private_footprint_swap_kb);
+    process_node->set_private_swap(
+        base::KiB(process_dump_iter.os_dump().private_footprint_swap_kb));
 #endif
     resource_attribution::SplitResourceAmongFrameAndWorkerImpls(
-        process_rss, process_node, &FrameNodeImpl::SetResidentSetKbEstimate,
-        &WorkerNodeImpl::SetResidentSetKbEstimate);
-    uint64_t process_pmf = process_dump_iter.os_dump().private_footprint_kb;
-    process_node->set_private_footprint_kb(process_pmf);
+        process_rss, process_node, &FrameNodeImpl::SetResidentSetEstimate,
+        &WorkerNodeImpl::SetResidentSetEstimate);
+    base::ByteCount process_pmf =
+        base::KiB(process_dump_iter.os_dump().private_footprint_kb);
+    process_node->set_private_footprint(process_pmf);
     resource_attribution::SplitResourceAmongFrameAndWorkerImpls(
-        process_pmf, process_node,
-        &FrameNodeImpl::SetPrivateFootprintKbEstimate,
-        &WorkerNodeImpl::SetPrivateFootprintKbEstimate);
+        process_pmf, process_node, &FrameNodeImpl::SetPrivateFootprintEstimate,
+        &WorkerNodeImpl::SetPrivateFootprintEstimate);
   }
 
   GraphImpl::FromGraph(GetOwningGraph())

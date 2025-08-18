@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -251,15 +252,15 @@ class FrameNode : public TypedNode<FrameNode> {
   // TODO(joenotcharles): Move the resource usage estimates to a separate
   // class.
 
-  // Returns the most recently estimated resident set of the frame, in
-  // kilobytes. This is an estimate because RSS is computed by process, and a
-  // process can host multiple frames.
-  virtual uint64_t GetResidentSetKbEstimate() const = 0;
+  // Returns the most recently estimated resident set of the frame. This is an
+  // estimate because RSS is computed by process, and a process can host
+  // multiple frames.
+  virtual base::ByteCount GetResidentSetEstimate() const = 0;
 
-  // Returns the most recently estimated private footprint of the frame, in
-  // kilobytes. This is an estimate because it is computed by process, and a
-  // process can host multiple frames.
-  virtual uint64_t GetPrivateFootprintKbEstimate() const = 0;
+  // Returns the most recently estimated private footprint of the frame. This is
+  // an estimate because it is computed by process, and a process can host
+  // multiple frames.
+  virtual base::ByteCount GetPrivateFootprintEstimate() const = 0;
 };
 
 // Observer interface for frame nodes.
