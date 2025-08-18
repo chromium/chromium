@@ -2732,7 +2732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.MostVisited" units="index"
-    expires_after="2025-09-28">
+    expires_after="2026-09-28">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -2751,7 +2751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.OnStart"
-    enum="IOSMagicStackModuleType" expires_after="2025-09-28">
+    enum="IOSMagicStackModuleType" expires_after="2026-09-28">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -2807,7 +2807,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.Tips" units="index"
-    expires_after="2025-09-26">
+    expires_after="2026-09-26">
   <owner>bwwilliams@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
