@@ -24,9 +24,6 @@ class SSLServerContextImpl : public SSLServerContext {
   SSLServerContextImpl(X509Certificate* certificate,
                        EVP_PKEY* pkey,
                        const SSLServerConfig& ssl_server_config);
-  SSLServerContextImpl(X509Certificate* certificate,
-                       scoped_refptr<SSLPrivateKey> key,
-                       const SSLServerConfig& ssl_server_config);
   ~SSLServerContextImpl() override;
 
   std::unique_ptr<SSLServerSocket> CreateSSLServerSocket(
@@ -46,9 +43,7 @@ class SSLServerContextImpl : public SSLServerContext {
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain_;
 
   // Private key used by the server.
-  // Only one representation should be set at any time.
   bssl::UniquePtr<EVP_PKEY> pkey_;
-  const scoped_refptr<SSLPrivateKey> private_key_;
 };
 
 }  // namespace net
