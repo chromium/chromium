@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -122,14 +123,19 @@ class GlicEnabling : public signin::IdentityManager::Observer {
     bool IsEnabledAndConsented() const { return IsEnabled() && !not_consented; }
 
     bool ShouldShowSettingsPage() const {
+      const bool show_ai_settings_for_testing = base::FeatureList::IsEnabled(
+          optimization_guide::features::kAiSettingsPageForceAvailable);
+
       // If the feature is disabled by enterprise policy, the settings page
       // should be shown (it will be shown in a policy-disabled state) only if
       // all other non-enterprise conditions are met: the account has all
       // appropriate permissions and has previously completed the FRE before the
-      // policy went into effect.
-      return IsProfileEligible() && !not_rolled_out &&
-             !primary_account_not_capable && !disallowed_by_remote_other &&
-             !not_consented;
+      // policy went into effect. The settings page should also be shown if the
+      // settings testing flag is enabled.
+      return show_ai_settings_for_testing ||
+             (IsProfileEligible() && !not_rolled_out &&
+              !primary_account_not_capable && !disallowed_by_remote_other &&
+              !not_consented);
     }
 
     bool DisallowedByAdmin() const {
