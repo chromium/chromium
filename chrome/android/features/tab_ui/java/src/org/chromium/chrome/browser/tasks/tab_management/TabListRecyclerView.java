@@ -45,7 +45,7 @@ import java.util.List;
 
 /** A custom RecyclerView implementation for the tab grid, to handle show/hide logic in class. */
 @NullMarked
-class TabListRecyclerView extends RecyclerView
+public class TabListRecyclerView extends RecyclerView
         implements TabListMediator.TabGridAccessibilityHelper, RunOnNextLayout {
     private static final float SMOOTH_SCROLL_SPEED_FACTOR = 0.8f;
     private boolean mBlockTouchInput;

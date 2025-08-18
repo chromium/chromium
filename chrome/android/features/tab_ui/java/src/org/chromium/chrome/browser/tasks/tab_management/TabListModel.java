@@ -40,7 +40,7 @@ import java.util.List;
  * org.chromium.chrome.browser.tab.Tab}s.
  */
 @NullMarked
-class TabListModel extends ModelList {
+public class TabListModel extends ModelList {
     @IntDef({
         AnimationStatus.SELECTED_CARD_ZOOM_IN,
         AnimationStatus.SELECTED_CARD_ZOOM_OUT,

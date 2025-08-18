@@ -94,6 +94,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView.QuickDeleteAnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -202,47 +203,6 @@ class TabListMediator implements TabListNotificationHandler {
          * @return Whether the given action is a reordering action.
          */
         boolean isReorderAction(int action);
-    }
-
-    /**
-     * Holder class for a {@link TabActionListener} with a {@link TabActionButtonType} describing
-     * what the listener does to determine which drawable to show in the UI.
-     */
-    static class TabActionButtonData {
-        @IntDef({
-            TabActionButtonType.CLOSE,
-            TabActionButtonType.SELECT,
-            TabActionButtonType.OVERFLOW,
-            TabActionButtonType.PIN
-        })
-        @Retention(RetentionPolicy.SOURCE)
-        @interface TabActionButtonType {
-            int CLOSE = 0;
-            int SELECT = 1;
-            int OVERFLOW = 2;
-            int PIN = 3;
-        }
-
-        public final @TabActionButtonType int type;
-        public final @Nullable TabActionListener tabActionListener;
-
-        TabActionButtonData(
-                @TabActionButtonType int type, @Nullable TabActionListener tabActionListener) {
-            this.type = type;
-            this.tabActionListener = tabActionListener;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return (obj instanceof TabActionButtonData other)
-                    && type == other.type
-                    && Objects.equals(tabActionListener, other.tabActionListener);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.type, this.tabActionListener);
-        }
     }
 
     /**
@@ -2002,24 +1962,21 @@ class TabListMediator implements TabListNotificationHandler {
             Tab tab, @TabActionState int tabActionState) {
         if (tabActionState == TabActionState.SELECTABLE) {
             return new TabActionButtonData(
-                    TabActionButtonData.TabActionButtonType.SELECT, mSelectableTabOnClickListener);
+                    TabActionButtonType.SELECT, mSelectableTabOnClickListener);
         }
         // A tab is deemed a tab group card representation if it is part of a tab group and
         // based in the tab switcher.
         boolean isTabGroup = isTabInTabGroup(tab) && mActionsOnAllRelatedTabs;
         if (isTabGroup) {
             return new TabActionButtonData(
-                    TabActionButtonData.TabActionButtonType.OVERFLOW,
-                    getTabGroupOverflowMenuClickListener());
+                    TabActionButtonType.OVERFLOW, getTabGroupOverflowMenuClickListener());
         }
 
         if (tab.getIsPinned()) {
-            return new TabActionButtonData(
-                    TabActionButtonData.TabActionButtonType.PIN, /* tabActionListener= */ null);
+            return new TabActionButtonData(TabActionButtonType.PIN, /* tabActionListener= */ null);
         }
 
-        return new TabActionButtonData(
-                TabActionButtonData.TabActionButtonType.CLOSE, mTabClosedListener);
+        return new TabActionButtonData(TabActionButtonType.CLOSE, mTabClosedListener);
     }
 
     private TabActionListener getTabGroupOverflowMenuClickListener() {
@@ -2096,10 +2053,8 @@ class TabListMediator implements TabListNotificationHandler {
         TabActionButtonData tabActionButtonData =
                 isSelectableState
                         ? new TabActionButtonData(
-                                TabActionButtonData.TabActionButtonType.SELECT,
-                                mSelectableTabOnClickListener)
-                        : new TabActionButtonData(
-                                TabActionButtonData.TabActionButtonType.CLOSE, mTabClosedListener);
+                                TabActionButtonType.SELECT, mSelectableTabOnClickListener)
+                        : new TabActionButtonData(TabActionButtonType.CLOSE, mTabClosedListener);
         assumeNonNull(mGridCardOnClickListenerProvider);
         TabActionListener tabClickListener =
                 isSelectableState

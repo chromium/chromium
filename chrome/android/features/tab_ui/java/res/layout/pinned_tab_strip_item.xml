@@ -4,6 +4,7 @@ Copyright 2025 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
+<!-- TODO(crbug.com/436615821): Remove unused resources tag once implemented. -->
 <org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -13,7 +14,8 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:background="@drawable/pinned_tab_strip_item_background"
     android:paddingHorizontal="@dimen/pinned_tab_strip_item_horizontal_padding"
-    tools:ignore="UnusedResources">
+    tools:ignore="UnusedResources"
+    android:clickable="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
