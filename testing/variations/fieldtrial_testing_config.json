@@ -25616,26 +25616,6 @@
             ]
         }
     ],
-    "UnoDesktopHistorySyncPillExperiment": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithBrowseAcrossDevices",
-                    "params": {
-                        "history-sync-optin-expansion-pill-option": "browse-across-devices"
-                    },
-                    "enable_features": [
-                        "EnableHistorySyncOptinExpansionPill"
-                    ]
-                }
-            ]
-        }
-    ],
     "UpdateStateBeforeUnbinding": [
         {
             "platforms": [
