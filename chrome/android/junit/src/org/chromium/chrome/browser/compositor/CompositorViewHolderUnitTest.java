@@ -1028,18 +1028,29 @@ public class CompositorViewHolderUnitTest {
     @Test
     @Config(qualifiers = "sw600dp")
     public void testSetBackgroundRunnable() {
-        int pendingFrameCount = 0;
-        int framesUntilHideBackground = 1;
-        boolean swappedCurrentSize = true;
-
-        // Mark that a frame has swapped, and the buffer has swapped once (still waiting on one).
-        mCompositorViewHolder.didSwapFrame(pendingFrameCount);
-        mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
+        // Trigger a compositor layout. Verify the background has not yet been removed.
+        mCompositorViewHolder.onCompositorLayout();
         verifyBackgroundNotRemoved();
 
-        // Mark that the buffer has swapped a second time (and we're no longer waiting on one).
-        framesUntilHideBackground = 0;
+        // Mark that a frame has swapped, but the buffer has not yet swapped. Verify the background
+        // has not yet been removed.
+        int pendingFrameCount = 0;
+        mCompositorViewHolder.didSwapFrame(pendingFrameCount);
+        verifyBackgroundNotRemoved();
+
+        // Mark that the buffer has swapped. Verify the background has now been removed
+        boolean swappedCurrentSize = true;
+        int framesUntilHideBackground = 1;
         mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
+        verifyBackgroundRemoved();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testSetBackgroundRunnable_Timeout() {
+        // Run delayed tasks (timing out the background runnable), then verify the background has
+        // been removed.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyBackgroundRemoved();
     }
 
