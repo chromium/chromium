@@ -15,4 +15,8 @@ UndoManagerBridge::UndoManagerBridge(id<UndoManagerBridgeObserver> observer)
 void UndoManagerBridge::OnUndoManagerStateChange() {
   [observer_ undoManagerChanged];
 }
+
+void UndoManagerBridge::OnUndoManagerShutdown() {
+  [observer_ undoManagerShutdown];
+}
 }  // namespace bookmarks

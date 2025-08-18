@@ -11,6 +11,7 @@
 @protocol UndoManagerBridgeObserver
 // Invoked when the internal state of the undo manager has changed.
 - (void)undoManagerChanged;
+- (void)undoManagerShutdown;
 @end
 
 namespace bookmarks {
@@ -23,6 +24,7 @@ class UndoManagerBridge : public UndoManagerObserver {
 
  private:
   void OnUndoManagerStateChange() override;
+  void OnUndoManagerShutdown() override;
   __weak id<UndoManagerBridgeObserver> observer_;
 };
 }  // namespace bookmarks

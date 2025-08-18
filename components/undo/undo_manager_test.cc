@@ -165,6 +165,7 @@ class TestObserver : public UndoManagerObserver {
   int state_change_count() { return state_change_count_; }
 
   void OnUndoManagerStateChange() override { ++state_change_count_; }
+  void OnUndoManagerShutdown() override {}
 
  private:
   int state_change_count_;

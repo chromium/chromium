@@ -348,10 +348,7 @@ void BookmarkUndoService::StartObservingBookmarkModel(BookmarkModel* model) {
 }
 
 void BookmarkUndoService::Shutdown() {
-  // After `RemoveAllObservations` call below - this instance won't be notified
-  // of `BookmarkModel` destruction. Undo operations keep a pointer to
-  // `BookmarkModel` - delete them to avoid dangling pointers.
-  undo_manager_.RemoveAllOperations();
+  undo_manager_.Shutdown();
   scoped_observation_.Reset();
 }
 
