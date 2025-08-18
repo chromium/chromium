@@ -120,7 +120,8 @@ class PaintPreviewClient
     // Main frame capture time.
     base::TimeDelta main_frame_blink_recording_time;
 
-    // Callback that is invoked on completion of data. Always non-null.
+    // Callback that is invoked on completion of data. May become null if the
+    // screenshot request failed.
     PaintPreviewCallback callback;
 
     // All the render frames that are still required.

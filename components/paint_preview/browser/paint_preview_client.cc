@@ -385,7 +385,9 @@ void PaintPreviewClient::CaptureSubframePaintPreview(
   }
 
   auto* document_data = base::FindOrNull(all_document_data_, guid);
-  if (!document_data) {
+  if (!document_data || !document_data->callback) {
+    // If the screenshot has already failed, there's no need to request a
+    // subframe paint.
     return;
   }
 
@@ -494,10 +496,16 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
 
   auto* document_data =
       base::FindOrNull(all_document_data_, params.document_guid);
-  if (!document_data) {
+  if (!document_data || !document_data->callback) {
+    // `document_data->callback` was checked/set in both of the (indirect)
+    // callers of this method (namely `CapturePaintPreview` and
+    // `CaptureSubframePaintPreview`), but since there may have been some async
+    // thread hops between those checks and here, the callback may have been
+    // invoked already. Not all codepaths that invoke the callback also erase
+    // `document_data` from the `all_document_data_` map, so we have to check
+    // both and a given map entry may have a null callback.
     return;
   }
-  CHECK(document_data->callback);
 
   if (status != mojom::PaintPreviewStatus::kOk) {
     std::move(document_data->callback).Run(params.document_guid, status, {});
