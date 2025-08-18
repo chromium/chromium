@@ -311,7 +311,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
         GURL(url_response.url()), kGen204IdentifierQueryParameter,
         &url_gen204_id);
     ASSERT_TRUE(has_gen204_id);
-    ASSERT_TRUE(client_logs.has_paella_id());
+    ASSERT_NE(client_logs.paella_id(), 0u);
     ASSERT_EQ(base::NumberToString(client_logs.paella_id()).c_str(),
               url_gen204_id);
   }
@@ -537,7 +537,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       1);
   ASSERT_EQ(query_controller.sent_client_logs().lens_overlay_entry_point(),
             lens::LensOverlayClientLogs::APP_MENU);
-  ASSERT_TRUE(query_controller.sent_client_logs().has_paella_id());
+  ASSERT_NE(query_controller.sent_client_logs().paella_id(), 0u);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -607,7 +607,7 @@ TEST_F(LensOverlayQueryControllerTest,
       1);
   ASSERT_EQ(query_controller.sent_client_logs().lens_overlay_entry_point(),
             lens::LensOverlayClientLogs::APP_MENU);
-  ASSERT_TRUE(query_controller.sent_client_logs().has_paella_id());
+  ASSERT_NE(query_controller.sent_client_logs().paella_id(), 0u);
 }
 
 // Tests that the query controller attaches the server session id from the
