@@ -22,7 +22,6 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
 
 class BrowserWindowInterface;
@@ -32,6 +31,10 @@ class ProfileManager;
 namespace contextual_cueing {
 class ContextualCueingService;
 }  // namespace contextual_cueing
+
+namespace optimization_guide::proto {
+class ScriptToolResult;
+}  // namespace optimization_guide::proto
 
 namespace signin {
 class IdentityManager;

@@ -54,6 +54,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
