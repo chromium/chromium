@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
@@ -1583,19 +1584,21 @@ TEST_F(UkmPageLoadMetricsObserverTest, PageSizeMetrics) {
 
   std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
   // Cached resource.
-  resources.push_back(CreateResource(true /* was_cached */, 0 /* delta_bytes */,
-                                     20 * 1024 /* encoded_body_length */,
-                                     30 * 1024 /* decoded_body_length */,
-                                     true /* is_complete */));
+  resources.push_back(CreateResource(/*was_cached=*/true,
+                                     /*delta_bytes=*/base::ByteCount(0),
+                                     /*encoded_body_length=*/base::KiB(20),
+                                     /*decoded_body_length=*/base::KiB(30),
+                                     /*is_complete=*/true));
   // Uncached resource.
   resources.push_back(CreateResource(
-      false /* was_cached */, 40 * 1024 /* delta_bytes */,
-      40 * 1024 /* encoded_body_length */, 50 * 1024 /* decoded_body_length */,
-      true /* is_complete */));
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(40),
+      /*encoded_body_length=*/base::KiB(40),
+      /*decoded_body_length=*/base::KiB(50),
+      /*is_complete=*/true));
   tester()->SimulateResourceDataUseUpdate(resources);
 
-  int64_t network_bytes = 0;
-  int64_t cache_bytes = 0;
+  base::ByteCount network_bytes;
+  base::ByteCount cache_bytes;
   for (const auto& request : resources) {
     if (request->cache_type ==
         page_load_metrics::mojom::CacheType::kNotCached) {
@@ -1609,8 +1612,9 @@ TEST_F(UkmPageLoadMetricsObserverTest, PageSizeMetrics) {
   DeleteContents();
 
   int64_t bucketed_network_bytes =
-      ukm::GetExponentialBucketMin(network_bytes, 1.3);
-  int64_t bucketed_cache_bytes = ukm::GetExponentialBucketMin(cache_bytes, 1.3);
+      ukm::GetExponentialBucketMin(network_bytes.InBytes(), 1.3);
+  int64_t bucketed_cache_bytes =
+      ukm::GetExponentialBucketMin(cache_bytes.InBytes(), 1.3);
 
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -1632,22 +1636,24 @@ TEST_F(UkmPageLoadMetricsObserverTest, JSSizeMetrics) {
 
   std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
   // 30 kilobytes after decoding.
-  resources.push_back(CreateResource(true /* was_cached */, 0 /* delta_bytes */,
-                                     20 * 1024 /* encoded_body_length */,
-                                     30 * 1024 /* decoded_body_length */,
-                                     true /* is_complete */));
+  resources.push_back(CreateResource(/*was_cached=*/true,
+                                     /*delta_bytes=*/base::ByteCount(0),
+                                     /*encoded_body_length=*/base::KiB(20),
+                                     /*decoded_body_length=*/base::KiB(30),
+                                     /*is_complete=*/true));
 
   // 50 kilobytes after decoding.
   resources.push_back(CreateResource(
-      false /* was_cached */, 40 * 1024 /* delta_bytes */,
-      40 * 1024 /* encoded_body_length */, 50 * 1024 /* decoded_body_length */,
-      true /* is_complete */));
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(40),
+      /*encoded_body_length=*/base::KiB(40),
+      /*decoded_body_length=*/base::KiB(50),
+      /*is_complete=*/true));
 
   // 120 kilobytes after decoding, not JS.
   resources.push_back(CreateResource(
-      false /* was_cached */, 40 * 1024 /* delta_bytes */,
-      100 * 1024 /* encoded_body_length */,
-      120 * 1024 /* decoded_body_length */, true /* is_complete */));
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(40),
+      /*encoded_body_length=*/base::KiB(100),
+      /*decoded_body_length=*/base::KiB(120), /*is_complete=*/true));
 
   resources[0]->mime_type = "application/javascript";
   resources[1]->mime_type = "application/javascript";
@@ -1661,7 +1667,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, JSSizeMetrics) {
   // Metrics look at decoded body length.
   // 30 + 50 = 80 kilobytes.
   int64_t bucketed_network_js_bytes =
-      ukm::GetExponentialBucketMinForBytes(80 * 1024);
+      ukm::GetExponentialBucketMinForBytes(base::KiB(80).InBytes());
 
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -1682,22 +1688,23 @@ TEST_F(UkmPageLoadMetricsObserverTest, JSMaxSizeMetrics) {
   std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
 
   // 30 kilobytes after decoding.
-  resources.push_back(CreateResource(true /* was_cached */, 0 /* delta_bytes */,
-                                     20 * 1024 /* encoded_body_length */,
-                                     30 * 1024 /* decoded_body_length */,
-                                     true /* is_complete */));
+  resources.push_back(CreateResource(/*was_cached=*/true,
+                                     /*delta_bytes=*/base::ByteCount(0),
+                                     /*encoded_body_length=*/base::KiB(20),
+                                     /*decoded_body_length=*/base::KiB(30),
+                                     /*is_complete=*/true));
 
   // 500 kilobytes after decoding.
   resources.push_back(CreateResource(
-      false /* was_cached */, 400 * 1024 /* delta_bytes */,
-      400 * 1024 /* encoded_body_length */,
-      500 * 1024 /* decoded_body_length */, true /* is_complete */));
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(400),
+      /*encoded_body_length=*/base::KiB(400),
+      /*decoded_body_length=*/base::KiB(500), /*is_complete=*/true));
 
   // 120 kilobytes after decoding, not JS.
   resources.push_back(CreateResource(
-      false /* was_cached */, 40 * 1024 /* delta_bytes */,
-      100 * 1024 /* encoded_body_length */,
-      120 * 1024 /* decoded_body_length */, true /* is_complete */));
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(40),
+      /*encoded_body_length=*/base::KiB(100),
+      /*decoded_body_length=*/base::KiB(120), /*is_complete=*/true));
 
   resources[0]->mime_type = "application/javascript";
   resources[1]->mime_type = "application/javascript";
@@ -1732,17 +1739,20 @@ TEST_F(UkmPageLoadMetricsObserverTest, ImageMediaSizeMetrics) {
 
   std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
   resources.push_back(CreateResource(
-      false /* was_cached */, 10 * 1024 /* delta_bytes */,
-      10 * 1024 /* encoded_body_length */, 10 * 1024 /* decoded_body_length */,
-      true /* is_complete */));
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(10),
+      /*encoded_body_length=*/base::KiB(10),
+      /*decoded_body_length=*/base::KiB(10),
+      /*is_complete=*/true));
   resources.push_back(CreateResource(
-      false /* was_cached */, 20 * 1024 /* delta_bytes */,
-      20 * 1024 /* encoded_body_length */, 20 * 1024 /* decoded_body_length */,
-      true /* is_complete */));
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(20),
+      /*encoded_body_length=*/base::KiB(20),
+      /*decoded_body_length=*/base::KiB(20),
+      /*is_complete=*/true));
   resources.push_back(CreateResource(
-      false /* was_cached */, 50 * 1024 /* delta_bytes */,
-      50 * 1024 /* encoded_body_length */, 50 * 1024 /* decoded_body_length */,
-      true /* is_complete */));
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(50),
+      /*encoded_body_length=*/base::KiB(50),
+      /*decoded_body_length=*/base::KiB(50),
+      /*is_complete=*/true));
 
   resources[0]->mime_type = "image/png";
   resources[0]->is_main_frame_resource = true;

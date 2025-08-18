@@ -69,15 +69,16 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
                         const network::mojom::URLResponseHead& response_head,
                         network::mojom::RequestDestination request_destination,
                         bool is_ad_resource) override;
-  void DidReceiveTransferSizeUpdate(int request_id,
-                                    int received_data_length) override;
+  void DidReceiveTransferSizeUpdate(
+      int request_id,
+      base::ByteCount received_data_length) override;
   void DidCompleteResponse(
       int request_id,
       const network::URLLoaderCompletionStatus& status) override;
   void DidCancelResponse(int request_id) override;
   void DidLoadResourceFromMemoryCache(const GURL& response_url,
                                       int request_id,
-                                      int64_t encoded_body_length,
+                                      base::ByteCount encoded_body_length,
                                       const std::string& mime_type,
                                       bool from_archive) override;
   void DidStartNavigation(

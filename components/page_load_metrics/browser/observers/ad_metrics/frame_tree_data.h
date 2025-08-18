@@ -11,6 +11,7 @@
 #include <array>
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data_utils.h"
@@ -30,16 +31,16 @@ namespace heavy_ad_thresholds {
 // PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame.Network histogram on mobile and
 // desktop. Additive noise is added to this threshold, see
 // AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider.
-const int kMaxNetworkBytes = 4.0 * 1024 * 1024;
+inline constexpr base::ByteCount kMaxNetworkBytes = base::MiB(4);
 
 // CPU thresholds are selected from AdFrameLoad UKM, and are intended to target
 // 1 in 1000 ad iframes combined, with each threshold responsible for roughly
 // half of those intervention. Maximum number of milliseconds of CPU use allowed
 // to be used by a frame.
-const int kMaxCpuTime = 60 * 1000;
+inline constexpr int kMaxCpuTime = 60 * 1000;
 
 // Maximum percentage of CPU utilization over a 30 second window allowed.
-const int kMaxPeakWindowedPercent = 50;
+inline constexpr int kMaxPeakWindowedPercent = 50;
 
 }  // namespace heavy_ad_thresholds
 
@@ -129,7 +130,7 @@ class FrameTreeData final {
   // |root_frame_tree_node_id| is the root frame of the subtree that
   // FrameTreeData stores information for.
   explicit FrameTreeData(content::FrameTreeNodeId root_frame_tree_node_id,
-                         int heavy_ad_network_threshold_noise);
+                         base::ByteCount heavy_ad_network_threshold_noise);
   ~FrameTreeData();
 
   // Processes a resource load in frame, calling ResourceLoadAggregator.
@@ -139,7 +140,8 @@ class FrameTreeData final {
 
   // Adjusts ad bytes after call to ProcessResourceLoadInFrame, calling
   // ResourceLoadAggregator.
-  void AdjustAdBytes(int64_t unaccounted_ad_bytes, ResourceMimeType mime_type);
+  void AdjustAdBytes(base::ByteCount unaccounted_ad_bytes,
+                     ResourceMimeType mime_type);
 
   // Updates the cpu usage of this frame.
   void UpdateCpuUsage(base::TimeTicks update_time, base::TimeDelta update);
@@ -161,7 +163,7 @@ class FrameTreeData final {
   void MaybeUpdateFrameDepth(content::RenderFrameHost* render_frame_host);
 
   // Updates the recorded bytes of memory used.
-  void UpdateMemoryUsage(int64_t delta_bytes);
+  void UpdateMemoryUsage(base::ByteCount delta_bytes);
 
   // Returns whether the frame should be recorded for UKMs and UMA histograms.
   // A frame should be recorded if it has non-zero bytes or non-zero CPU usage
@@ -344,7 +346,7 @@ class FrameTreeData final {
   HeavyAdAction heavy_ad_action_ = HeavyAdAction::kNone;
 
   // Number of bytes of noise that should be added to the network threshold.
-  const int heavy_ad_network_threshold_noise_;
+  const base::ByteCount heavy_ad_network_threshold_noise_;
 
   // Whether or not the frame has been activated (clicked on).
   UserActivationStatus user_activation_status_ =

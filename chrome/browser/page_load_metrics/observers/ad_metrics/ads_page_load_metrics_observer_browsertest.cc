@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
@@ -110,8 +111,7 @@ const char kMemoryUpdateCountHistogramId[] =
 class AdsPageLoadMetricsObserverBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
-  AdsPageLoadMetricsObserverBrowserTest()
-      : subresource_filter::SubresourceFilterBrowserTest() {}
+  AdsPageLoadMetricsObserverBrowserTest() = default;
 
   AdsPageLoadMetricsObserverBrowserTest(
       const AdsPageLoadMetricsObserverBrowserTest&) = delete;
@@ -1577,7 +1577,7 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
       EXPECT_FALSE(error_observer.last_navigation_succeeded());
     } else {
       // Otherwise load the resource, ensuring enough bytes were loaded.
-      int64_t current_network_bytes = waiter->current_network_bytes();
+      base::ByteCount current_network_bytes = waiter->current_network_bytes();
       page_load_metrics::LoadLargeResource(
           large_resource, page_load_metrics::kMaxHeavyAdNetworkSize);
       waiter->AddMinimumNetworkBytesExpectation(
@@ -1721,7 +1721,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
   ad_script_response->Send(std::string(5000, ' '));
   ad_script_response->Done();
 
-  waiter->AddMinimumNetworkBytesExpectation(5000);
+  waiter->AddMinimumNetworkBytesExpectation(base::ByteCount(5000));
 
   std::vector<network::mojom::PermissionsPolicyFeature> features = {
       network::mojom::PermissionsPolicyFeature::kBluetooth,
@@ -1814,7 +1814,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
   vanilla_script_response->WaitForRequest();
   vanilla_script_response->Send(page_load_metrics::kHttpOkResponseHeader);
   vanilla_script_response->Send(std::string(1024, ' '));
-  waiter->AddMinimumNetworkBytesExpectation(5000);
+  waiter->AddMinimumNetworkBytesExpectation(base::ByteCount(5000));
   waiter->Wait();
 
   // Close all tabs instead of navigating as the embedded_test_server will
@@ -1858,21 +1858,20 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
   waiter->AddMinimumCompleteResourcesExpectation(3);
   waiter->Wait();
-  int64_t initial_page_bytes = waiter->current_network_bytes();
+  base::ByteCount initial_page_bytes = waiter->current_network_bytes();
 
   // Make the response large enough so that normal editing to the resource files
   // won't interfere with the test expectations.
-  const int response_kilobytes = 64;
-  const int response_bytes = response_kilobytes * 1024;
+  const base::ByteCount response_size = base::KiB(64);
 
   // Ad resource will not finish loading but should be reported to metrics.
   incomplete_resource_response->WaitForRequest();
   incomplete_resource_response->Send(page_load_metrics::kHttpOkResponseHeader);
-  incomplete_resource_response->Send(std::string(response_bytes, ' '));
+  incomplete_resource_response->Send(std::string(response_size.InBytes(), ' '));
 
   // Wait for the resource update to be received for the incomplete response.
 
-  waiter->AddMinimumNetworkBytesExpectation(response_bytes);
+  waiter->AddMinimumNetworkBytesExpectation(response_size);
   waiter->Wait();
 
   // Close all tabs instead of navigating as the embedded_test_server will
@@ -1880,29 +1879,29 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
   // ControllableHttpResponse.
   browser()->tab_strip_model()->CloseAllTabs();
 
-  int expected_page_kilobytes = (initial_page_bytes + response_bytes) / 1024;
+  base::ByteCount expected_page_size = initial_page_bytes + response_size;
 
   histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.Ads.Bytes.FullPage.Network", expected_page_kilobytes,
+      "PageLoad.Clients.Ads.Bytes.FullPage.Network", expected_page_size.InKiB(),
       1);
   histogram_tester.ExpectBucketCount(
       "PageLoad.Clients.Ads.Bytes.AdFrames.Aggregate.Network",
-      response_kilobytes, 1);
+      response_size.InKiB(), 1);
   histogram_tester.ExpectBucketCount(
       "PageLoad.Clients.Ads.Bytes.AdFrames.Aggregate.Total2",
-      response_kilobytes, 1);
+      response_size.InKiB(), 1);
   histogram_tester.ExpectBucketCount(
       "PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame.Network",
-      response_kilobytes, 1);
+      response_size.InKiB(), 1);
   histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame.Total2", response_kilobytes,
-      1);
+      "PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame.Total2",
+      response_size.InKiB(), 1);
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::AdFrameLoad::kEntryName);
   EXPECT_EQ(1u, entries.size());
   ukm_recorder.ExpectEntryMetric(
       entries.front(), ukm::builders::AdFrameLoad::kLoading_NetworkBytesName,
-      ukm::GetExponentialBucketMinForBytes(response_bytes));
+      ukm::GetExponentialBucketMinForBytes(response_size.InBytes()));
   ukm_recorder.ExpectEntryMetric(
       entries.front(), ukm::builders::AdFrameLoad::kLoading_CacheBytes2Name, 0);
 }

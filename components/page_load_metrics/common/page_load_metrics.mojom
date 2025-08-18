@@ -4,13 +4,13 @@
 
 module page_load_metrics.mojom;
 
-import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/byte_count.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import
-  "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom";
 import "services/network/public/mojom/request_priority.mojom";
+import "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom";
 import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // TimeDeltas below relative to navigation start.
 struct DocumentTiming {
@@ -115,8 +115,8 @@ struct ParseTiming {
   // equal to parse_blocked_on_script_load_duration. Note that this value may be
   // updated multiple times during the period between parse_start and
   // parse_stop. Note that some uncommon cases where scripts are loaded via
-  // document.write are not currently covered by this field. See crbug/600711
-  // for details.
+  // document.write are not currently covered by this field. See
+  // crbug.com/41247575 for details.
   mojo_base.mojom.TimeDelta? parse_blocked_on_script_load_from_document_write_duration;
 
   // Sum of times when the parser is executing a script.  This duration takes
@@ -130,7 +130,7 @@ struct ParseTiming {
   // parse_blocked_on_script_load_duration. Note that this value may be updated
   // multiple times during the period between parse_start and parse_stop. Note
   // that some uncommon cases where scripts are loaded via document.write are
-  // not currently covered by this field. See crbug/600711 for details.
+  // not currently covered by this field. See crbug.com/41247575 for details.
   mojo_base.mojom.TimeDelta? parse_blocked_on_script_execution_from_document_write_duration;
 };
 
@@ -474,19 +474,19 @@ struct ResourceDataUpdate {
 
   // Network bytes received for the resource since the last timing update
   // from renderer to browser.
-  int64 delta_bytes = 0;
+  mojo_base.mojom.ByteCount delta_bytes;
 
   // Total network bytes received for the resource across timing updates. This
   // is the aggregate of the |delta_bytes| from each timing update.
-  int64 received_data_length = 0;
+  mojo_base.mojom.ByteCount received_data_length;
 
   // The length of the response body for the resource before removing any
   // content encodings. Only set for complete resources.
-  int64 encoded_body_length = 0;
+  mojo_base.mojom.ByteCount encoded_body_length;
 
   // The length of the response body in bytes for the resource after decoding.
   // Only set for complete resources.
-  int64 decoded_body_length = 0;
+  mojo_base.mojom.ByteCount decoded_body_length;
 
   // Whether this resource load has completed.
   bool is_complete;

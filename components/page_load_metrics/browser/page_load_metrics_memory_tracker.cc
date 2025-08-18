@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/byte_count.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/page_load_metrics/browser/features.h"
@@ -88,11 +89,11 @@ void PageLoadMetricsMemoryTracker::OnV8MemoryMeasurementAvailable(
       continue;
     }
 
-    int64_t delta_bytes = UpdateMemoryUsageAndGetDelta(
-        rfh, frame_data->v8_memory_used().InBytes());
+    base::ByteCount delta_bytes =
+        UpdateMemoryUsageAndGetDelta(rfh, frame_data->v8_memory_used());
 
     // Only send updates that are nontrivial.
-    if (delta_bytes == 0) {
+    if (delta_bytes.is_zero()) {
       continue;
     }
 
@@ -113,8 +114,8 @@ void PageLoadMetricsMemoryTracker::OnV8MemoryMeasurementAvailable(
                       MemoryUpdate(rfh->GetGlobalId(), delta_bytes))));
 
     if (!emplace_pair.second) {
-      emplace_pair.first->second.updates.emplace_back(
-          MemoryUpdate(rfh->GetGlobalId(), delta_bytes));
+      emplace_pair.first->second.updates.emplace_back(rfh->GetGlobalId(),
+                                                      delta_bytes);
     }
   }
 
@@ -150,11 +151,11 @@ void PageLoadMetricsMemoryTracker::OnRenderFrameDeleted(
   // contents will be picked up by the next GC. So for all intents and
   // purposes, the memory is freed at this point, and we remove the entry from
   // our usage map and notify observers of the delta.
-  int64_t delta_bytes = -it->second;
+  base::ByteCount delta_bytes = -it->second;
   per_frame_memory_usage_map_.erase(it);
 
   // Only send updates that are nontrivial.
-  if (delta_bytes == 0) {
+  if (delta_bytes.is_zero()) {
     return;
   }
 
@@ -163,12 +164,12 @@ void PageLoadMetricsMemoryTracker::OnRenderFrameDeleted(
   observer->OnV8MemoryChanged(update);
 }
 
-int64_t PageLoadMetricsMemoryTracker::UpdateMemoryUsageAndGetDelta(
+base::ByteCount PageLoadMetricsMemoryTracker::UpdateMemoryUsageAndGetDelta(
     content::RenderFrameHost* render_frame_host,
-    uint64_t current_bytes_used) {
+    base::ByteCount current_bytes_used) {
   DCHECK(render_frame_host);
 
-  int64_t delta_bytes = current_bytes_used;
+  base::ByteCount delta_bytes = current_bytes_used;
   int routing_id = render_frame_host->GetRoutingID();
   auto it = per_frame_memory_usage_map_.find(routing_id);
 

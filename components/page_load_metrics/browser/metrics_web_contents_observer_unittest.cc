@@ -1373,17 +1373,18 @@ TEST_F(MetricsWebContentsObserverNonPrimaryPageTest, MemoryUpdates) {
   EXPECT_EQ(1, CountOnBackForwardCacheEntered());
   EXPECT_EQ(2, tracker_committed_count());
 
-  std::vector<MemoryUpdate> memory_updates = {{rfh1_id, 100}, {rfh2_id, 200}};
+  std::vector<MemoryUpdate> memory_updates = {{rfh1_id, base::ByteCount(100)},
+                                              {rfh2_id, base::ByteCount(200)}};
   observer()->OnV8MemoryChanged(memory_updates);
 
   // Verify that memory updates are observed both in primary URL2 and
   // non-primary URL1.
   ASSERT_EQ(2u, observed_memory_updates_.size());
   ASSERT_EQ(1u, observed_memory_updates_[GURL(kDefaultTestUrl)].size());
-  EXPECT_EQ(100,
+  EXPECT_EQ(base::ByteCount(100),
             observed_memory_updates_[GURL(kDefaultTestUrl)][0].delta_bytes);
   ASSERT_EQ(1u, observed_memory_updates_[GURL(kDefaultTestUrl2)].size());
-  EXPECT_EQ(200,
+  EXPECT_EQ(base::ByteCount(200),
             observed_memory_updates_[GURL(kDefaultTestUrl2)][0].delta_bytes);
 }
 

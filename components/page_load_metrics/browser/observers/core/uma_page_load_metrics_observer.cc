@@ -12,6 +12,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -1066,8 +1067,8 @@ void UmaPageLoadMetricsObserver::OnCpuTimingUpdate(
 
 void UmaPageLoadMetricsObserver::RecordByteAndResourceHistograms(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  DCHECK_GE(network_bytes_, 0);
-  DCHECK_GE(cache_bytes_, 0);
+  DCHECK(!network_bytes_.is_negative());
+  DCHECK(!cache_bytes_.is_negative());
   click_tracker_.RecordClickBurst(GetDelegate().GetPageUkmSourceId());
 }
 
@@ -1137,7 +1138,8 @@ void UmaPageLoadMetricsObserver::RecordV8MemoryHistograms() {
   }
 }
 
-void UmaPageLoadMetricsObserver::MemoryUsage::UpdateUsage(int64_t delta_bytes) {
+void UmaPageLoadMetricsObserver::MemoryUsage::UpdateUsage(
+    base::ByteCount delta_bytes) {
   current_bytes_used_ += delta_bytes;
   max_bytes_used_ = std::max(max_bytes_used_, current_bytes_used_);
 }

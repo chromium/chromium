@@ -496,7 +496,7 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
     //     was_cached ? 0
     //                : data_reduction_proxy::util::EstimateOriginalBodySize(
     //                      request, lofi_decider);
-    int original_content_length = 0;
+    base::ByteCount original_content_length;
 
     const blink::mojom::CommonNetworkInfoPtr& network_info =
         resource_load_info.network_info;
@@ -504,8 +504,9 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
         url::SchemeHostPort(resource_load_info.final_url),
         network_info->remote_endpoint.value(),
         render_frame_host->GetFrameTreeNodeId(), resource_load_info.was_cached,
-        resource_load_info.raw_body_bytes, original_content_length,
-        resource_load_info.request_destination, resource_load_info.net_error,
+        base::ByteCount(resource_load_info.raw_body_bytes),
+        original_content_length, resource_load_info.request_destination,
+        resource_load_info.net_error,
         std::make_unique<net::LoadTimingInfo>(
             resource_load_info.load_timing_info));
     tracker->OnLoadedResource(extra_request_complete_info);

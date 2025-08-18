@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_MEMORY_TRACKER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_MEMORY_TRACKER_H_
 
+#include "base/byte_count.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -46,12 +47,12 @@ class PageLoadMetricsMemoryTracker
                             MetricsWebContentsObserver* observer);
 
  private:
-  int64_t UpdateMemoryUsageAndGetDelta(
+  base::ByteCount UpdateMemoryUsageAndGetDelta(
       content::RenderFrameHost* render_frame_host,
-      uint64_t current_bytes_used);
+      base::ByteCount current_bytes_used);
 
   // Tracks the most recent per-frame measurements by frame routing id.
-  base::flat_map<int, uint64_t> per_frame_memory_usage_map_;
+  base::flat_map<int, base::ByteCount> per_frame_memory_usage_map_;
 
   // Allows receipt of per-frame V8 memory measurements once instantiated
   // and PageLoadMetricsMemoryTracker is added as an observer.

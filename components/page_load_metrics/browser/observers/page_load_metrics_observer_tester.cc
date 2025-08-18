@@ -305,9 +305,9 @@ void PageLoadMetricsObserverTester::SimulateLoadedResource(
   blink::mojom::ResourceLoadInfo resource_load_info;
   resource_load_info.final_url = info.final_url.GetURL();
   resource_load_info.was_cached = info.was_cached;
-  resource_load_info.raw_body_bytes = info.raw_body_bytes;
+  resource_load_info.raw_body_bytes = info.raw_body_bytes.InBytes();
   resource_load_info.total_received_bytes =
-      info.original_network_content_length;
+      info.original_network_content_length.InBytes();
   resource_load_info.request_destination = info.request_destination;
   resource_load_info.net_error = info.net_error;
   resource_load_info.network_info = blink::mojom::CommonNetworkInfo::New();
@@ -385,9 +385,9 @@ void PageLoadMetricsObserverTester::RegisterObservers(
 
 void PageLoadMetricsObserverTester::SimulateMemoryUpdate(
     content::RenderFrameHost* render_frame_host,
-    int64_t delta_bytes) {
+    base::ByteCount delta_bytes) {
   DCHECK(render_frame_host);
-  if (delta_bytes != 0) {
+  if (!delta_bytes.is_zero()) {
     std::vector<MemoryUpdate> update(
         {MemoryUpdate(render_frame_host->GetGlobalId(), delta_bytes)});
     metrics_web_contents_observer_->OnV8MemoryChanged(update);

@@ -222,7 +222,7 @@ void PageLoadMetricsTestWaiter::AddMinimumCompleteResourcesExpectation(
 }
 
 void PageLoadMetricsTestWaiter::AddMinimumNetworkBytesExpectation(
-    int expected_minimum_network_bytes) {
+    base::ByteCount expected_minimum_network_bytes) {
   expected_minimum_network_bytes_ = expected_minimum_network_bytes;
 }
 
@@ -426,8 +426,9 @@ void PageLoadMetricsTestWaiter::OnResourceDataUseObserved(
 
     // If |rfh| is a subframe with nonzero bytes, update the subframe
     // data observation.
-    if (rfh->GetParent() && resource->delta_bytes > 0)
+    if (rfh->GetParent() && resource->delta_bytes.is_positive()) {
       observed_.subframe_data_ = true;
+    }
   }
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();
@@ -663,7 +664,7 @@ bool PageLoadMetricsTestWaiter::ResourceUseExpectationsSatisfied() const {
   return (expected_minimum_complete_resources_ == 0 ||
           current_complete_resources_ >=
               expected_minimum_complete_resources_) &&
-         (expected_minimum_network_bytes_ == 0 ||
+         (expected_minimum_network_bytes_.is_zero() ||
           current_network_bytes_ >= expected_minimum_network_bytes_);
 }
 
@@ -827,7 +828,7 @@ void PageLoadMetricsTestWaiter::ResetExpectations() {
   expected_ = State();
   observed_ = State();
   expected_minimum_complete_resources_ = 0;
-  expected_minimum_network_bytes_ = 0;
+  expected_minimum_network_bytes_ = base::ByteCount(0);
   expected_minimum_aggregate_cpu_time_ = base::TimeDelta();
 }
 

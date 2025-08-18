@@ -48,7 +48,7 @@ const char kHttpOkResponseHeader[] =
     "Content-Type: text/html; charset=utf-8\r\n"
     "\r\n";
 
-const int kMaxHeavyAdNetworkSize =
+const base::ByteCount kMaxHeavyAdNetworkSize =
     heavy_ad_thresholds::kMaxNetworkBytes +
     AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
         kMaxNetworkThresholdNoiseBytes;
@@ -144,10 +144,10 @@ void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents) {
 }
 
 void LoadLargeResource(net::test_server::ControllableHttpResponse* response,
-                       int bytes) {
+                       base::ByteCount bytes) {
   response->WaitForRequest();
   response->Send(kHttpOkResponseHeader);
-  response->Send(std::string(bytes, ' '));
+  response->Send(std::string(bytes.InBytes(), ' '));
   response->Done();
 }
 

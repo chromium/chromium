@@ -208,14 +208,14 @@ class UmaPageLoadMetricsObserver
   // Class to keep track of per-frame memory usage by V8.
   class MemoryUsage {
    public:
-    void UpdateUsage(int64_t delta_bytes);
+    void UpdateUsage(base::ByteCount delta_bytes);
 
-    uint64_t current_bytes_used() { return current_bytes_used_; }
-    uint64_t max_bytes_used() { return max_bytes_used_; }
+    base::ByteCount current_bytes_used() { return current_bytes_used_; }
+    base::ByteCount max_bytes_used() { return max_bytes_used_; }
 
    private:
-    uint64_t current_bytes_used_ = 0U;
-    uint64_t max_bytes_used_ = 0U;
+    base::ByteCount current_bytes_used_;
+    base::ByteCount max_bytes_used_;
   };
 
   void RecordNavigationTimingHistograms();
@@ -243,12 +243,12 @@ class UmaPageLoadMetricsObserver
 
   // The number of body (not header) prefilter bytes consumed by completed
   // requests for the page.
-  int64_t cache_bytes_;
-  int64_t network_bytes_;
+  base::ByteCount cache_bytes_;
+  base::ByteCount network_bytes_;
 
   // The number of prefilter bytes consumed by completed and partial network
   // requests for the page.
-  int64_t network_bytes_including_headers_;
+  base::ByteCount network_bytes_including_headers_;
 
   // The CPU usage attributed to this page.
   base::TimeDelta total_cpu_usage_;

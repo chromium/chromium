@@ -995,21 +995,21 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   builder.SetCpuTime(total_foreground_cpu_time_.InMilliseconds());
 
   builder.SetNet_CacheBytes2(
-      ukm::GetExponentialBucketMinForBytes(cache_bytes_));
+      ukm::GetExponentialBucketMinForBytes(cache_bytes_.InBytes()));
   builder.SetNet_NetworkBytes2(
-      ukm::GetExponentialBucketMinForBytes(network_bytes_));
+      ukm::GetExponentialBucketMinForBytes(network_bytes_.InBytes()));
 
   builder.SetNet_JavaScriptBytes2(
-      ukm::GetExponentialBucketMinForBytes(js_decoded_bytes_));
+      ukm::GetExponentialBucketMinForBytes(js_decoded_bytes_.InBytes()));
   builder.SetNet_JavaScriptMaxBytes2(
-      ukm::GetExponentialBucketMinForBytes(js_max_decoded_bytes_));
+      ukm::GetExponentialBucketMinForBytes(js_max_decoded_bytes_.InBytes()));
 
   builder.SetNet_ImageBytes2(
-      ukm::GetExponentialBucketMinForBytes(image_total_bytes_));
+      ukm::GetExponentialBucketMinForBytes(image_total_bytes_.InBytes()));
   builder.SetNet_ImageSubframeBytes2(
-      ukm::GetExponentialBucketMinForBytes(image_subframe_bytes_));
+      ukm::GetExponentialBucketMinForBytes(image_subframe_bytes_.InBytes()));
   builder.SetNet_MediaBytes2(
-      ukm::GetExponentialBucketMinForBytes(media_bytes_));
+      ukm::GetExponentialBucketMinForBytes(media_bytes_.InBytes()));
 
   builder.SetSoftNavigationCount(
       GetDelegate().GetSoftNavigationMetrics().count);

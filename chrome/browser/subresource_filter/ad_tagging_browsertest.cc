@@ -99,7 +99,7 @@ class AdTaggingPageLoadMetricsTestWaiter
     // results in a cache miss, by using the fact that it will have no received
     // data. Note that this only impacts this class's expectations, not those in
     // PageLoadMetricsTestWaiter itself.
-    if (resource->is_complete && resource->received_data_length != 0) {
+    if (resource->is_complete && !resource->received_data_length.is_zero()) {
       if (resource->reported_as_ad_resource) {
         current_complete_ad_resources_++;
       } else {

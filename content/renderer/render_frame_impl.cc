@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -4532,7 +4533,8 @@ void RenderFrameImpl::DidLoadResourceFromMemoryCache(
     const blink::WebURLResponse& response) {
   for (auto& observer : observers_) {
     observer.DidLoadResourceFromMemoryCache(
-        request.Url(), response.RequestId(), response.EncodedBodyLength(),
+        request.Url(), response.RequestId(),
+        base::ByteCount(response.EncodedBodyLength()),
         response.MimeType().Utf8(), response.FromArchive());
   }
 }
@@ -4564,7 +4566,8 @@ void RenderFrameImpl::DidCancelResponse(int request_id) {
 void RenderFrameImpl::DidReceiveTransferSizeUpdate(int resource_id,
                                                    int received_data_length) {
   for (auto& observer : observers_) {
-    observer.DidReceiveTransferSizeUpdate(resource_id, received_data_length);
+    observer.DidReceiveTransferSizeUpdate(
+        resource_id, base::ByteCount(received_data_length));
   }
 }
 

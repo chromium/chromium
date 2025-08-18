@@ -11,6 +11,7 @@
 
 #include <array>
 
+#include "base/byte_count.h"
 #include "base/containers/queue.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
@@ -47,7 +48,8 @@ class ResourceLoadAggregator {
   // Adds additional bytes to the ad resource byte counts. This
   // is used to notify the frame that some bytes were tagged as ad bytes after
   // they were loaded.
-  void AdjustAdBytes(int64_t unaccounted_ad_bytes, ResourceMimeType mime_type);
+  void AdjustAdBytes(base::ByteCount unaccounted_ad_bytes,
+                     ResourceMimeType mime_type);
 
   // Get the mime type of a resource. This only returns a subset of mime types,
   // grouped at a higher level. For example, all video mime types return the
@@ -59,37 +61,38 @@ class ResourceLoadAggregator {
 
   // Accessors for the various data stored in the class.
 
-  size_t bytes() const { return bytes_; }
+  base::ByteCount bytes() const { return bytes_; }
 
-  size_t network_bytes() const { return network_bytes_; }
+  base::ByteCount network_bytes() const { return network_bytes_; }
 
-  size_t ad_bytes() const { return ad_bytes_; }
+  base::ByteCount ad_bytes() const { return ad_bytes_; }
 
-  size_t ad_network_bytes() const { return ad_network_bytes_; }
+  base::ByteCount ad_network_bytes() const { return ad_network_bytes_; }
 
-  size_t GetAdNetworkBytesForMime(ResourceMimeType mime_type) const {
+  base::ByteCount GetAdNetworkBytesForMime(ResourceMimeType mime_type) const {
     return ad_bytes_by_mime_[static_cast<size_t>(mime_type)];
   }
 
  private:
   // Total bytes used to load resources in the frame, including headers.
-  size_t bytes_ = 0u;
-  size_t network_bytes_ = 0u;
+  base::ByteCount bytes_;
+  base::ByteCount network_bytes_;
 
   // Ad network bytes for different mime type resources loaded in the frame.
-  std::array<size_t, static_cast<size_t>(ResourceMimeType::kMaxValue) + 1>
-      ad_bytes_by_mime_ = {0};
+  std::array<base::ByteCount,
+             static_cast<size_t>(ResourceMimeType::kMaxValue) + 1>
+      ad_bytes_by_mime_;
 
   // Tracks the number of bytes that were used to load resources which were
   // detected to be ads inside of this frame. For ad frames, these counts should
   // match |frame_bytes| and |frame_network_bytes|.
-  size_t ad_bytes_ = 0u;
-  size_t ad_network_bytes_ = 0u;
+  base::ByteCount ad_bytes_;
+  base::ByteCount ad_network_bytes_;
 };
 
 class PeakCpuAggregator {
  public:
-  // Standard constructor / desturctor.
+  // Standard constructor / destructor.
   PeakCpuAggregator();
   ~PeakCpuAggregator();
 
@@ -127,19 +130,19 @@ class PeakCpuAggregator {
 
 class MemoryUsageAggregator {
  public:
-  void UpdateUsage(int64_t delta_bytes);
+  void UpdateUsage(base::ByteCount delta_bytes);
 
-  uint64_t max_bytes_used() const { return max_bytes_used_; }
+  base::ByteCount max_bytes_used() const { return max_bytes_used_; }
 
  private:
   // Maximum concurrent memory usage by V8 in this ad frame tree.
   // Tracks max value of |v8_current_memory_bytes_used_| for this frame tree.
-  uint64_t max_bytes_used_ = 0UL;
+  base::ByteCount max_bytes_used_;
 
   // Current concurrent memory usage by V8 in this ad frame tree.
   // Computation is best-effort, as it relies on individual asynchronous
   // per-frame measurements, some of which may be stale.
-  uint64_t current_bytes_used_ = 0UL;
+  base::ByteCount current_bytes_used_;
 };
 
 }  // namespace page_load_metrics

@@ -76,13 +76,14 @@ class PageTimingMetricsSender {
                         const network::mojom::URLResponseHead& response_head,
                         network::mojom::RequestDestination request_destination,
                         bool is_ad_resource);
-  void DidReceiveTransferSizeUpdate(int resource_id, int received_data_length);
+  void DidReceiveTransferSizeUpdate(int resource_id,
+                                    base::ByteCount received_data_length);
   void DidCompleteResponse(int resource_id,
                            const network::URLLoaderCompletionStatus& status);
   void DidCancelResponse(int resource_id);
   void DidLoadResourceFromMemoryCache(const GURL& response_url,
                                       int request_id,
-                                      int64_t encoded_body_length,
+                                      base::ByteCount encoded_body_length,
                                       const std::string& mime_type);
   void OnMainFrameIntersectionChanged(
       const gfx::Rect& main_frame_intersection_rect);

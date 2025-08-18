@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
@@ -187,7 +188,7 @@ class UmaPageLoadMetricsObserverTest
   }
 
   void SimulateV8MemoryChange(content::RenderFrameHost* render_frame_host,
-                              int64_t delta_bytes) {
+                              base::ByteCount delta_bytes) {
     tester()->SimulateMemoryUpdate(render_frame_host, delta_bytes);
   }
 
@@ -597,7 +598,7 @@ TEST_P(UmaPageLoadMetricsObserverTest, Reload) {
   tester()->SimulateTimingUpdate(timing);
 
   auto resources =
-      GetSampleResourceDataUpdateForTesting(10 * 1024 /* resource_size */);
+      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiB(10));
   tester()->SimulateResourceDataUseUpdate(resources);
 
   tester()->NavigateToUntrackedUrl();
@@ -641,7 +642,7 @@ TEST_P(UmaPageLoadMetricsObserverTest, ForwardBack) {
   tester()->SimulateTimingUpdate(timing);
 
   auto resources =
-      GetSampleResourceDataUpdateForTesting(10 * 1024 /* resource_size */);
+      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiB(10));
   tester()->SimulateResourceDataUseUpdate(resources);
 
   tester()->NavigateToUntrackedUrl();
@@ -711,7 +712,7 @@ TEST_P(UmaPageLoadMetricsObserverTest, NewNavigation) {
   tester()->SimulateTimingUpdate(timing);
 
   auto resources =
-      GetSampleResourceDataUpdateForTesting(10 * 1024 /* resource_size */);
+      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiB(10));
   tester()->SimulateResourceDataUseUpdate(resources);
 
   tester()->NavigateToUntrackedUrl();
@@ -1359,12 +1360,12 @@ TEST_P(UmaPageLoadMetricsObserverTest, MainFrame_MaxMemoryBytesRecorded) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   // Notify that memory measurements are available for the main frame.
-  SimulateV8MemoryChange(main_rfh(), 100 * 1024);
+  SimulateV8MemoryChange(main_rfh(), base::KiB(100));
 
   // Simulate positive and negative shifts to memory usage and ensure the
   // maximum value is properly tracked.
-  SimulateV8MemoryChange(main_rfh(), 50 * 1024);
-  SimulateV8MemoryChange(main_rfh(), -150 * 1024);
+  SimulateV8MemoryChange(main_rfh(), base::KiB(50));
+  SimulateV8MemoryChange(main_rfh(), base::KiB(-150));
 
   // Navigate again to force histogram recording.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
@@ -1386,13 +1387,13 @@ TEST_P(UmaPageLoadMetricsObserverTest, SingleSubFrame_MaxMemoryBytesRecorded) {
       GURL("https://google.com/subframe.html"));
 
   // Notify that memory measurements are available for each frame.
-  SimulateV8MemoryChange(main_rfh(), 100 * 1024);
-  SimulateV8MemoryChange(subframe, 10 * 1024);
+  SimulateV8MemoryChange(main_rfh(), base::KiB(100));
+  SimulateV8MemoryChange(subframe, base::KiB(10));
 
   // Simulate positive and negative shifts to memory usage and ensure the
   // maximum value is properly tracked.
-  SimulateV8MemoryChange(subframe, 30 * 1024);
-  SimulateV8MemoryChange(subframe, -20 * 1024);
+  SimulateV8MemoryChange(subframe, base::KiB(30));
+  SimulateV8MemoryChange(subframe, base::KiB(-20));
 
   // Navigate again to force histogram recording.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
@@ -1419,21 +1420,21 @@ TEST_P(UmaPageLoadMetricsObserverTest, MultiSubFrames_MaxMemoryBytesRecorded) {
       subframe2, "subframe3", GURL("https://google.com/subframe3.html"));
 
   // Notify that memory measurements are available for each frame.
-  SimulateV8MemoryChange(main_rfh(), 500 * 1024);
-  SimulateV8MemoryChange(subframe1, 10 * 1024);
-  SimulateV8MemoryChange(subframe2, 20 * 1024);
-  SimulateV8MemoryChange(subframe3, 30 * 1024);
+  SimulateV8MemoryChange(main_rfh(), base::KiB(500));
+  SimulateV8MemoryChange(subframe1, base::KiB(10));
+  SimulateV8MemoryChange(subframe2, base::KiB(20));
+  SimulateV8MemoryChange(subframe3, base::KiB(30));
 
   // Simulate positive and negative shifts to memory usage and ensure the
   // maximum value is properly tracked.
-  SimulateV8MemoryChange(main_rfh(), 100 * 1024);
-  SimulateV8MemoryChange(subframe1, 5 * 1024);
-  SimulateV8MemoryChange(subframe1, -2 * 1024);
-  SimulateV8MemoryChange(subframe2, 5 * 1024);
-  SimulateV8MemoryChange(subframe2, -2 * 1024);
-  SimulateV8MemoryChange(main_rfh(), -200 * 1024);
-  SimulateV8MemoryChange(subframe3, 5 * 1024);
-  SimulateV8MemoryChange(subframe3, -2 * 1024);
+  SimulateV8MemoryChange(main_rfh(), base::KiB(100));
+  SimulateV8MemoryChange(subframe1, base::KiB(5));
+  SimulateV8MemoryChange(subframe1, base::KiB(-2));
+  SimulateV8MemoryChange(subframe2, base::KiB(5));
+  SimulateV8MemoryChange(subframe2, base::KiB(-2));
+  SimulateV8MemoryChange(main_rfh(), base::KiB(-200));
+  SimulateV8MemoryChange(subframe3, base::KiB(5));
+  SimulateV8MemoryChange(subframe3, base::KiB(-2));
 
   // Navigate again to force histogram recording.
   NavigateAndCommit(GURL(kDefaultTestUrl2));

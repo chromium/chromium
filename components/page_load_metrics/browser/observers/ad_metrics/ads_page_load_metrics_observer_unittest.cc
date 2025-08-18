@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -79,14 +80,14 @@ namespace page_load_metrics {
 namespace {
 
 struct ExpectedFrameBytes {
-  ExpectedFrameBytes(size_t cached_kb, size_t uncached_kb)
-      : cached_kb(cached_kb), uncached_kb(uncached_kb) {}
-  size_t cached_kb;
-  size_t uncached_kb;
+  ExpectedFrameBytes(base::ByteCount cached, base::ByteCount uncached)
+      : cached(cached), uncached(uncached) {}
+  base::ByteCount cached;
+  base::ByteCount uncached;
 
   bool operator<(const ExpectedFrameBytes& other) const {
-    return cached_kb < other.cached_kb ||
-           (cached_kb == other.cached_kb && uncached_kb < other.uncached_kb);
+    return cached < other.cached ||
+           (cached == other.cached && uncached < other.uncached);
   }
 };
 
@@ -114,26 +115,27 @@ struct CompleteAuctionResult {
 enum class ResourceCached { kNotCached = 0, kCachedHttp, kCachedMemory };
 enum class FrameType { AD = 0, NON_AD };
 
-const base::TimeDelta kParseStartTime = base::Milliseconds(3);
-const base::TimeDelta kCreativeEligibleToPaintTime = base::Milliseconds(4);
-const base::TimeDelta kCreativeFCPTime = base::Milliseconds(5);
-const base::TimeDelta kOtherFrameEligibleToPaintTime = base::Milliseconds(9);
-const base::TimeDelta kOtherFrameFCPTime = base::Milliseconds(10);
-const char kAdUrl[] = "https://ads.com/ad/disallowed.html";
-const char kOtherAdUrl[] = "https://other-ads.com/ad/disallowed.html";
-const char kNonAdUrl[] = "https://foo.com/";
-const char kNonAdUrlSameOrigin[] = "https://ads.com/foo";
-const char kAllowedUrl[] = "https://foo.com/ad/not_disallowed.html";
-const char kMemoryMainFrameMaxHistogramId[] =
+constexpr base::TimeDelta kParseStartTime = base::Milliseconds(3);
+constexpr base::TimeDelta kCreativeEligibleToPaintTime = base::Milliseconds(4);
+constexpr base::TimeDelta kCreativeFCPTime = base::Milliseconds(5);
+constexpr base::TimeDelta kOtherFrameEligibleToPaintTime =
+    base::Milliseconds(9);
+constexpr base::TimeDelta kOtherFrameFCPTime = base::Milliseconds(10);
+constexpr char kAdUrl[] = "https://ads.com/ad/disallowed.html";
+constexpr char kOtherAdUrl[] = "https://other-ads.com/ad/disallowed.html";
+constexpr char kNonAdUrl[] = "https://foo.com/";
+constexpr char kNonAdUrlSameOrigin[] = "https://ads.com/foo";
+constexpr char kAllowedUrl[] = "https://foo.com/ad/not_disallowed.html";
+constexpr char kMemoryMainFrameMaxHistogramId[] =
     "PageLoad.Clients.Ads.Memory.MainFrame.Max";
-const char kMemoryUpdateCountHistogramId[] =
+constexpr char kMemoryUpdateCountHistogramId[] =
     "PageLoad.Clients.Ads.Memory.UpdateCount";
-const char kAdClickHistoryQueryCountHistogramId[] =
+constexpr char kAdClickHistoryQueryCountHistogramId[] =
     "PageLoad.Clients.Ads.AdClick.HistoryQueryCount2";
-const char kAdClickEtldPlusOneHistoryQueryCountHistogramId[] =
+constexpr char kAdClickEtldPlusOneHistoryQueryCountHistogramId[] =
     "PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount2";
 
-const int kMaxHeavyAdNetworkBytes =
+constexpr base::ByteCount kMaxHeavyAdNetworkBytes =
     heavy_ad_thresholds::kMaxNetworkBytes +
     AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
         kMaxNetworkThresholdNoiseBytes;
@@ -204,9 +206,9 @@ class ResourceLoadingCancellingThrottle
     // Load a resource for the main frame before it commits.
     std::vector<mojom::ResourceDataUpdatePtr> resources;
     mojom::ResourceDataUpdatePtr resource = mojom::ResourceDataUpdate::New();
-    resource->received_data_length = 10 * 1024;
-    resource->delta_bytes = 10 * 1024;
-    resource->encoded_body_length = 10 * 1024;
+    resource->received_data_length = base::KiB(10);
+    resource->delta_bytes = base::KiB(10);
+    resource->encoded_body_length = base::KiB(10);
     resource->cache_type = mojom::CacheType::kNotCached;
     resource->is_complete = true;
     resource->is_primary_frame_resource = true;
@@ -229,14 +231,16 @@ class ResourceLoadingCancellingThrottle
 class MockNoiseProvider
     : public AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider {
  public:
-  explicit MockNoiseProvider(int noise)
-      : HeavyAdThresholdNoiseProvider(true /* use_noise */), noise_(noise) {}
+  explicit MockNoiseProvider(base::ByteCount noise)
+      : HeavyAdThresholdNoiseProvider(/*use_noise=*/true), noise_(noise) {}
   ~MockNoiseProvider() override = default;
 
-  int GetNetworkThresholdNoiseForFrame() const override { return noise_; }
+  base::ByteCount GetNetworkThresholdNoiseForFrame() const override {
+    return noise_;
+  }
 
  private:
-  int noise_;
+  base::ByteCount noise_;
 };
 
 std::string SuffixedHistogram(const std::string& suffix) {
@@ -249,14 +253,14 @@ std::string SuffixedHistogram(const std::string& suffix) {
 void TestHistograms(const base::HistogramTester& histograms,
                     const ukm::TestAutoSetUkmRecorder& ukm_recorder,
                     const std::vector<ExpectedFrameBytes>& ad_frames,
-                    size_t non_ad_cached_kb,
-                    size_t non_ad_uncached_kb) {
-  size_t total_ad_uncached_kb = 0;
-  size_t total_ad_kb = 0;
+                    base::ByteCount non_ad_cached,
+                    base::ByteCount non_ad_uncached) {
+  base::ByteCount total_ad_uncached;
+  base::ByteCount total_ad;
   size_t ad_frame_count = 0;
 
-  std::map<size_t, int> frames_with_total_byte_count;
-  std::map<size_t, int> frames_with_network_byte_count;
+  std::map<base::ByteCount, int> frames_with_total_byte_count;
+  std::map<base::ByteCount, int> frames_with_network_byte_count;
   std::map<size_t, int> frames_with_percent_network_count;
 
   // This map is keyed by (total bytes, network bytes).
@@ -265,18 +269,18 @@ void TestHistograms(const base::HistogramTester& histograms,
   // Perform some initial calculations on the number of bytes, of each type,
   // in each ad frame.
   for (const ExpectedFrameBytes& bytes : ad_frames) {
-    total_ad_uncached_kb += bytes.uncached_kb;
-    total_ad_kb += bytes.cached_kb + bytes.uncached_kb;
+    total_ad_uncached += bytes.uncached;
+    total_ad += bytes.cached + bytes.uncached;
 
     ad_frame_count += 1;
 
-    size_t total_frame_kb = bytes.cached_kb + bytes.uncached_kb;
+    base::ByteCount total_frame = bytes.cached + bytes.uncached;
 
-    frames_with_total_byte_count[total_frame_kb] += 1;
-    frames_with_network_byte_count[bytes.uncached_kb] += 1;
-    if (total_frame_kb > 0) {
-      frames_with_percent_network_count[(bytes.uncached_kb * 100) /
-                                        total_frame_kb] += 1;
+    frames_with_total_byte_count[total_frame] += 1;
+    frames_with_network_byte_count[bytes.uncached] += 1;
+    if (total_frame.is_positive()) {
+      frames_with_percent_network_count[(bytes.uncached.InBytes() * 100) /
+                                        total_frame.InBytes()] += 1;
     }
     frame_byte_counts[bytes] += 1;
   }
@@ -291,39 +295,41 @@ void TestHistograms(const base::HistogramTester& histograms,
   for (const auto& total_bytes_and_count : frames_with_total_byte_count) {
     histograms.ExpectBucketCount(
         SuffixedHistogram("Bytes.AdFrames.PerFrame.Total2"),
-        total_bytes_and_count.first, total_bytes_and_count.second);
+        total_bytes_and_count.first.InKiB(), total_bytes_and_count.second);
   }
   for (const auto& network_bytes_and_count : frames_with_network_byte_count) {
     histograms.ExpectBucketCount(
         SuffixedHistogram("Bytes.AdFrames.PerFrame.Network"),
-        network_bytes_and_count.first, network_bytes_and_count.second);
+        network_bytes_and_count.first.InKiB(), network_bytes_and_count.second);
   }
 
   histograms.ExpectUniqueSample(
-      SuffixedHistogram("Bytes.AdFrames.Aggregate.Total2"), total_ad_kb, 1);
+      SuffixedHistogram("Bytes.AdFrames.Aggregate.Total2"), total_ad.InKiB(),
+      1);
   histograms.ExpectUniqueSample(
       SuffixedHistogram("Bytes.AdFrames.Aggregate.Network"),
-      total_ad_uncached_kb, 1);
+      total_ad_uncached.InKiB(), 1);
   histograms.ExpectUniqueSample(
       SuffixedHistogram("Bytes.FullPage.Total2"),
-      non_ad_cached_kb + non_ad_uncached_kb + total_ad_kb, 1);
+      (non_ad_cached + non_ad_uncached + total_ad).InKiB(), 1);
   histograms.ExpectUniqueSample(SuffixedHistogram("Bytes.FullPage.Network"),
-                                non_ad_uncached_kb + total_ad_uncached_kb, 1);
+                                (non_ad_uncached + total_ad_uncached).InKiB(),
+                                1);
   histograms.ExpectUniqueSample(
       SuffixedHistogram("Bytes.NonAdFrames.Aggregate.Total2"),
-      non_ad_cached_kb + non_ad_uncached_kb, 1);
-  if (total_ad_kb + non_ad_cached_kb + non_ad_uncached_kb > 0) {
+      (non_ad_cached + non_ad_uncached).InKiB(), 1);
+  if ((total_ad + non_ad_cached + non_ad_uncached).is_positive()) {
     histograms.ExpectUniqueSample(
         SuffixedHistogram("Bytes.FullPage.Total2.PercentAdFrames"),
-        (total_ad_kb * 100) /
-            (total_ad_kb + non_ad_cached_kb + non_ad_uncached_kb),
+        total_ad.InBytes() * 100 /
+            (total_ad + non_ad_cached + non_ad_uncached).InBytes(),
         1);
   }
-  if (total_ad_uncached_kb + non_ad_uncached_kb > 0) {
+  if ((total_ad_uncached + non_ad_uncached).is_positive()) {
     histograms.ExpectUniqueSample(
         SuffixedHistogram("Bytes.FullPage.Network.PercentAdFrames"),
-        (total_ad_uncached_kb * 100) /
-            (total_ad_uncached_kb + non_ad_uncached_kb),
+        total_ad_uncached.InBytes() * 100 /
+            (total_ad_uncached + non_ad_uncached).InBytes(),
         1);
   }
 
@@ -333,19 +339,18 @@ void TestHistograms(const base::HistogramTester& histograms,
   EXPECT_EQ(ad_frame_count, entries.size());
 
   for (const auto& byte_count : frame_byte_counts) {
-    size_t cached_bytes = byte_count.first.cached_kb * 1024;
-    size_t network_bytes = byte_count.first.uncached_kb * 1024;
     int matching_entries = 0;
     for (const ukm::mojom::UkmEntry* entry : entries) {
       int64_t entry_cache_bytes = *ukm_recorder.GetEntryMetric(
           entry, ukm::builders::AdFrameLoad::kLoading_CacheBytes2Name);
       int64_t entry_network_bytes = *ukm_recorder.GetEntryMetric(
           entry, ukm::builders::AdFrameLoad::kLoading_NetworkBytesName);
-      if (entry_cache_bytes ==
-              ukm::GetExponentialBucketMinForBytes(cached_bytes) &&
-          entry_network_bytes ==
-              ukm::GetExponentialBucketMinForBytes(network_bytes))
+      if (entry_cache_bytes == ukm::GetExponentialBucketMinForBytes(
+                                   byte_count.first.cached.InBytes()) &&
+          entry_network_bytes == ukm::GetExponentialBucketMinForBytes(
+                                     byte_count.first.uncached.InBytes())) {
         matching_entries++;
+      }
     }
     EXPECT_EQ(matching_entries, byte_count.second);
   }
@@ -556,8 +561,8 @@ class AdsPageLoadMetricsObserverTest
         blink::mojom::LocalFrame::Name_,
         base::BindRepeating(&FrameRemoteTester::BindPendingReceiver,
                             base::Unretained(&frame_remote_tester_)));
-    // The override above will only apply when a new LocalFrame is bound. Reset the existing
-    // LocalFrame to force binding of a new LocalFrame.
+    // The override above will only apply when a new LocalFrame is bound. Reset
+    // the existing LocalFrame to force binding of a new LocalFrame.
     RenderFrameHostTester::For(navigation_simulator->GetFinalRenderFrameHost())
         ->ResetLocalFrame();
 
@@ -566,15 +571,16 @@ class AdsPageLoadMetricsObserverTest
 
   void ResourceDataUpdate(RenderFrameHost* render_frame_host,
                           ResourceCached resource_cached,
-                          int resource_size_in_kbyte,
+                          base::ByteCount resource_size,
                           std::string mime_type = "",
                           bool is_ad_resource = false) {
     std::vector<mojom::ResourceDataUpdatePtr> resources;
     mojom::ResourceDataUpdatePtr resource = mojom::ResourceDataUpdate::New();
     resource->received_data_length =
-        static_cast<bool>(resource_cached) ? 0 : resource_size_in_kbyte << 10;
+        resource_cached == ResourceCached::kNotCached ? resource_size
+                                                      : base::ByteCount(0);
     resource->delta_bytes = resource->received_data_length;
-    resource->encoded_body_length = resource_size_in_kbyte << 10;
+    resource->encoded_body_length = resource_size;
     resource->reported_as_ad_resource = is_ad_resource;
     resource->is_complete = true;
     switch (resource_cached) {
@@ -654,7 +660,8 @@ class AdsPageLoadMetricsObserverTest
       frames.push_back(current_frame);
 
       // Load bytes in frame.
-      ResourceDataUpdate(current_frame, ResourceCached::kNotCached, 10);
+      ResourceDataUpdate(current_frame, ResourceCached::kNotCached,
+                         base::KiB(10));
     }
 
     // In order to test that |creative_origin_status_| in FrameTreeData is
@@ -718,7 +725,8 @@ class AdsPageLoadMetricsObserverTest
       frames.push_back(current_frame);
 
       // Load bytes in frame.
-      ResourceDataUpdate(current_frame, ResourceCached::kNotCached, 10);
+      ResourceDataUpdate(current_frame, ResourceCached::kNotCached,
+                         base::KiB(10));
     }
 
     // Create a vector of indices to easily ensure frames are processed in
@@ -786,7 +794,7 @@ class AdsPageLoadMetricsObserverTest
         kAdUrl, main_frame, start + base::Milliseconds(100));
 
     // Load some bytes so that the frame is recorded.
-    ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+    ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(100));
 
     // Set FirstContentfulPaint.
     SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
@@ -847,7 +855,7 @@ class AdsPageLoadMetricsObserverTest
     }
   }
 
-  // A shorcut that given pre- and post-activation task time (if they exist),
+  // A shortcut that given pre- and post-activation task time (if they exist),
   // will check the three relevant TotalUsage histograms.
   void CheckActivatedTotalUsageHistograms(std::optional<int> pre_task_time,
                                           std::optional<int> post_task_time) {
@@ -863,7 +871,7 @@ class AdsPageLoadMetricsObserverTest
   }
 
   void SimulateV8MemoryChange(content::RenderFrameHost* render_frame_host,
-                              int64_t delta_bytes) {
+                              base::ByteCount delta_bytes) {
     tester()->SimulateMemoryUpdate(render_frame_host, delta_bytes);
   }
 
@@ -902,7 +910,7 @@ class AdsPageLoadMetricsObserverTest
     // Mock the noise provider to make tests deterministic. Tests can override
     // this again to test non-zero noise.
     observer->SetHeavyAdThresholdNoiseProviderForTesting(
-        std::make_unique<MockNoiseProvider>(0 /* noise */));
+        std::make_unique<MockNoiseProvider>(/*noise=*/base::ByteCount(0)));
 
     // Install the observer into each PageLoadTracker, but as now tests are
     // interested only in behaviors of the observer for the outermost page,
@@ -941,16 +949,17 @@ TEST_P(AdsPageLoadMetricsObserverTest, PageWithNoAds) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* frame1 = CreateAndNavigateSubFrame(kNonAdUrl, main_frame);
   RenderFrameHost* frame2 = CreateAndNavigateSubFrame(kNonAdUrl, main_frame);
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(frame1, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(frame2, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(frame1, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(frame2, ResourceCached::kNotCached, base::KiB(10));
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
   TestHistograms(histogram_tester(), test_ukm_recorder(),
-                 std::vector<ExpectedFrameBytes>(), 0 /* non_ad_cached_kb */,
-                 30 /* non_ad_uncached_kb */);
+                 std::vector<ExpectedFrameBytes>(),
+                 /*non_ad_cached=*/base::ByteCount(0),
+                 /*non_ad_uncached=*/base::KiB(30));
 
   // Verify that other UMA wasn't written.
   histogram_tester().ExpectTotalCount(
@@ -961,33 +970,36 @@ TEST_P(AdsPageLoadMetricsObserverTest, PageWithAds) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* frame1 = CreateAndNavigateSubFrame(kNonAdUrl, main_frame);
   RenderFrameHost* frame2 = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(frame1, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(frame2, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(frame1, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(frame2, ResourceCached::kNotCached, base::KiB(10));
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {{0, 10}},
-                 0 /* non_ad_cached_kb */, 20 /* non_ad_uncached_kb */);
+  TestHistograms(histogram_tester(), test_ukm_recorder(),
+                 {{base::ByteCount(0), base::KiB(10)}},
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(20));
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, PageWithAdsButNoAdFrame) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 40,
-                     "" /* mime_type */, false /* is_ad_resource */);
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10,
-                     "" /* mime_type */, true /* is_ad_resource */);
-  ResourceDataUpdate(main_frame, ResourceCached::kCachedHttp, 30,
-                     "" /* mime_type */, false /* is_ad_resource */);
-  ResourceDataUpdate(main_frame, ResourceCached::kCachedHttp, 20,
-                     "" /* mime_type */, true /* is_ad_resource */);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(40),
+                     /*mime_type=*/"", /*is_ad_resource=*/false);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10),
+                     /*mime_type=*/"", /*is_ad_resource=*/true);
+  ResourceDataUpdate(main_frame, ResourceCached::kCachedHttp, base::KiB(30),
+                     /*mime_type=*/"", /*is_ad_resource=*/false);
+  ResourceDataUpdate(main_frame, ResourceCached::kCachedHttp, base::KiB(20),
+                     /*mime_type=*/"", /*is_ad_resource=*/true);
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
   TestHistograms(histogram_tester(), test_ukm_recorder(), {},
-                 50 /* non_ad_cached_kb */, 50 /* non_ad_uncached_kb */);
+                 /*non_ad_cached=*/base::KiB(50),
+                 /*non_ad_uncached=*/base::KiB(50));
 
   // We expect the ad bytes percentages to be correctly reported, even though
   // there was no ad frame.
@@ -1004,21 +1016,21 @@ TEST_P(AdsPageLoadMetricsObserverTest, PageWithAdsButNoAdFrame) {
 TEST_P(AdsPageLoadMetricsObserverTest, AdFrameMimeTypeBytes) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
   ResourceDataUpdate(
-      ad_frame, ResourceCached::kNotCached, 10 /* resource_size_in_kbyte */,
-      "application/javascript" /* mime_type */, true /* is_ad_resource */);
+      ad_frame, ResourceCached::kNotCached, /*resource_size=*/base::KiB(10),
+      /*mime_type=*/"application/javascript", /*is_ad_resource=*/true);
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     20 /* resource_size_in_kbyte */,
-                     "image/png" /* mime_type */, true /* is_ad_resource */);
+                     /*resource_size=*/base::KiB(20),
+                     /*mime_type=*/"image/png", /*is_ad_resource=*/true);
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     30 /* resource_size_in_kbyte */,
-                     "video/webm" /* mime_type */, true /* is_ad_resource */);
+                     /*resource_size=*/base::KiB(30),
+                     /*mime_type=*/"video/webm", /*is_ad_resource=*/true);
 
   // Cached resource not counted.
   ResourceDataUpdate(ad_frame, ResourceCached::kCachedHttp,
-                     40 /* resource_size_in_kbyte */,
-                     "video/webm" /* mime_type */, true /* is_ad_resource */);
+                     /*resource_size=*/base::KiB(40),
+                     /*mime_type=*/"video/webm", /*is_ad_resource=*/true);
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
@@ -1048,19 +1060,21 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdFrameMimeTypeBytes) {
 TEST_P(AdsPageLoadMetricsObserverTest, ResourceBeforeAdFrameCommits) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Create subframe and load resource before commit.
   RenderFrameHost* subframe = AppendChildFrame(main_frame);
   auto navigation_simulator = CreateNavigationSimulator(kAdUrl, subframe);
-  ResourceDataUpdate(subframe, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(subframe, ResourceCached::kNotCached, base::KiB(10));
   navigation_simulator->Commit();
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {{0, 10}},
-                 0 /* non_ad_cached_kb */, 10 /*non_ad_uncached_kb*/);
+  TestHistograms(histogram_tester(), test_ukm_recorder(),
+                 {{base::ByteCount(0), base::KiB(10)}},
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(10));
 }
 
 // Test that the cross-origin ad subframe navigation metric works as it's
@@ -1080,10 +1094,10 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdsOriginStatusMetrics) {
     RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
     RenderFrameHost* ad_sub_frame =
         CreateAndNavigateSubFrame(kAdUrl, main_frame);
-    ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
-    ResourceDataUpdate(ad_sub_frame, ResourceCached::kNotCached, 10);
+    ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
+    ResourceDataUpdate(ad_sub_frame, ResourceCached::kNotCached, base::KiB(10));
     ResourceDataUpdate(CreateAndNavigateSubFrame(kAdUrl, ad_sub_frame),
-                       ResourceCached::kNotCached, 10);
+                       ResourceCached::kNotCached, base::KiB(10));
     // Trigger histograms by navigating away, then test them.
     NavigateFrame(kAdUrl, main_frame);
     histograms.ExpectUniqueSample(kCrossOriginHistogramId, OriginStatus::kCross,
@@ -1102,11 +1116,11 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdsOriginStatusMetrics) {
     base::HistogramTester histograms;
     ukm::TestAutoSetUkmRecorder ukm_recorder;
     RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-    ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
+    ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
     ResourceDataUpdate(CreateAndNavigateSubFrame(kAdUrl, main_frame),
-                       ResourceCached::kNotCached, 10);
+                       ResourceCached::kNotCached, base::KiB(10));
     ResourceDataUpdate(CreateAndNavigateSubFrame(kNonAdUrl, main_frame),
-                       ResourceCached::kNotCached, 10);
+                       ResourceCached::kNotCached, base::KiB(10));
     // Trigger histograms by navigating away, then test them.
     NavigateFrame(kAdUrl, main_frame);
     histograms.ExpectUniqueSample(kCrossOriginHistogramId, OriginStatus::kCross,
@@ -1126,9 +1140,9 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdsOriginStatusMetrics) {
     base::HistogramTester histograms;
     ukm::TestAutoSetUkmRecorder ukm_recorder;
     RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrlSameOrigin);
-    ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
+    ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
     ResourceDataUpdate(CreateAndNavigateSubFrame(kAdUrl, main_frame),
-                       ResourceCached::kNotCached, 10);
+                       ResourceCached::kNotCached, base::KiB(10));
     // Trigger histograms by navigating away, then test them.
     NavigateFrame(kAdUrl, main_frame);
     histograms.ExpectUniqueSample(kCrossOriginHistogramId, OriginStatus::kSame,
@@ -1146,20 +1160,22 @@ TEST_P(AdsPageLoadMetricsObserverTest, PageWithAdFrameThatRenavigates) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Navigate the ad frame again.
   ad_frame = NavigateFrame(kAdUrl, ad_frame);
 
   // In total, 30KB for entire page and 20 in one ad frame.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {{0, 20}},
-                 0 /* non_ad_cached_kb */, 10 /* non_ad_uncached_kb */);
+  TestHistograms(histogram_tester(), test_ukm_recorder(),
+                 {{base::ByteCount(0), base::KiB(20)}},
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(10));
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, PageWithNonAdFrameThatRenavigatesToAd) {
@@ -1173,13 +1189,14 @@ TEST_P(AdsPageLoadMetricsObserverTest, PageWithNonAdFrameThatRenavigatesToAd) {
   RenderFrameHost* sub_frame_child_ad =
       CreateAndNavigateSubFrame(kAdUrl, sub_frame);
 
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(sub_frame, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(sub_frame_child_ad, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(sub_frame, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(sub_frame_child_ad, ResourceCached::kNotCached,
+                     base::KiB(10));
 
   // Navigate the subframe again, this time it's an ad.
   sub_frame = NavigateFrame(kAdUrl, sub_frame);
-  ResourceDataUpdate(sub_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(sub_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // In total, 40KB was loaded for the entire page and 20KB from ad
   // frames (the original child ad frame and the renavigated frame which
@@ -1188,14 +1205,17 @@ TEST_P(AdsPageLoadMetricsObserverTest, PageWithNonAdFrameThatRenavigatesToAd) {
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {{0, 10}, {0, 10}},
-                 0 /* non_ad_cached_kb */, 20 /* non_ad_uncached_kb */);
+  TestHistograms(histogram_tester(), test_ukm_recorder(),
+                 {{base::ByteCount(0), base::KiB(10)},
+                  {base::ByteCount(0), base::KiB(10)}},
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(20));
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, CountAbortedNavigation) {
   // If the first navigation in a frame is aborted, keep track of its bytes.
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Create an ad subframe that aborts before committing.
   RenderFrameHost* subframe_ad = AppendChildFrame(main_frame);
@@ -1208,23 +1228,25 @@ TEST_P(AdsPageLoadMetricsObserverTest, CountAbortedNavigation) {
   // Load resources for the aborted frame (e.g., simulate the navigation
   // aborting due to a doc.write during provisional navigation). They should
   // be counted.
-  ResourceDataUpdate(subframe_ad, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(subframe_ad, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(subframe_ad, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(subframe_ad, ResourceCached::kNotCached, base::KiB(10));
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {{0, 20}},
-                 0 /* non_ad_cached_kb */, 10 /* non_ad_uncached_kb */);
+  TestHistograms(histogram_tester(), test_ukm_recorder(),
+                 {{base::ByteCount(0), base::KiB(20)}},
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(10));
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, CountAbortedSecondNavigationForFrame) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Sub frame that is not an ad.
   RenderFrameHost* sub_frame = CreateAndNavigateSubFrame(kNonAdUrl, main_frame);
-  ResourceDataUpdate(sub_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(sub_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Now navigate (and abort) the subframe to an ad.
   auto navigation_simulator = CreateNavigationSimulator(kAdUrl, sub_frame);
@@ -1236,26 +1258,28 @@ TEST_P(AdsPageLoadMetricsObserverTest, CountAbortedSecondNavigationForFrame) {
   // Load resources for the aborted frame (e.g., simulate the navigation
   // aborting due to a doc.write during provisional navigation). Since the
   // frame attempted to load an ad, the frame is tagged forever as an ad.
-  ResourceDataUpdate(sub_frame, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(sub_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(sub_frame, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(sub_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {{0, 20}},
-                 0 /* non_ad_cached_kb */, 20 /* non_ad_uncached_kb */);
+  TestHistograms(histogram_tester(), test_ukm_recorder(),
+                 {{base::ByteCount(0), base::KiB(20)}},
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(20));
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, TwoResourceLoadsBeforeCommit) {
   // Main frame.
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Now open a subframe and have its resource load before notification of
   // navigation finishing.
   RenderFrameHost* subframe_ad = AppendChildFrame(main_frame);
   auto navigation_simulator = CreateNavigationSimulator(kAdUrl, subframe_ad);
-  ResourceDataUpdate(subframe_ad, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(subframe_ad, ResourceCached::kNotCached, base::KiB(10));
 
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
@@ -1264,22 +1288,24 @@ TEST_P(AdsPageLoadMetricsObserverTest, TwoResourceLoadsBeforeCommit) {
 
   // Renavigate the subframe to a successful commit. But again, the resource
   // loads before the observer sees the finished navigation.
-  ResourceDataUpdate(subframe_ad, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(subframe_ad, ResourceCached::kNotCached, base::KiB(10));
   NavigateFrame(kAdUrl, subframe_ad);
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {{0, 20}},
-                 0 /* non_ad_cached_kb */, 10 /* non_ad_uncached_kb */);
+  TestHistograms(histogram_tester(), test_ukm_recorder(),
+                 {{base::ByteCount(0), base::KiB(20)}},
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(10));
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, UntaggingAdFrame) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Renavigate and untag the ad frame.
   auto navigation_simulator = CreateNavigationSimulator(kNonAdUrl, ad_frame);
@@ -1287,14 +1313,15 @@ TEST_P(AdsPageLoadMetricsObserverTest, UntaggingAdFrame) {
   navigation_simulator->Commit();
 
   ResourceDataUpdate(navigation_simulator->GetFinalRenderFrameHost(),
-                     ResourceCached::kNotCached, 10);
+                     ResourceCached::kNotCached, base::KiB(10));
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
   // As the frame was untagged, no ad bytes should have been recorded.
   TestHistograms(histogram_tester(), test_ukm_recorder(), {},
-                 0 /* non_ad_cached_kb */, 20 /* non_ad_uncached_kb */);
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(20));
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, MainFrameResource) {
@@ -1305,7 +1332,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, MainFrameResource) {
   navigation_simulator->Commit();
 
   ResourceDataUpdate(navigation_simulator->GetFinalRenderFrameHost(),
-                     ResourceCached::kNotCached, 10);
+                     ResourceCached::kNotCached, base::KiB(10));
 
   NavigateMainFrame(kNonAdUrl);
 
@@ -1406,15 +1433,16 @@ TEST_P(AdsPageLoadMetricsObserverTest,
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
   TestHistograms(histogram_tester(), test_ukm_recorder(),
-                 std::vector<ExpectedFrameBytes>(), 0 /* non_ad_cached_kb */,
-                 20 /* non_ad_uncached_kb */);
+                 std::vector<ExpectedFrameBytes>(),
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(20));
 
   // Verify that other UMA wasn't written.
   histogram_tester().ExpectTotalCount(
@@ -1433,14 +1461,14 @@ TEST_P(AdsPageLoadMetricsObserverTest, FilterAds_DoNotLogMetrics) {
   ConfigureAsSubresourceFilterOnlyURL(GURL(kNonAdUrl));
   NavigateMainFrame(kNonAdUrl);
 
-  ResourceDataUpdate(main_rfh(), ResourceCached::kNotCached, 10,
-                     "" /* mime_type */, false /* is_ad_resource */);
+  ResourceDataUpdate(main_rfh(), ResourceCached::kNotCached, base::KiB(10),
+                     /*mime_type=*/"", /*is_ad_resource=*/false);
 
   RenderFrameHost* subframe = AppendChildFrame(main_rfh());
   std::unique_ptr<NavigationSimulator> simulator =
       CreateNavigationSimulator(kDefaultDisallowedUrl, subframe);
-  ResourceDataUpdate(subframe, ResourceCached::kNotCached, 10,
-                     "" /* mime_type */, true /* is_ad_resource */);
+  ResourceDataUpdate(subframe, ResourceCached::kNotCached, base::KiB(10),
+                     /*mime_type=*/"", /*is_ad_resource=*/true);
   simulator->Commit();
 
   EXPECT_NE(content::NavigationThrottle::PROCEED,
@@ -1464,11 +1492,11 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
   RenderFrameHost* child_ad_frame = CreateAndNavigateSubFrame(kAdUrl, ad_frame);
 
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Add some data to the ad frame so it gets reported.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(child_ad_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(child_ad_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Just delete the child frame this time.
   content::RenderFrameHostTester::For(child_ad_frame)->Detach();
@@ -1491,8 +1519,10 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   NavigateMainFrame(kNonAdUrl);
 
   // Verify histograms are logged correctly for the whole page.
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {{0, 20}},
-                 0 /* non_ad_cached_kb */, 10 /* non_ad_uncached_kb */);
+  TestHistograms(histogram_tester(), test_ukm_recorder(),
+                 {{base::ByteCount(0), base::KiB(20)}},
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(10));
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest,
@@ -1523,13 +1553,16 @@ TEST_P(AdsPageLoadMetricsObserverTest,
 
   // Update the nested subframe. If the frame was untracked the underlying
   // object would be deleted.
-  ResourceDataUpdate(nested_subframe, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(nested_subframe, ResourceCached::kNotCached,
+                     base::KiB(10));
 
   NavigateMainFrame(kNonAdUrl);
 
   // Verify histograms for the frame.
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {{0, 10}},
-                 0 /* non_ad_cached_kb */, 0 /* non_ad_uncached_kb */);
+  TestHistograms(histogram_tester(), test_ukm_recorder(),
+                 {{base::ByteCount(0), base::KiB(10)}},
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(0));
 }
 
 // Tests that a non ad frame that is deleted does not cause any unspecified
@@ -1539,7 +1572,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, NonAdFrameDestroyed_FrameDeleted) {
   RenderFrameHost* vanilla_frame =
       CreateAndNavigateSubFrame(kNonAdUrl, main_frame);
 
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
 
   content::RenderFrameHostTester::For(vanilla_frame)->Detach();
 
@@ -1550,18 +1583,18 @@ TEST_P(AdsPageLoadMetricsObserverTest, NonAdFrameDestroyed_FrameDeleted) {
 TEST_P(AdsPageLoadMetricsObserverTest, MainFrameAdBytesRecorded) {
   NavigateMainFrame(kNonAdUrl);
 
-  ResourceDataUpdate(main_rfh(), ResourceCached::kNotCached, 10,
-                     "" /* mime_type */, true /* is_ad_resource */);
-  ResourceDataUpdate(main_rfh(), ResourceCached::kCachedHttp, 10,
-                     "" /* mime_type */, true /* is_ad_resource */);
+  ResourceDataUpdate(main_rfh(), ResourceCached::kNotCached, base::KiB(10),
+                     /*mime_type=*/"", /*is_ad_resource=*/true);
+  ResourceDataUpdate(main_rfh(), ResourceCached::kCachedHttp, base::KiB(10),
+                     /*mime_type=*/"", /*is_ad_resource=*/true);
 
   RenderFrameHost* subframe = AppendChildFrame(main_rfh());
   std::unique_ptr<NavigationSimulator> simulator =
       CreateNavigationSimulator(kDefaultDisallowedUrl, subframe);
-  ResourceDataUpdate(subframe, ResourceCached::kNotCached, 10,
-                     "" /* mime_type */, true /* is_ad_resource */);
-  ResourceDataUpdate(subframe, ResourceCached::kCachedHttp, 10,
-                     "" /* mime_type */, true /* is_ad_resource */);
+  ResourceDataUpdate(subframe, ResourceCached::kNotCached, base::KiB(10),
+                     /*mime_type=*/"", /*is_ad_resource=*/true);
+  ResourceDataUpdate(subframe, ResourceCached::kCachedHttp, base::KiB(10),
+                     /*mime_type=*/"", /*is_ad_resource=*/true);
   simulator->Commit();
 
   NavigateMainFrame(kNonAdUrl);
@@ -1589,15 +1622,17 @@ TEST_P(AdsPageLoadMetricsObserverTest, MemoryCacheAdBytesRecorded) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* frame1 = CreateAndNavigateSubFrame(kNonAdUrl, main_frame);
   RenderFrameHost* frame2 = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(frame1, ResourceCached::kCachedMemory, 10);
-  ResourceDataUpdate(frame2, ResourceCached::kCachedMemory, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(frame1, ResourceCached::kCachedMemory, base::KiB(10));
+  ResourceDataUpdate(frame2, ResourceCached::kCachedMemory, base::KiB(10));
 
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {{10, 0}},
-                 10 /* non_ad_cached_kb */, 10 /* non_ad_uncached_kb */);
+  TestHistograms(histogram_tester(), test_ukm_recorder(),
+                 {{base::KiB(10), base::ByteCount(0)}},
+                 /*non_ad_cached=*/base::KiB(10),
+                 /*non_ad_uncached=*/base::KiB(10));
 }
 
 // UKM metrics for ad page load are recorded correctly.
@@ -1615,14 +1650,14 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdPageLoadUKM) {
   PopulateRequiredTimingFields(&timing);
   tester()->SimulateTimingUpdate(timing);
   ResourceDataUpdate(
-      main_rfh(), ResourceCached::kNotCached, 10 /* resource_size_in_kbyte */,
-      "application/javascript" /* mime_type */, false /* is_ad_resource */);
+      main_rfh(), ResourceCached::kNotCached, /*resource_size=*/base::KiB(10),
+      /*mime_type=*/"application/javascript", /*is_ad_resource=*/false);
   ResourceDataUpdate(
-      main_rfh(), ResourceCached::kNotCached, 10 /* resource_size_in_kbyte */,
-      "application/javascript" /* mime_type */, true /* is_ad_resource */);
+      main_rfh(), ResourceCached::kNotCached, /*resource_size=*/base::KiB(10),
+      /*mime_type=*/"application/javascript", /*is_ad_resource=*/true);
   ResourceDataUpdate(main_rfh(), ResourceCached::kNotCached,
-                     10 /* resource_size_in_kbyte */,
-                     "video/webm" /* mime_type */, true /* is_ad_resource */);
+                     /*resource_size=*/base::KiB(10),
+                     /*mime_type=*/"video/webm", /*is_ad_resource=*/true);
 
   // Update cpu timings.
   OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
@@ -1670,7 +1705,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, ZeroBytesNonZeroCpuFrame_Recorded) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Use CPU but maintain zero bytes in the ad frame
   OnCpuTimingUpdate(ad_frame, base::Milliseconds(1000));
@@ -1678,8 +1713,10 @@ TEST_P(AdsPageLoadMetricsObserverTest, ZeroBytesNonZeroCpuFrame_Recorded) {
   NavigateFrame(kNonAdUrl, main_frame);
 
   // We expect the frame to be recorded as it has non-zero CPU usage
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {{0, 0}},
-                 0 /* non_ad_cached_kb */, 10 /* non_ad_uncached_kb */);
+  TestHistograms(histogram_tester(), test_ukm_recorder(),
+                 {{base::ByteCount(0), base::ByteCount(0)}},
+                 /*non_ad_cached=*/base::KiB(0),
+                 /*non_ad_uncached=*/base::KiB(10));
 
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("Cpu.FullPage.TotalUsage2"), 1000, 1);
@@ -1691,7 +1728,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowUnactivated) {
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Add some data to the ad frame so it gets reported.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Perform some updates on ad and non-ad frames. Usage 1%.
   OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
@@ -1753,7 +1790,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityDistributionMoments) {
 
   // Add some ad resource so that ad density metrics are recorded in the end.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     /*resource_size_in_kbyte=*/10,
+                     /*resource_size=*/base::KiB(10),
                      /*mime_type=*/"",
                      /*is_ad_resource=*/true);
 
@@ -1841,7 +1878,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowedActivated) {
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Add some data to the ad frame so it gets reported.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Perform some updates on ad and non-ad frames. Usage 1%.
   OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
@@ -1892,7 +1929,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsNoActivation) {
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Add some data to the ad frame so it gets reported.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Perform some updates on ad and non-ad frames.
   OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
@@ -1943,7 +1980,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsOnActivation) {
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Add some data to the ad frame so it get reported.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Perform some updates on ad and non-ad frames.
   OnCpuTimingUpdate(ad_frame, base::Milliseconds(1000));
@@ -2195,14 +2232,15 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdFeatureOff_UMARecorded) {
       content::RenderFrameHostTester::For(ad_frame_total_cpu);
 
   // Load some bytes in each frame so they are considered ad iframes.
-  ResourceDataUpdate(ad_frame_none, ResourceCached::kNotCached, 1);
-  ResourceDataUpdate(ad_frame_net, ResourceCached::kNotCached, 1);
-  ResourceDataUpdate(ad_frame_cpu, ResourceCached::kNotCached, 1);
-  ResourceDataUpdate(ad_frame_total_cpu, ResourceCached::kNotCached, 1);
+  ResourceDataUpdate(ad_frame_none, ResourceCached::kNotCached, base::KiB(1));
+  ResourceDataUpdate(ad_frame_net, ResourceCached::kNotCached, base::KiB(1));
+  ResourceDataUpdate(ad_frame_cpu, ResourceCached::kNotCached, base::KiB(1));
+  ResourceDataUpdate(ad_frame_total_cpu, ResourceCached::kNotCached,
+                     base::KiB(1));
 
   // Make three of the ad frames hit thresholds for heavy ads.
   ResourceDataUpdate(ad_frame_net, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024));
+                     heavy_ad_thresholds::kMaxNetworkBytes);
   OnCpuTimingUpdate(
       ad_frame_cpu,
       base::Milliseconds(heavy_ad_thresholds::kMaxPeakWindowedPercent * 30000 /
@@ -2260,7 +2298,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdNetworkUsage_InterventionFired) {
 
   // Load just under the threshold amount of bytes.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) - 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes - base::KiB(1));
 
   // Verify we did not trigger the intervention.
   EXPECT_FALSE(HasInterventionReportsAfterFlush(ad_frame));
@@ -2273,7 +2311,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdNetworkUsage_InterventionFired) {
   ErrorPageWaiter waiter(web_contents());
 
   // Load enough bytes to trigger the intervention.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 2);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(2));
 
   const char kInterventionMessage[] =
       "Ad was removed because its network usage exceeded the limit. "
@@ -2298,7 +2336,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdNetworkUsage_InterventionFired) {
   // bytes to UMA.
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.NetworkBytesAtFrameUnload"),
-      heavy_ad_thresholds::kMaxNetworkBytes / 1024, 1);
+      heavy_ad_thresholds::kMaxNetworkBytes.InKiB(), 1);
   histogram_tester().ExpectTotalCount(
       SuffixedHistogram("HeavyAds.NetworkBytesAtFrameUnload"), 1);
 }
@@ -2315,7 +2353,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdCpuInterventionInBackground) {
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Add some data to the ad frame so it get reported.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 1);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(1));
 
   // Use just under the peak threshold amount of CPU.
   OnCpuTimingUpdate(
@@ -2365,7 +2403,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
 
   // Load just under the threshold amount of bytes.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) - 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes - base::KiB(1));
 
   // Verify we did not trigger the intervention.
   EXPECT_FALSE(HasInterventionReportsAfterFlush(ad_frame));
@@ -2388,7 +2426,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
 
   // Load enough bytes to trigger the intervention.
   ErrorPageWaiter waiter(web_contents());
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 2);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(2));
 
   // Wait for an error page and then check there's an intervention on the frame.
   waiter.WaitForError();
@@ -2409,14 +2447,14 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
   OverrideHeavyAdNoiseProvider(
-      std::make_unique<MockNoiseProvider>(2048 /* network noise */));
+      std::make_unique<MockNoiseProvider>(/*network noise=*/base::KiB(2)));
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
   content::RenderFrameHostTester* rfh_tester =
       content::RenderFrameHostTester::For(ad_frame);
 
   // Load just under the threshold amount of bytes with noise included.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
   histogram_tester().ExpectTotalCount(
       SuffixedHistogram("HeavyAds.InterventionType2"), 0);
   EXPECT_EQ(rfh_tester->GetHeavyAdIssueCount(
@@ -2430,7 +2468,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   ErrorPageWaiter waiter(web_contents());
 
   // Load enough bytes to meet the noised threshold criteria.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 1);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(1));
 
   waiter.WaitForError();
   histogram_tester().ExpectUniqueSample(
@@ -2449,7 +2487,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   // UMA.
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.NetworkBytesAtFrameUnload"),
-      heavy_ad_thresholds::kMaxNetworkBytes / 1024, 1);
+      heavy_ad_thresholds::kMaxNetworkBytes.InKiB(), 1);
   histogram_tester().ExpectTotalCount(
       SuffixedHistogram("HeavyAds.NetworkBytesAtFrameUnload"), 1);
 }
@@ -2463,12 +2501,12 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
   OverrideHeavyAdNoiseProvider(
-      std::make_unique<MockNoiseProvider>(2048 /* network noise */));
+      std::make_unique<MockNoiseProvider>(/*network noise=*/base::KiB(2)));
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Load network bytes that trip the heavy ad threshold without noise.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     heavy_ad_thresholds::kMaxNetworkBytes / 1024 + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
 
   // Verify we did not trigger the intervention.
   EXPECT_FALSE(HasInterventionReportsAfterFlush(ad_frame));
@@ -2491,14 +2529,14 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
   OverrideHeavyAdNoiseProvider(
-      std::make_unique<MockNoiseProvider>(2048 /* network noise */));
+      std::make_unique<MockNoiseProvider>(base::KiB(2)));
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
   content::RenderFrameHostTester* rfh_tester =
       content::RenderFrameHostTester::For(ad_frame);
 
   // Load network bytes that trip the heavy ad threshold without noise.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     heavy_ad_thresholds::kMaxNetworkBytes / 1024 + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
   histogram_tester().ExpectTotalCount(
       SuffixedHistogram("HeavyAds.InterventionType2"), 0);
   EXPECT_EQ(rfh_tester->GetHeavyAdIssueCount(
@@ -2549,7 +2587,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdTotalCpuUsage_InterventionFired) {
       content::RenderFrameHostTester::For(ad_frame);
 
   // Add some data to the ad frame so it get reported.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 1);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(1));
 
   // Use just under the threshold amount of CPU.Needs to spread across enough
   // windows to not trigger peak threshold.
@@ -2591,7 +2629,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPeakCpuUsage_InterventionFired) {
       content::RenderFrameHostTester::For(ad_frame);
 
   // Add some data to the ad frame so it get reported.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 1);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(1));
 
   // Use just under the peak threshold amount of CPU.
   OnCpuTimingUpdate(
@@ -2644,7 +2682,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   // Add enough data to trigger the intervention.
   ErrorPageWaiter waiter(web_contents());
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
 
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   waiter.WaitForError();
@@ -2666,7 +2704,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdFeatureDisabled_NotFired) {
 
   // Add enough data to trigger the intervention.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (kMaxHeavyAdNetworkBytes / 1024) + 1);
+                     kMaxHeavyAdNetworkBytes + base::KiB(1));
 
   // Verify we did not trigger the intervention.
   EXPECT_FALSE(HasInterventionReportsAfterFlush(ad_frame));
@@ -2689,7 +2727,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
 
   // Add enough data to trigger the intervention.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
 
   EXPECT_FALSE(HasInterventionReportsAfterFlush(ad_frame));
 
@@ -2753,7 +2791,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPolicyProvided) {
     ErrorPageWaiter waiter(web_contents());
     if (test_case.exceed_network) {
       ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                         (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                         heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
     }
     if (test_case.exceed_cpu) {
       OnCpuTimingUpdate(
@@ -2783,7 +2821,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_MetricsRecorded) {
 
   // Add enough data to trigger the intervention.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
 
   // Reload the page.
   NavigationSimulator::Reload(web_contents());
@@ -2794,7 +2832,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_MetricsRecorded) {
 }
 
 // Verifies when a user reloads a page we do not trigger the heavy ad
-// intevention.
+// intervention.
 TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_InterventionIgnored) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -2809,7 +2847,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_InterventionIgnored) {
 
   // Add enough data to trigger the intervention.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
 
   // Verify we did not trigger the intervention.
   EXPECT_FALSE(HasInterventionReportsAfterFlush(ad_frame));
@@ -2831,7 +2869,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
 
   // Add enough data to trigger the intervention.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
 
   // Verify we trigger the intervention.
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
@@ -2857,7 +2895,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdBlocklistFull_NotFired) {
 
   // Add enough data to trigger the intervention.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
 
   // Verify we did not trigger the intervention.
   EXPECT_FALSE(HasInterventionReportsAfterFlush(ad_frame));
@@ -2883,7 +2921,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   // Add enough data to trigger the intervention.
   ErrorPageWaiter waiter(web_contents());
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
 
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   waiter.WaitForError();
@@ -2918,7 +2956,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdBlocklist_InterventionReported) {
   // Add enough data to trigger the intervention.
   ErrorPageWaiter waiter(web_contents());
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
 
   // Verify the intervention triggered.
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
@@ -2934,7 +2972,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdBlocklist_InterventionReported) {
 
   // Add enough data to trigger the intervention.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
 
   // Verify the intervention did not occur again.
   EXPECT_FALSE(HasInterventionReportsAfterFlush(ad_frame));
@@ -2958,7 +2996,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
 
   // Load enough bytes to trigger the intervention.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+                     heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1));
 
   const char kReportOnlyMessage[] =
       "A future version of Chrome may remove this ad because its network "
@@ -2991,7 +3029,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, NoFirstContentfulPaint_NotRecorded) {
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Load some bytes so that the frame is recorded.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(100));
 
   // Navigate away and check the histogram.
   NavigateFrame(kNonAdUrl, main_frame);
@@ -3052,7 +3090,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, FirstContentfulPaint_Recorded) {
       kAdUrl, main_frame, start + base::Milliseconds(100));
 
   // Load some bytes so that the frame is recorded.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(100));
 
   // Set FirstContentfulPaint.
   SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
@@ -3439,7 +3477,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
       kAdUrl, ad_frame, start + base::Milliseconds(200));
 
   // Load some bytes so that the frame is recorded.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(100));
 
   // Set FirstContentfulPaint for nested subframe. Assume that it paints first.
   SimulateFirstContentfulPaint(sub_frame, base::Milliseconds(90));
@@ -3477,7 +3515,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   RenderFrameHost* sub_frame = CreateAndNavigateSubFrame(kAdUrl, ad_frame);
 
   // Load some bytes so that the frame is recorded.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(100));
 
   // Set FirstContentfulPaint for root ad frame.
   SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
@@ -3518,9 +3556,12 @@ TEST_P(AdsPageLoadMetricsObserverTest,
       kAdUrl, main_frame, start + base::Milliseconds(300));
 
   // Load some bytes so that the frame is recorded.
-  ResourceDataUpdate(ad_frame_at_100ms, ResourceCached::kNotCached, 100);
-  ResourceDataUpdate(ad_frame_at_200ms, ResourceCached::kNotCached, 100);
-  ResourceDataUpdate(ad_frame_at_300ms, ResourceCached::kNotCached, 100);
+  ResourceDataUpdate(ad_frame_at_100ms, ResourceCached::kNotCached,
+                     base::KiB(100));
+  ResourceDataUpdate(ad_frame_at_200ms, ResourceCached::kNotCached,
+                     base::KiB(100));
+  ResourceDataUpdate(ad_frame_at_300ms, ResourceCached::kNotCached,
+                     base::KiB(100));
 
   SimulateFirstContentfulPaint(ad_frame_at_100ms,
                                base::Milliseconds(300));  // @400ms
@@ -3565,7 +3606,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   RenderFrameHost* sub_frame = CreateAndNavigateSubFrame(kAdUrl, ad_frame);
 
   // Load some bytes so that the frame is recorded.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(100));
 
   // Set FirstContentfulPaint for nested subframe. It is the only frame painted.
   SimulateFirstContentfulPaint(sub_frame, base::Milliseconds(90));
@@ -3606,16 +3647,16 @@ TEST_P(AdsMemoryMeasurementTest, SingleAdFrame_MaxMemoryBytesRecorded) {
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Load kilobytes in frame so that aggregates are recorded.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Notify that memory measurement is available.
-  SimulateV8MemoryChange(ad_frame, 10 * 1024);
+  SimulateV8MemoryChange(ad_frame, base::KiB(10));
 
   // Update memory usage. The max will change, as 30 is positive.
-  SimulateV8MemoryChange(ad_frame, 30 * 1024);
+  SimulateV8MemoryChange(ad_frame, base::KiB(30));
 
   // Update memory usage. The max will remain the same, as -20 is negative.
-  SimulateV8MemoryChange(ad_frame, -20 * 1024);
+  SimulateV8MemoryChange(ad_frame, base::KiB(-20));
 
   // Navigate main frame to record histograms.
   NavigateMainFrame(kNonAdUrl);
@@ -3631,22 +3672,22 @@ TEST_P(AdsMemoryMeasurementTest, MultiAdFramesNested_MaxMemoryBytesRecorded) {
   RenderFrameHost* ad_frame2 = CreateAndNavigateSubFrame(kAdUrl, ad_frame1);
 
   // Load kilobytes in each frame so that aggregates are recorded.
-  ResourceDataUpdate(ad_frame1, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(ad_frame2, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(ad_frame1, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(ad_frame2, ResourceCached::kNotCached, base::KiB(10));
 
   // Notify that memory measurement is available.
-  SimulateV8MemoryChange(ad_frame1, 10 * 1024);
-  SimulateV8MemoryChange(ad_frame2, 10 * 1024);
+  SimulateV8MemoryChange(ad_frame1, base::KiB(10));
+  SimulateV8MemoryChange(ad_frame2, base::KiB(10));
 
   // Update memory usage. The max will change, as these values are both
   // positive.
-  SimulateV8MemoryChange(ad_frame1, 30 * 1024);
-  SimulateV8MemoryChange(ad_frame2, 10 * 1024);
+  SimulateV8MemoryChange(ad_frame1, base::KiB(30));
+  SimulateV8MemoryChange(ad_frame2, base::KiB(10));
 
   // Update memory usage. The max will remain the same, as these values
   // are both negative.
-  SimulateV8MemoryChange(ad_frame1, -25 * 1024);
-  SimulateV8MemoryChange(ad_frame2, -5 * 1024);
+  SimulateV8MemoryChange(ad_frame1, base::KiB(-25));
+  SimulateV8MemoryChange(ad_frame2, base::KiB(-5));
 
   // Navigate main frame to record histograms.
   NavigateMainFrame(kNonAdUrl);
@@ -3664,26 +3705,26 @@ TEST_P(AdsMemoryMeasurementTest,
       CreateAndNavigateSubFrame(kOtherAdUrl, main_frame);
 
   // Load kilobytes in each frame so that aggregates are recorded.
-  ResourceDataUpdate(ad_frame1, ResourceCached::kNotCached, 10);
-  ResourceDataUpdate(ad_frame2, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(ad_frame1, ResourceCached::kNotCached, base::KiB(10));
+  ResourceDataUpdate(ad_frame2, ResourceCached::kNotCached, base::KiB(10));
 
   // Notify that memory measurement is available.
-  SimulateV8MemoryChange(ad_frame1, 10 * 1024);
-  SimulateV8MemoryChange(ad_frame2, 10 * 1024);
+  SimulateV8MemoryChange(ad_frame1, base::KiB(10));
+  SimulateV8MemoryChange(ad_frame2, base::KiB(10));
 
   // Update memory usage. The second max and aggregate max
   // will change.
-  SimulateV8MemoryChange(ad_frame1, -9 * 1024);
-  SimulateV8MemoryChange(ad_frame2, 100 * 1024);
+  SimulateV8MemoryChange(ad_frame1, base::KiB(-9));
+  SimulateV8MemoryChange(ad_frame2, base::KiB(100));
 
   // Update memory usage. The aggregate max will change
   // again after the first update.
-  SimulateV8MemoryChange(ad_frame1, 1 * 1024);
-  SimulateV8MemoryChange(ad_frame2, -90 * 1024);
+  SimulateV8MemoryChange(ad_frame1, base::KiB(1));
+  SimulateV8MemoryChange(ad_frame2, base::KiB(-90));
 
   // Update memory usage. The first max will change.
-  SimulateV8MemoryChange(ad_frame1, 50 * 1024);
-  SimulateV8MemoryChange(ad_frame2, -5 * 1024);
+  SimulateV8MemoryChange(ad_frame1, base::KiB(50));
+  SimulateV8MemoryChange(ad_frame2, base::KiB(-5));
 
   // Navigate main frame to record histograms.
   NavigateMainFrame(kNonAdUrl);
@@ -3697,19 +3738,19 @@ TEST_P(AdsMemoryMeasurementTest, MainFrame_MaxMemoryBytesRecorded) {
 
   // Load kilobytes in each frame. |ad_frame| must exist for ad metrics to be
   // tracked.
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 1000);
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(1000));
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
 
   // Notify that memory measurement is available.
-  SimulateV8MemoryChange(main_frame, 1000 * 1024);
+  SimulateV8MemoryChange(main_frame, base::KiB(1000));
 
   // Update memory usage. The max will also change, as this value is
   // positive.
-  SimulateV8MemoryChange(main_frame, 1000 * 1024);
+  SimulateV8MemoryChange(main_frame, base::KiB(1000));
 
   // Update memory usage. The max will remain the same, as this value is
   // negative.
-  SimulateV8MemoryChange(main_frame, -1980 * 1024);
+  SimulateV8MemoryChange(main_frame, base::KiB(-1980));
 
   // Navigate to record histograms.
   NavigateFrame(kNonAdUrl, main_frame);
@@ -3738,7 +3779,7 @@ TEST_P(AdsPageLoadMetricsObserverIncognitoTest, FirstContentfulPaint_Recorded) {
       kAdUrl, main_frame, start + base::Milliseconds(100));
 
   // Load some bytes so that the frame is recorded.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(100));
 
   // Set FirstContentfulPaint.
   SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
