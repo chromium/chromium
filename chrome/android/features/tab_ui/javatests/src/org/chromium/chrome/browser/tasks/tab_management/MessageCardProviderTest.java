@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageData;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
@@ -53,7 +54,6 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Integration tests for MessageCardProvider component. */
@@ -204,10 +204,10 @@ public class MessageCardProviderTest {
     }
 
     private void addMessageCards() {
-        List<MessageCardProviderMediator.Message<@MessageType Integer>> messageList =
-                mCoordinator.getMessageItems();
-        for (int i = 0; i < messageList.size(); i++) {
-            MessageCardProviderMediator.Message<@MessageType Integer> message = messageList.get(i);
+        for (MessageService<@MessageType Integer> service : mCoordinator.getMessageServices()) {
+            Message<@MessageType Integer> message =
+                    mCoordinator.getNextMessageItemForType(service.getMessageType());
+            if (message == null) continue;
             if (message.type == MessageType.PRICE_MESSAGE) {
                 mModelList.add(new MVCListAdapter.ListItem(UiType.PRICE_MESSAGE, message.model));
             } else {

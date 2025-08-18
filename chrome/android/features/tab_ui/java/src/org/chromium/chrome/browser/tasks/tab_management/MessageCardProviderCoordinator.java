@@ -10,10 +10,9 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tasks.tab_management.MessageCardProviderMediator.Message;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,7 +25,6 @@ import java.util.List;
 @NullMarked
 public class MessageCardProviderCoordinator<T> {
     private final MessageCardProviderMediator<T> mMediator;
-    private final List<MessageService<T>> mMessageServices = new ArrayList<>();
 
     MessageCardProviderCoordinator(
             Context context,
@@ -43,41 +41,45 @@ public class MessageCardProviderCoordinator<T> {
      * @param service The {@link MessageService} to subscribe.
      */
     public void subscribeMessageService(MessageService<T> service) {
-        mMessageServices.add(service);
+        // TODO(crbug.com/439557010): Simplify the observer interactions.
+        // We must register the service to the mediator before registering the mediator to the
+        // service.
+        mMediator.addMessageService(service);
         service.addObserver(mMediator);
     }
 
     /**
-     * Get all messages.
+     * Returns the next {@link Message} for the given messageType, if there is any. Otherwise
+     * returns null.
      *
-     * @return a list of {@link Message}.
-     */
-    public List<Message<T>> getMessageItems() {
-        return mMediator.getMessageItems();
-    }
-
-    /**
      * @param messageType The message type associates with the message.
-     * @return The next {@link Message} for the given messageType, if there is any. Otherwise
-     *     returns null.
      */
     public @Nullable Message<T> getNextMessageItemForType(T messageType) {
         return mMediator.getNextMessageItemForType(messageType);
     }
 
     /**
+     * Whether the given message is shown.
+     *
      * @param messageType The message type associated with the message.
      * @param identifier The identifier associated with the message.
-     * @return Whether the given message is shown.
      */
     boolean isMessageShown(T messageType, int identifier) {
         return mMediator.isMessageShown(messageType, identifier);
     }
 
+    /** Returns all registered message services. */
+    public List<MessageService<T>> getMessageServices() {
+        return mMediator.getMessageServices();
+    }
+
     /** Clean up all member fields. */
     public void destroy() {
-        for (int i = 0; i < mMessageServices.size(); i++) {
-            mMessageServices.get(i).removeObserver(mMediator);
+        List<MessageService<T>> services = mMediator.getMessageServices();
+        for (int i = 0; i < services.size(); i++) {
+            MessageService<T> service = services.get(i);
+            mMediator.removeMessageService(service);
+            service.removeObserver(mMediator);
         }
     }
 }
