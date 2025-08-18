@@ -24,7 +24,8 @@ int ComputeUnderlineOffsetAuto(const blink::FontMetrics& font_metrics,
   // pixel gap. If underline is thick then use a bigger gap.
   // Positive underline Position means underline should be drawn below baseline
   // and negative value means drawing above baseline.
-  int gap{is_auto ? std::max<int>(1, ceilf(text_decoration_thickness / 2.f))
+  int gap{is_auto ? std::max<int>(
+                        1, ClampTo<int>(ceilf(text_decoration_thickness / 2.f)))
                   : 0};
 
   // Position underline near the alphabetic baseline.
