@@ -203,6 +203,27 @@
   <message name="IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL" desc="Message in the message box shown if user asks to open a lot of bookmarks in a folder. The number will always be 15 or more.">
     Are you sure you want to open <ph name="TAB_COUNT">$1<ex>20</ex></ph> tabs?
   </message>
+  <if expr="not is_android">
+    <message name="IDS_BOOKMARK_BAR_ALREADY_CREATED_GROUP" desc="Message in the message box shown when user opens a bookmark folder as tab group if user already did that before">
+      You already created a group from this folder.
+    </message>
+    <if expr="not use_titlecase">
+      <message name="IDS_BOOKMARK_BAR_CREATE_NEW_GROUP_BUTTON" desc="Create new group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Create new group
+      </message>
+      <message name="IDS_BOOKMARK_BAR_REPLACE_OLD_GROUP_BUTTON" desc="Replace old group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Replace old group
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_BOOKMARK_BAR_CREATE_NEW_GROUP_BUTTON" desc="In title case: Create new group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Create New Group
+      </message>
+      <message name="IDS_BOOKMARK_BAR_REPLACE_OLD_GROUP_BUTTON" desc="In title case: Replace old group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Replace Old Group
+      </message>
+    </if>
+  </if>
   <!-- End of Bookmarks Bar Context Menu strings. -->
 
   <!-- Begin of Bookmarks Bubble strings. -->

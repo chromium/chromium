@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -48,6 +49,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -84,6 +86,24 @@ namespace {
 // the actual web contents and what browsers they are located in can be
 // determined (if necessary).
 using OpenedWebContentsSet = base::flat_set<const content::WebContents*>;
+
+// Result of user action when a dialog is shown.
+// The dialog is shown when user tries to open a bookmark folder as tab group
+// that already connected with one before.
+enum class OpenGroupMessageBoxResult {
+  // No UI shows, user does not need to make a choice. Default to create a new
+  // group.
+  kNoMessage = 0,
+
+  // User chooses to create a new group.
+  kCreateNewGroup = 1,
+
+  // User chooses to replace the old group with bookmarks in the folder.
+  kReplaceOldGroup = 2,
+
+  // User cancels the action by pressing Esc key. Do nothing.
+  kCancel = 3,
+};
 
 // Opens all of the URLs in `bookmark_urls` using `navigator` and
 // `initial_disposition` as a starting point. Returns a reference set of the
@@ -307,7 +327,10 @@ void DoOpen(Browser* browser,
             page_load_metrics::NavigationHandleUserData::InitiatorLocation
                 navigation_type,
             std::optional<BookmarkLaunchAction> launch_action,
-            chrome::MessageBoxResult result) {
+            OpenGroupMessageBoxResult result) {
+  if (result == OpenGroupMessageBoxResult::kCancel) {
+    return;
+  }
   const auto opened_web_contents = OpenAllHelper(
       browser, std::move(url_and_ids_to_open), initial_disposition,
       navigation_type, std::move(launch_action));
@@ -346,7 +369,7 @@ void DoOpen(Browser* browser,
     bool is_new_group = true;
     if (features::IsBookmarkTabGroupConversionEnabled() &&
         connected_group_id.has_value() &&
-        result == chrome::MESSAGE_BOX_RESULT_YES) {
+        result == OpenGroupMessageBoxResult::kReplaceOldGroup) {
       is_new_group = false;
     }
 
@@ -449,25 +472,44 @@ void DoOpenPromptConfirm(
              bookmark_folder_node_id, folder_title, add_to_split,
              navigation_type, launch_action,
              override_connected_group_for_testing.value()
-                 ? chrome::MESSAGE_BOX_RESULT_YES
-                 : chrome::MESSAGE_BOX_RESULT_NO);
+                 ? OpenGroupMessageBoxResult::kReplaceOldGroup
+                 : OpenGroupMessageBoxResult::kCreateNewGroup);
     } else {
       // Show UI dialog for user selection.
-      // TODO(crbug.com/436350653): Add localization strings.
-      chrome::ShowQuestionMessageBoxAsync(
-          browser->window()->GetNativeWindow(),
-          l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
-          l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
-          base::BindOnce(DoOpen, browser, std::move(url_and_ids_to_open),
-                         initial_disposition, bookmark_folder_node_id,
-                         folder_title, add_to_split, navigation_type,
-                         launch_action));
+      auto on_create_new_group = base::BindOnce(
+          DoOpen, browser, url_and_ids_to_open, initial_disposition,
+          bookmark_folder_node_id, folder_title, add_to_split, navigation_type,
+          launch_action, OpenGroupMessageBoxResult::kCreateNewGroup);
+      auto on_replace_old_group = base::BindOnce(
+          DoOpen, browser, url_and_ids_to_open, initial_disposition,
+          bookmark_folder_node_id, folder_title, add_to_split, navigation_type,
+          launch_action, OpenGroupMessageBoxResult::kReplaceOldGroup);
+      auto on_cancel = base::BindOnce(
+          DoOpen, browser, std::move(url_and_ids_to_open), initial_disposition,
+          bookmark_folder_node_id, folder_title, add_to_split, navigation_type,
+          launch_action, OpenGroupMessageBoxResult::kCancel);
+
+      auto dialog_model_builder = ui::DialogModel::Builder();
+      dialog_model_builder.SetTitle(l10n_util::GetStringUTF16(IDS_PRODUCT_NAME))
+          .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
+              IDS_BOOKMARK_BAR_ALREADY_CREATED_GROUP)))
+          .AddOkButton(std::move(on_replace_old_group),
+                       ui::DialogModel::Button::Params().SetLabel(
+                           l10n_util::GetStringUTF16(
+                               IDS_BOOKMARK_BAR_REPLACE_OLD_GROUP_BUTTON)))
+          .AddCancelButton(std::move(on_create_new_group),
+                           ui::DialogModel::Button::Params().SetLabel(
+                               l10n_util::GetStringUTF16(
+                                   IDS_BOOKMARK_BAR_CREATE_NEW_GROUP_BUTTON)))
+          .SetCloseActionCallback(std::move(on_cancel));
+
+      chrome::ShowBrowserModal(browser, dialog_model_builder.Build());
     }
 
   } else {
     DoOpen(browser, std::move(url_and_ids_to_open), initial_disposition,
            bookmark_folder_node_id, folder_title, add_to_split, navigation_type,
-           launch_action, chrome::MESSAGE_BOX_RESULT_YES);
+           launch_action, OpenGroupMessageBoxResult::kNoMessage);
   }
 }
 
