@@ -77,7 +77,6 @@
 <translation id="1310362642333088424">כדי להוריד קבצים, תמונות ופריטים נוספים, נדרש יותר נפח אחסון.</translation>
 <translation id="1312168552565502328">‏קובצי cookie, נתוני אתרים</translation>
 <translation id="1312721752506309252">מופעלת הגנה משופרת</translation>
-<translation id="1317821187353201763">סגירת הכרטיסייה</translation>
 <translation id="1321993286294231467">קרתה שגיאה בשמירת התמונה.</translation>
 <translation id="1322735045095424339">מצב אנונימי נדרש על ידי הארגון שלך</translation>
 <translation id="1323735185997015385">מחיקה</translation>
@@ -92,7 +91,6 @@
 <translation id="1358214951266274152">מעבר לקישור שהעתקת</translation>
 <translation id="1360432990279830238">לצאת ולהשבית את הסנכרון?</translation>
 <translation id="1363028406613469049">רצועה</translation>
-<translation id="1364367057792633742">כרטיסייה חדשה</translation>
 <translation id="1365106417372288489">‏ה-iPhone שוחזר לאחרונה, ויכול להיות שדפדפן ברירת מחדל השתנה בעקבות זאת.</translation>
 <translation id="1366297852155605523">קבצים ששותפו איתי</translation>
 <translation id="1369286077209859800">הצגת כל הכרטיסיות בקבוצת הכרטיסיות</translation>
@@ -122,7 +120,6 @@
 <translation id="1469381646033328562">החשבון מנוהל על ידי ההורה שלך.
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">השתנתה</translation>
-<translation id="1480152980057770392">הצגת רשימת הקריאה</translation>
 <translation id="1485907716209290998">מעקב אחר חבילה</translation>
 <translation id="1486096554574027028">חיפוש בסיסמאות</translation>
 <translation id="1491277525950327607">יש ללחוץ פעמיים כדי להחליף את מצב ההגדרה</translation>
@@ -366,8 +363,6 @@
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2360196772093551345">בקשת אתר לנייד</translation>
 <translation id="2362083820973145409">נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. ההגדרות ייפתחו.</translation>
-<translation id="2377230674627603057">רשת של קבוצות כרטיסיות</translation>
-<translation id="2377336083033403521">חיפוש כרטיסיות…</translation>
 <translation id="2381405137052800939">הגדרות בסיסיות</translation>
 <translation id="2384692388811649784">הסתרת הכרטיסיות הפרטיות</translation>
 <translation id="2386793615875593361">נבחרה תמונה אחת</translation>
@@ -674,7 +669,6 @@
 <translation id="368329460027487650">החשבון לא מחובר. ייפתחו אפשרויות הכניסה.</translation>
 <translation id="3695446226812920698">איך עושים זאת</translation>
 <translation id="3700134753671613714">היכנס כדי שהסימניות יופיעו בכל המכשירים שלך.</translation>
-<translation id="3706112388989951153">עריכת סימנייה</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{‏סיסמה אחת ({COUNT}) שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google עם הכתובת {EMAIL}.}one{‏{COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {EMAIL}.}two{‏{COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {EMAIL}.}other{‏{COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {EMAIL}.}}</translation>
 <translation id="371230970611282515">המערכת חוזה אירועים מסוכנים ומזהירה אותך לגביהם לפני שהם מתרחשים.</translation>
 <translation id="372115889256123713">קבצים במטמון</translation>
@@ -742,7 +736,6 @@
 <translation id="3967327056943561740">סימניות</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3973560090698854095">‏הפעולה הזו תמחק את הכתובות ששמורות בחשבון שלך ב-Google <ph name="USER_EMAIL" />.</translation>
-<translation id="3982893814825393515">דיווח על בעיה…</translation>
 <translation id="398604237578616937">נכנסת לחשבון בתור <ph name="USER_EMAIL" />. לפתיחת תפריט החשבון.</translation>
 <translation id="3986739045730058129">מעבר לכרטיסייה</translation>
 <translation id="3992684624889376114">מידע על הדף הזה</translation>
@@ -774,7 +767,6 @@
 <translation id="4111985840824673503">סימון הכול כ'נקרא'</translation>
 <translation id="411254640334432676">ההורדה נכשלה.</translation>
 <translation id="4112644173421521737">חיפוש</translation>
-<translation id="4112786312631440274">מעבר לכרטיסייה הבאה</translation>
 <translation id="4113030288477039509">מנוהל על ידי מנהל המערכת שלך</translation>
 <translation id="4113957097611235433">שינוי הסיסמאות</translation>
 <translation id="4120936477286528673">האתר הזה מנסה שוב ושוב לפתוח אפליקציה אחרת.</translation>
@@ -856,6 +848,7 @@
 <translation id="4430277756566635951">החשבון הנוכחי: <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
 <translation id="4430505936695785931">גישה לסיסמאות שמורות באפליקציות אחרות</translation>
 <translation id="4431224949908513835">צריך לבחור אמצעי תשלום למילוי.</translation>
+<translation id="4432122368769493392">הגדרות</translation>
 <translation id="4442550905108052454">פותחים את ה<ph name="BEGIN_BOLD" />הגדרות<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738">אפשרויות נוספות של <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">אפשר להחליק את הקצה כדי לעבור אחורה או קדימה.</translation>
@@ -869,9 +862,7 @@
 <translation id="4474494258097106883">‏מותאם ל-iPhone שלך</translation>
 <translation id="4488754974567924717">אם הסיסמאות שלך ייחשפו לאחרים, נודיע לך</translation>
 <translation id="4489536976005181779">{count,plural, =1{הדף נוסף לרשימת הקריאה בחשבון שלך, {email}}one{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}two{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}other{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}}</translation>
-<translation id="4490794477009017910">מעבר לכרטיסייה הקודמת</translation>
 <translation id="4493604894403585654">‏נכנסת לחשבון בתור <ph name="USER_EMAIL" /> אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
-<translation id="4495516234578759322">חיפוש של המחרוזת התואמת הבאה</translation>
 <translation id="4502423230170890588">הסרה מהמכשיר הזה</translation>
 <translation id="4508750114462689118">סגירת קידום הכניסה</translation>
 <translation id="4509345063551561634">מיקום:</translation>
@@ -899,12 +890,10 @@
 <translation id="461440297010471931">‏חיפוש באמצעות Google</translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4621768135601674446">פתיחת האפשרויות של "מצב קריאה"</translation>
-<translation id="4624080227980645783">חלון פרטי חדש</translation>
 <translation id="4627107755957573804">מתן הרשאה לאתרים ולאפליקציות לשדרג חשבונות קיימים לשימוש במפתחות גישה</translation>
 <translation id="4629065796475200039">הסיסמה שלך לא יובאה</translation>
 <translation id="4630212057753624203">בועה לדוגמה</translation>
 <translation id="4631335160486397366">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
-<translation id="4631890462758052414">כרטיסייה פרטית חדשה</translation>
 <translation id="4632655012900268062">התאמה אישית של הכרטיסים</translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
 <translation id="4636930964841734540">מידע</translation>
@@ -1150,7 +1139,6 @@
 <translation id="5565871407246142825">כרטיסי אשראי</translation>
 <translation id="5567439033041178034">למידע נוסף</translation>
 <translation id="5572648434713976849">בסרגל הכתובות יוצגו הצעות משופרות</translation>
-<translation id="5576885723883013398">חלון חדש</translation>
 <translation id="5578795271662203820">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">הסתרה של רשימת הקריאה</translation>
 <translation id="5581786858144165447">‏מצב AI: רוצה לשאול משהו?</translation>
@@ -1337,7 +1325,6 @@
 <translation id="6231782223312638214">מוצע</translation>
 <translation id="6232329973559504466">חיפוש במצב אנונימי</translation>
 <translation id="6234310016144827337">מומלץ לבדוק את החיבור ולנסות שוב</translation>
-<translation id="6234438496206735891">הצגת ההורדות</translation>
 <translation id="6236952928980352967">שחזור האזהרה</translation>
 <translation id="623755660902014047">מצב קריאה</translation>
 <translation id="6247557882553405851">‏מנהל הסיסמאות של Google</translation>
@@ -1433,7 +1420,6 @@
 <translation id="6574225511994820656">טיפים להגדרה</translation>
 <translation id="6579867704846662339">‏אפשר לפתוח כתובות URL נכנסות מאפליקציות אחרות במצב פרטי.</translation>
 <translation id="6583087784430677195">כדי להשבית את המילוי האוטומטי, פותחים את ה<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" /> ועוברים אל 'מילוי אוטומטי של סיסמאות'.</translation>
-<translation id="6585048665672348661">מחיקת נתוני הגלישה מתבצעת…</translation>
 <translation id="6585618849026997638">כדי לחזור אל דף שחשוב לך אפשר להוסיף אותו לסימניות</translation>
 <translation id="659407965921887085">הכרטיס הזה מציג ירידות במחיר ברחבי האינטרנט של מוצרים שבמעקב שלך כרגע</translation>
 <translation id="6596481460663245319">‏חיפוש התמונה באמצעות Google</translation>
@@ -1455,7 +1441,6 @@
 <translation id="6640268266988685324">כרטיסייה פתוחה</translation>
 <translation id="6641465290890659327">שיתוף עותק של הסיסמה שלך</translation>
 <translation id="6642362222295953972">מעבר אל כרטיסייה קיימת</translation>
-<translation id="664573288952458293">תצוגה של כרטיסיות רגילות</translation>
 <translation id="6645899968535965230">‏קוד QR‏: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">‏כתובות URL שבהן ביקרת יישלחו אל Google כדי לחזות את האתרים הבאים שאליהם תתבצע כניסה על ידך</translation>
 <translation id="6657585470893396449">סיסמה</translation>
@@ -1468,7 +1453,6 @@
 <translation id="6676349090816247042">אפשרויות כניסה לחשבון.</translation>
 <translation id="667999046851023355">מסמך</translation>
 <translation id="6680416467695217368">התאמה אישית של התפריט</translation>
-<translation id="6681586159478273915">חיפוש קולי</translation>
 <translation id="6681791404926413601">{count,plural, =1{אפשרות אחת ({count}) לאמצעי תשלום זמינה מעל המקלדת.}one{‫{count} אפשרויות לאמצעי תשלום זמינות מעל המקלדת.}two{‫{count} אפשרויות לאמצעי תשלום זמינות מעל המקלדת.}other{‫{count} אפשרויות לאמצעי תשלום זמינות מעל המקלדת.}}</translation>
 <translation id="6682680306647339111">התזכורת הוסרה</translation>
 <translation id="6684262542644248484">נכנסים לחשבון באתר כלשהו</translation>
@@ -1561,7 +1545,6 @@
 <translation id="7039345315346323556">מהזמן האחרון</translation>
 <translation id="704692552158601232">אפליקציית ברירת המחדל לדפדפן</translation>
 <translation id="7055240621761583113">מילוי אוטומטי של הסיסמה</translation>
-<translation id="7058455400288852416">פתיחת הכלי למעבר בין כרטיסיות</translation>
 <translation id="7063811929043357292">החשבון מנוהל על ידי ההורה שלך.
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="7067610207756299941">כדי להגן על אבטחת הארגון, נתונים שלא נשמרו יימחקו מהמכשיר. בין הנתונים שיימחקו: סיסמאות, היסטוריה ועוד.</translation>
@@ -1622,7 +1605,6 @@
 <translation id="736564850024123010">כדי להתאים אישית את חוויית השימוש, אפשר לשנות את המיקום של סרגל הכתובות.</translation>
 <translation id="7366909168761621528">נתוני גלישה</translation>
 <translation id="7367530036083223701">הווידג'ט של מנהל הסיסמאות מאפשר לגשת לסיסמאות באופן מאובטח במסך הבית.</translation>
-<translation id="7369285139974632858">הוספה לסימניות</translation>
 <translation id="7380220816562673297">‏בשלב הזה אפשר לשתף סיסמאות רק עם חברים בקבוצה המשפחתית. ניתן <ph name="BEGIN_LINK" />ליצור קבוצה משפחתית<ph name="END_LINK" /> של עד 6 אנשים ולהפיק יותר ממוצרי Google ומהמינויים לשירותי Google.</translation>
 <translation id="7380698179418029202">‏צריך לבחור את קובץ ה-<ph name="BEGIN_BOLD" />‎.zip<ph name="END_BOLD" /> של הייצוא מ-Safari</translation>
 <translation id="739101637685146669">‏איזו כתובת URL להוסיף לסימניות?</translation>
@@ -1851,7 +1833,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />המכשירים שלך<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">הוספת סיסמה</translation>
 <translation id="8195936400946057039">הגנה מפני איומים באינטרנט</translation>
-<translation id="8202744799033457229">הצגת ההיסטוריה</translation>
 <translation id="8205564605687841303">ביטול</translation>
 <translation id="8206354486702514201">הגדרה זו נאכפת על ידי מנהל המערכת שלך.</translation>
 <translation id="8209050860603202033">פתיחת התמונה</translation>
@@ -1860,7 +1841,6 @@
 <translation id="8214293972734702249">כרטיסייה שהוצמדה, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">הצגת גרסה אופליין בכרטיסייה חדשה</translation>
 <translation id="8221665793629393739">תזכורת: רוצה לחזור לכאן?</translation>
-<translation id="8230355548492839438">חיפוש של הקודם</translation>
 <translation id="8232956427053453090">שמירת הנתונים</translation>
 <translation id="8233237502828137700">סגירת הבאנר של המבצע</translation>
 <translation id="8258734532103758067">ייצאתי את הנתונים שלי</translation>
@@ -1912,7 +1892,6 @@
 <translation id="8407831512155324054">הסיסמאות נראות חזקות</translation>
 <translation id="8414283596511250978">לא שוכחים את הסיסמאות</translation>
 <translation id="842523302461531262">להגדרה כברירת מחדל בהגדרות…</translation>
-<translation id="8425826545759040372">תצוגה של כרטיסיות פרטיות</translation>
 <translation id="8428045167754449968">עיר / יישוב</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428634594422941299">הבנתי</translation>
@@ -1932,9 +1911,7 @@
 <translation id="8503813439785031346">שם משתמש</translation>
 <translation id="8505361906966222822">שמירה במיקום…</translation>
 <translation id="850600235656508448">פתיחה במצב אנונימי</translation>
-<translation id="8511141513131731477">מעבר לכרטיסייה הראשונה</translation>
 <translation id="8515534223594179607">ייצוא של נתוני הגלישה</translation>
-<translation id="852075982791215701">מעבר לכרטיסייה האחרונה</translation>
 <translation id="8522147671363140027">{count,plural, =1{‏סיסמה אחת ({count}) ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}one{‏{count} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}two{‏{count} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}other{‏{count} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}}</translation>
 <translation id="8524799873541103884">כרטיסיות <ph name="INCOGNITO" /> ‏<ph name="FIRST_VISIBLE_TAB" /> עד <ph name="LAST_VISIBLE_TAB" /> מתוך <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">פתיחת קישורים מאפליקציות אחרות במצב פרטי</translation>
@@ -1980,7 +1957,6 @@
 <translation id="8668210798914567634">דף זה נשמר ברשימת הקריאה שלך.</translation>
 <translation id="8672642291731179042">תרגום דפים</translation>
 <translation id="8672733398999596205">הפעלת הכול</translation>
-<translation id="8672993423386237345">הצגת העזרה</translation>
 <translation id="8674716540979958118">יש לך סיסמאות שנחשפו.</translation>
 <translation id="8679900250380464358">הוספה לרשימת הקריאה</translation>
 <translation id="8680786875305615692">עזרה בשיפור האבטחה באינטרנט לכולם</translation>
@@ -1995,7 +1971,6 @@
 <translation id="8706253136355675497">טמפרטורה</translation>
 <translation id="8706806585855470492">תהיה לך אפשרות לשתף, להצטרף ולשתף פעולה בקבוצות של כרטיסיות</translation>
 <translation id="8709409604518538305">הכרטיסיות נסגרו</translation>
-<translation id="8712534545803964353">חיפוש בדף…</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8717864919010420084">העתקת הקישור</translation>
 <translation id="8722229818691036192">החשבונות במכשיר הזה</translation>
@@ -2004,7 +1979,6 @@
 <translation id="872371143724482722">{COUNT,plural, =1{כרטיסייה אחת ({COUNT})}one{‫{COUNT} כרטיסיות}two{‫{COUNT} כרטיסיות}other{‫{COUNT} כרטיסיות}}</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8726523474917941818">שליחת תזכורת</translation>
-<translation id="8728922029615312208">סגירת הכול</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8731268612289859741">קוד האבטחה</translation>
 <translation id="87371078663613140">בודקים את האפשרויות בסרגל התפריטים</translation>
@@ -2031,17 +2005,14 @@
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8822421075653507124">כדי לוודא שאפשר להשתמש במכשיר באופן בטוח, האדמין של הארגון צריך לקבל מידע על מערכת ההפעלה, הדפדפן וההגדרות של המכשיר, וגם על התוכנה שמותקנת במכשיר.</translation>
 <translation id="8831208860914609320">סגירת כל הכרטיסיות הלא פעילות</translation>
-<translation id="8831944931153286232">הוספה לרשימת הקריאה</translation>
 <translation id="8837654851594567190">מיון לפי המקור</translation>
 <translation id="8840513115188359703">‏פעולה זו לא תוציא אותך מחשבון Google שלך.</translation>
 <translation id="8848286253339013170">‏התמונה נשמרת ב-Google Photos של <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">מוסתר</translation>
 <translation id="8855242995793521265">ההגנה המשופרת לא מאטה במידה משמעותית את הדפדפן או המכשיר.</translation>
 <translation id="8856643812068084733">ארכיונים</translation>
-<translation id="8859598907209490382">הצגת ההגדרות</translation>
 <translation id="8863067612494559785">מתבצעת העברה אל <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">‏קבלת מסלול הגעה ומידע מקומי ממפות Google</translation>
-<translation id="886477344907998366">הצגת הסימניות</translation>
 <translation id="8871974300055371298">הגדרות תוכן</translation>
 <translation id="8877788021141246043">הגדרת תזכורת</translation>
 <translation id="8879604564928138696">אפשר ללחוץ לחיצה כפולה כדי לנסות</translation>
@@ -2065,7 +2036,6 @@
 <translation id="8928426232677696166">החשבון <ph name="EMAIL" /> מנוהל על ידי הארגון שלך. צריך לבחור חשבון.</translation>
 <translation id="894191600409472540">עליך ליצור סיסמאות חזקות</translation>
 <translation id="8943780400130412484">להתחיל הורדה חדשה?</translation>
-<translation id="8944844131570002190">פתיחת המיקום…</translation>
 <translation id="8953046091948372197">הסיסמאות יופיעו כאן</translation>
 <translation id="8953602327115378731">{count,plural, =1{אפשרות אחת ({count}) להשלמה אוטומטית זמינה מעל המקלדת.}one{‫{count} אפשרויות להשלמה אוטומטית זמינות מעל המקלדת.}two{‫{count} אפשרויות להשלמה אוטומטית זמינות מעל המקלדת.}other{‫{count} אפשרויות להשלמה אוטומטית זמינות מעל המקלדת.}}</translation>
 <translation id="895541991026785598">דיווח על בעיה</translation>
@@ -2160,7 +2130,6 @@
 <translation id="972084300091883657">{COUNT,plural, =0{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_NAME" />}=1{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_NAME" /> ועוד משתמש אחד ({COUNT})}one{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_NAME" /> ועוד {COUNT} משתמשים}two{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_NAME" /> ועוד {COUNT} משתמשים}other{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_NAME" /> ועוד {COUNT} משתמשים}}</translation>
 <translation id="973493300226275298">ניתן לעקוב אחר מחיר של מוצר בחנויות וירטואליות. תתקבל התראה כשתהיה הנחה.</translation>
 <translation id="973788791897303708">קבוצת הכרטיסיות הזו מלאה</translation>
-<translation id="976392601789283511">פתיחה מחדש של הכרטיסייה האחרונה שנסגרה</translation>
 <translation id="981498610235328462">הארגון מאפשר לך להיכנס לדפדפן רק באמצעות חשבונות מסוימים. החשבונות שאינם מותרים מוסתרים.</translation>
 <translation id="984275831282074731">אמצעי תשלום</translation>
 <translation id="985379595344853742">סגירה של כל הכרטיסיות הפרטיות</translation>

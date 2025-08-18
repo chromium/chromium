@@ -77,7 +77,6 @@
 <translation id="1310362642333088424">Per scaricare file, foto e altri contenuti ti serve più spazio di archiviazione.</translation>
 <translation id="1312168552565502328">Cookie, dati dei siti</translation>
 <translation id="1312721752506309252">È attiva la protezione avanzata</translation>
-<translation id="1317821187353201763">Chiudi scheda</translation>
 <translation id="1321993286294231467">Errore durante il salvataggio dell'immagine.</translation>
 <translation id="1322735045095424339">La tua organizzazione richiede la modalità in incognito</translation>
 <translation id="1323735185997015385">Elimina</translation>
@@ -92,7 +91,6 @@
 <translation id="1358214951266274152">Visita il link che hai copiato</translation>
 <translation id="1360432990279830238">Uscire e disattivare la sincronizzazione?</translation>
 <translation id="1363028406613469049">Traccia</translation>
-<translation id="1364367057792633742">Nuova scheda</translation>
 <translation id="1365106417372288489">Il tuo iPhone è stato ripristinato di recente e questo potrebbe aver modificato il tuo browser predefinito.</translation>
 <translation id="1366297852155605523">Condivisi con me</translation>
 <translation id="1369286077209859800">Mostra tutte le schede nel gruppo di schede</translation>
@@ -122,7 +120,6 @@
 <translation id="1469381646033328562">Il tuo account è gestito da un genitore.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Modificata</translation>
-<translation id="1480152980057770392">Mostra elenco di lettura</translation>
 <translation id="1485907716209290998">Tracciamento della spedizione</translation>
 <translation id="1486096554574027028">Cerca password</translation>
 <translation id="1491277525950327607">Tocca due volte per attivare/disattivare l'impostazione</translation>
@@ -366,8 +363,6 @@
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2360196772093551345">Richiedi sito per dispositivi mobili</translation>
 <translation id="2362083820973145409">Accesso eseguito come <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Consente di aprire le impostazioni.</translation>
-<translation id="2377230674627603057">Griglia dei gruppi di schede</translation>
-<translation id="2377336083033403521">Cerca tra le schede…</translation>
 <translation id="2381405137052800939">Opzioni di base</translation>
 <translation id="2384692388811649784">Nascondi le schede di navigazione in incognito</translation>
 <translation id="2386793615875593361">Una selezionata</translation>
@@ -674,7 +669,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="368329460027487650">Account disconnesso. Consente di aprire le opzioni per accedere.</translation>
 <translation id="3695446226812920698">Scopri come</translation>
 <translation id="3700134753671613714">Accedi per visualizzare i tuoi Preferiti su tutti i tuoi dispositivi.</translation>
-<translation id="3706112388989951153">Modifica preferito</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} password è salvata solo su questo dispositivo. Per usarla su altri dispositivi, salvala nel tuo Account Google {EMAIL}.}other{{COUNT} password sono salvate solo su questo dispositivo. Per usarle su altri dispositivi, salvale nel tuo Account Google {EMAIL}.}}</translation>
 <translation id="371230970611282515">Prevede e ti avvisa quando stanno per verificarsi eventi pericolosi.</translation>
 <translation id="372115889256123713">file memorizzati nella cache</translation>
@@ -742,7 +736,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3967327056943561740">Preferiti</translation>
 <translation id="3967822245660637423">Download completato</translation>
 <translation id="3973560090698854095">Questa azione elimina gli indirizzi salvati nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
-<translation id="3982893814825393515">Segnala un problema…</translation>
 <translation id="398604237578616937">Accesso eseguito come <ph name="USER_EMAIL" />. Apri il menu dell'account.</translation>
 <translation id="3986739045730058129">Vai alla scheda</translation>
 <translation id="3992684624889376114">Informazioni su questa pagina</translation>
@@ -774,7 +767,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4111985840824673503">Segna tutti come già letti</translation>
 <translation id="411254640334432676">Download non riuscito.</translation>
 <translation id="4112644173421521737">Cerca</translation>
-<translation id="4112786312631440274">Passa alla scheda successiva</translation>
 <translation id="4113030288477039509">Gestito dall'amministratore</translation>
 <translation id="4113957097611235433">Cambia le password</translation>
 <translation id="4120936477286528673">Questo sito sta cercando ripetutamente di aprire un'altra applicazione.</translation>
@@ -870,9 +862,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4474494258097106883">Realizzato per il tuo iPhone</translation>
 <translation id="4488754974567924717">Ti informeremo se le tue password vengono compromesse</translation>
 <translation id="4489536976005181779">{count,plural, =1{Pagina aggiunta al tuo elenco di lettura nel tuo account, {email}}other{Pagine aggiunte al tuo elenco di lettura nel tuo account, {email}}}</translation>
-<translation id="4490794477009017910">Vai alle schede precedenti</translation>
 <translation id="4493604894403585654">Hai eseguito l'accesso come <ph name="USER_EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
-<translation id="4495516234578759322">Trova successiva</translation>
 <translation id="4502423230170890588">Rimuovi da questo dispositivo</translation>
 <translation id="4508750114462689118">Chiudi promo accesso</translation>
 <translation id="4509345063551561634">Percorso:</translation>
@@ -900,12 +890,10 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="461440297010471931">Ricerca con Google</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4621768135601674446">Apri le opzioni della modalità Lettura</translation>
-<translation id="4624080227980645783">Nuova finestra di navigazione in incognito</translation>
 <translation id="4627107755957573804">Consenti a siti e app di eseguire l'upgrade degli account esistenti per utilizzare le passkey</translation>
 <translation id="4629065796475200039">La tua password non è stata importata</translation>
 <translation id="4630212057753624203">Fumetto di esempio</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> password riutilizzate</translation>
-<translation id="4631890462758052414">Nuova scheda di navigazione in incognito</translation>
 <translation id="4632655012900268062">Personalizza le schede</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
 <translation id="4636930964841734540">Info</translation>
@@ -1151,7 +1139,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5565871407246142825">Carte di credito</translation>
 <translation id="5567439033041178034">ULTERIORI INFORMAZIONI</translation>
 <translation id="5572648434713976849">Riceverai suggerimenti migliori nella barra degli indirizzi</translation>
-<translation id="5576885723883013398">Nuova finestra</translation>
 <translation id="5578795271662203820">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Nascondi elenco di lettura</translation>
 <translation id="5581786858144165447">Chiedi a AI Mode</translation>
@@ -1338,7 +1325,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6231782223312638214">Suggerito</translation>
 <translation id="6232329973559504466">Ricerca in incognito</translation>
 <translation id="6234310016144827337">Controlla la connessione e riprova</translation>
-<translation id="6234438496206735891">Mostra download</translation>
 <translation id="6236952928980352967">Ripristina avviso</translation>
 <translation id="623755660902014047">Modalità Lettura</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
@@ -1434,7 +1420,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6574225511994820656">Configura</translation>
 <translation id="6579867704846662339">Puoi scegliere di aprire gli URL in arrivo da altre app in incognito.</translation>
 <translation id="6583087784430677195">Per disattivare la funzionalità, apri le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" /> e vai a Riempimento automatico password.</translation>
-<translation id="6585048665672348661">Elimina dati di navigazione…</translation>
 <translation id="6585618849026997638">Puoi tornare a una pagina che ritieni importante aggiungendola ai preferiti</translation>
 <translation id="659407965921887085">Questa scheda mostra le riduzioni di prezzo sul web per i prodotti che monitori al momento</translation>
 <translation id="6596481460663245319">Cerca immagine con Google</translation>
@@ -1456,7 +1441,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6640268266988685324">Scheda aperta</translation>
 <translation id="6641465290890659327">Condividi una copia della password</translation>
 <translation id="6642362222295953972">Passa alla scheda esistente</translation>
-<translation id="664573288952458293">Griglia schede normali</translation>
 <translation id="6645899968535965230">Codice QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro</translation>
 <translation id="6657585470893396449">Password</translation>
@@ -1469,7 +1453,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6676349090816247042">Opzioni di accesso.</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6680416467695217368">Personalizza menu</translation>
-<translation id="6681586159478273915">Ricerca vocale</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} opzione per il metodo di pagamento disponibile sopra la tastiera.}other{{count} opzioni per il metodo di pagamento disponibili sopra la tastiera.}}</translation>
 <translation id="6682680306647339111">Promemoria rimosso</translation>
 <translation id="6684262542644248484">Accedi a un sito web</translation>
@@ -1562,7 +1545,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7039345315346323556">Recenti</translation>
 <translation id="704692552158601232">App browser predefinita</translation>
 <translation id="7055240621761583113">Compila automaticamente la password</translation>
-<translation id="7058455400288852416">Vai al Selettore di schede</translation>
 <translation id="7063811929043357292">Il tuo account è gestito da un genitore.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="7067610207756299941">Per proteggere la sicurezza della tua organizzazione, i dati non salvati verranno eliminati dal dispositivo. Potrebbero essere incluse password, cronologia e altro ancora.</translation>
@@ -1623,7 +1605,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="736564850024123010">Cambia la posizione della barra degli indirizzi per un'esperienza personalizzata.</translation>
 <translation id="7366909168761621528">Dati di navigazione</translation>
 <translation id="7367530036083223701">Accedi in sicurezza alle tue password dalla schermata Home con il widget Gestore delle password.</translation>
-<translation id="7369285139974632858">Aggiungi ai preferiti</translation>
 <translation id="7380220816562673297">Al momento puoi condividere le password solo con i membri del gruppo Famiglia. <ph name="BEGIN_LINK" />Crea un gruppo Famiglia<ph name="END_LINK" /> formato da un massimo di 6 membri e usa al meglio i tuoi prodotti e abbonamenti su Google.</translation>
 <translation id="7380698179418029202">Seleziona il file di esportazione di Safari <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /></translation>
 <translation id="739101637685146669">Quale URL vuoi aggiungere ai preferiti?</translation>
@@ -1852,7 +1833,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />I tuoi dispositivi<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Aggiungi password</translation>
 <translation id="8195936400946057039">Protezione dalle minacce online</translation>
-<translation id="8202744799033457229">Mostra la cronologia</translation>
 <translation id="8205564605687841303">Annulla</translation>
 <translation id="8206354486702514201">Questa impostazione è stata applicata dall'amministratore.</translation>
 <translation id="8209050860603202033">Apri immagine</translation>
@@ -1861,7 +1841,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8214293972734702249">Scheda bloccata: <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Visualizza versione offline in una nuova scheda</translation>
 <translation id="8221665793629393739">Il tuo promemoria per rivedere</translation>
-<translation id="8230355548492839438">Trova precedente</translation>
 <translation id="8232956427053453090">Conserva i dati</translation>
 <translation id="8233237502828137700">Chiudi banner promozionale</translation>
 <translation id="8258734532103758067">Ho esportato i miei dati</translation>
@@ -1913,7 +1892,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8407831512155324054">Le tue password sembrano efficaci</translation>
 <translation id="8414283596511250978">Le tue password sempre con te</translation>
 <translation id="842523302461531262">Rendilo predefinito nelle impostazioni…</translation>
-<translation id="8425826545759040372">Griglia schede di navigazione in incognito</translation>
 <translation id="8428045167754449968">Città/località</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8428634594422941299">Ok</translation>
@@ -1933,9 +1911,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8503813439785031346">Nome utente</translation>
 <translation id="8505361906966222822">Salva in…</translation>
 <translation id="850600235656508448">Apri in modalità di navigazione in incognito</translation>
-<translation id="8511141513131731477">Vai alla prima scheda</translation>
 <translation id="8515534223594179607">Esporta dati di navigazione</translation>
-<translation id="852075982791215701">Vai all'ultima scheda</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} password e altri elementi vengono salvati solo su questo dispositivo. Per usarli su altri dispositivi, salvali nel tuo Account Google {email}.}other{{count} password e altri elementi vengono salvati solo su questo dispositivo. Per usarli su altri dispositivi, salvali nel tuo Account Google {email}.}}</translation>
 <translation id="8524799873541103884">Schede <ph name="INCOGNITO" /> dalla <ph name="FIRST_VISIBLE_TAB" /> alla <ph name="LAST_VISIBLE_TAB" /> di <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Apri link da altre app in incognito</translation>
@@ -1981,7 +1957,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8668210798914567634">Questa pagina è stata salvata nel tuo Elenco di lettura.</translation>
 <translation id="8672642291731179042">Traduci pagine</translation>
 <translation id="8672733398999596205">Attiva tutto</translation>
-<translation id="8672993423386237345">Mostra la Guida</translation>
 <translation id="8674716540979958118">Hai password compromesse.</translation>
 <translation id="8679900250380464358">Aggiungi a elenco lettura</translation>
 <translation id="8680786875305615692">Contribuisci a migliorare la sicurezza sul web per tutti</translation>
@@ -1996,7 +1971,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Potrai partecipare e collaborare a gruppi di schede, nonché condividerli</translation>
 <translation id="8709409604518538305">Le schede sono state chiuse</translation>
-<translation id="8712534545803964353">Trova nella pagina…</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8717864919010420084">Copia link</translation>
 <translation id="8722229818691036192">Account su questo dispositivo</translation>
@@ -2005,7 +1979,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="872371143724482722">{COUNT,plural, =1{{COUNT} scheda}other{{COUNT} schede}}</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8726523474917941818">Ricordamelo</translation>
-<translation id="8728922029615312208">Chiudi tutte</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8731268612289859741">Codice di sicurezza</translation>
 <translation id="87371078663613140">Esplora le opzioni nella barra dei menu</translation>
@@ -2032,17 +2005,14 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8822421075653507124">Per garantire che questo dispositivo possa essere usato in sicurezza, la tua organizzazione potrebbe dover accedere alle informazioni relative al sistema operativo, al browser, alle impostazioni e al software installato sul dispositivo.</translation>
 <translation id="8831208860914609320">Chiudi tutte le schede non attive</translation>
-<translation id="8831944931153286232">Aggiungi all'elenco di lettura</translation>
 <translation id="8837654851594567190">Ordina per publisher</translation>
 <translation id="8840513115188359703">Non verrai disconnesso dal tuo Account Google.</translation>
 <translation id="8848286253339013170">Salvataggio immagine in Google Foto per <ph name="USER_EMAIL" /> in corso…</translation>
 <translation id="8849001918648564819">Nascosto</translation>
 <translation id="8855242995793521265">Non rallenta in modo significativo il browser o il dispositivo.</translation>
 <translation id="8856643812068084733">Archivi</translation>
-<translation id="8859598907209490382">Mostra impostazioni</translation>
 <translation id="8863067612494559785">Invio a <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="8863431381414769983">Ricevi indicazioni stradali e informazioni locali da Google Maps</translation>
-<translation id="886477344907998366">Mostra i preferiti</translation>
 <translation id="8871974300055371298">Impostazioni contenuti</translation>
 <translation id="8877788021141246043">Imposta un promemoria</translation>
 <translation id="8879604564928138696">Tocca due volte per provare</translation>
@@ -2066,7 +2036,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8928426232677696166"><ph name="EMAIL" />, gestito dalla tua organizzazione, attualmente selezionato. Scegli un account.</translation>
 <translation id="894191600409472540">Crea password efficaci</translation>
 <translation id="8943780400130412484">Iniziare un nuovo download?</translation>
-<translation id="8944844131570002190">Apri il percorso…</translation>
 <translation id="8953046091948372197">Qui troverai le tue password</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} opzione per il completamento automatico disponibile sopra la tastiera.}other{{count} opzioni per il completamento automatico disponibili sopra la tastiera.}}</translation>
 <translation id="895541991026785598">Segnala un problema</translation>
@@ -2161,7 +2130,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="972084300091883657">{COUNT,plural, =0{Partecipa al gruppo di schede con <ph name="OWNER_NAME" />}=1{Partecipa al gruppo di schede con <ph name="OWNER_NAME" /> e {COUNT} altra persona}other{Partecipa al gruppo di schede con <ph name="OWNER_NAME" /> e {COUNT} altre persone}}</translation>
 <translation id="973493300226275298">Monitora il prezzo di un prodotto nei negozi online. Riceverai avvisi quando il prezzo cala.</translation>
 <translation id="973788791897303708">Questo gruppo di schede è al completo</translation>
-<translation id="976392601789283511">Riapri l'ultima scheda chiusa</translation>
 <translation id="981498610235328462">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti.</translation>
 <translation id="984275831282074731">Metodi di pagamento</translation>
 <translation id="985379595344853742">Chiudi tutte le schede di navigazione in incognito</translation>

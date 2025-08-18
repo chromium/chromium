@@ -689,7 +689,6 @@
 <translation id="1468571364034902819">이 프로필을 사용할 수 없음</translation>
 <translation id="1469702495092129863">마이크를 확인하세요.</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{새 그룹에 탭 추가}other{새 그룹에 탭 추가}}</translation>
-<translation id="1470350905258700113">이 기기 사용</translation>
 <translation id="1470946456740188591">캐럿 브라우징을 사용 설정하거나 중지하려면 Ctrl+Search+7 단축키를 사용합니다.</translation>
 <translation id="1471034383866732283">읽기 모드에서 이 페이지의 주요 콘텐츠를 찾을 수 없습니다</translation>
 <translation id="1472675084647422956">자세히 보기</translation>
@@ -1657,7 +1656,6 @@
 <translation id="2119602978828978573">지원되는 실시간 자막 언어</translation>
 <translation id="2120297377148151361">활동 및 상호작용</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> 권한이 차단됨</translation>
-<translation id="2121055421682309734">{COUNT,plural, =0{쿠키가 차단됨}=1{쿠키가 차단됨, 예외 1개}other{쿠키가 차단됨, 예외 {COUNT}개}}</translation>
 <translation id="2121825465123208577">크기 조정</translation>
 <translation id="2123766928840368256">다른 파일 선택</translation>
 <translation id="2124930039827422115">{1,plural, =1{1명의 사용자가 별표 <ph name="AVERAGE_RATING" />개로 평가했습니다.}other{#명의 사용자가 별표 <ph name="AVERAGE_RATING" />개로 평가했습니다.}}</translation>
@@ -2325,7 +2323,6 @@
 <translation id="2565214867520763227">스크린 리더 사용 설정</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" />님 외 <ph name="NUM_OTHER_MEMBERS" />명이 있는 탭 그룹에 참여</translation>
 <translation id="256726287944589768">새 탭 페이지에 바닥글 표시</translation>
-<translation id="2568694057933302218">시크릿 모드에 있는 동안에는 사이트에서 사용자의 사이트 내 탐색 활동을 보기 위해 쿠키를 사용할 수 없습니다. 사용자의 탐색 활동은 광고 개인 최적화 등의 목적으로 사용되지 않습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="2568774940984945469">정보 표시줄 컨테이너</translation>
 <translation id="2569972178052279830">소매업체 이름</translation>
 <translation id="257088987046510401">테마</translation>
@@ -2344,7 +2341,6 @@
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" />(<ph name="EMAIL" />)님이 “<ph name="GROUP_NAME" />” 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, Google 서비스 전반에서 나와 더 이상 소통할 수 없게 됩니다.</translation>
 <translation id="2580889980133367162"><ph name="HOST" />에서 여러 파일을 다운로드할 수 있도록 항상 허용</translation>
 <translation id="258095186877893873">길게</translation>
-<translation id="2581455244799175627">서드 파티 쿠키 허용 자세히 알아보기</translation>
 <translation id="2581786034175502848">다시 사용 설정하려면 Shift 키를 5번 누릅니다.</translation>
 <translation id="2581992808349413349">보안 연결을 사용하여 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회합니다. 이는 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />에서 관리형 서비스 제공업체를 사용합니다.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />(플랫폼 <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2950,6 +2946,7 @@
 <translation id="3003623123441819449">CSS 캐시</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" />에서 비공개 Wi-Fi 연결을 생성합니다.</translation>
 <translation id="3004385386820284928">키보드 키 맞춤설정</translation>
+<translation id="300580149047131921">방금 사용</translation>
 <translation id="3006881078666935414">사용 데이터 없음</translation>
 <translation id="3007555010975143508">다음 앱은 화면을 녹화하는 데 사용될 수 있습니다.</translation>
 <translation id="3007771295016901659">탭 복사</translation>
@@ -3061,7 +3058,6 @@
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">보안을 위해 일시적으로 차단됨</translation>
 <translation id="3083899879156272923">마우스를 화면 중앙에 유지한 상태로 화면 움직이기</translation>
-<translation id="3083998949001524405">서드 파티 쿠키 사용이 허용됨</translation>
 <translation id="3084121729444215602">관리자가 <ph name="EXTENSION_NAME" />를 고정했습니다.</translation>
 <translation id="3084548735795614657">드롭하여 설치</translation>
 <translation id="3084771660770137092">Chrome에 메모리가 부족하거나 웹페이지 프로세싱이 다른 이유로 종료되었습니다. 계속하려면 새로고침하거나 다른 페이지로 이동하세요.</translation>
@@ -3156,7 +3152,6 @@
 <translation id="3161522574479303604">모든 언어</translation>
 <translation id="3162070126914310576">조직 단위의 초기 등록 한도에 도달하여 이 기기를 지금 등록할 수 없습니다. 관리자에게 문의하여 도움을 받으세요.</translation>
 <translation id="3162853326462195145">학교 계정</translation>
-<translation id="3162899666601560689">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하기 위해 쿠키를 사용할 수 있습니다.</translation>
 <translation id="3163085718713826852">인증서 비밀번호 입력</translation>
 <translation id="3163201441334626963">공급업체 <ph name="VENDOR_ID" />의 알 수 없는 제품 <ph name="PRODUCT_ID" /></translation>
 <translation id="3163511056918491211">언제든지 간편하게 데이터를 복원하거나 기기를 전환하세요. 백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
@@ -4031,7 +4026,6 @@
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 보내는 중}other{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 보내는 중}}</translation>
 <translation id="3765055238058255342">이 유형의 카드</translation>
 <translation id="3765246971671567135">오프라인 데모 모드 정책을 읽을 수 없습니다.</translation>
-<translation id="3765696567014520261">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서 기능이 작동하지 않을 수 있습니다</translation>
 <translation id="3766687283066842296">휴대전화 허브 자세히 알아보기</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" />Hz</translation>
 <translation id="3767835232661747729">현재는 가족 구성원과만 비밀번호를 공유할 수 있습니다. 그룹에 가입하도록 <ph name="BEGIN_LINK" />가족 구성원을 초대<ph name="END_LINK" />하고 Google 서비스 전반의 제품과 구독을 최대한 활용하세요.</translation>
@@ -4252,7 +4246,6 @@
 <translation id="3904326018476041253">위치 서비스</translation>
 <translation id="3905761538810670789">앱 복구</translation>
 <translation id="3906096710440765802">Chrome에 로그인하여 모든 기기에서 내 비밀번호, 북마크 등을 사용하세요.</translation>
-<translation id="3908288065506437185">시크릿 모드에서 서드 파티 쿠키 차단</translation>
 <translation id="3908501907586732282">확장 프로그램 사용</translation>
 <translation id="3909456989251621103">서버 인증서를 삭제하면 Chrome에서 더 이상 서버를 식별하는 데 이 인증서를 사용하지 않습니다.</translation>
 <translation id="3909701002594999354">모든 제어 기능 표시(&amp;C)</translation>
@@ -5081,7 +5074,6 @@
         카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="4503748371388753124">컴퓨터에 신뢰할 수 있는 플랫폼 모듈(TPM) 보안 기기가 있습니다. 이 기기는 ChromeOS Flex에서 여러 중요한 보안 기능을 구현하는 데 사용됩니다. 자세히 알아보려면 Chromebook 고객센터의 다음 페이지를 방문하세요.
 https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="4504374760782163539">{COUNT,plural, =0{쿠키가 허용됨}=1{쿠키가 허용됨, 예외 1개}other{쿠키가 허용됨, 예외 {COUNT}개}}</translation>
 <translation id="4504940961672722399">아이콘을 클릭하거나 <ph name="EXTENSION_SHORTCUT" />을(를) 눌러 확장 프로그램을 사용합니다.</translation>
 <translation id="4505469832694348179">이 QR 코드로 Chrome을 다운로드하고 Google 계정에 로그인하세요.</translation>
 <translation id="450552327874992444">이미 추가된 단어입니다.</translation>
@@ -5217,7 +5209,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4594218792629569101">'읽음으로 표시'를 선택하여 페이지를 목록 맨 아래로 이동합니다.</translation>
 <translation id="4595560905247879544">앱 및 확장 프로그램은 관리자(<ph name="CUSTODIAN_NAME" />)만 수정할 수 있습니다.</translation>
 <translation id="4598345735110653698">패스키 관리</translation>
-<translation id="4598549027014564149">시크릿 모드인 경우 사이트에서 쿠키를 사용해 관련 사이트 등 사용자의 사이트 탐색 활동을 볼 수 없습니다. 사용자의 탐색 활동은 광고 개인 최적화 등의 목적으로 사용되지 않습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="4598556348158889687">저장용량 관리</translation>
 <translation id="4598776695426288251">여러 기기를 통해 Wi-Fi 사용 가능</translation>
 <translation id="4600071396330666617">추천 수</translation>
@@ -6425,7 +6416,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5458716506062529991">잘못된 PIN을 너무 많이 입력했습니다. 패스키 및 비밀번호에 액세스하려면 PIN을 변경하세요.</translation>
 <translation id="5459470938885464873">인증서를 가져오는 중에 오류가 발생했습니다</translation>
 <translation id="5459864179070366255">설치 계속</translation>
-<translation id="5460641065520325899">탐색 중에 사이트에서 나를 추적하는 데 사용할 수 있는 정보 유형을 관리합니다.</translation>
 <translation id="5460861858595506978">영감</translation>
 <translation id="5461050611724244538">휴대전화와 연결 끊김</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />의 색인</translation>
@@ -6782,7 +6772,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5722086096420375088">초록색 및 흰색</translation>
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5723508132121499792">실행 중인 백그라운드 앱 없음</translation>
-<translation id="5723967018671998714">시크릿 모드에서는 타사 쿠키가 차단됨</translation>
 <translation id="5725112283692663422">AI로 테마 만들기에 관한 의견 보내기</translation>
 <translation id="5727728807527375859">확장 프로그램, 애플리케이션, 테마로 인해 컴퓨터가 손상될 수 있습니다. 계속하시겠습니까?</translation>
 <translation id="5728072125198221967">연결된 Google 서비스</translation>
@@ -8334,7 +8323,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6824564591481349393">이메일 주소 복사(&amp;E)</translation>
 <translation id="6824584962142919697">요소 검사(&amp;I)</translation>
 <translation id="6825184156888454064">이름순 정렬</translation>
-<translation id="6826872289184051766">USB를 통해 인증</translation>
 <translation id="6827121912381363404">모든 확장 프로그램이 <ph name="PERMITTED_SITE" /> 사이트를 읽고 변경하도록 허용</translation>
 <translation id="6827422464708099620">옵션을 더 보려면 선택하세요</translation>
 <translation id="6827517233063803343">앱 및 설정은 Google 계정으로 로그인한 모든 ChromeOS 기기와 동기화됩니다. 브라우저 동기화 옵션을 보려면 <ph name="LINK_BEGIN" />Chrome 설정<ph name="LINK_END" />으로 이동하세요.</translation>
@@ -9503,7 +9491,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7659584679870740384">더 이상 이 기기를 사용할 권한이 없습니다. 관리자에게 로그인 권한에 대해 문의하세요.</translation>
 <translation id="7660116474961254898">휴대전화에 표시된 안내를 따르세요</translation>
 <translation id="7660146600670077843">탭을 마우스 오른쪽 버튼으로 클릭하고 '새 그룹에 탭 추가'를 선택합니다.</translation>
-<translation id="7661259717474717992">사이트에서 쿠키 데이터 저장 및 읽기 허용</translation>
 <translation id="7661451191293163002">등록 인증서를 확인할 수 없습니다.</translation>
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
 <translation id="7663719505383602579">수신기: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -10507,7 +10494,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8323317289166663449">컴퓨터 및 모든 웹사이트의 전체 데이터 읽기 및 변경</translation>
 <translation id="8323518750352551353">방문 기록을 별도로 유지하시겠습니까?</translation>
 <translation id="8324158725704657629">다시 묻지 않음</translation>
-<translation id="8324784016256120271">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하기 위해 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8325413836429495820">클립보드 확인이 허용되지 않음</translation>
 <translation id="8326478304147373412">PKCS #7, 인증서 체인</translation>
 <translation id="8327386430364625757">산술 글꼴</translation>
@@ -11223,7 +11209,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="881782782501875829">포트 번호 추가</translation>
 <translation id="881799181680267069">기타 숨기기</translation>
 <translation id="8818152010000655963">배경화면</translation>
-<translation id="8818958672113348984">휴대전화를 통해 인증</translation>
 <translation id="8818988764764862764">창이 왼쪽으로 이동함</translation>
 <translation id="8819510664278523111">기기 EID는 <ph name="EID_NUMBER" />, 기기 IMEI는 <ph name="IMEI_NUMBER" />, 기기 일련번호는 <ph name="SERIAL_NUMBER" />입니다. 이 번호를 사용하여 서비스를 활성화할 수 있습니다.</translation>
 <translation id="8820817407110198400">북마크</translation>

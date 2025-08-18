@@ -689,7 +689,6 @@
 <translation id="1468571364034902819">Не можете да използвате този потребителски профил</translation>
 <translation id="1469702495092129863">Проверете микрофона си</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Добавяне на раздела към нова група}other{Добавяне на разделите към нова група}}</translation>
-<translation id="1470350905258700113">Използване на това устройство</translation>
 <translation id="1470946456740188591">За да включите или изключите Caret Browsing, използвайте клавишната комбинация Ctrl + клавиша „търсене“ + 7</translation>
 <translation id="1471034383866732283">Режимът за четене не може да намери основното съдържание на тази страница</translation>
 <translation id="1472675084647422956">Показване на още</translation>
@@ -1653,7 +1652,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2119602978828978573">Поддържани езици за надписите на живо</translation>
 <translation id="2120297377148151361">Активност и взаимодействия</translation>
 <translation id="2120639962942052471">„<ph name="PERMISSION" />“ е блокирано</translation>
-<translation id="2121055421682309734">{COUNT,plural, =0{„Бисквитките“ са блокирани}=1{„Бисквитките“ са блокирани – 1 изключение}other{„Бисквитките“ са блокирани – {COUNT} изключения}}</translation>
 <translation id="2121825465123208577">Преоразмеряване</translation>
 <translation id="2123766928840368256">Избиране на друг файл</translation>
 <translation id="2124930039827422115">{1,plural, =1{Оценка <ph name="AVERAGE_RATING" /> от един потребител.}other{Оценка <ph name="AVERAGE_RATING" /> от # потребители.}}</translation>
@@ -2320,7 +2318,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2565214867520763227">Включете екранния четец</translation>
 <translation id="2566146433999774844">Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /> и още <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="256726287944589768">Показване на долния колонтитул в новия раздел в браузъра</translation>
-<translation id="2568694057933302218">Докато сте в режим „инкогнито“, сайтовете не могат да използват „бисквитките“ ви, за да виждат активността ви при сърфиране в други сайтове. Активността ви при сърфиране не се използва за неща като персонализиране на рекламите. Функциите в някои сайтове може да не работят.</translation>
 <translation id="2568774940984945469">Контейнер на инфолента</translation>
 <translation id="2569972178052279830">Име на търговеца</translation>
 <translation id="257088987046510401">Теми</translation>
@@ -2339,7 +2336,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) незабавно ще загуби достъп до групата раздели „<ph name="GROUP_NAME" />“ и вече няма да може да взаимодейства с вас в услугите на Google.</translation>
 <translation id="2580889980133367162">Винаги да е разрешено на <ph name="HOST" /> да изтегля няколко файла</translation>
 <translation id="258095186877893873">Дълго</translation>
-<translation id="2581455244799175627">Още за разрешаването на „бисквитки“ на трети страни</translation>
 <translation id="2581786034175502848">Натиснете Shift 5 пъти, за да го активирате отново</translation>
 <translation id="2581992808349413349">Използвайте защитена връзка, за да потърсите IP адреса на даден сайт в DNS (системата за имена на домейни). За целта се използва доставчик на управлявани услуги на адрес <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2945,6 +2941,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3003623123441819449">Кеш за CSS</translation>
 <translation id="3003967365858406397">Устройството ви <ph name="PHONE_NAME" /> ще създаде частна Wi-Fi връзка.</translation>
 <translation id="3004385386820284928">Персонализиране на клавишите на клавиатурата</translation>
+<translation id="300580149047131921">Наскоро използвано</translation>
 <translation id="3006881078666935414">Няма данни за използването</translation>
 <translation id="3007555010975143508">Тези приложения ще се използват за записване на екрана ви:</translation>
 <translation id="3007771295016901659">Дублиране на раздела</translation>
@@ -3056,7 +3053,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="308268297242056490">URI адрес</translation>
 <translation id="3083193146044397360">Временно блокирано от съображения за сигурност</translation>
 <translation id="3083899879156272923">Преместване на екрана и задържане на мишката в центъра му</translation>
-<translation id="3083998949001524405">Разрешено е използването на „бисквитки“ на трети страни</translation>
 <translation id="3084121729444215602">Разширението <ph name="EXTENSION_NAME" /> е фиксирано от администратора ви</translation>
 <translation id="3084548735795614657">Освободете, за да инсталирате</translation>
 <translation id="3084771660770137092">Или Chrome няма достатъчно памет, или процесът за уеб страницата бе прекратен по друга причина. За да продължите, презаредете или отворете друга страница.</translation>
@@ -3151,7 +3147,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3161522574479303604">Всички езици</translation>
 <translation id="3162070126914310576">Това устройство не може да бъде регистрирано в момента, защото за организационната единица е достигнато ограничението за първоначална регистрация. За помощ се свържете с администратора си.</translation>
 <translation id="3162853326462195145">Училищен профил</translation>
-<translation id="3162899666601560689">Сайтовете могат да използват „бисквитки“ с цел по-добро сърфиране, например за да оставате в профила си или за да запомнят артикулите в пазарската ви кошница</translation>
 <translation id="3163085718713826852">Въведете паролата за сертификата</translation>
 <translation id="3163201441334626963">Неизвестен продукт <ph name="PRODUCT_ID" /> от доставчик <ph name="VENDOR_ID" /></translation>
 <translation id="3163511056918491211">По всяко време можете лесно да възстановите данните на устройството си или да го замените с друго. Резервните ви копия се качват в Google и се шифроват посредством паролата за профила ви в Google.</translation>
@@ -4026,7 +4021,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3764974059056958214">{COUNT,plural, =1{Изпращате <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}other{Изпращате <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765055238058255342">този тип карта</translation>
 <translation id="3765246971671567135">Правилото за офлайн демонстрационен режим не можа да бъде прочетено.</translation>
-<translation id="3765696567014520261">Сайтовете не могат да използват „бисквитките“ ви, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами. Някои функции в някои сайтове може да не работят</translation>
 <translation id="3766687283066842296">Научете повече за Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Хц</translation>
 <translation id="3767835232661747729">Засега можете да споделяте пароли само с членове на семейството. <ph name="BEGIN_LINK" />Поканете членове на семейството<ph name="END_LINK" /> в групата си и се възползвайте в по-голяма степен от продуктите и абонаментите си във всички услуги на Google.</translation>
@@ -4248,7 +4242,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3904326018476041253">Услуги за местоположение</translation>
 <translation id="3905761538810670789">Поправяне на приложението</translation>
 <translation id="3906096710440765802">Влезте в профила си в Chrome, за да получите своите пароли, отметки и др. на всичките си устройства</translation>
-<translation id="3908288065506437185">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="3908501907586732282">Активиране на разширението</translation>
 <translation id="3909456989251621103">Ако изтриете сертификат на сървър, Chrome вече няма да го използва за идентифициране на сървърите.</translation>
 <translation id="3909701002594999354">Показване на всички &amp;контроли</translation>
@@ -5078,7 +5071,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
         <ph name="BREAK" />
         Можете да управлявате настройките от менюто на картата или да видите още опции в „Персонализиране на Chrome“.</translation>
 <translation id="4503748371388753124">Компютърът ви съдържа устройство за сигурност от типа „модул за надеждна платформа (TPM)“, което служи за реализиране на множество критични защитни функции в ChromeOS Flex. За да научите повече, посетете Помощния център на Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="4504374760782163539">{COUNT,plural, =0{„Бисквитките“·са разрешени}=1{„Бисквитките“ са разрешени – 1 изключение}other{„Бисквитките“ са разрешени – {COUNT} изключения}}</translation>
 <translation id="4504940961672722399">Използвайте това разширение, като кликнете върху съответната икона или натиснете „<ph name="EXTENSION_SHORTCUT" />“.</translation>
 <translation id="4505469832694348179">Изтеглете Chrome с този QR код и влезте в профила си в Google.</translation>
 <translation id="450552327874992444">Думата вече е добавена</translation>
@@ -5214,7 +5206,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4594218792629569101">Изберете „Означаване като прочетено“, за да преместите страницата най-долу в списъка</translation>
 <translation id="4595560905247879544">Само мениджърът (<ph name="CUSTODIAN_NAME" />) може да променя приложенията и разширенията.</translation>
 <translation id="4598345735110653698">Управление на кодовете за достъп</translation>
-<translation id="4598549027014564149">Докато сте в режим „инкогнито“, сайтовете не могат да използват „бисквитките“ ви, за да виждат активността ви при сърфиране в други сайтове, дори да са сродни. Активността ви при сърфиране не се използва за неща като персонализиране на рекламите. Функциите в някои сайтове може да не работят.</translation>
 <translation id="4598556348158889687">Управление на хранилището</translation>
 <translation id="4598776695426288251">Налице е Wi-Fi през няколко устройства</translation>
 <translation id="4600071396330666617">Брой предложения</translation>
@@ -6423,7 +6414,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5458716506062529991">Въведохте грешен ПИН код твърде много пъти. Променете го за достъп до ключовете за достъп и паролите си.</translation>
 <translation id="5459470938885464873">Грешка при импортирането на сертификата</translation>
 <translation id="5459864179070366255">Продължаване с инсталирането</translation>
-<translation id="5460641065520325899">Управлявайте типовете информация, които сайтовете могат да използват, за да ви проследяват, докато сърфирате.</translation>
 <translation id="5460861858595506978">Вдъхновение</translation>
 <translation id="5461050611724244538">Връзката с телефона ви прекъсна</translation>
 <translation id="5463275305984126951">Индекс на <ph name="LOCATION" /></translation>
@@ -6781,7 +6771,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5722086096420375088">Зелено и бяло</translation>
 <translation id="572328651809341494">Скорошни раздели</translation>
 <translation id="5723508132121499792">Не се изпълняват приложения на заден план</translation>
-<translation id="5723967018671998714">„Бисквитките“ на трети страни са блокирани в режим „инкогнито“</translation>
 <translation id="5725112283692663422">Изпращане на отзиви за функцията за създаване на тема с AI</translation>
 <translation id="5727728807527375859">Разширенията, приложенията и темите могат да навредят на компютъра ви. Наистина ли искате да продължите?</translation>
 <translation id="5728072125198221967">Свързани услуги на Google</translation>
@@ -8334,7 +8323,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6824564591481349393">Копиране на име&amp;йл адреса</translation>
 <translation id="6824584962142919697">&amp;Инспектиране на елементите</translation>
 <translation id="6825184156888454064">Сортиране по име</translation>
-<translation id="6826872289184051766">Потвърждаване чрез USB</translation>
 <translation id="6827121912381363404">Разрешаване на всички разширения да четат и променят <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827422464708099620">Изберете, за да видите още опции</translation>
 <translation id="6827517233063803343">Приложенията и настройките ви ще се синхронизират с всички устройства с Chrome OS, на които сте влезли в профила си в Google. За да намерите опциите за синхронизиране на браузъра, отворете <ph name="LINK_BEGIN" />настройките на Chrome<ph name="LINK_END" />.</translation>
@@ -9504,7 +9492,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7659584679870740384">Не сте упълномощени да използвате това устройство. За разрешение за вход се свържете с администратора.</translation>
 <translation id="7660116474961254898">Изпълнете инструкциите на телефона си</translation>
 <translation id="7660146600670077843">Кликнете с десния бутон върху даден раздел и изберете „Добавяне на раздела към нова група“</translation>
-<translation id="7661259717474717992">Разрешаване на сайтовете да запазват и четат данни в „бисквитки“</translation>
 <translation id="7661451191293163002">Не можа да бъде получен регистрационен сертификат.</translation>
 <translation id="7662283695561029522">Докоснете, за да конфигурирате</translation>
 <translation id="7663719505383602579">Приемник: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -10507,7 +10494,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8323317289166663449">да чете и променя всичките ви данни на компютъра и в уебсайтовете</translation>
 <translation id="8323518750352551353">Да се раздели ли сърфирането?</translation>
 <translation id="8324158725704657629">Без повторно питане</translation>
-<translation id="8324784016256120271">Сайтовете могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами</translation>
 <translation id="8325413836429495820">Сайтове без разрешение за преглед на буферната памет</translation>
 <translation id="8326478304147373412">PKCS 7, верига сертификати</translation>
 <translation id="8327386430364625757">Математически символи</translation>
@@ -11223,7 +11209,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="881782782501875829">Добавяне на номер на порт</translation>
 <translation id="881799181680267069">Скриване на другите</translation>
 <translation id="8818152010000655963">Тапет</translation>
-<translation id="8818958672113348984">Потвърждаване чрез телефона ви</translation>
 <translation id="8818988764764862764">Прозорецът бе преместен наляво</translation>
 <translation id="8819510664278523111">EID номерът на устройството ви е <ph name="EID_NUMBER" />, IMEI номерът му е <ph name="IMEI_NUMBER" />, а серийният му номер – <ph name="SERIAL_NUMBER" />. Тези номера могат да се използват за активиране на услугата.</translation>
 <translation id="8820817407110198400">Отметки</translation>

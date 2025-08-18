@@ -686,7 +686,6 @@
 <translation id="1468571364034902819">无法使用这份个人资料</translation>
 <translation id="1469702495092129863">请检查麦克风</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{向新群组中添加标签页}other{向新群组中添加标签页}}</translation>
-<translation id="1470350905258700113">使用此设备</translation>
 <translation id="1470946456740188591">如需开启或关闭光标浏览模式，请使用快捷键 Ctrl + 搜索键 + 7</translation>
 <translation id="1471034383866732283">朗读模式在此页面中找不到主要内容</translation>
 <translation id="1472675084647422956">展开</translation>
@@ -1640,7 +1639,6 @@
 <translation id="2119602978828978573">支持的实时字幕语言</translation>
 <translation id="2120297377148151361">活动和互动行为</translation>
 <translation id="2120639962942052471">已禁用<ph name="PERMISSION" /></translation>
-<translation id="2121055421682309734">{COUNT,plural, =0{已阻止 Cookie}=1{已阻止 Cookie，但有 1 项例外情况}other{已阻止 Cookie，但有 {COUNT} 项例外情况}}</translation>
 <translation id="2121825465123208577">调整大小</translation>
 <translation id="2123766928840368256">另选一个文件</translation>
 <translation id="2124930039827422115">{1,plural, =1{已有一位用户给出了 <ph name="AVERAGE_RATING" /> 的评分。}other{已有 # 位用户给出评分，平均评分为 <ph name="AVERAGE_RATING" />。}}</translation>
@@ -2303,7 +2301,6 @@
 <translation id="2565214867520763227">开启屏幕阅读器</translation>
 <translation id="2566146433999774844">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的标签页分组</translation>
 <translation id="256726287944589768">在“新标签页”页面上显示页脚</translation>
-<translation id="2568694057933302218">在无痕模式下，网站无法使用 Cookie 查看您在各个网站上的浏览活动。系统不会将您的浏览活动用于展示个性化广告等用途。某些网站上的功能可能会无法正常运行。</translation>
 <translation id="2568774940984945469">信息栏容器</translation>
 <translation id="2569972178052279830">零售商名称</translation>
 <translation id="257088987046510401">主题</translation>
@@ -2322,7 +2319,6 @@
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且将无法再在各项 Google 服务中与您互动。</translation>
 <translation id="2580889980133367162">始终允许 <ph name="HOST" /> 下载多个文件</translation>
 <translation id="258095186877893873">长</translation>
-<translation id="2581455244799175627">详细了解如何允许第三方 Cookie</translation>
 <translation id="2581786034175502848">按 shift 键 5 次即可重新启用</translation>
 <translation id="2581992808349413349">使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。此操作需要使用 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 上的代管式服务提供商</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />（平台：<ph name="PLATFORM_VERSION" />）<ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2928,6 +2924,7 @@
 <translation id="3003623123441819449">CSS 缓存</translation>
 <translation id="3003967365858406397">您的 <ph name="PHONE_NAME" /> 将创建一个私享的 Wi-Fi 网络连接。</translation>
 <translation id="3004385386820284928">自定义键盘按键</translation>
+<translation id="300580149047131921">最近使用过</translation>
 <translation id="3006881078666935414">无使用情况数据</translation>
 <translation id="3007555010975143508">系统将使用以下应用录制屏幕：</translation>
 <translation id="3007771295016901659">复制标签</translation>
@@ -3039,7 +3036,6 @@
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">已暂时屏蔽相应权限以保护您的安全</translation>
 <translation id="3083899879156272923">移动屏幕时鼠标指针始终位于屏幕中央</translation>
-<translation id="3083998949001524405">已允许使用第三方 Cookie</translation>
 <translation id="3084121729444215602">“<ph name="EXTENSION_NAME" />”已被您的管理员固定</translation>
 <translation id="3084548735795614657">拖放以安装</translation>
 <translation id="3084771660770137092">Chrome 浏览器内存不足或因其他原因网页进程终止。要继续，请重新加载或转到其他网页。</translation>
@@ -3134,7 +3130,6 @@
 <translation id="3161522574479303604">所有语言</translation>
 <translation id="3162070126914310576">由于您的组织部门已达到初始注册上限，因此无法立即注册此设备。请与您的管理员联系，以获取帮助。</translation>
 <translation id="3162853326462195145">学校账号</translation>
-<translation id="3162899666601560689">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品</translation>
 <translation id="3163085718713826852">输入证书密码</translation>
 <translation id="3163201441334626963">来自供应商 <ph name="VENDOR_ID" /> 的未知产品 <ph name="PRODUCT_ID" /></translation>
 <translation id="3163511056918491211">随时轻松恢复数据或更换设备。您的备份内容将上传到 Google 并使用您的 Google 账号密码进行加密。</translation>
@@ -4007,7 +4002,6 @@
 <translation id="3764974059056958214">{COUNT,plural, =1{正在将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}other{正在将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}}</translation>
 <translation id="3765055238058255342">此类型的卡片</translation>
 <translation id="3765246971671567135">无法读取离线演示模式政策。</translation>
-<translation id="3765696567014520261">网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行</translation>
 <translation id="3766687283066842296">详细了解 Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> 赫兹</translation>
 <translation id="3767835232661747729">目前，您只能与家庭成员分享密码。您可以<ph name="BEGIN_LINK" />邀请家庭成员<ph name="END_LINK" />加入您的群组，与他们一起充分利用您所用的 Google 产品和订阅。</translation>
@@ -4228,7 +4222,6 @@
 <translation id="3904326018476041253">位置信息服务</translation>
 <translation id="3905761538810670789">修复应用</translation>
 <translation id="3906096710440765802">登录 Chrome 即可在所有设备上获取密码、书签等信息</translation>
-<translation id="3908288065506437185">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3908501907586732282">启用扩展程序</translation>
 <translation id="3909456989251621103">如果您删除了某个服务器证书，Chrome 将不再使用该证书来识别服务器。</translation>
 <translation id="3909701002594999354">显示所有控件(&amp;C)</translation>
@@ -5057,7 +5050,6 @@
         <ph name="BREAK" />
         您可在卡片菜单中管理设置，或在“自定义 Chrome”部分查看更多选项。</translation>
 <translation id="4503748371388753124">您的计算机包含可信平台模块 (TPM) 安全设备，该设备可用于在 ChromeOS Flex 中实现许多关键的安全功能。如需了解详情，请访问 Chromebook 帮助中心：https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="4504374760782163539">{COUNT,plural, =0{已允许 Cookie}=1{已允许 Cookie，但有 1 项例外情况}other{已允许 Cookie，但有 {COUNT} 项例外情况}}</translation>
 <translation id="4504940961672722399">点击该图标或按 <ph name="EXTENSION_SHORTCUT" />，即可使用此扩展程序。</translation>
 <translation id="4505469832694348179">使用此二维码下载 Chrome，然后登录您的 Google 账号。</translation>
 <translation id="450552327874992444">已经添加了这个字词</translation>
@@ -5193,7 +5185,6 @@
 <translation id="4594218792629569101">选择“标记为已读”即可将相应页面移至清单底部</translation>
 <translation id="4595560905247879544">只有管理员（<ph name="CUSTODIAN_NAME" />）可以修改应用和扩展程序。</translation>
 <translation id="4598345735110653698">管理通行密钥</translation>
-<translation id="4598549027014564149">在无痕模式下，网站无法使用 Cookie 查看您在各个网站（即使是彼此相关的网站）上的浏览活动。系统不会将您的浏览活动用于展示个性化广告等用途。某些网站上的功能可能会无法正常运行。</translation>
 <translation id="4598556348158889687">存储空间管理</translation>
 <translation id="4598776695426288251">可通过多部设备使用 Wi-Fi</translation>
 <translation id="4600071396330666617">建议数量</translation>
@@ -6400,7 +6391,6 @@
 <translation id="5458716506062529991">您输错 PIN 码的次数过多。如需访问您的通行密钥和密码，请更改 PIN 码。</translation>
 <translation id="5459470938885464873">导入证书时出错</translation>
 <translation id="5459864179070366255">继续安装</translation>
-<translation id="5460641065520325899">管理网站可利用哪些类型的信息来跟踪您浏览时的活动。</translation>
 <translation id="5460861858595506978">灵感示例</translation>
 <translation id="5461050611724244538">与您手机的连接中断了</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> 的索引</translation>
@@ -6755,7 +6745,6 @@
 <translation id="5722086096420375088">绿色和白色</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
 <translation id="5723508132121499792">没有任何后台应用在运行</translation>
-<translation id="5723967018671998714">已阻止无痕模式下的第三方 Cookie</translation>
 <translation id="5725112283692663422">发送有关“利用 AI 创建主题”的反馈</translation>
 <translation id="5727728807527375859">扩展功能、应用和主题背景可能会损害您的计算机。您确定要继续吗？</translation>
 <translation id="5728072125198221967">关联的 Google 服务</translation>
@@ -8307,7 +8296,6 @@
 <translation id="6824564591481349393">复制电子邮件地址(&amp;E)</translation>
 <translation id="6824584962142919697">检查元素(&amp;I)</translation>
 <translation id="6825184156888454064">按名称排序</translation>
-<translation id="6826872289184051766">通过 USB 进行验证</translation>
 <translation id="6827121912381363404">允许所有扩展程序读取和更改 <ph name="PERMITTED_SITE" /> 数据</translation>
 <translation id="6827422464708099620">选择即可查看更多选项</translation>
 <translation id="6827517233063803343">您的应用和设置会在您使用自己的 Google 账号登录的所有 Chrome 操作系统设备上保持同步。如需了解浏览器同步选项，请前往 <ph name="LINK_BEGIN" />Chrome 设置<ph name="LINK_END" />。</translation>
@@ -9477,7 +9465,6 @@
 <translation id="7659584679870740384">您无权使用此设备。请向管理员申请登录权限。</translation>
 <translation id="7660116474961254898">请按照手机上的说明操作</translation>
 <translation id="7660146600670077843">右键点击某个标签页，然后选择“向新组添加标签页”</translation>
-<translation id="7661259717474717992">允许网站保存和读取 Cookie 数据</translation>
 <translation id="7661451191293163002">无法获取注册证书。</translation>
 <translation id="7662283695561029522">点按即可配置</translation>
 <translation id="7663719505383602579">接收器：<ph name="ARC_PROCESS_NAME" /></translation>
@@ -10480,7 +10467,6 @@
 <translation id="8323317289166663449">读取和更改您在自己的计算机上以及在所有网站上的所有数据</translation>
 <translation id="8323518750352551353">是否单独浏览？</translation>
 <translation id="8324158725704657629">别再询问</translation>
-<translation id="8324784016256120271">网站可以使用 Cookie 查看您在各个不同网站上的浏览活动，以便实现某些功能或目的（例如为您展示个性化广告）</translation>
 <translation id="8325413836429495820">不允许查看您的剪贴板</translation>
 <translation id="8326478304147373412">PKCS #7，证书链</translation>
 <translation id="8327386430364625757">数学字体</translation>
@@ -11196,7 +11182,6 @@
 <translation id="881782782501875829">添加端口号</translation>
 <translation id="881799181680267069">隐藏其他应用</translation>
 <translation id="8818152010000655963">壁纸</translation>
-<translation id="8818958672113348984">通过手机进行验证</translation>
 <translation id="8818988764764862764">窗口已向左移动</translation>
 <translation id="8819510664278523111">您的设备 EID 为 <ph name="EID_NUMBER" />，设备 IMEI 为 <ph name="IMEI_NUMBER" />，设备序列号为 <ph name="SERIAL_NUMBER" />。这些号码可用于帮助激活服务。</translation>
 <translation id="8820817407110198400">书签</translation>

@@ -688,7 +688,6 @@
 <translation id="1468571364034902819">無法使用這個設定檔</translation>
 <translation id="1469702495092129863">請檢查麥克風</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{將分頁加入新群組}other{將分頁加入新群組}}</translation>
-<translation id="1470350905258700113">使用這部裝置</translation>
 <translation id="1470946456740188591">如要開啟或關閉鍵盤瀏覽功能，請使用快速鍵 Ctrl 鍵 + 搜尋鍵 + 7</translation>
 <translation id="1471034383866732283">閱讀模式無法找出這個頁面的主要內容</translation>
 <translation id="1472675084647422956">顯示更多</translation>
@@ -1646,7 +1645,6 @@
 <translation id="2119602978828978573">支援的即時字幕語言</translation>
 <translation id="2120297377148151361">活動與互動行為</translation>
 <translation id="2120639962942052471">已封鎖<ph name="PERMISSION" /></translation>
-<translation id="2121055421682309734">{COUNT,plural, =0{已封鎖 Cookie}=1{已封鎖 Cookie，有 1 個例外狀況}other{已封鎖 Cookie，有 {COUNT} 個例外狀況}}</translation>
 <translation id="2121825465123208577">調整大小</translation>
 <translation id="2123766928840368256">選擇其他檔案</translation>
 <translation id="2124930039827422115">{1,plural, =1{平均評分：<ph name="AVERAGE_RATING" /> (評分人數：1)。}other{平均評分：<ph name="AVERAGE_RATING" /> (評分人數：#)。}}</translation>
@@ -2310,7 +2308,6 @@
 <translation id="2565214867520763227">開啟螢幕閱讀器</translation>
 <translation id="2566146433999774844">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人的分頁群組</translation>
 <translation id="256726287944589768">在新分頁中顯示頁尾</translation>
-<translation id="2568694057933302218">在無痕模式下，網站無法使用 Cookie 瞭解你在各網站的瀏覽活動，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="2568774940984945469">資訊列容器</translation>
 <translation id="2569972178052279830">零售商名稱</translation>
 <translation id="257088987046510401">主題</translation>
@@ -2329,7 +2326,6 @@
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 會立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權，也無法再透過各項 Google 服務與你互動。</translation>
 <translation id="2580889980133367162">永遠允許 <ph name="HOST" /> 下載多個檔案</translation>
 <translation id="258095186877893873">長</translation>
-<translation id="2581455244799175627">進一步瞭解允許第三方 Cookie</translation>
 <translation id="2581786034175502848">按 Shift 鍵 5 次即可重新啟用</translation>
 <translation id="2581992808349413349">在 DNS (網域名稱系統) 中透過安全連線查詢網站的 IP 位址。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的代管服務供應商</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (平台：<ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2935,6 +2931,7 @@
 <translation id="3003623123441819449">CSS 快取</translation>
 <translation id="3003967365858406397">你的「<ph name="PHONE_NAME" />」將建立私人 Wi-Fi 連線。</translation>
 <translation id="3004385386820284928">自訂鍵盤按鍵</translation>
+<translation id="300580149047131921">最近使用過</translation>
 <translation id="3006881078666935414">沒有使用情況資料</translation>
 <translation id="3007555010975143508">以下應用程式將用來錄製你的螢幕畫面：</translation>
 <translation id="3007771295016901659">複製分頁</translation>
@@ -3046,7 +3043,6 @@
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">已暫時封鎖權限，保護你的安全</translation>
 <translation id="3083899879156272923">以滑鼠游標為中心移動畫面</translation>
-<translation id="3083998949001524405">允許使用第三方 Cookie</translation>
 <translation id="3084121729444215602">系統管理員已固定「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="3084548735795614657">拖曳即可安裝</translation>
 <translation id="3084771660770137092">Chrome 記憶體不足或其他某些原因導致網頁處理程序終止。如要繼續執行，請重新載入或前往其他網頁。</translation>
@@ -3141,7 +3137,6 @@
 <translation id="3161522574479303604">所有語言</translation>
 <translation id="3162070126914310576">貴機構單位已達到初始註冊上限，因此目前無法註冊這部裝置。請向管理員尋求協助。</translation>
 <translation id="3162853326462195145">學校帳戶</translation>
-<translation id="3162899666601560689">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品</translation>
 <translation id="3163085718713826852">輸入憑證密碼</translation>
 <translation id="3163201441334626963">供應商 <ph name="VENDOR_ID" /> 提供的不明產品 <ph name="PRODUCT_ID" /></translation>
 <translation id="3163511056918491211">隨時可以輕鬆還原資料或改用其他裝置。備份內容會上傳到 Google，並使用您的 Google 帳戶密碼加密。</translation>
@@ -4013,7 +4008,6 @@
 <translation id="3764974059056958214">{COUNT,plural, =1{正在將 <ph name="ATTACHMENTS" />傳送到「<ph name="DEVICE_NAME" />」}other{正在將 <ph name="ATTACHMENTS" />傳送到「<ph name="DEVICE_NAME" />」}}</translation>
 <translation id="3765055238058255342">這類資訊卡</translation>
 <translation id="3765246971671567135">無法讀取離線展示模式的政策。</translation>
-<translation id="3765696567014520261">網站無法透過 Cookie 瞭解你在各網站的瀏覽活動，也無法放送個人化廣告。某些網站的功能可能無法運作</translation>
 <translation id="3766687283066842296">進一步瞭解 Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">目前只能與家庭成員分享密碼。你可以<ph name="BEGIN_LINK" />邀請家庭成員<ph name="END_LINK" />加入群組，充分發揮 Google 的產品和訂閱服務的功用。</translation>
@@ -4234,7 +4228,6 @@
 <translation id="3904326018476041253">定位服務</translation>
 <translation id="3905761538810670789">修復應用程式</translation>
 <translation id="3906096710440765802">只要登入 Chrome，即可在所有裝置上使用你的密碼、書籤和其他資料</translation>
-<translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3908501907586732282">啟用擴充功能</translation>
 <translation id="3909456989251621103">刪除伺服器憑證後，Chrome 就不會再用該憑證識別伺服器。</translation>
 <translation id="3909701002594999354">顯示所有控制項(&amp;C)</translation>
@@ -5060,7 +5053,6 @@
 <translation id="4502477450742595012">在分頁標籤上按一下滑鼠右鍵，選取「將分頁加入新群組」</translation>
 <translation id="4503362512377701151">系統顯示最近使用的分頁群組，方便你接續先前的瀏覽進度。<ph name="BREAK" /><ph name="BREAK" />你可以透過三點選單管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="4503748371388753124">你的電腦含有可信任平台模組 (TPM) 安全性裝置，可用於實作 ChromeOS Flex 中許多重要的安全性功能。如需瞭解詳情，請造訪 Chromebook 說明中心：https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="4504374760782163539">{COUNT,plural, =0{已允許 Cookie}=1{已允許 Cookie，有 1 個例外狀況}other{已允許 Cookie，有 {COUNT} 個例外狀況}}</translation>
 <translation id="4504940961672722399">按一下這個圖示或按下 <ph name="EXTENSION_SHORTCUT" />，即可使用這項擴充功能。</translation>
 <translation id="4505469832694348179">使用這個 QR code 下載 Chrome，然後登入 Google 帳戶。</translation>
 <translation id="450552327874992444">已新增該字詞</translation>
@@ -5196,7 +5188,6 @@
 <translation id="4594218792629569101">選取「標示為已讀取」即可將頁面移至清單底部</translation>
 <translation id="4595560905247879544">只有管理員 (<ph name="CUSTODIAN_NAME" />) 可以修改應用程式和擴充功能。</translation>
 <translation id="4598345735110653698">管理密碼金鑰</translation>
-<translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解你的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="4598556348158889687">儲存空間管理</translation>
 <translation id="4598776695426288251">可透過多部裝置使用 Wi-Fi</translation>
 <translation id="4600071396330666617">建議數量</translation>
@@ -6402,7 +6393,6 @@
 <translation id="5458716506062529991">PIN 碼輸入錯誤的次數過多。如要存取密碼金鑰和密碼，請變更 PIN 碼。</translation>
 <translation id="5459470938885464873">匯入憑證時發生錯誤</translation>
 <translation id="5459864179070366255">繼續安裝</translation>
-<translation id="5460641065520325899">管理網站可在你瀏覽時用來追蹤的資訊類型。</translation>
 <translation id="5460861858595506978">靈感</translation>
 <translation id="5461050611724244538">手機連線中斷</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> 的索引</translation>
@@ -6757,7 +6747,6 @@
 <translation id="5722086096420375088">綠色與白色</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5723508132121499792">沒有執行中的背景應用程式</translation>
-<translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5725112283692663422">請提供你對「使用 AI 建立主題」的意見</translation>
 <translation id="5727728807527375859">擴充功能、應用程式及主題可能損害你的電腦，確定要繼續？</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
@@ -8306,7 +8295,6 @@
 <translation id="6824564591481349393">複製電子郵件地址(&amp;E)</translation>
 <translation id="6824584962142919697">檢查元素 (&amp;I)</translation>
 <translation id="6825184156888454064">依名稱排序</translation>
-<translation id="6826872289184051766">透過 USB 進行驗證</translation>
 <translation id="6827121912381363404">允許所有擴充功能讀取及變更 <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827422464708099620">選取即可查看更多選項</translation>
 <translation id="6827517233063803343">使用 Google 帳戶登入後，所有 ChromeOS 裝置上的應用程式和設定都會保持同步。如要查看瀏覽器同步處理選項，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
@@ -9475,7 +9463,6 @@
 <translation id="7659584679870740384">您未獲得授權，無法使用這個裝置。如需登入權限，請與管理員聯絡。</translation>
 <translation id="7660116474961254898">請按照手機上的指示操作</translation>
 <translation id="7660146600670077843">在分頁標籤上按一下滑鼠右鍵，選取「將分頁加入新群組」</translation>
-<translation id="7661259717474717992">允許網站儲存及讀取 Cookie 資料</translation>
 <translation id="7661451191293163002">無法取得註冊憑證。</translation>
 <translation id="7662283695561029522">輕觸即可進行設定</translation>
 <translation id="7663719505383602579">接收端：<ph name="ARC_PROCESS_NAME" /></translation>
@@ -10478,7 +10465,6 @@
 <translation id="8323317289166663449">讀取及變更你在個人電腦和所有網站上的所有資料</translation>
 <translation id="8323518750352551353">要分開保存瀏覽資料嗎？</translation>
 <translation id="8324158725704657629">不要再詢問</translation>
-<translation id="8324784016256120271">網站可使用 Cookie 查看你在各網站的瀏覽活動，並提供個人化廣告等服務</translation>
 <translation id="8325413836429495820">不得查看剪貼簿</translation>
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
 <translation id="8327386430364625757">數學字型</translation>
@@ -11194,7 +11180,6 @@
 <translation id="881782782501875829">新增連接埠號碼</translation>
 <translation id="881799181680267069">隱藏其他</translation>
 <translation id="8818152010000655963">桌布</translation>
-<translation id="8818958672113348984">透過你的手機進行驗證</translation>
 <translation id="8818988764764862764">視窗已向左移動</translation>
 <translation id="8819510664278523111">裝置 EID 為 <ph name="EID_NUMBER" />，裝置 IMEI 為 <ph name="IMEI_NUMBER" />，裝置序號為 <ph name="SERIAL_NUMBER" />。你可以使用這些號碼啟用服務。</translation>
 <translation id="8820817407110198400">書籤</translation>

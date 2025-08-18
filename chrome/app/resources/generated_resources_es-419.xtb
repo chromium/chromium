@@ -688,7 +688,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1468571364034902819">No se puede usar este perfil</translation>
 <translation id="1469702495092129863">Revisa el micrófono</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Agregar pestaña a un grupo nuevo}other{Agregar pestañas a un grupo nuevo}}</translation>
-<translation id="1470350905258700113">Usar este dispositivo</translation>
 <translation id="1470946456740188591">Para activar o desactivar la navegación por cursor de texto, usa la combinación de teclas Ctrl+Buscar+7</translation>
 <translation id="1471034383866732283">El modo de lectura no puede encontrar el contenido principal de esta página</translation>
 <translation id="1472675084647422956">Mostrar más</translation>
@@ -1643,7 +1642,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2119602978828978573">Idiomas compatibles con Subtitulado instantáneo</translation>
 <translation id="2120297377148151361">Interacciones y actividad</translation>
 <translation id="2120639962942052471">Se bloqueó <ph name="PERMISSION" /></translation>
-<translation id="2121055421682309734">{COUNT,plural, =0{Se bloquearon las cookies}=1{Se bloquearon las cookies; hay 1 excepción}other{Se bloquearon las cookies; hay {COUNT} excepciones}}</translation>
 <translation id="2121825465123208577">Ajustar tamaño</translation>
 <translation id="2123766928840368256">Elegir otro archivo</translation>
 <translation id="2124930039827422115">{1,plural, =1{Calificación de <ph name="AVERAGE_RATING" /> de un usuario}other{Calificación de <ph name="AVERAGE_RATING" /> de # usuarios}}</translation>
@@ -2307,7 +2305,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2565214867520763227">Activar el lector de pantalla</translation>
 <translation id="2566146433999774844">Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUM_OTHER_MEMBERS" /> personas más</translation>
 <translation id="256726287944589768">Mostrar el pie de página en la página Nueva pestaña</translation>
-<translation id="2568694057933302218">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en diferentes sitios. Tu actividad de navegación no se usa, por ejemplo, para personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="2568774940984945469">Contenedor de la barra de información</translation>
 <translation id="2569972178052279830">Nombre del minorista</translation>
 <translation id="257088987046510401">Temas</translation>
@@ -2326,7 +2323,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderá de inmediato el acceso al grupo de pestañas "<ph name="GROUP_NAME" />" y ya no podrá interactuar contigo en los servicios de Google.</translation>
 <translation id="2580889980133367162">Siempre permitir que <ph name="HOST" /> descargue varios archivos</translation>
 <translation id="258095186877893873">Largo</translation>
-<translation id="2581455244799175627">Más información para permitir cookies de terceros</translation>
 <translation id="2581786034175502848">Presiona Mayúsculas 5 veces para volver a habilitarlo</translation>
 <translation id="2581992808349413349">Usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio). Utiliza un proveedor de servicios administrado en <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2932,6 +2928,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3003623123441819449">Caché CSS</translation>
 <translation id="3003967365858406397">Tu número <ph name="PHONE_NAME" /> creará una conexión de Wi-Fi privada.</translation>
 <translation id="3004385386820284928">Personalizar las teclas del teclado</translation>
+<translation id="300580149047131921">Se usó recientemente</translation>
 <translation id="3006881078666935414">No hay datos de uso</translation>
 <translation id="3007555010975143508">Se usarán estas apps para grabar tu pantalla:</translation>
 <translation id="3007771295016901659">Duplicar pestaña</translation>
@@ -3043,7 +3040,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Se bloqueó temporalmente para proteger tu seguridad</translation>
 <translation id="3083899879156272923">Mover pantalla mientras el mouse se mantiene en el centro</translation>
-<translation id="3083998949001524405">Pueden usar cookies de terceros</translation>
 <translation id="3084121729444215602">Tu administrador fijó <ph name="EXTENSION_NAME" /></translation>
 <translation id="3084548735795614657">Soltar para instalar</translation>
 <translation id="3084771660770137092">El proceso de la página web puede haber finalizado por agotamiento de la memoria de Chrome o por algún otro motivo. Para continuar, reinicia la página o accede a otra página.</translation>
@@ -3138,7 +3134,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3161522574479303604">Todos los idiomas</translation>
 <translation id="3162070126914310576">No se puede inscribir este dispositivo en este momento porque tu unidad organizativa alcanzó su límite de inscripción inicial. Comunícate con tu administrador para obtener asistencia.</translation>
 <translation id="3162853326462195145">Cuenta de una institución educativa</translation>
-<translation id="3162899666601560689">Los sitios pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a ellos o recordar artículos del carrito de compras.</translation>
 <translation id="3163085718713826852">Ingresa la contraseña del certificado</translation>
 <translation id="3163201441334626963">Producto desconocido <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="3163511056918491211">Cambia de dispositivo o restablece tus datos fácilmente en cualquier momento. Las copias de seguridad se suben a Google y se encriptan con la contraseña de tu Cuenta de Google.</translation>
@@ -4013,7 +4008,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3764974059056958214">{COUNT,plural, =1{Enviando <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}other{Enviando <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765055238058255342">este tipo de tarjeta</translation>
 <translation id="3765246971671567135">No se pudo leer la política del modo de demostración sin conexión.</translation>
-<translation id="3765696567014520261">Los sitios no pueden usar tus cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="3766687283066842296">Obtener más información sobre Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Por el momento, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Invita a miembros de la familia<ph name="END_LINK" /> a unirse a tu grupo y aprovecha al máximo tus productos y suscripciones en Google.</translation>
@@ -4234,7 +4228,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3904326018476041253">Servicios de ubicación</translation>
 <translation id="3905761538810670789">Reparar aplicación</translation>
 <translation id="3906096710440765802">Accede a tu cuenta en Chrome para obtener tus contraseñas, favoritos y mucho más en todos tus dispositivos</translation>
-<translation id="3908288065506437185">Bloquear cookies de terceros en el modo Incógnito</translation>
 <translation id="3908501907586732282">Habilitar extensión</translation>
 <translation id="3909456989251621103">Si borras un certificado de servidor, Chrome ya no lo usará para identificar servidores.</translation>
 <translation id="3909701002594999354">Mostrar todos los &amp;controles</translation>
@@ -5064,7 +5057,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
         <ph name="BREAK" />
         Puedes administrar la configuración desde el menú de la tarjeta o ver más opciones en la sección Personalizar Chrome.</translation>
 <translation id="4503748371388753124">La computadora contiene un dispositivo de seguridad del Módulo de plataforma segura (TPM) que se usa para implementar varias funciones clave de seguridad en ChromeOS Flex. Para obtener más información, visita el Centro de ayuda de Chromebook: https://support.google.com/chromebook/?p=tpm.</translation>
-<translation id="4504374760782163539">{COUNT,plural, =0{Se permiten las cookies}=1{Se permiten las cookies; 1 excepción}other{Se permiten las cookies; {COUNT} excepciones}}</translation>
 <translation id="4504940961672722399">Para usar esta extensión, haz clic en este ícono o presiona <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">Descarga Chrome con este código QR y accede a tu Cuenta de Google.</translation>
 <translation id="450552327874992444">Ya se agregó esta palabra</translation>
@@ -5200,7 +5192,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4594218792629569101">Selecciona "Marcar como leído" para mover la página a la parte inferior de tu lista</translation>
 <translation id="4595560905247879544">Solo el administrador (<ph name="CUSTODIAN_NAME" />) puede modificar las apps y extensiones.</translation>
 <translation id="4598345735110653698">Administrar llaves de acceso</translation>
-<translation id="4598549027014564149">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en sitios, ni siquiera en sitios relacionados. Tu actividad de navegación no se usa, por ejemplo, para personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="4598556348158889687">Administración de almacenamiento</translation>
 <translation id="4598776695426288251">Wi-Fi disponible mediante varios dispositivos</translation>
 <translation id="4600071396330666617">Número de sugerencias</translation>
@@ -6408,7 +6399,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5458716506062529991">Ingresaste un PIN incorrecto demasiadas veces. Para acceder a tus llaves de acceso y contraseñas, cambia tu PIN.</translation>
 <translation id="5459470938885464873">Se produjo un error al importar el certificado</translation>
 <translation id="5459864179070366255">Continuar a la instalación</translation>
-<translation id="5460641065520325899">Administra los tipos de información que los sitios pueden usar para seguirte mientras navegas.</translation>
 <translation id="5460861858595506978">Inspiración</translation>
 <translation id="5461050611724244538">Se perdió la conexión con tu teléfono</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
@@ -6765,7 +6755,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5722086096420375088">Verde y blanco</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5723508132121499792">No se ejecutan aplicaciones de fondo</translation>
-<translation id="5723967018671998714">En el modo Incógnito, se bloquean las cookies de terceros</translation>
 <translation id="5725112283692663422">Envía comentarios sobre Crear tema con IA</translation>
 <translation id="5727728807527375859">Las extensiones, las aplicaciones y los temas pueden dañar tu computadora. ¿Estás seguro de que deseas continuar?</translation>
 <translation id="5728072125198221967">Servicios de Google vinculados</translation>
@@ -8317,7 +8306,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6824564591481349393">Copiar la dir&amp;ección de correo electrónico</translation>
 <translation id="6824584962142919697">Analizar elementos</translation>
 <translation id="6825184156888454064">Ordenar por nombre</translation>
-<translation id="6826872289184051766">Verificar mediante USB</translation>
 <translation id="6827121912381363404">Permitir que todas las extensiones lean y cambien <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827422464708099620">Seleccionar para ver más opciones</translation>
 <translation id="6827517233063803343">Se sincronizarán tus apps y tu configuración en todos los dispositivos con ChromeOS a los que hayas accedido con tu Cuenta de Google. Para ver las opciones de sincronización del navegador, ve a la <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
@@ -9487,7 +9475,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7659584679870740384">No tienes autorización para utilizar este dispositivo. Para obtener permiso de acceso, comunícate con el administrador.</translation>
 <translation id="7660116474961254898">Sigue las instrucciones en el teléfono</translation>
 <translation id="7660146600670077843">Haz clic con el botón derecho en una pestaña y selecciona "Agregar pestaña a un grupo nuevo"</translation>
-<translation id="7661259717474717992">Permitir que los sitios guarden y lean datos de cookies</translation>
 <translation id="7661451191293163002">No se pudo obtener un certificado de registro.</translation>
 <translation id="7662283695561029522">Presiona para configurar</translation>
 <translation id="7663719505383602579">Receptor: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -10490,7 +10477,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8323317289166663449">Leer y cambiar todos tus datos de tu computadora y todos los sitios web</translation>
 <translation id="8323518750352551353">¿Quieres separar la navegación?</translation>
 <translation id="8324158725704657629">No volver a preguntar</translation>
-<translation id="8324784016256120271">Los sitios pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
 <translation id="8325413836429495820">No puede ver el contenido del portapapeles</translation>
 <translation id="8326478304147373412">PKCS N. º 7, cadena de certificados</translation>
 <translation id="8327386430364625757">Fuente matemática</translation>
@@ -11206,7 +11192,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="881782782501875829">Agrega el número de puerto</translation>
 <translation id="881799181680267069">Ocultar otros</translation>
 <translation id="8818152010000655963">Fondo de pantalla</translation>
-<translation id="8818958672113348984">Verificar por teléfono</translation>
 <translation id="8818988764764862764">La ventana se movió hacia la izquierda</translation>
 <translation id="8819510664278523111">El EID de tu dispositivo es <ph name="EID_NUMBER" />, el IMEI es <ph name="IMEI_NUMBER" /> y el número de serie es <ph name="SERIAL_NUMBER" />. Estos números se pueden usar para activar el servicio.</translation>
 <translation id="8820817407110198400">Favoritos</translation>

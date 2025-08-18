@@ -689,7 +689,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1468571364034902819">Nu se poate folosi acest profil</translation>
 <translation id="1469702495092129863">Verifică microfonul</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Adaugă fila într-un grup nou}few{Adaugă filele într-un grup nou}other{Adaugă filele într-un grup nou}}</translation>
-<translation id="1470350905258700113">Folosește acest dispozitiv</translation>
 <translation id="1470946456740188591">Pentru a activa sau a dezactiva navigarea cu tastatura, folosește comanda rapidă Ctrl + tasta de căutare + 7</translation>
 <translation id="1471034383866732283">Modul de lectură nu găsește conținutul principal din această pagină</translation>
 <translation id="1472675084647422956">Afișați mai multe</translation>
@@ -1647,7 +1646,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2119602978828978573">Limbi acceptate pentru Subtitrări live</translation>
 <translation id="2120297377148151361">Activitate și interacțiuni</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> a fost blocată</translation>
-<translation id="2121055421682309734">{COUNT,plural, =0{Cookie-urile sunt blocate}=1{Cookie-urile sunt blocate, cu o excepție}few{Cookie-urile sunt blocate, cu {COUNT} excepții}other{Cookie-urile sunt blocate, cu {COUNT} de excepții}}</translation>
 <translation id="2121825465123208577">Redimensionează</translation>
 <translation id="2123766928840368256">Alege alt fișier</translation>
 <translation id="2124930039827422115">{1,plural, =1{Evaluat cu <ph name="AVERAGE_RATING" /> de 1 utilizator.}few{Evaluat cu <ph name="AVERAGE_RATING" /> de # utilizatori.}other{Evaluat cu <ph name="AVERAGE_RATING" /> de # de utilizatori.}}</translation>
@@ -2311,7 +2309,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2565214867520763227">Activează cititorul de ecran</translation>
 <translation id="2566146433999774844">Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /> și încă <ph name="NUM_OTHER_MEMBERS" /> persoane</translation>
 <translation id="256726287944589768">Afișează subsolul în pagina Filă nouă</translation>
-<translation id="2568694057933302218">În modul incognito, site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe site-uri. Activitatea ta de navigare nu este folosită pentru acțiuni precum personalizarea anunțurilor. Este posibil ca funcțiile de pe anumite site-uri să nu ruleze.</translation>
 <translation id="2568774940984945469">Container bară de informații</translation>
 <translation id="2569972178052279830">Numele comerciantului</translation>
 <translation id="257088987046510401">Teme</translation>
@@ -2330,7 +2327,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) va pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și nu va mai putea să interacționeze cu tine în serviciile Google.</translation>
 <translation id="2580889980133367162">Permiteți întotdeauna <ph name="HOST" /> să descarce mai multe fișiere</translation>
 <translation id="258095186877893873">Lungă</translation>
-<translation id="2581455244799175627">Mai multe despre permiterea cookie-urilor terță parte</translation>
 <translation id="2581786034175502848">Apasă pe Shift de cinci ori pentru a-l reactiva</translation>
 <translation id="2581992808349413349">Folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii). Acest lucru folosește un furnizor de servicii gestionat la <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2936,6 +2932,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3003623123441819449">Memorie cache CSS</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> va crea o conexiune Wi-Fi privată.</translation>
 <translation id="3004385386820284928">Personalizează tastele de pe tastatură</translation>
+<translation id="300580149047131921">Utilizată recent</translation>
 <translation id="3006881078666935414">Nu există date de utilizare</translation>
 <translation id="3007555010975143508">Aceste aplicații vor fi folosite pentru a-ți înregistra ecranul:</translation>
 <translation id="3007771295016901659">Duplică fila</translation>
@@ -3047,7 +3044,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Blocată temporar pentru protecția securității</translation>
 <translation id="3083899879156272923">Mută ecranul păstrând mouse-ul în centrul ecranului</translation>
-<translation id="3083998949001524405">Au permisiunea de a folosi cookie-uri terță parte</translation>
 <translation id="3084121729444215602"><ph name="EXTENSION_NAME" /> este fixat de administrator</translation>
 <translation id="3084548735795614657">Plasați pentru instalare</translation>
 <translation id="3084771660770137092">Fie Chrome nu are suficientă memorie, fie procesarea paginii web a fost întreruptă dintr-un alt motiv. Pentru a continua, reîncarcă sau accesează altă pagină.</translation>
@@ -3142,7 +3138,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3161522574479303604">Toate limbile</translation>
 <translation id="3162070126914310576">Dispozitivul nu poate fi înregistrat acum deoarece unitatea organizațională a atins limita inițială pentru înregistrări. Contactează administratorul pentru asistență.</translation>
 <translation id="3162853326462195145">Contul de la școală</translation>
-<translation id="3162899666601560689">Site-urile pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături</translation>
 <translation id="3163085718713826852">Introdu parola certificatului</translation>
 <translation id="3163201441334626963">Produs necunoscut <ph name="PRODUCT_ID" /> de la furnizorul <ph name="VENDOR_ID" /></translation>
 <translation id="3163511056918491211">Restabilește datele sau schimbă dispozitivele cu ușurință, în orice moment. Backupurile sunt încărcate pe serverele Google și sunt criptate folosind parola pentru Contul Google.</translation>
@@ -4016,7 +4011,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Se trimite <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}few{Se trimit <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}other{Se trimit <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765055238058255342">acest tip de card</translation>
 <translation id="3765246971671567135">Nu s-a putut citi politica offline privind modul demo.</translation>
-<translation id="3765696567014520261">Site-urile nu pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile. Este posibil ca funcțiile din anumite site-uri să nu ruleze</translation>
 <translation id="3766687283066842296">Află mai multe despre Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Momentan, poți permite accesul la parole doar membrilor familiei. <ph name="BEGIN_LINK" />Invită membrii familiei<ph name="END_LINK" /> să se alăture grupului și profită la maximum de produsele și abonamentele tale de pe Google.</translation>
@@ -4237,7 +4231,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3904326018476041253">Servicii de localizare</translation>
 <translation id="3905761538810670789">Repară aplicația</translation>
 <translation id="3906096710440765802">Conectează-te la Chrome pentru a accesa parolele, marcajele și altele pe toate dispozitivele tale</translation>
-<translation id="3908288065506437185">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="3908501907586732282">Activați extensia</translation>
 <translation id="3909456989251621103">Dacă ștergi un certificat de server, Chrome nu îl va mai folosi pentru a identifica servere.</translation>
 <translation id="3909701002594999354">Afișează toate &amp;comenzile</translation>
@@ -5067,7 +5060,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
         <ph name="BREAK" />
         Poți să gestionezi setările din meniul cardului sau să afișezi mai multe opțiuni în Personalizează Chrome.</translation>
 <translation id="4503748371388753124">Computerul conține un dispozitiv de securitate Trusted Platform Module (TPM), care este folosit pentru a implementa numeroase funcții esențiale de securitate în sistemul de operare Chrome Flex. Accesează Centrul de ajutor Chromebook pentru a afla mai multe: https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="4504374760782163539">{COUNT,plural, =0{Cookie-urile sunt permise}=1{Cookie-urile sunt permise, cu o excepție}few{Cookie-urile sunt permise, cu {COUNT} excepții}other{Cookie-urile sunt permise, cu {COUNT} de excepții}}</translation>
 <translation id="4504940961672722399">Utilizați această extensie dând clic pe pictogramă sau apăsând pe <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">Descarcă Chrome folosind acest cod QR și conectează-te la Contul Google.</translation>
 <translation id="450552327874992444">Cuvântul a fost deja adăugat</translation>
@@ -5203,7 +5195,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4594218792629569101">Selectează Marchează ca citit pentru a muta pagina în partea de jos a listei</translation>
 <translation id="4595560905247879544">Aplicațiile și extensiile pot fi modificate numai de administrator (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4598345735110653698">Gestionează cheile de acces</translation>
-<translation id="4598549027014564149">În modul incognito, site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe site-uri, inclusiv site-urile conexe. Activitatea ta de navigare nu este folosită pentru acțiuni precum personalizarea anunțurilor. Este posibil ca funcțiile de pe anumite site-uri să nu ruleze.</translation>
 <translation id="4598556348158889687">Gestionarea stocării</translation>
 <translation id="4598776695426288251">Conexiune Wi-Fi disponibilă prin mai multe dispozitive</translation>
 <translation id="4600071396330666617">Numărul de sugestii</translation>
@@ -6409,7 +6400,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5458716506062529991">Ai introdus un cod PIN greșit de prea multe ori. Pentru a accesa cheile de acces și parolele, schimbă codul PIN.</translation>
 <translation id="5459470938885464873">Eroare la importarea certificatului</translation>
 <translation id="5459864179070366255">Continuă instalarea</translation>
-<translation id="5460641065520325899">Gestionează tipurile de informații pe care site-urile le pot folosi pentru a te urmări în timp ce navighezi.</translation>
 <translation id="5460861858595506978">Inspirație</translation>
 <translation id="5461050611724244538">Conexiunea cu telefonul a fost întreruptă</translation>
 <translation id="5463275305984126951">Index pentru <ph name="LOCATION" /></translation>
@@ -6766,7 +6756,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5722086096420375088">Verde și alb</translation>
 <translation id="572328651809341494">File recente</translation>
 <translation id="5723508132121499792">Nu rulează aplicații în fundal</translation>
-<translation id="5723967018671998714">Cookie-urile terță parte sunt blocate în modul Incognito</translation>
 <translation id="5725112283692663422">Trimite feedback despre opțiunea Creează o temă cu AI</translation>
 <translation id="5727728807527375859">Extensiile, aplicațiile și temele pot dăuna computerului. Sigur vrei să continui?</translation>
 <translation id="5728072125198221967">Servicii Google conectate</translation>
@@ -8320,7 +8309,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6824564591481349393">Copiază adresa de &amp;e-mail</translation>
 <translation id="6824584962142919697">&amp;Inspectează elementele</translation>
 <translation id="6825184156888454064">Sortează după nume</translation>
-<translation id="6826872289184051766">Confirmă prin USB</translation>
 <translation id="6827121912381363404">Permite ca toate extensiile să citească și să modifice <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827422464708099620">Selectează pentru a vedea mai multe opțiuni</translation>
 <translation id="6827517233063803343">Aplicațiile și setările se vor sincroniza pe toate dispozitivele cu sistemul de operare Chrome pe care te-ai conectat folosind contul Google. Pentru opțiunile de sincronizare a browserului, accesează <ph name="LINK_BEGIN" />Setările Chrome<ph name="LINK_END" />.</translation>
@@ -9490,7 +9478,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7659584679870740384">Nu ești autorizat(ă) să folosești acest dispozitiv. Contactează administratorul pentru permisiunea de conectare.</translation>
 <translation id="7660116474961254898">Urmează instrucțiunile de pe telefon</translation>
 <translation id="7660146600670077843">Dă clic dreapta pe o filă și selectează Adaugă fila într-un grup nou</translation>
-<translation id="7661259717474717992">Permite site-urilor să salveze și să citească datele asociate cookie-urilor</translation>
 <translation id="7661451191293163002">Nu s-a putut obține un certificat de înregistrare.</translation>
 <translation id="7662283695561029522">Atinge pentru a configura</translation>
 <translation id="7663719505383602579">Receptor: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -10493,7 +10480,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8323317289166663449">să citească și să modifice toate datele de pe computer și de pe toate site-urile</translation>
 <translation id="8323518750352551353">Navigare separată?</translation>
 <translation id="8324158725704657629">Nu mai întreba</translation>
-<translation id="8324784016256120271">Site-urile pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile</translation>
 <translation id="8325413836429495820">Nu au permisiunea de a vedea clipboardul</translation>
 <translation id="8326478304147373412">PKCS #7, lanț de certificate</translation>
 <translation id="8327386430364625757">Font matematic</translation>
@@ -11210,7 +11196,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="881782782501875829">Adaugă numărul portului</translation>
 <translation id="881799181680267069">Ascunde-le pe celelalte</translation>
 <translation id="8818152010000655963">Imaginea de fundal</translation>
-<translation id="8818958672113348984">Confirmă prin telefon</translation>
 <translation id="8818988764764862764">Fereastra a fost mutată spre stânga</translation>
 <translation id="8819510664278523111">Numărul EID al dispozitivului este <ph name="EID_NUMBER" />, numărul IMEI al dispozitivului este <ph name="IMEI_NUMBER" />, iar numărul de serie al dispozitivului este <ph name="SERIAL_NUMBER" />. Aceste numere se pot folosi pentru activarea serviciului.</translation>
 <translation id="8820817407110198400">Marcaje</translation>

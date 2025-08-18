@@ -692,7 +692,6 @@
 <translation id="1468571364034902819">Цей профіль вимкнено</translation>
 <translation id="1469702495092129863">Перевірте мікрофон</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Додати вкладку в нову групу}one{Додати вкладки в нову групу}few{Додати вкладки в нову групу}many{Додати вкладки в нову групу}other{Додати вкладки в нову групу}}</translation>
-<translation id="1470350905258700113">Використовувати цей пристрій</translation>
 <translation id="1470946456740188591">Щоб увімкнути або вимкнути клавішну навігацію, натисніть Ctrl + Search + 7</translation>
 <translation id="1471034383866732283">У режимі читання не вдалося знайти основний контент на цій сторінці</translation>
 <translation id="1472675084647422956">Показати більше</translation>
@@ -1659,7 +1658,6 @@
 <translation id="2119602978828978573">Мови, які підтримує функція живих субтитрів</translation>
 <translation id="2120297377148151361">Активність і взаємодії</translation>
 <translation id="2120639962942052471">Заблоковано: <ph name="PERMISSION" /></translation>
-<translation id="2121055421682309734">{COUNT,plural, =0{Файли cookie блокуються.}=1{Файли cookie блокуються, 1 виняток}one{Файли cookie блокуються, {COUNT} виняток}few{Файли cookie блокуються, {COUNT} винятки}many{Файли cookie блокуються, {COUNT} винятків}other{Файли cookie блокуються, {COUNT} винятку}}</translation>
 <translation id="2121825465123208577">Змінити розмір</translation>
 <translation id="2123766928840368256">Вибрати інший файл</translation>
 <translation id="2124930039827422115">{1,plural, =1{Оцінка одного користувача: <ph name="AVERAGE_RATING" />.}one{Оцінка # користувача: <ph name="AVERAGE_RATING" />.}few{Оцінка # користувачів: <ph name="AVERAGE_RATING" />.}many{Оцінка # користувачів: <ph name="AVERAGE_RATING" />.}other{Оцінка # користувача: <ph name="AVERAGE_RATING" />.}}</translation>
@@ -2326,7 +2324,6 @@
 <translation id="2565214867520763227">Увімкніть програму зчитування з екрана</translation>
 <translation id="2566146433999774844">Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще стільки користувачів: <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="256726287944589768">Показувати нижній колонтитул на сторінці нової вкладки</translation>
-<translation id="2568694057933302218">У режимі анонімного перегляду сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі. Дані про такі дії не використовуються для персоналізації реклами. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="2568774940984945469">Контейнер інформаційної панелі</translation>
 <translation id="2569972178052279830">Ім’я або назва продавця</translation>
 <translation id="257088987046510401">Теми</translation>
@@ -2345,7 +2342,6 @@
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) відразу втратить доступ до групи вкладок "<ph name="GROUP_NAME" />" і більше не зможе взаємодіяти з вами в сервісах Google.</translation>
 <translation id="2580889980133367162">Завжди дозволяти <ph name="HOST" /> завантажувати декілька файлів</translation>
 <translation id="258095186877893873">Довго</translation>
-<translation id="2581455244799175627">Докладніше про дозвіл використовувати сторонні файли cookie</translation>
 <translation id="2581786034175502848">Щоб знову ввімкнути її, натисніть клавішу Shift 5 разів</translation>
 <translation id="2581992808349413349">Використовуйте захищене з’єднання для пошуку IP-адреси сайту в системі доменних імен (DNS). Для цього використовується керований постачальник послуг (<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />).</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2951,6 +2947,7 @@
 <translation id="3003623123441819449">Кеш CSS</translation>
 <translation id="3003967365858406397">Пристрій <ph name="PHONE_NAME" /> створить приватне з’єднання Wi-Fi.</translation>
 <translation id="3004385386820284928">Налаштувати клавіші клавіатури</translation>
+<translation id="300580149047131921">Використано нещодавно</translation>
 <translation id="3006881078666935414">Немає даних про використання</translation>
 <translation id="3007555010975143508">Для запису екрана використовуватимуться ці додатки:</translation>
 <translation id="3007771295016901659">Ідентична вкладка</translation>
@@ -3062,7 +3059,6 @@
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Тимчасово заблоковано, щоб захистити вашу конфіденційність</translation>
 <translation id="3083899879156272923">Зафіксувати курсор по центру рухомого екрана</translation>
-<translation id="3083998949001524405">Дозволено використовувати сторонні файли cookie</translation>
 <translation id="3084121729444215602">Ваш адміністратор закріпив розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3084548735795614657">Перетягніть, щоб установити</translation>
 <translation id="3084771660770137092">Недостатньо пам'яті Chrome або процес для веб-сторінки припинено з іншої причини. Щоб продовжити, перезавантажте цю сторінку чи перейдіть на іншу.</translation>
@@ -3157,7 +3153,6 @@
 <translation id="3161522574479303604">Усі мови</translation>
 <translation id="3162070126914310576">Зараз не можна зареєструвати цей пристрій, оскільки ваш організаційний підрозділ досяг ліміту для початкової реєстрації. Зверніться по допомогу до свого адміністратора.</translation>
 <translation id="3162853326462195145">Обліковий запис закладу освіти</translation>
-<translation id="3162899666601560689">Сайти можуть використовувати файли cookie, щоб покращувати веб-перегляд, наприклад не виходити з облікового запису чи запам'ятовувати товари в кошику для покупок</translation>
 <translation id="3163085718713826852">Введіть пароль сертифіката</translation>
 <translation id="3163201441334626963">Невідомий продукт <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_ID" /></translation>
 <translation id="3163511056918491211">Легко відновлюйте дані та переносьте їх на інші пристрої. Ваші резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google.</translation>
@@ -4032,7 +4027,6 @@
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> надсилається на пристрій <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> надсилається на пристрій <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> надсилаються на пристрій <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> надсилаються на пристрій <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> надсилається на пристрій <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765055238058255342">Цей тип картки</translation>
 <translation id="3765246971671567135">Не вдалося прочитати політику демо-режиму офлайн.</translation>
-<translation id="3765696567014520261">Сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="3766687283066842296">Докладніше про функцію "Керування телефоном"</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Гц</translation>
 <translation id="3767835232661747729">Зараз ви можете обмінюватися паролями лише з учасниками сімейної групи. <ph name="BEGIN_LINK" />Запросіть учасників<ph name="END_LINK" /> до своєї групи й користуйтеся всіма перевагами продуктів і підписок у Google.</translation>
@@ -4253,7 +4247,6 @@
 <translation id="3904326018476041253">Геолокація</translation>
 <translation id="3905761538810670789">Відновити додаток</translation>
 <translation id="3906096710440765802">Увійдіть в обліковий запис у Chrome, щоб отримати доступ до своїх паролів, закладок і інших даних на всіх пристроях</translation>
-<translation id="3908288065506437185">Заборонити сторонні файли cookie в режимі анонімного перегляду</translation>
 <translation id="3908501907586732282">Увімкнути розширення</translation>
 <translation id="3909456989251621103">Якщо видалити сертифікат сервера, Chrome більше не використовуватиме його для ідентифікації серверів.</translation>
 <translation id="3909701002594999354">Показати всі &amp;елементи керування</translation>
@@ -5083,7 +5076,6 @@
         <ph name="BREAK" />
         Ви можете керувати налаштуваннями в меню картки або переглянути інші опції в розділі "Налаштувати Chrome".</translation>
 <translation id="4503748371388753124">Ваш комп’ютер оснащено пристроєм Trusted Platform Module (TPM), який виконує багато важливих функцій безпеки в ОС Chrome Flex. Щоб дізнатися більше, відвідайте Довідковий центр Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="4504374760782163539">{COUNT,plural, =0{Файли cookie дозволено}=1{Файли cookie дозволено, 1 виняток}one{Файли cookie дозволено, {COUNT} виняток}few{Файли cookie дозволено, {COUNT} винятки}many{Файли cookie дозволено, {COUNT} винятків}other{Файли cookie дозволено, {COUNT} винятку}}</translation>
 <translation id="4504940961672722399">Запустіть розширення, натиснувши цей значок або комбінацію клавіш <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">Завантажте Chrome за допомогою цього QR-коду й увійдіть у свій обліковий запис Google.</translation>
 <translation id="450552327874992444">Слово вже додано</translation>
@@ -5219,7 +5211,6 @@
 <translation id="4594218792629569101">Виберіть "Позначити як прочитане", щоб перемістити сторінку в кінець списку</translation>
 <translation id="4595560905247879544">Лише адміністратор (<ph name="CUSTODIAN_NAME" />) може змінювати додатки та розширення.</translation>
 <translation id="4598345735110653698">Керувати ключами доступу</translation>
-<translation id="4598549027014564149">В анонімному режимі сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, навіть на пов’язаних сайтах. Дані про дії у веб-переглядачі не використовуються для персоналізації реклами. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="4598556348158889687">Керування пам’яттю</translation>
 <translation id="4598776695426288251">Доступне з’єднання Wi-Fi через кілька пристроїв</translation>
 <translation id="4600071396330666617">Кількість пропозицій</translation>
@@ -6425,7 +6416,6 @@
 <translation id="5458716506062529991">Ви ввели неправильний PIN-код забагато разів. Щоб переглянути свої паролі й ключі доступу, змініть PIN-код.</translation>
 <translation id="5459470938885464873">Сталася помилка</translation>
 <translation id="5459864179070366255">Установити</translation>
-<translation id="5460641065520325899">Керуйте типами інформації, яку сайти можуть використовувати для відстеження ваших дій.</translation>
 <translation id="5460861858595506978">Натхнення</translation>
 <translation id="5461050611724244538">Немає з'єднання з телефоном</translation>
 <translation id="5463275305984126951">Індекс <ph name="LOCATION" /></translation>
@@ -6780,7 +6770,6 @@
 <translation id="5722086096420375088">Зелено-білий</translation>
 <translation id="572328651809341494">Останні вкладки</translation>
 <translation id="5723508132121499792">Не запущено жодну фонову програму</translation>
-<translation id="5723967018671998714">Сторонні файли cookie блокуються в режимі анонімного перегляду</translation>
 <translation id="5725112283692663422">Надішліть відгук про функцію "Створити тему за допомогою ШІ"</translation>
 <translation id="5727728807527375859">Розширення, служби та теми можуть зашкодити вашому комп'ютеру. Дійсно продовжити?</translation>
 <translation id="5728072125198221967">Пов’язані сервіси Google</translation>
@@ -8337,7 +8326,6 @@
 <translation id="6824564591481349393">Копіювати &amp;адресу електронної пошти</translation>
 <translation id="6824584962142919697">&amp;Перевірити елементи</translation>
 <translation id="6825184156888454064">Сортувати за назвою</translation>
-<translation id="6826872289184051766">Підтвердити через USB</translation>
 <translation id="6827121912381363404">Дозволити всім розширенням переглядати та змінювати сайт <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827422464708099620">Виберіть, щоб побачити більше варіантів</translation>
 <translation id="6827517233063803343">Ваші додатки й налаштування буде синхронізовано на всіх пристроях з ОС Chrome, де ви ввійшли в обліковий запис Google. Щоб переглянути параметри синхронізації веб-переглядача, відкрийте <ph name="LINK_BEGIN" />налаштування Chrome<ph name="LINK_END" />.</translation>
@@ -9506,7 +9494,6 @@
 <translation id="7659584679870740384">Вам не маєте права використовувати цей пристрій. Зверніться до адміністратора, щоб отримати дозвіл на вхід.</translation>
 <translation id="7660116474961254898">Дотримуйтеся вказівок на екрані телефона</translation>
 <translation id="7660146600670077843">Натисніть правою кнопкою миші на вкладці й виберіть "Додати вкладку в нову групу"</translation>
-<translation id="7661259717474717992">Дозволити сайтам зберігати та переглядати дані файлів cookie</translation>
 <translation id="7661451191293163002">Не вдалось отримати сертифікат про реєстрацію.</translation>
 <translation id="7662283695561029522">Торкніться, щоб налаштувати</translation>
 <translation id="7663719505383602579">Одержувач: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -10509,7 +10496,6 @@
 <translation id="8323317289166663449">Читати та змінювати всі ваші дані на комп’ютері та всіх веб-сайтах</translation>
 <translation id="8323518750352551353">Окремий вебпереглядач?</translation>
 <translation id="8324158725704657629">Не запитувати знову</translation>
-<translation id="8324784016256120271">Сайти можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу</translation>
 <translation id="8325413836429495820">Заборонено переглядати буфер обміну</translation>
 <translation id="8326478304147373412">PKCS #7, ланцюжок сертифікатів</translation>
 <translation id="8327386430364625757">Математичний шрифт</translation>
@@ -11228,7 +11214,6 @@
 <translation id="881782782501875829">Додати номер порту</translation>
 <translation id="881799181680267069">Сховати інші</translation>
 <translation id="8818152010000655963">Фоновий малюнок</translation>
-<translation id="8818958672113348984">Підтвердити через телефон</translation>
 <translation id="8818988764764862764">Вікно переміщено ліворуч</translation>
 <translation id="8819510664278523111">EID пристрою: <ph name="EID_NUMBER" />, IMEI пристрою: <ph name="IMEI_NUMBER" />, серійний номер пристрою: <ph name="SERIAL_NUMBER" />. За допомогою цих номерів можна активувати сервіс.</translation>
 <translation id="8820817407110198400">Закладки</translation>

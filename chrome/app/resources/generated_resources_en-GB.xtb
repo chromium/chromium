@@ -689,7 +689,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1468571364034902819">Can't use this profile</translation>
 <translation id="1469702495092129863">Check your microphone</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Add Tab to New Group}other{Add Tabs to New Group}}</translation>
-<translation id="1470350905258700113">Use this device</translation>
 <translation id="1470946456740188591">To turn caret browsing on or off, use the shortcut Ctrl+Search+7</translation>
 <translation id="1471034383866732283">Reading mode can't find the main content on this page</translation>
 <translation id="1472675084647422956">Show more</translation>
@@ -1657,7 +1656,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2119602978828978573">Supported Live Caption languages</translation>
 <translation id="2120297377148151361">Activity and interactions</translation>
 <translation id="2120639962942052471">Blocked <ph name="PERMISSION" /></translation>
-<translation id="2121055421682309734">{COUNT,plural, =0{Cookies are blocked}=1{Cookies are blocked – 1 exception}other{Cookies are blocked – {COUNT} exceptions}}</translation>
 <translation id="2121825465123208577">Re-size</translation>
 <translation id="2123766928840368256">Choose a different file</translation>
 <translation id="2124930039827422115">{1,plural, =1{Rated <ph name="AVERAGE_RATING" /> by one user.}other{Rated <ph name="AVERAGE_RATING" /> by # users.}}</translation>
@@ -2324,7 +2322,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2565214867520763227">Turn on screen reader</translation>
 <translation id="2566146433999774844">Join tab group with <ph name="OWNER_FIRST_NAME" /> and <ph name="NUM_OTHER_MEMBERS" /> others</translation>
 <translation id="256726287944589768">Show footer on New tab page</translation>
-<translation id="2568694057933302218">While in Incognito, sites can't use your cookies to see your browsing activity across sites. Your browsing activity isn't used for things like personalising ads. Features on some sites may not work.</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
 <translation id="2569972178052279830">Retailer name</translation>
 <translation id="257088987046510401">Themes</translation>
@@ -2343,7 +2340,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and will no longer be able to interact with you across Google services.</translation>
 <translation id="2580889980133367162">Always allow <ph name="HOST" /> to download multiple files</translation>
 <translation id="258095186877893873">Long</translation>
-<translation id="2581455244799175627">More about allowing third-party cookies</translation>
 <translation id="2581786034175502848">Press shift 5 times to re-enable it</translation>
 <translation id="2581992808349413349">Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2949,6 +2945,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3003623123441819449">CSS Cache</translation>
 <translation id="3003967365858406397">Your <ph name="PHONE_NAME" /> will create a private Wi-Fi connection.</translation>
 <translation id="3004385386820284928">Customise keyboard keys</translation>
+<translation id="300580149047131921">Recently used</translation>
 <translation id="3006881078666935414">No usage data</translation>
 <translation id="3007555010975143508">These apps will be used to record your screen:</translation>
 <translation id="3007771295016901659">Duplicate tab</translation>
@@ -3060,7 +3057,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Temporarily blocked to protect your security</translation>
 <translation id="3083899879156272923">Move screen, keeping mouse in the centre of the screen</translation>
-<translation id="3083998949001524405">Allowed to use third-party cookies</translation>
 <translation id="3084121729444215602"><ph name="EXTENSION_NAME" /> is pinned by your Administrator</translation>
 <translation id="3084548735795614657">Drop to install</translation>
 <translation id="3084771660770137092">Either Chrome ran out of memory or the process for the web page was terminated for some other reason. To continue, reload or go to another page.</translation>
@@ -3155,7 +3151,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3161522574479303604">All languages</translation>
 <translation id="3162070126914310576">This device can't be enrolled at the moment because your organisation unit has reached its initial enrolment limit. Contact your administrator for assistance.</translation>
 <translation id="3162853326462195145">School account</translation>
-<translation id="3162899666601560689">Sites can use cookies to improve your browsing experience, for example to keep you signed in or to remember items in your shopping basket</translation>
 <translation id="3163085718713826852">Enter certificate password</translation>
 <translation id="3163201441334626963">Unknown product <ph name="PRODUCT_ID" /> from vendor <ph name="VENDOR_ID" /></translation>
 <translation id="3163511056918491211">Easily restore your data or switch devices at any time. Your backups are uploaded to Google and encrypted using your Google Account password.</translation>
@@ -4030,7 +4025,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3764974059056958214">{COUNT,plural, =1{Sending <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}other{Sending <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765055238058255342">this type of card</translation>
 <translation id="3765246971671567135">Could not read offline demo mode policy.</translation>
-<translation id="3765696567014520261">Sites can't use your cookies to see your browsing activity across different sites, for example, to personalise ads. Features on some sites may not work</translation>
 <translation id="3766687283066842296">Learn more about Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">For now, you can only share passwords with family members. <ph name="BEGIN_LINK" />Invite family members<ph name="END_LINK" /> to join your group and get more from your products and subscriptions across Google.</translation>
@@ -4251,7 +4245,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3904326018476041253">Location Services</translation>
 <translation id="3905761538810670789">Repair app</translation>
 <translation id="3906096710440765802">Sign in to Chrome to get your passwords, bookmarks and more on all your devices</translation>
-<translation id="3908288065506437185">Block third-party cookies in Incognito mode</translation>
 <translation id="3908501907586732282">Enable extension</translation>
 <translation id="3909456989251621103">If you delete a server certificate, Chrome will no longer use it to identify servers.</translation>
 <translation id="3909701002594999354">Show all &amp;controls</translation>
@@ -5081,7 +5074,6 @@ You can manage this account’s settings by installing the Family Link app on yo
         <ph name="BREAK" />
         You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="4503748371388753124">Your computer contains a Trusted Platform Module (TPM) security device, which is used to implement many critical security features in Chrome OS Flex. Visit the Chromebook Help Centre to learn more: https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="4504374760782163539">{COUNT,plural, =0{Cookies are allowed}=1{Cookies are allowed – 1 exception}other{Cookies are allowed – {COUNT} exceptions}}</translation>
 <translation id="4504940961672722399">Use this extension by clicking on this icon or by pressing <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">Download Chrome with this QR code, and sign in to your Google Account.</translation>
 <translation id="450552327874992444">Word already added</translation>
@@ -5217,7 +5209,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4594218792629569101">Select ‘Mark as read’ to move the page to the bottom of your list</translation>
 <translation id="4595560905247879544">Apps and extensions can only be modified by the manager (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4598345735110653698">Manage passkeys</translation>
-<translation id="4598549027014564149">While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalising ads. Features on some sites may not work.</translation>
 <translation id="4598556348158889687">Storage management</translation>
 <translation id="4598776695426288251">Wi-Fi available via multiple devices</translation>
 <translation id="4600071396330666617">Number of suggestions</translation>
@@ -6426,7 +6417,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5458716506062529991">You've entered the wrong PIN too many times. To access your passkeys and passwords, change your PIN.</translation>
 <translation id="5459470938885464873">Error importing certificate</translation>
 <translation id="5459864179070366255">Continue to install</translation>
-<translation id="5460641065520325899">Manage the types of information that sites can use to track you as you browse.</translation>
 <translation id="5460861858595506978">Inspiration</translation>
 <translation id="5461050611724244538">Connection lost with your phone</translation>
 <translation id="5463275305984126951">Index of <ph name="LOCATION" /></translation>
@@ -6783,7 +6773,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5722086096420375088">Green and white</translation>
 <translation id="572328651809341494">Recent tabs</translation>
 <translation id="5723508132121499792">No background apps running</translation>
-<translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
 <translation id="5725112283692663422">Send feedback for Create theme with AI</translation>
 <translation id="5727728807527375859">Extensions, apps and themes can harm your computer. Are you sure that you want to continue?</translation>
 <translation id="5728072125198221967">Linked Google services</translation>
@@ -8336,7 +8325,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6824564591481349393">Copy &amp;Email Address</translation>
 <translation id="6824584962142919697">&amp;Inspect elements</translation>
 <translation id="6825184156888454064">Sort by name</translation>
-<translation id="6826872289184051766">Verify via USB</translation>
 <translation id="6827121912381363404">Allow all extensions to read and change <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827422464708099620">Select to see more options</translation>
 <translation id="6827517233063803343">Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google Account. For browser sync options, go to <ph name="LINK_BEGIN" />Chrome settings<ph name="LINK_END" />.</translation>
@@ -9506,7 +9494,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7659584679870740384">You are not authorised to use this device. Please contact the administrator for sign-in permission.</translation>
 <translation id="7660116474961254898">Follow the instructions on your phone</translation>
 <translation id="7660146600670077843">Right-click on a tab and select 'Add tab to new group'</translation>
-<translation id="7661259717474717992">Allow sites to save and read cookie data</translation>
 <translation id="7661451191293163002">A registration certificate could not be obtained.</translation>
 <translation id="7662283695561029522">Tap to configure</translation>
 <translation id="7663719505383602579">Receiver: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -10509,7 +10496,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8323317289166663449">Read and change all your data on your computer and all websites</translation>
 <translation id="8323518750352551353">Separate browsing?</translation>
 <translation id="8324158725704657629">Don't ask again</translation>
-<translation id="8324784016256120271">Sites can use cookies to see your browsing activity across different sites, for example, to personalise ads</translation>
 <translation id="8325413836429495820">Not allowed to see your clipboard</translation>
 <translation id="8326478304147373412">PKCS #7, certificate chain</translation>
 <translation id="8327386430364625757">Mathematical font</translation>
@@ -11225,7 +11211,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="881782782501875829">Add port number</translation>
 <translation id="881799181680267069">Hide Others</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
-<translation id="8818958672113348984">Verify via your phone</translation>
 <translation id="8818988764764862764">Window moved to the left</translation>
 <translation id="8819510664278523111">Your device EID is <ph name="EID_NUMBER" /> , device IMEI is <ph name="IMEI_NUMBER" /> and device serial number is <ph name="SERIAL_NUMBER" />. These numbers can be used to help activate service.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>

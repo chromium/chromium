@@ -688,7 +688,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1468571364034902819">Ky profil nuk mund të përdoret</translation>
 <translation id="1469702495092129863">Kontrollo mikrofonin tënd</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Shto një skedë te grupi i ri}other{Shto skeda te grupi i ri}}</translation>
-<translation id="1470350905258700113">Përdor këtë pajisje</translation>
 <translation id="1470946456740188591">Për të aktivizuar ose çaktivizuar shfletimin me kursor teksti, përdor shkurtoren "Ctrl+Kërko+7"</translation>
 <translation id="1471034383866732283">Modaliteti i leximit nuk mund ta gjejë përmbajtjen kryesore në këtë faqe</translation>
 <translation id="1472675084647422956">Shfaq më shumë</translation>
@@ -1643,7 +1642,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2119602978828978573">Gjuhët e mbështetura për "Titrat në çast"</translation>
 <translation id="2120297377148151361">Aktiviteti dhe bashkëveprimet</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> është bllokuar</translation>
-<translation id="2121055421682309734">{COUNT,plural, =0{Kukit janë bllokuar}=1{Kukit janë bllokuar, 1 përjashtim}other{Kukit janë bllokuar, {COUNT} përjashtime}}</translation>
 <translation id="2121825465123208577">Ndrysho madhësinë</translation>
 <translation id="2123766928840368256">Zgjidh një skedar tjetër</translation>
 <translation id="2124930039827422115">{1,plural, =1{Vlerësuar me <ph name="AVERAGE_RATING" /> nga një përdorues.}other{Vlerësuar me <ph name="AVERAGE_RATING" /> nga # përdorues.}}</translation>
@@ -2308,7 +2306,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2565214867520763227">Aktivizo lexuesin e ekranit</translation>
 <translation id="2566146433999774844">Bashkohu në grupin e skedave me <ph name="OWNER_FIRST_NAME" /> dhe <ph name="NUM_OTHER_MEMBERS" /> të tjerë</translation>
 <translation id="256726287944589768">Shfaq fundin e faqes në faqen e skedës së re</translation>
-<translation id="2568694057933302218">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme. Aktiviteti yt i shfletimit nuk përdoret për gjëra të tilla si p.sh. personalizimi i reklamave. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="2568774940984945469">Mbajtësi i shiritit të informacionit</translation>
 <translation id="2569972178052279830">Emri i shitësit me pakicë</translation>
 <translation id="257088987046510401">Temat</translation>
@@ -2327,7 +2324,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) do të humbasë menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe nuk do të mund të ndërveprojë më me ty në shërbimet e Google.</translation>
 <translation id="2580889980133367162">Lejo gjithmonë që <ph name="HOST" /> të shkarkojë shumë skedarë</translation>
 <translation id="258095186877893873">E gjatë</translation>
-<translation id="2581455244799175627">Më shumë rreth lejimit të kukive të palëve të treta</translation>
 <translation id="2581786034175502848">Shtyp Shift 5 herë për ta riaktivizuar atë</translation>
 <translation id="2581992808349413349">Përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajti në sistemin e emrave të domeneve (DNS). Kjo përdor një ofrues të menaxhuar të shërbimit në <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2933,6 +2929,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3003623123441819449">Memoria specifike e CSS-së</translation>
 <translation id="3003967365858406397">Telefoni yt <ph name="PHONE_NAME" /> do të krijojë një lidhje private Wi-Fi.</translation>
 <translation id="3004385386820284928">Personalizo tastet e tastierës</translation>
+<translation id="300580149047131921">Përdorur së fundi</translation>
 <translation id="3006881078666935414">Nuk ka asnjë të dhënë përdorimi</translation>
 <translation id="3007555010975143508">Këto aplikacione do të përdoren për të regjistruar ekranin tënd:</translation>
 <translation id="3007771295016901659">Dubliko skedën</translation>
@@ -3044,7 +3041,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">U bllokua përkohësisht për të mbrojtur sigurinë tënde</translation>
 <translation id="3083899879156272923">Lëvize ekranin duke e mbajtur miun në qendër të ekranit</translation>
-<translation id="3083998949001524405">Lejo që të përdoren kukit e palëve të treta</translation>
 <translation id="3084121729444215602"><ph name="EXTENSION_NAME" /> është gozhduar nga administratori</translation>
 <translation id="3084548735795614657">Lëshoje për ta instaluar</translation>
 <translation id="3084771660770137092">Chrome nuk ka më memorie ose procesi për faqen e uebit u ndërpre për disa arsye. Për të vazhduar, ngarkoje përsëri ose shko te një faqe tjetër.</translation>
@@ -3139,7 +3135,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3161522574479303604">Të gjitha gjuhët</translation>
 <translation id="3162070126914310576">Kjo pajisje nuk mund të regjistrohet për momentin sepse njësia jote e organizatës ka arritur kufirin e regjistrimeve fillestare. Kontakto me administratorin tënd për ndihmë.</translation>
 <translation id="3162853326462195145">Llogaria e shkollës</translation>
-<translation id="3162899666601560689">Sajtet mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve</translation>
 <translation id="3163085718713826852">Fut fjalëkalimin e certifikatës</translation>
 <translation id="3163201441334626963">Produkt i panjohur <ph name="PRODUCT_ID" /> nga shitësi <ph name="VENDOR_ID" /></translation>
 <translation id="3163511056918491211">Restauro të dhënat e tua ose ndërro pajisjet në çdo kohë me lehtësi. Rezervimet e tua ngarkohen te Google dhe enkriptohen duke përdorur fjalëkalimin e "Llogarisë sate të Google".</translation>
@@ -4012,7 +4007,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3764974059056958214">{COUNT,plural, =1{Po dërgohen <ph name="ATTACHMENTS" /> te <ph name="DEVICE_NAME" />}other{Po dërgohen <ph name="ATTACHMENTS" /> te <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765055238058255342">këtë lloj karte</translation>
 <translation id="3765246971671567135">Politika offline e modalitetit të demonstrimit nuk mund të lexohej.</translation>
-<translation id="3765696567014520261">Sajtet nuk mund të përdorin kukit e tua për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, p.sh. për të personalizuar reklamat. Veçoritë në disa sajte mund të mos funksionojnë</translation>
 <translation id="3766687283066842296">Mëso më shumë rreth Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Për momentin, mund t'i ndash fjalëkalimet vetëm me anëtarët e familjes. <ph name="BEGIN_LINK" />Fto anëtarët e familjes<ph name="END_LINK" /> për t'u bashkuar në grupin tënd dhe për të përfituar më shumë nga produktet dhe abonimet e tua nëpër Google.</translation>
@@ -4233,7 +4227,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3904326018476041253">Shërbimet e vendndodhjes</translation>
 <translation id="3905761538810670789">Riparo aplikacionin</translation>
 <translation id="3906096710440765802">Identifikohu në Chrome për të marrë fjalëkalimet, faqeshënuesit dhe më shumë në të gjitha pajisjet e tua</translation>
-<translation id="3908288065506437185">Blloko kukit e palëve të treta në "Modalitetin 'e fshehtë'"</translation>
 <translation id="3908501907586732282">Aktivizo shtesën</translation>
 <translation id="3909456989251621103">Nëse fshin një certifikatë serveri, Chrome nuk do ta përdorë më atë për të identifikuar serverët.</translation>
 <translation id="3909701002594999354">Shfaq të gjitha &amp;kontrollet</translation>
@@ -5063,7 +5056,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
         <ph name="BREAK" />
         Mund t'i menaxhosh cilësimet nga menyja e kartave ose mund të shikosh më shumë opsione te "Personalizo Chrome".</translation>
 <translation id="4503748371388753124">Kompjuteri yt përmban një pajisje sigurie të "Modulit të platformës së besuar" (TPM), e cila përdoret për të zbatuar shumë veçori kritike të sigurisë në Chrome OS Flex. Vizito "Qendrën e ndihmës të Chromebook" për të mësuar më shumë: https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="4504374760782163539">{COUNT,plural, =0{Kukit lejohen}=1{Kukit lejohen, 1 përjashtim}other{Kukit lejohen, {COUNT} përjashtime}}</translation>
 <translation id="4504940961672722399">Përdore këtë shtesë duke klikuar këtë ikonë ose duke shtypur <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">Shkarko Chrome me këtë kod QR dhe identifikohu në "Llogarinë tënde të Google".</translation>
 <translation id="450552327874992444">Fjala është shtuar tashmë</translation>
@@ -5199,7 +5191,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4594218792629569101">Zgjidh “Shëno si të lexuar” për ta zhvendosur faqen në fund të listës</translation>
 <translation id="4595560905247879544">Aplikacionet dhe shtesat mund të modifikohen vetëm nga menaxheri (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4598345735110653698">Menaxho çelësat e kalimit</translation>
-<translation id="4598549027014564149">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, as edhe në sajtet e ngjashme. Aktiviteti yt i shfletimit nuk përdoret për gjëra të tilla si p.sh. personalizimi i reklamave. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="4598556348158889687">Menaxhimi i hapësirës ruajtëse</translation>
 <translation id="4598776695426288251">Wi-Fi i disponueshëm nëpërmjet shumë pajisjeve</translation>
 <translation id="4600071396330666617">Numri i sugjerimeve</translation>
@@ -6405,7 +6396,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5458716506062529991">Ke futur shumë herë një kod të gabuar PIN. Për t'u qasur te çelësat e kalimit dhe fjalëkalimet, ndrysho kodin PIN.</translation>
 <translation id="5459470938885464873">Gabim gjatë importimit të certifikatave</translation>
 <translation id="5459864179070366255">Vazhdo me instalimin</translation>
-<translation id="5460641065520325899">Menaxho llojet e informacioneve që mund të përdorin sajtet për të të gjurmuar kur ti shfleton.</translation>
 <translation id="5460861858595506978">Frymëzim</translation>
 <translation id="5461050611724244538">Humbi lidhja me telefonin tënd</translation>
 <translation id="5463275305984126951">Indeksi i <ph name="LOCATION" /></translation>
@@ -6762,7 +6752,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5722086096420375088">E gjelbër dhe e bardhë</translation>
 <translation id="572328651809341494">Skedat e fundit</translation>
 <translation id="5723508132121499792">Nuk ka aplikacione sfondi në punë</translation>
-<translation id="5723967018671998714">Kukit e palëve të treta janë bllokuar në modalitetin "i fshehtë"</translation>
 <translation id="5725112283692663422">Dërgo komente për "Krijo temë me IA"</translation>
 <translation id="5727728807527375859">Shtesat, aplikacionet dhe temat mund ta dëmtojnë kompjuterin tënd. Je i sigurt se dëshiron të vazhdosh?</translation>
 <translation id="5728072125198221967">Shërbimet e lidhura të Google</translation>
@@ -8314,7 +8303,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6824564591481349393">Kopjo adresën e &amp;mail-it</translation>
 <translation id="6824584962142919697">&amp;Inspekto elementet</translation>
 <translation id="6825184156888454064">Rendit sipas emrit</translation>
-<translation id="6826872289184051766">Verifikohu nëpërmjet USB-së</translation>
 <translation id="6827121912381363404">Lejo të gjitha shtesat që të lexojnë dhe ndryshojnë <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827422464708099620">Zgjidh që të shikosh më shumë opsione</translation>
 <translation id="6827517233063803343">Aplikacionet dhe cilësimet e tua do të sinkronizohen në të gjitha pajisjet ChromeOS ku je identifikuar me llogarinë tënde të Google. Për opsionet e sinkronizimit të shfletuesit, shko te <ph name="LINK_BEGIN" />cilësimet e Chrome<ph name="LINK_END" />.</translation>
@@ -9483,7 +9471,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7659584679870740384">Nuk je i autorizuar ta përdorësh këtë pajisje. Kontakto me administratorin për të marrë leje për identifikim.</translation>
 <translation id="7660116474961254898">Ndiq udhëzimet në telefonin tënd</translation>
 <translation id="7660146600670077843">Kliko me butonin djathtas në një skedë dhe zgjidh "Shto skedën në grup të ri"</translation>
-<translation id="7661259717474717992">Lejo faqet të ruajnë dhe lexojnë të dhënat e kukive</translation>
 <translation id="7661451191293163002">Nuk mund të merrej një certifikatë regjistrimi.</translation>
 <translation id="7662283695561029522">Trokit për të konfiguruar</translation>
 <translation id="7663719505383602579">Marrësi: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -10484,7 +10471,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8323317289166663449">Lexo dhe ndrysho të gjitha të dhënat në kompjuterin tënd dhe të gjitha uebsajtet</translation>
 <translation id="8323518750352551353">Të ndahet shfletimi?</translation>
 <translation id="8324158725704657629">Mos pyet më</translation>
-<translation id="8324784016256120271">Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, për shembull për t'i personalizuar reklamat</translation>
 <translation id="8325413836429495820">Nuk lejohen të shikojnë kujtesën e fragmenteve</translation>
 <translation id="8326478304147373412">PKCS #7, zinxhiri i certifikatës</translation>
 <translation id="8327386430364625757">Font matematikor</translation>
@@ -11200,7 +11186,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="881782782501875829">Shto numrin e portës</translation>
 <translation id="881799181680267069">Fshihi të tjerat</translation>
 <translation id="8818152010000655963">Imazhi i sfondit</translation>
-<translation id="8818958672113348984">Verifikohu nëpërmjet telefonit</translation>
 <translation id="8818988764764862764">Dritarja u zhvendos në të majtë</translation>
 <translation id="8819510664278523111">Numri EID i pajisjes sate është <ph name="EID_NUMBER" /> , numri IMEI është <ph name="IMEI_NUMBER" />, ndërsa numri i serisë së pajisjes është <ph name="SERIAL_NUMBER" />. Këta numra mund të përdoren për të ndihmuar në aktivizimin e shërbimit.</translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
