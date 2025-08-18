@@ -247,11 +247,8 @@ IPAddress ConvertIPv4ToIPv4MappedIPv6(const IPAddress& address) {
 IPAddress ConvertIPv4MappedIPv6ToIPv4(const IPAddress& address) {
   DCHECK(address.IsIPv4MappedIPv6());
 
-  absl::InlinedVector<uint8_t, 16> bytes;
-  bytes.insert(
-      bytes.end(),
-      UNSAFE_TODO(address.bytes().begin() + std::size(kIPv4MappedPrefix)),
-      address.bytes().end());
+  auto bytes =
+      base::span(address.bytes()).subspan(std::size(kIPv4MappedPrefix));
   return IPAddress(bytes.data(), bytes.size());
 }
 
