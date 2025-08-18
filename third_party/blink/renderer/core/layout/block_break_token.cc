@@ -53,9 +53,7 @@ BlockBreakToken* BlockBreakToken::CreateForBreakInRepeatedFragment(
   token->data_->sequence_number = sequence_number;
   token->data_->consumed_block_size = consumed_block_size;
   token->is_at_block_end_ = is_at_block_end;
-#if DCHECK_IS_ON()
   token->is_repeated_actual_break_ = true;
-#endif
   return token;
 }
 
@@ -121,7 +119,7 @@ String BlockBreakToken::ToString(bool skip_node_info) const {
   string_builder.Append(ConsumedBlockSize().ToString());
   string_builder.Append("px");
 
-  if (MonolithicOverflow()) {
+  if (!is_repeated_actual_break_ && MonolithicOverflow()) {
     string_builder.Append(" monolithic overflow:");
     string_builder.Append(MonolithicOverflow().ToString());
     string_builder.Append("px");

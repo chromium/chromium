@@ -127,4 +127,56 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
   EXPECT_EQ(expectation, dump);
 }
 
+TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithRepeatedContent) {
+  SetBodyInnerHTML(R"HTML(
+<div style="columns:2; width:100px; height:100px; gap:0; column-fill:auto;">
+  <div style="display:table;">
+    <div style="display:table-header-group; break-inside:avoid;">
+      <div style="columns:2; gap:0; column-fill:auto; height:20px;">
+        <div style="height:40px;"></div>
+      </div>
+    </div>
+    <div style="height:100px;"></div>
+  </div>
+</div>
+  )HTML");
+
+  String dump = DumpAll();
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:800x600 LayoutView #document
+    Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x116 LayoutBlockFlow HTML
+      Box (block-flow) offset:8,8 size:784x100 LayoutBlockFlow BODY
+        Box (block-flow-root block-flow) offset:0,0 size:100x100 LayoutBlockFlow (multicol) DIV
+          Box (column block-flow) offset:0,0 size:50x100 sequence:0 (seen all children) consumed:100px
+            Box (block-flow-root) offset:0,0 size:0x100 LayoutTable DIV sequence:0 (seen all children) consumed:100px
+              Box (block-flow-root) offset:0,0 size:0x20 LayoutTableSection DIV sequence:0 (repeated) consumed:0px
+                Box (block-flow-root) offset:0,0 size:0x20 LayoutTableRow (anonymous) sequence:0 (repeated) consumed:0px
+                  Box (block-flow-root block-flow) offset:0,0 size:0x20 LayoutTableCell (anonymous) sequence:0 (repeated) consumed:0px
+                    Box (block-flow-root block-flow) offset:0,0 size:0x20 LayoutBlockFlow (multicol) DIV sequence:0 (repeated) consumed:0px
+                      Box (column block-flow) offset:0,0 size:0x20 sequence:0 (seen all children) consumed:20px
+                        Box (block-flow) offset:0,0 size:0x20 LayoutBlockFlow DIV sequence:0 (seen all children) consumed:20px
+                      Box (column block-flow)(resumed) offset:0,0 size:0x20 sequence:1 (repeated) consumed:0px
+                        Box (block-flow)(resumed) offset:0,0 size:0x20 LayoutBlockFlow DIV sequence:1 (repeated) consumed:0px
+              Box (block-flow-root) offset:0,20 size:0x80 LayoutTableSection (anonymous) sequence:0 (seen all children) consumed:80px
+                Box (block-flow-root) offset:0,0 size:0x80 LayoutTableRow (anonymous) sequence:0 (seen all children) consumed:80px
+                  Box (block-flow-root block-flow) offset:0,0 size:0x80 LayoutTableCell (anonymous) sequence:0 (seen all children) consumed:80px
+                    Box (block-flow) offset:0,0 size:0x80 LayoutBlockFlow DIV sequence:0 (seen all children) consumed:80px
+          Box (column block-flow)(resumed) offset:50,0 size:50x100
+            Box (block-flow-root)(resumed) offset:0,0 size:0x40 LayoutTable DIV
+              Box (block-flow-root)(resumed) offset:0,0 size:0x20 LayoutTableSection DIV
+                Box (block-flow-root)(resumed) offset:0,0 size:0x20 LayoutTableRow (anonymous)
+                  Box (block-flow-root block-flow)(resumed) offset:0,0 size:0x20 LayoutTableCell (anonymous)
+                    Box (block-flow-root block-flow)(resumed) offset:0,0 size:0x20 LayoutBlockFlow (multicol) DIV
+                      Box (column block-flow) offset:0,0 size:0x20 sequence:2 consumed:20px
+                        Box (block-flow)(resumed) offset:0,0 size:0x20 LayoutBlockFlow DIV sequence:2 consumed:20px
+                      Box (column block-flow)(resumed) offset:0,0 size:0x20
+                        Box (block-flow)(resumed) offset:0,0 size:0x20 LayoutBlockFlow DIV
+              Box (block-flow-root)(resumed) offset:0,20 size:0x20 LayoutTableSection (anonymous)
+                Box (block-flow-root)(resumed) offset:0,0 size:0x20 LayoutTableRow (anonymous)
+                  Box (block-flow-root block-flow)(resumed) offset:0,0 size:0x20 LayoutTableCell (anonymous)
+                    Box (block-flow)(resumed) offset:0,0 size:0x20 LayoutBlockFlow DIV
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
 }  // namespace blink

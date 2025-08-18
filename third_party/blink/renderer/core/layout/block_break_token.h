@@ -85,9 +85,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   // want a fragmentainer break before laying out the node). What the sequence
   // number is for such a break token is undefined.
   unsigned SequenceNumber() const {
-#if DCHECK_IS_ON()
     DCHECK(is_repeated_actual_break_ || !IsBreakBefore());
-#endif
     DCHECK(data_);
     return data_->sequence_number;
   }
@@ -100,17 +98,13 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   //
   // This value is only used (and set) when printing.
   LayoutUnit MonolithicOverflow() const {
-#if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
-#endif
     DCHECK(data_);
     return data_->monolithic_overflow;
   }
 
   const BlockBreakTokenData* TokenData() const {
-#if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
-#endif
     DCHECK(data_);
     return data_.Get();
   }
@@ -130,9 +124,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   bool IsRepeated() const { return is_repeated_; }
 
   bool IsCausedByColumnSpanner() const {
-#if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
-#endif
     return is_caused_by_column_spanner_;
   }
 
@@ -141,9 +133,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   // break tokens, if any, and not attempt to start laying out nodes that don't
   // have one (since all children are either finished, or have a break token).
   bool HasSeenAllChildren() const {
-#if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
-#endif
     return has_seen_all_children_;
   }
 
@@ -173,9 +163,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
 
   // True if earlier fragments could not position the list marker.
   bool HasUnpositionedListMarker() const {
-#if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
-#endif
     return has_unpositioned_list_marker_;
   }
 
@@ -188,9 +176,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   //
   // A child which we haven't visited yet doesn't have a break token here.
   const base::span<const Member<const BreakToken>> ChildBreakTokens() const {
-#if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
-#endif
     return ChildBreakTokensInternal();
   }
 
