@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -31,5 +32,26 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingServiceDataCollectionCUJTest,
                        SidePanelOpensAutomatically) {
   RunTestSequence(WaitForShow(kSidePanelElementId));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+
+using ReadAnythingServiceGuestTest = InProcessBrowserTest;
+IN_PROC_BROWSER_TEST_F(ReadAnythingServiceGuestTest,
+                       ServiceIsCreatedForGuestProfile) {
+  Browser* guest_browser = CreateGuestBrowser();
+  Profile* guest_profile = guest_browser->profile();
+  EXPECT_TRUE(guest_profile->IsGuestSession());
+
+  ReadAnythingService* guest_service = ReadAnythingService::Get(guest_profile);
+  EXPECT_NE(nullptr, guest_service);
+
+  // The service should not be created for the original profile because the
+  // guest profile uses kOffTheRecord.
+  Profile* original_profile = guest_profile->GetOriginalProfile();
+  ReadAnythingService* original_service =
+      ReadAnythingService::Get(original_profile);
+  EXPECT_EQ(nullptr, original_service);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

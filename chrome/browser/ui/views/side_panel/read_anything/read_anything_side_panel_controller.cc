@@ -129,8 +129,8 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
 
   auto* service =
       ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
-  // At the moment, services are created for normal and incognito profiles but
-  // not unusual profile types. On the other hand,
+  // At the moment, services are created for normal, incognito, and guest
+  // profiles but not unusual profile types. On the other hand,
   // ReadAnythingSidePanelController is created for all tabs. Thus we need a
   // nullptr check.
   if (service) {
@@ -180,8 +180,8 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
 
   auto* service =
       ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
-  // At the moment, services are created for normal and incognito profiles but
-  // not unusual profile types. On the other hand,
+  // At the moment, services are created for normal, guest, and incognito
+  // profiles but not unusual profile types. On the other hand,
   // ReadAnythingSidePanelController is created for all tabs. Thus we need a
   // nullptr check.
   if (service) {

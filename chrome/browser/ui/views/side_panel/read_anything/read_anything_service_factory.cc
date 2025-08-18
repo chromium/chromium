@@ -27,6 +27,7 @@ ReadAnythingServiceFactory::ReadAnythingServiceFactory()
           "ReadAnythingServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {
   DependsOn(extensions::ChromeExtensionSystemFactory::GetInstance());
 }
