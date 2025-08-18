@@ -2478,7 +2478,8 @@ public class UrlOverridingTest {
         Assert.assertFalse(tab.getWebContents().hasOpener());
     }
 
-    private void doTestInitialIntentToApp(boolean allowInitialIntentToLeave) throws Exception {
+    private void doTestInitialIntentToApp(boolean allowInitialIntentToLeave, boolean prewarm)
+            throws Exception {
         final String initialUrl = "https://example.com/path";
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
@@ -2497,6 +2498,10 @@ public class UrlOverridingTest {
                     lastResultValue.set(result.second.getResultType());
                     navigated.notifyCalled();
                 });
+
+        if (prewarm) {
+            CustomTabsTestUtils.warmUpAndWait();
+        }
 
         Intent intent = getCustomTabFromChromeIntent(initialUrl, false);
 
@@ -2554,13 +2559,27 @@ public class UrlOverridingTest {
     @Feature("CustomTabFromChrome")
     @LargeTest
     public void testInitialIntentToApp() throws Exception {
-        doTestInitialIntentToApp(false);
+        doTestInitialIntentToApp(false, false);
     }
 
     @Test
     @Feature("CustomTabFromChrome")
     @LargeTest
     public void testInitialIntentToApp_allowToLeave() throws Exception {
-        doTestInitialIntentToApp(true);
+        doTestInitialIntentToApp(true, false);
+    }
+
+    @Test
+    @Feature("CustomTabFromChrome")
+    @LargeTest
+    public void testInitialIntentToApp_prewarmed() throws Exception {
+        doTestInitialIntentToApp(false, true);
+    }
+
+    @Test
+    @Feature("CustomTabFromChrome")
+    @LargeTest
+    public void testInitialIntentToApp_allowToLeave_prewarmed() throws Exception {
+        doTestInitialIntentToApp(true, true);
     }
 }
