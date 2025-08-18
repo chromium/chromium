@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
@@ -93,11 +94,11 @@ public class StatusBarColorController
     private final @ColorInt int mIncognitoActiveOmniboxColor;
     private final @ColorInt int mStandardScrolledOmniboxColor;
     private final @ColorInt int mIncognitoScrolledOmniboxColor;
-    private final @ColorInt int mBackgroundColorForNtp;
     private final ObservableSupplier<Integer> mOverviewColorSupplier;
     private final Callback<Integer> mOverviewColorObserver = ignored -> updateStatusBarColor();
     private boolean mToolbarColorChanged;
     private @ColorInt int mToolbarColor;
+    private @ColorInt int mBackgroundColorForNtp;
 
     private @Nullable TabModelSelector mTabModelSelector;
     private CallbackController mCallbackController = new CallbackController();
@@ -121,6 +122,8 @@ public class StatusBarColorController
     // Desktop window states.
     private DesktopWindowStateManager mDesktopWindowStateManager;
     private boolean mIsTopResumedActivity;
+
+    private @Nullable NtpCustomizationConfigManager.HomepageStateListener mHomepageStateListener;
 
     private final LayoutStateObserver mLayoutStateObserver =
             new LayoutStateObserver() {
@@ -147,6 +150,7 @@ public class StatusBarColorController
      * @param edgeToEdgeSystemBarColorHelper Draws status bar color for Edge to Edge.
      * @param desktopWindowStateManagerSupplier Supplier to retrieve desktop window information.
      * @param overviewColorSupplier Notifies when the overview color changes.
+     * @param supportEdgeToEdge Whether to support making NTPs edge-to-edge.
      */
     public StatusBarColorController(
             Window window,
@@ -159,7 +163,8 @@ public class StatusBarColorController
             TopUiThemeColorProvider topUiThemeColorProvider,
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             OneshotSupplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier,
-            ObservableSupplier<Integer> overviewColorSupplier) {
+            ObservableSupplier<Integer> overviewColorSupplier,
+            boolean supportEdgeToEdge) {
         mWindow = window;
         mIsTablet = isTablet;
         mStatusBarColorProvider = statusBarColorProvider;
@@ -170,8 +175,9 @@ public class StatusBarColorController
                 SurfaceColorUpdateUtils.getDefaultThemeColor(context, /* isIncognito= */ false);
         mIncognitoDefaultThemeColor =
                 SurfaceColorUpdateUtils.getDefaultThemeColor(context, /* isIncognito= */ true);
+        var ntpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
         mBackgroundColorForNtp =
-                ContextCompat.getColor(context, R.color.home_surface_background_color);
+                ntpCustomizationConfigManager.getBackgroundColor(mWindow.getContext());
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
 
         // TODO(b/41494931): Share code with LocationBarCoordinator's constructor.
@@ -275,6 +281,21 @@ public class StatusBarColorController
                     updateStatusBarColor();
                 });
         mOverviewColorSupplier.addObserver(mOverviewColorObserver);
+
+        if (supportEdgeToEdge) {
+            mHomepageStateListener =
+                    new NtpCustomizationConfigManager.HomepageStateListener() {
+                        @Override
+                        public void onBackgroundColorChanged(
+                                int backgroundColor, boolean fromInitialization) {
+                            if (mBackgroundColorForNtp == backgroundColor) return;
+
+                            mBackgroundColorForNtp = backgroundColor;
+                            updateStatusBarColor();
+                        }
+                    };
+            ntpCustomizationConfigManager.addListener(mHomepageStateListener);
+        }
     }
 
     // DestroyObserver implementation.
@@ -292,6 +313,9 @@ public class StatusBarColorController
             mCallbackController = null;
         }
         mOverviewColorSupplier.removeObserver(mOverviewColorObserver);
+        if (mHomepageStateListener != null) {
+            NtpCustomizationConfigManager.getInstance().removeListener(mHomepageStateListener);
+        }
     }
 
     // TopResumedActivityChangedObserver implementation.

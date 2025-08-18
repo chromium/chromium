@@ -316,10 +316,18 @@ public class NtpCustomizationUtils {
     /** Returns whether all flags are enabled to allow edge-to-edge for customized theme. */
     public static boolean canEnableEdgeToEdgeForCustomizedTheme(
             WindowAndroid windowAndroid, boolean isTablet) {
+        return canEnableEdgeToEdgeForCustomizedTheme(isTablet)
+                && EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(windowAndroid);
+    }
+
+    /**
+     * Returns whether all flags are enabled to allow edge-to-edge for customized theme. This method
+     * doesn't check EdgeToEdgeStateProvider.
+     */
+    public static boolean canEnableEdgeToEdgeForCustomizedTheme(boolean isTablet) {
         return !isTablet
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
-                && EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(windowAndroid);
+                && ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
     }
 
     /**
