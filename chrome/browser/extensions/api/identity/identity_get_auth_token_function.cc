@@ -687,8 +687,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
     const std::string& consent_result,
     const GaiaId& gaia_id) {
   TRACE_EVENT_INSTANT("identity", "OnGaiaRemoteConsentFlowApproved",
-                      perfetto::Track::FromPointer(this), "gaia_id",
-                      gaia_id.ToString());
+                      perfetto::Track::FromPointer(this));
   DCHECK(!consent_result.empty());
   remote_consent_approved_ = true;
 
@@ -741,8 +740,7 @@ void IdentityGetAuthTokenFunction::OnGetAccessTokenComplete(
 #endif
   DCHECK(!token_key_account_access_token_fetcher_);
   if (access_token) {
-    TRACE_EVENT_END("identity", perfetto::Track::FromPointer(this), "account",
-                    token_key_.account_info.account_id.ToString());
+    TRACE_EVENT_END("identity", perfetto::Track::FromPointer(this));
 
     StartGaiaRequest(access_token.value());
   } else {
