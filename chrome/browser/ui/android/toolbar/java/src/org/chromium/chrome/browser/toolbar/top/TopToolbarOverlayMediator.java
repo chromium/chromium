@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
+import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -97,7 +98,9 @@ public class TopToolbarOverlayMediator {
     private float mViewportHeight;
 
     private @Nullable OffsetTag mTopControlsOffsetTag;
+    private @Nullable OffsetTag mTopProgressBarOffsetTag;
     private @Nullable OffsetTag mBottomControlsOffsetTag;
+    private @Nullable OffsetTag mBottomProgressBarOffsetTag;
     private @ControlsPosition int mControlsPosition;
 
     TopToolbarOverlayMediator(
@@ -237,7 +240,6 @@ public class TopToolbarOverlayMediator {
                             mTopControlsOffsetTag = offsetTagsInfo.getTopControlsOffsetTag();
                             mBottomControlsOffsetTag = offsetTagsInfo.getBottomControlsOffsetTag();
                             updateOffsetTag();
-
                             if (shouldUpdateOffsets) {
                                 mModel.set(
                                         TopToolbarOverlayProperties.CONTENT_OFFSET,
@@ -251,6 +253,10 @@ public class TopToolbarOverlayMediator {
                         mControlsPosition = controlsPosition;
                         if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
                             updateOffsetTag();
+                            if (ChromeFeatureList.sAndroidAnimatedCompositedProgressBar
+                                    .isEnabled()) {
+                                updateProgress();
+                            }
                         }
                     }
                 };
@@ -342,13 +348,45 @@ public class TopToolbarOverlayMediator {
 
         // Update and set the progress info to trigger an update; the PROGRESS_BAR_INFO
         // property skips the object equality check.
-        mProgressInfoCallback.onResult(mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
+        DrawingInfo drawingInfo = mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO);
+        mProgressInfoCallback.onResult(drawingInfo);
+        if (ChromeFeatureList.sAndroidAnimatedCompositedProgressBar.isEnabled()) {
+            if (drawingInfo.visible) {
+                if (mTopProgressBarOffsetTag == null) {
+                    mTopProgressBarOffsetTag = OffsetTag.createRandom();
+                }
+                if (mBottomProgressBarOffsetTag == null) {
+                    mBottomProgressBarOffsetTag = OffsetTag.createRandom();
+                }
+            } else {
+                mTopProgressBarOffsetTag = null;
+                mBottomProgressBarOffsetTag = null;
+            }
+
+            if (mControlsPosition == ControlsPosition.TOP) {
+                drawingInfo.offsetTag = mTopProgressBarOffsetTag;
+            } else if (mControlsPosition == ControlsPosition.BOTTOM) {
+                drawingInfo.offsetTag = mBottomProgressBarOffsetTag;
+            } else {
+                drawingInfo.offsetTag = null;
+            }
+
+            onProgressBarOffsetTagsChanged();
+        }
+
+        // TODO(https://crbug.com/439461293) Try not updating the model if nothing changed.
         mModel.set(
                 TopToolbarOverlayProperties.PROGRESS_BAR_INFO,
                 mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
     }
 
-    /** @return Whether this component is in tablet mode. */
+    private void onProgressBarOffsetTagsChanged() {
+        // TODO(https://crbug.com/434769428) plumb and register OffsetTags in native.
+    }
+
+    /**
+     * @return Whether this component is in tablet mode.
+     */
     private boolean isTablet() {
         if (sIsTabletForTesting != null) return sIsTabletForTesting;
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);

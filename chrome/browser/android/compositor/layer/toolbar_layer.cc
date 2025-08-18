@@ -12,6 +12,7 @@
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/resources/toolbar_resource.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/nine_patch_resource.h"
@@ -144,14 +145,20 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
                                      int progress_bar_static_background_width,
                                      int progress_bar_static_background_color,
                                      float corner_radius,
-                                     bool progress_bar_visual_update_available) {
+                                     bool progress_bar_visual_update_available,
+                                     bool visible,
+                                     const viz::OffsetTag& offset_tag) {
   bool is_progress_bar_visible = SkColorGetA(progress_bar_background_color);
+  if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+    is_progress_bar_visible = visible;
+  }
 
   progress_bar_background_layer_->SetHideLayerAndSubtree(!is_progress_bar_visible);
   progress_bar_layer_->SetHideLayerAndSubtree(!is_progress_bar_visible);
   progress_bar_static_background_layer_->SetHideLayerAndSubtree(
       !(is_progress_bar_visible && progress_bar_visual_update_available));
 
+  // TODO(https://crbug.com/434769434) Reorganize layers and set OffsetTag.
   if (is_progress_bar_visible) {
     progress_bar_background_layer_->SetPosition(
         gfx::PointF(progress_bar_background_x, progress_bar_background_y));

@@ -83,9 +83,13 @@ void TopToolbarSceneLayer::UpdateProgressBar(
     jint progress_bar_static_background_width,
     jint progress_bar_static_background_color,
     jfloat corner_radius,
-    jboolean progress_bar_visual_update_available) {
+    jboolean progress_bar_visual_update_available,
+    bool visible,
+    const base::android::JavaParamRef<jobject>& joffset_tag) {
   if (!toolbar_layer_)
     return;
+
+  viz::OffsetTag offset_tag = cc::android::FromJavaOffsetTag(env, joffset_tag);
   toolbar_layer_->UpdateProgressBar(
       progress_bar_x, progress_bar_y, progress_bar_width, progress_bar_height,
       progress_bar_color, progress_bar_background_x, progress_bar_background_y,
@@ -93,7 +97,7 @@ void TopToolbarSceneLayer::UpdateProgressBar(
       progress_bar_background_color, progress_bar_static_background_x,
       progress_bar_static_background_width,
       progress_bar_static_background_color, corner_radius,
-      progress_bar_visual_update_available);
+      progress_bar_visual_update_available, visible, offset_tag);
 }
 
 void TopToolbarSceneLayer::SetContentTree(

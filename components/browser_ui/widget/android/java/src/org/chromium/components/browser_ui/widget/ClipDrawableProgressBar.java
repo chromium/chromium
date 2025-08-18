@@ -22,6 +22,8 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.OffsetTag;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** An alternative progress bar implemented using ClipDrawable for simplicity and performance. */
@@ -38,6 +40,8 @@ public class ClipDrawableProgressBar extends ImageView {
         public int progressBarStaticBackgroundColor;
         public float cornerRadius;
         public boolean progressBarVisualUpdateAvailable;
+        public boolean visible;
+        public @Nullable OffsetTag offsetTag;
     }
 
     /** An observer for visible progress updates. */
@@ -255,7 +259,12 @@ public class ClipDrawableProgressBar extends ImageView {
      * @param drawingInfoOut An instance that the result will be written.
      */
     public void getDrawingInfo(DrawingInfo drawingInfoOut) {
-        float effectiveAlpha = getVisibility() == VISIBLE ? getAlpha() : 0.0f;
+        boolean visible = getVisibility() == VISIBLE;
+        if (ChromeFeatureList.sAndroidAnimatedCompositedProgressBar.isEnabled()) {
+            visible = mDesiredVisibility == VISIBLE;
+            drawingInfoOut.visible = visible;
+        }
+        float effectiveAlpha = visible ? getAlpha() : 0.0f;
         drawingInfoOut.progressBarColor = applyAlpha(mForegroundColor, effectiveAlpha);
         drawingInfoOut.progressBarBackgroundColor = applyAlpha(mBackgroundColor, effectiveAlpha);
         // Defaults to Color.TRANSPARENT
@@ -271,6 +280,8 @@ public class ClipDrawableProgressBar extends ImageView {
             }
         }
 
+        // TODO(https://crbug.com/439461465) Remove updates which position the rectangles. These
+        // updates will be done in viz via OffsetTags.
         if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {
             drawingInfoOut.progressBarStaticBackgroundRect.set(
                     getLeft(), getTop(), getRight(), getBottom());
@@ -321,7 +332,9 @@ public class ClipDrawableProgressBar extends ImageView {
         int newVisibility = mDesiredVisibility;
         if (getAlpha() == 0 && mDesiredVisibility == VISIBLE) newVisibility = INVISIBLE;
         if (oldVisibility != newVisibility) {
-            super.setVisibility(newVisibility);
+            if (!ChromeFeatureList.sAndroidAnimatedCompositedProgressBar.isEnabled()) {
+                super.setVisibility(newVisibility);
+            }
             if (mProgressBarObserver != null) mProgressBarObserver.onVisibilityChanged();
         }
     }
@@ -398,6 +411,13 @@ public class ClipDrawableProgressBar extends ImageView {
 
     @Override
     protected boolean onSetAlpha(int alpha) {
+        if (ChromeFeatureList.sAndroidAnimatedCompositedProgressBar.isEnabled()) {
+            if (alpha == 0) {
+                mDesiredVisibility = INVISIBLE;
+            } else {
+                mDesiredVisibility = VISIBLE;
+            }
+        }
         updateInternalVisibility();
         return super.onSetAlpha(alpha);
     }

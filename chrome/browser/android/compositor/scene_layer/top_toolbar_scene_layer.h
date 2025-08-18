@@ -45,22 +45,25 @@ class TopToolbarSceneLayer : public SceneLayer {
       const base::android::JavaParamRef<jobject>& joffset_tag);
 
   // Update the progress bar.
-  void UpdateProgressBar(JNIEnv* env,
-                         jint progress_bar_x,
-                         jint progress_bar_y,
-                         jint progress_bar_width,
-                         jint progress_bar_height,
-                         jint progress_bar_color,
-                         jint progress_bar_background_x,
-                         jint progress_bar_background_y,
-                         jint progress_bar_background_width,
-                         jint progress_bar_background_height,
-                         jint progress_bar_background_color,
-                         jint progress_bar_static_background_x,
-                         jint progress_bar_static_background_width,
-                         jint progress_bar_static_background_color,
-                         jfloat corner_radius,
-                         jboolean progress_bar_visual_update_available);
+  void UpdateProgressBar(
+      JNIEnv* env,
+      jint progress_bar_x,
+      jint progress_bar_y,
+      jint progress_bar_width,
+      jint progress_bar_height,
+      jint progress_bar_color,
+      jint progress_bar_background_x,
+      jint progress_bar_background_y,
+      jint progress_bar_background_width,
+      jint progress_bar_background_height,
+      jint progress_bar_background_color,
+      jint progress_bar_static_background_x,
+      jint progress_bar_static_background_width,
+      jint progress_bar_static_background_color,
+      jfloat corner_radius,
+      jboolean progress_bar_visual_update_available,
+      bool visible,
+      const base::android::JavaParamRef<jobject>& joffset_tag);
 
   void SetContentTree(
       JNIEnv* env,

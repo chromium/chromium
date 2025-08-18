@@ -79,7 +79,9 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
                         progressInfo.progressBarStaticBackgroundRect.width(),
                         progressInfo.progressBarStaticBackgroundColor,
                         progressInfo.cornerRadius,
-                        progressInfo.progressBarVisualUpdateAvailable);
+                        progressInfo.progressBarVisualUpdateAvailable,
+                        progressInfo.visible,
+                        progressInfo.offsetTag);
     }
 
     @Override
@@ -137,6 +139,8 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
                 int progressBarStaticBackgroundWidth,
                 int progressBarStaticBackgroundColor,
                 float cornerRadius,
-                boolean progressBarVisualUpdateAvailable);
+                boolean progressBarVisualUpdateAvailable,
+                boolean visible,
+                @Nullable OffsetTag offsetTag);
     }
 }

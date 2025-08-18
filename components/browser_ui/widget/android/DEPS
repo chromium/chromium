@@ -1,4 +1,6 @@
 include_rules = [
+  "+cc/input/android/java/src/org/chromium/cc/input/OffsetTag.java",
+  "+chrome/browser/flags",
   "+components/embedder_support/android",
   "+content/public/test/android",
   "+ui/accessibility",

@@ -582,6 +582,11 @@ bool ShouldRemoveRedirectionBitmap() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+bool IsAndroidAnimatedCompositedProgressBarEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kAndroidAnimatedCompositedProgressBar);
+}
+
 bool IsBcivBottomControlsEnabled() {
   return base::FeatureList::IsEnabled(features::kAndroidBcivBottomControls);
 }
