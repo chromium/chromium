@@ -245,6 +245,11 @@
         "id": "MultipleAutomaticDownloadsContentSetting",
         "type": "string",
         "enum": ["allow", "block", "ask"]
+      },
+      {
+        "id": "SoundContentSetting",
+        "type": "string",
+        "enum": ["allow", "block"]
       }
     ],
     "properties": {
@@ -366,6 +371,15 @@
         "value": [
           "automatic-downloads",
           {"$ref":"MultipleAutomaticDownloadsContentSetting"}
+        ]
+      },
+      "sound": {
+        "$ref": "ContentSetting",
+        "nodoc": true,
+        "description": "Whether to allow sites to play sound. One of<br><var>allow</var>: Allow sites to play sound,<br><var>block</var>: Don't allow sites to play sound. <br>Default is <var>allow</var>.<br>The primary URL is the URL of the document which wants to play sound. The secondary URL is not used.",
+        "value": [
+          "sound",
+          {"$ref":"SoundContentSetting"}
         ]
       }
     }
