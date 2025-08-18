@@ -8613,24 +8613,6 @@
             ]
         }
     ],
-    "DevToolsAiDebugWithAi": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DevToolsAiDebugWithAi"
-                    ]
-                }
-            ]
-        }
-    ],
     "DevToolsAiSubmenuPrompts": [
         {
             "platforms": [
@@ -8644,6 +8626,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DevToolsAiSubmenuPrompts"
+                    ],
+                    "disable_features": [
+                        "DevToolsAiDebugWithAi"
                     ]
                 }
             ]
