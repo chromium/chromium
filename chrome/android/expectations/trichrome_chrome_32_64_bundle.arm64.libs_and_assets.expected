@@ -1,6 +1,5 @@
 apk_path=lib/armeabi-v7a/libchromium_android_linker.so, compress=False, alignment=4096
 apk_path=assets/chrome_100_percent.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/chrome_200_percent.pak, compress=False, alignment=4
 apk_path=assets/locales/af.pak, compress=False, alignment=4
 apk_path=assets/locales/af_FEMININE.pak, compress=False, alignment=4
 apk_path=assets/locales/af_MASCULINE.pak, compress=False, alignment=4
