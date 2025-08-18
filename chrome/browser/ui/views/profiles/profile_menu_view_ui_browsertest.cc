@@ -231,6 +231,26 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
             {{switches::kEnableHistorySyncOptinExpansionPill, {}}},
     },
     {
+        .pixel_test_param = {.test_suffix =
+                                 "HistorySyncOptinExperimentNewPromoVariant"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .extra_features_and_params =
+            {{switches::kEnableHistorySyncOptinExpansionPill,
+              {{"history-sync-optin-expansion-pill-option",
+                "browse-across-devices-new-profile-menu-promo-variant"}}}},
+    },
+    {
+        .pixel_test_param =
+            {.test_suffix =
+                 "HistorySyncOptinExperimentNewPromoVariant_DarkTheme",
+             .use_dark_theme = true},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .extra_features_and_params =
+            {{switches::kEnableHistorySyncOptinExpansionPill,
+              {{"history-sync-optin-expansion-pill-option",
+                "browse-across-devices-new-profile-menu-promo-variant"}}}},
+    },
+    {
         .pixel_test_param = {.test_suffix = "BatchUploadPromoSingleLocalData"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .with_local_data = WithLocalData::kSingleLocalData,
@@ -241,6 +261,16 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
                              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .with_local_data = WithLocalData::kMultipleLocalData,
+    },
+    {
+        .pixel_test_param = {.test_suffix =
+                                 "BatchUploadPromoAndHistorySyncOptinPromo"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .with_local_data = WithLocalData::kMultipleLocalData,
+        .extra_features_and_params =
+            {{switches::kEnableHistorySyncOptinExpansionPill,
+              {{"history-sync-optin-expansion-pill-option",
+                "browse-across-devices-new-profile-menu-promo-variant"}}}},
     },
     {
         .pixel_test_param = {.test_suffix = "AvatarSyncPromo"},

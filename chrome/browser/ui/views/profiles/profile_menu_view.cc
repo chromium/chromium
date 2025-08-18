@@ -171,9 +171,26 @@ std::u16string GetSyncPromoDescription(std::string_view email) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (base::FeatureList::IsEnabled(
           switches::kEnableHistorySyncOptinExpansionPill)) {
-    return l10n_util::GetStringFUTF16(
-        IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION,
-        base::UTF8ToUTF16(email));
+    switch (switches::kHistorySyncOptinExpansionPillOption.Get()) {
+      case switches::HistorySyncOptinExpansionPillOption::kBrowseAcrossDevices:
+        return l10n_util::GetStringFUTF16(
+            IDS_PROFILE_MENU_SYNC_PROMO_BROWSE_ACROSS_DEVICES_DESCRIPTION,
+            base::UTF8ToUTF16(email));
+      case switches::HistorySyncOptinExpansionPillOption::kSyncHistory:
+        return l10n_util::GetStringFUTF16(
+            IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION,
+            base::UTF8ToUTF16(email));
+      case switches::HistorySyncOptinExpansionPillOption::
+          kSeeTabsFromOtherDevices:
+        return l10n_util::GetStringFUTF16(
+            IDS_PROFILE_MENU_SYNC_PROMO_SEE_TABS_FROM_OTHER_DEVICES_DESCRIPTION,
+            base::UTF8ToUTF16(email));
+      case switches::HistorySyncOptinExpansionPillOption::
+          kBrowseAcrossDevicesNewProfileMenuPromoVariant:
+        // If the new promo variant is enabled, the identity section
+        // shouldn't contain a sync promo.
+        NOTREACHED();
+    }
   }
 #endif
   return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
@@ -192,6 +209,19 @@ std::u16string GetSyncPromoButtonLabel() {
   }
 #endif
   return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
+}
+
+bool IsNewSyncPromoVariantEnabled() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableHistorySyncOptinExpansionPill) &&
+      switches::kHistorySyncOptinExpansionPillOption.Get() ==
+          switches::HistorySyncOptinExpansionPillOption::
+              kBrowseAcrossDevicesNewProfileMenuPromoVariant) {
+    return true;
+  }
+#endif
+  return false;
 }
 
 }  // namespace
@@ -742,6 +772,12 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       break;
     }
     case signin_util::SignedInState::kSignedIn:
+      if (IsNewSyncPromoVariantEnabled()) {
+        // In the new variant, the sync button is displayed as the feature
+        // button.
+        params.subtitle = base::UTF8ToUTF16(primary_account_info.email);
+        break;
+      }
       params.subtitle = GetSyncPromoDescription(primary_account_info.email);
       params.button_text = GetSyncPromoButtonLabel();
       signin_metrics::LogSyncOptInOffered(
@@ -785,6 +821,22 @@ void ProfileMenuView::BuildIdentityWithCallToAction() {
     return;
   }
   SetProfileIdentityWithCallToAction(GetIdentitySectionParams(*entry));
+}
+
+void ProfileMenuView::BuildHistorySyncOptInButton() {
+  CHECK(!profile().IsGuestSession());
+  signin_metrics::AccessPoint access_point =
+      explicit_signin_access_point_.value_or(
+          signin_metrics::AccessPoint::kAvatarBubbleSignIn);
+  signin_metrics::LogSyncOptInOffered(access_point);
+  AddPromoButton(
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SYNC_PROMO_ROW_BUTTON_LABEL),
+      base::BindRepeating(
+          &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
+          IdentityManagerFactory::GetForProfile(&profile())
+              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
+          ActionableItem::kHistorySyncOptInButton, access_point),
+      kDevicesChromeRefreshIcon);
 }
 
 void ProfileMenuView::OnBatchUploadDataReceived(
@@ -995,6 +1047,11 @@ void ProfileMenuView::MaybeBuildSignoutButton() {
 
 void ProfileMenuView::BuildFeatureButtons() {
   CHECK(!profile().IsGuestSession());
+  if (signin_util::GetSignedInState(IdentityManagerFactory::GetForProfile(
+          &profile())) == signin_util::SignedInState::kSignedIn &&
+      IsNewSyncPromoVariantEnabled()) {
+    BuildHistorySyncOptInButton();
+  }
   // May add the button asynchronously, order is not be guaranteed.
   MaybeBuildBatchUploadButton();
   BuildAutofillSettingsButton();

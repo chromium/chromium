@@ -133,6 +133,17 @@ BASE_DECLARE_FEATURE(kRetryInterceptionBubbleOnDiceSyncHeaderTimeout);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableHistorySyncOptinExpansionPill);
 
+enum class HistorySyncOptinExpansionPillOption {
+  kBrowseAcrossDevices,
+  kSyncHistory,
+  kSeeTabsFromOtherDevices,
+  kBrowseAcrossDevicesNewProfileMenuPromoVariant,
+};
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<HistorySyncOptinExpansionPillOption>
+    kHistorySyncOptinExpansionPillOption;
+
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kForceFreDefaultBrowserStep[];
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
