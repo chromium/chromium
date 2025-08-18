@@ -222,6 +222,12 @@ class NET_EXPORT SpdySessionPool
       bool is_websocket,
       const NetLogWithSource& net_log);
 
+  using AvailableSessionMap =
+      std::map<SpdySessionKey, base::WeakPtr<SpdySession>>;
+  const AvailableSessionMap& available_sessions_for_testing() const {
+    return available_sessions_;
+  }
+
   // Returns an available session if there is active session for `key` and the
   // session can be used for IP addresses in `service_endpoint`. Should be
   // called only when IP-based pooling is enabled.
@@ -356,8 +362,6 @@ class NET_EXPORT SpdySessionPool
 
   using SessionSet = std::set<raw_ptr<SpdySession>>;
   using WeakSessionList = std::vector<base::WeakPtr<SpdySession>>;
-  using AvailableSessionMap =
-      std::map<SpdySessionKey, base::WeakPtr<SpdySession>>;
   using AliasMap = std::multimap<IPEndPoint, SpdySessionKey>;
   using DnsAliasesBySessionKeyMap =
       std::map<SpdySessionKey, std::set<std::string>>;

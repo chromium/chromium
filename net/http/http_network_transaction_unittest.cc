@@ -9053,8 +9053,10 @@ TEST_P(HttpNetworkTransactionTest,
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  const ProxyChain kFirstHopOnlyChain{{proxy_server_1_}};
-  const ProxyChain kSecondHopOnlyChain{{proxy_server_1_}};
+  const ProxyChain kFirstHopOnlyChain =
+      ProxyChain::ForIpProtection({proxy_server_1_});
+  const ProxyChain kSecondHopOnlyChain =
+      ProxyChain::ForIpProtection({proxy_server_2_});
 
   session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
@@ -9296,7 +9298,7 @@ TEST_P(HttpNetworkTransactionTest,
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
-  EXPECT_EQ(kFirstHopOnlyChain, response->proxy_chain);
+  EXPECT_EQ(kSecondHopOnlyChain, response->proxy_chain);
 
   ASSERT_THAT(ReadTransaction(&trans3, &response_data), IsOk());
   EXPECT_EQ(kTrans3RespData, response_data);

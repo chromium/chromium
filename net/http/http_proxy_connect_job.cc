@@ -922,19 +922,13 @@ std::string HttpProxyConnectJob::GetUserAgent() const {
 
 SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
   // Construct the SpdySessionKey using a ProxyChain that corresponds to what we
-  // are sending the CONNECT to. For the first proxy server use
-  // `ProxyChain::Direct()`, and for the others use a proxy chain containing all
+  // are sending the CONNECT to. For the first proxy server use a direct proxy
+  // chain, and for the others use a proxy chain containing all
   // proxy servers that we have already connected through.
-  std::vector<ProxyServer> intermediate_proxy_servers;
-  for (size_t proxy_index = 0; proxy_index < params_->proxy_chain_index();
-       ++proxy_index) {
-    intermediate_proxy_servers.push_back(
-        params_->proxy_chain().GetProxyServer(proxy_index));
-  }
-  ProxyChain session_key_proxy_chain(std::move(intermediate_proxy_servers));
-  if (params_->proxy_chain_index() == 0) {
-    DCHECK(session_key_proxy_chain.is_direct());
-  }
+  ProxyChain session_key_proxy_chain =
+      params_->proxy_chain().Prefix(params_->proxy_chain_index());
+  DCHECK(params_->proxy_chain_index() != 0 ||
+         session_key_proxy_chain.is_direct());
 
   // Note that `disable_cert_network_fetches` must be true for proxies to avoid
   // deadlock. See comment on

@@ -47,6 +47,7 @@
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/transport_connect_job.h"
+#include "net/spdy/spdy_session_key.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/test/cert_test_util.h"
@@ -62,6 +63,9 @@
 #include "url/scheme_host_port.h"
 
 using ::testing::_;
+using ::testing::Key;
+using ::testing::Property;
+using ::testing::UnorderedElementsAre;
 
 namespace net {
 
@@ -872,6 +876,18 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeaders) {
   proxy_delegate_->VerifyOnTunnelHeadersReceived(
       kHttpsNestedProxyChain, /*chain_index=*/1, kResponseHeaderName,
       second_hop_proxy_server_uri, /*call_index=*/1);
+
+  if (GetParam() == SPDY) {
+    auto sessions = common_connect_job_params_->spdy_session_pool
+                        ->available_sessions_for_testing();
+    EXPECT_THAT(
+        sessions,
+        UnorderedElementsAre(
+            Key(Property(&SpdySessionKey::proxy_chain,
+                         ProxyChain::ForIpProtection({}))),
+            Key(Property(&SpdySessionKey::proxy_chain,
+                         ProxyChain::ForIpProtection({kHttpsProxyServer})))));
+  }
 }
 
 // Test the case where auth credentials are not cached.
