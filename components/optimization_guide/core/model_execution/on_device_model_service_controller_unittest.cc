@@ -3311,7 +3311,8 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesCpuModel) {
   feature_list.InitAndEnableFeatureWithParameters(
       on_device_model::features::kOnDeviceModelCpuBackend,
       {{"on_device_cpu_ram_threshold_mb", "0"},
-       {"on_device_cpu_processor_count_threshold", "0"}});
+       {"on_device_cpu_processor_count_threshold", "0"},
+       {"on_device_cpu_require_64_bit_processor", "false"}});
   FakeBaseModelAsset base_model(
       std::vector<proto::OnDeviceModelPerformanceHint>{
           proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU});

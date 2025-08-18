@@ -19,6 +19,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
@@ -591,7 +592,8 @@ TEST_F(OnDeviceModelComponentTest, CpuOnlyDeviceRejectsGpuOnlyModel) {
   feature_list.InitAndEnableFeatureWithParameters(
       on_device_model::features::kOnDeviceModelCpuBackend,
       {{"on_device_cpu_ram_threshold_mb", "0"},
-       {"on_device_cpu_processor_count_threshold", "0"}});
+       {"on_device_cpu_processor_count_threshold", "0"},
+       {"on_device_cpu_require_64_bit_processor", "false"}});
   fake_settings_.performance_class = PerformanceClass::kVeryLow;
   std::vector<proto::OnDeviceModelPerformanceHint> gpu_hints{
       proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE,
@@ -610,7 +612,8 @@ TEST_F(OnDeviceModelComponentTest, CpuOnlyDeviceSelectsCpuHint) {
   feature_list.InitAndEnableFeatureWithParameters(
       on_device_model::features::kOnDeviceModelCpuBackend,
       {{"on_device_cpu_ram_threshold_mb", "0"},
-       {"on_device_cpu_processor_count_threshold", "0"}});
+       {"on_device_cpu_processor_count_threshold", "0"},
+       {"on_device_cpu_require_64_bit_processor", "false"}});
   fake_settings_.performance_class = PerformanceClass::kVeryLow;
   test_component_state_.Install(
       std::make_unique<FakeBaseModelAsset>(AllHints()));
@@ -624,12 +627,41 @@ TEST_F(OnDeviceModelComponentTest, CpuOnlyDeviceSelectsCpuHint) {
             proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU);
 }
 
+TEST_F(OnDeviceModelComponentTest, CpuOnlyRequire64BitProcessor) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      on_device_model::features::kOnDeviceModelCpuBackend,
+      {{"on_device_cpu_ram_threshold_mb", "0"},
+       {"on_device_cpu_processor_count_threshold", "0"},
+       // Require 64-bit devices.
+       {"on_device_cpu_require_64_bit_processor", "true"}});
+  fake_settings_.performance_class = PerformanceClass::kVeryLow;
+  test_component_state_.Install(
+      std::make_unique<FakeBaseModelAsset>(AllHints()));
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+
+#if defined(ARCH_CPU_64_BITS)
+  // If the device has a 64-bit processor, the model should be downloaded.
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
+  ASSERT_TRUE(manager().GetState());
+  EXPECT_EQ(manager().GetState()->GetBaseModelSpec().model_name, "Test");
+  EXPECT_EQ(manager().GetState()->GetBaseModelSpec().model_version, "0.0.1");
+  EXPECT_EQ(manager().GetState()->GetBaseModelSpec().selected_performance_hint,
+            proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU);
+#else
+  // Otherwise, the model should not be downloaded.
+  ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
+#endif  // defined(ARCH_CPU_64_BITS)
+}
+
 TEST_F(OnDeviceModelComponentTest, GpuCapableDeviceAndCpuOnlyManifest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       on_device_model::features::kOnDeviceModelCpuBackend,
       {{"on_device_cpu_ram_threshold_mb", "0"},
-       {"on_device_cpu_processor_count_threshold", "0"}});
+       {"on_device_cpu_processor_count_threshold", "0"},
+       {"on_device_cpu_require_64_bit_processor", "false"}});
   fake_settings_.performance_class = PerformanceClass::kHigh;
   std::vector<proto::OnDeviceModelPerformanceHint> hints{
       proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU,
