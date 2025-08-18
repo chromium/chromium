@@ -25,6 +25,11 @@ class SaveAndFillManager {
   // suggestion.
   virtual void OnDidAcceptCreditCardSaveAndFillSuggestion(
       FillCardCallback fill_card_callback) = 0;
+  // Called when the Save and Fill suggestion is shown to the user.
+  virtual void OnSuggestionOffered() = 0;
+  // Called when the form is submitted. This is used to check if a strike should
+  // be added if the suggestion was shown but not selected.
+  virtual void OnCreditCardFormSubmitted() = 0;
   // Returns true if the maximum number of strikes has been reached.
   virtual bool IsMaxStrikesLimitReached() = 0;
 };

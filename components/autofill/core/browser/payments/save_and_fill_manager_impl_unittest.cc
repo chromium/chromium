@@ -718,4 +718,44 @@ TEST_F(SaveAndFillManagerImplTest, CardUploadFeedback_UploadFailed) {
   EXPECT_EQ(cards[0]->number(), u"1111222233334444");
 }
 
+// Verify that a strike is added when the suggestion is offered but not
+// selected, and the form is submitted.
+TEST_F(SaveAndFillManagerImplTest,
+       OnFormSubmitted_AddsStrikeWhenSuggestionOfferedButNotSelected) {
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+
+  save_and_fill_manager_impl_->OnSuggestionOffered();
+  save_and_fill_manager_impl_->OnCreditCardFormSubmitted();
+
+  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
+}
+
+// Verify that no strike is added if the suggestion was offered and accepted by
+// the user.
+TEST_F(SaveAndFillManagerImplTest,
+       OnFormSubmitted_NoStrikeWhenSuggestionOfferedAndSelected) {
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+
+  save_and_fill_manager_impl_->OnSuggestionOffered();
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+  save_and_fill_manager_impl_->OnCreditCardFormSubmitted();
+
+  EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());
+}
+
+// Verify that no strike is added if the suggestion is offered but the form is
+// never submitted.
+TEST_F(SaveAndFillManagerImplTest,
+       OnFormSubmitted_NoStrikeWhenFormNotSubmitted) {
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+
+  save_and_fill_manager_impl_->OnSuggestionOffered();
+  // To simulate the tab being closed, we reset the unique_ptr and destroy the
+  // SaveAndFillManagerImpl.
+  save_and_fill_manager_impl_.reset();
+
+  EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());
+}
+
 }  // namespace autofill::payments

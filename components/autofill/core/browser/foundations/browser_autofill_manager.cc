@@ -122,6 +122,7 @@
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
+#include "components/autofill/core/browser/payments/save_and_fill_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
@@ -939,6 +940,11 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       /*observed_submission=*/true, GetCurrentPageLanguage(),
       metrics_->initial_interaction_timestamp, last_unlocked_credit_card_cvc_,
       driver().GetPageUkmSourceId());
+
+  if (auto* save_and_fill_manager =
+          client().GetPaymentsAutofillClient()->GetSaveAndFillManager()) {
+    save_and_fill_manager->OnCreditCardFormSubmitted();
+  }
 }
 
 void BrowserAutofillManager::UpdatePendingForm(const FormData& form) {
@@ -2327,6 +2333,11 @@ void BrowserAutofillManager::DidShowSuggestions(
   if (shown_suggestion_types.contains(
           SuggestionType::kSaveAndFillCreditCardEntry)) {
     metrics_->credit_card_form_event_logger.OnSaveAndFillSuggestionShown();
+
+    if (auto* save_and_fill_manager =
+            client().GetPaymentsAutofillClient()->GetSaveAndFillManager()) {
+      save_and_fill_manager->OnSuggestionOffered();
+    }
   }
 
   if (std::ranges::none_of(

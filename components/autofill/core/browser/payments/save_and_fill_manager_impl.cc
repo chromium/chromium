@@ -35,6 +35,7 @@ SaveAndFillManagerImpl::~SaveAndFillManagerImpl() = default;
 
 void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion(
     FillCardCallback fill_card_callback) {
+  save_and_fill_suggestion_selected_ = true;
   fill_card_callback_ = std::move(fill_card_callback);
 
   if (IsCreditCardUploadEnabled()) {
@@ -51,6 +52,17 @@ void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion(
                 weak_ptr_factory_.GetWeakPtr()));
   } else {
     OfferLocalSaveAndFill();
+  }
+}
+
+void SaveAndFillManagerImpl::OnSuggestionOffered() {
+  save_and_fill_suggestion_offered_ = true;
+}
+
+void SaveAndFillManagerImpl::OnCreditCardFormSubmitted() {
+  if (save_and_fill_suggestion_offered_ &&
+      !save_and_fill_suggestion_selected_) {
+    GetSaveAndFillStrikeDatabase()->AddStrike();
   }
 }
 

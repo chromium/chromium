@@ -3834,6 +3834,33 @@ TEST_F(BrowserAutofillManagerTest,
   FormSubmitted(response_data);
 }
 
+TEST_F(BrowserAutofillManagerTest, FormSubmission_NotifiesSaveAndFillManager) {
+  EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
+              OnCreditCardFormSubmitted());
+
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+
+  FormsSeen({form});
+  FormSubmitted(form);
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       SaveAndFillSuggestionShownTwice_NotifiesManagerTwice) {
+  EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
+              OnSuggestionOffered())
+      .Times(2);
+
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  DidShowSuggestions(form, /*field_index=*/0,
+                     SuggestionType::kSaveAndFillCreditCardEntry);
+  DidShowSuggestions(form, /*field_index=*/0,
+                     SuggestionType::kSaveAndFillCreditCardEntry);
+}
+
 // Test the field log events at the form submission.
 // TODO(crbug.com/40100455): Move those tests out of this file.
 class BrowserAutofillManagerWithLogEventsTest

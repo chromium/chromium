@@ -27,6 +27,8 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   // SaveAndFillManager:
   void OnDidAcceptCreditCardSaveAndFillSuggestion(
       FillCardCallback fill_card_callback) override;
+  void OnSuggestionOffered() override;
+  void OnCreditCardFormSubmitted() override;
   bool IsMaxStrikesLimitReached() override;
 
   // Called when the user makes a decision on the local Save and Fill dialog.
@@ -107,6 +109,10 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   // Boolean value indicates whether the upload Save and Fill dialog has been
   // accepted.
   bool upload_save_and_fill_dialog_accepted_ = false;
+  // True if the Save and Fill suggestion was offered to the user.
+  bool save_and_fill_suggestion_offered_ = false;
+  // True if the user accepted the Save and Fill suggestion.
+  bool save_and_fill_suggestion_selected_ = false;
 
   // StrikeDatabase used to check whether to show the Save and Fill suggestion.
   std::unique_ptr<SaveAndFillStrikeDatabase> save_and_fill_strike_database_;
