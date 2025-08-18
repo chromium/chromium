@@ -45,3 +45,28 @@ src:*{/,\\}third_party{/,\\}nearby{/,\\}*
 src:*{/,\\}third_party{/,\\}*
 # v8's build system isn't amenable to fixes: https://crbug.com/408259026
 src:*{/,\\}v8{/,\\}*
+
+[exit-time-destructors]
+src:*{/,\\}third_party{/,\\}angle{/,\\}*
+src:*{/,\\}third_party{/,\\}crashpad{/,\\}crashpad{/,\\}third_party{/,\\}cpp-httplib{/,\\}*
+src:*{/,\\}third_party{/,\\}crc32c{/,\\}src{/,\\}src{/,\\}*
+src:*{/,\\}third_party{/,\\}dawn{/,\\}src{/,\\}dawn{/,\\}*
+src:*{/,\\}third_party{/,\\}fuzztest{/,\\}src{/,\\}*
+src:*{/,\\}third_party{/,\\}gemmlowp{/,\\}*
+src:*{/,\\}third_party{/,\\}googletest{/,\\}src{/,\\}googlemock{/,\\}src{/,\\}*
+src:*{/,\\}third_party{/,\\}grpc{/,\\}source{/,\\}src{/,\\}*
+src:*{/,\\}third_party{/,\\}libprotobuf-mutator{/,\\}src{/,\\}src{/,\\}libfuzzer{/,\\}*
+src:*{/,\\}third_party{/,\\}openscreen{/,\\}src{/,\\}*
+src:*{/,\\}third_party{/,\\}openxr{/,\\}src{/,\\}src{/,\\}*
+src:*{/,\\}third_party{/,\\}skia{/,\\}tools{/,\\}*
+src:*{/,\\}third_party{/,\\}spirv-tools{/,\\}*
+src:*{/,\\}third_party{/,\\}swiftshader{/,\\}*
+src:*{/,\\}third_party{/,\\}tflite{/,\\}src{/,\\}third_party{/,\\}xla{/,\\}*
+src:*{/,\\}third_party{/,\\}vulkan-utility-libraries{/,\\}*
+src:*{/,\\}third_party{/,\\}webrtc{/,\\}*
+src:*{/,\\}third_party{/,\\}webrtc_overrides{/,\\}test{/,\\}*
+src:*{/,\\}v8{/,\\}*
+# TODO(crbug.com/439580400): This suppression must be fixed internally.
+src:*{/,\\}chrome{/,\\}elevation_service{/,\\}internal{/,\\}*
+# TODO(crbug.com/439492886): This suppression must be fixed internally.
+src:*{/,\\}chrome{/,\\}browser{/,\\}platform_experience{/,\\}*
