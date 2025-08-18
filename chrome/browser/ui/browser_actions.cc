@@ -552,10 +552,12 @@ void BrowserActions::InitializeBrowserActions() {
     root_action_item_->AddChild(
         ChromeMenuAction(
             base::BindRepeating(
-                [](send_tab_to_self::SendTabToSelfToolbarBubbleController*
-                       bubble_controller,
-                   TabStripModel* tab_strip_model, actions::ActionItem* item,
+                [](BrowserWindowInterface* bwi, TabStripModel* tab_strip_model,
+                   actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
+                  auto* const bubble_controller =
+                      bwi->GetFeatures()
+                          .send_tab_to_self_toolbar_bubble_controller();
                   if (bubble_controller->IsBubbleShowing()) {
                     bubble_controller->HideBubble();
                   } else {
@@ -563,8 +565,7 @@ void BrowserActions::InitializeBrowserActions() {
                         tab_strip_model->GetActiveWebContents());
                   }
                 },
-                bwi->GetFeatures().send_tab_to_self_toolbar_bubble_controller(),
-                tab_strip_model),
+                bwi, tab_strip_model),
             kActionSendTabToSelf, IDS_SEND_TAB_TO_SELF, IDS_SEND_TAB_TO_SELF,
             kDevicesChromeRefreshIcon)
             .SetEnabled(chrome::CanSendTabToSelf(bwi))
