@@ -137,47 +137,39 @@ FindDatesAndSetFormatStrings(
   std::vector<std::pair<data_util::Date, PossibleTypes*>> dates;
 
   // Match formats against individual fields.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAiVoteForFormatStringsFromSingleFields)) {
-    for (auto [field, pt] : base::zip(fields, possible_types)) {
-      if (!may_be_interesting(field) || !may_be_complete_date(field)) {
-        continue;
-      }
-      for (auto& [date, format] :
-           GetMatchingCompleteDateAndFormats(field->value())) {
-        pt.formats.emplace(FormatString_Type_DATE, std::move(format));
-        dates.emplace_back(date, &pt);
-      }
+  for (auto [field, pt] : base::zip(fields, possible_types)) {
+    if (!may_be_interesting(field) || !may_be_complete_date(field)) {
+      continue;
+    }
+    for (auto& [date, format] :
+         GetMatchingCompleteDateAndFormats(field->value())) {
+      pt.formats.emplace(FormatString_Type_DATE, std::move(format));
+      dates.emplace_back(date, &pt);
     }
   }
 
   // Match formats against groups of three consecutive fields.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAiVoteForFormatStringsFromMultipleFields)) {
-    for (size_t i = 0; i + 2 < fields.size(); ++i) {
-      const base::span<const std::unique_ptr<AutofillField>, 3> group =
-          fields.subspan(i).first<3>();
-      if (!std::ranges::all_of(group, may_be_interesting) ||
-          !may_be_split_date(group)) {
-        continue;
-      }
-      static constexpr std::u16string_view kSeparator = u"-";
-      static_assert(
-          std::ranges::all_of(kSeparator, data_util::IsDateSeparatorChar));
-      const std::u16string maybe_full_date = base::JoinString(
-          {group[0]->value(), group[1]->value(), group[2]->value()},
-          kSeparator);
-      for (auto& [full_date, full_format] :
-           GetMatchingCompleteDateAndFormats(maybe_full_date)) {
-        std::vector<std::u16string> partial_formats =
-            base::SplitString(full_format, kSeparator, base::KEEP_WHITESPACE,
-                              base::SPLIT_WANT_ALL);
-        if (partial_formats.size() == 3) {
-          for (size_t j = 0; j < 3; ++j) {
-            possible_types[i + j].formats.emplace(
-                FormatString_Type_DATE, std::move(partial_formats[j]));
-            dates.emplace_back(full_date, &possible_types[i + j]);
-          }
+  for (size_t i = 0; i + 2 < fields.size(); ++i) {
+    const base::span<const std::unique_ptr<AutofillField>, 3> group =
+        fields.subspan(i).first<3>();
+    if (!std::ranges::all_of(group, may_be_interesting) ||
+        !may_be_split_date(group)) {
+      continue;
+    }
+    static constexpr std::u16string_view kSeparator = u"-";
+    static_assert(
+        std::ranges::all_of(kSeparator, data_util::IsDateSeparatorChar));
+    const std::u16string maybe_full_date = base::JoinString(
+        {group[0]->value(), group[1]->value(), group[2]->value()}, kSeparator);
+    for (auto& [full_date, full_format] :
+         GetMatchingCompleteDateAndFormats(maybe_full_date)) {
+      std::vector<std::u16string> partial_formats = base::SplitString(
+          full_format, kSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      if (partial_formats.size() == 3) {
+        for (size_t j = 0; j < 3; ++j) {
+          possible_types[i + j].formats.emplace(FormatString_Type_DATE,
+                                                std::move(partial_formats[j]));
+          dates.emplace_back(full_date, &possible_types[i + j]);
         }
       }
     }

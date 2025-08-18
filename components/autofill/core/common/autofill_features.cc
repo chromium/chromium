@@ -218,21 +218,6 @@ BASE_FEATURE(kAutofillAiVoteForFormatStringsForAffixes,
              "AutofillAiVoteForFormatStringsForAffixes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, votes for date format strings from individual fields are
-// uploaded. For example, <input type=text value=31/12/2025> leads to the format
-// strings DD/MM/YYYY and D/M/YYYY.
-BASE_FEATURE(kAutofillAiVoteForFormatStringsFromSingleFields,
-             "AutofillAiVoteForFormatStringsFromSingleFields",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, votes for date format strings from multiple fields are uploaded.
-// For example, <input type=text value=31> <input type=text value=12> <input
-// type=text value=2025> leads to the format strings DD and D, MM and M, YYYY,
-// respectively.
-BASE_FEATURE(kAutofillAiVoteForFormatStringsFromMultipleFields,
-             "AutofillAiVoteForFormatStringsFromMultipleFields",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the second iteration AutofillAI.
 BASE_FEATURE(kAutofillAiWithDataSchema,
              "AutofillAiWithDataSchema",

@@ -406,8 +406,6 @@ class DeterminePossibleFieldTypesForUploadTest : public ::testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillAiWithDataSchema, features::kAutofillAiNoTagTypes,
          features::kAutofillAiVoteForFormatStringsForAffixes,
-         features::kAutofillAiVoteForFormatStringsFromSingleFields,
-         features::kAutofillAiVoteForFormatStringsFromMultipleFields,
          features::kAutofillEnableLoyaltyCardsFilling},
         {});
   }
@@ -945,13 +943,6 @@ class FindDatesAndSetFormatStringsTest : public testing::Test {
     std::set<std::pair<FormatString_Type, std::u16string>> formats;
   };
 
-  FindDatesAndSetFormatStringsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillAiVoteForFormatStringsFromSingleFields,
-         features::kAutofillAiVoteForFormatStringsFromMultipleFields},
-        {});
-  }
-
   // FindDatesAndSetFormatStrings() does two things:
   // - It stores the format strings in `PossibleTypes::formats`.
   // - It returns the found dates and pointers to the `PossibleTypes` of the
@@ -1015,7 +1006,6 @@ class FindDatesAndSetFormatStringsTest : public testing::Test {
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that non-text <input> do not match any format string.
