@@ -18,10 +18,12 @@
   --cr-button-border-color: transparent;
   --iron-icon-width: 16px;
   --iron-icon-height: 16px;
-  --iron-icon-stroke-color: black;
+  --iron-icon-stroke-color: var(--color-tab-foreground-active-frame-active);
   --iron-icon-fill-color: transparent;
+  stroke-width: 3px;
   height: 43px;
-  min-width: 45px;
+  min-width: 30px;
+  padding: 0;
   shape-rendering: crispEdges;
 }
 
