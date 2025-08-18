@@ -231,6 +231,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
       std::optional<bool> title_and_scrim_visible = std::nullopt);
   void StopForcingControlsVisibleForTesting();
 
+  void FireEnableControlsAfterMoveTimerForTesting();
+
   void set_overlay_view_cb_for_testing(GetOverlayViewCb get_overlay_view_cb) {
     get_overlay_view_cb_ = std::move(get_overlay_view_cb);
   }
@@ -249,6 +251,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   void set_minimum_size_for_testing(const gfx::Size& min_size) {
     min_size_ = min_size;
+  }
+
+  void set_meets_user_interaction_for_testing(bool meets_user_interaction) {
+    meets_user_interaction_ = meets_user_interaction;
   }
 
   void FinishTuckAnimationForTesting();
@@ -376,6 +382,14 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   //    * The `MediaSession` routed frame is the primary main frame
   //    * The origin URL has high media engagement or is a file
   bool IsTrustedForMediaPlayback() const;
+
+  // Updates the value of `meets_user_interaction_` if needed.
+  //
+  // `meets_user_interaction_` is only set to true after
+  // `initial_title_hide_timer_` fires and a desired `event` is triggered. If
+  // `event` fires while the `initial_title_hide_timer_` is running, the
+  // `meets_user_interaction_` update is done after the timer finishes.
+  void MaybeUpdateMeetsUserInteraction(const ui::Event& event);
 
   // Not owned; |controller_| owns |this|.
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
@@ -545,6 +559,15 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   // Used to animate the Picture-in-Picture window creation.
   std::unique_ptr<PictureInPictureWidgetFadeAnimator> fade_animator_;
+
+  // Set to true when the user has interacted with the overlay window in an
+  // intentional manner. False otherwise. For example, hovering the cursor over
+  // the overlay window is not considered meeting user interaction.
+  bool meets_user_interaction_ = false;
+
+  // Set to true if the user interacts with the window before the
+  // `initial_title_hide_timer_` fires.
+  bool user_interacted_before_timer_fired_ = false;
 
   base::WeakPtrFactory<VideoOverlayWindowViews> weak_factory_{this};
 };

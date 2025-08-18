@@ -60,6 +60,7 @@
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/button_test_api.h"
@@ -498,6 +499,7 @@ class PictureInPicturePixelComparisonBrowserTest
 
       // Make sure native widget events won't unexpectedly hide or show the
       // controls nor the title and scrim.
+      GetOverlayWindow()->FireEnableControlsAfterMoveTimerForTesting();
       GetOverlayWindow()->ForceControlsVisibleForTesting(
           /*controls_visible=*/false, /*title_and_scrim_visible=*/false);
 
@@ -2356,3 +2358,239 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   SetExpectedHasHighEngagement(true);
   EXPECT_FALSE(IsTrustedForMediaPlayback());
 }
+
+class VideoPictureInPictureWindowControllerWith2024UIBrowserTest
+    : public VideoPictureInPictureWindowControllerBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        media::kVideoPictureInPictureControlsUpdate2024);
+    VideoPictureInPictureWindowControllerBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    VideoPictureInPictureWindowControllerWith2024UIBrowserTest,
+    TitleVisibility) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "example.com", "/media/picture-in-picture/window-size.html")));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  SetUpWindowController(active_web_contents);
+  ASSERT_TRUE(window_controller() != nullptr);
+
+  // Open Picture-in-Picture window.
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  EXPECT_TRUE(GetOverlayWindow()->AreTitleAndScrimVisibleForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    VideoPictureInPictureWindowControllerWith2024UIBrowserTest,
+    TitleVisibility_TrustedSite_HidesAfterTimer) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "example.com", "/media/picture-in-picture/window-size.html")));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  SetUpWindowController(active_web_contents);
+  ASSERT_TRUE(window_controller() != nullptr);
+
+  // Open Picture-in-Picture window.
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  // Set high media engagement and verify that the overlay window is trusted for
+  // media playback.
+  SetExpectedHasHighEngagement(true);
+  EXPECT_TRUE(IsTrustedForMediaPlayback());
+
+  // Fire the initial hide timer and verify that the title and scrim are not
+  // visible.
+  ASSERT_NE(GetOverlayWindow(), nullptr);
+  GetOverlayWindow()->FireEnableControlsAfterMoveTimerForTesting();
+  GetOverlayWindow()->initial_title_hide_timer_for_testing().FireNow();
+  EXPECT_FALSE(GetOverlayWindow()->AreTitleAndScrimVisibleForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    VideoPictureInPictureWindowControllerWith2024UIBrowserTest,
+    TitleVisibility_UntrustedSite_DoesNotHideAfterTimer) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "example.com", "/media/picture-in-picture/window-size.html")));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  SetUpWindowController(active_web_contents);
+  ASSERT_TRUE(window_controller() != nullptr);
+
+  // Open Picture-in-Picture window.
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  // Set low media engagement and verify that the overlay window is not trusted
+  // for media playback.
+  SetExpectedHasHighEngagement(false);
+  EXPECT_FALSE(IsTrustedForMediaPlayback());
+
+  // Fire the initial hide timer and verify that the title and scrim are
+  // visible.
+  ASSERT_NE(GetOverlayWindow(), nullptr);
+  GetOverlayWindow()->FireEnableControlsAfterMoveTimerForTesting();
+  GetOverlayWindow()->initial_title_hide_timer_for_testing().FireNow();
+  EXPECT_TRUE(GetOverlayWindow()->AreTitleAndScrimVisibleForTesting());
+}
+
+struct InteractionTestParam {
+  ui::EventType event_type;
+  bool title_should_be_visible;
+};
+
+class VideoPictureInPictureWindowControllerInteractionBrowserTest
+    : public VideoPictureInPictureWindowControllerWith2024UIBrowserTest,
+      public testing::WithParamInterface<InteractionTestParam> {
+ protected:
+  void SimulateInteraction(ui::EventType event_type) {
+    switch (event_type) {
+      case ui::EventType::kKeyPressed: {
+        ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::DomCode::SPACE, ui::EF_NONE);
+        GetOverlayWindow()->OnKeyEvent(&event);
+        break;
+      }
+      case ui::EventType::kMousePressed: {
+        ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+        GetOverlayWindow()->OnMouseEvent(&event);
+        break;
+      }
+      case ui::EventType::kGestureTap: {
+        ui::GestureEvent event(
+            0, 0, 0, ui::EventTimeForNow(),
+            ui::GestureEventDetails(ui::EventType::kGestureTap));
+        GetOverlayWindow()->OnGestureEvent(&event);
+        break;
+      }
+      case ui::EventType::kMouseMoved: {
+        ui::MouseEvent event(ui::EventType::kMouseMoved, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+        GetOverlayWindow()->OnMouseEvent(&event);
+        break;
+      }
+      default:
+        FAIL() << "Unhandled event type";
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    VideoPictureInPictureWindowControllerInteractionBrowserTest,
+    TitleVisibility_UntrustedSite_HidesOnInteraction_InteractionAfterTimerEnds) {
+  const auto param = GetParam();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "example.com", "/media/picture-in-picture/window-size.html")));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  SetUpWindowController(active_web_contents);
+  ASSERT_TRUE(window_controller() != nullptr);
+
+  // Open Picture-in-Picture window.
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  // Set low media engagement and verify that the overlay window is not trusted
+  // for media playback.
+  SetExpectedHasHighEngagement(false);
+  EXPECT_FALSE(IsTrustedForMediaPlayback());
+
+  // Fire the initial hide timer and verify that the title and scrim are
+  // visible.
+  ASSERT_NE(GetOverlayWindow(), nullptr);
+  GetOverlayWindow()->FireEnableControlsAfterMoveTimerForTesting();
+  GetOverlayWindow()->initial_title_hide_timer_for_testing().FireNow();
+  EXPECT_TRUE(GetOverlayWindow()->AreTitleAndScrimVisibleForTesting());
+
+  SimulateInteraction(param.event_type);
+
+  // Wait for title and scrim to update and verify the expected visibility.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetOverlayWindow()->AreTitleAndScrimVisibleForTesting() ==
+           param.title_should_be_visible;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    VideoPictureInPictureWindowControllerInteractionBrowserTest,
+    TitleVisibility_UntrustedSite_HidesOnInteraction_InteractionBeforeTimerEnds) {
+  const auto param = GetParam();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "example.com", "/media/picture-in-picture/window-size.html")));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  SetUpWindowController(active_web_contents);
+  ASSERT_TRUE(window_controller() != nullptr);
+
+  // Open Picture-in-Picture window.
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  // Set low media engagement and verify that the overlay window is not trusted
+  // for media playback.
+  SetExpectedHasHighEngagement(false);
+  EXPECT_FALSE(IsTrustedForMediaPlayback());
+
+  // Send a key pressed event and verify that the title and scrim are visible.
+  ASSERT_NE(GetOverlayWindow(), nullptr);
+  GetOverlayWindow()->FireEnableControlsAfterMoveTimerForTesting();
+
+  SimulateInteraction(param.event_type);
+
+  EXPECT_TRUE(
+      GetOverlayWindow()->initial_title_hide_timer_for_testing().IsRunning());
+  EXPECT_TRUE(GetOverlayWindow()->AreTitleAndScrimVisibleForTesting());
+
+  // Fire the initial hide timer and verify the expected title and scrim
+  // visibility.
+  GetOverlayWindow()->initial_title_hide_timer_for_testing().FireNow();
+  EXPECT_FALSE(
+      GetOverlayWindow()->initial_title_hide_timer_for_testing().IsRunning());
+  EXPECT_EQ(GetOverlayWindow()->AreTitleAndScrimVisibleForTesting(),
+            param.title_should_be_visible);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    VideoPictureInPictureWindowControllerInteractionBrowserTest,
+    testing::Values(InteractionTestParam{ui::EventType::kKeyPressed, false},
+                    InteractionTestParam{ui::EventType::kMousePressed, false},
+                    InteractionTestParam{ui::EventType::kGestureTap, false},
+                    InteractionTestParam{ui::EventType::kMouseMoved, true}));
