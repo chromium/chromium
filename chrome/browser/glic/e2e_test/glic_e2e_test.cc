@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/e2e_test/glic_e2e_test.h"
 
+#include <map>
 #include <optional>
 
 #include "base/files/file_path.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -32,6 +34,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -176,6 +180,10 @@ void GlicE2ETest::SetUpInProcessBrowserTestFixture() {
 }
 
 void GlicE2ETest::TearDownOnMainThread() {
+  for (auto& client : devtools_clients_) {
+    client.second->DetachProtocolClient();
+  }
+  devtools_clients_.clear();
   if (test_mode_ == kRecord || test_mode_ == kReplay) {
     // Ensure enough time for WPR to write archive at recording mode
     // by putting this in main thread.
@@ -255,6 +263,51 @@ GlicFreController& GlicE2ETest::fre_controller() {
 }
 WebPageReplayServerWrapper* GlicE2ETest::web_page_replay_server_wrapper() {
   return web_page_replay_server_wrapper_.get();
+}
+
+void GlicE2ETest::ThrottleCurrentTabNetwork() {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  CHECK(web_contents);
+  ThrottleWebContentsNetwork(web_contents);
+}
+
+void GlicE2ETest::ThrottleWebContentsNetwork(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+
+  auto& devtools_client_ptr = devtools_clients_[web_contents];
+  if (!devtools_client_ptr) {
+    devtools_client_ptr =
+        std::make_unique<content::TestDevToolsProtocolClient>();
+    devtools_client_ptr->AttachToWebContents(web_contents);
+    devtools_client_ptr->SendCommand("Network.enable", base::Value::Dict());
+  }
+
+  // Corresponds to the "Slow 3G" preset in
+  // third_party/devtools-frontend/src/front_end/core/sdk/NetworkManager.ts
+  base::Value::Dict params;
+  params.Set("offline", false);
+  // Latency in ms.
+  params.Set("latency", 2000.0);
+  // Throughput in Bps.
+  params.Set("downloadThroughput", 50000);
+  params.Set("uploadThroughput", 50000);
+
+  devtools_client_ptr->SendCommand("Network.emulateNetworkConditions",
+                                   std::move(params));
+}
+
+void GlicE2ETest::ThrottleGlicNetwork() {
+  auto* glic_view =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+          ->window_controller()
+          .GetGlicView();
+  CHECK(glic_view);
+  content::WebContents* web_contents =
+      glic_view->GetWebContents()->GetInnerWebContents()[0];
+  CHECK(web_contents);
+  ThrottleWebContentsNetwork(web_contents);
 }
 
 }  // namespace glic::test

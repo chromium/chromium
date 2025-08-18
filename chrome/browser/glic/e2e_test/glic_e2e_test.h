@@ -15,6 +15,11 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "ui/base/interaction/interactive_test.h"
 
+namespace content {
+class WebContents;
+class TestDevToolsProtocolClient;
+}  // namespace content
+
 using captured_sites_test_utils::WebPageReplayServerWrapper;
 
 namespace glic::test {
@@ -57,6 +62,10 @@ class GlicE2ETest : public InteractiveBrowserTestT<signin::test::LiveTest> {
   // Sets FRE status as completed.
   void SetFRECompletion();
 
+  void ThrottleCurrentTabNetwork();
+  void ThrottleWebContentsNetwork(content::WebContents* web_contents);
+  void ThrottleGlicNetwork();
+
   GlicKeyedService* glic_service();
   GlicWindowController& window_controller();
   GlicFreController& fre_controller();
@@ -70,6 +79,9 @@ class GlicE2ETest : public InteractiveBrowserTestT<signin::test::LiveTest> {
   bool running_actor_tests_ = false;
   GlicE2ETestMode test_mode_;
   std::unique_ptr<WebPageReplayServerWrapper> web_page_replay_server_wrapper_;
+  std::map<content::WebContents*,
+           std::unique_ptr<content::TestDevToolsProtocolClient>>
+      devtools_clients_;
 };
 
 }  // namespace glic::test
