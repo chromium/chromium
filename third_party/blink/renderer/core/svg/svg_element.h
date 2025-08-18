@@ -207,6 +207,8 @@ class CORE_EXPORT SVGElement : public Element {
 
   void ParseAttribute(const AttributeModificationParams&) override;
   void AttributeChanged(const AttributeModificationParams&) override;
+  void InvalidateStyleAttribute(
+      bool only_changed_independent_properties) override;
   void InvalidateInstances();
 
   void UpdatePresentationAttributeStyle(const SVGAnimatedPropertyBase&);

@@ -656,6 +656,13 @@ namespace {
 
 inline ScopedStyleResolver* ScopedResolverFor(const Element& element) {
   TreeScope* tree_scope = &element.GetTreeScope();
+  if (RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
+    if (const auto* svg_element = DynamicTo<SVGElement>(element)) {
+      if (SVGElement* corresponding = svg_element->CorrespondingElement()) {
+        tree_scope = &corresponding->GetTreeScope();
+      }
+    }
+  }
   if (ScopedStyleResolver* resolver = tree_scope->GetScopedStyleResolver()) {
     DCHECK(!element.IsVTTElement());
     return resolver;
@@ -898,9 +905,9 @@ void MatchElementScopeRules(const Element& element,
   collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
   if (element_scope_resolver) {
     collector.ClearMatchedRules();
-    DCHECK_EQ(&element_scope_resolver->GetTreeScope(), &element.GetTreeScope());
     element_scope_resolver->CollectMatchingElementScopeRules(
-        collector, /*part_shadow_host*/ nullptr);
+        element.GetTreeScope().RootNode(), collector,
+        /*part_shadow_host*/ nullptr);
     MatchHostPartRules(element, collector, tracker);
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
@@ -979,7 +986,8 @@ void MatchOuterScopeRules(const Element& matching_element,
                                                  &*current_part_names);
       } else {
         resolver->CollectMatchingElementScopeRules(
-            collector, base::OptionalToPtr(current_part_names));
+            tree_scope.RootNode(), collector,
+            base::OptionalToPtr(current_part_names));
       }
 
       collector.SortAndTransferMatchedRules(
@@ -2649,8 +2657,7 @@ StyleResolver::FindKeyframesRuleResult StyleResolver::FindKeyframesRule(
     const AtomicString& animation_name) {
   HeapVector<Member<ScopedStyleResolver>, 8> resolvers;
   CollectScopedResolversForHostedShadowTrees(*element, resolvers);
-  if (ScopedStyleResolver* scoped_resolver =
-          element->GetTreeScope().GetScopedStyleResolver()) {
+  if (ScopedStyleResolver* scoped_resolver = ScopedResolverFor(*element)) {
     resolvers.push_back(scoped_resolver);
   }
 

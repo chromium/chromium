@@ -299,10 +299,10 @@ class CascadeLayerSeeker {
     }
     if (scope) {
       DCHECK(scope->IsInTreeScope());
-      DCHECK(scope->GetTreeScope().GetScopedStyleResolver());
-      return scope->GetTreeScope()
-          .GetScopedStyleResolver()
-          ->GetCascadeLayerMap();
+      // TODO(crbug.com/40550039): Handle @layers for <use> instance cascading.
+      ScopedStyleResolver* resolver =
+          scope->GetTreeScope().GetScopedStyleResolver();
+      return resolver ? resolver->GetCascadeLayerMap() : nullptr;
     }
     if (!document) {
       return nullptr;

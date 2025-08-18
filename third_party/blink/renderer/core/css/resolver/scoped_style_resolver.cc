@@ -268,8 +268,13 @@ void ScopedStyleResolver::KeyframesRulesAdded(const TreeScope& tree_scope) {
                                                                 reason);
 }
 
+// The `scope_root` represents the node that should match the `:scope`
+// selector. This is normally the same as the ScopedStyleResolver's
+// root node, except when resolving style for <use>-cloned
+// SVG elements.
 template <class Func>
 void ScopedStyleResolver::ForAllStylesheets(ElementRuleCollector& collector,
+                                            const ContainerNode& scope_root,
                                             const Func& func) {
 #if DCHECK_IS_ON()
   // Verify that all the cached rule_set_groups_ have the right bits
@@ -287,39 +292,45 @@ void ScopedStyleResolver::ForAllStylesheets(ElementRuleCollector& collector,
 #endif
 
   for (RuleSetGroup& rule_set_group : rule_set_groups_) {
-    func(MatchRequest(rule_set_group, &scope_->RootNode(), collector));
+    func(MatchRequest(rule_set_group, &scope_root, collector));
   }
 }
 
 void ScopedStyleResolver::CollectMatchingElementScopeRules(
+    const ContainerNode& scope_root,
     ElementRuleCollector& collector,
     PartNames* part_names) {
   ForAllStylesheets(
-      collector, [&collector, part_names](const MatchRequest& match_request) {
+      collector, scope_root,
+      [&collector, part_names](const MatchRequest& match_request) {
         collector.CollectMatchingRules(match_request, part_names);
       });
 }
 
 void ScopedStyleResolver::CollectMatchingShadowHostRules(
     ElementRuleCollector& collector) {
-  ForAllStylesheets(collector, [&collector](const MatchRequest& match_request) {
-    collector.CollectMatchingShadowHostRules(match_request);
-  });
+  ForAllStylesheets(collector, GetTreeScope().RootNode(),
+                    [&collector](const MatchRequest& match_request) {
+                      collector.CollectMatchingShadowHostRules(match_request);
+                    });
 }
 
 void ScopedStyleResolver::CollectMatchingSlottedRules(
     ElementRuleCollector& collector) {
-  ForAllStylesheets(collector, [&collector](const MatchRequest& match_request) {
-    collector.CollectMatchingSlottedRules(match_request);
-  });
+  ForAllStylesheets(collector, GetTreeScope().RootNode(),
+                    [&collector](const MatchRequest& match_request) {
+                      collector.CollectMatchingSlottedRules(match_request);
+                    });
 }
 
 void ScopedStyleResolver::CollectMatchingPartPseudoRules(
     ElementRuleCollector& collector,
     PartNames* part_names) {
-  ForAllStylesheets(collector, [&](const MatchRequest& match_request) {
-    collector.CollectMatchingPartPseudoRules(match_request, part_names);
-  });
+  ForAllStylesheets(collector, GetTreeScope().RootNode(),
+                    [&](const MatchRequest& match_request) {
+                      collector.CollectMatchingPartPseudoRules(match_request,
+                                                               part_names);
+                    });
 }
 
 void ScopedStyleResolver::MatchPageRules(PageRuleCollector& collector) {

@@ -4675,6 +4675,9 @@
       base_feature: "none",
     },
     {
+      name: "Svg2Cascade",
+    },
+    {
       name: "SvgAnchorElementRelAttributes",
       status: "stable",
     },

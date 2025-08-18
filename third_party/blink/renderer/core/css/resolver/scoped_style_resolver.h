@@ -102,7 +102,8 @@ class CORE_EXPORT ScopedStyleResolver final
   void QuietlySwapActiveStyleSheets(ActiveStyleSheetVector& other);
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
-  void CollectMatchingElementScopeRules(ElementRuleCollector&,
+  void CollectMatchingElementScopeRules(const ContainerNode& scope_root,
+                                        ElementRuleCollector&,
                                         PartNames* part_names);
   void CollectMatchingShadowHostRules(ElementRuleCollector&);
   void CollectMatchingSlottedRules(ElementRuleCollector&);
@@ -125,7 +126,9 @@ class CORE_EXPORT ScopedStyleResolver final
 
  private:
   template <class Func>
-  void ForAllStylesheets(ElementRuleCollector&, const Func& func);
+  void ForAllStylesheets(ElementRuleCollector&,
+                         const ContainerNode& scope_root,
+                         const Func& func);
 
   void AddFontFaceRules(const RuleSet&);
   void AddCounterStyleRules(const RuleSet&);

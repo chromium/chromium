@@ -725,16 +725,22 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
     return;
   }
 
-  if (params.name == html_names::kIdAttr) {
-    InvalidateInstances();
-    return;
-  }
+  if (!RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
+    if (params.name == html_names::kIdAttr) {
+      // TODO(crbug.com/40550039): Id attributes also need to be synchronized
+      // instead of rebuilding the tree as animations/transitions would
+      // otherwise not work correctly.
+      InvalidateInstances();
+      return;
+    }
 
-  // Changes to the style attribute are processed lazily (see
-  // Element::getAttribute() and related methods), so we don't want changes to
-  // the style attribute to result in extra work here.
-  if (params.name == html_names::kStyleAttr)
-    return;
+    // Changes to the style attribute are processed lazily (see
+    // Element::getAttribute() and related methods), so we don't want changes to
+    // the style attribute to result in extra work here.
+    if (params.name == html_names::kStyleAttr) {
+      return;
+    }
+  }
 
   CSSPropertyID prop_id =
       CssPropertyIdForSVGAttributeName(GetExecutionContext(), params.name);
@@ -742,6 +748,12 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
     UpdatePresentationAttributeStyle(prop_id, params.name, params.new_value);
     SynchronizeAttributeInShadowInstances(params.name, params.new_value);
     return;
+  }
+
+  if (RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
+    // TODO(crbug.com/40550039): breaks CSS animations/transitions because the
+    // tree is re-created. We need to copy the attribute instead.
+    InvalidateInstances();
   }
 }
 
@@ -894,7 +906,7 @@ const ComputedStyle* SVGElement::CustomStyleForLayoutObject(
       kSVGAttributeMode);
 
   SVGElement* corresponding_element = CorrespondingElement();
-  if (!corresponding_element) {
+  if (!corresponding_element || RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
     return GetDocument().GetStyleResolver().ResolveStyle(this,
                                                          style_recalc_context);
   }
@@ -964,6 +976,14 @@ void SVGElement::NotifyResourceClients() const {
     return;
   }
   resource->NotifyContentChanged();
+}
+
+void SVGElement::InvalidateStyleAttribute(
+    bool only_changed_independent_properties) {
+  Element::InvalidateStyleAttribute(only_changed_independent_properties);
+  if (RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
+    InvalidateInstances();
+  }
 }
 
 void SVGElement::InvalidateInstances() {
