@@ -124,46 +124,6 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
 
   int num_tabs = indices.size();
 
-#if BUILDFLAG(ENABLE_GLIC)
-  if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab) &&
-      glic::GlicEnabling::IsReadyForProfile(tab_strip->profile())) {
-    auto* service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-        tab_strip->profile());
-    bool start_sharing = false;
-    for (const auto& selection : indices) {
-      if (!service->sharing_manager().IsTabPinned(
-              tab_strip->GetTabAtIndex(selection)->GetHandle())) {
-        start_sharing = true;
-        break;
-      }
-    }
-    if (start_sharing) {
-      int32_t potential_count = service->sharing_manager().GetNumPinnedTabs() +
-                                static_cast<int32_t>(indices.size());
-      if (potential_count > service->sharing_manager().GetMaxPinnedTabs()) {
-        AddItem(TabStripModel::CommandGlicShareLimit,
-                l10n_util::GetPluralStringFUTF16(
-                    IDS_TAB_CXMENU_GLIC_SHARE_LIMIT,
-                    service->sharing_manager().GetMaxPinnedTabs()));
-      } else {
-        const gfx::VectorIcon& icon =
-            glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_ACCESSING_ICON);
-        AddItemWithIcon(TabStripModel::CommandGlicStartShare,
-                        l10n_util::GetPluralStringFUTF16(
-                            IDS_TAB_CXMENU_GLIC_START_SHARE, num_tabs),
-                        ui::ImageModel::FromVectorIcon(
-                            icon, kColorTabAlertPipPlayingActiveFrameActive));
-      }
-    } else {
-      AddItem(TabStripModel::CommandGlicStopShare,
-              l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_GLIC_STOP_SHARE,
-                                               num_tabs));
-    }
-
-    AddSeparator(ui::NORMAL_SEPARATOR);
-  }
-#endif
-
   AddItemWithStringId(TabStripModel::CommandNewTabToRight,
                       base::i18n::IsRTL() ? IDS_TAB_CXMENU_NEWTABTOLEFT
                                           : IDS_TAB_CXMENU_NEWTABTORIGHT);
@@ -319,7 +279,14 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
       base::FeatureList::IsEnabled(features::kSideBySide);
   const bool display_send_to_self = send_tab_to_self::ShouldDisplayEntryPoint(
       tab_strip->GetWebContentsAt(index));
-  if (display_read_later || display_send_to_self) {
+#if BUILDFLAG(ENABLE_GLIC)
+  const bool display_share_with_glic =
+      base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab) &&
+      glic::GlicEnabling::IsReadyForProfile(tab_strip->profile());
+#else
+  const bool display_share_with_glic = false;
+#endif
+  if (display_read_later || display_send_to_self || display_share_with_glic) {
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
@@ -332,6 +299,43 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     SetEnabledAt(GetItemCount() - 1,
                  tab_strip->IsReadLaterSupportedForAny(indices));
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (display_share_with_glic) {
+    auto* service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+        tab_strip->profile());
+    bool start_sharing = false;
+    for (const auto& selection : indices) {
+      if (!service->sharing_manager().IsTabPinned(
+              tab_strip->GetTabAtIndex(selection)->GetHandle())) {
+        start_sharing = true;
+        break;
+      }
+    }
+    if (start_sharing) {
+      int32_t potential_count = service->sharing_manager().GetNumPinnedTabs() +
+                                static_cast<int32_t>(indices.size());
+      if (potential_count > service->sharing_manager().GetMaxPinnedTabs()) {
+        AddItem(TabStripModel::CommandGlicShareLimit,
+                l10n_util::GetPluralStringFUTF16(
+                    IDS_TAB_CXMENU_GLIC_SHARE_LIMIT,
+                    service->sharing_manager().GetMaxPinnedTabs()));
+      } else {
+        const gfx::VectorIcon& icon =
+            glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_ACCESSING_ICON);
+        AddItemWithIcon(TabStripModel::CommandGlicStartShare,
+                        l10n_util::GetPluralStringFUTF16(
+                            IDS_TAB_CXMENU_GLIC_START_SHARE, num_tabs),
+                        ui::ImageModel::FromVectorIcon(
+                            icon, kColorTabAlertPipPlayingActiveFrameActive));
+      }
+    } else {
+      AddItem(TabStripModel::CommandGlicStopShare,
+              l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_GLIC_STOP_SHARE,
+                                               num_tabs));
+    }
+  }
+#endif
 
   if (display_send_to_self) {
 #if BUILDFLAG(IS_MAC)
