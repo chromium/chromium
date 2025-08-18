@@ -77,6 +77,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Denied by preventSilentAccess"/>
 </enum>
 
+<!-- LINT.IfChange(BlobBuildFromStreamResult) -->
+
+<enum name="BlobBuildFromStreamResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Aborted while building"/>
+  <int value="2" label="Failed to allocate memory for blob"/>
+  <int value="3" label="Failed to allocate file space for blob"/>
+  <int value="4" label="Failed writing to file"/>
+</enum>
+
+<!-- LINT.ThenChange(//storage/browser/blob/blob_builder_from_stream.h:BlobBuildFromStreamResult) -->
+
 <enum name="BooleanInherited">
   <int value="0" label="Not inherited"/>
   <int value="1" label="Inherited"/>

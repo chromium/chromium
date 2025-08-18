@@ -807,6 +807,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.Blob.BuildFromStreamResult2"
+    enum="BlobBuildFromStreamResult" expires_after="M150">
+  <owner>horo@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The result of constructing a blob using the BlobRegistry.RegisterFromStream
+    API. The original BuildFromStreamResult histogram was expired in M87, and
+    the new BuildFromStreamResult2 histogram was introduced in M141.
+  </summary>
+</histogram>
+
 <histogram name="Storage.Blob.FileReaderLoader.DataPipeNotReadableMojoError"
     enum="FileReaderLoaderMojoResult" expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>

@@ -672,16 +672,22 @@ void BlobBuilderFromStream::OnError(Result result) {
 
   if (!callback_)
     return;
+  RecordResult(result);
   std::move(callback_).Run(this, nullptr);
 }
 
 void BlobBuilderFromStream::OnSuccess() {
   DCHECK(context_);
   DCHECK(callback_);
+  RecordResult(Result::kSuccess);
   std::move(callback_).Run(
       this, context_->AddFinishedBlob(
                 base::Uuid::GenerateRandomV4().AsLowercaseString(),
                 content_type_, content_disposition_, std::move(items_)));
+}
+
+void BlobBuilderFromStream::RecordResult(Result result) {
+  UMA_HISTOGRAM_ENUMERATION("Storage.Blob.BuildFromStreamResult2", result);
 }
 
 bool BlobBuilderFromStream::ShouldStoreNextBlockOnDisk(uint64_t length_hint) {
