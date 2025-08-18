@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/paint_preview/common/capture_result.h"
-#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-shared.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -120,8 +119,8 @@ class PaintPreviewClient
     // Main frame capture time.
     base::TimeDelta main_frame_blink_recording_time;
 
-    // Callback that is invoked on completion of data. May become null if the
-    // screenshot request failed.
+    // Callback that is invoked on completion of data. Must be non-null for the
+    // lifetime of the InProgressDocumentCaptureState.
     PaintPreviewCallback callback;
 
     // All the render frames that are still required.

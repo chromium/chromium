@@ -348,7 +348,17 @@ void PaintPreviewClient::CapturePaintPreview(
   chromeVersion->set_minor(current_chrome_version.components()[1]);
   chromeVersion->set_build(current_chrome_version.components()[2]);
   chromeVersion->set_patch(current_chrome_version.components()[3]);
-  document_data.callback = std::move(callback);
+  document_data.callback = base::BindOnce(
+      [](base::WeakPtr<PaintPreviewClient> client,
+         PaintPreviewCallback callback, base::UnguessableToken guid,
+         mojom::PaintPreviewStatus status,
+         std::unique_ptr<CaptureResult> result) {
+        if (client) {
+          client->all_document_data_.erase(guid);
+        }
+        std::move(callback).Run(guid, status, std::move(result));
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   // Ensure the frame is not under prerendering state as the UKM cannot be
   // recorded while prerendering. Current callers pass frames that are under
@@ -385,11 +395,12 @@ void PaintPreviewClient::CaptureSubframePaintPreview(
   }
 
   auto* document_data = base::FindOrNull(all_document_data_, guid);
-  if (!document_data || !document_data->callback) {
+  if (!document_data) {
     // If the screenshot has already failed, there's no need to request a
     // subframe paint.
     return;
   }
+  CHECK(document_data->callback);
 
   RecordingParams params(guid);
   params.clip_rect = rect;
@@ -496,16 +507,10 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
 
   auto* document_data =
       base::FindOrNull(all_document_data_, params.document_guid);
-  if (!document_data || !document_data->callback) {
-    // `document_data->callback` was checked/set in both of the (indirect)
-    // callers of this method (namely `CapturePaintPreview` and
-    // `CaptureSubframePaintPreview`), but since there may have been some async
-    // thread hops between those checks and here, the callback may have been
-    // invoked already. Not all codepaths that invoke the callback also erase
-    // `document_data` from the `all_document_data_` map, so we have to check
-    // both and a given map entry may have a null callback.
+  if (!document_data) {
     return;
   }
+  CHECK(document_data->callback);
 
   if (status != mojom::PaintPreviewStatus::kOk) {
     std::move(document_data->callback).Run(params.document_guid, status, {});

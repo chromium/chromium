@@ -17,6 +17,7 @@
 #include "components/paint_preview/common/capture_result.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
+#include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "components/paint_preview/common/version.h"
 #include "components/version_info/version_info.h"
@@ -29,10 +30,13 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace paint_preview {
+
+using testing::AnyOf;
 
 namespace {
 
@@ -111,11 +115,15 @@ mojom::PaintPreviewCaptureParamsPtr ToMojoParams(
 
 }  // namespace
 
-class PaintPreviewClientRenderViewHostTest
-    : public content::RenderViewHostTestHarness,
-      public testing::WithParamInterface<RecordingPersistence> {
+class PaintPreviewClientRenderViewHostTestBase
+    : public content::RenderViewHostTestHarness {
  public:
-  PaintPreviewClientRenderViewHostTest() = default;
+  PaintPreviewClientRenderViewHostTestBase() = default;
+
+  PaintPreviewClientRenderViewHostTestBase(
+      const PaintPreviewClientRenderViewHostTestBase&) = delete;
+  PaintPreviewClientRenderViewHostTestBase& operator=(
+      const PaintPreviewClientRenderViewHostTestBase&) = delete;
 
  protected:
   void SetUp() override {
@@ -127,13 +135,11 @@ class PaintPreviewClientRenderViewHostTest
         web_contents(), GURL("https://www.chromium.org"));
   }
 
-  mojo::StructPtr<mojom::PaintPreviewCaptureResponse>
-  NewMockPaintPreviewCaptureResponse() {
-    auto response = mojom::PaintPreviewCaptureResponse::New();
-    if (GetParam() == RecordingPersistence::kMemoryBuffer) {
-      response->skp = {mojo_base::BigBuffer()};
-    }
-    return response;
+  void TearDown() override {
+#if BUILDFLAG(IS_POSIX)
+    base::SetPosixFilePermissions(temp_dir_.GetPath(), 0777);
+#endif
+    content::RenderViewHostTestHarness::TearDown();
   }
 
   void OverrideInterface(MockPaintPreviewRecorder* service) {
@@ -145,13 +151,42 @@ class PaintPreviewClientRenderViewHostTest
                             base::Unretained(service)));
   }
 
+  content::RenderFrameHost* AddChildRFH(content::RenderFrameHost* parent,
+                                        std::string_view origin) {
+    content::RenderFrameHost* result =
+        content::RenderFrameHostTester::For(parent)->AppendChild("");
+    content::RenderFrameHostTester::For(result)
+        ->InitializeRenderFrameIfNeeded();
+    SimulateNavigation(&result, GURL(origin));
+    return result;
+  }
+
+  void SimulateNavigation(content::RenderFrameHost** rfh, const GURL& url) {
+    auto navigation_simulator =
+        content::NavigationSimulator::CreateRendererInitiated(url, *rfh);
+    navigation_simulator->Commit();
+    *rfh = navigation_simulator->GetFinalRenderFrameHost();
+  }
+
   base::ScopedTempDir temp_dir_;
 
  private:
-  PaintPreviewClientRenderViewHostTest(
-      const PaintPreviewClientRenderViewHostTest&) = delete;
-  PaintPreviewClientRenderViewHostTest& operator=(
-      const PaintPreviewClientRenderViewHostTest&) = delete;
+};
+
+class PaintPreviewClientRenderViewHostTest
+    : public PaintPreviewClientRenderViewHostTestBase,
+      public testing::WithParamInterface<RecordingPersistence> {
+ public:
+  mojo::StructPtr<mojom::PaintPreviewCaptureResponse>
+  NewMockPaintPreviewCaptureResponse() {
+    auto response = mojom::PaintPreviewCaptureResponse::New();
+    if (GetParam() == RecordingPersistence::kMemoryBuffer) {
+      response->skp = {mojo_base::BigBuffer()};
+    }
+    return response;
+  }
+
+ private:
 };
 
 TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
@@ -279,6 +314,59 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureFailureMock) {
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
 }
+
+// We can only mutate file permissions on POSIX systems.
+#if BUILDFLAG(IS_POSIX)
+TEST_F(PaintPreviewClientRenderViewHostTestBase, SubframeFileCreationFails) {
+  auto* subframe = AddChildRFH(main_rfh(), "https://example.test");
+  ASSERT_TRUE(subframe);
+
+  PaintPreviewClient::PaintPreviewParams params(
+      RecordingPersistence::kFileSystem);
+  params.root_dir = temp_dir_.GetPath();
+  params.inner.is_main_frame = true;
+
+  auto response = mojom::PaintPreviewCaptureResponse::New();
+
+  MockPaintPreviewRecorder recorder;
+  recorder.SetExpectedParams(ToMojoParams(params));
+  recorder.SetResponse(mojom::PaintPreviewStatus::kCaptureFailed,
+                       std::move(response));
+  OverrideInterface(&recorder);
+
+  PaintPreviewClient::CreateForWebContents(web_contents());
+  auto* client = PaintPreviewClient::FromWebContents(web_contents());
+  ASSERT_NE(client, nullptr);
+
+  recorder.SetResponseAction(base::BindLambdaForTesting([&]() {
+    // Before sending the main frame response, make the directory read-only to
+    // cause a file creation error on subsequent writes, and issue a reentrant
+    // call for a subframe, to see if the main frame's control flow mistakenly
+    // invokes the callback even after the subframe failed the whole capture.
+
+    base::SetPosixFilePermissions(temp_dir_.GetPath(), 0555);
+
+    client->CaptureSubframePaintPreview(params.inner.document_guid, gfx::Rect(),
+                                        subframe);
+  }));
+
+  base::RunLoop loop;
+  client->CapturePaintPreview(
+      params, main_rfh(),
+      base::BindLambdaForTesting([&](base::UnguessableToken returned_guid,
+                                     mojom::PaintPreviewStatus status,
+                                     std::unique_ptr<CaptureResult> result) {
+        EXPECT_EQ(returned_guid, params.inner.document_guid);
+        // The precise status from the client depends on thread scheduling.
+        EXPECT_THAT(status, AnyOf(mojom::PaintPreviewStatus::kFileCreationError,
+                                  mojom::PaintPreviewStatus::kFailed));
+        EXPECT_EQ(result, nullptr);
+        loop.QuitClosure().Run();
+      }));
+
+  loop.Run();
+}
+#endif
 
 TEST_P(PaintPreviewClientRenderViewHostTest, RenderFrameDeletedNotCapturing) {
   // Test that a deleting a render frame doesn't cause any problems if not
