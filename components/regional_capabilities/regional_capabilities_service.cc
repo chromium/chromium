@@ -178,6 +178,7 @@ const ProgramSettings* CountryIdToProgram(CountryId country_id) {
       case ui::DEVICE_FORM_FACTOR_TABLET:
       case ui::DEVICE_FORM_FACTOR_TV:
       case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
+      case ui::DEVICE_FORM_FACTOR_XR:
         break;
     }
   }

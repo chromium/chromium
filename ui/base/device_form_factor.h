@@ -16,6 +16,7 @@ enum DeviceFormFactor {
   DEVICE_FORM_FACTOR_TV = 3,
   DEVICE_FORM_FACTOR_AUTOMOTIVE = 4,
   DEVICE_FORM_FACTOR_FOLDABLE = 5,
+  DEVICE_FORM_FACTOR_XR = 6,
 };
 
 // Returns the form factor of current device. For platforms other than Android

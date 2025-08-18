@@ -217,6 +217,7 @@ std::string YandexSearchPathFromDeviceFormFactor() {
     case ui::DEVICE_FORM_FACTOR_TABLET:
     case ui::DEVICE_FORM_FACTOR_FOLDABLE:
     case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
+    case ui::DEVICE_FORM_FACTOR_XR:
       return "search/pad/";
   }
   NOTREACHED();

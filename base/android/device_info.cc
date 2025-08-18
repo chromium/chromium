@@ -35,6 +35,7 @@ struct IDeviceInfo {
   bool isTv;
   // Available only on Android T+.
   int32_t vulkanDeqpLevel;
+  bool isXr;
 };
 #endif
 
@@ -65,13 +66,15 @@ static void JNI_DeviceInfo_FillFields(JNIEnv* env,
                                       jboolean isAutomotive,
                                       jboolean isFoldable,
                                       jboolean isDesktop,
-                                      jint vulkanDeqpLevel) {
+                                      jint vulkanDeqpLevel,
+                                      jboolean isXr) {
   Set(IDeviceInfo{.gmsVersionCode = gmsVersionCode,
                   .isAutomotive = static_cast<bool>(isAutomotive),
                   .isDesktop = static_cast<bool>(isDesktop),
                   .isFoldable = static_cast<bool>(isFoldable),
                   .isTv = static_cast<bool>(isTV),
-                  .vulkanDeqpLevel = vulkanDeqpLevel});
+                  .vulkanDeqpLevel = vulkanDeqpLevel,
+                  .isXr = static_cast<bool>(isXr)});
 }
 
 const std::string& gms_version_code() {
@@ -103,4 +106,17 @@ int32_t vulkan_deqp_level() {
   return get_device_info().vulkanDeqpLevel;
 }
 
+bool is_xr() {
+  return get_device_info().isXr;
+}
+
+void set_is_xr_for_testing() {
+  Java_DeviceInfo_setIsXrForTesting(AttachCurrentThread());  // IN-TEST
+  get_holder().reset();
+}
+
+void reset_is_xr_for_testing() {
+  Java_DeviceInfo_resetIsXrForTesting(AttachCurrentThread());  // IN-TEST
+  get_holder().reset();
+}
 }  // namespace base::android::device_info

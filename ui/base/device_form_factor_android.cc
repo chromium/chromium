@@ -5,6 +5,7 @@
 #include "ui/base/device_form_factor.h"
 
 #include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/android/jni_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -28,6 +29,10 @@ DeviceFormFactor GetDeviceFormFactor() {
 
   if (base::android::BuildInfo::GetInstance()->is_desktop()) {
     return DEVICE_FORM_FACTOR_DESKTOP;
+  }
+
+  if (base::android::device_info::is_xr()) {
+    return DEVICE_FORM_FACTOR_XR;
   }
 
   if (Java_DeviceFormFactor_isTablet(base::android::AttachCurrentThread())) {

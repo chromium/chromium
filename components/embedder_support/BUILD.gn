@@ -62,15 +62,10 @@ static_library("user_agent") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/version_info",
-    "//device/vr/buildflags",
     "//net",
     "//third_party/blink/public/common:headers",
     "//ui/base",
   ]
-
-  if (enable_vr) {
-    deps += [ "//device/vr/public/cpp:features" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -95,7 +90,6 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/version_info",
     "//content/public/common",
-    "//device/vr/buildflags",
     "//mojo/core/embedder",
     "//net",
     "//net/traffic_annotation:test_support",
@@ -119,10 +113,6 @@ source_set("unit_tests") {
       "android:native_java_unittests_java",
       "android:util",
     ]
-  }
-
-  if (enable_vr) {
-    deps += [ "//device/vr/public/cpp:features" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

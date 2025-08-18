@@ -43,11 +43,6 @@ BASE_FEATURE(kWebXrOrientationSensorDevice,
 #endif
 );
 
-// Feature flag to enforce a XR device setting for testing only.
-BASE_FEATURE(kForceIsXrDeviceForTesting,
-             "ForceIsXrDeviceForTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // Controls whether or not SharedBuffer support is enabled. This is enabled by
 // default; but some platforms (e.g. below O) cannot support the feature; while
@@ -121,9 +116,6 @@ bool IsOpenXrArEnabled() {
 #endif  // ENABLE_OPENXR
 
 bool IsXrDevice() {
-  if (base::FeatureList::IsEnabled(kForceIsXrDeviceForTesting)) {
-    return true;
-  }
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_OPENXR)
   return device::Java_XrFeatureStatus_isXrDevice(
       base::android::AttachCurrentThread());

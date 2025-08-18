@@ -83,6 +83,11 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
       return Study::AUTOMOTIVE;
     case ui::DEVICE_FORM_FACTOR_FOLDABLE:
       return Study::FOLDABLE;
+    // TODO(crbug.com/435473340) Since XR study is not established yet for UMA.
+    // To prevent compilation failure temporarily using tablet as it closer to
+    // the tablet form factor. XR devices are not public yet.
+    case ui::DEVICE_FORM_FACTOR_XR:
+      return Study::TABLET;
   }
   NOTREACHED();
 #endif  // BUILDFLAG(PLATFORM_CFM)
