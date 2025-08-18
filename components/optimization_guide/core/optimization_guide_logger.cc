@@ -17,7 +17,7 @@ namespace {
 // TODO(rajendrant): Verify if all debug messages before browser startup are
 // getting saved without being dropped, when some hints fetching and model
 // downloading happens.
-constexpr size_t kMaxRecentLogMessages = 100;
+constexpr size_t kMaxRecentLogMessages = 700;
 
 }  // namespace
 
