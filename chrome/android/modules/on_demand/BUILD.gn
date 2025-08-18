@@ -41,7 +41,10 @@ grpc_java_library("os_migration_target_service_grpc_java") {
 }
 
 android_library("data_importer_service_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/data_import/DataImporterServiceImpl.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/data_import/DataImporterServiceImpl.java",
+    "java/src/org/chromium/chrome/browser/data_import/TargetService.java",
+  ]
   deps = [
     ":os_migration_target_service_grpc_java",
     ":os_migration_target_service_proto_java",

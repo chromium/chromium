@@ -45,7 +45,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 @Features.EnableFeatures(ChromeFeatureList.ANDROID_DATA_IMPORTER_SERVICE)
 public class TargetServiceTest {
 
-    private DataImporterServiceImpl.TargetService mService;
+    private TargetService mService;
 
     @Mock private StreamObserver<TargetHandshakeResponse> mHandshakeResponseObserver;
     @Mock private StreamObserver<ImportItemResponse> mImportItemResponseObserver;
@@ -61,7 +61,7 @@ public class TargetServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mService = new DataImporterServiceImpl.TargetService();
+        mService = new TargetService();
         mService.mBridge = mBridge;
     }
 
