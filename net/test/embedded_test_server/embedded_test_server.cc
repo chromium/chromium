@@ -1127,16 +1127,9 @@ HttpConnection* EmbeddedTestServer::AddConnection(
 void EmbeddedTestServer::RemoveConnection(
     HttpConnection* connection,
     EmbeddedTestServerConnectionListener* listener) {
-  DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
-  DCHECK(connection);
-  DCHECK_EQ(1u, connections_.count(connection->Socket()));
-
-  StreamSocket* raw_socket = connection->Socket();
-  std::unique_ptr<StreamSocket> socket = connection->TakeSocket();
-  connections_.erase(raw_socket);
-
-  if (listener && socket && socket->IsConnected())
-    listener->OnResponseCompletedSuccessfully(std::move(socket));
+  CHECK(io_thread_->task_runner()->BelongsToCurrentThread());
+  CHECK(connection);
+  CHECK_EQ(1u, connections_.erase(connection->Socket()));
 }
 
 bool EmbeddedTestServer::PostTaskToIOThreadAndWait(base::OnceClosure closure) {

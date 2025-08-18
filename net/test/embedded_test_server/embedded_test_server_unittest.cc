@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -87,16 +88,7 @@ class TestConnectionListener
     did_read_from_socket_ = true;
   }
 
-  void OnResponseCompletedSuccessfully(
-      std::unique_ptr<StreamSocket> socket) override {
-    base::AutoLock lock(lock_);
-    did_get_socket_on_complete_ = socket && socket->IsConnected();
-    complete_loop_.Quit();
-  }
-
   void WaitUntilFirstConnectionAccepted() { accept_loop_.Run(); }
-
-  void WaitUntilGotSocketFromResponseCompleted() { complete_loop_.Run(); }
 
   size_t SocketAcceptedCount() const {
     base::AutoLock lock(lock_);
@@ -108,21 +100,14 @@ class TestConnectionListener
     return did_read_from_socket_;
   }
 
-  bool DidGetSocketOnComplete() const {
-    base::AutoLock lock(lock_);
-    return did_get_socket_on_complete_;
-  }
-
  private:
-  size_t socket_accepted_count_ = 0;
-  bool did_read_from_socket_ = false;
-  bool did_get_socket_on_complete_ = false;
+  mutable base::Lock lock_;
+
+  size_t socket_accepted_count_ GUARDED_BY(lock_) = 0;
+  bool did_read_from_socket_ GUARDED_BY(lock_) = false;
 
   base::RunLoop accept_loop_;
-  base::RunLoop complete_loop_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  mutable base::Lock lock_;
 };
 
 struct EmbeddedTestServerConfig {
@@ -412,7 +397,6 @@ TEST_P(EmbeddedTestServerTest, ConnectionListenerAccept) {
 
   EXPECT_EQ(1u, connection_listener_.SocketAcceptedCount());
   EXPECT_FALSE(connection_listener_.DidReadFromSocket());
-  EXPECT_FALSE(connection_listener_.DidGetSocketOnComplete());
 }
 
 TEST_P(EmbeddedTestServerTest, ConnectionListenerRead) {
@@ -685,41 +669,6 @@ TEST_P(EmbeddedTestServerTest, UpgradeRequestHandlerEvalStopsOnErrorResponse) {
   EXPECT_EQ(HTTP_INTERNAL_SERVER_ERROR,
             request->response_headers()->response_code());
   EXPECT_FALSE(second_handler_called.IsSet());
-}
-
-// TODO(http://crbug.com/1166868): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ConnectionListenerComplete DISABLED_ConnectionListenerComplete
-#else
-#define MAYBE_ConnectionListenerComplete ConnectionListenerComplete
-#endif
-TEST_P(EmbeddedTestServerTest, MAYBE_ConnectionListenerComplete) {
-  // OnResponseCompletedSuccessfully() makes the assumption that a connection is
-  // "finished" before the socket is closed, and in the case of HTTP/2 this is
-  // not supported
-  if (GetParam().protocol == HttpConnection::Protocol::kHttp2)
-    return;
-
-  ASSERT_TRUE(StartServerAndSetUpContext());
-
-  TestDelegate delegate;
-  // Need to send a Keep-Alive response header since the EmbeddedTestServer only
-  // invokes OnResponseCompletedSuccessfully() if the socket is still open, and
-  // the network stack will close the socket if not reuable, resulting in
-  // potentially racilly closing the socket before
-  // OnResponseCompletedSuccessfully() is invoked.
-  std::unique_ptr<URLRequest> request(context_->CreateRequest(
-      server_->GetURL("/set-header?Connection: Keep-Alive"), DEFAULT_PRIORITY,
-      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-
-  request->Start();
-  delegate.RunUntilComplete();
-
-  EXPECT_EQ(1u, connection_listener_.SocketAcceptedCount());
-  EXPECT_TRUE(connection_listener_.DidReadFromSocket());
-
-  connection_listener_.WaitUntilGotSocketFromResponseCompleted();
-  EXPECT_TRUE(connection_listener_.DidGetSocketOnComplete());
 }
 
 TEST_P(EmbeddedTestServerTest, ConcurrentFetches) {
