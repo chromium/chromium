@@ -17,7 +17,7 @@ found in the LICENSE file.
             <solid android:color="@android:color/transparent" />
             <stroke
                 android:color="@macro/default_control_color_active"
-                android:width="@dimen/focused_icon_background_stroke_width" />
+                android:width="@dimen/focused_outline_stroke_width" />
             <corners android:radius="@dimen/modern_toolbar_background_corner_radius"/>
         </shape>
     </item>

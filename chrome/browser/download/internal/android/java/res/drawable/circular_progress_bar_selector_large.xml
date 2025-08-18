@@ -20,7 +20,7 @@ found in the LICENSE file.
                 android:height="@dimen/download_manager_progress_bar_focus_circle_size" />
             <stroke
                 android:color="@macro/default_control_color_active"
-                android:width="@dimen/focused_icon_background_stroke_width" />
+                android:width="@dimen/focused_outline_stroke_width" />
         </shape>
     </item>
     <item android:state_pressed="true">

@@ -18,7 +18,7 @@ found in the LICENSE file.
       <corners android:radius="@dimen/modern_toolbar_background_corner_radius"/>
       <stroke
         android:color="@macro/default_control_color_active"
-        android:width="@dimen/focused_icon_background_stroke_width" />
+        android:width="@dimen/focused_outline_stroke_width" />
     </shape>
   </item>
   <item android:state_pressed="true">
