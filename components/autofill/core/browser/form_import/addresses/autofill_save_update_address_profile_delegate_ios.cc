@@ -75,14 +75,14 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetPhoneNumber()
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::IsOriginalProfileHomeProfile()
     const {
-  return GetOriginalProfile()->record_type() ==
-         AutofillProfile::RecordType::kAccountHome;
+  return GetOriginalProfile() && GetOriginalProfile()->record_type() ==
+                                     AutofillProfile::RecordType::kAccountHome;
 }
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::IsOriginalProfileWorkProfile()
     const {
-  return GetOriginalProfile()->record_type() ==
-         AutofillProfile::RecordType::kAccountWork;
+  return GetOriginalProfile() && GetOriginalProfile()->record_type() ==
+                                     AutofillProfile::RecordType::kAccountWork;
 }
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetEmailAddress()
@@ -125,6 +125,11 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetSubtitle() {
 
 std::u16string
 AutofillSaveUpdateAddressProfileDelegateIOS::GetMessageActionText() const {
+  if (IsOriginalProfileHomeProfile() || IsOriginalProfileWorkProfile()) {
+    return l10n_util::GetStringUTF16(
+        IDS_IOS_AUTOFILL_SAVE_HOME_WORK_ADDRESS_MESSAGE_PRIMARY_ACTION);
+  }
+
   return l10n_util::GetStringUTF16(
       original_profile_ ? IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_PRIMARY_ACTION
                         : IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION);
@@ -216,6 +221,12 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetMessageText()
     return l10n_util::GetStringUTF16(
         IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_TITLE);
   }
+
+  if (IsOriginalProfileHomeProfile() || IsOriginalProfileWorkProfile()) {
+    return l10n_util::GetStringUTF16(
+        IDS_IOS_AUTOFILL_SAVE_HOME_WORK_ADDRESS_MESSAGE_TITLE);
+  }
+
   return l10n_util::GetStringUTF16(
       original_profile_ ? IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_TITLE
                         : IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_TITLE);

@@ -590,11 +590,17 @@
     <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_TITLE" desc="Title shown in the message that offers the user to proceed with saving a new address." meaning="In Title Case for iOS">
       Save address?
     </message>
+    <message name="IDS_IOS_AUTOFILL_SAVE_HOME_WORK_ADDRESS_MESSAGE_TITLE" desc="Title shown in the message that offers the user to proceed with saving a new address by updating home and work address." meaning="In Title Case for iOS">
+      Save address
+    </message>
    <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_TITLE" desc="Title shown in the message that offers the user to proceed with saving a new address in the google account" meaning="In Title Case for iOS">
       Save address in account?
     </message>
     <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION" desc="Label of the primary action button in the message that offers the user to proceed with saving a new address.">
       Save…
+    </message>
+    <message name="IDS_IOS_AUTOFILL_SAVE_HOME_WORK_ADDRESS_MESSAGE_PRIMARY_ACTION" desc="Label of the primary action button in the message that offers the user to proceed with saving a new address by updating a home or work address.">
+      Save
     </message>
     <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_TITLE" desc="Title shown in the message that offers the user to proceed with updating an existing address." meaning="In Title Case for iOS">
       Update address?
