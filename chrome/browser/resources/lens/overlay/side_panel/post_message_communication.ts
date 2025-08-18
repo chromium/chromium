@@ -35,6 +35,8 @@ export class PostMessageReceiver {
   private handshakeMessage: Uint8Array =
       new TextEncoder().encode(loadTimeData.getString('handshakeMessage'));
   private handshakeIntervalId: number|null = null;
+  private isAimSearchboxEnabled: boolean =
+      loadTimeData.getBoolean('enableAimSearchbox');
 
   constructor(
       sidePanelProxy: SidePanelBrowserProxy, resultsFrame: HTMLIFrameElement) {
@@ -66,6 +68,10 @@ export class PostMessageReceiver {
   }
 
   private queueHandshake() {
+    // Only send the handshake message if the AIM searchbox is enabled.
+    if (!this.isAimSearchboxEnabled) {
+      return;
+    }
     // Wait for the iframe to load before sending the handshake message.
     // Also will send a new handshake message if the iframe is reloaded.
     this.eventTracker.add(this.resultsFrame, 'load', () => {
@@ -84,6 +90,10 @@ export class PostMessageReceiver {
   }
 
   private onMessageReceived(event: MessageEvent) {
+    // Only handle messages if the AIM searchbox is enabled.
+    if (!this.isAimSearchboxEnabled) {
+      return;
+    }
     // Only handle messages from the results frame.
     if (event.origin !== this.resultsSearchUrl.origin) {
       return;

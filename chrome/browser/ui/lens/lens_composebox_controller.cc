@@ -78,6 +78,10 @@ void LensComposeboxController::CloseUI() {
 
 void LensComposeboxController::OnAimMessage(
     const std::vector<uint8_t>& message) {
+  // Ignore the message if the searchbox is disabled.
+  if (!lens::features::GetAimSearchboxEnabled()) {
+    return;
+  }
   // Try and parse the message as an AimToClientMessage. Since it is the only
   // message type we expect, if parsing fails, we can assume it is a malformed
   // message and ignore it.
