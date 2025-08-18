@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.AddressResolutionResult" enum="BooleanSuccess"
-    expires_after="2025-12-07">
+    expires_after="2026-12-07">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -383,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.SavedPrintersCount" units="printers"
-    expires_after="2025-12-07">
+    expires_after="2026-12-07">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.TotalNetworkPrintersCount2" units="printers"
-    expires_after="2025-12-07">
+    expires_after="2026-12-07">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.TotalNetworkPrintersCount2.SettingsOpened"
-    units="printers" expires_after="2025-12-07">
+    units="printers" expires_after="2026-12-07">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -428,7 +428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.UsbSetupSource" enum="UsbPrinterSetupSource"
-    expires_after="2025-09-27">
+    expires_after="2026-12-07">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
