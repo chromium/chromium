@@ -20,6 +20,7 @@ namespace ash::printing {
 crypto::obsolete::Md5 MakeMd5HasherForPrinterConfigurer();
 crypto::obsolete::Md5 MakeMd5HasherForUsbPrinterUtil();
 crypto::obsolete::Md5 MakeMd5HasherForZeroconf();
+std::string PolicyPrinterId(const std::string& json);
 std::string ServerPrinterId(const std::string& url);
 }  // namespace ash::printing
 
@@ -119,6 +120,7 @@ class CRYPTO_EXPORT Md5 {
   friend Md5 ash::printing::MakeMd5HasherForPrinterConfigurer();
   friend Md5 ash::printing::MakeMd5HasherForUsbPrinterUtil();
   friend Md5 ash::printing::MakeMd5HasherForZeroconf();
+  friend std::string ash::printing::PolicyPrinterId(const std::string& json);
   friend std::string ash::printing::ServerPrinterId(const std::string& url);
 
   // TODO(https://crbug.com/433545115): get rid of this.
