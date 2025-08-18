@@ -37,6 +37,8 @@ class PdfRect {
   float width() const { return right_ - left_; }
   float height() const { return top_ - bottom_; }
 
+  void Offset(float horizontal, float vertical);
+
   bool IsEmpty() const { return !width() || !height(); }
 
   // When a PdfRect has top < bottom, or right < left, the values should be

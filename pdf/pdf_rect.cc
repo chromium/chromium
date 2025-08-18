@@ -9,6 +9,13 @@
 
 namespace chrome_pdf {
 
+void PdfRect::Offset(float horizontal, float vertical) {
+  left_ += horizontal;
+  top_ += vertical;
+  right_ += horizontal;
+  bottom_ += vertical;
+}
+
 void PdfRect::Normalize() {
   if (top_ < bottom_) {
     std::swap(top_, bottom_);

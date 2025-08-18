@@ -14,6 +14,7 @@
 #include "pdf/flatten_pdf_result.h"
 #include "pdf/pdf_rect.h"
 #include "pdf/pdf_transform.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "printing/nup_parameters.h"
@@ -136,16 +137,15 @@ void TransformPDFPageForPrinting(
       crop_box.writable_right(), crop_box.writable_top());
   CalculateMediaBoxAndCropBox(rotated, has_media_box, has_crop_box, &media_box,
                               &crop_box);
-  PdfRect source_clip_box = CalculateClipBoxBoundary(media_box, crop_box);
-  source_clip_box.Scale(scale_factor);
+  PdfRect clip_box = CalculateClipBoxBoundary(media_box, crop_box);
+  clip_box.Scale(scale_factor);
 
   // Calculate the translation offset values.
   gfx::Vector2dF offset =
-      fitted_scaling
-          ? CalculateScaledClipBoxOffset(gfx_printed_rect, source_clip_box)
-          : CalculateNonScaledClipBoxOffset(
-                src_page_rotation, actual_page_width, actual_page_height,
-                source_clip_box);
+      fitted_scaling ? CalculateScaledClipBoxOffset(gfx_printed_rect, clip_box)
+                     : CalculateNonScaledClipBoxOffset(
+                           src_page_rotation, actual_page_width,
+                           actual_page_height, clip_box);
 
   // Reset the media box and crop box. When the page has crop box and media box,
   // the plugin will display the crop box contents and not the entire media box.
@@ -167,11 +167,8 @@ void TransformPDFPageForPrinting(
   // All the positions have been calculated, now manipulate the PDF.
   const FS_MATRIX matrix = {scale_factor, 0.0f,       0.0f,
                             scale_factor, offset.x(), offset.y()};
-  const FS_RECTF cliprect = {source_clip_box.left() + offset.x(),
-                             source_clip_box.top() + offset.y(),
-                             source_clip_box.right() + offset.x(),
-                             source_clip_box.bottom() + offset.y()};
-  FPDFPage_TransFormWithClip(page, &matrix, &cliprect);
+  clip_box.Offset(offset.x(), offset.y());
+  FPDFPage_TransFormWithClip(page, &matrix, &FsRectFFromPdfRect(clip_box));
   FPDFPage_TransformAnnots(page, scale_factor, 0, 0, scale_factor, offset.x(),
                            offset.y());
 }

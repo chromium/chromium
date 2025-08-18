@@ -40,6 +40,27 @@ TEST(PdfRectTest, WritableAccessors) {
   EXPECT_EQ(8.0f, rect.top());
 }
 
+TEST(PdfRectTest, Offset) {
+  PdfRect rect(1.0f, 2.0f, 3.0f, 5.0f);
+  rect.Offset(10.0f, 20.0f);
+  EXPECT_EQ(11.0f, rect.left());
+  EXPECT_EQ(22.0f, rect.bottom());
+  EXPECT_EQ(13.0f, rect.right());
+  EXPECT_EQ(25.0f, rect.top());
+
+  rect.Offset(-5.0f, -15.0f);
+  EXPECT_EQ(6.0f, rect.left());
+  EXPECT_EQ(7.0f, rect.bottom());
+  EXPECT_EQ(8.0f, rect.right());
+  EXPECT_EQ(10.0f, rect.top());
+
+  rect.Offset(0.0f, 0.0f);
+  EXPECT_EQ(6.0f, rect.left());
+  EXPECT_EQ(7.0f, rect.bottom());
+  EXPECT_EQ(8.0f, rect.right());
+  EXPECT_EQ(10.0f, rect.top());
+}
+
 TEST(PdfRectTest, IsEmpty) {
   PdfRect rect(1.0f, 2.0f, 3.0f, 5.0f);
   EXPECT_FALSE(rect.IsEmpty());
