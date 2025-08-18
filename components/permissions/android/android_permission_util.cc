@@ -5,8 +5,10 @@
 #include "components/permissions/android/android_permission_util.h"
 
 #include "base/android/jni_array.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/location/android/location_settings_impl.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
@@ -153,7 +155,7 @@ bool HasSystemPermission(ContentSettingsType type,
   if (!web_contents || !web_contents->GetNativeView()) {
     return false;
   }
-  if (type == ContentSettingsType::GEOLOCATION &&
+  if ((type == permissions::PermissionUtil::GetGeolocationType()) &&
       !IsSystemLocationSettingEnabled()) {
     return false;
   }
@@ -168,7 +170,7 @@ bool CanRequestSystemPermission(ContentSettingsType type,
   if (!web_contents || !web_contents->GetNativeView()) {
     return false;
   }
-  if (type == ContentSettingsType::GEOLOCATION &&
+  if ((type == permissions::PermissionUtil::GetGeolocationType()) &&
       !IsSystemLocationSettingEnabled()) {
     return false;
   }

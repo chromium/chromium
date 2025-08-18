@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.site_settings;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.AfterClass;
@@ -119,11 +121,23 @@ public class PermissionInfoTest {
                 new PermissionInfo(
                         type, origin, embedder, /* isEmbargoed= */ false, SessionModel.DURABLE);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                        info.setGeolocationSetting(
+                                profile, new GeolocationSetting(setting, setting));
+                    } else {
+                        info.setContentSetting(profile, setting);
+                    }
+                });
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return info.getContentSetting(profile) == expectedSetting;
+                    if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                        return info.getGeolocationSetting(profile).mPrecise == expectedSetting;
+                    } else {
+                        return info.getContentSetting(profile) == expectedSetting;
+                    }
                 });
     }
 
@@ -143,14 +157,14 @@ public class PermissionInfoTest {
             throws Throwable {
         Profile primaryOtrProfile = getPrimaryOtrProfile();
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.BLOCK,
                 primaryOtrProfile,
                 ContentSettingValues.BLOCK);
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.DEFAULT,
@@ -165,14 +179,14 @@ public class PermissionInfoTest {
             throws Throwable {
         Profile nonPrimaryOtrProfile = getNonPrimaryOtrProfile();
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.BLOCK,
                 nonPrimaryOtrProfile,
                 ContentSettingValues.BLOCK);
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.DEFAULT,
@@ -186,14 +200,14 @@ public class PermissionInfoTest {
     public void testResetDSEGeolocation_RegularProfile_DefaultsToAskFromBlock() throws Throwable {
         Profile regularProfile = getRegularProfile();
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.BLOCK,
                 regularProfile,
                 ContentSettingValues.BLOCK);
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.DEFAULT,

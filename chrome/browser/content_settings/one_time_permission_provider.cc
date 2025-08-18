@@ -303,7 +303,7 @@ void OneTimePermissionProvider::OnAllTabsInBackgroundTimerExpired(
   switch (expiry_type) {
     case BackgroundExpiryType::kTimeout:
       DeleteEntriesMatchingGURL(
-          ContentSettingsType::GEOLOCATION, origin.GetURL(),
+          permissions::PermissionUtil::GetGeolocationType(), origin.GetURL(),
           permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND);
       return;
     case BackgroundExpiryType::kLongTimeout:

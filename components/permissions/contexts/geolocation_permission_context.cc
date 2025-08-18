@@ -136,9 +136,9 @@ void GeolocationPermissionContext::UpdateTabContext(
   // case, PageSpecificContentSettings will be null.
   if (content_settings) {
     if (allowed) {
-      content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
+      content_settings->OnContentAllowed(content_settings_type());
     } else {
-      content_settings->OnContentBlocked(ContentSettingsType::GEOLOCATION);
+      content_settings->OnContentBlocked(content_settings_type());
     }
   }
 

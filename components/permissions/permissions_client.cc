@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents.h"
@@ -197,7 +198,7 @@ bool PermissionsClient::CanRequestDevicePermission(
 
 bool PermissionsClient::IsPermissionAllowedByDevicePolicy(
     content::WebContents* web_contents,
-    ContentSetting setting,
+    PermissionSetting setting,
     const content_settings::SettingInfo& info,
     ContentSettingsType type) const {
   return false;
@@ -205,7 +206,7 @@ bool PermissionsClient::IsPermissionAllowedByDevicePolicy(
 
 bool PermissionsClient::IsPermissionBlockedByDevicePolicy(
     content::WebContents* web_contents,
-    ContentSetting setting,
+    PermissionSetting setting,
     const content_settings::SettingInfo& info,
     ContentSettingsType type) const {
   return false;

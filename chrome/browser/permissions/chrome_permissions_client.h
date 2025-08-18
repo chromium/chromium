@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/permissions/permission_request_enums.h"
@@ -143,12 +144,12 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   bool CanRequestDevicePermission(ContentSettingsType type) const override;
   bool IsPermissionBlockedByDevicePolicy(
       content::WebContents* web_contents,
-      ContentSetting setting,
+      PermissionSetting setting,
       const content_settings::SettingInfo& info,
       ContentSettingsType type) const override;
   bool IsPermissionAllowedByDevicePolicy(
       content::WebContents* web_contents,
-      ContentSetting setting,
+      PermissionSetting setting,
       const content_settings::SettingInfo& info,
       ContentSettingsType type) const override;
   bool IsSystemDenied(ContentSettingsType type) const override;

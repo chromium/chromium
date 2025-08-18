@@ -33,6 +33,7 @@
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
@@ -446,6 +447,8 @@ static jint JNI_WebsitePreferenceBridge_GetPermissionSettingForOrigin(
     const JavaParamRef<jstring>& embedder) {
   ContentSettingsType type =
       static_cast<ContentSettingsType>(content_settings_type);
+  CHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(type))
+      << type;
   return GetPermissionSettingForOrigin(env, jbrowser_context_handle, type,
                                        origin, embedder);
 }
@@ -459,6 +462,8 @@ static void JNI_WebsitePreferenceBridge_SetPermissionSettingForOrigin(
     jint value) {
   ContentSettingsType type =
       static_cast<ContentSettingsType>(content_settings_type);
+  CHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(type))
+      << type;
 
   switch (type) {
     case ContentSettingsType::NOTIFICATIONS:

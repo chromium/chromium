@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
+
 import android.Manifest;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -27,6 +29,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
+import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -174,13 +177,24 @@ public class PermissionUpdateMessageTest {
             @ContentSettingValues int value) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    WebsitePreferenceBridgeJni.get()
-                            .setPermissionSettingForOrigin(
-                                    ProfileManager.getLastUsedRegularProfile(),
-                                    type,
-                                    origin,
-                                    origin,
-                                    value);
+                    if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                        WebsitePreferenceBridgeJni.get()
+                                .setGeolocationSettingForOrigin(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        type,
+                                        origin,
+                                        origin,
+                                        value,
+                                        value);
+                    } else {
+                        WebsitePreferenceBridgeJni.get()
+                                .setPermissionSettingForOrigin(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        type,
+                                        origin,
+                                        origin,
+                                        value);
+                    }
                 });
     }
 
@@ -279,7 +293,7 @@ public class PermissionUpdateMessageTest {
                 GEOLOCATION_PAGE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 /* javascriptToExecute= */ null,
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 /* switchContent= */ false);
     }
 
@@ -322,7 +336,7 @@ public class PermissionUpdateMessageTest {
                 GEOLOCATION_PAGE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 /* javascriptToExecute= */ null,
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 /* switchContent= */ true);
     }
 
@@ -347,7 +361,7 @@ public class PermissionUpdateMessageTest {
                             @Override
                             public PermissionInfo call() {
                                 return new PermissionInfo(
-                                        ContentSettingsType.GEOLOCATION,
+                                        getGeolocationType(),
                                         locationUrl,
                                         null,
                                         /* isEmbargoed= */ false,
@@ -367,11 +381,21 @@ public class PermissionUpdateMessageTest {
 
         try {
             ThreadUtils.runOnUiThreadBlocking(
-                    () ->
+                    () -> {
+                        if (geolocationSettings.getContentSettingsType()
+                                == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                            geolocationSettings.setGeolocationSetting(
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    new GeolocationSetting(
+                                            ContentSettingValues.ALLOW,
+                                            ContentSettingValues.ALLOW));
+
+                        } else {
                             geolocationSettings.setContentSetting(
                                     ProfileManager.getLastUsedRegularProfile(),
-                                    ContentSettingValues.ALLOW));
-
+                                    ContentSettingValues.ALLOW);
+                        }
+                    });
             mActivityTestRule.loadUrl(mTestServer.getURL(GEOLOCATION_PAGE));
             CriteriaHelper.pollUiThread(
                     () -> {

@@ -438,7 +438,8 @@ bool PermissionDecisionAutoBlocker::RecordDismissAndEmbargo(
   if (current_dismissal_count_with_quiet_ui >=
       kDefaultDismissalsBeforeBlockWithQuietUi) {
     DCHECK(permission == ContentSettingsType::NOTIFICATIONS ||
-           permission == ContentSettingsType::GEOLOCATION);
+           permission == ContentSettingsType::GEOLOCATION ||
+           permission == ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
     PlaceUnderEmbargo(url, permission, kPermissionDismissalEmbargoKey);
     return true;
   }
@@ -468,7 +469,7 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
   if (current_ignore_count_with_quiet_ui >=
       kDefaultIgnoresBeforeBlockWithQuietUi) {
     DCHECK(permission == ContentSettingsType::NOTIFICATIONS ||
-           permission == ContentSettingsType::GEOLOCATION);
+           permission == permissions::PermissionUtil::GetGeolocationType());
     PlaceUnderEmbargo(url, permission, kPermissionIgnoreEmbargoKey);
     return true;
   }

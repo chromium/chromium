@@ -143,7 +143,7 @@ void GeolocationPermissionContextAndroid::RequestPermission(
   if (!request_data->embedded_permission_element_initiated &&
       status == PermissionStatus::GRANTED &&
       ShouldRepromptUserForPermissions(web_contents,
-                                       {ContentSettingsType::GEOLOCATION}) ==
+                                       {content_settings_type()}) ==
           PermissionRepromptState::kShow) {
     if (auto* manager =
             PermissionRequestManager::FromWebContents(web_contents)) {
@@ -161,7 +161,7 @@ void GeolocationPermissionContextAndroid::RequestPermission(
     permissions::PermissionsRepromptControllerAndroid::FromWebContents(
         web_contents)
         ->RepromptPermissionRequest(
-            {ContentSettingsType::GEOLOCATION}, content_settings_type(),
+            {content_settings_type()}, content_settings_type(),
             base::BindOnce(&GeolocationPermissionContextAndroid::
                                HandleUpdateAndroidPermissions,
                            weak_factory_.GetWeakPtr(), request_data->id,

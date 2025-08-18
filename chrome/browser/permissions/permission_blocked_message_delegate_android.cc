@@ -46,6 +46,7 @@ PermissionBlockedMessageDelegate::PermissionBlockedMessageDelegate(
       icon = IDR_ANDROID_INFOBAR_NOTIFICATIONS_OFF;
       break;
     case ContentSettingsType::GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
       title = IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_TITLE;
       icon = IDR_ANDROID_MESSAGE_LOCATION_OFF;
       break;

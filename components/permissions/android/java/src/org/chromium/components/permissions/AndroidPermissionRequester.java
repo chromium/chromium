@@ -5,6 +5,7 @@
 package org.chromium.components.permissions;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -215,8 +216,7 @@ public class AndroidPermissionRequester {
                                 deniedStringId =
                                         R.string.infobar_missing_microphone_camera_permissions_text;
                             } else if (deniedContentSettings.size() == 1) {
-                                if (deniedContentSettings.contains(
-                                        ContentSettingsType.GEOLOCATION)) {
+                                if (deniedContentSettings.contains(getGeolocationType())) {
                                     deniedStringId =
                                             R.string.infobar_missing_location_permission_text;
                                 } else if (deniedContentSettings.contains(

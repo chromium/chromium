@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
+
 import android.Manifest;
 import android.text.TextUtils;
 
@@ -89,13 +91,24 @@ public class EmbeddedPermissionPromptTest {
             @ContentSettingValues int value) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    WebsitePreferenceBridgeJni.get()
-                            .setPermissionSettingForOrigin(
-                                    ProfileManager.getLastUsedRegularProfile(),
-                                    type,
-                                    origin,
-                                    origin,
-                                    value);
+                    if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                        WebsitePreferenceBridgeJni.get()
+                                .setGeolocationSettingForOrigin(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        type,
+                                        origin,
+                                        origin,
+                                        value,
+                                        value);
+                    } else {
+                        WebsitePreferenceBridgeJni.get()
+                                .setPermissionSettingForOrigin(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        type,
+                                        origin,
+                                        origin,
+                                        value);
+                    }
                 });
     }
 
@@ -107,7 +120,7 @@ public class EmbeddedPermissionPromptTest {
                 new PermissionUpdateWaiter(title, activity);
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(permissionUpdateWaiter));
         switch (type) {
-            case ContentSettingsType.GEOLOCATION -> {
+            case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS -> {
                 mActivityTestRule.runJavaScriptCodeInCurrentTab("checkGeolocation();");
             }
             default -> {
@@ -376,7 +389,7 @@ public class EmbeddedPermissionPromptTest {
             case "microphone":
                 return ContentSettingsType.MEDIASTREAM_MIC;
             case "geolocation":
-                return ContentSettingsType.GEOLOCATION;
+                return getGeolocationType();
             default:
                 assert false : "Unreached";
         }

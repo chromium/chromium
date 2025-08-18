@@ -208,7 +208,7 @@ void OneTimePermissionsTracker::CleanupStateForExpiredContentSetting(
   }
 
   for (const auto& origin : affected_origins) {
-    if (type == ContentSettingsType::GEOLOCATION) {
+    if (type == permissions::PermissionUtil::GetGeolocationType()) {
       origin_tracker_[origin].background_expiration_timer->Stop();
     } else {
       origin_tracker_[origin]

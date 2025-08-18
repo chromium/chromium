@@ -109,7 +109,7 @@ public class PermissionUtil {
     @CalledByNative
     public static String[] getRequiredAndroidPermissionsForContentSetting(int contentSettingType) {
         switch (contentSettingType) {
-            case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                 if (isApproximateLocationSupportEnabled()) {
                     return Arrays.copyOf(
                             LOCATION_REQUIRED_PERMISSIONS_POST_S,
@@ -149,18 +149,19 @@ public class PermissionUtil {
     }
 
     /**
-     * Returns optional Android permission strings for a given {@link ContentSettingsType}.  If
-     * there is no permissions associated with the content setting, or all of them are required,
-     * then an empty array is returned.
+     * Returns optional Android permission strings for a given {@link ContentSettingsType}. If there
+     * is no permissions associated with the content setting, or all of them are required, then an
+     * empty array is returned.
      *
      * @param contentSettingType The content setting to get the Android permissions for.
      * @return The optional Android permissions for the given content setting. Permission sets
-     *         returned for different content setting types are disjunct.
+     *     returned for different content setting types are disjunct.
      */
     @CalledByNative
     public static String[] getOptionalAndroidPermissionsForContentSetting(int contentSettingType) {
         switch (contentSettingType) {
-            case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
+                // TODO!
                 if (isApproximateLocationSupportEnabled()) {
                     return Arrays.copyOf(
                             LOCATION_OPTIONAL_PERMISSIONS_POST_S,
@@ -252,5 +253,14 @@ public class PermissionUtil {
     public static void requestLocationServices(WindowAndroid windowAndroid) {
         assumeNonNull(windowAndroid.getActivity().get())
                 .startActivity(LocationUtils.getInstance().getSystemLocationSettingsIntent());
+    }
+
+    public static @ContentSettingsType.EnumType int getGeolocationType() {
+        boolean enabled =
+                PermissionsAndroidFeatureMap.isEnabled(
+                        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
+        return enabled
+                ? ContentSettingsType.GEOLOCATION_WITH_OPTIONS
+                : ContentSettingsType.GEOLOCATION;
     }
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/permissions/system/geolocation_observation.h"
 
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_util.h"
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 
 static_assert(BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED));
@@ -29,7 +30,7 @@ void GeolocationObservation::OnSystemPermissionUpdated(
     device::LocationSystemPermissionStatus new_status) {
   const bool is_blocked =
       (new_status == device::LocationSystemPermissionStatus::kDenied);
-  callback_.Run(ContentSettingsType::GEOLOCATION, is_blocked);
+  callback_.Run(permissions::PermissionUtil::GetGeolocationType(), is_blocked);
 }
 
 }  // namespace system_permission_settings

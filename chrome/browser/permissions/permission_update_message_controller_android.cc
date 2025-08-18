@@ -11,6 +11,7 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/permissions/android/android_permission_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -95,7 +96,8 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
   for (ContentSettingsType content_settings_type : content_settings_types) {
     switch (message_id) {
       case -1:
-        if (content_settings_type == ContentSettingsType::GEOLOCATION) {
+        if (content_settings_type ==
+            permissions::PermissionUtil::GetGeolocationType()) {
           message_id = IDS_MESSAGE_MISSING_LOCATION_PERMISSION_TEXT;
         } else if (content_settings_type ==
                    ContentSettingsType::MEDIASTREAM_MIC) {

@@ -82,6 +82,7 @@ public class PermissionInfo implements Serializable {
     /** Returns the ContentSetting value for this origin. */
     public @ContentSettingValues @Nullable Integer getContentSetting(
             BrowserContextHandle browserContextHandle) {
+        assert mContentSettingsType != ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
         return PermissionInfo.getContentSetting(
                 browserContextHandle, mContentSettingsType, mOrigin, mEmbedder);
     }
@@ -89,6 +90,7 @@ public class PermissionInfo implements Serializable {
     /** Sets the native ContentSetting value for this origin. */
     public void setContentSetting(
             BrowserContextHandle browserContextHandle, @ContentSettingValues int value) {
+        assert mContentSettingsType != ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
         WebsitePreferenceBridgeJni.get()
                 .setPermissionSettingForOrigin(
                         browserContextHandle,

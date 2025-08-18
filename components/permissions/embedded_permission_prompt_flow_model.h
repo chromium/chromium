@@ -75,7 +75,7 @@ class EmbeddedPermissionPromptFlowModel {
 
   // Calculate the variant of given type based on the current state of browser
   // (content settings) and device (settings and policies).
-  Variant DeterminePromptVariant(ContentSetting setting,
+  Variant DeterminePromptVariant(PermissionSetting setting,
                                  const content_settings::SettingInfo& info,
                                  ContentSettingsType type);
 

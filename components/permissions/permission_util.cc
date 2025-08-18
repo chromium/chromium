@@ -103,7 +103,7 @@ std::string PermissionUtil::GetPermissionString(
     ContentSettingsType content_type) {
   PermissionType permission;
   bool success = PermissionUtil::GetPermissionType(content_type, &permission);
-  DCHECK(success);
+  DCHECK(success) << content_type;
 
   return blink::GetPermissionString(permission);
 }
@@ -704,6 +704,16 @@ bool PermissionUtil::DoesPlatformSupportChip() {
 #else
   return true;
 #endif
+}
+
+// static
+ContentSettingsType PermissionUtil::GetGeolocationType() {
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    return ContentSettingsType::GEOLOCATION_WITH_OPTIONS;
+  } else {
+    return ContentSettingsType::GEOLOCATION;
+  }
 }
 
 }  // namespace permissions

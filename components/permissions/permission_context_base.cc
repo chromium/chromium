@@ -96,7 +96,8 @@ PermissionContextBase::PermissionContextBase(
     : browser_context_(browser_context),
       content_settings_type_(content_settings_type),
       permissions_policy_feature_(permissions_policy_feature) {
-  CHECK(permissions::PermissionUtil::IsPermission(content_settings_type_));
+  CHECK(permissions::PermissionUtil::IsPermission(content_settings_type_))
+      << content_settings_type_;
 }
 
 PermissionContextBase::~PermissionContextBase() {

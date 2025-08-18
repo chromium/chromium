@@ -14,6 +14,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 
@@ -37,7 +38,8 @@ void PrefBasedQuietPermissionUiSelector::SelectUiToUse(
         Decision(QuietUiReason::kEnabledInPrefs, Decision::ShowNoWarning()));
     return;
   }
-  if (content_settings_type == ContentSettingsType::GEOLOCATION &&
+  if ((content_settings_type ==
+       permissions::PermissionUtil::GetGeolocationType()) &&
       profile_->GetPrefs()->GetBoolean(
           prefs::kEnableQuietGeolocationPermissionUi)) {
     std::move(callback).Run(

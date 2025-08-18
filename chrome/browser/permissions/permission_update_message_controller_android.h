@@ -28,9 +28,10 @@ class PermissionUpdateMessageController
   // Creates a message to resolve conflicts in Android runtime permissions.
   //
   // This function can only be called with |content_settings_types| as follow:
-  // // ContentSettingsType::MEDIASTREAM_MIC,
+  // ContentSettingsType::MEDIASTREAM_MIC,
   // ContentSettingsType::MEDIASTREAM_CAMERA,
-  // ContentSettingsType::GEOLOCATION, or
+  // ContentSettingsType::GEOLOCATION,
+  // ContentSettingsType::GEOLOCATION_WITH_OPTIONS, or
   // ContentSettingsType::AR or with both
   // ContentSettingsType::MEDIASTREAM_MIC and
   // ContentSettingsType::MEDIASTREAM_CAMERA.

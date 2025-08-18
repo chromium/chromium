@@ -142,6 +142,7 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
                 preferenceKey = SiteSettingsCategory.Type.NOTIFICATIONS;
                 break;
             case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                 preferenceKey = SiteSettingsCategory.Type.DEVICE_LOCATION;
                 break;
             default:

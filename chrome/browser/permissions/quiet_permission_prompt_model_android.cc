@@ -22,6 +22,7 @@ std::u16string GetPermissionBlockedTitle(
       return l10n_util::GetStringUTF16(
           IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_TITLE);
     case ContentSettingsType::GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
       return l10n_util::GetStringUTF16(
           IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_TITLE);
     default:
@@ -73,6 +74,7 @@ std::u16string GetPermissionBlockedUIDescription(
     case ContentSettingsType::NOTIFICATIONS:
       return GetNotificationBlockedUIDescription(reason);
     case ContentSettingsType::GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
       return GetGeolocationBlockedUIDescription(reason);
     default:
       NOTREACHED();
