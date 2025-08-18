@@ -4055,7 +4055,13 @@ bool WebMediaPlayerImpl::HasUnmutedAudio() const {
   // showing a media notification. To preserve a consistent experience, it does
   // not apply if a media was audible so the system states do not flicker
   // depending on whether the user muted the player.
-  return HasAudio() && !client_->WasAlwaysMuted();
+  const bool has_been_audible = !client_->WasAlwaysMuted();
+
+  if (base::FeatureList::IsEnabled(
+          media::kPauseMutedBackgroundAudio)) {
+    return HasAudio() && has_been_audible && volume_ > 0.;
+  }
+  return HasAudio() && has_been_audible;
 }
 
 bool WebMediaPlayerImpl::IsVideoBeingCaptured() const {

@@ -544,6 +544,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationSharedImageEncode);
 #endif
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kRenderMutedAudio);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kPauseMutedBackgroundAudio);
 
 // Enable experimental headless captions.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kHeadlessLiveCaption);

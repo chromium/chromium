@@ -2944,6 +2944,8 @@ class WebMediaPlayerImplBackgroundBehaviorTest
     return wmpi_->ShouldPausePlaybackWhenHidden();
   }
 
+  void SetVolume(double volume) { wmpi_->SetVolume(volume); }
+
   // We should pause media playback if the media-playback-while-not-visible
   // permission policy is not enabled and the player's frame is hidden.
   bool IsFrameHiddenAndShouldPauseWhenHidden() const {
@@ -2977,6 +2979,33 @@ class WebMediaPlayerImplBackgroundBehaviorTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioOnly_Remute) {
+  // This flag should be default-enabled, but enable it here just to be sure.
+  base::test::ScopedFeatureList scoped_background_audio_flag{
+      media::kPauseMutedBackgroundAudio};
+  SCOPED_TRACE(testing::Message() << PrintValues());
+  // Audio only players should pause when entering the background,
+  // even if they're initially unmuted.
+  EXPECT_CALL(client_, WasAlwaysMuted())
+      .WillOnce(Return(true))
+      .WillRepeatedly(Return(false));
+  SetMetadata(true, false);
+  // Initially, we've never produced audible audio, so we should always pause.
+  EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
+  // Next, unmute.
+  SetVolume(1.);
+  // We should now never pause unless we should.
+  if (IsFrameHiddenAndShouldPauseWhenHidden()) {
+    EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
+    return;
+  }
+  // In all other cases, we should not be pausing right now.
+  EXPECT_FALSE(ShouldPausePlaybackWhenHidden());
+  // We now mute, we should now pause again.
+  SetVolume(0.);
+  EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
+}
 
 TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioOnly) {
   SCOPED_TRACE(testing::Message() << PrintValues());

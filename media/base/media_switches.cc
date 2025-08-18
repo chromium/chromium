@@ -1491,6 +1491,15 @@ BASE_FEATURE(MediaFoundationSharedImageEncode,
 // Controls whether muted media stream audio should continue to render.
 BASE_FEATURE(RenderMutedAudio, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether audio is permitted to play if it's inaudible on a background
+// tab. This is separate to the kRenderMutedAudio flag, which routes decoded
+// audio into nowhere if the media is playing back. This flag instead _pauses_
+// playback when the media goes to background to avoid wasting CPU power on
+// decoding audio that cannot be heard. This flag will be switched on gradually
+// via Finch.
+BASE_FEATURE(PauseMutedBackgroundAudio,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls headless Live Caption experiment, which is likely unstable.
 BASE_FEATURE(HeadlessLiveCaption, base::FEATURE_DISABLED_BY_DEFAULT);
 
