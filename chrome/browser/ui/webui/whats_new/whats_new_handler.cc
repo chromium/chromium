@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/webui_url_constants.h"
@@ -25,6 +26,11 @@
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#endif
 
 WhatsNewHandler::WhatsNewHandler(
     mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver,
@@ -95,6 +101,15 @@ void WhatsNewHandler::RecordModuleImpression(
   std::string histogram_name = "UserEducation.WhatsNew.ModuleShown.";
   histogram_name.append(module_name);
   base::UmaHistogramEnumeration(histogram_name, position);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (module_name == "GlicIntro") {
+    if (auto* glic_service =
+            glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_)) {
+      glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kWhatsNew);
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 void WhatsNewHandler::RecordExploreMoreToggled(bool expanded) {

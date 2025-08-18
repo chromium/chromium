@@ -33,6 +33,7 @@ source_set("whats_new") {
     ]
     public_deps += [
       "//chrome/browser:browser_process",
+      "//chrome/browser/glic",
       "//chrome/browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/common:constants",
       "//components/lens:features",

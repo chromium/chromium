@@ -291,6 +291,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_profile_manager.h:GlicPrewarmingChecksResult) -->
 
+<!-- LINT.IfChange(GlicPrewarmingFreSource) -->
+
+<enum name="GlicPrewarmingFreSource">
+  <int value="0" label="What's New"/>
+  <int value="1" label="Nudge"/>
+  <int value="2" label="IPH"/>
+  <int value="3" label="Test"/>
+  <int value="4" label="Browser Command"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/public/glic_keyed_service.h:GlicPrewarmingFreSource) -->
+
 <!-- LINT.IfChange(GlicRequestEvent) -->
 
 <enum name="GlicRequestEvent">
