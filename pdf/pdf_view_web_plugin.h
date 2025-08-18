@@ -613,24 +613,42 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                     const std::string& token);
   void SaveToFile(const std::string& token);
 
-  // Returns `block_size` bytes to save the PDF with `request_type`, starting
-  // from location `offset`. For non-original save requests, uses `buffer` to
-  // temporarily store save data for future calls. Since the caller may not know
-  // the exact file size, the first request (when `offset` is 0) can be called
-  // with `block_size` 0 and in that case, the entire file data, capped at 16MB
-  // limit is returned. The function also returns the total file size. Note that
-  // it only handles files less than INT_MAX size, and if the file is larger
-  // than that, it returns 0 as file size and no data.
-  SaveDataBlock SaveBlockToBufferImpl(std::vector<uint8_t>& buffer,
-                                      pdf::mojom::SaveRequestType request_type,
-                                      uint32_t offset,
-                                      uint32_t block_size);
+  // Returns the size of the original PDF file. It does not handle files larger
+  // than INT_MAX. If the file is larger than that, it returns 0.
+  uint32_t GetOriginalFileSize();
 
-  // For a call to `SaveBlockToBufferImpl()`, ensures `offset` and
-  // `block_size` have expected values and returns the effective `block_size`.
+  // Returns a block of data from the original PDF file.
+  std::vector<uint8_t> GetOriginalFileData(uint32_t offset,
+                                           uint32_t block_size);
+
+  // Populates `buffer` with the modified PDF file data.
+  // The `buffer` is released if the file is larger than `INT_MAX`.
+  void PopulateBufferWithModifiedFileData(std::vector<uint8_t>& buffer);
+
+  // Gets a block of modified PDF data from `buffer`.
+  // `PopulateBufferWithModifiedFileData()` must be called first to populate
+  // `buffer`.
+  std::vector<uint8_t> GetModifiedFileDataFromBuffer(
+      base::span<const uint8_t> buffer,
+      uint32_t offset,
+      uint32_t block_size);
+
+  // For a call in `SaveBlockToBuffer()`, ensures `offset` and `block_size` have
+  // expected values and returns the effective `block_size`.
   uint32_t VerifyParamsAndGetSaveBlockSize(uint32_t total_file_size,
                                            uint32_t offset,
                                            uint32_t block_size);
+
+  // Returns `block_size` bytes to save the PDF with `request_type`, starting
+  // from location `offset`. Since the caller may not know the exact file size,
+  // the first request (when `offset` is 0) can be called with `block_size` 0
+  // and in that case, the entire file data, capped at 16MB limit is returned.
+  // The function also returns the total file size.
+  // Note that it only handles files less than INT_MAX size, and if the file is
+  // larger than that, it returns 0 as file size and no data.
+  SaveDataBlock SaveBlockToBuffer(pdf::mojom::SaveRequestType request_type,
+                                  uint32_t offset,
+                                  uint32_t block_size);
 
   // Sets whether the plugin can and should handle the save by using `pdf_host_`
   // to notify the browser. Prevents duplicate notifications to the browser if

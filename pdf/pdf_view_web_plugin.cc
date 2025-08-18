@@ -1872,8 +1872,7 @@ void PdfViewWebPlugin::HandleGetSaveDataBlockMessage(
       static_cast<uint32_t>(message.FindInt("blockSize").value());
 
   client_->PostMessage(CreateSaveDataBlockMessage(
-      token, SaveBlockToBufferImpl(save_data_buffer_, request_type, offset,
-                                   block_size)));
+      token, SaveBlockToBuffer(request_type, offset, block_size)));
 }
 
 void PdfViewWebPlugin::HandleGetSuggestedFileName(
@@ -2195,6 +2194,39 @@ void PdfViewWebPlugin::SaveToBuffer(pdf::mojom::SaveRequestType request_type,
   client_->PostMessage(std::move(message));
 }
 
+uint32_t PdfViewWebPlugin::GetOriginalFileSize() {
+  const uint32_t size = engine_->GetLoadedByteSize();
+  // This function does not handle files larger than INT_MAX.
+  return size <= static_cast<uint32_t>(INT_MAX) ? size : 0;
+}
+
+std::vector<uint8_t> PdfViewWebPlugin::GetOriginalFileData(
+    uint32_t offset,
+    uint32_t block_size) {
+  std::vector<uint8_t> block(block_size);
+  if (!engine_->ReadLoadedBytes(offset, block)) {
+    block.resize(0);
+  }
+  return block;
+}
+
+void PdfViewWebPlugin::PopulateBufferWithModifiedFileData(
+    std::vector<uint8_t>& buffer) {
+  buffer = engine_->GetSaveData();
+  // This function does not handle files larger than INT_MAX.
+  if (buffer.size() > static_cast<uint32_t>(INT_MAX)) {
+    ReleaseBuffer(buffer);
+  }
+}
+
+std::vector<uint8_t> PdfViewWebPlugin::GetModifiedFileDataFromBuffer(
+    base::span<const uint8_t> buffer,
+    uint32_t offset,
+    uint32_t block_size) {
+  auto data_span = buffer.subspan(offset, block_size);
+  return {data_span.begin(), data_span.end()};
+}
+
 uint32_t PdfViewWebPlugin::VerifyParamsAndGetSaveBlockSize(
     uint32_t total_file_size,
     uint32_t offset,
@@ -2216,8 +2248,7 @@ uint32_t PdfViewWebPlugin::VerifyParamsAndGetSaveBlockSize(
   return block_size;
 }
 
-PdfViewWebPlugin::SaveDataBlock PdfViewWebPlugin::SaveBlockToBufferImpl(
-    std::vector<uint8_t>& buffer,
+PdfViewWebPlugin::SaveDataBlock PdfViewWebPlugin::SaveBlockToBuffer(
     pdf::mojom::SaveRequestType request_type,
     uint32_t offset,
     uint32_t block_size) {
@@ -2225,38 +2256,29 @@ PdfViewWebPlugin::SaveDataBlock PdfViewWebPlugin::SaveBlockToBufferImpl(
 
   SaveDataBlock result;
   if (request_type == pdf::mojom::SaveRequestType::kOriginal) {
-    // This function does not handle files larger than INT_MAX.
-    if (engine_->GetLoadedByteSize() <= static_cast<uint32_t>(INT_MAX)) {
-      result.total_file_size = engine_->GetLoadedByteSize();
+    result.total_file_size = GetOriginalFileSize();
+    if (result.total_file_size) {
       block_size = VerifyParamsAndGetSaveBlockSize(result.total_file_size,
                                                    offset, block_size);
-      result.block.resize(block_size);
-      if (!engine_->ReadLoadedBytes(offset, result.block)) {
-        result.block.resize(0);
-      }
+      result.block = GetOriginalFileData(offset, block_size);
     }
     return result;
   }
 
   if (offset == 0) {
-    buffer = engine_->GetSaveData();
-    // This function does not handle files larger than INT_MAX.
-    if (buffer.size() > static_cast<uint32_t>(INT_MAX)) {
-      ReleaseBuffer(buffer);
-    }
+    PopulateBufferWithModifiedFileData(save_data_buffer_);
   } else {
-    CHECK(buffer.size());
+    CHECK(save_data_buffer_.size());
   }
-  if (buffer.size()) {
-    result.total_file_size = static_cast<uint32_t>(buffer.size());
+  result.total_file_size = static_cast<uint32_t>(save_data_buffer_.size());
+  if (result.total_file_size) {
     block_size = VerifyParamsAndGetSaveBlockSize(result.total_file_size, offset,
                                                  block_size);
-    result.block.resize(block_size);
-    base::span(result.block)
-        .copy_from(base::span(buffer).subspan(offset, block_size));
+    result.block =
+        GetModifiedFileDataFromBuffer(save_data_buffer_, offset, block_size);
     // Drop the buffer if everything is returned.
     if (offset + block_size == result.total_file_size) {
-      ReleaseBuffer(buffer);
+      ReleaseBuffer(save_data_buffer_);
     }
   }
 
