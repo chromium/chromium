@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -238,13 +239,10 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
           web_contents(), &path, GetParam(), gfx::Rect(0, 0, 0, 0),
           mojom::ClipCoordOverride::kCenterOnScrollOffset,
           mojom::ClipCoordOverride::kScrollOffset, true, 50, 1000),
-      base::BindOnce(
-          [](base::OnceClosure quit_closure,
-             PaintPreviewBaseService::CaptureStatus expected_status,
-             const base::FilePath& expected_path,
-             PaintPreviewBaseService::CaptureStatus status,
-             std::unique_ptr<CaptureResult> result) {
-            EXPECT_EQ(status, expected_status);
+      base::BindLambdaForTesting(
+          [&](PaintPreviewBaseService::CaptureStatus status,
+              std::unique_ptr<CaptureResult> result) {
+            EXPECT_EQ(status, PaintPreviewBaseService::CaptureStatus::kOk);
             EXPECT_TRUE(result->proto.has_root_frame());
             EXPECT_EQ(result->proto.subframes_size(), 0);
             EXPECT_TRUE(result->proto.root_frame().is_main_frame());
@@ -255,17 +253,17 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
             switch (GetParam()) {
               case RecordingPersistence::kFileSystem: {
 #if BUILDFLAG(IS_WIN)
-                base::FilePath path = base::FilePath(
+                base::FilePath received_path = base::FilePath(
                     base::UTF8ToWide(result->proto.root_frame().file_path()));
                 base::FilePath name(
                     base::UTF8ToWide(base::StrCat({token.ToString(), ".skp"})));
 #else
-                base::FilePath path =
+                base::FilePath received_path =
                     base::FilePath(result->proto.root_frame().file_path());
                 base::FilePath name(base::StrCat({token.ToString(), ".skp"}));
 #endif
-                EXPECT_EQ(path.DirName(), expected_path);
-                EXPECT_EQ(path.BaseName(), name);
+                EXPECT_EQ(received_path.DirName(), path);
+                EXPECT_EQ(received_path.BaseName(), name);
               } break;
 
               case RecordingPersistence::kMemoryBuffer: {
@@ -276,10 +274,8 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
               default:
                 NOTREACHED();
             }
-            std::move(quit_closure).Run();
-          },
-          loop.QuitClosure(), PaintPreviewBaseService::CaptureStatus::kOk,
-          path));
+            loop.Quit();
+          }));
   loop.Run();
 }
 
@@ -311,17 +307,14 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureFailed) {
                           mojom::ClipCoordOverride::kCenterOnScrollOffset,
                           mojom::ClipCoordOverride::kScrollOffset, true, 0,
                           std::numeric_limits<uint64_t>::max()),
-      base::BindOnce(
-          [](base::OnceClosure quit_closure,
-             PaintPreviewBaseService::CaptureStatus expected_status,
-             PaintPreviewBaseService::CaptureStatus status,
-             std::unique_ptr<CaptureResult> result) {
-            EXPECT_EQ(status, expected_status);
+      base::BindLambdaForTesting(
+          [&](PaintPreviewBaseService::CaptureStatus status,
+              std::unique_ptr<CaptureResult> result) {
+            EXPECT_EQ(status,
+                      PaintPreviewBaseService::CaptureStatus::kCaptureFailed);
             EXPECT_EQ(result, nullptr);
-            std::move(quit_closure).Run();
-          },
-          loop.QuitClosure(),
-          PaintPreviewBaseService::CaptureStatus::kCaptureFailed));
+            loop.Quit();
+          }));
   loop.Run();
 }
 
@@ -353,17 +346,15 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureDisallowed) {
                           mojom::ClipCoordOverride::kCenterOnScrollOffset,
                           mojom::ClipCoordOverride::kScrollOffset, true, 0,
                           std::numeric_limits<uint64_t>::max()),
-      base::BindOnce(
-          [](base::OnceClosure quit_closure,
-             PaintPreviewBaseService::CaptureStatus expected_status,
-             PaintPreviewBaseService::CaptureStatus status,
-             std::unique_ptr<CaptureResult> result) {
-            EXPECT_EQ(status, expected_status);
+      base::BindLambdaForTesting(
+          [&](PaintPreviewBaseService::CaptureStatus status,
+              std::unique_ptr<CaptureResult> result) {
+            EXPECT_EQ(
+                status,
+                PaintPreviewBaseService::CaptureStatus::kContentUnsupported);
             EXPECT_EQ(result, nullptr);
-            std::move(quit_closure).Run();
-          },
-          loop.QuitClosure(),
-          PaintPreviewBaseService::CaptureStatus::kContentUnsupported));
+            loop.Quit();
+          }));
   loop.Run();
 }
 

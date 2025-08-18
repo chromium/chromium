@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -184,12 +185,11 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   main_frame->set_frame_offset_y(30);
 
   base::RunLoop loop;
-  auto callback = base::BindOnce(
-      [](base::RepeatingClosure quit, base::UnguessableToken expected_guid,
-         base::FilePath temp_dir, PaintPreviewProto expected_proto,
-         base::UnguessableToken returned_guid, mojom::PaintPreviewStatus status,
-         std::unique_ptr<CaptureResult> result) {
-        EXPECT_EQ(returned_guid, expected_guid);
+  auto callback =
+      base::BindLambdaForTesting([&](base::UnguessableToken returned_guid,
+                                     mojom::PaintPreviewStatus status,
+                                     std::unique_ptr<CaptureResult> result) {
+        EXPECT_EQ(returned_guid, params.inner.document_guid);
         EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
 
         auto token = base::UnguessableToken::Deserialize(
@@ -207,7 +207,8 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
         main_frame->set_embedding_token_high(token.GetHighForSerialization());
         if (GetParam() == RecordingPersistence::kFileSystem) {
           main_frame->set_file_path(
-              temp_dir.AppendASCII(base::StrCat({token.ToString(), ".skp"}))
+              temp_dir_.GetPath()
+                  .AppendASCII(base::StrCat({token.ToString(), ".skp"}))
                   .AsUTF8Unsafe());
         }
 
@@ -235,10 +236,8 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
             NOTREACHED();
         }
 
-        quit.Run();
-      },
-      loop.QuitClosure(), params.inner.document_guid, temp_dir_.GetPath(),
-      expected_proto);
+        loop.Quit();
+      });
   MockPaintPreviewRecorder service;
   service.SetExpectedParams(ToMojoParams(params));
   service.SetResponse(mojom::PaintPreviewStatus::kOk, std::move(response));
@@ -259,15 +258,14 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureFailureMock) {
   response->skp = {mojo_base::BigBuffer()};
 
   base::RunLoop loop;
-  auto callback = base::BindOnce(
-      [](base::RepeatingClosure quit, base::UnguessableToken expected_guid,
-         base::UnguessableToken returned_guid, mojom::PaintPreviewStatus status,
-         std::unique_ptr<CaptureResult> result) {
-        EXPECT_EQ(returned_guid, expected_guid);
+  auto callback =
+      base::BindLambdaForTesting([&](base::UnguessableToken returned_guid,
+                                     mojom::PaintPreviewStatus status,
+                                     std::unique_ptr<CaptureResult> result) {
+        EXPECT_EQ(returned_guid, params.inner.document_guid);
         EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
-        quit.Run();
-      },
-      loop.QuitClosure(), params.inner.document_guid);
+        loop.Quit();
+      });
   MockPaintPreviewRecorder recorder;
   recorder.SetExpectedParams(ToMojoParams(params));
   recorder.SetResponse(mojom::PaintPreviewStatus::kCaptureFailed,
@@ -303,15 +301,14 @@ TEST_P(PaintPreviewClientRenderViewHostTest, RenderFrameDeletedDuringCapture) {
   response->embedding_token = std::nullopt;
 
   base::RunLoop loop;
-  auto callback = base::BindOnce(
-      [](base::RepeatingClosure quit, base::UnguessableToken returned_guid,
-         mojom::PaintPreviewStatus status,
-         std::unique_ptr<CaptureResult> result) {
+  auto callback =
+      base::BindLambdaForTesting([&](base::UnguessableToken returned_guid,
+                                     mojom::PaintPreviewStatus status,
+                                     std::unique_ptr<CaptureResult> result) {
         EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
         EXPECT_EQ(result, nullptr);
-        quit.Run();
-      },
-      loop.QuitClosure());
+        loop.Quit();
+      });
   MockPaintPreviewRecorder service;
   service.SetExpectedParams(ToMojoParams(params));
   service.SetResponse(mojom::PaintPreviewStatus::kOk, std::move(response));
@@ -320,8 +317,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, RenderFrameDeletedDuringCapture) {
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
   ASSERT_NE(client, nullptr);
   service.SetResponseAction(
-      base::BindOnce(&PaintPreviewClient::RenderFrameDeleted,
-                     base::Unretained(client), base::Unretained(rfh)));
+      base::BindLambdaForTesting([&]() { client->RenderFrameDeleted(rfh); }));
   client->CapturePaintPreview(params, rfh, std::move(callback));
   loop.Run();
 }
