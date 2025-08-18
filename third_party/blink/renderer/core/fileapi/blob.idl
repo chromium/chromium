@@ -39,8 +39,7 @@ typedef (ArrayBuffer or ArrayBufferView or Blob or USVString) BlobPart;
     readonly attribute unsigned long long size;
     readonly attribute DOMString type;
 
-    // TODO(jsbell): start and end arguments should be [Clamp]
-    [RaisesException] Blob slice(optional long long start, optional long long end, optional DOMString contentType);
+    [RaisesException] Blob slice(optional [Clamp] long long start, optional [Clamp] long long end, optional DOMString contentType);
     [CallWith=ScriptState] ReadableStream stream();
     [CallWith=ScriptState] Promise<USVString> text();
     [CallWith=ScriptState] Promise<ArrayBuffer> arrayBuffer();
