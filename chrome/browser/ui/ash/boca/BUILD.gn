@@ -10,18 +10,15 @@ static_library("boca") {
     "chrome_tab_strip_delegate.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/favicon",
-    "//chrome/browser/ui/tabs",
-    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ash/browser_delegate",
     "//components/app_constants",
     "//components/app_restore",
+    "//components/sessions",
     "//content/public/browser",
   ]
 }

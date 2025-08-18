@@ -2660,7 +2660,6 @@ static_library("ui") {
       "//chrome/browser/ui/ash/assistant",
       "//chrome/browser/ui/ash/back_gesture",
       "//chrome/browser/ui/ash/birch",
-      "//chrome/browser/ui/ash/boca",
       "//chrome/browser/ui/ash/capture_mode",
       "//chrome/browser/ui/ash/desks",
       "//chrome/browser/ui/ash/device_scheduled_reboot",
