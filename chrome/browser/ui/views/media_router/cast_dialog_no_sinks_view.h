@@ -54,7 +54,7 @@ class CastDialogNoSinksView : public views::View {
 
   const raw_ptr<Profile> profile_;
   base::OneShotTimer timer_;
-  raw_ptr<views::View, DanglingUntriaged> icon_ = nullptr;
+  raw_ptr<views::View> icon_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::StyledLabel> permission_rejected_label_ = nullptr;
   bool permission_rejected_;
