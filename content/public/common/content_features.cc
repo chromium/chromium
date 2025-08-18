@@ -566,6 +566,28 @@ BASE_FEATURE(kInstalledAppProvider,
              "InstalledAppProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, derives isolate priority from the more granular process
+// priority (user-blocking, user-visible, best-effort) instead of renderer
+// visibility (visible, hidden).
+//
+// Subtlety: A renderer hosting a hidden frame playing audio will have
+// user-blocking priority. Without this feature, an isolate in this renderer
+// would have best-effort priority (derived from the visibility), whereas with
+// the feature it would be user-blocking. To keep isolates in hidden renderers
+// at best-effort priority, but otherwise use the process priority, enable this
+// feature along with "IsolatesPriorityBestEffortWhenHidden".
+BASE_FEATURE(kIsolatesPriorityUseProcessPriority,
+             "IsolatesPriorityUseProcessPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, forces the priority of isolates in hidden renderers to
+// best-effort, overriding the effect of kIsolatesPriorityUseProcessPriority
+// (isolates in visible renderer will still get their priority derived from
+// process priority).
+BASE_FEATURE(kIsolatesPriorityBestEffortWhenHidden,
+             "IsolatesPriorityBestEffortWhenHidden",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable support for isolated web apps. This will guard features like serving
 // isolated web apps via the isolated-app:// scheme, and other advanced isolated
 // app functionality. See https://github.com/reillyeon/isolated-web-apps for a
@@ -909,11 +931,6 @@ BASE_FEATURE(kRestrictThreadPoolInBackground,
 BASE_FEATURE(kSetHistoryInfoOnViewCreation,
              "SetHistoryInfoOnViewCreation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Set a tri-state priority on v8 isolates reflecting the renderer priority.
-BASE_FEATURE(kSetIsolatesPriority,
-             "SetIsolatesPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, sends the spare renderer information when setting the
 // priority of renderers. Currently only Android handles the spare renderer
