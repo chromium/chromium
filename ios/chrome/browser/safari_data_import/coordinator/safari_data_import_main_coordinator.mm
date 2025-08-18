@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_entry_point_mediator.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_export_coordinator.h"
 #import "ios/chrome/browser/safari_data_import/public/metrics.h"
+#import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_ui_handler.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_entry_point_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -54,6 +55,8 @@
 - (void)start {
   CHECK(ShouldShowSafariImportWorkflow());
   _viewController = [[SafariDataImportEntryPointViewController alloc] init];
+  _viewController.showReminderButton =
+      _entryPoint != SafariDataImportEntryPoint::kSetting;
   _viewController.modalInPresentation = YES;
   _viewController.actionHandler = self;
   PromosManager* promosManager =
@@ -99,15 +102,16 @@
 
 - (void)confirmationAlertSecondaryAction {
   RecordSafariImportActionOnEntryPoint(
-      SafariDataImportEntryPointAction::kRemindMeLater, _entryPoint);
-  [_mediator registerReminder];
+      SafariDataImportEntryPointAction::kDismiss, _entryPoint);
+  [_mediator notifyUsedOrDismissed];
   [self.delegate safariImportWorkflowDidEndForCoordinator:self];
 }
 
-- (void)confirmationAlertDismissAction {
+- (void)confirmationAlertTertiaryAction {
+  CHECK(_viewController.showReminderButton);
   RecordSafariImportActionOnEntryPoint(
-      SafariDataImportEntryPointAction::kDismiss, _entryPoint);
-  [_mediator notifyUsedOrDismissed];
+      SafariDataImportEntryPointAction::kRemindMeLater, _entryPoint);
+  [_mediator registerReminder];
   [self.delegate safariImportWorkflowDidEndForCoordinator:self];
 }
 
