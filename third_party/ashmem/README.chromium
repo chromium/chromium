@@ -26,3 +26,6 @@ Patches:
   0006-Allocate-memfds-directly-instead-of-relying-on-AShar.patch:
      Use memfd instead of relying on ASharedMemory_create for devices that
      conform to API level 202604.
+  0007-Do-not-rely-on-ASharedMemory-when-using-memfds.patch:
+     Avoid using readlink() via ASharedMemory by using memfd related
+     syscalls when necessary.

@@ -244,6 +244,90 @@ bool CallJniOnLoad(void* handle) {
   return true;
 }
 
+// Callback used with __system_property_read_callback.
+void prop_read_int(void* cookie, const char* name, const char* value, uint32_t serial) {
+  *static_cast<int *>(cookie) = atoi(value);
+  (void)name;
+  (void)serial;
+}
+
+int system_property_get_int(const char* name) {
+  int result = 0;
+  if (__builtin_available(android 26, *)) {
+    const prop_info* info = __system_property_find(name);
+    if (info)
+      __system_property_read_callback(info, &prop_read_int, &result);
+  } else {
+    char value[PROP_VALUE_MAX] = {};
+    if (__system_property_get(name, value) >= 1)
+      result = atoi(value);
+  }
+  return result;
+}
+
+int vendor_api_level() {
+  static int v_api_level = -1;
+  if (v_api_level < 0)
+    v_api_level = system_property_get_int("ro.vendor.api_level");
+  return v_api_level;
+}
+
+int memfd_create_region(const char *name, size_t size) {
+  int fd = syscall(__NR_memfd_create, name, MFD_CLOEXEC | MFD_ALLOW_SEALING);
+  if (fd < 0) {
+    LOG_E("memfd_create(%s, %zd) failed: %m", name, size);
+    return fd;
+  }
+
+  int ret = ftruncate(fd, size);
+  if (ret < 0) {
+    LOG_E("ftruncate(%s, %zd) failed: %m", name, size);
+    goto error;
+  }
+
+  ret = fcntl(fd, F_ADD_SEALS, F_SEAL_GROW | F_SEAL_SHRINK);
+  if (ret < 0) {
+    LOG_E("memfd_create(%s, %zd) fcntl(F_ADD_SEALS) failed: %m", name, size);
+    goto error;
+  }
+
+  return fd;
+
+error:
+  close(fd);
+  return ret;
+}
+
+int memfd_set_prot_region(int fd, int prot) {
+  int seals = fcntl(fd, F_GET_SEALS);
+  if (seals == -1) {
+    LOG_E("memfd_set_prot_region(%d, %d): F_GET_SEALS failed: %m", fd, prot);
+    return -1;
+  }
+
+  if (prot & PROT_WRITE) {
+    /*
+     * Now we want the buffer to be read-write, let's check if the buffer
+     * has been previously marked as read-only before, if so return error
+     */
+    if (seals & F_SEAL_FUTURE_WRITE) {
+      LOG_E("memfd_set_prot_region(%d, %d): region is write protected", fd, prot);
+      // Inline with ashmem error code, if already in read-only mode.
+      errno = EINVAL;
+      return -1;
+    }
+
+    return 0;
+  }
+
+  // We would only allow read-only for any future file operations
+  if (fcntl(fd, F_ADD_SEALS, F_SEAL_FUTURE_WRITE) == -1) {
+    LOG_E("memfd_set_prot_region(%d, %d): F_SEAL_FUTURE_WRITE seal failed: %m", fd, prot);
+    return -1;
+  }
+
+  return 0;
+}
 }  // namespace
 
 String::String(JNIEnv* env, jstring str) {
@@ -332,68 +416,15 @@ bool FindWebViewReservation(uintptr_t* out_address, size_t* out_size) {
   return result;
 }
 
-/* Callback used with __system_property_read_callback. */
-static void prop_read_int(void* cookie,
-                          const char* name,
-                          const char* value,
-                          uint32_t serial) {
-  *static_cast<int *>(cookie) = atoi(value);
-  (void)name;
-  (void)serial;
-}
-
-static int system_property_get_int(const char* name) {
-  int result = 0;
-  if (__builtin_available(android 26, *)) {
-    const prop_info* info = __system_property_find(name);
-    if (info)
-      __system_property_read_callback(info, &prop_read_int, &result);
-  } else {
-    char value[PROP_VALUE_MAX] = {};
-    if (__system_property_get(name, value) >= 1)
-      result = atoi(value);
-  }
-  return result;
-}
-
-static int vendor_api_level() {
-  static int v_api_level = -1;
-  if (v_api_level < 0)
-    v_api_level = system_property_get_int("ro.vendor.api_level");
-  return v_api_level;
-}
-
-static int memfd_create_region(const char *name, size_t size) {
-  int fd = syscall(__NR_memfd_create, name, MFD_CLOEXEC | MFD_ALLOW_SEALING);
-  if (fd < 0) {
-    LOG_E("memfd_create(%s, %zd) failed: %m", name, size);
-    return fd;
-  }
-
-  int ret = ftruncate(fd, size);
-  if (ret < 0) {
-    LOG_E("ftruncate(%s, %zd) failed: %m", name, size);
-    goto error;
-  }
-
-  ret = fcntl(fd, F_ADD_SEALS, F_SEAL_GROW | F_SEAL_SHRINK);
-  if (ret < 0) {
-    LOG_E("memfd_create(%s, %zd) fcntl(F_ADD_SEALS) failed: %m", name, size);
-    goto error;
-  }
-
-  return fd;
-
-error:
-  close(fd);
-  return ret;
-}
-
-// Starting with API level 26 (Android O) the following functions from
+// Starting with API level 26 (Android O) until device vendor API level
+// 202604 (Android 17), the following functions from
 // libandroid.so should be used to create shared memory regions to ensure
 // compatibility with the future versions:
 // * ASharedMemory_create()
 // * ASharedMemory_setProt()
+//
+// For devices with vendor API levels at 202604 and above, memfd should
+// be used.
 //
 // This is inspired by //third_party/ashmem/ashmem-dev.c, which cannot be
 // referenced from the linker library to avoid increasing binary size.
@@ -401,7 +432,6 @@ error:
 // *Not* threadsafe.
 struct SharedMemoryFunctions {
   SharedMemoryFunctions() {
-    library_handle = dlopen("libandroid.so", RTLD_NOW);
     /*
      * When a device conforms to the VSR for API level 202604 (Android 17),
      * ASharedMemory will allocate memfds and attempt to relabel them by using
@@ -411,18 +441,18 @@ struct SharedMemoryFunctions {
      * it may be unsafe. Since memfds from Chromium should be accessible with
      * the existing sepolicy for appdomain_tmpfs files, just allocate memfds
      * directly if the device conforms to the VSR for API level 202604.
-     *
-     * The rest of the functions work fine with ASharedMemory, as it can recognize
-     * memfds and act accordingly.
      */
-    if (vendor_api_level() >= 202604)
+    if (vendor_api_level() >= 202604) {
       create = &memfd_create_region;
-    else
+      set_protection = &memfd_set_prot_region;
+    } else {
+      library_handle = dlopen("libandroid.so", RTLD_NOW);
       create = reinterpret_cast<CreateFunction>(
           dlsym(library_handle, "ASharedMemory_create"));
 
-    set_protection = reinterpret_cast<SetProtectionFunction>(
-        dlsym(library_handle, "ASharedMemory_setProt"));
+      set_protection = reinterpret_cast<SetProtectionFunction>(
+          dlsym(library_handle, "ASharedMemory_setProt"));
+    }
   }
 
   bool IsWorking() const {
