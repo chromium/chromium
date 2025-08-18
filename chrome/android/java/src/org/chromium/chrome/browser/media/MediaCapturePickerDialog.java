@@ -197,6 +197,9 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
 
     @Override
     public void onTabAdded(Tab tab) {
+        // We do not support capture of native pages, so don't show them as options.
+        if (tab.isNativePage()) return;
+
         mTabItemStateMap.put(tab, new TabItemState(tab));
     }
 
