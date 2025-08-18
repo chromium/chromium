@@ -177,6 +177,7 @@ chrome_ios_eg2_test("ios_chrome_signin_eg2tests_module") {
     "//ios/chrome/browser/authentication/ui_bundled/signin/two_screens_signin:eg2_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet:eg2_tests",
     "//ios/chrome/browser/post_restore_signin/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar:eg2_tests",
     "//ios/chrome/browser/signin/model:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]

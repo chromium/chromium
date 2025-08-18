@@ -46,3 +46,47 @@ source_set("utils") {
     "//ios/third_party/material_components_ios",
   ]
 }
+
+source_set("test_utils") {
+  testonly = true
+  sources = [
+    "identity_snackbar_message_test_utils.h",
+    "identity_snackbar_message_test_utils.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "identity_snackbar_message_egtest.mm" ]
+  deps = [
+    ":test_utils",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
+    "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts:constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:test_constants",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

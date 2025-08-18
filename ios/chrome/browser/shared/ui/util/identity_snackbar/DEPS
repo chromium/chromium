@@ -7,5 +7,8 @@ specific_include_rules = {
     "+ios/chrome/browser/signin/model/constants.h",
     "+ios/chrome/browser/signin/model/identity_manager_factory.h",
     "+ios/chrome/browser/signin/model/system_identity.h",
+  ],
+  "identity_snackbar_message_test_utils\.mm" : [
+    "+ios/chrome/browser/signin/model/fake_system_identity.h",
   ]
 }

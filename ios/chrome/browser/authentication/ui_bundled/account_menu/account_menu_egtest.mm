@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message_test_utils.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
@@ -32,6 +33,9 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using signin::assertSnackbarNotShown;
+using signin::assertSnackbarShownAndDismissItWithIdentity;
 
 namespace {
 
@@ -60,15 +64,6 @@ id<GREYMatcher> identityDiscMatcher() {
   return grey_accessibilityID(kNTPFeedHeaderIdentityDisc);
 }
 
-// A matcher for the snackbar message, when the user is signed in with primary
-// identity `identity`.
-id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
-  NSString* snackbarMessage =
-      l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-                              base::SysNSStringToUTF16(identity.userGivenName));
-  return grey_allOf(grey_text(snackbarMessage), grey_sufficientlyVisible(),
-                    nil);
-}
 }  // namespace
 
 // Integration tests using the Account Menu.
@@ -90,27 +85,6 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   config.features_enabled.push_back(kIdentityDiscAccountMenu);
-  if ([self isRunningTest:@selector
-            (testMultipleIdentities_IdentityConfirmationToast)] ||
-      [self isRunningTest:@selector
-            (testSingleIdentity_IdentityConfirmationToast)] ||
-      [self isRunningTest:@selector
-            (testFrequencyLimitation_IdentityConfirmationToast)] ||
-      [self isRunningTest:@selector
-            (testRecentSignin_IdentityConfirmationToast)]) {
-    config.relaunch_policy = ForceRelaunchByCleanShutdown;
-    config.additional_args.push_back(
-        "--enable-features=" + std::string(kStartSurface.name) + "<" +
-        std::string(kStartSurface.name));
-    config.additional_args.push_back(
-        "--force-fieldtrials=" + std::string(kStartSurface.name) + "/Test");
-    config.additional_args.push_back(
-        "--force-fieldtrial-params=" + std::string(kStartSurface.name) +
-        ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
-        "/" + "0");
-    config.features_enabled.push_back(kIdentityConfirmationSnackbar);
-  }
-
   return config;
 }
 
@@ -124,42 +98,6 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 - (void)tearDownHelper {
   [ChromeEarlGrey signOutAndClearIdentities];
   [super tearDownHelper];
-}
-
-// Prepaes the NTP start surface.
-- (void)prepareStartSurface {
-  [[self class] closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
-  [ChromeEarlGrey loadURL:destinationUrl];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"Anyone know any good pony jokes?"];
-}
-
-// Update the identity snackbar params based on its last count, to allow
-// displaying it.
-- (void)prepareSnackbarParamsForNextDisplayWithLastCount:(int)lastCount {
-  [ChromeEarlGrey
-        setIntegerValue:lastCount
-      forLocalStatePref:prefs::kIdentityConfirmationSnackbarDisplayCount];
-
-  if (lastCount == 0) {
-    // Set params for reminder after 1 day.
-    [ChromeEarlGrey
-             setTimeValue:base::Time::Now() - base::Days(1)
-        forLocalStatePref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
-  } else if (lastCount == 1) {
-    // Set params for reminder after 7 days.
-    [ChromeEarlGrey
-             setTimeValue:base::Time::Now() - base::Days(7)
-        forLocalStatePref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
-  } else if (lastCount == 2) {
-    // Set params for reminder after 30 days.
-    [ChromeEarlGrey
-             setTimeValue:base::Time::Now() - base::Days(30)
-        forLocalStatePref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
-  }
 }
 
 // Select the identity disc particle.
@@ -195,38 +133,6 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::Seconds(5), wait_for_disappearance),
              @"Account menu did not disappear.");
-}
-
-// Assert the snackbar is not shown for kPrimaryIdentity.
-- (void)assertSnackbarNotShown {
-  [[EarlGrey selectElementWithMatcher:snackbarMessageMatcher(kPrimaryIdentity)]
-      assertWithMatcher:grey_nil()];
-}
-
-// Assert the snackbar is shown for `identity`.
-- (void)assertSnackbarShownAndDismissItWithIdentity:
-    (FakeSystemIdentity*)identity {
-  id<GREYMatcher> snackbar_matcher = snackbarMessageMatcher(identity);
-  ConditionBlock wait_for_appearance = ^{
-    NSError* error;
-
-    // Checking if collection view exists in the UI hierarchy.
-    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-
-    return error == nil;
-  };
-  if (!wait_for_appearance()) {
-    // Waiting up to 10 seconds because sign-out from managed account may be
-    // slow.
-    GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                   base::Seconds(10), wait_for_appearance),
-               @"Snackbar did not appear.");
-  }
-
-  [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-      performAction:grey_tap()];
 }
 
 // Close the account menu.
@@ -449,7 +355,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
 
-  [self assertSnackbarShownAndDismissItWithIdentity:kSecondaryIdentity];
+  assertSnackbarShownAndDismissItWithIdentity(kSecondaryIdentity);
   [SigninEarlGrey verifySignedInWithFakeIdentity:kSecondaryIdentity];
   [self assertAccountMenuIsNotShown];
 }
@@ -480,7 +386,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
     // is not always detected on CQ causing flakyness.
     // TODO(crbug.com/433726717): Remove the `if` around the assertion when
     // snack-bar stop being flaky on egtest on iphone.
-    [self assertSnackbarShownAndDismissItWithIdentity:kPrimaryIdentity];
+    assertSnackbarShownAndDismissItWithIdentity(kPrimaryIdentity);
   }
   [SigninEarlGrey verifySignedInWithFakeIdentity:kPrimaryIdentity];
   [self assertAccountMenuIsNotShown];
@@ -521,7 +427,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
     // is not always detected on CQ causing flakyness.
     // TODO(crbug.com/433726717): Remove the `if` around the assertion when
     // snack-bar stop being flaky on egtest on iphone.
-    [self assertSnackbarShownAndDismissItWithIdentity:kManagedIdentity1];
+    assertSnackbarShownAndDismissItWithIdentity(kManagedIdentity1);
   }
   [SigninEarlGrey verifySignedInWithFakeIdentity:kManagedIdentity1];
   [self assertAccountMenuIsNotShown];
@@ -570,146 +476,9 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
         performAction:grey_tap()];
   }
 
-  [self assertSnackbarShownAndDismissItWithIdentity:kManagedIdentity2];
+  assertSnackbarShownAndDismissItWithIdentity(kManagedIdentity2);
   [self assertAccountMenuIsNotShown];
   [SigninEarlGrey verifySignedInWithFakeIdentity:kManagedIdentity2];
-}
-
-#pragma mark - Test snackbar
-
-// Verifies identity confirmation snackbar shows on startup with multiple
-// identities on device after 1 day.
-- (void)testMultipleIdentities_IdentityConfirmationToast {
-  // TODO(crbug.com/433726717): Test disabled on iPhones.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPhones.");
-  }
-
-  [self prepareStartSurface];
-  // Add multiple identities and sign in with one of them.
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
-  [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
-  [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
-
-  // Background then foreground the app.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-
-  // Confirm the snackbar shows after 1 day of signing in with multi identities
-  // on device.
-  [self assertSnackbarShownAndDismissItWithIdentity:kPrimaryIdentity];
-}
-
-// Verifies no identity confirmation snackbar shows on startup with only one
-// identity on device.
-- (void)testSingleIdentity_IdentityConfirmationToast {
-  [self prepareStartSurface];
-  // Add multiple identities and sign in with one of them.
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
-  [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
-
-  // Background then foreground the app.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-
-  [self assertSnackbarNotShown];
-}
-
-// Verifies no identity confirmation snackbar shows on startup when there is an
-// identity on the device but the user is signed-out.
-- (void)testNoIdentity_IdentityConfirmationToast {
-  [self prepareStartSurface];
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
-
-  // Keep the identity on device but sign-out.
-  [SigninEarlGrey signOut];
-  [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
-
-  // Background then foreground the app.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  [self assertSnackbarNotShown];
-}
-
-// Verifies identity confirmation snackbar on startup does not show after a
-// recent sign-in.
-- (void)testRecentSignin_IdentityConfirmationToast {
-  [self prepareStartSurface];
-  // Add multiple identities and sign in with one of them.
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
-  [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
-
-  // Background then foreground the app.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  [self assertSnackbarNotShown];
-}
-
-// Verifies identity confirmation snackbar shows on startup with multiple
-// identities on device with frequency limitations.
-- (void)testFrequencyLimitation_IdentityConfirmationToast {
-  // TODO(crbug.com/433726717): Test disabled on iPhones.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPhones.");
-  }
-
-  [self prepareStartSurface];
-  // Add multiple identities and sign in with one of them.
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
-  [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
-
-  // Snackbar shows after 1 day of signing in.
-  [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  [self assertSnackbarShownAndDismissItWithIdentity:kPrimaryIdentity];
-
-  // Background then foreground the app again.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  [self assertSnackbarNotShown];
-
-  // Update params to be ready for a second display after 7 days.
-  [self prepareSnackbarParamsForNextDisplayWithLastCount:1];
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  [self assertSnackbarShownAndDismissItWithIdentity:kPrimaryIdentity];
-
-  // Background then foreground the app again.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  [self assertSnackbarNotShown];
-
-  // Update params to be ready for a third display after 30 days.
-  [self prepareSnackbarParamsForNextDisplayWithLastCount:2];
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  [self assertSnackbarShownAndDismissItWithIdentity:kPrimaryIdentity];
-
-  // Update params after third display.
-  [self prepareSnackbarParamsForNextDisplayWithLastCount:3];
-
-  // Background then foreground the app again, the snackbar does not show after
-  // third display.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  [self assertSnackbarNotShown];
-}
-
-// Verifies identity confirmation snackbar does not show if NTP start surface
-// not shown.
-- (void)testNoStartSurfaceNoSnackbar_IdentityConfirmationToast {
-  // Skip prepareStartSurface.
-
-  // Add multiple identities and sign in with one of them.
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
-  [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
-  [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
-
-  // Background then foreground the app.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-
-  [self assertSnackbarNotShown];
-}
-
-// Verifies identity confirmation snackbar does not show in incognito.
-- (void)testNoSnackbarShownIncognito_IdentityConfirmationToast {
-  [ChromeEarlGrey openNewIncognitoTab];
-
-  // Background then foreground the app.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-
-  [self assertSnackbarNotShown];
 }
 
 // Tests remove account from the edit accounts menu.

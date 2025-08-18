@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message_test_utils.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -910,12 +911,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   //  Dismiss signed in snackbar.
-  NSString* signedInSnackbarTitle = l10n_util::GetNSStringF(
-      IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-      base::SysNSStringToUTF16(managedIdentity.userFullName));
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(signedInSnackbarTitle)]
-      performAction:grey_tap()];
+  signin::assertSnackbarShownAndDismissItWithIdentity(managedIdentity);
 
   // Confirm profile switched.
   GREYAssert([[ChromeEarlGrey currentProfileName]
