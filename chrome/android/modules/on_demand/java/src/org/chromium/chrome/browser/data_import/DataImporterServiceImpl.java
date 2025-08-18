@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.util.Base64;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.google.protobuf.ByteString;
 
 import io.grpc.Context;
@@ -172,7 +174,8 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
         }
     }
 
-    static class TargetService extends TargetServiceGrpc.TargetServiceImplBase {
+    // TODO(crbug.com/436171659): Separate this class out into its own file.
+    public static class TargetService extends TargetServiceGrpc.TargetServiceImplBase {
         // Helper "struct" to accumulate import results for a given session ID, to be returned to
         // the API caller in `importItemsDone()`.
         static class ImportResults {
@@ -191,7 +194,7 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
         private final Object mPendingImportsLock = new Object();
 
         // Must only be created and used on the UI thread.
-        @Nullable DataImporterBridge mBridge;
+        @VisibleForTesting @Nullable DataImporterBridge mBridge;
 
         @Override
         public void handshake(
