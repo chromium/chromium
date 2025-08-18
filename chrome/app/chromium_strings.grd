@@ -1481,9 +1481,8 @@ Chromium is unable to recover your settings.
         </if>
 
         <!-- On Sign-in Avatar Button Label Desktop -->
-        <!-- TODO(crbug.com/417928515): Finalize the string and make it translateable. -->
-        <message translateable="false" name="IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS" desc="">
-          Making Chromium Yours
+        <message name="IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS" desc="The avatar button label when the user has just signed in. When clicked, it opens the profile menu.">
+          Making Chromium yours...
         </message>
       </if>
 
