@@ -33,22 +33,10 @@ TEST_F(OtpSuggestionGeneratorTest, Otps) {
   EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(otps[0]));
   EXPECT_EQ(suggestions[0].type, SuggestionType::kOneTimePasswordEntry);
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kAndroidMessages);
-  ASSERT_TRUE(std::holds_alternative<Suggestion::OneTimePasswordPayload>(
-      suggestions[0].payload));
-  EXPECT_EQ(
-      std::get<Suggestion::OneTimePasswordPayload>(suggestions[0].payload),
-      Suggestion::OneTimePasswordPayload(
-          {{field_id, base::UTF8ToUTF16(otps[0])}}));
 
   EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(otps[1]));
   EXPECT_EQ(suggestions[1].type, SuggestionType::kOneTimePasswordEntry);
   EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kAndroidMessages);
-  ASSERT_TRUE(std::holds_alternative<Suggestion::OneTimePasswordPayload>(
-      suggestions[1].payload));
-  EXPECT_EQ(
-      std::get<Suggestion::OneTimePasswordPayload>(suggestions[1].payload),
-      Suggestion::OneTimePasswordPayload(
-          {{field_id, base::UTF8ToUTF16(otps[1])}}));
 }
 
 }  // namespace autofill

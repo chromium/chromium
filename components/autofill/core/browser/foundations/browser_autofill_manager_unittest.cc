@@ -9186,8 +9186,8 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
   manager().AddSeenFormStructure(std::move(form_structure));
 
   std::u16string otp_value = u"123456";
-  Suggestion::OneTimePasswordPayload otp_filling_payload(
-      {{form.fields()[0].global_id(), otp_value}});
+  OtpFillData otp_fill_data;
+  otp_fill_data[form.fields()[0].global_id()] = otp_value;
 
   base::flat_map<FieldGlobalId, FieldType> expected_types = {
       {form.fields()[0].global_id(), ONE_TIME_CODE}};
@@ -9196,10 +9196,10 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
                                         mojom::ActionPersistence::kFill, _, _,
                                         expected_types, _))
       .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
-                      Return(std::vector<FieldGlobalId>{})));
-  manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
-      &otp_filling_payload.filling_data, AutofillTriggerSource::kPopup);
+                      Return(base::flat_set<FieldGlobalId>{})));
+  manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                              form.fields()[0].global_id(), &otp_fill_data,
+                              AutofillTriggerSource::kPopup);
   ASSERT_EQ(1u, filled_fields.size());
   EXPECT_EQ(form.fields()[0].global_id(), filled_fields[0].global_id());
   EXPECT_EQ(otp_value, filled_fields[0].value());

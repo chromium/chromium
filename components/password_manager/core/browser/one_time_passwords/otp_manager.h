@@ -58,6 +58,10 @@ class OtpManager : public autofill::OtpSuggestionDelegate {
                          const autofill::FieldGlobalId& field_id,
                          base::OnceCallback<void(std::vector<std::string>)>
                              callback) const override;
+  autofill::OtpFillData GetFillDataForOtpSuggestion(
+      const autofill::FormGlobalId& form_id,
+      const autofill::FieldGlobalId& field_id,
+      const std::u16string& otp_value) const override;
 
   // Called by the client when the renderer frame identified by `frame_token` is
   // deleted.

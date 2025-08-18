@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/integrators/password_manager/otp_suggestion_delegate.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -58,6 +59,12 @@ class OtpFormManager {
   void GetOtpSuggestions(
       const autofill::FieldGlobalId& field_id,
       base::OnceCallback<void(std::vector<std::string>)> callback);
+
+  // Returns the fill data (mapping field IDs to values to fill) for a given
+  // suggestion triggering field and OTP value.
+  autofill::OtpFillData GetFillDataForOtpSuggestion(
+      const autofill::FieldGlobalId& field_id,
+      const std::u16string& otp_value) const;
 
   const std::vector<autofill::FieldGlobalId>& otp_field_ids() const {
     return otp_field_ids_;

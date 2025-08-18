@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/form_autofill_history.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/integrators/password_manager/otp_suggestion_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_constants.h"
 
@@ -40,8 +41,6 @@ enum class RefillTriggerReason {
 };
 
 using VerifiedProfile = std::map<FieldType, std::u16string>;
-
-using OtpFillData = std::map<FieldGlobalId, std::u16string>;
 
 using FillingPayload = std::variant<const AutofillProfile*,
                                     const CreditCard*,

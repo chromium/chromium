@@ -127,6 +127,18 @@ void OtpFormManager::GetOtpSuggestions(
   }
 }
 
+autofill::OtpFillData OtpFormManager::GetFillDataForOtpSuggestion(
+    const FieldGlobalId& field_id,
+    const std::u16string& otp_value) const {
+  CHECK(IsFieldEligibleForOtpFilling(field_id));
+  autofill::OtpFillData fill_data;
+  // TODO(crbug.com/415273270): Implement logic for splitting the value by
+  // fields and checking if the initiating field is present in the resulting
+  // map.
+  fill_data[field_id] = otp_value;
+  return fill_data;
+}
+
 void OtpFormManager::RetrieveOtpValue() {
   if (sms_otp_backend_) {
     sms_otp_retrieval_in_progress_ = true;

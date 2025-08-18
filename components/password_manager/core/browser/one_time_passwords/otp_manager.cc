@@ -139,6 +139,15 @@ void OtpManager::GetOtpSuggestions(
   form_manager->GetOtpSuggestions(field_id, std::move(callback));
 }
 
+autofill::OtpFillData OtpManager::GetFillDataForOtpSuggestion(
+    const autofill::FormGlobalId& form_id,
+    const autofill::FieldGlobalId& field_id,
+    const std::u16string& otp_value) const {
+  OtpFormManager* form_manager = GetManagerForForm(form_id);
+  CHECK(form_manager);
+  return form_manager->GetFillDataForOtpSuggestion(field_id, otp_value);
+}
+
 void OtpManager::OnRenderFrameDeleted(
     const autofill::LocalFrameToken& frame_token) {
   CleanFormManagersForTheFrame(frame_token);

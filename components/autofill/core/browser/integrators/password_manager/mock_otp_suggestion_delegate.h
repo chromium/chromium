@@ -33,6 +33,12 @@ class MockOtpSuggestionDelegate : public OtpSuggestionDelegate {
                const FieldGlobalId& field_id,
                base::OnceCallback<void(std::vector<std::string>)> callback),
               (const, override));
+  MOCK_METHOD(OtpFillData,
+              GetFillDataForOtpSuggestion,
+              (const FormGlobalId& form_id,
+               const FieldGlobalId& field_id,
+               const std::u16string& otp_value),
+              (const, override));
 };
 
 }  // namespace autofill

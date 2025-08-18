@@ -193,22 +193,6 @@ struct Suggestion {
     std::map<FieldType, std::u16string> fields;
   };
 
-  struct OneTimePasswordPayload final {
-    OneTimePasswordPayload();
-    explicit OneTimePasswordPayload(
-        std::map<FieldGlobalId, std::u16string> filling_data);
-    OneTimePasswordPayload(const OneTimePasswordPayload&);
-    OneTimePasswordPayload(OneTimePasswordPayload&&);
-    OneTimePasswordPayload& operator=(const OneTimePasswordPayload&);
-    OneTimePasswordPayload& operator=(OneTimePasswordPayload&&);
-    ~OneTimePasswordPayload();
-
-    friend bool operator==(const OneTimePasswordPayload&,
-                           const OneTimePasswordPayload&) = default;
-
-    std::map<FieldGlobalId, std::u16string> filling_data;
-  };
-
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
   using Payload = std::variant<Guid,
@@ -220,8 +204,7 @@ struct Suggestion {
                                AutofillAiPayload,
                                PaymentsPayload,
                                IdentityCredentialPayload,
-                               AutocompleteEntry,
-                               OneTimePasswordPayload>;
+                               AutocompleteEntry>;
 
   // This struct is used to provide password suggestions with custom icons,
   // using the favicon of the website associated with the credentials. While
@@ -472,8 +455,6 @@ struct Suggestion {
                std::holds_alternative<PaymentsPayload>(payload);
       case SuggestionType::kBnplEntry:
         return std::holds_alternative<PaymentsPayload>(payload);
-      case SuggestionType::kOneTimePasswordEntry:
-        return std::holds_alternative<OneTimePasswordPayload>(payload);
       case SuggestionType::kDevtoolsTestAddressEntry:
       default:
         return std::holds_alternative<Guid>(payload) ||

@@ -5,9 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_OTP_SUGGESTION_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_OTP_SUGGESTION_DELEGATE_H_
 
+#include <map>
+#include <string>
+
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
+
+using OtpFillData = std::map<FieldGlobalId, std::u16string>;
 
 // This delegate is queried for OTP suggestions for a given field.
 // This interface is required for communication from //components/autofill to
@@ -31,6 +36,13 @@ class OtpSuggestionDelegate {
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       base::OnceCallback<void(std::vector<std::string>)> callback) const = 0;
+
+  // When an OTP suggestion is selected, this method is called to get the fill
+  // data, which contains information about what value to fill into what field.
+  virtual OtpFillData GetFillDataForOtpSuggestion(
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
+      const std::u16string& otp_value) const = 0;
 };
 
 }  // namespace autofill

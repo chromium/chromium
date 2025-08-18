@@ -289,27 +289,6 @@ Suggestion::IdentityCredentialPayload::operator=(IdentityCredentialPayload&&) =
 
 Suggestion::IdentityCredentialPayload::~IdentityCredentialPayload() = default;
 
-Suggestion::OneTimePasswordPayload::OneTimePasswordPayload() = default;
-Suggestion::OneTimePasswordPayload::OneTimePasswordPayload(
-    std::map<FieldGlobalId, std::u16string> filling_data)
-    : filling_data(std::move(filling_data)) {}
-
-Suggestion::OneTimePasswordPayload::OneTimePasswordPayload(
-    const OneTimePasswordPayload&) = default;
-
-Suggestion::OneTimePasswordPayload::OneTimePasswordPayload(
-    OneTimePasswordPayload&&) = default;
-
-Suggestion::OneTimePasswordPayload&
-Suggestion::OneTimePasswordPayload::operator=(const OneTimePasswordPayload&) =
-    default;
-
-Suggestion::OneTimePasswordPayload&
-Suggestion::OneTimePasswordPayload::operator=(OneTimePasswordPayload&&) =
-    default;
-
-Suggestion::OneTimePasswordPayload::~OneTimePasswordPayload() = default;
-
 Suggestion::PaymentsPayload::PaymentsPayload() = default;
 
 Suggestion::PaymentsPayload::PaymentsPayload(
