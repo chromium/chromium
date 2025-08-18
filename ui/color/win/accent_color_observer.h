@@ -31,9 +31,6 @@ class COMPONENT_EXPORT(COLOR) AccentColorObserver {
   base::CallbackListSubscription Subscribe(base::RepeatingClosure callback);
 
   std::optional<SkColor> accent_color() const { return accent_color_; }
-  std::optional<SkColor> accent_color_inactive() const {
-    return accent_color_inactive_;
-  }
   std::optional<SkColor> accent_border_color() const {
     return accent_border_color_;
   }
@@ -50,7 +47,6 @@ class COMPONENT_EXPORT(COLOR) AccentColorObserver {
 
   base::RepeatingClosureList callbacks_;
   std::optional<SkColor> accent_color_;
-  std::optional<SkColor> accent_color_inactive_;
   std::optional<SkColor> accent_border_color_;
   bool use_dwm_frame_color_ = false;
 };
