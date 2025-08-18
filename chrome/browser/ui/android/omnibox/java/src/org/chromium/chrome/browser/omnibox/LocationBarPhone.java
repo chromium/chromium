@@ -12,7 +12,6 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
@@ -86,14 +85,14 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     /**
-     * Returns {@link FrameLayout.LayoutParams} of the LocationBar view.
+     * Returns {@link MarginLayoutParams} of the LocationBar view.
      *
      * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getLayoutParams()
      */
-    public FrameLayout.LayoutParams getFrameLayoutParams() {
-        return (FrameLayout.LayoutParams) getLayoutParams();
+    public MarginLayoutParams getMarginLayoutParams() {
+        return (MarginLayoutParams) getLayoutParams();
     }
 
     int getOffsetOfFirstVisibleFocusedView() {

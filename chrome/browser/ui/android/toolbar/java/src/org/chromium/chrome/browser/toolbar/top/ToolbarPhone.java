@@ -1016,8 +1016,8 @@ public class ToolbarPhone extends ToolbarLayout
         TraceEvent.begin("ToolbarPhone.updateLocationBarLayoutForExpansionAnimation");
         if (isInTabSwitcherMode()) return;
 
-        FrameLayout.LayoutParams locationBarLayoutParams =
-                mLocationBar.getPhoneCoordinator().getFrameLayoutParams();
+        MarginLayoutParams locationBarLayoutParams =
+                mLocationBar.getPhoneCoordinator().getMarginLayoutParams();
         int currentLeftMargin = locationBarLayoutParams.leftMargin;
         int currentWidth = locationBarLayoutParams.width;
 
