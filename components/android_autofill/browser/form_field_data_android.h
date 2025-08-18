@@ -32,7 +32,7 @@ class FormFieldDataAndroid {
     explicit FieldTypes(FieldType type);
     FieldTypes(FieldType heuristic_type,
                FieldType server_type,
-               std::string_view computed_type,
+               std::string_view overall_type,
                std::vector<FieldType> server_predictions);
     FieldTypes(FieldTypes&&);
     FieldTypes& operator=(FieldTypes&&);
@@ -44,7 +44,7 @@ class FormFieldDataAndroid {
 
     FieldType heuristic_type = UNKNOWN_TYPE;
     FieldType server_type = UNKNOWN_TYPE;
-    std::string computed_type;
+    std::string overall_type;
     std::vector<FieldType> server_predictions;
   };
 

@@ -115,7 +115,7 @@ public class AutofillRequestTest {
         fieldBuilder.mHeuristicType = "PASSWORD";
         fieldBuilder.mId = "username-id";
         fieldBuilder.mServerType = "USERNAME";
-        fieldBuilder.mComputedType = "USERNAME";
+        fieldBuilder.mOverallType = "USERNAME";
 
         TestViewStructure structure =
                 fillStructureForRequest(createRequest(FORM_SESSION_ID, fieldBuilder.build()));

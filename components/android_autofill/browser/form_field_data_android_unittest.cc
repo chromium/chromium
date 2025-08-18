@@ -65,11 +65,11 @@ TEST_F(FormFieldDataAndroidTest, FieldTypesEquality) {
 
   const FieldTypes mixed_types(/*heuristic_type=*/USERNAME,
                                /*server_type=*/NAME_FIRST,
-                               /*computed_type=*/"NAME_FIRST",
+                               /*overall_type=*/"NAME_FIRST",
                                /*server_predictions=*/{NAME_FIRST});
   const FieldTypes same_types(/*heuristic_type=*/USERNAME,
                               /*server_type=*/USERNAME,
-                              /*computed_type=*/"USERNAME",
+                              /*overall_type=*/"USERNAME",
                               /*server_predictions=*/{USERNAME});
   EXPECT_NE(mixed_types, USERNAME);
   EXPECT_NE(mixed_types, NAME_FIRST);

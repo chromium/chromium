@@ -91,7 +91,7 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
                 env, FieldTypeToStringView(field_types.heuristic_type)),
       ConvertUTF8ToJavaString(env,
                               FieldTypeToStringView(field_types.server_type)),
-      ConvertUTF8ToJavaString(env, field_types.computed_type),
+      ConvertUTF8ToJavaString(env, field_types.overall_type),
       ToJavaArrayOfPredictionStrings(env, field_types.server_predictions),
       field.bounds().x(), field.bounds().y(), field.bounds().right(),
       field.bounds().bottom(),
@@ -138,7 +138,7 @@ void FormFieldDataAndroidBridgeImpl::UpdateFieldTypes(
       env, obj,
       ConvertUTF8ToJavaString(env,
                               FieldTypeToStringView(field_types.server_type)),
-      ConvertUTF8ToJavaString(env, field_types.computed_type),
+      ConvertUTF8ToJavaString(env, field_types.overall_type),
       ToJavaArrayOfPredictionStrings(env, field_types.server_predictions));
 }
 

@@ -99,7 +99,7 @@ public class FormData {
                             .addAttribute("ua-autofill-hints", field.mHeuristicType)
                             .addAttribute("id", field.mId);
             builder.addAttribute("crowdsourcing-autofill-hints", field.getServerType());
-            builder.addAttribute("computed-autofill-hints", field.getComputedType());
+            builder.addAttribute("computed-autofill-hints", field.getOverallType());
             // Compose multiple predictions to a string separated by ','.
             String[] predictions = field.getServerPredictions();
             if (predictions != null && predictions.length > 0) {

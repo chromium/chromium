@@ -70,7 +70,7 @@ public class FormFieldData {
     // Provides the field type along with mHeuristicType, but could be changed
     // after the object instantiated.
     private String mServerType;
-    private String mComputedType;
+    private String mOverallType;
     private String[] mServerPredictions;
     private @Nullable AutofillId mAutofillId;
 
@@ -90,7 +90,7 @@ public class FormFieldData {
             int maxLength,
             String heuristicType,
             String serverType,
-            String computedType,
+            String overallType,
             String[] serverPredictions,
             float left,
             float top,
@@ -128,7 +128,7 @@ public class FormFieldData {
         mHeuristicType = heuristicType;
         mServerType = serverType;
         mServerPredictions = serverPredictions;
-        mComputedType = computedType;
+        mOverallType = overallType;
         mBounds = new RectF(left, top, right, bottom);
         mVisible = visible;
         mAutofilled = isAutofilled;
@@ -188,9 +188,9 @@ public class FormFieldData {
 
     @CalledByNative
     private void updateFieldTypes(
-            String serverType, String computedType, String[] serverPredictions) {
+            String serverType, String overallType, String[] serverPredictions) {
         mServerType = serverType;
-        mComputedType = computedType;
+        mOverallType = overallType;
         mServerPredictions = serverPredictions;
     }
 
@@ -198,8 +198,8 @@ public class FormFieldData {
         return mServerType;
     }
 
-    public String getComputedType() {
-        return mComputedType;
+    public String getOverallType() {
+        return mOverallType;
     }
 
     public String[] getServerPredictions() {
@@ -263,7 +263,7 @@ public class FormFieldData {
             int maxLength,
             String heuristicType,
             String serverType,
-            String computedType,
+            String overallType,
             String[] serverPredictions,
             float left,
             float top,
@@ -290,7 +290,7 @@ public class FormFieldData {
                 maxLength,
                 heuristicType,
                 serverType,
-                computedType,
+                overallType,
                 serverPredictions,
                 left,
                 top,

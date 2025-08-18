@@ -23,7 +23,7 @@ public class FormFieldDataBuilder {
     int mMaxLength;
     String mHeuristicType;
     String mServerType;
-    String mComputedType;
+    String mOverallType;
     String[] mServerPredictions;
     RectF mBounds = new RectF();
     String[] mDatalistValues;
@@ -51,7 +51,7 @@ public class FormFieldDataBuilder {
                         mMaxLength,
                         mHeuristicType,
                         mServerType,
-                        mComputedType,
+                        mOverallType,
                         mServerPredictions,
                         mBounds.left,
                         mBounds.top,

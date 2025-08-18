@@ -2914,13 +2914,13 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(2, viewTypes.size());
         assertEquals(viewStructure.getChild(0).getAutofillId(), viewTypes.get(0).mAutofillId);
         assertEquals("USERNAME", viewTypes.get(0).mServerType);
-        assertEquals("USERNAME", viewTypes.get(0).mComputedType);
+        assertEquals("USERNAME", viewTypes.get(0).mOverallType);
         assertArrayEquals(
                 new String[] {"USERNAME", "EMAIL_ADDRESS"},
                 viewTypes.get(0).getServerPredictions());
         assertEquals(viewStructure.getChild(1).getAutofillId(), viewTypes.get(1).mAutofillId);
         assertEquals("EMAIL_ADDRESS", viewTypes.get(1).mServerType);
-        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mComputedType);
+        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mOverallType);
         assertArrayEquals(new String[] {"EMAIL_ADDRESS"}, viewTypes.get(1).getServerPredictions());
     }
 
@@ -3004,11 +3004,11 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(2, viewTypes.size());
         assertEquals(viewStructure.getChild(0).getAutofillId(), viewTypes.get(0).mAutofillId);
         assertEquals("USERNAME", viewTypes.get(0).mServerType);
-        assertEquals("USERNAME", viewTypes.get(0).mComputedType);
+        assertEquals("USERNAME", viewTypes.get(0).mOverallType);
         assertArrayEquals(new String[] {"USERNAME"}, viewTypes.get(0).getServerPredictions());
         assertEquals(viewStructure.getChild(1).getAutofillId(), viewTypes.get(1).mAutofillId);
         assertEquals("EMAIL_ADDRESS", viewTypes.get(1).mServerType);
-        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mComputedType);
+        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mOverallType);
         assertArrayEquals(new String[] {"EMAIL_ADDRESS"}, viewTypes.get(1).getServerPredictions());
     }
 
@@ -3095,13 +3095,13 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(2, viewTypes.size());
         assertEquals(viewStructure.getChild(0).getAutofillId(), viewTypes.get(0).mAutofillId);
         assertEquals("USERNAME", viewTypes.get(0).mServerType);
-        assertEquals("USERNAME", viewTypes.get(0).mComputedType);
+        assertEquals("USERNAME", viewTypes.get(0).mOverallType);
         assertArrayEquals(
                 new String[] {"USERNAME", "EMAIL_ADDRESS"},
                 viewTypes.get(0).getServerPredictions());
         assertEquals(viewStructure.getChild(1).getAutofillId(), viewTypes.get(1).mAutofillId);
         assertEquals("EMAIL_ADDRESS", viewTypes.get(1).mServerType);
-        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mComputedType);
+        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mOverallType);
         assertArrayEquals(new String[] {"EMAIL_ADDRESS"}, viewTypes.get(1).getServerPredictions());
     }
 
