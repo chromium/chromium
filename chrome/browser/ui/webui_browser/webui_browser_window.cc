@@ -657,8 +657,7 @@ void WebUIBrowserWindow::ShowHatsDialog(
 }
 
 ExclusiveAccessContext* WebUIBrowserWindow::GetExclusiveAccessContext() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return this;
 }
 
 std::string WebUIBrowserWindow::GetWorkspace() const {
@@ -774,6 +773,55 @@ void WebUIBrowserWindow::Minimize() {
 
 void WebUIBrowserWindow::Restore() {
   widget_->Restore();
+}
+
+Profile* WebUIBrowserWindow::GetProfile() {
+  return browser_->profile();
+}
+
+void WebUIBrowserWindow::EnterFullscreen(const url::Origin& origin,
+                                         ExclusiveAccessBubbleType bubble_type,
+                                         const int64_t display_id) {
+  // TODO(webium): Implement this.
+  NOTIMPLEMENTED();
+}
+
+void WebUIBrowserWindow::ExitFullscreen() {
+  // TODO(webium): Implement this.
+  NOTIMPLEMENTED();
+}
+
+void WebUIBrowserWindow::UpdateExclusiveAccessBubble(
+    const ExclusiveAccessBubbleParams& params,
+    ExclusiveAccessBubbleHideCallback first_hide_callback) {
+  // TODO(webium): Implement this.
+  NOTIMPLEMENTED();
+}
+
+bool WebUIBrowserWindow::IsExclusiveAccessBubbleDisplayed() const {
+  // TODO(webium): Implement this.
+  return false;
+}
+
+void WebUIBrowserWindow::OnExclusiveAccessUserInput() {
+  // TODO(webium): Implement this.
+}
+
+content::WebContents* WebUIBrowserWindow::GetWebContentsForExclusiveAccess() {
+  // TODO(webium): Implement this.
+  NOTREACHED();
+}
+
+bool WebUIBrowserWindow::CanUserEnterFullscreen() const {
+  // TODO(webium): Implement this.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool WebUIBrowserWindow::CanUserExitFullscreen() const {
+  // TODO(webium): Implement this.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 void WebUIBrowserWindow::DestroyBrowser() {

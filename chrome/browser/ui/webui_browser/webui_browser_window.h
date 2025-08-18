@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
@@ -27,6 +28,7 @@ class WebUILocationBar;
 // A BrowserWindow implementation that uses WebUI for its primary UI. It still
 // uses views::Widget for windowing management.
 class WebUIBrowserWindow : public BrowserWindow,
+                           public ExclusiveAccessContext,
                            public ui::ColorProviderSource {
  public:
   explicit WebUIBrowserWindow(std::unique_ptr<Browser> browser);
@@ -210,7 +212,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   gfx::Rect GetBounds() const override;
   bool IsMaximized() const override;
   bool IsMinimized() const override;
-  bool IsFullscreen() const override;
+  bool IsFullscreen() const override;  // Also in ExclusiveAccessContext.
   gfx::Rect GetRestoredBounds() const override;
   ui::mojom::WindowShowState GetRestoredState() const override;
   void Maximize() override;
@@ -226,6 +228,21 @@ class WebUIBrowserWindow : public BrowserWindow,
   ui::RendererColorMap GetRendererColorMap(
       ui::ColorProviderKey::ColorMode color_mode,
       ui::ColorProviderKey::ForcedColors forced_colors) const override;
+
+  // ExclusiveAccessContext:
+  Profile* GetProfile() override;
+  void EnterFullscreen(const url::Origin& origin,
+                       ExclusiveAccessBubbleType bubble_type,
+                       const int64_t display_id) override;
+  void ExitFullscreen() override;
+  void UpdateExclusiveAccessBubble(
+      const ExclusiveAccessBubbleParams& params,
+      ExclusiveAccessBubbleHideCallback first_hide_callback) override;
+  bool IsExclusiveAccessBubbleDisplayed() const override;
+  void OnExclusiveAccessUserInput() override;
+  content::WebContents* GetWebContentsForExclusiveAccess() override;
+  bool CanUserEnterFullscreen() const override;
+  bool CanUserExitFullscreen() const override;
 
   Browser* browser() { return browser_.get(); }
 
