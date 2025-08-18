@@ -310,6 +310,10 @@ public final class ProductionSupportedFlagList {
                 "When enabled, two-part zip codes are splitted into two fields while filling and"
                         + " imported from two adjacent fields."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ZIP_CODE_VALIDATION_AND_MERGING,
+                "When enabled, zip code validation is extended to support more countries and new"
+                        + " zip code merging logic applied."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_NEGATIVE_PATTERN_FOR_ALL_ATTRIBUTES,
                 "When enabled, parser won't try to match other attributes if any of the negative"
                         + " patterns matched."),

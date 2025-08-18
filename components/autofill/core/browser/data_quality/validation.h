@@ -8,6 +8,8 @@
 #include <string>
 #include <string_view>
 
+#include "components/autofill/core/browser/country_type.h"
+
 namespace base {
 class Time;
 }  // namespace base
@@ -56,8 +58,12 @@ bool IsPossiblePhoneNumber(std::u16string_view text,
                            const std::string& country_code);
 
 // Returns true if `text` looks like a valid zip code.
-// Valid for US zip codes only.
-bool IsValidZip(std::u16string_view text);
+// When `extended_validation == true`, the validation is applied for all
+// countries.
+// TODO(crbug.com/434140055): Clean up `extended_validation` when launched.
+bool IsValidZip(std::u16string_view text,
+                const AddressCountryCode& country_code,
+                bool extended_validation);
 
 // Returns true if `text` looks like an SSN, with or without separators.
 bool IsSSN(std::u16string_view text);

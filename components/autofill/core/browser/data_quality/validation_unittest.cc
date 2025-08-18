@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/strings/grit/components_strings.h"
@@ -306,6 +307,51 @@ TEST(AutofillValidation, IsValidNameOnCard) {
     EXPECT_FALSE(IsValidNameOnCard(name));
   }
 }
+
+struct ZipCodeTestCase {
+  bool extended_validation;
+  std::u16string text;
+  std::string country_code;
+  bool is_valid;
+};
+
+class AutofillIsValidZipTest : public testing::TestWithParam<ZipCodeTestCase> {
+};
+
+TEST_P(AutofillIsValidZipTest, IsValidZip) {
+  const ZipCodeTestCase& test_case = GetParam();
+  EXPECT_EQ(
+      IsValidZip(test_case.text, AddressCountryCode(test_case.country_code),
+                 test_case.extended_validation),
+      test_case.is_valid);
+}
+
+INSTANTIATE_TEST_SUITE_P(ValidZip,
+                         AutofillIsValidZipTest,
+                         testing::Values(
+                             // Not extended validation.
+                             ZipCodeTestCase{false, u"90210", "US", true},
+                             ZipCodeTestCase{false, u"90210-1234", "US", true},
+                             ZipCodeTestCase{false, u"ABCDE", "US", false},
+                             ZipCodeTestCase{false, u"any string", "PL", true},
+                             ZipCodeTestCase{false, u"123", "GB", true},
+
+                             // Extended validation.
+                             ZipCodeTestCase{true, u"00-950", "PL", true},
+                             ZipCodeTestCase{true, u"00950", "PL", true},
+                             ZipCodeTestCase{true, u"00", "PL", false},
+                             ZipCodeTestCase{true, u"K1A 0B1", "CA", true},
+                             ZipCodeTestCase{true, u"K1A0B1", "CA", true},
+                             ZipCodeTestCase{true, u"K1A", "CA", false},
+                             ZipCodeTestCase{true, u"12345", "DE", true},
+                             ZipCodeTestCase{true, u"〒１００－８７９９", "JP",
+                                             true},
+                             ZipCodeTestCase{true, u"100-8799", "JP", true},
+                             ZipCodeTestCase{true, u"100", "JP", false},
+                             ZipCodeTestCase{true, u"AB-100-8799", "JP", false},
+                             ZipCodeTestCase{true, u"ABC-123", "BR", false},
+                             ZipCodeTestCase{true, u"ABC-123", "XX", true},
+                             ZipCodeTestCase{true, u"ABC_123", "XX", false}));
 
 }  // namespace
 }  // namespace autofill

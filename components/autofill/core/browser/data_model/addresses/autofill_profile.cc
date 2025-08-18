@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
@@ -503,7 +504,9 @@ bool AutofillProfile::IsPresentButInvalid(FieldType type) const {
       return country == "US" && !IsValidState(data);
 
     case ADDRESS_HOME_ZIP:
-      return country == "US" && !IsValidZip(data);
+      return !IsValidZip(data, AddressCountryCode(country),
+                         base::FeatureList::IsEnabled(
+                             features::kAutofillZipCodeValidationAndMerging));
 
     case PHONE_HOME_WHOLE_NUMBER:
       return !i18n::PhoneObject(data, country, /*infer_country_code=*/false)

@@ -11,11 +11,15 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
@@ -72,9 +76,65 @@ bool IsPossiblePhoneNumber(std::u16string_view text,
   return i18n::IsPossiblePhoneNumber(base::UTF16ToUTF8(text), country_code);
 }
 
-bool IsValidZip(std::u16string_view text) {
-  static constexpr char16_t kZipPattern[] = u"^\\d{5}(-\\d{4})?$";
-  return MatchesRegex<kZipPattern>(text);
+bool IsValidZip(std::u16string_view text,
+                const AddressCountryCode& country_code,
+                bool extended_validation) {
+  static constexpr char16_t kUsZipPattern[] = u"^\\d{5}(-\\d{4})?$";
+  if (extended_validation) {
+    // A valid zip code string can contain only digits, uppercase Latin letters,
+    // hyphens, and spaces.
+    // [Ref: https://en.wikipedia.org/wiki/List_of_postal_codes]
+    static constexpr char16_t kDefaultZipPattern[] = u"^[A-Z0-9- ]+$";
+    static constexpr char16_t kNumericZipPattern[] = u"^[0-9- ]+$";
+    static constexpr char16_t kJpZipCharacters[] = u"^[〒0-9- ０-９－　]+$";
+
+    // Defines the lower boundary of zip code lengths for countries with split
+    // zip format. This check prevents a ZIP prefix (e.g., the first 3 digits
+    // out of 8 in JP) from being imported as a full ZIP code from a form with
+    // split zip fields. For most countries, the min length constant is simply
+    // the prefix length + 1, because it's safer to use a smaller value than
+    // the exact minimal zip length in case the zip format changes.
+    // [Ref: https://en.wikipedia.org/wiki/List_of_postal_codes]
+    static constexpr auto kZipCodeMinLengthMap =
+        base::MakeFixedFlatMap<std::string_view, std::size_t>({{"BR", 6},
+                                                               {"CA", 4},
+                                                               {"CZ", 4},
+                                                               {"GB", 5},
+                                                               {"GR", 4},
+                                                               {"IE", 4},
+                                                               {"IN", 4},
+                                                               {"JP", 4},
+                                                               {"NL", 5},
+                                                               {"PL", 3},
+                                                               {"PT", 5},
+                                                               {"SE", 4}});
+
+    // A set of some of the biggest countries with a strictly numeric zip code
+    // format + countries with split numeric zip format (e.g., "GR", "PT").
+    static constexpr auto kNumericZipCodeCountriesSet =
+        base::MakeFixedFlatSet<std::string_view>({"BR", "CH", "CN", "DE", "ES",
+                                                  "GR", "IN", "IT", "MX", "PL",
+                                                  "PT", "RU", "SE"});
+    auto it = kZipCodeMinLengthMap.find(country_code.value());
+    if (it != kZipCodeMinLengthMap.end() && text.length() < it->second) {
+      return false;
+    }
+    if (country_code == AddressCountryCode("US")) {
+      return MatchesRegex<kUsZipPattern>(text);
+    }
+    if (country_code == AddressCountryCode("JP")) {
+      return MatchesRegex<kJpZipCharacters>(text);
+    }
+    if (base::Contains(kNumericZipCodeCountriesSet, country_code.value())) {
+      return MatchesRegex<kNumericZipPattern>(text);
+    }
+    return MatchesRegex<kDefaultZipPattern>(text);
+  } else {
+    if (country_code != AddressCountryCode("US")) {
+      return true;
+    }
+    return MatchesRegex<kUsZipPattern>(text);
+  }
 }
 
 bool IsSSN(std::u16string_view text) {

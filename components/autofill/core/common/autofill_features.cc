@@ -584,6 +584,13 @@ BASE_FEATURE(kAutofillSupportSplitZipCode,
              "AutofillSupportSplitZipCode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables extended zip code validation
+// and new zip code merging logic.
+// TODO(crbug.com/434140055): Clean up when launched.
+BASE_FEATURE(kAutofillZipCodeValidationAndMerging,
+             "AutofillZipCodeValidationAndMerging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the form field parser won't try to match other attributes if
 // any of the negative patterns matched.
 BASE_FEATURE(kAutofillUseNegativePatternForAllAttributes,
