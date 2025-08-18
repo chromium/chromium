@@ -65,7 +65,7 @@ class BLINK_EXPORT WebNavigationBodyLoader {
     // callback will be called on a background thread with the same decoded data
     // which will be given to DecodedBodyDataReceived().
     using ProcessBackgroundDataCallback =
-        WTF::CrossThreadRepeatingFunction<void(const WebString&)>;
+        CrossThreadRepeatingFunction<void(const WebString&)>;
     virtual ProcessBackgroundDataCallback TakeProcessBackgroundDataCallback() {
       return ProcessBackgroundDataCallback();
     }

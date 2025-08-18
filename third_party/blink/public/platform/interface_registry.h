@@ -47,9 +47,9 @@ class BLINK_PLATFORM_EXPORT InterfaceRegistry {
       base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)> factory) {
     AddInterface(
         Interface::Name_,
-        WTF::BindRepeating(&InterfaceRegistry::ForwardToInterfaceFactory<
-                               mojo::PendingReceiver<Interface>>,
-                           std::move(factory)));
+        blink::BindRepeating(&InterfaceRegistry::ForwardToInterfaceFactory<
+                                 mojo::PendingReceiver<Interface>>,
+                             std::move(factory)));
   }
 
   template <typename Interface>
@@ -57,12 +57,11 @@ class BLINK_PLATFORM_EXPORT InterfaceRegistry {
       base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)> factory,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     DCHECK(task_runner->RunsTasksInCurrentSequence());
-    AddInterface(
-        Interface::Name_,
-        WTF::BindRepeating(&InterfaceRegistry::ForwardToInterfaceFactory<
-                               mojo::PendingReceiver<Interface>>,
-                           std::move(factory)),
-        std::move(task_runner));
+    AddInterface(Interface::Name_,
+                 BindRepeating(&InterfaceRegistry::ForwardToInterfaceFactory<
+                                   mojo::PendingReceiver<Interface>>,
+                               std::move(factory)),
+                 std::move(task_runner));
   }
 
   template <typename Interface>
@@ -71,7 +70,7 @@ class BLINK_PLATFORM_EXPORT InterfaceRegistry {
           factory) {
     AddAssociatedInterface(
         Interface::Name_,
-        WTF::BindRepeating(
+        blink::BindRepeating(
             &InterfaceRegistry::ForwardToAssociatedInterfaceFactory<
                 mojo::PendingAssociatedReceiver<Interface>>,
             std::move(factory)));

@@ -264,7 +264,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   // Callback used to detect and propagate a render error.
   void OnAudioRenderErrorCallback();
 
-  void SendLogMessage(const WTF::String& message) const;
+  void SendLogMessage(const String& message) const;
 
   void StopForceBeginFrames(TimerBase*);
 

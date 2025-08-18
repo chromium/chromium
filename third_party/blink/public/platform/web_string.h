@@ -162,9 +162,9 @@ class BLINK_PLATFORM_EXPORT WebString {
   bool operator<(const WebString& other) const;
 
 #if INSIDE_BLINK
-  WebString(const WTF::String&);
-  WebString& operator=(const WTF::String&);
-  operator WTF::String() const;
+  WebString(const String&);
+  WebString& operator=(const String&);
+  operator String() const;
 
   operator StringView() const;
 
@@ -181,11 +181,11 @@ class BLINK_PLATFORM_EXPORT WebString {
 
 #if INSIDE_BLINK
 // This can be used as a projection, e.g. when calling base::ToVector().
-inline WebString ToWebString(const WTF::String& s) {
+inline WebString ToWebString(const String& s) {
   return WebString(s);
 }
-// To convert a std::vector<WebString> to WTF::Vector<String>, use
-//   WTF::Vector<String>(std_vector_web_string).
+// To convert a std::vector<WebString> to Vector<String>, use
+//   Vector<String>(std_vector_web_string).
 #endif
 
 inline bool operator==(const WebString& a, const char* b) {

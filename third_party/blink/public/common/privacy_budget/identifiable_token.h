@@ -74,7 +74,7 @@ namespace blink {
 //
 //   1. Use an existing byte span representation.
 //
-//      E.g.: Assuming |v| is a WTF::Vector
+//      E.g.: Assuming |v| is a blink::Vector
 //          IdentifiabilityMetricBuilder(...).Set(
 //              ..., base::as_byte_span(v.Data(), v.Size()));
 //
