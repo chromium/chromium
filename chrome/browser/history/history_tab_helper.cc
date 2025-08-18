@@ -395,6 +395,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       frame_url = referrer_url;
     }
   }
+  bool has_actor_task_id = chrome_ui_data && chrome_ui_data->actor_task_id();
 
   // TODO(crbug.com/434976953): Move TaskId to be accessible by
   // HistoryAddPageArgs, so we can pass actor_task_id() directly without getting
@@ -404,12 +405,13 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       history::ContextIDForWebContents(web_contents()), nav_entry_id,
       navigation_handle->GetNavigationId(), referrer_url,
       navigation_handle->GetRedirectChain(), page_transition, hidden,
-      history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
+      has_actor_task_id ? history::SOURCE_ACTOR : history::SOURCE_BROWSED,
+      navigation_handle->DidReplaceEntry(),
       should_consider_for_ntp_most_visited, is_ephemeral, title, top_level_url,
       frame_url, opener,
       chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),
       app_id_, std::move(context_annotations),
-      (chrome_ui_data && chrome_ui_data->actor_task_id())
+      has_actor_task_id
           ? std::make_optional(chrome_ui_data->actor_task_id().value())
           : std::nullopt);
 
