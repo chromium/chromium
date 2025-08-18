@@ -10,6 +10,8 @@
 #include "base/containers/span.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
+class Profile;
+
 namespace privacy_sandbox {
 
 class NoticeCatalog {
@@ -23,7 +25,7 @@ class NoticeCatalog {
 
 class NoticeCatalogImpl : public NoticeCatalog {
  public:
-  NoticeCatalogImpl();
+  explicit NoticeCatalogImpl(Profile* profile);
   ~NoticeCatalogImpl() override;
 
   base::span<NoticeApi*> GetNoticeApis() override;
@@ -52,6 +54,13 @@ class NoticeCatalogImpl : public NoticeCatalog {
   // Populates the catalog with all the notices and their requirements.
   void Populate();
 
+  template <typename T>
+  auto EligibilityCallback(auto (T::*f)());
+
+  template <typename T>
+  T* GetApiService();
+
+  raw_ptr<Profile> profile_;
   std::vector<std::unique_ptr<NoticeApi>> apis_;
   absl::flat_hash_map<NoticeId, std::unique_ptr<Notice>> notices_;
   std::vector<Notice*> notice_ptrs_;

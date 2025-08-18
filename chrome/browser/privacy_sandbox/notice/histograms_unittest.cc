@@ -10,6 +10,8 @@
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_catalog.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,14 +21,24 @@ namespace {
 using Event = notice::mojom::PrivacySandboxNoticeEvent;
 using enum Event;
 
-TEST(PrivacySandboxNoticeHistogramsTest, CheckPSNoticeHistograms) {
+class PrivacySandboxNoticeHistogramsTest : public testing::Test {
+ public:
+  PrivacySandboxNoticeHistogramsTest()
+      : profile_(std::make_unique<TestingProfile>()) {}
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+};
+
+TEST_F(PrivacySandboxNoticeHistogramsTest, CheckPSNoticeHistograms) {
   std::optional<base::HistogramVariantsEntryMap> notices;
   std::vector<std::string> missing_notices;
   {
     notices = base::ReadVariantsFromHistogramsXml("PSNotice", "privacy");
     ASSERT_TRUE(notices.has_value());
   }
-  NoticeCatalogImpl catalog;
+  NoticeCatalogImpl catalog(profile_.get());
   EXPECT_EQ(catalog.GetNotices().size(), notices->size());
   for (const Notice* notice : catalog.GetNotices()) {
     // TODO(crbug.com/333406690): Implement something to clean up notices that
@@ -43,7 +55,7 @@ TEST(PrivacySandboxNoticeHistogramsTest, CheckPSNoticeHistograms) {
          "//tools/metrics/histograms/metadata/privacy/histograms.xml";
 }
 
-TEST(PrivacySandboxNoticeHistogramsTest, CheckPSNoticeActionHistograms) {
+TEST_F(PrivacySandboxNoticeHistogramsTest, CheckPSNoticeActionHistograms) {
   std::optional<base::HistogramVariantsEntryMap> actions;
   std::vector<std::string> missing_actions;
   {

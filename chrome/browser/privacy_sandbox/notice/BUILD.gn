@@ -20,12 +20,10 @@ source_set("notice_definitions") {
 
 source_set("core") {
   sources = [
-    "notice_catalog.cc",
     "notice_model.cc",
     "notice_storage.cc",
   ]
   public = [
-    "notice_catalog.h",
     "notice_model.h",
     "notice_storage.h",
   ]
@@ -52,6 +50,18 @@ source_set("interfaces") {
   ]
 }
 
+source_set("catalog") {
+  sources = [ "notice_catalog.cc" ]
+  public = [ "notice_catalog.h" ]
+  deps = [
+    ":core",
+    ":notice_definitions",
+    ":notice_mojom",
+    "//base",
+    "//chrome/browser/privacy_sandbox:headers",
+  ]
+}
+
 source_set("factory") {
   public = [ "notice_service_factory.h" ]
   deps = [
@@ -72,6 +82,7 @@ source_set("notice") {
   ]
 
   public_deps = [
+    ":catalog",
     ":core",
     ":factory",
     ":interfaces",
@@ -153,6 +164,7 @@ source_set("test_support") {
     "mocks/mock_notice_storage.h",
   ]
   deps = [
+    ":catalog",
     ":core",
     ":interfaces",
     ":notice_mojom",
@@ -185,6 +197,7 @@ source_set("unit_tests") {
   ]
   data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
   deps = [
+    ":catalog",
     ":core",
     ":notice",
     ":test_support",
@@ -215,6 +228,7 @@ source_set("browser_tests") {
   sources = [ "notice_service_browsertest.cc" ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [
+    ":catalog",
     ":core",
     ":interfaces",
     ":notice",
