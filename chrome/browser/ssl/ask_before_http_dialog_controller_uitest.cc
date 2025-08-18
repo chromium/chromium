@@ -22,6 +22,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
@@ -80,7 +81,8 @@ class AskBeforeHttpDialogControllerUiTest
     switch (test_type()) {
       case AskBeforeHttpDialogControllerTestType::kHttpsFirstModeOnly:
         feature_list_.InitWithFeatures(
-            /*enabled_features=*/{features::kHttpsFirstDialogUi},
+            /*enabled_features=*/{security_interstitials::features::
+                                      kHttpsFirstDialogUi},
             /*disabled_features=*/{
                 features::kHttpsFirstModeV2ForEngagedSites,
                 features::kHttpsFirstModeV2ForTypicallySecureUsers});
@@ -88,14 +90,16 @@ class AskBeforeHttpDialogControllerUiTest
 
       case AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIncognito:
         feature_list_.InitWithFeatures(
-            /*enabled_features=*/{features::kHttpsFirstDialogUi,
+            /*enabled_features=*/{security_interstitials::features::
+                                      kHttpsFirstDialogUi,
                                   features::kHttpsFirstModeIncognito},
             /*disabled_features=*/{});
         break;
 
       case AskBeforeHttpDialogControllerTestType::kHttpsFirstBalancedMode:
         feature_list_.InitWithFeatures(
-            /*enabled_features=*/{features::kHttpsFirstDialogUi,
+            /*enabled_features=*/{security_interstitials::features::
+                                      kHttpsFirstDialogUi,
                                   features::kHttpsFirstBalancedMode,
                                   features::kHttpsFirstBalancedModeAutoEnable},
             /*disabled_features=*/{
@@ -110,7 +114,7 @@ class AskBeforeHttpDialogControllerUiTest
         feature_list_.InitWithFeatures(
             /*enabled_features=*/
             {
-                features::kHttpsFirstDialogUi,
+                security_interstitials::features::kHttpsFirstDialogUi,
                 features::kHttpsFirstModeV2ForEngagedSites,
                 features::kHttpsFirstModeV2ForTypicallySecureUsers,
                 features::kHttpsFirstModeForAdvancedProtectionUsers,

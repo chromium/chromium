@@ -72,6 +72,7 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/security_interstitials/core/features.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
@@ -978,8 +979,9 @@ class PageInfoBubbleViewHttpsUpgradesBrowserTest
   PageInfoBubbleViewHttpsUpgradesBrowserTest() {
     // TODO(crbug.com/351990829): Get these tests working with the new
     // Ask-before-HTTP dialog UI and then re-enable the feature here.
-    feature_list_.InitWithFeatures({features::kHttpsUpgrades},
-                                   {features::kHttpsFirstDialogUi});
+    feature_list_.InitWithFeatures(
+        {features::kHttpsUpgrades},
+        {security_interstitials::features::kHttpsFirstDialogUi});
   }
   ~PageInfoBubbleViewHttpsUpgradesBrowserTest() override = default;
 

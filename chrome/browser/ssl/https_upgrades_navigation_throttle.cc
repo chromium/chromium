@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/security_interstitials/core/features.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -135,7 +136,8 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
       // Mark this as a fallback HTTP navigation and trigger the interstitial.
       tab_helper->set_is_navigation_fallback(true);
 
-      if (base::FeatureList::IsEnabled(features::kHttpsFirstDialogUi)) {
+      if (base::FeatureList::IsEnabled(
+              security_interstitials::features::kHttpsFirstDialogUi)) {
         // New dialog UI.
         // Rewrite the response to a blank page. DidFinishNavigation will
         // show the ABH dialog on top of this blank page.
@@ -210,7 +212,8 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
     security_interstitials::https_only_mode::RecordInterstitialReason(
         interstitial_state_);
 
-    if (base::FeatureList::IsEnabled(features::kHttpsFirstDialogUi)) {
+    if (base::FeatureList::IsEnabled(
+            security_interstitials::features::kHttpsFirstDialogUi)) {
       // New dialog UI.
       // Rewrite the response to a blank page and cancel the navigation.
       // HttpsOnlyModeTabHelper::DidFinishNavigation() will

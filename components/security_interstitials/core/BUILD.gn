@@ -12,6 +12,8 @@ static_library("core") {
     "common_string_util.h",
     "controller_client.cc",
     "controller_client.h",
+    "features.cc",
+    "features.h",
     "https_only_mode_allowlist.cc",
     "https_only_mode_allowlist.h",
     "https_only_mode_enforcelist.cc",

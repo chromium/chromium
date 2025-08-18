@@ -37,6 +37,7 @@ include_rules = [
   "+components/saved_tab_groups",
   "+components/search",
   "+components/search_engines",
+  "+components/security_interstitials/core",
   "+components/security_state",
   "+components/sessions",
   "+components/signin/public",

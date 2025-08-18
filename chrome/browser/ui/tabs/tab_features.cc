@@ -84,6 +84,7 @@
 #include "components/ip_protection/common/ip_protection_status.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
+#include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/base/features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -365,7 +366,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<QwacWebContentsObserver>(tab);
   }
 
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstDialogUi)) {
+  if (base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsFirstDialogUi)) {
     ask_before_http_dialog_controller_ =
         std::make_unique<AskBeforeHttpDialogController>(&tab);
   }
