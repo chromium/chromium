@@ -271,7 +271,6 @@
         ],
         "ci_only": true,
         "description": "Run with android_35_google_apis_tablet_x64",
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"

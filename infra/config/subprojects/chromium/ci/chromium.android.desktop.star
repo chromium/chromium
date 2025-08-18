@@ -293,10 +293,8 @@ ci.thin_tester(
                 ],
                 ci_only = True,
             ),
-            # TODO(crbug.com/436488951): Promote out of experimental.
             "android_chrome_wpt_tests": targets.mixin(
                 ci_only = True,
-                experiment_percentage = 100,
             ),
             "unit_tests": targets.mixin(
                 args = [
