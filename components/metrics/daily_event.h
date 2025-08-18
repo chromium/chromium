@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
@@ -71,6 +72,9 @@ class DailyEvent {
   // Adds a observer to be notified when a day elapses. All observers should
   // be registered before the the DailyEvent starts checking time.
   void AddObserver(std::unique_ptr<Observer> observer);
+
+  // Registers closure that will be called when the DailyEvent is emitted.
+  void AddObserverClosure(base::RepeatingClosure closure);
 
   // Checks if a day has elapsed. If it has, OnDailyEvent will be called on
   // all observers.

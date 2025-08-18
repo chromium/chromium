@@ -4,6 +4,7 @@
 
 #include "components/metrics/daily_event.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"
@@ -12,8 +13,22 @@
 #include "components/prefs/pref_service.h"
 
 namespace metrics {
-
 namespace {
+
+class CallbackObserver : public DailyEvent::Observer {
+ public:
+  explicit CallbackObserver(base::RepeatingClosure closure)
+      : closure_(std::move(closure)) {}
+  ~CallbackObserver() override = default;
+
+  CallbackObserver(const CallbackObserver&) = delete;
+  CallbackObserver& operator=(const CallbackObserver&) = delete;
+
+  void OnDailyEvent(DailyEvent::IntervalType _) override { closure_.Run(); }
+
+ private:
+  base::RepeatingClosure closure_;
+};
 
 void RecordIntervalTypeHistogram(const std::string& histogram_name,
                                  DailyEvent::IntervalType type) {
@@ -25,11 +40,8 @@ void RecordIntervalTypeHistogram(const std::string& histogram_name,
 
 }  // namespace
 
-DailyEvent::Observer::Observer() {
-}
-
-DailyEvent::Observer::~Observer() {
-}
+DailyEvent::Observer::Observer() = default;
+DailyEvent::Observer::~Observer() = default;
 
 DailyEvent::DailyEvent(PrefService* pref_service,
                        const char* pref_name,
@@ -39,8 +51,7 @@ DailyEvent::DailyEvent(PrefService* pref_service,
       histogram_name_(histogram_name) {
 }
 
-DailyEvent::~DailyEvent() {
-}
+DailyEvent::~DailyEvent() = default;
 
 // static
 void DailyEvent::RegisterPref(PrefRegistrySimple* registry,
@@ -52,6 +63,10 @@ void DailyEvent::AddObserver(std::unique_ptr<DailyEvent::Observer> observer) {
   DVLOG(2) << "DailyEvent observer added.";
   DCHECK(last_fired_.is_null());
   observers_.push_back(std::move(observer));
+}
+
+void DailyEvent::AddObserverClosure(base::RepeatingClosure closure) {
+  AddObserver(std::make_unique<CallbackObserver>(std::move(closure)));
 }
 
 void DailyEvent::CheckInterval() {
