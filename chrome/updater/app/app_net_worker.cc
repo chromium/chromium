@@ -124,9 +124,7 @@ class FetchServiceImpl : public mojom::FetchService {
  public:
   FetchServiceImpl(mojo::PendingReceiver<mojom::FetchService> pending_receiver,
                    base::OnceCallback<void(int)> on_complete_callback);
-  ~FetchServiceImpl() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  }
+  ~FetchServiceImpl() override;
 
   // Overrides for mojom::FetchService.
   void PostRequest(const ::GURL& url,
@@ -144,23 +142,17 @@ class FetchServiceImpl : public mojom::FetchService {
   SEQUENCE_CHECKER(sequence_checker_);
 
   mojo::Receiver<mojom::FetchService> receiver_;
-  base::OnceCallback<void(int)> on_complete_callback_;
-
-  // Network fetcher for POST request.
-  std::unique_ptr<update_client::NetworkFetcher> fetcher_;
-
-  // For file download, `update_client::NetworkFetcher` interface takes
-  // a `base::FilePath` as the output, and the Mojo interface takes a
-  // `base::File` object. This customized fetcher is used to support
-  // the Mojo interface.
-  std::unique_ptr<NetworkFileFetcher> file_fetcher_;
 };
 
 FetchServiceImpl::FetchServiceImpl(
     mojo::PendingReceiver<mojom::FetchService> pending_receiver,
-    base::OnceCallback<void(int)> on_complete_callback)
-    : receiver_(this, std::move(pending_receiver)),
-      on_complete_callback_(std::move(on_complete_callback)) {}
+    base::OnceCallback<void(int)> shutdown_callback)
+    : receiver_(this, std::move(pending_receiver)) {
+  receiver_.set_disconnect_handler(
+      base::BindOnce(std::move(shutdown_callback), kErrorOk));
+}
+
+FetchServiceImpl::~FetchServiceImpl() = default;
 
 void FetchServiceImpl::PostRequest(
     const ::GURL& url,
@@ -171,13 +163,6 @@ void FetchServiceImpl::PostRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto wrapper =
       base::MakeRefCounted<PostRequestObserverWrapper>(std::move(callback));
-  if (fetcher_ || file_fetcher_) {
-    LOG(ERROR) << "Each service instance can do only one fetch request.";
-    wrapper->OnRequestComplete(nullptr, kErrorMojoRequestRejected, {}, {}, {},
-                               -1);
-    std::move(on_complete_callback_).Run(kErrorMojoRequestRejected);
-    return;
-  }
   base::flat_map<std::string, std::string> headers;
   for (const auto& header : additional_headers) {
     headers.emplace(header->name, header->value);
@@ -185,18 +170,20 @@ void FetchServiceImpl::PostRequest(
   // Creates a network fetcher without any proxy configuration (let the system
   // handle the proxy settings) to fetch data. Network events are logged by the
   // parent process.
-  fetcher_ = base::MakeRefCounted<NetworkFetcherFactory>(
-                 /*policy_service_proxy_configuration=*/std::nullopt,
-                 /*event_logger=*/nullptr)
-                 ->Create();
-  fetcher_->PostRequest(
+  std::unique_ptr<update_client::NetworkFetcher> fetcher =
+      base::MakeRefCounted<NetworkFetcherFactory>(
+          /*policy_service_proxy_configuration=*/std::nullopt,
+          /*event_logger=*/nullptr)
+          ->Create();
+  update_client::NetworkFetcher* fetcher_ptr = fetcher.get();
+  fetcher_ptr->PostRequest(
       url, post_data, content_type, headers,
       base::BindRepeating(&PostRequestObserverWrapper::OnResponseStarted,
                           wrapper),
       base::BindRepeating(&PostRequestObserverWrapper::OnProgress, wrapper),
       base::BindOnce(
-          [](scoped_refptr<PostRequestObserverWrapper> wrapper,
-             base::OnceCallback<void(int)> callback,
+          [](std::unique_ptr<update_client::NetworkFetcher> /*fetcher*/,
+             scoped_refptr<PostRequestObserverWrapper> wrapper,
              std::optional<std::string> response_body, int32_t net_error,
              const std::string& header_etag,
              const std::string& header_x_cup_server_proof,
@@ -206,9 +193,8 @@ void FetchServiceImpl::PostRequest(
                                        header_etag, header_x_cup_server_proof,
                                        header_set_cookie,
                                        xheader_retry_after_sec);
-            std::move(callback).Run(net_error);
           },
-          wrapper, std::move(on_complete_callback_)));
+          std::move(fetcher), wrapper));
 }
 
 void FetchServiceImpl::DownloadToFile(
@@ -218,26 +204,21 @@ void FetchServiceImpl::DownloadToFile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto wrapper =
       base::MakeRefCounted<FileDownloadObserverWrapper>(std::move(callback));
-  if (fetcher_ || file_fetcher_) {
-    LOG(ERROR) << "Each service instance can do only one fetch request.";
-    wrapper->OnDownloadComplete(kErrorMojoRequestRejected, -1);
-    std::move(on_complete_callback_).Run(kErrorMojoRequestRejected);
-    return;
-  }
-  file_fetcher_ = std::make_unique<NetworkFileFetcher>();
-  file_fetcher_->Download(
+  std::unique_ptr<NetworkFileFetcher> file_fetcher =
+      std::make_unique<NetworkFileFetcher>();
+  NetworkFileFetcher* file_fetcher_ptr = file_fetcher.get();
+  file_fetcher_ptr->Download(
       url, std::move(output_file),
       base::BindRepeating(&FileDownloadObserverWrapper::OnResponseStarted,
                           wrapper),
       base::BindRepeating(&FileDownloadObserverWrapper::OnProgress, wrapper),
       base::BindOnce(
-          [](scoped_refptr<FileDownloadObserverWrapper> wrapper,
-             base::OnceCallback<void(int)> callback, int32_t net_error,
-             int64_t content_length) {
+          [](std::unique_ptr<NetworkFileFetcher> /*file_fetcher*/,
+             scoped_refptr<FileDownloadObserverWrapper> wrapper,
+             int32_t net_error, int64_t content_length) {
             wrapper->OnDownloadComplete(net_error, content_length);
-            std::move(callback).Run(net_error);
           },
-          wrapper, std::move(on_complete_callback_)));
+          std::move(file_fetcher), wrapper));
 }
 
 // AppNetWorker runs networking tasks in a dedicated process.
