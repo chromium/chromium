@@ -1813,6 +1813,8 @@ const char kMemlogModeAllRenderers[] = "All renderers";
 const char kMemlogModeRendererSampling[] = "Single renderer";
 const char kMemlogModeBrowser[] = "Browser only";
 const char kMemlogModeGpu[] = "GPU only";
+const char kMemlogModeUtilitySampling[] = "Single utility";
+const char kMemlogModeAllUtilities[] = "All utilities";
 
 const char kMemlogSamplingRateName[] =
     "Heap profiling sampling interval (in bytes).";

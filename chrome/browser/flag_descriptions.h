@@ -993,6 +993,8 @@ extern const char kMemlogModeAllRenderers[];
 extern const char kMemlogModeBrowser[];
 extern const char kMemlogModeGpu[];
 extern const char kMemlogModeRendererSampling[];
+extern const char kMemlogModeUtilitySampling[];
+extern const char kMemlogModeAllUtilities[];
 
 extern const char kMemlogSamplingRateName[];
 extern const char kMemlogSamplingRateDescription[];

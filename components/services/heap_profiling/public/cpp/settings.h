@@ -45,6 +45,9 @@ enum class Mode {
   // Every utility process and the browser process are profiled.
   kUtilityAndBrowser = 9,
 
+  // Profile all utility processes.
+  kAllUtilities = 10,
+
   kCount
 };
 

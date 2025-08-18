@@ -1146,6 +1146,10 @@ const FeatureEntry::Choice kMemlogModeChoices[] = {
      heap_profiling::kMemlogModeAllRenderers},
     {flag_descriptions::kMemlogModeRendererSampling,
      heap_profiling::kMemlogMode, heap_profiling::kMemlogModeRendererSampling},
+    {flag_descriptions::kMemlogModeUtilitySampling, heap_profiling::kMemlogMode,
+     heap_profiling::kMemlogModeUtilitySampling},
+    {flag_descriptions::kMemlogModeAllUtilities, heap_profiling::kMemlogMode,
+     heap_profiling::kMemlogModeAllUtilities},
 };
 
 const FeatureEntry::Choice kMemlogStackModeChoices[] = {

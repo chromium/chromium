@@ -65,6 +65,9 @@ bool ShouldProfileNonRendererProcessType(Mode mode, int process_type) {
       return process_type == content::ProcessType::PROCESS_TYPE_UTILITY ||
              process_type == content::ProcessType::PROCESS_TYPE_BROWSER;
 
+    case Mode::kAllUtilities:
+      return process_type == content::ProcessType::PROCESS_TYPE_UTILITY;
+
     case Mode::kNone:
       return false;
 
