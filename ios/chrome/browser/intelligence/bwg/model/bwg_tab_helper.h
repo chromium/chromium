@@ -61,6 +61,12 @@ class BwgTabHelper : public web::WebStateObserver,
   // Set the BWG commands handler, used to show/hide the BWG UI.
   void SetBwgCommandsHandler(id<BWGCommands> handler);
 
+  // Sets the state of `is_first_run`.
+  void SetIsFirstRun(bool is_first_run);
+
+  // Gets the state of `is_first_run`.
+  bool GetIsFirstRun();
+
   // WebStateObserver:
   void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
@@ -116,6 +122,9 @@ class BwgTabHelper : public web::WebStateObserver,
   // The observation of the Web State.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
+
+  // Whether this is a first run experience.
+  bool is_first_run_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_TAB_HELPER_H_

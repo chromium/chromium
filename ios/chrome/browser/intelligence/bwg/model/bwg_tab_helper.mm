@@ -82,6 +82,14 @@ void BwgTabHelper::SetBwgUiShowing(bool showing) {
   }
 }
 
+void BwgTabHelper::SetIsFirstRun(bool is_first_run) {
+  is_first_run_ = is_first_run;
+}
+
+bool BwgTabHelper::GetIsFirstRun() {
+  return is_first_run_;
+}
+
 bool BwgTabHelper::GetIsBwgSessionActiveInBackground() {
   return is_bwg_session_active_in_background_;
 }

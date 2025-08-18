@@ -64,6 +64,18 @@ extern const char kStartupTimeNoFREHistogram[];
 // UMA histogram key for IOS.Gemini.Session.Time.
 extern const char kBWGSessionTimeHistogram[];
 
+// UMA histogram key for IOS.Gemini.SessionLength.WithPrompt.
+extern const char kBWGSessionLengthWithPromptHistogram[];
+
+// UMA histogram key for IOS.Gemini.SessionLength.Abandoned.
+extern const char kBWGSessionLengthAbandonedHistogram[];
+
+// UMA histogram key for IOS.Gemini.SessionLength.FRE.WithPrompt.
+extern const char kBWGSessionLengthFREWithPromptHistogram[];
+
+// UMA histogram key for IOS.Gemini.SessionLength.FRE.Abandoned.
+extern const char kBWGSessionLengthFREWithAbandonedHistogram[];
+
 // Enum for the IOS.Gemini.FirstPrompt.SubmissionMethod histogram.
 // LINT.IfChange(IOSGeminiFirstPromptSubmissionMethod)
 enum class IOSGeminiFirstPromptSubmissionMethod {
@@ -89,8 +101,21 @@ extern const char kResponseLatencyWithContextHistogram[];
 // UMA histogram key for IOS.Gemini.Response.Latency.WithoutContext.
 extern const char kResponseLatencyWithoutContextHistogram[];
 
+// Represents the completed Gemini session types.
+enum class IOSGeminiSessionType {
+  kUnknown = 0,
+  kWithPrompt = 1,
+  kAbandoned = 2,
+  kMaxValue = kAbandoned,
+};
+
 // Records the duration of a Gemini session.
 void RecordBWGSessionTime(base::TimeDelta session_duration);
+
+// Records the duration of a Gemini session by type of session.
+void RecordBWGSessionLengthByType(base::TimeDelta session_duration,
+                                  bool is_first_run,
+                                  IOSGeminiSessionType session_type);
 
 // Records when user sees the Gemini entry point impression.
 // Can be called once every 10 minutes to avoid spam logging.

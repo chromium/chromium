@@ -92,10 +92,36 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
                           serverID:(NSString*)serverID {
   [_BWGHandler dismissBWGFlowWithCompletion:nil];
   [self setSessionActive:NO clientID:clientID];
+
+  web::WebState* webState = [self webStateWithClientID:clientID];
+  if (!webState) {
+    return;
+  }
+  // Get the BWGTabHelper from the WebState.
+  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
+  // WebState should always be valid as long as the tab is open.
+  if (!BWGTabHelper) {
+    // Early exit if no valid tab helper is found.
+    return;
+  }
+  bool isFirstSession = BWGTabHelper->GetIsFirstRun();
+  BWGTabHelper->SetIsFirstRun(false);
+
   // Record session duration.
   if (!_sessionStartTime.is_null()) {
     base::TimeDelta session_duration =
         base::TimeTicks::Now() - _sessionStartTime;
+
+    // Determine session type.
+    IOSGeminiSessionType session_type;
+    if (_hasSubmittedFirstPrompt) {
+      session_type = IOSGeminiSessionType::kWithPrompt;
+    } else {
+      session_type = IOSGeminiSessionType::kAbandoned;
+    }
+
+    RecordBWGSessionLengthByType(session_duration, isFirstSession,
+                                 session_type);
     RecordBWGSessionTime(session_duration);
     _sessionStartTime = base::TimeTicks();
   }

@@ -35,6 +35,18 @@ const char kStartupTimeWithFREHistogram[] = "IOS.Gemini.StartupTime.FirstRun";
 
 const char kStartupTimeNoFREHistogram[] = "IOS.Gemini.StartupTime.NotFirstRun";
 
+const char kBWGSessionLengthWithPromptHistogram[] =
+    "IOS.Gemini.SessionLength.WithPrompt";
+
+const char kBWGSessionLengthAbandonedHistogram[] =
+    "IOS.Gemini.SessionLength.Abandoned";
+
+const char kBWGSessionLengthFREWithPromptHistogram[] =
+    "IOS.Gemini.SessionLength.FRE.WithPrompt";
+
+const char kBWGSessionLengthFREAbandonedHistogram[] =
+    "IOS.Gemini.SessionLength.FRE.Abandoned";
+
 const char kBWGSessionTimeHistogram[] = "IOS.Gemini.Session.Time";
 
 const char kFirstPromptSubmissionMethodHistogram[] =
@@ -86,6 +98,38 @@ void RecordFREConsentAction(IOSGeminiFREAction action) {
 
 void RecordBWGSessionTime(base::TimeDelta session_duration) {
   base::UmaHistogramTimes(kBWGSessionTimeHistogram, session_duration);
+}
+
+void RecordBWGSessionLengthByType(base::TimeDelta session_duration,
+                                  bool is_first_run,
+                                  IOSGeminiSessionType session_type) {
+  if (is_first_run) {
+    switch (session_type) {
+      case IOSGeminiSessionType::kWithPrompt:
+        base::UmaHistogramTimes(kBWGSessionLengthFREWithPromptHistogram,
+                                session_duration);
+        break;
+      case IOSGeminiSessionType::kAbandoned:
+        base::UmaHistogramTimes(kBWGSessionLengthFREAbandonedHistogram,
+                                session_duration);
+        break;
+      case IOSGeminiSessionType::kUnknown:
+        break;
+    }
+  } else {
+    switch (session_type) {
+      case IOSGeminiSessionType::kWithPrompt:
+        base::UmaHistogramTimes(kBWGSessionLengthWithPromptHistogram,
+                                session_duration);
+        break;
+      case IOSGeminiSessionType::kAbandoned:
+        base::UmaHistogramTimes(kBWGSessionLengthAbandonedHistogram,
+                                session_duration);
+        break;
+      case IOSGeminiSessionType::kUnknown:
+        break;
+    }
+  }
 }
 
 void RecordGeminiEntryPointImpression() {

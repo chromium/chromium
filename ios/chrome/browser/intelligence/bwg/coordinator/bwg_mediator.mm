@@ -88,11 +88,17 @@
   }
 
   _didPresentBWGFRE = [self.delegate maybePresentBWGFRE];
-  // Not presenting the FRE implies that the promo was shown and user consent
-  // was given which means we can navigate to the BWG overlay immediately.
-  if (!_didPresentBWGFRE) {
-    [self prepareBWGOverlay];
+  if (_didPresentBWGFRE) {
+    BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
+    if (!BWGTabHelper) {
+      return;
+    }
+    BWGTabHelper->SetIsFirstRun(true);
+
+    return;
   }
+
+  [self prepareBWGOverlay];
 }
 
 #pragma mark - BWGConsentMutator
