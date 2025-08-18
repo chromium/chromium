@@ -8,7 +8,6 @@
 #include <optional>
 #include <type_traits>
 
-#include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types_base.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
