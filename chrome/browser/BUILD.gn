@@ -1270,7 +1270,6 @@ static_library("browser") {
     "privacy_sandbox/privacy_sandbox_policy_handler.cc",
     "privacy_sandbox/privacy_sandbox_policy_handler.h",
     "privacy_sandbox/privacy_sandbox_service_factory.cc",
-    "privacy_sandbox/privacy_sandbox_service_factory.h",
     "privacy_sandbox/privacy_sandbox_service_impl.cc",
     "privacy_sandbox/privacy_sandbox_service_impl.h",
     "privacy_sandbox/privacy_sandbox_settings_delegate.cc",
