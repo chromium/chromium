@@ -9744,7 +9744,7 @@ crbug.com/436163716 [ Win ] external/wpt/secure-payment-confirmation/enrollment-
 crbug.com/436615917 inspector-protocol/timeline/long-animation-frame-trace-visual-update.js [ Failure Pass ]
 
 # Gardener 2025-08-06
-crbug.com/436534724 external/wpt/resource-timing/tentative/document-initiated.html [ Pass Timeout ]
+crbug.com/436534724 external/wpt/resource-timing/tentative/initiator-url/document-initiated.html [ Pass Timeout ]
 
 # Gardener 2025-08-07
 crbug.com/435121429 external/wpt/web-animations/timing-model/animations/setting-the-start-time-of-an-animation.html [ Failure Pass ]
