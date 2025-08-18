@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "ui/events/android/events_android_utils.h"
 #include "ui/events/android/motion_event_android_factory.h"
-#include "ui/events/android/motion_event_android_native.h"
 
 namespace viz {
 

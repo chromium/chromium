@@ -17,7 +17,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
-#include "ui/events/android/motion_event_android_native.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/motion_event_test_utils.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"

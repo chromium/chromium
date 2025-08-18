@@ -8,7 +8,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "ui/events/android/motion_event_android_java.h"
-#include "ui/events/android/motion_event_android_native.h"
 #include "ui/events/android/motion_event_android_source_java.h"
 #include "ui/events/android/motion_event_android_source_native.h"
 
@@ -161,7 +160,7 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidFactory::CreateFromNative(
   auto source = std::make_unique<MotionEventAndroidSourceNative>(
       std::move(input_event), y_offset_pix);
 
-  return base::WrapUnique<MotionEventAndroid>(new MotionEventAndroidNative(
+  return base::WrapUnique<MotionEventAndroid>(new MotionEventAndroid(
       pix_to_dip,
       /*ticks_x=*/0.f,
       /*ticks_y=*/0.f,
