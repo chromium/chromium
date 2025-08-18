@@ -844,7 +844,7 @@ crbug.com/416417899 [ android android-brya passthrough ] deqp/functional/gles3/n
 crbug.com/416417899 [ android android-brya passthrough ] deqp/functional/gles3/shaderoperator/unary_operator_00.html [ Failure ]
 crbug.com/416408899 [ android android-brya passthrough angle-vulkan ] conformance2/textures/misc/copy-texture-image-same-texture.html [ Failure ]
 crbug.com/416408899 [ android android-brya passthrough angle-vulkan ] conformance2/misc/uninitialized-test-2.html [ Failure ]
-
+crbug.com/439644379 [ android android-brya ] conformance2/textures/misc/npot-video-sizing.html [ Failure ]
 
 #####################
 # ChromeOS failures #
