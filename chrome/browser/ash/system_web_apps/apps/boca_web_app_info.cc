@@ -125,9 +125,12 @@ bool BocaSystemAppDelegate::ShouldHaveExtensionsContainerInToolbar() const {
 }
 
 bool BocaSystemAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
-  // Consumer SWA will also host 3P content, so we override app scope checks to
-  // prevent navigation outside the app.
-  return IsConsumerProfile(profile());
+  // The SWA is configured to host both 1P and 3P content depending on the use
+  // case. We relax URL scope checks for the following scenarios:
+  // 1. Consumer using the SWA when Class Tools is enabled.
+  // 2. Class Tools is disabled. This allows us to extend SWA usage beyond Class
+  // Tools (for example, locked quizzes).
+  return !IsEnabled(profile()) || IsConsumerProfile(profile());
 }
 
 bool BocaSystemAppDelegate::ShouldPinTab(GURL url) const {

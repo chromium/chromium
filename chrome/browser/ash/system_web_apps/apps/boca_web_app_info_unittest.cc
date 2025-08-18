@@ -106,6 +106,14 @@ TEST_F(BocaSystemAppDelegateTest, AppEnabledFromPref) {
   EXPECT_TRUE(delegate()->IsAppEnabled());
 }
 
+TEST_F(BocaSystemAppDelegateTest, OverrideURLScopeChecks) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
+  EXPECT_TRUE(delegate()->IsUrlInSystemAppScope(GURL()));
+}
+
 class BocaSystemAppProviderDelegateTest : public BocaSystemAppDelegateTest {
  public:
   BocaSystemAppProviderDelegateTest() {
