@@ -93,7 +93,7 @@ class ConsumerHost::StreamWriter {
 
   static scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
     return base::ThreadPool::CreateSequencedTaskRunner(
-        {base::WithBaseSyncPrimitives(), base::TaskPriority::BEST_EFFORT});
+        {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE});
   }
 
   StreamWriter(mojo::ScopedDataPipeProducerHandle stream,

@@ -53,13 +53,23 @@ class TracingScenario::TraceReader
                         base::WeakPtr<TracingScenario> scenario,
                         scoped_refptr<base::SequencedTaskRunner> task_runner,
                         const BackgroundTracingRule* triggered_rule) {
+    base::TimeTicks read_start_time = base::TimeTicks::Now();
+    TRACE_EVENT_BEGIN(
+        "tracing.background", "ReadTrace",
+        perfetto::NamedTrack::FromPointer("Scenario.ReadTrace", reader.get()));
     reader->tracing_session->ReadTrace(
-        [task_runner, scenario, reader, triggered_rule](
+        [task_runner, scenario, reader, triggered_rule, read_start_time](
             perfetto::TracingSession::ReadTraceCallbackArgs args) mutable {
           if (args.size) {
             reader->serialized_trace.append(args.data, args.size);
           }
           if (!args.has_more) {
+            TRACE_EVENT_END("tracing.background",
+                            perfetto::NamedTrack::FromPointer(
+                                "Scenario.ReadTrace", reader.get()));
+            base::UmaHistogramMediumTimes(
+                "Tracing.Background.ReadTraceDuration",
+                base::TimeTicks::Now() - read_start_time);
             task_runner->PostTask(
                 FROM_HERE, base::BindOnce(&TracingScenario::OnFinalizingDone,
                                           scenario, reader->trace_uuid,

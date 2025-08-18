@@ -1027,7 +1027,7 @@ bool BackgroundTracingManagerImpl::DoEmitNamedTrigger(
   }
   for (BackgroundTracingRule& obs : it->second) {
     if (obs.OnRuleTriggered(value, flow_id)) {
-      TRACE_EVENT_INSTANT("toplevel,latency", "NamedTrigger",
+      TRACE_EVENT_INSTANT("tracing.background", "NamedTrigger",
                           perfetto::Flow::Global(flow_id));
       return true;
     }

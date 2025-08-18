@@ -55,7 +55,7 @@ bool BackgroundTracingAgentImpl::DoEmitNamedTrigger(
     const std::string& trigger_name,
     std::optional<int32_t> value,
     uint64_t flow_id) {
-  TRACE_EVENT_INSTANT("latency", "NamedTrigger",
+  TRACE_EVENT_INSTANT("tracing.background", "NamedTrigger",
                       perfetto::Flow::Global(flow_id));
   DoEmitNamedTriggerImpl(trigger_name, value, flow_id);
   return true;
@@ -93,14 +93,15 @@ void BackgroundTracingAgentImpl::OnHistogramChanged(
   auto track = perfetto::NamedTrack("HistogramSamples");
   uint64_t flow_id =
       event_id.value_or(base::trace_event::GetNextGlobalTraceId());
-  TRACE_EVENT_INSTANT("toplevel,latency", "HistogramSampleTrigger", track,
-              [&](perfetto::EventContext ctx) {
-                perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
-                    ctx.event()->set_chrome_histogram_sample();
-                new_sample->set_name_hash(name_hash);
-                new_sample->set_sample(actual_value);
-                perfetto::Flow::Global(flow_id)(ctx);
-              });
+  TRACE_EVENT_INSTANT(
+      "tracing.background", "HistogramSampleTrigger", track,
+      [&](perfetto::EventContext ctx) {
+        perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
+            ctx.event()->set_chrome_histogram_sample();
+        new_sample->set_name_hash(name_hash);
+        new_sample->set_sample(actual_value);
+        perfetto::Flow::Global(flow_id)(ctx);
+      });
 
   client_->OnTriggerBackgroundTrace(
       tracing::mojom::BackgroundTracingRule::New(rule_id), actual_value,

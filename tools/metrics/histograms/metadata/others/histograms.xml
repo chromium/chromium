@@ -9432,6 +9432,16 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
+<histogram name="Tracing.Background.ReadTraceDuration" units="ms"
+    expires_after="2026-02-10">
+  <owner>etiennep@chromium.org</owner>
+  <owner>chrometto-team@google.com</owner>
+  <summary>
+    Records the elapsed time from TracingSession::ReadTrace initial call until
+    all data is received in the browser process.
+  </summary>
+</histogram>
+
 <histogram name="Tracing.Background.Scenario.Trigger.{Type}"
     enum="BackgroundTracingTriggerNameHash" expires_after="2026-02-10">
   <owner>etiennep@chromium.org</owner>
