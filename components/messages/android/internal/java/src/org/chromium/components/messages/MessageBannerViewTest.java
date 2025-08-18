@@ -4,8 +4,12 @@
 
 package org.chromium.components.messages;
 
+import static android.view.View.LAYOUT_DIRECTION_RTL;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -104,6 +108,26 @@ public class MessageBannerViewTest {
                             mMessageBannerView.findViewById(
                                     R.id.message_primary_progress_indicator);
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testRtl() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMessageBannerView.setLayoutDirection(LAYOUT_DIRECTION_RTL);
+                    PropertyModel propertyModel =
+                            new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                    .with(
+                                            MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                            MessageIdentifier.TEST_MESSAGE)
+                                    .with(MessageBannerProperties.TITLE, "test")
+                                    .with(MessageBannerProperties.DESCRIPTION, "Description")
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+                });
+        onView(withId(R.id.message_banner)).check(matches(isDisplayed()));
     }
 
     @Test

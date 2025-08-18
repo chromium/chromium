@@ -28,7 +28,9 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/message_shadow_top_margin"
         android:layout_marginBottom="@dimen/message_shadow_bottom_margin"
         android:layout_marginStart="@dimen/message_shadow_lateral_margin"
-        android:layout_marginEnd="@dimen/message_shadow_lateral_margin" >
+        android:layout_marginEnd="@dimen/message_shadow_lateral_margin"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" >
 
         <ImageView
             android:id="@+id/message_icon"
