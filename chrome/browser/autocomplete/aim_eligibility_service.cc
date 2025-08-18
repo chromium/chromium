@@ -10,6 +10,8 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_observer.h"
 #include "chrome/browser/browser_process.h"
@@ -64,6 +66,27 @@ std::string GetLocale() {
                                  ->Get()
                            : "";
 }
+
+// For recording UMA metrics. These aren't strictly omnibox-only, but omnibox is
+// a major consumer of `AimEligibilityService`, and the few metrics here don't
+// warrant creating a new metric namespace.
+// The status of the GWS request. See `GwsRequestStatus`.
+static constexpr char kUmaGwsRequestStatusHistogramName[] =
+    "Omnibox.AimEligibility.GwsRequestStatus";
+// Which AIM features were eligible according to the GWS request.
+static constexpr char kUmaGwsEligibilityHistogramPrefix[] =
+    "Omnibox.AimEligibility.GwsEligibility.";
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GwsAimEligibilityRequestStatus)
+enum class GwsRequestStatus {
+  kSent = 0,
+  kErrorResponse = 1,
+  kFailedToParse = 2,
+  kSuccess = 3,
+  kMaxValue = kSuccess,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:GwsAimEligibilityRequestStatus)
 
 static constexpr char kGwsRequestEndpoint[] =
     "http://www.google.com/async/folae?async=_fmt:pb";
@@ -226,6 +249,8 @@ void AimEligibilityService::StartGwsRequest() {
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request),
                                        kGwsRequestTrafficAnnotation);
+  base::UmaHistogramEnumeration(kUmaGwsRequestStatusHistogramName,
+                                GwsRequestStatus::kSent);
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&AimEligibilityService::OnGwsResponse,
@@ -240,10 +265,21 @@ void AimEligibilityService::OnGwsResponse(
   //   This will let us know how watered down UMA and finch are compared due to
   //   mismatched GWS eligibility criteria and estimate the actual population
   //   size.
-  if (!response_string)
+  if (!response_string) {
+    base::UmaHistogramEnumeration(kUmaGwsRequestStatusHistogramName,
+                                  GwsRequestStatus::kErrorResponse);
     return;
-  if (!ParseResponseString(*response_string))
+  }
+  if (!ParseResponseString(*response_string)) {
+    base::UmaHistogramEnumeration(kUmaGwsRequestStatusHistogramName,
+                                  GwsRequestStatus::kFailedToParse);
     return;
+  }
+  base::UmaHistogramEnumeration(kUmaGwsRequestStatusHistogramName,
+                                GwsRequestStatus::kSuccess);
+  base::UmaHistogramBoolean(
+      base::StrCat({kUmaGwsEligibilityHistogramPrefix, "is_eligible"}),
+      most_recent_response_.is_eligible());
   WriteToPref(*response_string);
   NotifyObservers();
 }
