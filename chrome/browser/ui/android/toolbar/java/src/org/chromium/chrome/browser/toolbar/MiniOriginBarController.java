@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -181,6 +182,7 @@ public class MiniOriginBarController implements Observer {
                                                 : MiniOriginEvent.KEYBOARD_ANIMATION_ENDED),
                         this::updateAnimationProgress,
                         this::waitingForImeAnimationToStart,
+                        new Handler(),
                         controlContainer.getToolbarHeight()
                                 - mContext.getResources()
                                         .getDimensionPixelSize(R.dimen.mini_origin_bar_height));
@@ -474,7 +476,7 @@ public class MiniOriginBarController implements Observer {
     @VisibleForTesting
     static class MiniOriginWindowInsetsAnimationListener implements WindowInsetsAnimationListener {
 
-        private boolean mAnimationInProgress;
+        private static final int FALLBACK_ANIMATION_TIMEOUT = 600;
         private int mFinalKeyboardHeight;
         private int mMaxKeyboardHeight;
         private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
@@ -488,8 +490,10 @@ public class MiniOriginBarController implements Observer {
         private @Nullable WindowInsetsAnimationCompat mAnimation;
         private boolean mIsCancelledPredictiveBack;
 
+        private final Handler mHandler;
         // The height of the keyboard that should trigger an early end to a hide animation.
         private final int mEarlyEndingHeight;
+        private final Runnable mCancelRunnable;
 
         MiniOriginWindowInsetsAnimationListener(
                 KeyboardVisibilityDelegate keyboardVisibilityDelegate,
@@ -499,6 +503,7 @@ public class MiniOriginBarController implements Observer {
                 Callback<Boolean> animationEndedSignal,
                 Callback<Float> animationProgressSignal,
                 BooleanSupplier waitingForAnimation,
+                Handler handler,
                 int earlyEndingHeight) {
             mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
             mContainerView = containerView;
@@ -508,7 +513,9 @@ public class MiniOriginBarController implements Observer {
             mAnimationEndedSignal = animationEndedSignal;
             mAnimationProgressSignal = animationProgressSignal;
             mWaitingForAnimation = waitingForAnimation;
+            mHandler = handler;
             mEarlyEndingHeight = earlyEndingHeight;
+            mCancelRunnable = this::cancel;
         }
 
         @Override
@@ -520,6 +527,7 @@ public class MiniOriginBarController implements Observer {
 
             mAnimation = animation;
             mOnAnimationPreparedSignal.run();
+            mHandler.postDelayed(mCancelRunnable, getCancellationInterval(mAnimation));
         }
 
         @Override
@@ -531,7 +539,11 @@ public class MiniOriginBarController implements Observer {
                 mAnimation = animation;
             }
 
-            mAnimationInProgress = true;
+            // Restart the clock on cancellation once we get a start signal. This avoids prematurely
+            // cancelling mid-animation in cases where start took a long time but the animation
+            // proceeds normally thereafter, e.g. if the IME takes a long time to warm up.
+            mHandler.removeCallbacks(mCancelRunnable);
+            mHandler.postDelayed(mCancelRunnable, getCancellationInterval(mAnimation));
             mMaxKeyboardHeight = bounds.getUpperBound().bottom;
             // In some cases, e.g. a floating keyboard, we get a notification of an inset animation
             // even though IME inset bottom will start and end at 0. There is a not a clean way to
@@ -585,8 +597,8 @@ public class MiniOriginBarController implements Observer {
 
         @Override
         public void onEnd(WindowInsetsAnimationCompat animation) {
-            if (!mAnimationInProgress) return;
-            mAnimationInProgress = false;
+            if (mAnimation != animation) return;
+            mHandler.removeCallbacks(mCancelRunnable);
             ViewUtils.setAncestorsShouldClipChildren(mContainerView, true, ViewGroup.NO_ID);
             ViewUtils.setAncestorsShouldClipToPadding(mContainerView, true, ViewGroup.NO_ID);
             mTranslationSupplier.set(0);
@@ -594,6 +606,15 @@ public class MiniOriginBarController implements Observer {
             mAnimationEndedSignal.onResult(mIsCancelledPredictiveBack);
             mIsCancelledPredictiveBack = false;
             mAnimation = null;
+        }
+
+        private void cancel() {
+            if (mAnimation == null) return;
+            onEnd(mAnimation);
+        }
+
+        private long getCancellationInterval(WindowInsetsAnimationCompat animationCompat) {
+            return Math.max(animationCompat.getDurationMillis() * 2, FALLBACK_ANIMATION_TIMEOUT);
         }
 
         private float getMinimizationFractionForInterpolatedFraction(float interpolatedFraction) {
