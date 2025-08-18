@@ -278,8 +278,10 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
 // This test verifies that the PNA 2.0 breakage UseCounter
 // (kPrivateNetworkAccessInsecureResourceNotKnownPrivate) is correctly logged.
+//
+// TODO(crbug.com/438315223): Re-enable once test flakiness is addressed.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessV2BreakageUseCounter) {
+                       DISABLED_PrivateNetworkAccessV2BreakageUseCounter) {
   // A top-level navigation request to a site with a private address should not
   // trigger the UseCounter.
   ASSERT_TRUE(content::NavigateToURL(
