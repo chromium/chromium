@@ -252,14 +252,14 @@ class TestResolveProxyDelegate : public ProxyDelegate {
 
   base::expected<HttpRequestHeaders, Error> OnBeforeTunnelRequest(
       const ProxyChain& proxy_chain,
-      size_t chain_index,
+      size_t proxy_index,
       OnBeforeTunnelRequestCallback callback) override {
     return HttpRequestHeaders();
   }
 
   Error OnTunnelHeadersReceived(
       const ProxyChain& proxy_chain,
-      size_t chain_index,
+      size_t proxy_index,
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }
@@ -306,14 +306,14 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
 
   base::expected<HttpRequestHeaders, Error> OnBeforeTunnelRequest(
       const ProxyChain& proxy_chain,
-      size_t chain_index,
+      size_t proxy_index,
       OnBeforeTunnelRequestCallback callback) override {
     return HttpRequestHeaders();
   }
 
   Error OnTunnelHeadersReceived(
       const ProxyChain& proxy_chain,
-      size_t chain_index,
+      size_t proxy_index,
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }

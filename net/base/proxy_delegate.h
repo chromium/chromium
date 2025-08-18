@@ -76,20 +76,23 @@ class NET_EXPORT ProxyDelegate {
   // The value passed to `callback` is to be interpreted in the same way as the
   // return value of this function. With the exception that ERR_IO_PENDING is
   // no longer an acceptable error code.
+  // `proxy_index` identifies the proxy, within `proxy_chain`, to whom we will
+  // be sending the extra headers`.
   virtual base::expected<HttpRequestHeaders, Error> OnBeforeTunnelRequest(
       const ProxyChain& proxy_chain,
-      size_t chain_index,
+      size_t proxy_index,
       OnBeforeTunnelRequestCallback callback) = 0;
 
   // Called when the response headers for the proxy tunnel request have been
   // received. Allows the delegate to override the net error code of the tunnel
   // request. Returning OK causes the standard tunnel response handling to be
-  // performed. Implementations should make sure they can trust the proxy server
-  // at position `chain_index` in `proxy_chain` before making decisions based on
+  // performed. `proxy_index` identifies the proxy, within `proxy_chain`, that
+  // we're receiving response headers from. Implementations should make sure
+  // they can trust said proxy before making decisions based on
   // `response_headers`.
   virtual Error OnTunnelHeadersReceived(
       const ProxyChain& proxy_chain,
-      size_t chain_index,
+      size_t proxy_index,
       const HttpResponseHeaders& response_headers) = 0;
 
   // Associates a `ProxyResolutionService` with this `ProxyDelegate`.

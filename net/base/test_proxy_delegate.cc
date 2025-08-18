@@ -78,7 +78,7 @@ void TestProxyDelegate::WaitForOnBeforeTunnelRequestAsyncCompletion() {
 
 void TestProxyDelegate::VerifyOnTunnelHeadersReceived(
     const ProxyChain& proxy_chain,
-    size_t chain_index,
+    size_t proxy_index,
     const std::string& response_header_name,
     const std::string& response_header_value,
     size_t call_index) const {
@@ -90,7 +90,7 @@ void TestProxyDelegate::VerifyOnTunnelHeadersReceived(
 
   EXPECT_EQ(proxy_chain,
             on_tunnel_headers_received_proxy_chains_.at(call_index));
-  EXPECT_EQ(chain_index,
+  EXPECT_EQ(proxy_index,
             on_tunnel_headers_received_chain_indices_.at(call_index));
 
   scoped_refptr<HttpResponseHeaders> response_headers =
@@ -129,7 +129,7 @@ std::string TestProxyDelegate::GetExtraHeaderValue(
 base::expected<HttpRequestHeaders, Error>
 TestProxyDelegate::OnBeforeTunnelRequest(
     const ProxyChain& proxy_chain,
-    size_t chain_index,
+    size_t proxy_index,
     OnBeforeTunnelRequestCallback callback) {
   on_before_tunnel_request_call_count_++;
 
@@ -137,7 +137,7 @@ TestProxyDelegate::OnBeforeTunnelRequest(
   if (extra_header_name_) {
     extra_headers.SetHeader(
         *extra_header_name_,
-        GetExtraHeaderValue(proxy_chain.GetProxyServer(chain_index)));
+        GetExtraHeaderValue(proxy_chain.GetProxyServer(proxy_index)));
   }
 
   if (on_before_tunnel_request_returns_async_) {
@@ -156,14 +156,14 @@ TestProxyDelegate::OnBeforeTunnelRequest(
 
 Error TestProxyDelegate::OnTunnelHeadersReceived(
     const ProxyChain& proxy_chain,
-    size_t chain_index,
+    size_t proxy_index,
     const HttpResponseHeaders& response_headers) {
   on_tunnel_headers_received_headers_.push_back(
       base::MakeRefCounted<HttpResponseHeaders>(
           response_headers.raw_headers()));
 
   on_tunnel_headers_received_proxy_chains_.push_back(proxy_chain);
-  on_tunnel_headers_received_chain_indices_.push_back(chain_index);
+  on_tunnel_headers_received_chain_indices_.push_back(proxy_index);
   return on_tunnel_headers_received_result_;
 }
 

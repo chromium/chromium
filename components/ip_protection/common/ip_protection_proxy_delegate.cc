@@ -217,7 +217,7 @@ void IpProtectionProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
 base::expected<net::HttpRequestHeaders, net::Error>
 IpProtectionProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyChain& proxy_chain,
-    size_t chain_index,
+    size_t proxy_index,
     OnBeforeTunnelRequestCallback callback) {
   auto vlog = [](std::string message) {
     VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
@@ -225,7 +225,7 @@ IpProtectionProxyDelegate::OnBeforeTunnelRequest(
   net::HttpRequestHeaders extra_headers;
   if (proxy_chain.is_for_ip_protection()) {
     std::optional<BlindSignedAuthToken> token =
-        ip_protection_core_->GetAuthToken(chain_index);
+        ip_protection_core_->GetAuthToken(proxy_index);
     if (token) {
       vlog("adding auth token");
       // The token value we have here is the full Authorization header value,
@@ -252,7 +252,7 @@ IpProtectionProxyDelegate::OnBeforeTunnelRequest(
 
 net::Error IpProtectionProxyDelegate::OnTunnelHeadersReceived(
     const net::ProxyChain& proxy_chain,
-    size_t chain_index,
+    size_t proxy_index,
     const net::HttpResponseHeaders& response_headers) {
   if (response_headers.response_code() == 200 ||
       !proxy_chain.is_for_ip_protection()) {

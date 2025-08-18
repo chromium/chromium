@@ -43,7 +43,7 @@ class TestProxyDelegate : public ProxyDelegate {
 
   // Setter for the name of a header to add to the tunnel request. The value of
   // the header will be based on the `OnBeforeTunnelRequest()` `proxy_chain` and
-  // `chain_index` parameters. If no extra header name is provided, no extra
+  // `proxy_index` parameters. If no extra header name is provided, no extra
   // header will be added to the tunnel request.
   void set_extra_header_name(std::string_view extra_header_name) {
     extra_header_name_ = extra_header_name;
@@ -84,7 +84,7 @@ class TestProxyDelegate : public ProxyDelegate {
   // and response header value were passed to a given
   // `OnTunnelHeadersReceived()` call.
   void VerifyOnTunnelHeadersReceived(const ProxyChain& proxy_chain,
-                                     size_t chain_index,
+                                     size_t proxy_index,
                                      const std::string& response_header_name,
                                      const std::string& response_header_value,
                                      size_t call_index = 0) const;
@@ -100,11 +100,11 @@ class TestProxyDelegate : public ProxyDelegate {
   void OnFallback(const ProxyChain& bad_chain, int net_error) override;
   base::expected<HttpRequestHeaders, Error> OnBeforeTunnelRequest(
       const ProxyChain& proxy_chain,
-      size_t chain_index,
+      size_t proxy_index,
       OnBeforeTunnelRequestCallback callback) override;
   Error OnTunnelHeadersReceived(
       const ProxyChain& proxy_chain,
-      size_t chain_index,
+      size_t proxy_index,
       const HttpResponseHeaders& response_headers) override;
   void SetProxyResolutionService(
       ProxyResolutionService* proxy_resolution_service) override;

@@ -84,14 +84,12 @@ void CronetProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
 
 base::expected<net::HttpRequestHeaders, net::Error>
 CronetProxyDelegate::OnBeforeTunnelRequest(
-    // Don't be confused, this is the index of the proxy within the chain, not
-    // the index of the chain itself.
     const net::ProxyChain& proxy_chain,
-    size_t chain_index,
+    size_t proxy_index,
     OnBeforeTunnelRequestCallback callback) {
   TRACE_EVENT_BEGIN("cronet", "CronetProxyDelegate::OnBeforeTunnelRequest",
-                    "proxy_chain", proxy_chain.ToDebugString(), "chain_index",
-                    chain_index);
+                    "proxy_chain", proxy_chain.ToDebugString(), "proxy_index",
+                    proxy_index);
   CHECK(proxy_chain.opaque_data().has_value());
   // org.chromium.net.Proxy.Callback#onBeforeTunnelRequest always continues
   // asynchronously. So, from //net's perspective, this always ends up in
@@ -104,14 +102,12 @@ CronetProxyDelegate::OnBeforeTunnelRequest(
 }
 
 net::Error CronetProxyDelegate::OnTunnelHeadersReceived(
-    // Don't be confused, this is the index of the proxy within the chain, not
-    // the index of the chain itself.
     const net::ProxyChain& proxy_chain,
-    size_t chain_index,
+    size_t proxy_index,
     const net::HttpResponseHeaders& response_headers) {
   TRACE_EVENT_BEGIN("cronet", "CronetProxyDelegate::OnTunnelHeadersReceived",
-                    "proxy_chain", proxy_chain.ToDebugString(), "chain_index",
-                    chain_index);
+                    "proxy_chain", proxy_chain.ToDebugString(), "proxy_index",
+                    proxy_index);
   CHECK(proxy_chain.opaque_data().has_value());
   auto result = [&] {
     if (network_tasks_->OnTunnelHeadersReceived(*proxy_chain.opaque_data(),

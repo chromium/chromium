@@ -160,7 +160,7 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
 base::expected<net::HttpRequestHeaders, net::Error>
 NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyChain& proxy_chain,
-    size_t chain_index,
+    size_t proxy_index,
     OnBeforeTunnelRequestCallback callback) {
   net::HttpRequestHeaders extra_headers;
   if (IsInProxyConfig(proxy_chain)) {
@@ -171,12 +171,12 @@ NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
 
 net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
     const net::ProxyChain& proxy_chain,
-    size_t chain_index,
+    size_t proxy_index,
     const net::HttpResponseHeaders& response_headers) {
   if (observer_) {
     // Copy the response headers since mojo expects a ref counted object.
     observer_->OnTunnelHeadersReceived(
-        proxy_chain, chain_index,
+        proxy_chain, proxy_index,
         base::MakeRefCounted<net::HttpResponseHeaders>(
             response_headers.raw_headers()));
   }
