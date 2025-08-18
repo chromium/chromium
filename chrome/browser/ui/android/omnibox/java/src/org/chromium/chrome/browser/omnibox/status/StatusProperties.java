@@ -288,6 +288,9 @@ public class StatusProperties {
     /** Specifies width of the verbose status text field. */
     static final WritableIntPropertyKey VERBOSE_STATUS_TEXT_WIDTH = new WritableIntPropertyKey();
 
+    /** Specifies the preferred size of the Status field. */
+    static final WritableBooleanPropertyKey USE_SMALL_WIDGET = new WritableBooleanPropertyKey();
+
     /**
      * Whether the status view is shown. This is different from SHOW_STATUS_ICON, which is
      * responsible for whether the icon sub-view is shown or not and is managed independently.
@@ -312,6 +315,7 @@ public class StatusProperties {
                 STATUS_VIEW_TOOLTIP_TEXT,
                 STATUS_VIEW_BACKGROUND,
                 TRANSLATION_X,
+                USE_SMALL_WIDGET,
                 VERBOSE_STATUS_TEXT_COLOR,
                 VERBOSE_STATUS_TEXT_STRING_RES,
                 VERBOSE_STATUS_TEXT_VISIBLE,

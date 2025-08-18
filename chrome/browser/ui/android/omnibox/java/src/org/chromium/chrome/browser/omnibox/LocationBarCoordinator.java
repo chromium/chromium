@@ -533,6 +533,7 @@ public class LocationBarCoordinator
     @Override
     public void setUrlBarUsesSmallText(boolean useSmallText) {
         mUrlCoordinator.setUseSmallText(useSmallText);
+        mStatusCoordinator.setUseSmallWidget(useSmallText);
     }
 
     @Override

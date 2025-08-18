@@ -332,6 +332,10 @@ public class StatusMediator
         mModel.set(StatusProperties.STATUS_ICON_ALPHA, alpha);
     }
 
+    public void setUseSmallWidget(boolean useSmallWidget) {
+        mModel.set(StatusProperties.USE_SMALL_WIDGET, useSmallWidget);
+    }
+
     void updateStatusVisibility() {
         // This logic doesn't apply to tablets.
         if (mIsTablet) return;

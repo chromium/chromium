@@ -255,6 +255,10 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.onTabCrashed();
     }
 
+    public void setUseSmallWidget(boolean useSmallWidget) {
+        mMediator.setUseSmallWidget(useSmallWidget);
+    }
+
     /** Returns the resource identifier of the current security icon drawable. */
     public @DrawableRes int getSecurityIconResource() {
         return mMediator.getSecurityIconResource();

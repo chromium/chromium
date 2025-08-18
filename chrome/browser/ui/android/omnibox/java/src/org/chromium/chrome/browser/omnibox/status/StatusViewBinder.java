@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.omnibox.status;
 
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -73,6 +75,15 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             applyStatusIconAndTooltipProperties(model, view);
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_WIDTH.equals(propertyKey)) {
             view.setVerboseStatusTextWidth(model.get(StatusProperties.VERBOSE_STATUS_TEXT_WIDTH));
+        } else if (StatusProperties.USE_SMALL_WIDGET.equals(propertyKey)) {
+            var params = view.getLayoutParams();
+            boolean useSmallWidget = model.get(StatusProperties.USE_SMALL_WIDGET);
+            params.height =
+                    useSmallWidget
+                            ? MarginLayoutParams.MATCH_PARENT
+                            : view.getResources()
+                                    .getDimensionPixelSize(R.dimen.location_bar_height);
+            view.setLayoutParams(params);
         } else {
             assert false : "Unhandled property update";
         }
