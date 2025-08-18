@@ -381,7 +381,7 @@ KeySystemConfigSelector::KeySystemConfigSelector(
     : key_systems_(key_systems),
       media_permission_(media_permission),
       web_frame_delegate_(std::move(web_frame_delegate)),
-      is_supported_media_type_cb_(WTF::BindRepeating(&IsSupportedMediaType)) {
+      is_supported_media_type_cb_(BindRepeating(&IsSupportedMediaType)) {
   DCHECK(key_systems_);
   DCHECK(media_permission_);
   DCHECK(web_frame_delegate_);
@@ -1090,8 +1090,8 @@ void KeySystemConfigSelector::SelectConfigInternal(
         DVLOG(3) << "Request permission.";
         media_permission_->RequestPermission(
             media::MediaPermission::Type::kProtectedMediaIdentifier,
-            WTF::BindOnce(&KeySystemConfigSelector::OnPermissionResult,
-                          weak_factory_.GetWeakPtr(), std::move(request)));
+            blink::BindOnce(&KeySystemConfigSelector::OnPermissionResult,
+                            weak_factory_.GetWeakPtr(), std::move(request)));
         return;
       case CONFIGURATION_SUPPORTED:
         std::string key_system = request->key_system;
@@ -1116,9 +1116,10 @@ void KeySystemConfigSelector::SelectConfigInternal(
             media::kHardwareSecureDecryptionFallbackPerSite.Get()) {
           if (!request->was_hardware_secure_decryption_preferences_requested) {
             media_permission_->IsHardwareSecureDecryptionAllowed(
-                WTF::BindOnce(&KeySystemConfigSelector::
-                                  OnHardwareSecureDecryptionAllowedResult,
-                              weak_factory_.GetWeakPtr(), std::move(request)));
+                blink::BindOnce(&KeySystemConfigSelector::
+                                    OnHardwareSecureDecryptionAllowedResult,
+                                weak_factory_.GetWeakPtr(),
+                                std::move(request)));
             return;
           }
 

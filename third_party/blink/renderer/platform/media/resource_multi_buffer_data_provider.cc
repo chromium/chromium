@@ -80,8 +80,8 @@ void ResourceMultiBufferDataProvider::Start() {
 
   if (url_data_->length() > 0 && byte_pos() >= url_data_->length()) {
     task_runner_->PostTask(
-        FROM_HERE, WTF::BindOnce(&ResourceMultiBufferDataProvider::Terminate,
-                                 weak_factory_.GetWeakPtr()));
+        FROM_HERE, blink::BindOnce(&ResourceMultiBufferDataProvider::Terminate,
+                                   weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -467,8 +467,8 @@ void ResourceMultiBufferDataProvider::DidFinishLoading() {
       retries_++;
       task_runner_->PostDelayedTask(
           FROM_HERE,
-          WTF::BindOnce(&ResourceMultiBufferDataProvider::Start,
-                        weak_factory_.GetWeakPtr()),
+          blink::BindOnce(&ResourceMultiBufferDataProvider::Start,
+                          weak_factory_.GetWeakPtr()),
           base::Milliseconds(kLoaderPartialRetryDelayMs));
       return;
     } else {
@@ -496,8 +496,8 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
     retries_++;
     task_runner_->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&ResourceMultiBufferDataProvider::Start,
-                      weak_factory_.GetWeakPtr()),
+        blink::BindOnce(&ResourceMultiBufferDataProvider::Start,
+                        weak_factory_.GetWeakPtr()),
         base::Milliseconds(kLoaderFailedRetryDelayMs +
                            kAdditionalDelayPerRetryMs * retries_));
   } else {

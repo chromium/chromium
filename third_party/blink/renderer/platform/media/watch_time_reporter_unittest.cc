@@ -353,10 +353,10 @@ class WatchTimeReporterTest
             has_audio_, has_video_, false, false, is_mse, is_encrypted, false,
             media::mojom::blink::MediaStreamType::kNone, renderer_type),
         initial_video_size,
-        WTF::BindRepeating(&WatchTimeReporterTest::GetCurrentMediaTime,
-                           WTF::Unretained(this)),
-        WTF::BindRepeating(&WatchTimeReporterTest::GetPipelineStatistics,
-                           WTF::Unretained(this)),
+        blink::BindRepeating(&WatchTimeReporterTest::GetCurrentMediaTime,
+                             Unretained(this)),
+        BindRepeating(&WatchTimeReporterTest::GetPipelineStatistics,
+                      Unretained(this)),
         &fake_metrics_provider_, scheduler::GetSequencedTaskRunnerForTesting(),
         task_environment_.GetMockTickClock());
     reporting_interval_ = wtr_->reporting_interval_;

@@ -103,8 +103,8 @@ class VideoFrameCompositorTest
   VideoFrameCompositor* compositor() { return compositor_.get(); }
 
   VideoFrameCompositor::OnNewFramePresentedCB GetNewFramePresentedCB() {
-    return WTF::BindOnce(&VideoFrameCompositorTest::OnNewFramePresented,
-                         WTF::Unretained(this));
+    return BindOnce(&VideoFrameCompositorTest::OnNewFramePresented,
+                    Unretained(this));
   }
 
  protected:

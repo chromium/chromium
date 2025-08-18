@@ -50,13 +50,13 @@ void CdmSessionAdapter::CreateCdm(media::CdmFactory* cdm_factory,
 
   cdm_factory->Create(
       cdm_config,
-      WTF::BindRepeating(&CdmSessionAdapter::OnSessionMessage, weak_this),
-      WTF::BindRepeating(&CdmSessionAdapter::OnSessionClosed, weak_this),
-      WTF::BindRepeating(&CdmSessionAdapter::OnSessionKeysChange, weak_this),
-      WTF::BindRepeating(&CdmSessionAdapter::OnSessionExpirationUpdate,
-                         weak_this),
-      WTF::BindOnce(&CdmSessionAdapter::OnCdmCreated, WTF::RetainedRef(this),
-                    cdm_config, start_time));
+      blink::BindRepeating(&CdmSessionAdapter::OnSessionMessage, weak_this),
+      blink::BindRepeating(&CdmSessionAdapter::OnSessionClosed, weak_this),
+      blink::BindRepeating(&CdmSessionAdapter::OnSessionKeysChange, weak_this),
+      blink::BindRepeating(&CdmSessionAdapter::OnSessionExpirationUpdate,
+                           weak_this),
+      blink::BindOnce(&CdmSessionAdapter::OnCdmCreated,
+                      blink::RetainedRef(this), cdm_config, start_time));
 }
 
 void CdmSessionAdapter::SetServerCertificate(

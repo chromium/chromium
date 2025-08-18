@@ -260,9 +260,9 @@ UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
     : fetch_context_(fetch_context),
       lru_(base::MakeRefCounted<MultiBuffer::GlobalLRU>(task_runner)),
       block_shift_(block_shift),
-      memory_pressure_listener_(FROM_HERE,
-                                WTF::BindRepeating(&UrlIndex::OnMemoryPressure,
-                                                   WTF::Unretained(this))),
+      memory_pressure_listener_(
+          FROM_HERE,
+          blink::BindRepeating(&UrlIndex::OnMemoryPressure, Unretained(this))),
       task_runner_(std::move(task_runner)) {}
 
 UrlIndex::~UrlIndex() = default;

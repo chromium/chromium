@@ -158,7 +158,7 @@ void WebAudioSourceProviderImpl::SetClient(
     // The client will now take control by calling provideInput() periodically.
     client_ = client;
 
-    set_format_cb_ = base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
+    set_format_cb_ = base::BindPostTaskToCurrentDefault(blink::BindRepeating(
         &WebAudioSourceProviderImpl::OnSetFormat, weak_factory_.GetWeakPtr()));
 
     // If |tee_filter_| is Initialize()d - then run |set_format_cb_| to send
@@ -339,8 +339,8 @@ void WebAudioSourceProviderImpl::GetOutputDeviceInfoAsync(
   // underlying audio renderer will prefer the media parameters. See
   // IsOptimizedForHardwareParameters() for more details.
   base::BindPostTaskToCurrentDefault(
-      WTF::BindOnce(std::move(info_cb),
-                    media::OutputDeviceInfo(media::OUTPUT_DEVICE_STATUS_OK)))
+      blink::BindOnce(std::move(info_cb),
+                      media::OutputDeviceInfo(media::OUTPUT_DEVICE_STATUS_OK)))
       .Run();
 }
 

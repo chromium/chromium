@@ -354,7 +354,7 @@ void WebContentDecryptionModuleSessionImpl::InitializeNewSession(
       eme_init_data_type, sanitized_init_data, session_type_,
       std::make_unique<NewSessionCdmResultPromise>(
           result, adapter_->GetKeySystemUMAPrefix(), kGenerateRequestUMAName,
-          WTF::BindOnce(
+          blink::BindOnce(
               &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
               weak_ptr_factory_.GetWeakPtr()),
           Vector<SessionInitStatus>{SessionInitStatus::NEW_SESSION}));
@@ -386,7 +386,7 @@ void WebContentDecryptionModuleSessionImpl::Load(
       session_type_, sanitized_session_id,
       std::make_unique<NewSessionCdmResultPromise>(
           result, adapter_->GetKeySystemUMAPrefix(), kLoadSessionUMAName,
-          WTF::BindOnce(
+          blink::BindOnce(
               &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
               weak_ptr_factory_.GetWeakPtr()),
           Vector<SessionInitStatus>{SessionInitStatus::NEW_SESSION,

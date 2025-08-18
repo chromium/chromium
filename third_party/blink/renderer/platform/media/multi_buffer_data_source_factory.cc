@@ -37,7 +37,7 @@ void MultiBufferDataSourceFactory::CreateDataSource(GURL uri,
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   auto download_cb =
 #if DCHECK_IS_ON()
-      WTF::BindRepeating(
+      BindRepeating(
           [](const std::string url, bool is_downloading) {
             DVLOG(1) << __func__ << "(" << url << ", " << is_downloading << ")";
           },
@@ -47,9 +47,9 @@ void MultiBufferDataSourceFactory::CreateDataSource(GURL uri,
 #endif
 
   get_url_data_.Run(std::move(uri), ignore_cache,
-                    WTF::BindOnce(&MultiBufferDataSourceFactory::OnUrlData,
-                                  weak_factory_.GetWeakPtr(), std::move(cb),
-                                  std::move(download_cb)));
+                    blink::BindOnce(&MultiBufferDataSourceFactory::OnUrlData,
+                                    weak_factory_.GetWeakPtr(), std::move(cb),
+                                    std::move(download_cb)));
 }
 
 void MultiBufferDataSourceFactory::OnUrlData(

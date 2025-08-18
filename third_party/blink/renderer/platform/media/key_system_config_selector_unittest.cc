@@ -471,12 +471,12 @@ class KeySystemConfigSelectorTest : public testing::Test {
     web_frame_delegate_ = std::make_unique<FakeWebLocalFrameDelegate>();
 
     key_system_config_selector.SetIsSupportedMediaTypeCBForTesting(
-        WTF::BindRepeating(&IsSupportedMediaType));
+        BindRepeating(&IsSupportedMediaType));
 
     key_system_config_selector.SelectConfig(
         key_system_, configs_,
-        WTF::BindOnce(&KeySystemConfigSelectorTest::OnConfigSelected,
-                      WTF::Unretained(this)));
+        BindOnce(&KeySystemConfigSelectorTest::OnConfigSelected,
+                 Unretained(this)));
   }
 
   void SelectConfigReturnsConfig() {

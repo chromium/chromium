@@ -90,8 +90,8 @@ void WebContentDecryptionModuleAccessImpl::CreateContentDecryptionModule(
   // gets garbage-collected.
   auto result_copy = std::make_unique<WebContentDecryptionModuleResult>(result);
   task_runner->PostTask(FROM_HERE,
-                        WTF::BindOnce(&CreateCdm, client_, security_origin_,
-                                      cdm_config_, std::move(result_copy)));
+                        blink::BindOnce(&CreateCdm, client_, security_origin_,
+                                        cdm_config_, std::move(result_copy)));
 }
 
 bool WebContentDecryptionModuleAccessImpl::UseHardwareSecureCodecs() const {

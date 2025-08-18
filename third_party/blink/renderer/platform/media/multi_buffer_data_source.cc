@@ -136,7 +136,7 @@ MultiBufferDataSource::MultiBufferDataSource(
   DCHECK(url_data_);
   url_data_->Use();
   url_data_->OnRedirect(
-      WTF::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
+      blink::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
 }
 
 MultiBufferDataSource::~MultiBufferDataSource() {
@@ -166,7 +166,7 @@ void MultiBufferDataSource::CreateResourceLoader(int64_t first_byte_position,
   SetReader(std::make_unique<MultiBufferReader>(
       url_data_->multibuffer(), first_byte_position, last_byte_position,
       is_client_audio_element_,
-      WTF::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
+      blink::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
       render_task_runner_));
   UpdateBufferSizes();
 }
@@ -180,7 +180,7 @@ void MultiBufferDataSource::CreateResourceLoader_Locked(
   reader_ = std::make_unique<MultiBufferReader>(
       url_data_->multibuffer(), first_byte_position, last_byte_position,
       is_client_audio_element_,
-      WTF::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
+      blink::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
       render_task_runner_);
   UpdateBufferSizes();
 }
@@ -210,7 +210,7 @@ void MultiBufferDataSource::Initialize(InitializeCB init_cb) {
                             weak_factory_.GetWeakPtr()));
   } else {
     reader_->Wait(
-        1, WTF::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
+        1, blink::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
   }
 }
 
@@ -239,7 +239,7 @@ void MultiBufferDataSource::OnRedirected(
   url_data_ = std::move(new_destination);
 
   url_data_->OnRedirect(
-      WTF::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
+      blink::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
 
   if (init_cb_) {
     CreateResourceLoader(0, kPositionNotSpecified);
@@ -250,7 +250,7 @@ void MultiBufferDataSource::OnRedirected(
                               weak_ptr_));
     } else {
       reader_->Wait(
-          1, WTF::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
+          1, blink::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
     }
   } else if (read_op_) {
     CreateResourceLoader(read_op_->position(), kPositionNotSpecified);
@@ -259,8 +259,8 @@ void MultiBufferDataSource::OnRedirected(
           *render_task_runner_, FROM_HERE,
           CrossThreadBindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
     } else {
-      reader_->Wait(1,
-                    WTF::BindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
+      reader_->Wait(
+          1, blink::BindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
     }
   }
 
@@ -505,8 +505,8 @@ void MultiBufferDataSource::ReadTask() {
     SeekTask_Locked();
   } else {
     reader_->Seek(read_op_->position());
-    reader_->Wait(1, WTF::BindOnce(&MultiBufferDataSource::ReadTask,
-                                   weak_factory_.GetWeakPtr()));
+    reader_->Wait(1, blink::BindOnce(&MultiBufferDataSource::ReadTask,
+                                     weak_factory_.GetWeakPtr()));
     UpdateLoadingState_Locked(false);
   }
 }
