@@ -270,10 +270,8 @@ const CGFloat kGrabberTopPadding = 5;
       _omniboxPopupContainer, self.view,
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                       withAction:@selector(updateMutatorDarkMode)];
-  }
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withAction:@selector(updateMutatorDarkMode)];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -292,20 +290,6 @@ const CGFloat kGrabberTopPadding = 5;
                 name:UIApplicationWillEnterForegroundNotification
               object:nil];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.userInterfaceStyle !=
-      previousTraitCollection.userInterfaceStyle) {
-    [self updateMutatorDarkMode];
-  }
-}
-#endif
 
 - (void)setWebViewHidden:(BOOL)hidden {
   if (_webViewHidden == hidden) {

@@ -70,9 +70,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   [super viewDidLoad];
   // To ensure the elements within this side panel adapt properly to its limited
   // width, explicitly set its horizontal size class to compact.
-  if (@available(iOS 17, *)) {
-    self.traitOverrides.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
-  }
+  self.traitOverrides.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
   _borderView = [self createBorderView];
   [self.view addSubview:_borderView];
   AddSameConstraintsWithInsets(_borderView, self.view,
@@ -194,10 +192,8 @@ const CGFloat kSelectionUICornerRadius = 13.0;
         constraintEqualToAnchor:_splitViewLayoutGuide.leadingAnchor],
   ]];
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
-                       withAction:@selector(sizeClassDidChange)];
-  }
+  [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
+                     withAction:@selector(sizeClassDidChange)];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -206,20 +202,6 @@ const CGFloat kSelectionUICornerRadius = 13.0;
                                   self.selectionViewController);
   [self.delegate lensOverlayContainerDidAppear:self animated:animated];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.horizontalSizeClass !=
-      previousTraitCollection.horizontalSizeClass) {
-    [self sizeClassDidChange];
-  }
-}
-#endif
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
   return UIInterfaceOrientationMaskPortrait;
