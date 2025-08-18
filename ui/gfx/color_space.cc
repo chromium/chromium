@@ -1135,8 +1135,15 @@ SkM44 ColorSpace::GetRangeAdjustMatrix(int bit_depth) const {
 
 bool ColorSpace::ToSkYUVColorSpace(int bit_depth, SkYUVColorSpace* out) const {
   // There should be no usages of RGB matrix for YUV conversion.
-  SCOPED_CRASH_KEY_STRING32("ToSkYUVColorSpace", "ColorSpace", ToString());
-  CHECK(matrix_ != gfx::ColorSpace::MatrixID::RGB, base::NotFatalUntil::M141);
+  if (matrix_ == gfx::ColorSpace::MatrixID::RGB) {
+    [[maybe_unused]] static bool call_once = [&]() {
+      SCOPED_CRASH_KEY_STRING32("ToSkYUVColorSpace", "ColorSpace", ToString());
+      CHECK(matrix_ != gfx::ColorSpace::MatrixID::RGB,
+            base::NotFatalUntil::M141);
+      return true;
+    }();
+  }
+
   switch (matrix_) {
     case MatrixID::BT709:
       *out = range_ == RangeID::FULL ? kRec709_Full_SkYUVColorSpace
