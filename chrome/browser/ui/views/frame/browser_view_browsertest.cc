@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands_mac.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -708,6 +710,57 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, SplitViewActiveIndexTest) {
       browser_view()->multi_contents_view()->GetActiveContentsView(),
       browser_view()->multi_contents_view()->end_contents_view_for_testing());
 }
+
+#if BUILDFLAG(IS_MAC)
+class MacSideBySideBrowserViewTest : public InProcessBrowserTest {
+ public:
+  MacSideBySideBrowserViewTest() {
+    scoped_feature_list_.InitWithFeatures({features::kSideBySide}, {});
+  }
+
+  MacSideBySideBrowserViewTest(const MacSideBySideBrowserViewTest&) = delete;
+  MacSideBySideBrowserViewTest& operator=(const MacSideBySideBrowserViewTest&) =
+      delete;
+
+ protected:
+  BrowserView* browser_view() {
+    return BrowserView::GetBrowserViewForBrowser(browser());
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(MacSideBySideBrowserViewTest,
+                       SplitViewFullscreenLayout) {
+  // Disable always show toolbar in fullscreen
+  chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), false);
+
+  // Create tabs and add to split
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit({1},
+                                              split_tabs::SplitTabVisualData());
+
+  ASSERT_TRUE(browser()->tab_strip_model()->selection_model().IsSelected(0));
+  ASSERT_TRUE(browser()->tab_strip_model()->selection_model().IsSelected(1));
+
+  TopContainerView* top_container = browser_view()->top_container();
+  views::View* overlay_view = browser_view()->overlay_view();
+
+  // Verify top_container is parented to browser_view before fullscreen
+  EXPECT_EQ(browser_view(), top_container->parent());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  // Verify top_container is parented to overlay after entering fullscreen
+  EXPECT_EQ(overlay_view, top_container->parent());
+
+  browser_view()->ExitFullscreen();
+
+  // Verify top_container is re-parented to browser_view after fullscreen exit
+  EXPECT_EQ(browser_view(), top_container->parent());
+}
+#endif
 
 namespace {
 

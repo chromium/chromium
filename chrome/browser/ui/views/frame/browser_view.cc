@@ -6371,7 +6371,6 @@ void BrowserView::OnImmersiveRevealStarted() {
 }
 
 void BrowserView::OnImmersiveRevealEnded() {
-  ReparentTopContainerForEndOfImmersive();
   InvalidateLayout();
   GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
 
@@ -6388,6 +6387,7 @@ void BrowserView::OnImmersiveRevealEnded() {
 }
 
 void BrowserView::OnImmersiveFullscreenExited() {
+  ReparentTopContainerForEndOfImmersive();
   OnImmersiveRevealEnded();
 }
 
