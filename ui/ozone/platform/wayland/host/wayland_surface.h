@@ -265,7 +265,7 @@ class WaylandSurface {
     // buffer_handle owning this wl_buffer is destroyed. Accessing this field
     // should ensure wl_buffer exists by calling
     // WaylandBufferManagerHost::EnsureBufferHandle(buffer_id).
-    raw_ptr<wl_buffer, AcrossTasksDanglingUntriaged> buffer = nullptr;
+    base::WeakPtr<WaylandBufferHandle> buffer;
     gfx::Size buffer_size_px;
 
     // The buffer scale refers to the ratio between the buffer size and the

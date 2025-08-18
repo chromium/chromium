@@ -263,7 +263,7 @@ bool WaylandSurface::AttachBuffer(WaylandBufferHandle* buffer_handle) {
   }
 
   pending_state_.buffer_size_px = buffer_handle->size();
-  pending_state_.buffer = buffer_handle->buffer();
+  pending_state_.buffer = buffer_handle->AsWeakPtr();
   pending_state_.buffer_id = buffer_handle->id();
   pending_state_.sync_method = buffer_handle->sync_method();
 
@@ -541,7 +541,10 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     // (0, 0). If this changes, then the calculation in DamageBuffer will also
     // need to be updated.
     // Note: should the offset be non-zero, use wl_surface_offset() to set it.
-    wl_surface_attach(surface_.get(), pending_state_.buffer, 0, 0);
+    wl_surface_attach(
+        surface_.get(),
+        pending_state_.buffer ? pending_state_.buffer->buffer() : nullptr, 0,
+        0);
     needs_commit = true;
   }
   pending_state_.acquire_fence = gfx::GpuFenceHandle();
