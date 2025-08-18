@@ -1951,28 +1951,67 @@ TEST_F(UDPSocketTest, BindToNetwork) {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Scoped helper to override the process-wide UDP socket limit.
-class OverrideUDPSocketLimit {
- public:
-  explicit OverrideUDPSocketLimit(int new_limit) {
-    base::FieldTrialParams params;
-    params[features::kLimitOpenUDPSocketsMax.name] =
-        base::NumberToString(new_limit);
+// Test the behavior of OwnedUDPSocketCount directly. Could be in its own file,
+// but seems best to keep it with the more integration-y tests that cover
+// UDPSocket usage of the class as well.
+TEST_F(UDPSocketTest, OwnedUDPSocketCount) {
+  std::vector<OwnedUDPSocketCount> owned_counts;
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(), 0);
 
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kLimitOpenUDPSockets, params);
+  // The default constructor doesn't increment the count.
+  owned_counts.resize(OwnedUDPSocketCount::kMaxUdpSockets);
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(), 0);
+
+  // Note that this block uses asserts rather than expects to reduce failure log
+  // size on regression.
+  for (int i = 0; i < OwnedUDPSocketCount::kMaxUdpSockets; ++i) {
+    // Creating another owned count should succeed.
+    auto owned_count = TryAcquireGlobalUDPSocketCount();
+    ASSERT_FALSE(owned_counts.empty());
+    ASSERT_EQ(GetGlobalUDPSocketCountForTesting(), i + 1);
+
+    // Test that moving an owned count works as expected.
+    owned_counts[i] = std::move(owned_count);
+    ASSERT_FALSE(owned_counts[i].empty());
+    ASSERT_EQ(GetGlobalUDPSocketCountForTesting(), i + 1);
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+  // Trying to make another owned count should should fail, since we should
+  // already be at the max.
+  auto owned_count_failed = TryAcquireGlobalUDPSocketCount();
+  EXPECT_TRUE(owned_count_failed.empty());
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets);
+
+  // Overwriting an owned count with the empty one should free up a UDP socket.
+  owned_counts.back() = std::move(owned_count_failed);
+  EXPECT_TRUE(owned_counts.back().empty());
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets - 1);
+
+  // Clearing owned counts should get us back to zero.
+  owned_counts.clear();
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(), 0);
+}
 
 // Tests that UDPClientSocket respects the global UDP socket limits.
 TEST_F(UDPSocketTest, LimitClientSocket) {
-  // Reduce the global UDP limit to 2.
-  OverrideUDPSocketLimit set_limit(2);
-
   ASSERT_EQ(0, GetGlobalUDPSocketCountForTesting());
+
+  // Use all but 2 sockets of the limit. Don't use UDPClientSockets for this
+  // because `OwnedUDPSocketCount::kMaxUdpSockets` is rather large.
+  //
+  // Note that this block uses asserts rather than expects to reduce failure log
+  // size on regression.
+  std::vector<OwnedUDPSocketCount> owned_counts;
+  for (int i = 0; i < OwnedUDPSocketCount::kMaxUdpSockets - 2; ++i) {
+    owned_counts.emplace_back(TryAcquireGlobalUDPSocketCount());
+    ASSERT_FALSE(owned_counts[i].empty());
+    ASSERT_EQ(GetGlobalUDPSocketCountForTesting(), i + 1);
+  }
+
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets - 2);
 
   auto socket1 = std::make_unique<UDPClientSocket>(DatagramSocket::DEFAULT_BIND,
                                                    nullptr, NetLogSource());
@@ -1981,7 +2020,8 @@ TEST_F(UDPSocketTest, LimitClientSocket) {
 
   // Simply constructing a UDPClientSocket does not increase the limit (no
   // Connect() or Bind() has been called yet).
-  ASSERT_EQ(0, GetGlobalUDPSocketCountForTesting());
+  ASSERT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets - 2);
 
   // The specific value of this address doesn't really matter, and no server
   // needs to be running here. The test only needs to call Connect() and won't
@@ -1990,41 +2030,48 @@ TEST_F(UDPSocketTest, LimitClientSocket) {
 
   // Successful Connect() on socket1 increases socket count.
   EXPECT_THAT(socket1->Connect(server_address), IsOk());
-  EXPECT_EQ(1, GetGlobalUDPSocketCountForTesting());
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets - 1);
 
   // Successful Connect() on socket2 increases socket count.
   EXPECT_THAT(socket2->Connect(server_address), IsOk());
-  EXPECT_EQ(2, GetGlobalUDPSocketCountForTesting());
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets);
 
-  // Attempting a third Connect() should fail with ERR_INSUFFICIENT_RESOURCES,
-  // as the limit is currently 2.
+  // Attempting a third Connect() should fail with ERR_INSUFFICIENT_RESOURCES.
   auto socket3 = std::make_unique<UDPClientSocket>(DatagramSocket::DEFAULT_BIND,
                                                    nullptr, NetLogSource());
   EXPECT_THAT(socket3->Connect(server_address),
               IsError(ERR_INSUFFICIENT_RESOURCES));
-  EXPECT_EQ(2, GetGlobalUDPSocketCountForTesting());
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets);
 
   // Check that explicitly closing socket2 free up a count.
   socket2->Close();
-  EXPECT_EQ(1, GetGlobalUDPSocketCountForTesting());
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets - 1);
 
   // Since the socket was already closed, deleting it will not affect the count.
   socket2.reset();
-  EXPECT_EQ(1, GetGlobalUDPSocketCountForTesting());
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets - 1);
 
   // Now that the count is below limit, try to connect another socket. This time
   // it will work.
   auto socket4 = std::make_unique<UDPClientSocket>(DatagramSocket::DEFAULT_BIND,
                                                    nullptr, NetLogSource());
   EXPECT_THAT(socket4->Connect(server_address), IsOk());
-  EXPECT_EQ(2, GetGlobalUDPSocketCountForTesting());
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets);
 
   // Verify that closing the two remaining sockets brings the open count back to
   // 0.
   socket1.reset();
-  EXPECT_EQ(1, GetGlobalUDPSocketCountForTesting());
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets - 1);
   socket4.reset();
-  EXPECT_EQ(0, GetGlobalUDPSocketCountForTesting());
+  EXPECT_EQ(GetGlobalUDPSocketCountForTesting(),
+            OwnedUDPSocketCount::kMaxUdpSockets - 2);
 }
 
 // Tests that UDPSocketClient updates the global counter

@@ -204,15 +204,6 @@ BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
              "SameSiteDefaultChecksMethodRigorously",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLimitOpenUDPSockets,
-             "LimitOpenUDPSockets",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-extern const base::FeatureParam<int> kLimitOpenUDPSocketsMax(
-    &kLimitOpenUDPSockets,
-    "LimitOpenUDPSocketsMax",
-    6000);
-
 BASE_FEATURE(kTimeoutTcpConnectAttempt,
              "TimeoutTcpConnectAttempt",
              base::FEATURE_DISABLED_BY_DEFAULT);
