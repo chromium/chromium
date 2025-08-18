@@ -435,6 +435,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public boolean isSettingsContainmentEnabled() {
+        return ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
+    }
+
+    @Override
     public void setPermissionAutorevocationEnabled(boolean isEnabled) {
         UserPrefs.get(mProfile)
                 .setBoolean(Pref.UNUSED_SITE_PERMISSIONS_REVOCATION_ENABLED, isEnabled);
