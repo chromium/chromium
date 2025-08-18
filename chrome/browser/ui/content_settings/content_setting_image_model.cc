@@ -418,8 +418,7 @@ void GetIconChromeRefresh(ContentSettingsType type,
 #endif
 #if BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
-      // TODO(crbug.com/429039234): Update corrected/new icons
-      *icon = blocked ? &vector_icons::kWebAssetOffIcon
+      *icon = blocked ? &vector_icons::kSyncSavedLocallyOffIcon
                       : &vector_icons::kSyncSavedLocallyIcon;
       return;
 #endif  // BUILDFLAG(IS_WIN)

@@ -874,7 +874,7 @@ TEST_F(ContentSettingImageModelTest, ProtectedMediaIdentifier_Blocked) {
             l10n_util::GetStringUTF16(
                 IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE));
   EXPECT_EQ(content_setting_image_model->icon(),
-            &vector_icons::kWebAssetOffIcon);
+            &vector_icons::kSyncSavedLocallyOffIcon);
 }
 
 TEST_F(ContentSettingImageModelTest, ProtectedMediaIdentifier_Reconciled) {

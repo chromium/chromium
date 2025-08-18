@@ -247,6 +247,7 @@ if (current_toolchain == default_toolchain) {
       "sync_off_chrome_refresh.icon",
       "sync_problem_chrome_refresh.icon",
       "sync_saved_locally.icon",
+      "sync_saved_locally_off.icon",
       "tab_search.icon",
       "tenancy.icon",
       "thumb_down.icon",
