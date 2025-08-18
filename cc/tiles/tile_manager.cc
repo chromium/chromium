@@ -51,6 +51,7 @@
 #include "cc/tiles/tiles_with_resource_iterator.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -593,9 +594,9 @@ void TileManager::Release(Tile* tile) {
 void TileManager::DidFinishRunningTileTasksRequiredForActivation() {
   TRACE_EVENT0("cc",
                "TileManager::DidFinishRunningTileTasksRequiredForActivation");
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("cc", "ScheduledTasksState",
-                                      TRACE_ID_LOCAL(this), "state",
-                                      ScheduledTasksStateAsValue());
+  TRACE_EVENT_INSTANT("cc", "ScheduledTasksState",
+                      perfetto::Track::FromPointer(this), "state",
+                      ScheduledTasksStateAsValue());
   // TODO(vmpstr): Temporary check to debug crbug.com/642927.
   CHECK(tile_task_manager_);
   signals_.activate_tile_tasks_completed = true;
@@ -604,9 +605,9 @@ void TileManager::DidFinishRunningTileTasksRequiredForActivation() {
 
 void TileManager::DidFinishRunningTileTasksRequiredForDraw() {
   TRACE_EVENT0("cc", "TileManager::DidFinishRunningTileTasksRequiredForDraw");
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("cc", "ScheduledTasksState",
-                                      TRACE_ID_LOCAL(this), "state",
-                                      ScheduledTasksStateAsValue());
+  TRACE_EVENT_INSTANT("cc", "ScheduledTasksState",
+                      perfetto::Track::FromPointer(this), "state",
+                      ScheduledTasksStateAsValue());
   // TODO(vmpstr): Temporary check to debug crbug.com/642927.
   CHECK(tile_task_manager_);
   signals_.draw_tile_tasks_completed = true;
@@ -616,7 +617,8 @@ void TileManager::DidFinishRunningTileTasksRequiredForDraw() {
 void TileManager::DidFinishRunningAllTileTasks(base::TimeTicks start_time,
                                                bool has_pending_queries) {
   TRACE_EVENT0("cc", "TileManager::DidFinishRunningAllTileTasks");
-  TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "ScheduledTasks", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("cc",
+                  /*"ScheduledTasks"*/ perfetto::Track::FromPointer(this));
   DCHECK(resource_pool_);
   DCHECK(tile_task_manager_);
 
@@ -1222,8 +1224,8 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
   DCHECK(did_check_for_completed_tasks_since_last_schedule_tasks_);
 
   if (!has_scheduled_tile_tasks_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc", "ScheduledTasks",
-                                      TRACE_ID_LOCAL(this));
+    TRACE_EVENT_BEGIN("cc", "ScheduledTasks",
+                      perfetto::Track::FromPointer(this));
   }
 
   // Cancel existing OnTaskSetFinished callbacks.
@@ -1415,9 +1417,9 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
 
   did_check_for_completed_tasks_since_last_schedule_tasks_ = false;
 
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("cc", "ScheduledTasksState",
-                                      TRACE_ID_LOCAL(this), "state",
-                                      ScheduledTasksStateAsValue());
+  TRACE_EVENT_INSTANT("cc", "ScheduledTasksState",
+                      perfetto::Track::FromPointer(this), "state",
+                      ScheduledTasksStateAsValue());
 }
 
 scoped_refptr<TileTask> TileManager::CreateRasterTask(

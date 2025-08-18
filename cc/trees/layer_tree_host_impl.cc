@@ -135,6 +135,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
@@ -201,14 +202,14 @@ bool IsMobileOptimized(LayerTreeImpl* active_tree) {
 
 void DidVisibilityChange(LayerTreeHostImpl* id, bool visible) {
   if (visible) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-        "cc,benchmark", "LayerTreeHostImpl::SetVisible", TRACE_ID_LOCAL(id),
-        "LayerTreeHostImpl", static_cast<void*>(id));
+    TRACE_EVENT_BEGIN("cc,benchmark", "LayerTreeHostImpl::SetVisible",
+                      perfetto::Track::FromPointer(id), "LayerTreeHostImpl",
+                      static_cast<void*>(id));
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "cc,benchmark", "LayerTreeHostImpl::SetVisible", TRACE_ID_LOCAL(id));
+  TRACE_EVENT_END("cc,benchmark", /*"LayerTreeHostImpl::SetVisible"*/
+                  perfetto::Track::FromPointer(id));
 }
 
 void PopulateMetadataContentColorUsage(
@@ -3849,9 +3850,10 @@ void LayerTreeHostImpl::CreatePendingTree() {
   pending_tree_fully_painted_ = false;
 
   client_->OnCanDrawStateChanged(CanDraw());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "cc", "PendingTree:waiting", TRACE_ID_LOCAL(pending_tree_.get()),
-      "active_lsid", active_tree()->local_surface_id_from_parent().ToString());
+  TRACE_EVENT_BEGIN("cc", "PendingTree:waiting",
+                    perfetto::Track::FromPointer(pending_tree_.get()),
+                    "active_lsid",
+                    active_tree()->local_surface_id_from_parent().ToString());
 }
 
 void LayerTreeHostImpl::PushScrollbarOpacitiesFromActiveToPending() {
@@ -3894,10 +3896,10 @@ void LayerTreeHostImpl::ActivateSyncTree() {
             perfetto::protos::pbzero::MainFramePipeline::Step::ACTIVATE);
       });
   if (pending_tree_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1(
-        "cc", "PendingTree:waiting", TRACE_ID_LOCAL(pending_tree_.get()),
-        "pending_lsid",
-        pending_tree_->local_surface_id_from_parent().ToString());
+    TRACE_EVENT_END("cc", /*"PendingTree:waiting"*/
+                    perfetto::Track::FromPointer(pending_tree_.get()),
+                    "pending_lsid",
+                    pending_tree_->local_surface_id_from_parent().ToString());
     active_tree_->lifecycle().AdvanceTo(LayerTreeLifecycle::kBeginningSync);
 
     // Process any requests in the UI resource queue.  The request queue is

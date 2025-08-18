@@ -40,6 +40,7 @@
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace cc {
 
@@ -345,13 +346,11 @@ void SingleThreadProxy::SetDeferMainFrameUpdate(bool defer_main_frame_update) {
     return;
 
   if (defer_main_frame_update) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "cc", "SingleThreadProxy::SetDeferMainFrameUpdate",
-        TRACE_ID_LOCAL(this));
+    TRACE_EVENT_BEGIN("cc", "SingleThreadProxy::SetDeferMainFrameUpdate",
+                      perfetto::Track::FromPointer(this));
   } else {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "cc", "SingleThreadProxy::SetDeferMainFrameUpdate",
-        TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("cc", /*"SingleThreadProxy::SetDeferMainFrameUpdate"*/
+                    perfetto::Track::FromPointer(this));
   }
 
   defer_main_frame_update_ = defer_main_frame_update;
@@ -375,11 +374,11 @@ void SingleThreadProxy::SetPauseRendering(bool pause_rendering) {
 
   pause_rendering_ = pause_rendering;
   if (pause_rendering_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "cc", "SingleThreadProxy::SetPauseRendering", TRACE_ID_LOCAL(this));
+    TRACE_EVENT_BEGIN("cc", "SingleThreadProxy::SetPauseRendering",
+                      perfetto::Track::FromPointer(this));
   } else {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "cc", "SingleThreadProxy::SetPauseRendering", TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("cc", /*"SingleThreadProxy::SetPauseRendering"*/
+                    perfetto::Track::FromPointer(this));
   }
 
   // The scheduler needs to know that it should not issue BeginFrame.
@@ -398,8 +397,8 @@ bool SingleThreadProxy::StartDeferringCommits(base::TimeDelta timeout,
   if (IsDeferringCommits())
     return false;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc", "SingleThreadProxy::SetDeferCommits",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("cc", "SingleThreadProxy::SetDeferCommits",
+                    perfetto::Track::FromPointer(this));
 
   paint_holding_reason_ = reason;
   commits_restart_time_ = base::TimeTicks::Now() + timeout;
@@ -418,8 +417,8 @@ void SingleThreadProxy::StopDeferringCommits(
   paint_holding_reason_.reset();
   commits_restart_time_ = base::TimeTicks();
   UMA_HISTOGRAM_ENUMERATION("PaintHolding.CommitTrigger2", trigger);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "SingleThreadProxy::SetDeferCommits",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("cc", /*"SingleThreadProxy::SetDeferCommits"*/
+                  perfetto::Track::FromPointer(this));
 
   // Notify dependent systems that the deferral status has changed.
   layer_tree_host_->OnDeferCommitsChanged(false, reason, trigger);

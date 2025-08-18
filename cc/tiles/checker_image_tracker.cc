@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace cc {
 namespace {
@@ -233,8 +234,9 @@ void CheckerImageTracker::DidFinishImageDecode(
     ImageController::ImageDecodeResult result) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "CheckerImageTracker::DidFinishImageDecode");
-  TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "CheckerImageTracker::DeferImageDecode",
-                                  TRACE_ID_LOCAL(image_id));
+  TRACE_EVENT_END(
+      "cc",
+      /*"CheckerImageTracker::DeferImageDecode"*/ perfetto::Track(image_id));
 
   DCHECK_NE(ImageController::ImageDecodeResult::DECODE_NOT_REQUIRED, result);
   DCHECK_EQ(outstanding_image_decode_.value().stable_id(), image_id);
@@ -430,8 +432,8 @@ void CheckerImageTracker::ScheduleNextImageDecode() {
 
   PaintImage::Id image_id = outstanding_image_decode_.value().stable_id();
   DCHECK_EQ(image_id_to_decode_.count(image_id), 0u);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "cc", "CheckerImageTracker::DeferImageDecode", TRACE_ID_LOCAL(image_id));
+  TRACE_EVENT_BEGIN("cc", "CheckerImageTracker::DeferImageDecode",
+                    perfetto::Track(image_id));
   ImageController::ImageDecodeRequestId request_id =
       image_controller_->QueueImageDecode(
           draw_image,

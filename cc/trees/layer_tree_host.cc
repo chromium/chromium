@@ -78,6 +78,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -1355,12 +1356,12 @@ void LayerTreeHost::SetViewportRectAndScale(
       pending_commit_state()->local_surface_id_from_parent;
   SetLocalSurfaceIdFromParent(local_surface_id_from_parent);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1("cc", "LayerTreeHostSize",
-                                  TRACE_ID_LOCAL(this), "id", id_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("cc", "LayerTreeHostSize",
-                                    TRACE_ID_LOCAL(this), "size",
-                                    device_viewport_rect.ToString(), "lsid",
-                                    local_surface_id_from_parent.ToString());
+  TRACE_EVENT_END("cc", /*"LayerTreeHostSize"*/
+                  perfetto::Track::FromPointer(this), "id", id_);
+  TRACE_EVENT_BEGIN("cc", "LayerTreeHostSize",
+                    perfetto::Track::FromPointer(this), "size",
+                    device_viewport_rect.ToString(), "lsid",
+                    local_surface_id_from_parent.ToString());
 
   bool device_viewport_rect_changed = false;
   if (pending_commit_state()->device_viewport_rect != device_viewport_rect) {

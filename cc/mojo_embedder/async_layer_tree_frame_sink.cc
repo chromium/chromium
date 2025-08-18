@@ -26,6 +26,7 @@
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "services/viz/public/mojom/compositing/thread.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace cc {
 namespace mojo_embedder {
@@ -507,9 +508,11 @@ void AsyncLayerTreeFrameSink::UpdateNeedsBeginFramesInternal(
   }
 
   if (needs_begin_frames) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames", this);
+    TRACE_EVENT_BEGIN("cc,benchmark", "NeedsBeginFrames",
+                      perfetto::Track::FromPointer(this));
   } else {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
+    TRACE_EVENT_END("cc,benchmark",
+                    /*"NeedsBeginFrames"*/ perfetto::Track::FromPointer(this));
   }
   needs_begin_frames_ = needs_begin_frames;
 }

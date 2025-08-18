@@ -16,6 +16,7 @@
 #include "cc/base/features.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace cc {
 
@@ -1617,9 +1618,9 @@ void SchedulerStateMachine::SetNeedsPrepareTiles() {
 }
 void SchedulerStateMachine::DidSubmitCompositorFrame() {
   if (!base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("cc", "Scheduler:pending_submit_frames",
-                                      TRACE_ID_LOCAL(this), "pending_frames",
-                                      pending_submit_frames_);
+    TRACE_EVENT_BEGIN("cc", "Scheduler:pending_submit_frames",
+                      perfetto::Track::FromPointer(this), "pending_frames",
+                      pending_submit_frames_);
 
     // If we are running with no frame rate limits, the GPU process can submit
     // a new BeginFrame request if the deadline for the pending BeginFrame
@@ -1647,9 +1648,9 @@ void SchedulerStateMachine::DidReceiveCompositorFrameAck() {
   if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
     NOTREACHED();
   } else {
-    TRACE_EVENT_NESTABLE_ASYNC_END1("cc", "Scheduler:pending_submit_frames",
-                                    TRACE_ID_LOCAL(this), "pending_frames",
-                                    pending_submit_frames_);
+    TRACE_EVENT_END("cc", /*"Scheduler:pending_submit_frames"*/
+                    perfetto::Track::FromPointer(this), "pending_frames",
+                    pending_submit_frames_);
     pending_submit_frames_--;
   }
 }
