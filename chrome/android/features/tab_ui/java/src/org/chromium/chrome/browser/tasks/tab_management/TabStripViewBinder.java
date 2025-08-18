@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
@@ -65,6 +67,7 @@ class TabStripViewBinder {
                             TabActionButtonData data =
                                     model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
                             assert data.type != TabActionButtonData.TabActionButtonType.OVERFLOW;
+                            assumeNonNull(data.tabActionListener);
                             data.tabActionListener.run(
                                     v,
                                     model.get(TabProperties.TAB_ID),

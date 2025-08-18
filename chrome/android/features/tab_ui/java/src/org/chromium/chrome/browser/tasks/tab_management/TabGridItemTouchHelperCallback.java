@@ -76,7 +76,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             new ObservableSupplierImpl<>(Tab.INVALID_TAB_ID);
     private final TabActionListener mTabClosedListener;
     private final String mComponentName;
-    private final TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
+    private final TabListMediator.@Nullable TabGridDialogHandler mTabGridDialogHandler;
     private final int mLongPressDpThresholdSquared;
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     private final ObservableSupplierImpl<RecyclerView> mRecyclerViewSupplier =
@@ -123,7 +123,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             TabListModel tabListModel,
             Supplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             TabActionListener tabClosedListener,
-            TabGridDialogHandler tabGridDialogHandler,
+            @Nullable TabGridDialogHandler tabGridDialogHandler,
             String componentName,
             boolean actionsOnAllRelatedTabs,
             @TabListMode int mode) {
@@ -149,9 +149,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     /**
      * @param listener the handler for longpress actions.
      */
-    void setOnLongPressTabItemEventListener(OnLongPressTabItemEventListener listener) {
+    void setOnLongPressTabItemEventListener(@Nullable OnLongPressTabItemEventListener listener) {
         assert mTabGridItemLongPressOrchestrator == null;
-        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled() && listener != null) {
             setTabGridItemLongPressOrchestrator(
                     new TabGridItemLongPressOrchestrator(
                             mRecyclerViewSupplier,
@@ -166,7 +166,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
      * @param listener the handler for dropping tabs on top of an archival message card.
      */
     void setOnDropOnArchivalMessageCardEventListener(
-            OnDropOnArchivalMessageCardEventListener listener) {
+            @Nullable OnDropOnArchivalMessageCardEventListener listener) {
         mOnDropOnArchivalMessageCardEventListener = listener;
     }
 

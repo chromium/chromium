@@ -857,7 +857,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         assert mContextMenuCoordinator != null;
         return onLongPressOnTabCard(
                 mContextMenuCoordinator,
-                mTabListCoordinator.getTabListGroupMenuCoordinator(),
+                assumeNonNull(mTabListCoordinator.getTabListGroupMenuCoordinator()),
                 tabId,
                 cardView);
     }
