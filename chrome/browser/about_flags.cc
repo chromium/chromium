@@ -153,6 +153,7 @@
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/remote_cocoa/app_shim/features.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -5001,6 +5002,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxShortcutsAndroidName,
      flag_descriptions::kOmniboxShortcutsAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxShortcutsAndroid)},
+    {"safe-browsing-scam-detection-keyboard-lock-trigger-android",
+     flag_descriptions::
+         kSafeBrowsingScamDetectionKeyboardLockTriggerAndroidName,
+     flag_descriptions::
+         kSafeBrowsingScamDetectionKeyboardLockTriggerAndroidDescription,
+     kOsAndroid,
+     SINGLE_VALUE_TYPE(
+         safe_browsing::switches::kScamDetectionKeyboardLockTriggerAndroid)},
     {"safe-browsing-sync-checker-check-allowlist",
      flag_descriptions::kSafeBrowsingSyncCheckerCheckAllowlistName,
      flag_descriptions::kSafeBrowsingSyncCheckerCheckAllowlistDescription,

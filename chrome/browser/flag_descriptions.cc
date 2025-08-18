@@ -5293,6 +5293,13 @@ const char kRightEdgeGoesForwardGestureNavName[] =
 const char kRightEdgeGoesForwardGestureNavDescription[] =
     "Enables the right edge to navigate forward in OS gesture navigation mode.";
 
+const char kSafeBrowsingScamDetectionKeyboardLockTriggerAndroidName[] =
+    "Scam Detection Keyboard Lock Trigger Android";
+const char kSafeBrowsingScamDetectionKeyboardLockTriggerAndroidDescription[] =
+    "Enable the keyboard lock trigger of Scam Detection via command line for "
+    "easier "
+    "testing.";
+
 const char kSafeBrowsingSyncCheckerCheckAllowlistName[] =
     "Safe Browsing Sync Checker Check Allowlist";
 const char kSafeBrowsingSyncCheckerCheckAllowlistDescription[] =

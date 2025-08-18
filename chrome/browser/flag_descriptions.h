@@ -3076,6 +3076,10 @@ extern const char kRelatedSearchesSwitchDescription[];
 extern const char kRightEdgeGoesForwardGestureNavName[];
 extern const char kRightEdgeGoesForwardGestureNavDescription[];
 
+extern const char kSafeBrowsingScamDetectionKeyboardLockTriggerAndroidName[];
+extern const char
+    kSafeBrowsingScamDetectionKeyboardLockTriggerAndroidDescription[];
+
 extern const char kSafeBrowsingSyncCheckerCheckAllowlistName[];
 extern const char kSafeBrowsingSyncCheckerCheckAllowlistDescription[];
 

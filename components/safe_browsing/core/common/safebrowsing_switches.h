@@ -28,6 +28,7 @@ extern const char kCloudBinaryUploadServiceUrlFlag[];
 extern const char kSbManualDownloadBlocklist[];
 extern const char kSbEnableEnhancedProtection[];
 extern const char kForceTreatUserAsAdvancedProtection[];
+extern const char kScamDetectionKeyboardLockTriggerAndroid[];
 
 }  // namespace safe_browsing::switches
 

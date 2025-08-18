@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/android/client_side_detection_intelligent_scan_delegate_android.h"
 
+#include "base/command_line.h"
 #include "base/notimplemented.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
@@ -12,6 +13,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 
 namespace safe_browsing {
 
@@ -42,6 +44,12 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
     ShouldRequestIntelligentScan(ClientPhishingRequest* verdict) {
   if (!IsEnhancedProtectionEnabled(*pref_)) {
     return false;
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kScamDetectionKeyboardLockTriggerAndroid) &&
+      verdict->client_side_detection_type() ==
+          ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED) {
+    return true;
   }
   if (!base::FeatureList::IsEnabled(
           kClientSideDetectionSendIntelligentScanInfoAndroid)) {

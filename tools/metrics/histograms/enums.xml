@@ -8704,6 +8704,8 @@ from previous Chrome versions.
   <int value="-1990614981" label="StoragePressureUI:disabled"/>
   <int value="-1990583427" label="FeedHeaderStickToTop:disabled"/>
   <int value="-1990238241" label="ChromeOSHWVBREncoding:enabled"/>
+  <int value="-1989825048"
+      label="scam-detection-keyboard-lock-trigger-android"/>
   <int value="-1989747818" label="TabStripKeyboardFocus:disabled"/>
   <int value="-1989624484" label="StartSurfaceRefactor:disabled"/>
   <int value="-1989570196" label="NtpWallpaperSearchButton:enabled"/>
