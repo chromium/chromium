@@ -32,6 +32,8 @@ SaveAndFillDialog::SaveAndFillDialog(
   // default state for widgets.
   SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   SetModalType(ui::mojom::ModalType::kChild);
+  SetAcceptCallbackWithClose(base::BindRepeating(&SaveAndFillDialog::OnAccepted,
+                                                 base::Unretained(this)));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
@@ -245,7 +247,12 @@ void SaveAndFillDialog::CreatePendingView() {
 }
 
 void SaveAndFillDialog::ToggleThrobberVisibility(bool visible) {
-  visible ? throbber_->Start() : throbber_->Stop();
+  if (visible) {
+    throbber_->Start();
+    SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
+  } else {
+    throbber_->Stop();
+  }
   main_view_->SetVisible(!visible);
   pending_view_->SetVisible(visible);
 }
@@ -279,13 +286,20 @@ SaveAndFillDialog::GetUserProvidedDataFromInput() const {
 }
 
 void SaveAndFillDialog::OnDialogClosed(views::Widget::ClosedReason reason) {
-  if (reason == views::Widget::ClosedReason::kAcceptButtonClicked) {
-    controller_->OnUserAcceptedDialog(GetUserProvidedDataFromInput());
-  } else if (reason == views::Widget::ClosedReason::kCancelButtonClicked) {
+  CHECK_NE(reason, views::Widget::ClosedReason::kAcceptButtonClicked);
+  if (reason == views::Widget::ClosedReason::kCancelButtonClicked) {
     controller_->OnUserCanceledDialog();
   } else {
     controller_->Dismiss();
   }
+}
+
+bool SaveAndFillDialog::OnAccepted() {
+  ToggleThrobberVisibility(/*visible=*/true);
+  controller_->OnUserAcceptedDialog(GetUserProvidedDataFromInput());
+  // Return false to prevent the dialog from closing. The controller is now
+  // responsible for closing it after the server call is complete.
+  return false;
 }
 
 std::unique_ptr<views::View> SaveAndFillDialog::CreateLegalMessageView() {

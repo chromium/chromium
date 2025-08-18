@@ -1051,6 +1051,16 @@ void ChromePaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+void ChromePaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (save_and_fill_dialog_controller_) {
+    save_and_fill_dialog_controller_->Dismiss();
+  }
+#else
+  NOTIMPLEMENTED();
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 SaveAndFillManager* ChromePaymentsAutofillClient::GetSaveAndFillManager() {
 #if BUILDFLAG(IS_ANDROID)
   return nullptr;

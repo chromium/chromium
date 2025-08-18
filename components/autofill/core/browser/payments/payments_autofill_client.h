@@ -648,6 +648,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // transitions to the server version.
   virtual void ShowCreditCardSaveAndFillPendingDialog();
 
+  // Hides the Save and Fill dialog upon receivng response from the CreateCard
+  // server call.
+  virtual void HideCreditCardSaveAndFillDialog();
+
   // Gets the payments Save and Fill manager owned by the client. This will be
   // used to handle the Save and Fill dialog.
   virtual payments::SaveAndFillManager* GetSaveAndFillManager();

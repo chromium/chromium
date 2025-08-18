@@ -304,6 +304,7 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
             .SaveCardLocallyIfNew(upload_details_.card));
   }
 
+  payments_autofill_client()->HideCreditCardSaveAndFillDialog();
   // Invoke feedback bubble. No callback needed (virtual card enrollment is not
   // eligible for card saved via the Save and Fill flow).
   payments_autofill_client()->CreditCardUploadCompleted(

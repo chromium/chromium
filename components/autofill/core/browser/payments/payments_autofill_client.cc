@@ -293,6 +293,8 @@ void PaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
 
 void PaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog() {}
 
+void PaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {}
+
 payments::SaveAndFillManager* PaymentsAutofillClient::GetSaveAndFillManager() {
   return nullptr;
 }

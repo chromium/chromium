@@ -250,7 +250,6 @@ void SaveAndFillDialogControllerImpl::OnUserAcceptedDialog(
       .Run(payments::PaymentsAutofillClient::CardSaveAndFillDialogUserDecision::
                kAccepted,
            user_provided_card_save_and_fill_details);
-  Dismiss();
 }
 
 void SaveAndFillDialogControllerImpl::OnUserCanceledDialog() {
