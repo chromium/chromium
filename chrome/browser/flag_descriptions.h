@@ -1937,6 +1937,9 @@ extern const char kShowWarningsForSuspiciousNotificationsDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kGlobalCacheListForGatingNotificationProtectionsName[];
 extern const char kGlobalCacheListForGatingNotificationProtectionsDescription[];
+
+extern const char kAnnotatedPageContentsForVirtualStructureName[];
+extern const char kAnnotatedPageContentsForVirtualStructureDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kPowerBookmarkBackendName[];
