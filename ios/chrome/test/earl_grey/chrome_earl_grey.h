@@ -101,6 +101,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the Enhanced Safe Browsing Infobar Promo feature is enabled.
 - (BOOL)isEnhancedSafeBrowsingInfobarEnabled;
 
+// Returns the interface orientation of the scene.
+- (UIInterfaceOrientation)interfaceOrientation;
+
 #pragma mark - Profile Utilities (EG2)
 
 // Returns the name (as in `ProfileIOS::GetProfileName()`) of the current

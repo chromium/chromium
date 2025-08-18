@@ -282,6 +282,7 @@ source_set("eg_app_support+eg2") {
     "//ios/third_party/material_components_ios",
     "//ios/web:eg_app_support+eg2",
     "//ios/web/common",
+    "//ios/web/common:uikit",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:web_view_js_utils",
     "//ios/web/public",

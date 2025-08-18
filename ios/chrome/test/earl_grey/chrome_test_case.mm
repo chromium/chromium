@@ -13,6 +13,7 @@
 
 #import <memory>
 
+#import "GREYConstants.h"
 #import "base/apple/bundle_locations.h"
 #import "base/base_paths.h"
 #import "base/command_line.h"
@@ -152,8 +153,8 @@ void ResetAuthentication() {
 
   std::unique_ptr<net::EmbeddedTestServer> _testServer;
 
-  // The orientation of the device when entering these tests.
-  UIDeviceOrientation _originalOrientation;
+  // The orientation of the interface when entering these tests.
+  UIInterfaceOrientation _originalOrientation;
 }
 
 // Cleans up mock authentication.
@@ -290,15 +291,18 @@ void ResetAuthentication() {
     policy_test_utils::ClearPolicies();
   }
 
-  if ([[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] orientation] !=
-      _originalOrientation) {
+  UIInterfaceOrientation currentOrientation =
+      [ChromeEarlGrey interfaceOrientation];
+  if (currentOrientation != _originalOrientation) {
     // Synchronization off due to an infinite spinner if the keyboard is
     // visible.
     ScopedSynchronizationDisabler disabler;
 
+    UIDeviceOrientation originalOrientation = [GREYConstants
+        deviceOrientationForInterfaceOrientation:_originalOrientation];
     // Rotate the device back to the original orientation, since some tests
     // attempt to run in other orientations.
-    [EarlGrey rotateDeviceToOrientation:_originalOrientation error:nil];
+    [EarlGrey rotateDeviceToOrientation:originalOrientation error:nil];
   }
   _executedTestMethodSetUp = NO;
   [super tearDown];
@@ -476,7 +480,7 @@ void ResetAuthentication() {
 
   gIsMockAuthenticationDisabled = NO;
   _tearDownHandler = nil;
-  _originalOrientation = [[XCUIDevice sharedDevice] orientation];
+  _originalOrientation = [ChromeEarlGrey interfaceOrientation];
 }
 
 // Returns the method name, e.g. "testSomething" of the test that is currently

@@ -89,6 +89,7 @@
 #import "ios/testing/open_url_context.h"
 #import "ios/testing/verify_custom_webkit.h"
 #import "ios/web/common/features.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/browser_state_utils.h"
 #import "ios/web/public/js_messaging/content_world.h"
@@ -1235,6 +1236,10 @@ NSString* SerializedValue(const base::Value* value) {
 + (BOOL)isEnhancedSafeBrowsingInfobarEnabled {
   return base::FeatureList::IsEnabled(
       safe_browsing::kEnhancedSafeBrowsingPromo);
+}
+
++ (UIInterfaceOrientation)interfaceOrientation {
+  return GetInterfaceOrientation();
 }
 
 #pragma mark - ContentSettings

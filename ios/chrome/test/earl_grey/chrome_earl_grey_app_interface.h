@@ -559,6 +559,9 @@ enum class TipsNotificationType;
 // Returns whether the Enhanced Safe Browsing Infobar Promo feature is enabled.
 + (BOOL)isEnhancedSafeBrowsingInfobarEnabled;
 
+// Returns the interface orientation of the scene.
++ (UIInterfaceOrientation)interfaceOrientation;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

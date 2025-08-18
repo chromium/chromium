@@ -189,6 +189,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isEnhancedSafeBrowsingInfobarEnabled];
 }
 
+- (UIInterfaceOrientation)interfaceOrientation {
+  return [ChromeEarlGreyAppInterface interfaceOrientation];
+}
+
 #pragma mark - Profile Utilities (EG2)
 
 - (NSString*)currentProfileName {
