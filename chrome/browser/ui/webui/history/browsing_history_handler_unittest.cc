@@ -138,7 +138,8 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
                 BrowsingHistoryService::HistoryEntry::LOCAL_ENTRY,
                 GURL(("http://test.com")), u"Test",
                 base::Time::Now() - base::Minutes(5), std::string(), false,
-                std::u16string(), false, GURL(), 0, 0, history::kNoAppIdFilter);
+                std::u16string(), false, GURL(), 0, 0,
+                /*is_actor_visit=*/false, history::kNoAppIdFilter);
             results.push_back(entry);
           }
 

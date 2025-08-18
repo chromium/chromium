@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "components/history/core/browser/browsing_history_driver.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/fake_web_history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -56,6 +57,7 @@ struct TestResult {
   int64_t hour_offset;  // Visit time in hours past the baseline time.
   HistoryEntry::EntryType type;
   std::string remote_icon_url_for_uma;
+  VisitSource visit_source = VisitSource::SOURCE_BROWSED;
 };
 
 class TestBrowsingHistoryDriver : public BrowsingHistoryDriver {
@@ -210,7 +212,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
       if (entry.type == kLocal) {
         local_history()->AddPage(GURL(entry.url),
                                  OffsetToTime(entry.hour_offset),
-                                 VisitSource::SOURCE_BROWSED);
+                                 entry.visit_source);
       } else if (entry.type == kRemote) {
         web_history->AddSyncedVisit(entry.url, OffsetToTime(entry.hour_offset),
                                     entry.remote_icon_url_for_uma);
@@ -241,6 +243,8 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
               static_cast<int>(actual.entry_type));
     EXPECT_EQ(GURL(expected.remote_icon_url_for_uma),
               actual.remote_icon_url_for_uma);
+    EXPECT_EQ(expected.visit_source == VisitSource::SOURCE_ACTOR,
+              actual.is_actor_visit);
   }
 
   TestBrowsingHistoryDriver::QueryResult QueryHistory(size_t max_count = 0) {
@@ -776,6 +780,27 @@ TEST_F(BrowsingHistoryServiceTest, RemoveVisitsMetric) {
     histograms.ExpectTotalCount("History.RemoveVisitsFromWebHistory.EntryCount",
                                 0);
   }
+}
+
+TEST_F(BrowsingHistoryServiceTest, ActorVisitPropagated) {
+  AddHistory({
+      {kUrl1, 1, kRemote},
+      {kUrl2, 2, kRemote},
+      {kUrl2, 3, kLocal, "", VisitSource::SOURCE_ACTOR},
+      {kUrl3, 4, kLocal, "", VisitSource::SOURCE_ACTOR},
+      {kUrl3, 5, kLocal},
+  });
+
+  VerifyQueryResult(
+      /*reached_beginning*/ true, /*has_synced_results*/ true,
+      {{kUrl3, 5, kLocal, "",
+        VisitSource::SOURCE_BROWSED},  // Duplicate visits take the latest visit
+                                       // values.
+       {kUrl2, 3, kBoth, "",
+        VisitSource::SOURCE_ACTOR},  // Duplicate visits take the latest visit
+                                     // values.
+       {kUrl1, 1, kRemote}},
+      QueryHistory());
 }
 
 }  // namespace

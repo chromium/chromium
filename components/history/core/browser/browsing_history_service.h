@@ -70,6 +70,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
                  const GURL& remote_icon_url_for_uma,
                  int visit_count,
                  int typed_count,
+                 bool is_actor_visit,
                  std::optional<std::string> app_id);
     HistoryEntry();
     HistoryEntry(const HistoryEntry& other);
@@ -113,6 +114,9 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
     // Number of times this URL has been manually entered in the URL bar.
     int typed_count = 0;
+
+    // Whether the visit is actor-initiated.
+    bool is_actor_visit = false;
 
     // ID of the app this entry was generated for. Set to a non-null value
     // on Android only.

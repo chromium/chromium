@@ -304,6 +304,7 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
   result_mojom->blocked_visit = is_blocked_visit;
   result_mojom->is_url_in_remote_user_data = IsEntryInRemoteUserData(entry);
   result_mojom->remote_icon_url_for_uma = entry.remote_icon_url_for_uma.spec();
+  result_mojom->is_actor_visit = entry.is_actor_visit;
 
   // Additional debugging fields shown only if the debug feature is enabled.
   if (history_clusters::GetConfig().user_visible_debug) {

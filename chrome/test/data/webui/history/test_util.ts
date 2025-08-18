@@ -48,6 +48,7 @@ export function createHistoryEntry(
     time: d.getTime(),
     title: urlStr,
     url: urlStr,
+    isActorVisit: false,
   };
 }
 

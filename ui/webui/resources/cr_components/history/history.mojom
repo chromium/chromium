@@ -114,6 +114,9 @@ struct HistoryEntry {
   // Whether the URL was obtained from a remote device.
   bool is_url_in_remote_user_data;
 
+  // Whether the visit is actor-initiated.
+  bool is_actor_visit;
+
   // Optional parameter used to plumb footprints associated icon url.
   string remote_icon_url_for_uma;
 
