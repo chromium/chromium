@@ -2932,7 +2932,7 @@ crbug.com/438873384 [ Win11-arm64 ] external/wpt/html/infrastructure/safe-passin
 crbug.com/438873384 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigatorcookies-cookieenabled-true.html [ Crash ]
 crbug.com/438780123 [ Win11-arm64 ] external/wpt/orientation-sensor/AbsoluteOrientationSensor-iframe-access.https.html [ Timeout ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Crash ]
-crbug.com/438873383 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Crash ]
+crbug.com/438873383 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Crash Failure Timeout ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-failed-zero-success-fraction.tentative.html [ Crash ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-no-referrer.tentative.html [ Timeout ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_fetch_error.tentative.html [ Crash ]
