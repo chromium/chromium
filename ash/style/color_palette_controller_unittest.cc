@@ -173,7 +173,6 @@ TEST_F(ColorPaletteControllerTest,
 }
 
 TEST_F(ColorPaletteControllerTest, SetColorScheme) {
-  SimulateUserLogin(kAccountId);
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.SetCalculatedColors(
       WallpaperCalculatedColors(kKMeanColor, SK_ColorWHITE));
@@ -199,7 +198,6 @@ TEST_F(ColorPaletteControllerTest, SetColorScheme) {
 }
 
 TEST_F(ColorPaletteControllerTest, SetStaticColor) {
-  SimulateUserLogin(kAccountId);
   const SkColor static_color = SK_ColorGRAY;
 
   color_palette_controller()->SetStaticColor(static_color, kAccountId,
@@ -229,7 +227,6 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor) {
 TEST_F(ColorPaletteControllerTest, UpdateColorScheme_NotifiesObserver) {
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
-  SimulateUserLogin(kAccountId);
   UpdateWallpaperColor(SK_ColorBLUE);
   const style::mojom::ColorScheme color_scheme =
       style::mojom::ColorScheme::kExpressive;
@@ -253,7 +250,6 @@ TEST_F(ColorPaletteControllerTest, UpdateColorScheme_NotifiesObserver) {
 TEST_F(ColorPaletteControllerTest, UpdateStaticColor_NotifiesObserver) {
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
-  SimulateUserLogin(kAccountId);
   color_palette_controller()->SetStaticColor(SK_ColorRED, kAccountId,
                                              base::DoNothing());
   UpdateWallpaperColor(SK_ColorBLUE);
@@ -279,7 +275,6 @@ TEST_F(ColorPaletteControllerTest, UpdateUseKMeans_NotifiesObserver) {
       style::mojom::ColorScheme::kTonalSpot, kAccountId, base::DoNothing());
   SetUseKMeansPref(true);
   UpdateWallpaperColor(kCelebiColor);
-  SimulateUserLogin(kAccountId);
 
   MockPaletteObserver observer;
   base::ScopedObservation<ColorPaletteController,
@@ -355,7 +350,6 @@ TEST_F(ColorPaletteControllerTest, GetSeedWithUnsetWallpaper) {
 }
 
 TEST_F(ColorPaletteControllerTest, GenerateSampleScheme) {
-  SimulateUserLogin(kAccountId);
   SetUseKMeansPref(false);
 
   SkColor seed = SkColorSetRGB(0xf5, 0x42, 0x45);  // Hue 359* Saturation 73%
@@ -441,7 +435,6 @@ TEST_F(ColorPaletteControllerTest, ExistingUser_UsesKMeansColor) {
   const bool dark_mode = true;
   dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
 
-  SimulateUserLogin(kAccountId);
   base::RunLoop().RunUntilIdle();
   UpdateWallpaperColor(kCelebiColor);
 
@@ -453,7 +446,6 @@ TEST_F(ColorPaletteControllerTest,
        GetWallpaperColorOrDefault_UseKMeans_TonalSpot_ReturnsKMeans) {
   const bool dark_mode = true;
   dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
-  SimulateUserLogin(kAccountId);
   UpdateWallpaperColor(kCelebiColor);
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kTonalSpot, kAccountId, base::DoNothing());
@@ -467,7 +459,6 @@ TEST_F(ColorPaletteControllerTest,
 
 TEST_F(ColorPaletteControllerTest,
        GetWallpaperColorOrDefault_UseKMeans_NotTonalSpot_ReturnsCelebiColor) {
-  SimulateUserLogin(kAccountId);
   UpdateWallpaperColor(kCelebiColor);
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
@@ -481,7 +472,6 @@ TEST_F(ColorPaletteControllerTest,
 
 TEST_F(ColorPaletteControllerTest,
        GetWallpaperColorOrDefault_UseKMeansIsFalse_TonalSpot_ReturnsCelebi) {
-  SimulateUserLogin(kAccountId);
   UpdateWallpaperColor(kCelebiColor);
   SetUseKMeansPref(false);
   color_palette_controller()->SetColorScheme(
@@ -507,7 +497,6 @@ TEST_F(ColorPaletteControllerTest, GuestLogin_UsesCelebiColor) {
 TEST_F(ColorPaletteControllerTest, WallpaperChanged_TurnsOffKMeans) {
   const SkColor celebi_color = SK_ColorBLUE;
   SetUseKMeansPref(true);
-  SimulateUserLogin(kAccountId);
   UpdateWallpaperColor(celebi_color);
   gfx::Size display_size =
       display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
@@ -529,7 +518,6 @@ TEST_F(ColorPaletteControllerTest, WallpaperChanged_TurnsOffKMeans) {
 TEST_F(ColorPaletteControllerTest, UseKMeansColor_OnlyTonalSpotUsesKMeans) {
   const bool dark_mode = true;
   dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
-  SimulateUserLogin(kAccountId);
   SetUseKMeansPref(true);
   UpdateWallpaperColor(kCelebiColor);
   base::RunLoop().RunUntilIdle();
@@ -557,7 +545,6 @@ TEST_F(ColorPaletteControllerTest, UseKMeansColor_OnlyTonalSpotUsesKMeans) {
 
 TEST_F(ColorPaletteControllerTest, WithoutUseKMeansColor_AllSchemesUseCelebi) {
   const SkColor celebi_color = SK_ColorBLUE;
-  SimulateUserLogin(kAccountId);
   SetUseKMeansPref(false);
   UpdateWallpaperColor(SK_ColorBLUE);
   base::RunLoop().RunUntilIdle();
@@ -584,7 +571,6 @@ TEST_F(ColorPaletteControllerTest, WithoutUseKMeansColor_AllSchemesUseCelebi) {
 }
 
 TEST_F(ColorPaletteControllerTest, GetSampleColorSchemes_WithKMeans) {
-  SimulateUserLogin(kAccountId);
   SetUseKMeansPref(true);
 
   SkColor seed = SkColorSetRGB(0xf5, 0x42, 0x45);  // Hue 359* Saturation 73%
