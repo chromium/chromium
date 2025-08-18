@@ -13,7 +13,9 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.getBackground;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 
+import androidx.annotation.ColorInt;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Rule;
@@ -165,5 +167,13 @@ public class NtpCustomizationUtilsUnitTest {
                         /* appliedTopPadding= */ 50,
                         /* systemTopInset= */ 50,
                         /* consumeTopInset= */ false));
+    }
+
+    @Test
+    public void testSaveBackgroundColor() {
+        @ColorInt int color = Color.RED;
+
+        NtpCustomizationUtils.setBackgroundColor(color);
+        assertEquals(color, NtpCustomizationUtils.getBackgroundColor());
     }
 }

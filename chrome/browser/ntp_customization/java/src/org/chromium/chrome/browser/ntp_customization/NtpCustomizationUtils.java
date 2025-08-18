@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Browser;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -55,13 +56,13 @@ public class NtpCustomizationUtils {
     @IntDef({
         NtpBackgroundImageType.DEFAULT,
         NtpBackgroundImageType.IMAGE_FROM_DISK,
-        NtpBackgroundImageType.COLOR_COLOR,
+        NtpBackgroundImageType.CHROME_COLOR,
         NtpBackgroundImageType.CHROME_THEME
     })
     public @interface NtpBackgroundImageType {
         int DEFAULT = 0;
         int IMAGE_FROM_DISK = 1;
-        int COLOR_COLOR = 2;
+        int CHROME_COLOR = 2;
         int CHROME_THEME = 3;
         int NUM_ENTRIES = 4;
     }
@@ -289,6 +290,22 @@ public class NtpCustomizationUtils {
         return BitmapFactory.decodeFile(file.getPath(), null);
     }
 
+    /**
+     * Sets the NTP's background color to the SharedPreference.
+     *
+     * @param color The new background color.
+     */
+    static void setBackgroundColor(@ColorInt int color) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeInt(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, color);
+    }
+
+    /** Gets the NTP's background color from the SharedPreference. */
+    static @ColorInt int getBackgroundColor() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readInt(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, -1);
+    }
+
     /** Returns whether all flags are enabled to allow edge-to-edge for customized theme. */
     public static boolean canEnableEdgeToEdgeForCustomizedTheme(
             WindowAndroid windowAndroid, boolean isTablet) {
@@ -331,5 +348,6 @@ public class NtpCustomizationUtils {
     public static void resetSharedPreferenceForTesting() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
     }
 }

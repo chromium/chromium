@@ -17,8 +17,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -175,6 +177,22 @@ public class TopInsetCoordinatorUnitTest {
 
         mNtpCustomizationConfigManager.notifyBackgroundImageChanged(
                 bitmap, /* fromInitialization= */ false);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+    }
+
+    @Test
+    public void testOnBackgroundColorChanged() {
+        Mockito.clearInvocations(mInsetObserver);
+        @ColorInt int color = Color.RED;
+
+        mNtpCustomizationConfigManager.notifyBackgroundColorChanged(
+                color, /* fromInitialization= */ true);
+        assertEquals(color, mNtpCustomizationConfigManager.getBackgroundColorForTesting());
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+
+        mNtpCustomizationConfigManager.notifyBackgroundColorChanged(
+                color, /* fromInitialization= */ false);
+        assertEquals(color, mNtpCustomizationConfigManager.getBackgroundColorForTesting());
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
     }
 

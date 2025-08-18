@@ -107,6 +107,14 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
                     }
 
                     @Override
+                    public void onBackgroundColorChanged(
+                            int backgroundColor, boolean fromInitialization) {
+                        if (fromInitialization) return;
+
+                        refreshWindowInsets(true);
+                    }
+
+                    @Override
                     public void refreshWindowInsets(boolean consumeTopInset) {
                         mConsumeTopInset = consumeTopInset;
                         mInsetObserver.retriggerOnApplyWindowInsets();

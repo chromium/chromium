@@ -65,7 +65,6 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Test
     public void testOnBackgroundChanged_withBitmap() {
         mNtpCustomizationConfigManager.addListener(mListener);
-        verify(mListener).onBackgroundChanged(eq(null), eq(true));
         clearInvocations(mListener);
 
         Bitmap bitmap = createBitmap();
@@ -82,7 +81,6 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Test
     public void testOnBackgroundChanged_withNullBitmap() {
         mNtpCustomizationConfigManager.addListener(mListener);
-        verify(mListener).onBackgroundChanged(eq(null), eq(true));
         clearInvocations(mListener);
 
         mNtpCustomizationConfigManager.onBackgroundChanged(null);
@@ -94,7 +92,6 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void testAddAndRemoveBackgroundChangeListener() {
         // Verifies that onBackgroundChanged() is called for the listener when it is added.
         mNtpCustomizationConfigManager.addListener(mListener);
-        verify(mListener).onBackgroundChanged(eq(null), eq(true));
         clearInvocations(mListener);
 
         Bitmap bitmap = createBitmap();

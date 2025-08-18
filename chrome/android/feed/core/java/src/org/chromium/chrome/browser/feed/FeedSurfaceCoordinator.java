@@ -26,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -531,6 +532,12 @@ public class FeedSurfaceCoordinator
                                 @Nullable Drawable backgroundDrawable, boolean fromInitialization) {
                             setBackground(backgroundDrawable);
                         }
+
+                        @Override
+                        public void onBackgroundColorChanged(
+                                int backgroundColor, boolean fromInitialization) {
+                            setBackgroundColor(backgroundColor);
+                        }
                     };
 
             mNtpCustomizationConfigManager.addListener(mHomepageStateListener);
@@ -641,6 +648,18 @@ public class FeedSurfaceCoordinator
         }
 
         mRecyclerView.setBackground(backgroundDrawable);
+        if (mNtpHeader != null) {
+            mNtpHeader.setBackgroundColor(Color.TRANSPARENT);
+        }
+    }
+
+    /**
+     * Sets the background color for the embedder NTP.
+     *
+     * @param backgroundColor The customized background color.
+     */
+    private void setBackgroundColor(@ColorInt int backgroundColor) {
+        mRecyclerView.setBackgroundColor(backgroundColor);
         if (mNtpHeader != null) {
             mNtpHeader.setBackgroundColor(Color.TRANSPARENT);
         }
