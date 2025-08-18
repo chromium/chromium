@@ -1225,21 +1225,6 @@ chromium-metrics-reviews@google.com.
   <token key="Sequence" variants="SmoothnessSequence"/>
 </histogram>
 
-<histogram name="Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow"
-    units="%" expires_after="2025-09-21">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Tracks the percent of dropped frames for in a 1 second sliding window.
-
-    PercentDroppedFrames is measured by tracking the number of frames which were
-    not displayed on screen out of the total number of frames expected to be
-    produced and displayed. In other words, the lower this number is, the
-    smoother experience.
-  </summary>
-</histogram>
-
 <histogram name="Graphics.Smoothness.PercentDroppedFrames3.AllSequences"
     units="%" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
