@@ -224,3 +224,7 @@ void RecordBWGEntryPointClick(bwg::EntryPoint entry_point, bool is_fre_flow) {
     base::UmaHistogramEnumeration(kFREEntryPointHistogram, entry_point);
   }
 }
+
+void RecordBWGNewChatButtonTapped() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiNewChatTapped"));
+}
