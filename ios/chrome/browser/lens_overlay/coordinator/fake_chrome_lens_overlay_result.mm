@@ -20,4 +20,13 @@
   // NO-OP
 }
 
+- (void)resultWebviewShown {
+  // NO-OP
+}
+
+- (void)resultWebviewSwipedWithDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  // NO-OP
+}
+
 @end
