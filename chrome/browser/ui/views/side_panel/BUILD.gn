@@ -83,8 +83,6 @@ source_set("side_panel") {
     "side_panel_registry.h",
     "side_panel_resize_area.cc",
     "side_panel_resize_area.h",
-    "side_panel_rounded_corner.cc",
-    "side_panel_rounded_corner.h",
     "side_panel_ui.h",
     "side_panel_util.cc",
     "side_panel_util.h",

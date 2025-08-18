@@ -849,16 +849,9 @@ void BrowserViewLayout::LayoutContentsContainerView(
     SetViewVisibility(side_panel_rounded_corner_,
                       layout_result.side_panel_visible && !is_in_split);
     if (layout_result.side_panel_visible) {
-      // This can return nullptr when there is no Widget (for context, see
-      // http://crbug.com/40178332). The nullptr dereference does not always
-      // crash due to compiler optimizations, so CHECKing here ensures we crash.
-      CHECK(side_panel_rounded_corner_->GetLayoutProvider());
       // Adjust the rounded corner bounds based on the side panel bounds.
-      const float corner_radius =
-          side_panel_rounded_corner_->GetLayoutProvider()
-              ->GetCornerRadiusMetric(
-                  views::ShapeContextTokens::kSidePanelPageContentRadius);
-      const float corner_size = corner_radius + views::Separator::kThickness;
+      const int corner_size =
+          side_panel_rounded_corner_->GetPreferredSize().width();
       if (layout_result.contents_container_after_side_panel) {
         side_panel_rounded_corner_->SetBounds(
             layout_result.side_panel_bounds.right(),
@@ -866,8 +859,7 @@ void BrowserViewLayout::LayoutContentsContainerView(
             corner_size, corner_size);
       } else {
         side_panel_rounded_corner_->SetBounds(
-            layout_result.side_panel_bounds.x() - corner_radius -
-                views::Separator::kThickness,
+            layout_result.side_panel_bounds.x() - corner_size,
             layout_result.side_panel_bounds.y() - views::Separator::kThickness,
             corner_size, corner_size);
       }

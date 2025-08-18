@@ -126,6 +126,7 @@
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
+#include "chrome/browser/ui/views/frame/contents_rounded_corner.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
@@ -165,7 +166,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_rounded_corner.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
@@ -1036,7 +1036,10 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       views::kElementIdentifierKey,
       kLeftAlignedSidePanelSeparatorViewElementId);
   side_panel_rounded_corner_ =
-      AddChildView(std::make_unique<SidePanelRoundedCorner>(this));
+      AddChildView(std::make_unique<ContentsRoundedCorner>(
+          this, views::ShapeContextTokens::kSidePanelPageContentRadius,
+          base::BindRepeating(&SidePanel::IsRightAligned,
+                              base::Unretained(unified_side_panel_))));
   side_panel_rounded_corner_->SetProperty(views::kElementIdentifierKey,
                                           kSidePanelRoundedCornerViewElementId);
 
