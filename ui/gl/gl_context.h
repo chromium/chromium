@@ -84,7 +84,8 @@ enum class AngleContextVirtualizationGroup {
   kDefault = -1,
   kDrDc = 1,
   kGLImageProcessor = 2,
-  kWebViewRenderThread = 3
+  kWebViewRenderThread = 3,
+  kAndroidVideoEncoder = 4,
 };
 
 struct GL_EXPORT GLContextAttribs {

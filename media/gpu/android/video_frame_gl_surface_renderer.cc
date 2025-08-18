@@ -115,8 +115,10 @@ EncoderStatus VideoFrameGLSurfaceRenderer::Initialize() {
             "GLSurface Initialize failed"};
   }
 
-  gl_context_ = gl::init::CreateGLContext(nullptr, gl_surface_.get(),
-                                          gl::GLContextAttribs());
+  gl::GLContextAttribs attribs;
+  attribs.angle_context_virtualization_group_number =
+      gl::AngleContextVirtualizationGroup::kAndroidVideoEncoder;
+  gl_context_ = gl::init::CreateGLContext(nullptr, gl_surface_.get(), attribs);
   if (!gl_context_) {
     return {EncoderStatus::Codes::kEncoderInitializationError,
             "gl::init::CreateGLContext failed"};
