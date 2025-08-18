@@ -396,11 +396,9 @@ void HighlightPainter::SelectionPaintState::
 // GetNode() for first-letter fragment returns null because it is anonymous.
 // Use AssociatedTextNode() of LayoutTextFragment to get the associated node.
 static Node* AssociatedNode(const LayoutObject* layout_object) {
-  if (RuntimeEnabledFeatures::PaintHighlightsForFirstLetterEnabled()) {
-    if (auto* layout_text_fragment =
-            DynamicTo<LayoutTextFragment>(layout_object)) {
-      return layout_text_fragment->AssociatedTextNode();
-    }
+  if (auto* layout_text_fragment =
+          DynamicTo<LayoutTextFragment>(layout_object)) {
+    return layout_text_fragment->AssociatedTextNode();
   }
   return layout_object->GetNode();
 }

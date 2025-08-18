@@ -145,16 +145,14 @@ void InvalidatePaintForNode(const Node& node) {
   layout_object->SetShouldDoFullPaintInvalidation(
       PaintInvalidationReason::kDocumentMarker);
 
-  if (RuntimeEnabledFeatures::PaintHighlightsForFirstLetterEnabled()) {
-    // When first-letter css is present, the node only points to remainder.
-    // So first letter part would not be invalidated by the above.
-    auto* text_layout = DynamicTo<LayoutTextFragment>(layout_object);
-    if (text_layout && text_layout->GetFirstLetterPseudoElement()) {
-      LayoutText* first_letter_layout = text_layout->GetFirstLetterPart();
-      CHECK(first_letter_layout);
-      first_letter_layout->SetShouldDoFullPaintInvalidation(
-          PaintInvalidationReason::kDocumentMarker);
-    }
+  // When first-letter css is present, the node only points to remainder.
+  // So first letter part would not be invalidated by the above.
+  auto* text_layout = DynamicTo<LayoutTextFragment>(layout_object);
+  if (text_layout && text_layout->GetFirstLetterPseudoElement()) {
+    LayoutText* first_letter_layout = text_layout->GetFirstLetterPart();
+    CHECK(first_letter_layout);
+    first_letter_layout->SetShouldDoFullPaintInvalidation(
+        PaintInvalidationReason::kDocumentMarker);
   }
 
   // Tell accessibility about the new marker.
