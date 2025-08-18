@@ -514,7 +514,7 @@ class BrowsingDataModelBrowserTest
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
     enabled_features.push_back({net::features::kDeviceBoundSessions,
-                                {{"ForceEnableForTesting", "true"}}});
+                                {{"RequireOriginTrialTokens", "false"}}});
     enabled_features.push_back(
         {unexportable_keys::
              kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,

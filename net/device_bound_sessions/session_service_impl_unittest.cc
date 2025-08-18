@@ -125,8 +125,8 @@ class SessionServiceImplTest : public ::testing::Test,
 class SessionServiceImplNoRefreshQuotaTest : public SessionServiceImplTest {
  public:
   SessionServiceImplNoRefreshQuotaTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        net::features::kDeviceBoundSessionsRefreshQuota);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kDeviceBoundSessions, {{"RefreshQuota", "false"}});
   }
 
  private:

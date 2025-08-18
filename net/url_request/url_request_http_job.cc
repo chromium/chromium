@@ -1193,7 +1193,7 @@ void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
   // appropriately, trigger a registration request per header value to attempt
   // to create a new session.
   if (request_->allows_device_bound_session_registration() ||
-      features::kDeviceBoundSessionsForceEnableForTesting.Get()) {
+      !features::kDeviceBoundSessionsRequireOriginTrialTokens.Get()) {
     std::vector<device_bound_sessions::RegistrationFetcherParam> params =
         device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
             request_url, headers);

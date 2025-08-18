@@ -661,13 +661,20 @@ BASE_FEATURE(kPersistDeviceBoundSessions,
              "PersistDeviceBoundSessions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
-                   kDeviceBoundSessionsForceEnableForTesting,
+                   kDeviceBoundSessionsRequireOriginTrialTokens,
                    &kDeviceBoundSessions,
-                   "ForceEnableForTesting",
-                   false);
-BASE_FEATURE(kDeviceBoundSessionsRefreshQuota,
-             "DeviceBoundSessionsRefreshQuota",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+                   "RequireOriginTrialTokens",
+                   true);
+BASE_FEATURE_PARAM(bool,
+                   kDeviceBoundSessionsRefreshQuota,
+                   &kDeviceBoundSessions,
+                   "RefreshQuota",
+                   true);
+BASE_FEATURE_PARAM(bool,
+                   kDeviceBoundSessionsCheckSubdomainRegistration,
+                   &kDeviceBoundSessions,
+                   "CheckSubdomainRegistration",
+                   true);
 BASE_FEATURE(kDeviceBoundSessionsOriginTrialFeedback,
              "DeviceBoundSessionsOriginTrialFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -114,8 +114,7 @@ SessionServiceImpl::SessionServiceImpl(
       key_service_(key_service),
       context_(request_context),
       session_store_(store) {
-  ignore_refresh_quota_ =
-      !base::FeatureList::IsEnabled(features::kDeviceBoundSessionsRefreshQuota);
+  ignore_refresh_quota_ = !features::kDeviceBoundSessionsRefreshQuota.Get();
   CHECK(context_);
 }
 

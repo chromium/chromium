@@ -2122,7 +2122,7 @@ class BackForwardCacheBrowserTestRestoreUnlessDeviceBoundSessionTerminated
     EnableFeatureAndSetParams(
         features::kDeviceBoundSessionTerminationEvictBackForwardCache, "", "");
     EnableFeatureAndSetParams(net::features::kDeviceBoundSessions,
-                              "ForceEnableForTesting", "true");
+                              "RequireOriginTrialTokens", "false");
     EnableFeatureAndSetParams(
         unexportable_keys::
             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,

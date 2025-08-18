@@ -4432,23 +4432,22 @@ const FeatureEntry::FeatureVariation kHistoryOptInEducationalTipVariations[] = {
      std::size(kHistoryOptInEducationalTipContinue), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam kStandardBoundSessionCredentialsStandard[] = {
+    {"RequireOriginTrialTokens", "true"},
+    {"RefreshQuota", "true"},
+    {"CheckSubdomainRegistration", "true"}};
 const FeatureEntry::FeatureParam
-    kStandardBoundSessionCredentialsEnabledNoOriginTrialToken[] = {
-        {"ForceEnableForTesting", "true"}};
-const FeatureEntry::FeatureParam
-    kStandardBoundSessionCredentialsEnabledOriginTrialToken[] = {
-        {"ForceEnableForTesting", "false"}};
+    kStandardBoundSessionCredentialsForDevelopers[] = {
+        {"RequireOriginTrialTokens", "false"},
+        {"RefreshQuota", "false"},
+        {"CheckSubdomainRegistration", "false"}};
 
 const FeatureEntry::FeatureVariation
     kStandardBoundSessionCredentialsVariations[] = {
-        {"- Without Origin Trial tokens",
-         kStandardBoundSessionCredentialsEnabledNoOriginTrialToken,
-         std::size(kStandardBoundSessionCredentialsEnabledNoOriginTrialToken),
-         nullptr},
-        {"- With Origin Trial tokens",
-         kStandardBoundSessionCredentialsEnabledOriginTrialToken,
-         std::size(kStandardBoundSessionCredentialsEnabledOriginTrialToken),
-         nullptr}};
+        {"- Standard", kStandardBoundSessionCredentialsStandard,
+         std::size(kStandardBoundSessionCredentialsStandard), nullptr},
+        {"- For developers", kStandardBoundSessionCredentialsForDevelopers,
+         std::size(kStandardBoundSessionCredentialsForDevelopers), nullptr}};
 
 const FeatureEntry::FeatureParam kEnableCanvasNoiseInAllModes[] = {
     {"enable_in_regular_mode", "true"}};
@@ -11166,11 +11165,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableStandardBoundSessionPersistenceDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(net::features::kPersistDeviceBoundSessions)},
-    {"enable-standard-device-bound-sesssion-refresh-quota",
-     flag_descriptions::kEnableStandardBoundSessionRefreshQuotaName,
-     flag_descriptions::kEnableStandardBoundSessionRefreshQuotaDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessionsRefreshQuota)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"cros-soul-gd", flag_descriptions::kCrosSoulGravediggerName,
