@@ -6,6 +6,7 @@
 
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_new_script_loader.h"
 #include "content/public/browser/global_request_id.h"

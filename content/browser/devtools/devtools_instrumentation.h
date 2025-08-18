@@ -21,17 +21,19 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
-#include "content/browser/renderer_host/frame_tree.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/filter/source_stream_type.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
+#include "third_party/blink/public/mojom/drag/drag.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
 
@@ -53,6 +55,10 @@ struct WebTransportError;
 
 namespace network {
 class URLLoaderFactoryBuilder;
+
+namespace mojom {
+class URLResponseHeadDevToolsInfo;
+}  // namespace mojom
 }  // namespace network
 
 namespace download {
@@ -66,8 +72,10 @@ class BackForwardCacheCanStoreDocumentResult;
 class BrowserContext;
 class DevToolsAgentHostImpl;
 class FencedFrame;
+class FrameTree;
 class FrameTreeNode;
 class NavigationRequest;
+class NavigationThrottleRegistry;
 class RenderFrameHostImpl;
 class RenderProcessHost;
 class SharedWorkerHost;
@@ -75,6 +83,7 @@ class ServiceWorkerContextWrapper;
 class SignedExchangeEnvelope;
 class StoragePartition;
 class WebContents;
+struct DropData;
 struct PrerenderMismatchedHeaders;
 
 struct SignedExchangeError;

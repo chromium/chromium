@@ -7,6 +7,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 
 namespace content {
