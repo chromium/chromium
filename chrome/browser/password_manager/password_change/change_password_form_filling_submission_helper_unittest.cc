@@ -718,6 +718,43 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
 }
 
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
+       SubmissionBeforePressingEnterIgnored) {
+  auto form_manager = CreateFormManager(/*credentials_to_seed=*/{});
+
+  base::test::TestFuture<bool> completion_future;
+  auto verifier =
+      CreateVerifier(form_manager.get(), completion_future.GetCallback());
+
+  base::RunLoop run_loop;
+  base::OnceCallback<void(bool)> callback;
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
+                      RunOnceCallback<5>(CreateFilledTestPasswordFormData())));
+  EXPECT_CALL(driver(), SubmitFormWithEnter).WillOnce(MoveArg<1>(&callback));
+  run_loop.Run();
+
+  verifier->OnPasswordFormSubmission(web_contents());
+  EXPECT_FALSE(verifier->submission_verifier());
+
+  std::move(callback).Run(true);
+  // Submission detected after pressing enter.
+  verifier->OnPasswordFormSubmission(web_contents());
+
+  EXPECT_TRUE(base::test::RunUntil([&verifier]() {
+    return verifier->submission_verifier()
+               ? verifier->submission_verifier()->capturer() != nullptr
+               : false;
+  }));
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
+  verifier->submission_verifier()->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+
+  EXPECT_TRUE(completion_future.Get());
+}
+
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        MultipleSubmissionsAreIgnored) {
   auto form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
@@ -787,6 +824,42 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
       logs_uploader()->GetFinalLog(),
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
+}
+
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
+       SubmissionBeforeFindingSubmitButtonIgnored) {
+  auto form_manager = CreateFormManager(/*credentials_to_seed=*/{});
+
+  base::test::TestFuture<bool> completion_future;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          optimization_guide::AIPageContentResult()));
+  auto verifier =
+      CreateVerifier(form_manager.get(), completion_future.GetCallback(),
+                     capture_annotated_page_content.Get());
+
+  base::RunLoop run_loop;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback callback;
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
+                      RunOnceCallback<5>(CreateFilledTestPasswordFormData())));
+  EXPECT_CALL(driver(), SubmitFormWithEnter)
+      .WillOnce(RunOnceCallback<1>(/*success=*/false));
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&callback));
+  run_loop.Run();
+
+  verifier->OnPasswordFormSubmission(web_contents());
+  EXPECT_FALSE(verifier->submission_verifier());
+
+  // Button found
+  PostResponseForSubmissionButtonClick<true>(std::move(callback));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&verifier]() { return verifier->submission_verifier(); }));
 }
 
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
