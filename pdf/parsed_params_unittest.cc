@@ -45,7 +45,6 @@ TEST(ParsedParamsTest, ParseWebPluginParamsMinimal) {
   EXPECT_FALSE(result->full_frame);
   EXPECT_EQ(SK_ColorTRANSPARENT, result->background_color);
   EXPECT_EQ(PDFiumFormFiller::DefaultScriptOption(), result->script_option);
-  EXPECT_FALSE(result->has_edits);
   EXPECT_FALSE(result->use_skia);
 }
 
@@ -158,28 +157,6 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithJavascriptNonEmpty) {
 
   EXPECT_EQ(PDFiumFormFiller::ScriptOption::kNoJavaScript,
             result->script_option);
-}
-
-TEST(ParsedParamsTest, ParseWebPluginParamsWithHasEdits) {
-  blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("has-edits"));
-  params.attribute_values.push_back(blink::WebString(""));
-
-  std::optional<ParsedParams> result = ParseWebPluginParams(params);
-  ASSERT_TRUE(result.has_value());
-
-  EXPECT_TRUE(result->has_edits);
-}
-
-TEST(ParsedParamsTest, ParseWebPluginParamsWithHasEditsNonEmpty) {
-  blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("has-edits"));
-  params.attribute_values.push_back(blink::WebString("false"));
-
-  std::optional<ParsedParams> result = ParseWebPluginParams(params);
-  ASSERT_TRUE(result.has_value());
-
-  EXPECT_TRUE(result->has_edits);
 }
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithHasUseSkia) {

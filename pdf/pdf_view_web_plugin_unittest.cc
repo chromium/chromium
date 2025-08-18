@@ -2159,57 +2159,6 @@ class PdfViewWebPluginSaveTest : public PdfViewWebPluginTest {
   }
 };
 
-#if BUILDFLAG(ENABLE_INK)
-// TODO(crbug.com/425604529): This behavior is exclusive to Ink1. Remove this
-// test when Ink2 launches.
-TEST_F(PdfViewWebPluginSaveTest, DISABLED_AnnotationInNonEditMode) {
-  base::Value expected_response = base::test::ParseJson(R"({
-    "type": "saveData",
-    "token": "annotation-in-non-edit-mode",
-    "fileName": "example.pdf",
-    "editModeForTesting": false,
-  })");
-  AddDataToValue(base::span(TestPDFiumEngine::kLoadedData), expected_response);
-
-  EXPECT_CALL(pdf_host_, SetPluginCanSave(true));
-  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
-  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
-
-  plugin_->OnMessage(ParseMessage(R"({
-    "type": "save",
-    "saveRequestType": "ANNOTATION",
-    "token": "annotation-in-non-edit-mode",
-  })"));
-
-  pdf_receiver_.FlushForTesting();
-}
-
-TEST_F(PdfViewWebPluginSaveTest, AnnotationInEditMode) {
-  EXPECT_CALL(pdf_host_, SetPluginCanSave(true));
-  plugin_->EnteredEditMode();
-  pdf_receiver_.FlushForTesting();
-
-  base::Value expected_response = base::test::ParseJson(R"({
-    "type": "saveData",
-    "token": "annotation-in-edit-mode",
-    "fileName": "example.pdf",
-    "editModeForTesting": true,
-  })");
-  AddDataToValue(base::span(TestPDFiumEngine::kSaveData), expected_response);
-
-  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
-  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
-
-  plugin_->OnMessage(ParseMessage(R"({
-    "type": "save",
-    "saveRequestType": "ANNOTATION",
-    "token": "annotation-in-edit-mode",
-  })"));
-
-  pdf_receiver_.FlushForTesting();
-}
-#endif  // BUILDFLAG(ENABLE_INK)
-
 TEST_F(PdfViewWebPluginSaveTest, OriginalInNonEditMode) {
   {
     InSequence pdf_host_sequence;
@@ -2260,29 +2209,6 @@ TEST_F(PdfViewWebPluginSaveTest, OriginalInEditMode) {
 
   pdf_receiver_.FlushForTesting();
 }
-
-#if BUILDFLAG(ENABLE_INK)
-// TODO(crbug.com/425604529): This behavior is exclusive to Ink1. Remove this
-// test when Ink2 launches.
-TEST_F(PdfViewWebPluginSaveTest, DISABLED_EditedInNonEditMode) {
-  base::Value expected_response = base::test::ParseJson(R"({
-    "type": "saveData",
-    "token": "edited-in-non-edit-mode",
-    "fileName": "example.pdf",
-    "editModeForTesting": false,
-  })");
-  AddDataToValue(base::span(TestPDFiumEngine::kLoadedData), expected_response);
-
-  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
-  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
-
-  plugin_->OnMessage(ParseMessage(R"({
-    "type": "save",
-    "saveRequestType": "EDITED",
-    "token": "edited-in-non-edit-mode",
-  })"));
-}
-#endif  // BUILDFLAG(ENABLE_INK)
 
 TEST_F(PdfViewWebPluginSaveTest, EditedInEditMode) {
   plugin_->EnteredEditMode();

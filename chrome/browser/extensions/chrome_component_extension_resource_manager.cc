@@ -34,10 +34,6 @@
 #include "ui/file_manager/grit/file_manager_gen_resources_map.h"
 #include "ui/file_manager/grit/file_manager_resources_map.h"
 
-#if BUILDFLAG(ENABLE_INK)
-#include "chromeos/grit/chromeos_media_app_bundle_resources.h"
-#endif  // BUILDFLAG(ENABLE_INK)
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -91,12 +87,6 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 #if BUILDFLAG(IS_CHROMEOS)
     {"chrome_app/chrome_app_icon_32.png", IDR_CHROME_APP_ICON_32},
     {"chrome_app/chrome_app_icon_192.png", IDR_CHROME_APP_ICON_192},
-#if BUILDFLAG(ENABLE_INK)
-    // Built in go/bbsrc/lib/BUILD
-    {"pdf/ink/ink_engine_ink.wasm", IDR_MEDIA_APP_INK_ENGINE_INK_WASM},
-    {"pdf/ink/ink_lib_binary.js", IDR_MEDIA_APP_EXPORT_CANVAS_BIN_JS},
-    {"pdf/ink/ink_loader.js", IDR_MEDIA_APP_INK_JS},
-#endif  // BUILDFLAG(ENABLE_INK)
 #endif  // BUILDFLAG(IS_CHROMEOS)
   };
 

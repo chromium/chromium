@@ -42,10 +42,9 @@ std::optional<ParsedParams> ParseWebPluginParams(
         return std::nullopt;
       }
     } else if (params.attribute_names[i] == "javascript") {
-      if (params.attribute_values[i] != "allow")
+      if (params.attribute_values[i] != "allow") {
         result.script_option = PDFiumFormFiller::ScriptOption::kNoJavaScript;
-    } else if (params.attribute_names[i] == "has-edits") {
-      result.has_edits = true;
+      }
     } else if (params.attribute_names[i] == "use-skia") {
       result.use_skia = true;
     }

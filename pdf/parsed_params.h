@@ -44,9 +44,6 @@ struct ParsedParams {
   PDFiumFormFiller::ScriptOption script_option =
       PDFiumFormFiller::DefaultScriptOption();
 
-  // Whether the PDF was edited previously in annotation mode.
-  bool has_edits = false;
-
   // Whether the PDF viewer uses Skia renderer. When set to false, the PDF
   // viewer uses AGG renderer.
   bool use_skia = false;

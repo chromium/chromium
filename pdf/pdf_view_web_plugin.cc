@@ -586,14 +586,6 @@ bool PdfViewWebPlugin::InitializeCommon() {
                                           weak_factory_.GetWeakPtr()));
   url_ = params->original_url;
 
-  // Not all edits go through the PDF plugin's form filler. The plugin instance
-  // can be restarted by exiting annotation mode on ChromeOS, which can set the
-  // document to an edited state.
-  edit_mode_ = params->has_edits;
-#if !BUILDFLAG(ENABLE_INK)
-  DCHECK(!edit_mode_);
-#endif  // !BUILDFLAG(ENABLE_INK)
-
   metrics_handler_ = std::make_unique<MetricsHandler>();
   return true;
 }
@@ -1946,7 +1938,7 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
 
   switch (request_type) {
     case pdf::mojom::SaveRequestType::kAnnotation:
-#if BUILDFLAG(ENABLE_INK) || BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(ENABLE_PDF_INK2)
       // In annotation mode, assume the user will make edits and prefer saving
       // using the plugin data.
       SetPluginCanSave(true);
@@ -1954,7 +1946,7 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
       return;
 #else
       NOTREACHED();
-#endif  // BUILDFLAG(ENABLE_INK) || BUILDFLAG(ENABLE_PDF_INK2)
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
     case pdf::mojom::SaveRequestType::kOriginal: {
       const bool can_save = plugin_can_save_ || edit_mode_;
       SetPluginCanSave(false);
@@ -2177,17 +2169,8 @@ void PdfViewWebPlugin::SaveToBuffer(pdf::mojom::SaveRequestType request_type,
       data_to_save = base::Value(std::move(data));
     }
   } else {
-#if BUILDFLAG(ENABLE_INK)
-    uint32_t length = engine_->GetLoadedByteSize();
-    if (IsSaveDataSizeValid(length)) {
-      base::Value::BlobStorage data(length);
-      if (engine_->ReadLoadedBytes(0, data)) {
-        data_to_save = base::Value(std::move(data));
-      }
-    }
-#else
+    // TODO(crbug.com/425604529): Remove `use_save_data`?
     NOTREACHED();
-#endif  // BUILDFLAG(ENABLE_INK)
   }
 
   message.Set("dataToSave", std::move(data_to_save));

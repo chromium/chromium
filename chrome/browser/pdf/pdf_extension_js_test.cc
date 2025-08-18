@@ -326,32 +326,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Printing) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_INK)
-// TODO(crbug.com/41434927): Test times out under sanitizers.
-// TODO(crbug.com/41495998): Test fails for
-// testViewportToCameraConversion.
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DISABLED_AnnotationsFeatureEnabled) {
-  // TODO(crbug.com/40268279): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  RunTestsInJsModule("annotations_feature_enabled_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, AnnotationsToolbar) {
-  // Although this test file does not require a PDF to be loaded, loading the
-  // elements without loading a PDF is difficult.
-  RunTestsInJsModule("annotations_toolbar_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbarDropdown) {
-  // Although this test file does not require a PDF to be loaded, loading the
-  // elements without loading a PDF is difficult.
-  RunTestsInJsModule("viewer_toolbar_dropdown_test.js", "test.pdf");
-}
-#endif  // BUILDFLAG(ENABLE_INK)
-
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerFilePicker) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
