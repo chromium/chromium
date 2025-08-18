@@ -1,5 +1,11 @@
 {
     "chromium.android": {
+        "android-10-x86-rel": {
+            "webview_trichrome_cts_tests full_mode": {
+                "shards": 3,
+                "try_builder": "android-x86-rel"
+            }
+        },
         "android-12-x64-rel": {
             "webview_instrumentation_test_apk": {
                 "shards": 11,
@@ -8,7 +14,7 @@
         },
         "android-15-x64-rel": {
             "android_browsertests": {
-                "shards": 10,
+                "shards": 9,
                 "try_builder": "android-x64-rel"
             },
             "chrome_public_test_apk": {
@@ -16,7 +22,7 @@
                 "try_builder": "android-x64-rel"
             },
             "components_browsertests": {
-                "shards": 83,
+                "shards": 123,
                 "try_builder": "android-x64-rel"
             }
         },
@@ -46,7 +52,7 @@
     "chromium.android.desktop": {
         "android-desktop-x64-rel-15-tests": {
             "android_browsertests": {
-                "shards": 27,
+                "shards": 30,
                 "try_builder": "android-desktop-x64-rel"
             },
             "unit_tests": {
@@ -72,7 +78,7 @@
                 "try_builder": "linux-chromeos-rel"
             },
             "browser_tests": {
-                "shards": 140,
+                "shards": 153,
                 "try_builder": "linux-chromeos-rel"
             },
             "components_unittests": {
@@ -132,7 +138,7 @@
                 "try_builder": "linux-rel"
             },
             "browser_tests": {
-                "shards": 42,
+                "shards": 46,
                 "try_builder": "linux-rel"
             },
             "components_unittests": {
@@ -176,7 +182,7 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "unit_tests": {
-                "shards": 6,
+                "shards": 8,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "webkit_unit_tests_v2": {
@@ -221,6 +227,10 @@
     },
     "chromium.win": {
         "Win10 Tests x64": {
+            "browser_tests": {
+                "shards": 60,
+                "try_builder": "win-rel"
+            },
             "content_browsertests": {
                 "shards": 11,
                 "try_builder": "win-rel"
@@ -234,7 +244,7 @@
                 "try_builder": "win-rel"
             },
             "pixel_browser_tests": {
-                "shards": 5,
+                "shards": 6,
                 "try_builder": "win-rel"
             },
             "updater_tests": {
