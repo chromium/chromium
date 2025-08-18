@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 
   // Navigate to the extension's page.
   const GURL extension_file_url(extension->GetResourceURL("file.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_file_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), extension_file_url));
 
   content::WebContents* web_contents = GetActiveWebContents();
   const std::u16string expected_title = u"foo";

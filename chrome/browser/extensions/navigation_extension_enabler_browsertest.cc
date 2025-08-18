@@ -14,7 +14,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -178,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
 
   // Navigate to a page with a subframe.
   GURL main_url = embedded_test_server()->GetURL("/iframe.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  content::WebContents* web_contents = GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, main_url));
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             main_url);
 
@@ -273,7 +272,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, NoExtensionsInRefererHeader) {
           test_data_dir_.AppendASCII("simple_with_file"));
   ASSERT_TRUE(extension);
   GURL page_url = extension->GetResourceURL("file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, page_url));
 
   // Click a link in the extension.
   GURL target_url = embedded_test_server()->GetURL("/echoheader?referer");
@@ -283,7 +283,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, NoExtensionsInRefererHeader) {
       document.body.appendChild(a);
       a.click();
   )";
-  content::WebContents* web_contents = GetActiveWebContents();
   content::TestNavigationObserver nav_observer(web_contents, 1);
   ExecuteScriptAsync(web_contents,
                      content::JsReplace(kScriptTemplate, target_url));

@@ -16,7 +16,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -64,7 +63,7 @@ class ExtensionURLRewriteBrowserTest : public extensions::ExtensionBrowserTest {
   // correspond to |url|, while the real URL of the navigation entry uses the
   // chrome-extension:// scheme.
   void TestExtensionURLOverride(const GURL& url) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
     EXPECT_EQ(url, GetLocationBarTextAsURL());
     EXPECT_EQ(url, GetNavigationEntry()->GetVirtualURL());
     EXPECT_TRUE(
@@ -74,7 +73,7 @@ class ExtensionURLRewriteBrowserTest : public extensions::ExtensionBrowserTest {
   // Navigates to |url| and tests that the location bar is empty while the
   // |virtual_url| is the same as |url|.
   void TestURLNotShown(const GURL& url) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
     EXPECT_EQ("", GetLocationBarText());
     EXPECT_EQ(url, GetNavigationEntry()->GetVirtualURL());
   }
@@ -85,8 +84,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionURLRewriteBrowserTest, NewTabPageURL) {
   // We do not use TestURLNotShown here because the virtual URL may be
   // updated to the local NTP since we do not have a network connection to
   // reach the remote NTP.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(), GURL(chrome::kChromeUINewTabURL)));
   EXPECT_EQ("", GetLocationBarText());
   // Check that the actual and virtual URL corresponds to the new tab URL.
   EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(profile()),

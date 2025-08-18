@@ -160,7 +160,7 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
   testing::AssertionResult TestScriptResult(const Extension* extension,
                                             const GURL& url,
                                             const char* code) {
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), url));
     if (!content::EvalJs(GetActiveWebContents(), code).ExtractBool()) {
       return testing::AssertionFailure();
     }

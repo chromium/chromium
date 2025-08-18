@@ -65,8 +65,8 @@ bool ClipboardApiTest::LoadHostedApp(const std::string& app_name,
 
   std::string launch_page_path =
       base::StringPrintf("%s/%s", app_name.c_str(), launch_page.c_str());
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           base_url.Resolve(launch_page_path)));
+  EXPECT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            base_url.Resolve(launch_page_path)));
 
   return true;
 }

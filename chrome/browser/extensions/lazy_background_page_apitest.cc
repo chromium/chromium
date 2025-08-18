@@ -240,14 +240,15 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, BroadcastEvent) {
 
   // Lazy Background Page doesn't exist yet.
   EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
-  EXPECT_EQ(0u, extension_action_test_util::GetActivePageActionCount(
-                    GetActiveWebContents()));
+  auto* web_contents = GetActiveWebContents();
+  EXPECT_EQ(0u,
+            extension_action_test_util::GetActivePageActionCount(web_contents));
 
   // Open a tab to a URL that will trigger the page action to show.
   ExtensionHostTestHelper host_helper(profile(), last_loaded_extension_id());
   host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+  ASSERT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
+                                              "/extensions/test_file.html")));
   // Wait for the background page to cycle.
   host_helper.WaitForDocumentElementAvailable();
   host_helper.WaitForHostDestroyed();
@@ -272,8 +273,9 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, Filters) {
   // Open a tab to a URL that will fire a webNavigation event.
   ExtensionHostTestHelper host_helper(profile(), last_loaded_extension_id());
   host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+  ASSERT_TRUE(NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL("/extensions/test_file.html")));
   // Wait for the background page to cycle.
   host_helper.WaitForDocumentElementAvailable();
   host_helper.WaitForHostDestroyed();
@@ -464,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_WaitForNTP) {
   ExtensionHostTestHelper host_helper(profile());
   host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
   // Navigate away from the NTP, which should close the event page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(NavigateToURL(active_tab, GURL("about:blank")));
   host_helper.WaitForHostDestroyed();
 
   // Lazy Background Page has been shut down.
@@ -566,8 +568,9 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_Messaging) {
   ResultCatcher catcher;
   ExtensionHostTestHelper host_helper(profile(), last_loaded_extension_id());
   host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
+                                              "/extensions/test_file.html")));
   host_helper.WaitForDocumentElementAvailable();
 
   // Background page got the content script's message and is still loaded
@@ -576,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_Messaging) {
   EXPECT_TRUE(IsBackgroundPageAlive(last_loaded_extension_id()));
 
   // Navigate away
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL("about:blank")));
   // Navigating away triggers closing the message channel and
   // therefore the background page.
   host_helper.WaitForHostDestroyed();
@@ -611,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventDispatchToTab) {
 
   ExtensionTestMessageListener page_ready("ready", ReplyBehavior::kWillReply);
   GURL page_url = extension->GetResourceURL("page.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), page_url));
   EXPECT_TRUE(page_ready.WaitUntilSatisfied());
 
   // After the event is sent below, wait for the event page to have received
