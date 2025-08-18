@@ -18,10 +18,8 @@
     </form>
     <script>
       let input_event_log = [];
-      let input_event_log_times = [];
       let log_handler = e => {
-        input_event_log.push(e.type);
-        input_event_log_times.push(e.timeStamp);
+        input_event_log.push({ type: e.type, time: e.timeStamp });
       };
 
       document.getElementById('input').addEventListener('change', log_handler);
@@ -29,6 +27,22 @@
       document.getElementById('input').addEventListener('keydown', log_handler);
       document.getElementById('input').addEventListener('keyup', log_handler);
       document.getElementById('submit').addEventListener('click', log_handler);
+
+      // Filtering out unexpected 'change' events. A 'change' event is kept only
+      // if it is immediately followed by a 'click' event (form submission).
+      function getStableEvents() {
+        return input_event_log.filter((event, index, arr) => {
+          return event.type !== 'change' || arr[index + 1]?.type === 'click';
+        });
+      }
+
+      function getStableEventLog() {
+        return getStableEvents().map(event => event.type).join(',');
+      }
+
+      function getStableEventLogTimes() {
+        return getStableEvents().map(event => event.time);
+      }
     </script>
 
     <div>

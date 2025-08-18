@@ -149,8 +149,7 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_DisabledInput) {
 }
 
 // Ensure type tool sends the expected events to an input box.
-// TODO(crbug.com/438242699): Re-enable it.
-IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, DISABLED_TypeTool_Events) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_Events) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -176,13 +175,12 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, DISABLED_TypeTool_Events) {
       "keydown,input,keyup,"
       // enter (causes submit to "click")
       "keydown,change,click,keyup",
-      EvalJs(web_contents(), "input_event_log.join(',')"));
+      EvalJs(web_contents(), "getStableEventLog()"));
 }
 
 // Ensure the type tool can be used without text to send an enter key in an
 // input.
-// TODO(crbug.com/438242699): Re-enable it.
-IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, DISABLED_TypeTool_EmptyText) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_EmptyText) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -203,14 +201,11 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, DISABLED_TypeTool_EmptyText) {
 
   EXPECT_EQ(
       // enter (causes submit to "click")
-      "keydown,click,keyup",
-      EvalJs(web_contents(), "input_event_log.join(',')"));
+      "keydown,click,keyup", EvalJs(web_contents(), "getStableEventLog()"));
 }
 
 // Ensure the type tool correctly sends the enter key after input if specified.
-// TODO(crbug.com/438242699): Re-enable it.
-IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
-                       DISABLED_TypeTool_FollowByEnter) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_FollowByEnter) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -237,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
       "keydown,input,keyup,"
       // enter (causes submit to "click")
       "keydown,change,click,keyup",
-      EvalJs(web_contents(), "input_event_log.join(',')"));
+      EvalJs(web_contents(), "getStableEventLog()"));
 
   ASSERT_TRUE(ExecJs(web_contents(), "input_event_log = []"));
 
@@ -255,8 +250,7 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
 
   EXPECT_EQ(
       // b
-      "keydown,input,keyup",
-      EvalJs(web_contents(), "input_event_log.join(',')"));
+      "keydown,input,keyup", EvalJs(web_contents(), "getStableEventLog()"));
 }
 
 // Ensure the type tool doesn't fail if the keydown event is handled (page
@@ -419,9 +413,8 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
 
 // Ensure the type tool correctly sends the events to element at the
 // coordinates.
-// TODO(crbug.com/438242699): Re-enable it.
 IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
-                       DISABLED_TypeTool_EventsSentToCoordinates) {
+                       TypeTool_EventsSentToCoordinates) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -486,9 +479,8 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
 
 // Ensure the type tool correctly sends the events to an unfocusable element at
 // the coordinates.
-// TODO(crbug.com/438242699): Re-enable it.
 IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
-                       DISABLED_TypeTool_EventsSentToUnfocusableCoordinate) {
+                       TypeTool_EventsSentToUnfocusableCoordinate) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -527,9 +519,8 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
 }
 
 // Ensure the type tool will fail if target coordinate is offscreen.
-// TODO(crbug.com/438242699): Re-enable it.
 IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
-                       DISABLED_TypeTool_SentToOffScreenCoordinates) {
+                       TypeTool_SentToOffScreenCoordinates) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -552,9 +543,8 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
 
 // Ensure the type tool can send a type action to a DOMNodeId that isn't
 // an editable.
-// TODO(crbug.com/438242699): Re-enable it.
 IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
-                       DISABLED_TypeTool_DomNodeIdTargetsNonEditable) {
+                       TypeTool_DomNodeIdTargetsNonEditable) {
   const GURL url = embedded_test_server()->GetURL("/actor/type_non_input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -585,10 +575,7 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
 
 // Ensure the type tool emits events at the expected intervals when typing
 // incrementally.
-//
-// TODO(crbug.com/438242699): Re-enable it.
-IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
-                       DISABLED_TypeTool_IncrementalTyping) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_IncrementalTyping) {
   if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
     GTEST_SKIP() << "GlicActorIncrementalTyping feature is disabled";
   }
@@ -616,10 +603,10 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
       "keydown,input,keyup,"  // e
       "keydown,input,keyup,"  // s
       "keydown,input,keyup",  // t
-      EvalJs(web_contents(), "input_event_log.join(',')"));
+      EvalJs(web_contents(), "getStableEventLog()"));
 
   base::Value::List timestamps =
-      EvalJs(web_contents(), "input_event_log_times").TakeValue().TakeList();
+      EvalJs(web_contents(), "getStableEventLogTimes()").TakeValue().TakeList();
 
   // There are 3 events per character (keydown, input, keyup).
   ASSERT_EQ(timestamps.size(), typed_string.length() * 3);
