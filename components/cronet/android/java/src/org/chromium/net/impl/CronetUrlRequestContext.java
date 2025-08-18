@@ -48,7 +48,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -668,39 +667,17 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     }
 
     @CalledByNative
-    private @JniType("std::optional<std::vector<std::string>>") String[] onBeforeTunnelRequest(
-            int chainId) {
+    private void onBeforeTunnelRequest(int chainId, ProxyCallbackRequestImpl request) {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("CronetUrlRequestContext#onBeforeTunnelRequest")) {
             VersionSafeProxyCallback callback = mProxyCallbacks.get(chainId);
-            List<Map.Entry<String, String>> headers;
             try (var callbackTraceEvent =
                     ScopedSysTraceEvent.scoped(
                             "CronetUrlRequestContext#onBeforeTunnelRequest running callback")) {
-                // TODO(https://crbug.com/421341906): Once net::ProxyDelegate supports async
-                // callbacks, stop calling this directly (i.e., on Cronet's network thread).
-                headers = callback.onBeforeTunnelRequest();
+                // TODO(https://crbug.com/421341906): Once we support executors, stop calling this
+                // directly (i.e., on Cronet's network thread).
+                callback.onBeforeTunnelRequest(request);
             }
-            if (headers == null) {
-                return null;
-            }
-            List<String> output = new ArrayList<String>();
-            for (Map.Entry<String, String> header : headers) {
-                // TODO(https://crbug.com/425666408): Find a better way to surface this. It's
-                // currently challenging since we're calling into the embedder code, not the other
-                // way around. Making this API async (https://crbug.com/421341906) could be a way of
-                // solving this, since we could throw IAE when the embedder calls back into Cronet.
-                if (!CronetUrlRequestContextJni.get()
-                                .isValidHeaderName(Objects.requireNonNull(header.getKey()))
-                        || !CronetUrlRequestContextJni.get()
-                                .isValidHeaderValue(Objects.requireNonNull(header.getValue()))) {
-                    throw new IllegalArgumentException(
-                            "Invalid header with headername: " + header.getKey());
-                }
-                output.add(header.getKey());
-                output.add(header.getValue());
-            }
-            return output.toArray(new String[output.size()]);
         }
     }
 
@@ -1161,11 +1138,5 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
         @NativeClassQualifiedName("CronetContextAdapter")
         void provideThroughputObservations(long nativePtr, boolean should);
-
-        @JniType("bool")
-        boolean isValidHeaderName(@JniType("std::string") String headerName);
-
-        @JniType("bool")
-        boolean isValidHeaderValue(@JniType("std::string") String headerValue);
     }
 }

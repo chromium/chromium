@@ -67,7 +67,7 @@ ALLOWED_EXCEPTIONS = [
     'org.chromium.net.impl.VersionSafeProxyOptions/createProxyOptionsProto -> org/chromium/net/Proxy/getHost:()Ljava/lang/String;',
     'org.chromium.net.impl.VersionSafeProxyOptions/createProxyOptionsProto -> org/chromium/net/Proxy/getPort:()I',
     'org.chromium.net.impl.VersionSafeProxyOptions/createProxyOptionsProto -> org/chromium/net/Proxy/getScheme:()I',
-    'org.chromium.net.impl.VersionSafeProxyCallback/onBeforeTunnelRequest -> org/chromium/net/Proxy$Callback/onBeforeTunnelRequest:()Ljava/util/List;',
+    'org.chromium.net.impl.VersionSafeProxyCallback/onBeforeTunnelRequest -> org/chromium/net/Proxy$Callback/onBeforeTunnelRequest:(Lorg/chromium/net/Proxy$Callback$Request;)V',
     'org.chromium.net.impl.VersionSafeProxyCallback/onTunnelHeadersReceived -> org/chromium/net/Proxy$Callback/onTunnelHeadersReceived:(Ljava/util/List;I)Z',
     'org.chromium.net.impl.VersionSafeCallbacks$UrlRequestStatusListener/onStatus -> org/chromium/net/UrlRequest$StatusListener/onStatus:(I)V',
     'org.chromium.net.impl.VersionSafeCallbacks$UrlRequestCallback/onRedirectReceived -> org/chromium/net/UrlRequest$Callback/onRedirectReceived:(Lorg/chromium/net/UrlRequest;Lorg/chromium/net/UrlResponseInfo;Ljava/lang/String;)V',

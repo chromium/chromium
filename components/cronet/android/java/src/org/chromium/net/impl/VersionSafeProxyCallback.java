@@ -5,7 +5,6 @@
 package org.chromium.net.impl;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.net.Proxy;
 
@@ -36,9 +35,8 @@ final class VersionSafeProxyCallback {
         mBackend = Objects.requireNonNull(backend);
     }
 
-    @Nullable
-    List<Map.Entry<String, String>> onBeforeTunnelRequest() {
-        return mBackend.onBeforeTunnelRequest();
+    void onBeforeTunnelRequest(Proxy.Callback.Request request) {
+        mBackend.onBeforeTunnelRequest(request);
     }
 
     boolean onTunnelHeadersReceived(

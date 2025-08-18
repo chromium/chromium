@@ -41,6 +41,57 @@ public final class Proxy {
     /** Controls tunnel establishment requests. */
     public abstract static class Callback {
         /**
+         * Represents a tunnel establishment request being sent to the proxy server.
+         *
+         * <p>All methods may be called synchronously or asynchronously, on any thread.
+         */
+        public abstract static class Request implements AutoCloseable {
+            /**
+             * Allows the tunnel establishment request to proceed with the specified extra headers.
+             *
+             * @param extraHeaders A list of headers to be added to the tunnel establishment
+             *     request. This list can be empty, in which case no headers will be added. These
+             *     headers won't be added to the actual HTTP requests that will go through the
+             *     tunnel.
+             * @throws IllegalArgumentException If any of the headers is not RFC 2616-compliant.
+             * @throws IllegalStateException If this gets called multiple times, or after {@link
+             *     Request#close} has been called.
+             */
+            public abstract void proceed(@NonNull List<Map.Entry<String, String>> extraHeaders);
+
+            /**
+             * Releases the resources associated with the tunnel establishment request. If by the
+             * time this is called, the tunnel establishment request has not been allowed to
+             * proceed, it will be canceled.
+             *
+             * <p>When a tunnel establishment request is canceled, Cronet will interpret it as a
+             * failure to connect to the associated {@link org.chromium.net.Proxy}. Cronet will then
+             * try the next {@link org.chromium.net.Proxy} in the list passed to {@link
+             * org.chromium.net.ProxyOptions} (refer to that class documentation for more info).
+             */
+            @Override
+            public abstract void close();
+        }
+
+        /**
+         * Called before sending a tunnel establishment request. Allows manipulating, or canceling,
+         * said request before Cronet sends it to the proxy. Refer to {@link Request} to learn how a
+         * request can be manipulated/canceled.
+         *
+         * <p>Warning: This will be called directly on Cronet's network thread, do not block.
+         *
+         * @param request Represents the request that will be sent to the proxy.
+         */
+        public void onBeforeTunnelRequest(@NonNull Request request) {
+            try (request) {
+                var headers = onBeforeTunnelRequest();
+                if (headers != null) {
+                    request.proceed(headers);
+                }
+            }
+        }
+
+        /**
          * Called before sending a tunnel establishment request. Allows adding headers that will be
          * sent only to the proxy as part of the tunnel establishment request. They will not be
          * added to the actual HTTP requests that will go through the proxy.
@@ -61,8 +112,13 @@ public final class Proxy {
          *     interpret it as a failure to connect to this Proxy and will try the next Proxy in the
          *     list passed to {@link org.chromium.net.ProxyOptions} (refer to that class
          *     documentation for more info).
+         * @deprecated Override onBeforeTunnelRequest(Request) instead.
          */
-        public abstract @Nullable List<Map.Entry<String, String>> onBeforeTunnelRequest();
+        @Deprecated
+        public @Nullable List<Map.Entry<String, String>> onBeforeTunnelRequest() {
+            throw new UnsupportedOperationException(
+                    "At least one overload of onBeforeTunnelRequest must be overridden");
+        }
 
         /**
          * Called after receiving a response to the tunnel establishment request. Allows reading

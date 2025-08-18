@@ -20,8 +20,10 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "components/prefs/json_pref_store.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
+#include "net/base/proxy_delegate.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/nqe/effective_connection_type.h"
@@ -99,15 +101,18 @@ class CronetContext {
     // Called before sending a tunnel establishment request. This is used to
     // forward //net's ProxyDelegate::OnBeforeTunnelRequest to, the embedder
     // provided, org.chromium.net.Proxy.Callback#onBeforeTunnelRequest.
-    // `extra_headers` should be modified to add headers that will be sent only
-    // to the proxy, as part of the tunnel establishment request.
-    // Return `true` if the tunnel establishment request is allowed to continue,
-    // `false` if it should be canceled. When canceled, we will attempt to
-    // connect via the next proxy in the list (see org.chromium.net.ProxyOptions
-    // for more info).
-    virtual bool OnBeforeTunnelRequest(
+    // If the tunnel establishment request should be allowed to continue, pass
+    // an net::HttpRequestHeaders object to `callback`. These will be sent only
+    // to the proxy, as part of the tunnel establishment request. If it should
+    // be canceled, pass a net::Error (other than OK and ERR_IO_PENDING). When
+    // canceled, we will attempt to connect via the next proxy in the list (see
+    // org.chromium.net.ProxyOptions for more info).
+    //
+    // WARNING: `callback` must never be called inline, it must instead be
+    // posted back onto the network thread.
+    virtual void OnBeforeTunnelRequest(
         int chain_id,
-        net::HttpRequestHeaders* extra_headers) = 0;
+        net::ProxyDelegate::OnBeforeTunnelRequestCallback callback) = 0;
 
     // Called after receiving a response to the tunnel establishment request.
     // This is used to forward //net's ProxyDelegate::OnTunnelHeadersReceived
@@ -307,8 +312,9 @@ class CronetContext {
     void StopNetLogCompleted();
 
     // See CronetContext::Callback::OnBeforeTunnelRequest.
-    bool OnBeforeTunnelRequest(int chain_id,
-                               net::HttpRequestHeaders* extra_headers);
+    void OnBeforeTunnelRequest(
+        int chain_id,
+        net::ProxyDelegate::OnBeforeTunnelRequestCallback callback);
 
     // See CronetContext::Callback::OnTunnelHeadersReceived.
     bool OnTunnelHeadersReceived(

@@ -32,6 +32,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/cronet/android/cronet_library_loader.h"
+#include "components/cronet/android/proxy_callback_request_adapter.h"
 #include "components/cronet/cronet_prefs_manager.h"
 #include "components/cronet/host_cache_persistence_manager.h"
 #include "components/cronet/proto/request_context_config.pb.h"
@@ -171,21 +172,14 @@ void CronetContextAdapter::OnStopNetLogCompleted() {
       base::android::AttachCurrentThread(), jcronet_url_request_context_);
 }
 
-bool CronetContextAdapter::OnBeforeTunnelRequest(
+void CronetContextAdapter::OnBeforeTunnelRequest(
     int chain_id,
-    net::HttpRequestHeaders* extra_headers) {
+    net::ProxyDelegate::OnBeforeTunnelRequestCallback callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  std::optional<std::vector<std::string>> jheaders =
-      Java_CronetUrlRequestContext_onBeforeTunnelRequest(
-          env, jcronet_url_request_context_, chain_id);
-  if (!jheaders.has_value()) {
-    return false;
-  }
-  const auto& headers = *jheaders;
-  for (size_t i = 0; i < headers.size(); i += 2) {
-    extra_headers->SetHeader(headers[i], headers[i + 1]);
-  }
-  return true;
+  Java_CronetUrlRequestContext_onBeforeTunnelRequest(
+      env, jcronet_url_request_context_, chain_id,
+      ProxyCallbackRequestAdapter::CreateProxyCallbackRequest(
+          std::move(callback)));
 }
 
 bool CronetContextAdapter::OnTunnelHeadersReceived(
@@ -342,18 +336,6 @@ static void JNI_CronetUrlRequestContext_AddPkp(
     env->ReleaseByteArrayElements(bytes_array.obj(), bytes, JNI_ABORT);
   }
   config->pkp_list.push_back(std::move(pkp));
-}
-
-static bool JNI_CronetUrlRequestContext_IsValidHeaderName(
-    JNIEnv* env,
-    std::string& header_name) {
-  return net::HttpUtil::IsValidHeaderName(header_name);
-}
-
-static bool JNI_CronetUrlRequestContext_IsValidHeaderValue(
-    JNIEnv* env,
-    std::string& header_value) {
-  return net::HttpUtil::IsValidHeaderValue(header_value);
 }
 
 // Creates RequestContextAdater if config is valid URLRequestContextConfig,

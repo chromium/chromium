@@ -38,6 +38,7 @@ generate_jni("cronet_jni_headers") {
     "java/src/org/chromium/net/impl/CronetUploadDataStream.java",
     "java/src/org/chromium/net/impl/CronetUrlRequest.java",
     "java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
+    "java/src/org/chromium/net/impl/ProxyCallbackRequestImpl.java",
   ]
 }
 
@@ -213,6 +214,8 @@ source_set("cronet_static") {
     "//components/cronet/android/cronet_url_request_adapter.h",
     "//components/cronet/android/io_buffer_with_byte_buffer.cc",
     "//components/cronet/android/io_buffer_with_byte_buffer.h",
+    "//components/cronet/android/proxy_callback_request_adapter.cc",
+    "//components/cronet/android/proxy_callback_request_adapter.h",
     "//components/cronet/android/shared_dictionary_with_byte_buffer.cc",
     "//components/cronet/android/shared_dictionary_with_byte_buffer.h",
     "//components/cronet/android/url_request_close_source.cc",
@@ -580,6 +583,7 @@ android_library("cronet_impl_native_java") {
     "java/src/org/chromium/net/impl/NativeCronetEngineBuilderImpl.java",
     "java/src/org/chromium/net/impl/NativeCronetEngineBuilderWithLibraryLoaderImpl.java",
     "java/src/org/chromium/net/impl/NativeCronetProvider.java",
+    "java/src/org/chromium/net/impl/ProxyCallbackRequestImpl.java",
   ]
 
   # Adding deps here won't include those deps in the cronet_impl_native_java.jar.

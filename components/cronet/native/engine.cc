@@ -25,6 +25,7 @@
 #include "components/cronet/version.h"
 #include "components/grpc_support/include/bidirectional_stream_c.h"
 #include "net/base/hash_value.h"
+#include "net/base/proxy_delegate.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -396,16 +397,15 @@ class Cronet_EngineImpl::Callback : public CronetContext::Callback {
       int32_t timestamp_ms,
       net::NetworkQualityObservationSource source) override;
   void OnStopNetLogCompleted() override LOCKS_EXCLUDED(engine_->lock_);
-  bool OnBeforeTunnelRequest(int chain_id,
-                             net::HttpRequestHeaders* extra_headers) override {
-    NOTIMPLEMENTED();
-    return false;
+  void OnBeforeTunnelRequest(
+      int chain_id,
+      net::ProxyDelegate::OnBeforeTunnelRequestCallback callback) override {
+    NOTREACHED();
   }
   bool OnTunnelHeadersReceived(
       int chain_id,
       const net::HttpResponseHeaders& response_headers) override {
-    NOTIMPLEMENTED();
-    return false;
+    NOTREACHED();
   }
 
  private:

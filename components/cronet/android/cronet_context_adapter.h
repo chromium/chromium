@@ -17,6 +17,7 @@
 #include "base/threading/thread.h"
 #include "components/cronet/cronet_context.h"
 #include "components/prefs/json_pref_store.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/network_handle.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -131,8 +132,9 @@ class CronetContextAdapter : public CronetContext::Callback {
       int32_t timestamp_ms,
       net::NetworkQualityObservationSource source) override;
   void OnStopNetLogCompleted() override;
-  bool OnBeforeTunnelRequest(int chain_id,
-                             net::HttpRequestHeaders* extra_headers) override;
+  void OnBeforeTunnelRequest(
+      int chain_id,
+      net::ProxyDelegate::OnBeforeTunnelRequestCallback callback) override;
   bool OnTunnelHeadersReceived(
       int chain_id,
       const net::HttpResponseHeaders& response_headers) override;

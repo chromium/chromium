@@ -93,23 +93,14 @@ CronetProxyDelegate::OnBeforeTunnelRequest(
                     "proxy_chain", proxy_chain.ToDebugString(), "chain_index",
                     chain_index);
   CHECK(proxy_chain.opaque_data().has_value());
-  auto result = [&]() -> base::expected<net::HttpRequestHeaders, net::Error> {
-    if (net::HttpRequestHeaders extra_headers;
-        network_tasks_->OnBeforeTunnelRequest(*proxy_chain.opaque_data(),
-                                              &extra_headers)) {
-      return extra_headers;
-    }
-    // TODO(https://crbug.com/422428959): Decide whether we want to propagate
-    // org.chromium.net.Proxy.Callback canceling a tunnel establishment request
-    // as net::ERR_TUNNEL_CONNECTION_FAILED. This is currently not possible, as
-    // net::ProxyFallback::CanFalloverToNextProxy does not try the next proxy in
-    // the list for net::ERR_TUNNEL_CONNECTION_FAILED, unless the chain is for
-    // IP Protection. For the time being, we return another error for which the
-    // next proxy is in the list is always attempted.
-    return base::unexpected(net::ERR_CONNECTION_CLOSED);
-  }();
-  TRACE_EVENT_END("cronet", "result", result.error_or(net::OK));
-  return result;
+  // org.chromium.net.Proxy.Callback#onBeforeTunnelRequest always continues
+  // asynchronously. So, from //net's perspective, this always ends up in
+  // `net::ERR_IO_PENDING`.
+  network_tasks_->OnBeforeTunnelRequest(*proxy_chain.opaque_data(),
+                                        std::move(callback));
+  const auto result = net::ERR_IO_PENDING;
+  TRACE_EVENT_END("cronet", "result", result);
+  return base::unexpected(result);
 }
 
 net::Error CronetProxyDelegate::OnTunnelHeadersReceived(

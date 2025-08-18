@@ -369,10 +369,16 @@ public abstract class org.chromium.net.NetworkQualityThroughputListener {
   public java.util.concurrent.Executor getExecutor();
   public org.chromium.net.NetworkQualityThroughputListener(java.util.concurrent.Executor);
 }
+public abstract class org.chromium.net.Proxy$Callback$Request implements java.lang.AutoCloseable {
+  public abstract void close();
+  public abstract void proceed(java.util.List<java.util.Map$Entry<java.lang.String, java.lang.String>>);
+  public org.chromium.net.Proxy$Callback$Request();
+}
 public abstract class org.chromium.net.Proxy$Callback {
   public abstract boolean onTunnelHeadersReceived(java.util.List<java.util.Map$Entry<java.lang.String, java.lang.String>>, int);
-  public abstract java.util.List<java.util.Map$Entry<java.lang.String, java.lang.String>> onBeforeTunnelRequest();
+  public java.util.List<java.util.Map$Entry<java.lang.String, java.lang.String>> onBeforeTunnelRequest();
   public org.chromium.net.Proxy$Callback();
+  public void onBeforeTunnelRequest(org.chromium.net.Proxy$Callback$Request);
 }
 public interface org.chromium.net.Proxy$Scheme extends java.lang.annotation.Annotation {
 }
@@ -665,4 +671,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<java.lang.String, org.chromium.net.apihelpers.StringCronetCallback> forStringBody(org.chromium.net.apihelpers.RedirectHandler);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: 5fd818a7fa4b22e1e4be8179648eba6b
+Stamp: f67a14138f07b5245131c732fe451b2a

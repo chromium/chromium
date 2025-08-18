@@ -6,6 +6,7 @@ package org.chromium.net.impl;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
@@ -208,11 +209,11 @@ public class VersionSafeProxyOptionsTest {
         assertThat(safeProxyCallbacks).isNotNull();
         assertThat(safeProxyCallbacks).hasSize(3);
         // Verify the order by verifying that we're calling the right mock.
-        safeProxyCallbacks.get(0).onBeforeTunnelRequest();
-        Mockito.verify(httpsProxyCallback, times(1)).onBeforeTunnelRequest();
-        Mockito.verify(httpProxyCallback, never()).onBeforeTunnelRequest();
+        safeProxyCallbacks.get(0).onBeforeTunnelRequest(any());
+        Mockito.verify(httpsProxyCallback, times(1)).onBeforeTunnelRequest(any());
+        Mockito.verify(httpProxyCallback, never()).onBeforeTunnelRequest(any());
         assertThat(safeProxyCallbacks.get(1)).isNull();
-        safeProxyCallbacks.get(2).onBeforeTunnelRequest();
-        Mockito.verify(httpProxyCallback, times(1)).onBeforeTunnelRequest();
+        safeProxyCallbacks.get(2).onBeforeTunnelRequest(any());
+        Mockito.verify(httpProxyCallback, times(1)).onBeforeTunnelRequest(any());
     }
 }

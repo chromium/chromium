@@ -37,12 +37,14 @@
 #include "components/cronet/cronet_prefs_manager.h"
 #include "components/cronet/host_cache_persistence_manager.h"
 #include "components/cronet/url_request_context_config.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_flags.h"
 #include "net/base/logging_network_change_observer.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate_impl.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/proxy_delegate.h"
 #include "net/base/url_util.h"
 #include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_verifier.h"
@@ -880,11 +882,11 @@ void CronetContext::NetworkTasks::StopNetLogCompleted() {
   callback_->OnStopNetLogCompleted();
 }
 
-bool CronetContext::NetworkTasks::OnBeforeTunnelRequest(
+void CronetContext::NetworkTasks::OnBeforeTunnelRequest(
     int chain_id,
-    net::HttpRequestHeaders* extra_headers) {
+    net::ProxyDelegate::OnBeforeTunnelRequestCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
-  return callback_->OnBeforeTunnelRequest(chain_id, extra_headers);
+  callback_->OnBeforeTunnelRequest(chain_id, std::move(callback));
 }
 
 bool CronetContext::NetworkTasks::OnTunnelHeadersReceived(
