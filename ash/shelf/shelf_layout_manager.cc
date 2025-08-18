@@ -1456,6 +1456,10 @@ void ShelfLayoutManager::OnLockStateEvent(LockStateObserver::EventType event) {
   MaybeUpdateShelfBackground(AnimationChangeType::ANIMATE);
 }
 
+void ShelfLayoutManager::OnAppModeSessionStarted() {
+  UpdateShelfVisibilityAfterLoginUIChange();
+}
+
 void ShelfLayoutManager::OnSessionStateChanged(
     session_manager::SessionState state) {
   // Check transition changes to/from the add user to session and change the
@@ -1482,7 +1486,7 @@ void ShelfLayoutManager::OnSessionStateChanged(
   }
 }
 
-void ShelfLayoutManager::OnLoginStatusChanged(LoginStatus loing_status) {
+void ShelfLayoutManager::OnLoginStatusChanged(LoginStatus login_status) {
   UpdateVisibilityState(/*force_layout=*/false);
 }
 
@@ -1872,16 +1876,16 @@ ShelfVisibilityState ShelfLayoutManager::CalculateShelfVisibility() {
     return SHELF_HIDDEN;
   }
 
+  if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
+    return SHELF_HIDDEN;
+  }
+
   if (!state_.IsActiveSessionState()) {
     // Needed to show system tray in non active session state.
     return SHELF_VISIBLE;
   }
 
   if (Shell::Get()->screen_pinning_controller()->IsPinned()) {
-    return SHELF_HIDDEN;
-  }
-
-  if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
     return SHELF_HIDDEN;
   }
 

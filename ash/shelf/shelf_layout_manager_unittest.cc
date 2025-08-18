@@ -261,10 +261,19 @@ class ShelfLayoutManagerTest : public ShelfLayoutManagerTestBase {
  public:
   ShelfLayoutManagerTest() = default;
 
+  // Sets up a Kiosk session after the app has launched.
   void SetUpKioskSession() {
     SessionInfo info;
     info.is_running_in_app_mode = true;
     info.state = session_manager::SessionState::ACTIVE;
+    Shell::Get()->session_controller()->SetSessionInfo(info);
+  }
+
+  // Sets up a Kiosk session during the splash screen.
+  void SetUpKioskSplashScreen() {
+    SessionInfo info;
+    info.is_running_in_app_mode = true;
+    info.state = session_manager::SessionState::LOGIN_PRIMARY;
     Shell::Get()->session_controller()->SetSessionInfo(info);
   }
 };
@@ -839,6 +848,15 @@ TEST_F(ShelfLayoutManagerTest, StatusAreaMoveWithSwipeOnAutoHiddenShelf) {
 
   EXPECT_EQ(hidden_shelf_in_screen_portion,
             GetWidgetOffsetFromBottom(shelf->status_area_widget()));
+}
+
+// Checks that the shelf stays hidden during Kiosk launch. This prevents users
+// from using the shelf to facilitate escapes. See crbug.com/435160606.
+TEST_F(ShelfLayoutManagerTest, HiddenShelfDuringKioskModeLaunch) {
+  SetUpKioskSplashScreen();
+
+  SwipeUpOnShelf();
+  EXPECT_EQ(SHELF_HIDDEN, GetPrimaryShelf()->GetVisibilityState());
 }
 
 // Checks that the shelf keeps hidden during the Kiosk mode.

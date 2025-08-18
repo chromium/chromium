@@ -36,6 +36,22 @@ class ASH_PUBLIC_EXPORT SessionObserver : public base::CheckedObserver {
   // Called when the session state is changed.
   virtual void OnSessionStateChanged(session_manager::SessionState state) {}
 
+  // Called when the Kiosk user session starts. This happens during Kiosk sign
+  // in before the profile is ready, quite early during Kiosk launch.
+  //
+  // This signal complements `OnSessionStateChanged` because `SessionState`
+  // remains `LOGIN_PRIMARY` during most of the Kiosk launch process.
+  //
+  // The expected ordering of events is:
+  // * `OnSessionStateChanged(LOGIN_PRIMARY)` -> Device is in the login screen.
+  // * User launches a Kiosk app from the apps menu, or an app is auto launched.
+  // * `OnAppModeSessionStarted()` -> Kiosk launch started.
+  // * `KioskLaunchController` loads the user profile and installs the app.
+  // * `OnSessionStateChanged(LOGGED_IN_NOT_ACTIVE)` -> Kiosk is ready to
+  //   launch the app.
+  // * `OnSessionStateChanged(ACTIVE)` -> The Kiosk app has launched.
+  virtual void OnAppModeSessionStarted() {}
+
   // Called when the login status is changed. |login_status| is the new status.
   virtual void OnLoginStatusChanged(LoginStatus login_status) {}
 
@@ -62,7 +78,7 @@ class ASH_PUBLIC_EXPORT SessionObserver : public base::CheckedObserver {
   virtual void OnUserToBeRemoved(const AccountId& account_id) {}
 
  protected:
-  ~SessionObserver() override {}
+  ~SessionObserver() override = default;
 };
 
 // A class to attach / detach an object as a session state observer.
