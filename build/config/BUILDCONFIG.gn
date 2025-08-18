@@ -320,12 +320,6 @@ is_fuchsia = current_os == "fuchsia"
 is_ios = current_os == "ios"
 is_linux = current_os == "linux"
 is_mac = current_os == "mac"
-
-# TODO(crbug.com/40511454): Remove is_nacl from all build files, then
-#                           remove the is_nacl variable.
-assert(current_os != "nacl")
-is_nacl = false
-
 is_wasm = current_os == "emscripten"
 is_watchos = current_os == "watchos"
 is_win = current_os == "win" || current_os == "winuwp"
@@ -410,7 +404,7 @@ if (is_android) {
       [ "//build/config/android:default_orderfile_instrumentation" ]
 }
 
-if (is_clang && !is_nacl) {
+if (is_clang) {
   default_compiler_configs += [
     "//build/config/clang:extra_warnings",
     "//build/config/clang:find_bad_constructs",
