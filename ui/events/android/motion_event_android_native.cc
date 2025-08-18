@@ -67,13 +67,6 @@ MotionEventAndroidNative::MotionEventAndroidNative(
                          pointer1,
                          std::move(source)) {}
 
-float MotionEventAndroidNative::GetPressure(size_t pointer_index) const {
-  if (GetAction() == MotionEvent::Action::UP) {
-    return 0.f;
-  }
-  return source()->GetPressure(pointer_index);
-}
-
 float MotionEventAndroidNative::GetXPix(size_t pointer_index) const {
   return GetX(pointer_index) / pix_to_dip();
 }

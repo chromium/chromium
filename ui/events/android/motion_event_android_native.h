@@ -29,7 +29,6 @@ class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
   void operator=(const MotionEventAndroidNative&) = delete;
 
   // Start ui::MotionEvent overrides
-  float GetPressure(size_t pointer_index) const override;
   // End ui::MotionEvent overrides
 
   // Start MotionEventAndroid overrides

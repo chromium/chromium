@@ -391,6 +391,14 @@ base::TimeTicks MotionEventAndroid::GetDownTime() const {
   return cached_down_time_ms_;
 }
 
+float MotionEventAndroid::GetPressure(size_t pointer_index) const {
+  DCHECK_LT(pointer_index, GetPointerCount());
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerPressure(pointer_index);
+  }
+  return source()->GetPressure(pointer_index);
+}
+
 float MotionEventAndroid::GetTangentialPressure(size_t pointer_index) const {
   DCHECK_LT(pointer_index, cached_pointer_count_);
   return 0.f;

@@ -103,14 +103,6 @@ float MotionEventAndroidJava::GetYPix(size_t pointer_index) const {
   return source()->GetYPix(pointer_index);
 }
 
-float MotionEventAndroidJava::GetPressure(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerPressure(pointer_index);
-  }
-  return source()->GetPressure(pointer_index);
-}
-
 bool MotionEventAndroidJava::IsLatestEventTimeResampled() const {
   return source()->IsLatestEventTimeResampled();
 }

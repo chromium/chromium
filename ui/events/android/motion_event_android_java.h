@@ -35,7 +35,6 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
   void operator=(const MotionEventAndroidJava&) = delete;
 
   // Start ui::MotionEvent overrides
-  float GetPressure(size_t pointer_index) const override;
   bool IsLatestEventTimeResampled() const override;
   // End ui::MotionEvent overrides
 

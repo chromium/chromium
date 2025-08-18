@@ -112,6 +112,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   float GetTwist(size_t pointer_index) const override;
   float GetTiltX(size_t pointer_index) const override;
   float GetTiltY(size_t pointer_index) const override;
+  float GetPressure(size_t pointer_index) const override;
   float GetTangentialPressure(size_t pointer_index) const override;
   // TODO(crbug.com/41493853): Cleanup GetEventTime method to have same
   // semantics as Android side of MotionEvent.GetEventTime(). On Android side
