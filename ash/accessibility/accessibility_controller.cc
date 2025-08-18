@@ -3271,14 +3271,8 @@ void AccessibilityController::UpdateColorCorrectionFromPrefs() {
 void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
   base::TimeDelta caret_blink_interval = base::Milliseconds(
       active_user_prefs_->GetInteger(prefs::kAccessibilityCaretBlinkInterval));
-  bool notify_dark = false;
   bool notify_web = false;
   bool notify_native = false;
-  auto* native_theme_dark = ui::NativeTheme::GetInstanceForDarkUI();
-  if (native_theme_dark->GetCaretBlinkInterval() != caret_blink_interval) {
-    notify_dark = true;
-    native_theme_dark->set_caret_blink_interval(caret_blink_interval);
-  }
   auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
   if (native_theme_web->GetCaretBlinkInterval() != caret_blink_interval) {
     notify_web = true;
@@ -3290,9 +3284,6 @@ void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
     native_theme->set_caret_blink_interval(caret_blink_interval);
   }
   // Avoid unnecessary notifications.
-  if (notify_dark) {
-    native_theme_dark->NotifyOnNativeThemeUpdated();
-  }
   if (notify_web) {
     native_theme_web->NotifyOnNativeThemeUpdated();
   }
@@ -3309,14 +3300,8 @@ void AccessibilityController::UpdateUseOverlayScrollbarFromPref() const {
   const bool use_overlay_scrollbar =
       overlay_scrollbar_enabled_by_feature_flag ||
       overlay_scrollbar_enabled_by_os_setting;
-  bool notify_dark = false;
   bool notify_web = false;
   bool notify_native = false;
-  auto* native_theme_dark = ui::NativeTheme::GetInstanceForDarkUI();
-  if (native_theme_dark->use_overlay_scrollbar() != use_overlay_scrollbar) {
-    notify_dark = true;
-    native_theme_dark->set_use_overlay_scrollbar(use_overlay_scrollbar);
-  }
   auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
   if (native_theme_web->use_overlay_scrollbar() != use_overlay_scrollbar) {
     notify_web = true;
@@ -3328,9 +3313,6 @@ void AccessibilityController::UpdateUseOverlayScrollbarFromPref() const {
     native_theme->set_use_overlay_scrollbar(use_overlay_scrollbar);
   }
   // Avoid unnecessary notifications.
-  if (notify_dark) {
-    native_theme_dark->NotifyOnNativeThemeUpdated();
-  }
   if (notify_web) {
     native_theme_web->NotifyOnNativeThemeUpdated();
   }

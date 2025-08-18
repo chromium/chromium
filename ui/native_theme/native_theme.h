@@ -470,9 +470,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Returns a shared instance of the default native theme for native UI.
   static NativeTheme* GetInstanceForNativeUi();
 
-  // Returns a shared instance of the native theme for incognito UI.
-  static NativeTheme* GetInstanceForDarkUI();
-
   // Whether OS-level dark mode is available in the current OS.
   static bool SystemDarkModeSupported();
 

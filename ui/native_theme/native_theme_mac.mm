@@ -111,12 +111,6 @@ NativeTheme* NativeTheme::GetInstanceForNativeUi() {
   return NativeThemeMac::instance();
 }
 
-NativeTheme* NativeTheme::GetInstanceForDarkUI() {
-  static base::NoDestructor<NativeThemeMac> s_native_theme(
-      /*configure_web_instance=*/false, /*should_only_use_dark_colors=*/true);
-  return s_native_theme.get();
-}
-
 // static
 bool NativeTheme::SystemDarkModeSupported() {
   return true;

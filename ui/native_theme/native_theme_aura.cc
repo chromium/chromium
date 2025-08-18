@@ -82,13 +82,6 @@ NativeTheme* NativeTheme::GetInstanceForNativeUi() {
       /*configure_web_instance=*/true);
   return s_native_theme.get();
 }
-
-NativeTheme* NativeTheme::GetInstanceForDarkUI() {
-  static base::NoDestructor<NativeThemeAura> s_native_theme(
-      /*use_overlay_scrollbars=*/false,
-      /*should_only_use_dark_colors=*/true);
-  return s_native_theme.get();
-}
 #endif  // !BUILDFLAG(IS_WIN)
 #endif  // !BUILDFLAG(IS_APPLE)
 

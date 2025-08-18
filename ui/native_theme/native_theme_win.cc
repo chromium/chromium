@@ -211,11 +211,6 @@ NativeTheme* NativeTheme::GetInstanceForNativeUi() {
   return s_native_theme.get();
 }
 
-NativeTheme* NativeTheme::GetInstanceForDarkUI() {
-  static base::NoDestructor<NativeThemeWin> s_dark_native_theme(false, true);
-  return s_dark_native_theme.get();
-}
-
 // static
 bool NativeTheme::SystemDarkModeSupported() {
   static bool system_supports_dark_mode =
