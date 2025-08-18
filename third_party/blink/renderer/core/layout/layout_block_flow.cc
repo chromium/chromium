@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control_inner_editor.h"
@@ -746,6 +747,12 @@ bool LayoutBlockFlow::AllowsColumns() const {
   // MathML layout objects don't support multicol.
   if (IsMathML())
     return false;
+
+  if (IsA<HTMLImageElement>(GetNode())) {
+    // We may create a LayoutBlockFlow for the ALT text of a broken image. Such
+    // a block should not become a multicol container.
+    return false;
+  }
 
   return true;
 }
