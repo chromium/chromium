@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_NATIVE_THEME_OVERLAY_SCROLLBAR_CONSTANTS_AURA_H_
-#define UI_NATIVE_THEME_OVERLAY_SCROLLBAR_CONSTANTS_AURA_H_
+#ifndef UI_NATIVE_THEME_OVERLAY_SCROLLBAR_CONSTANTS_H_
+#define UI_NATIVE_THEME_OVERLAY_SCROLLBAR_CONSTANTS_H_
 
 #include "base/time/time.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -32,4 +32,4 @@ constexpr base::TimeDelta kFluentOverlayScrollbarThinningDuration =
 
 }  // namespace ui
 
-#endif  // UI_NATIVE_THEME_OVERLAY_SCROLLBAR_CONSTANTS_AURA_H_
+#endif  // UI_NATIVE_THEME_OVERLAY_SCROLLBAR_CONSTANTS_H_
