@@ -19,6 +19,7 @@ class TabGroupSyncUtils {
   // Whether the destination URL from a NavigationHandle can be saved and
   // can be reloaded later on another machine.
   static bool IsSaveableNavigation(
+      bool is_extension_navigation_allowed,
       content::NavigationHandle* navigation_handle);
 
   // Record UKM metrics for navigations in saved tab groups.

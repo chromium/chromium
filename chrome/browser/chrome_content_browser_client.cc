@@ -8675,11 +8675,6 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-bool ChromeContentBrowserClient::IsSaveableNavigation(
-    content::NavigationHandle* navigation_handle) {
-  return tab_groups::TabGroupSyncUtils::IsSaveableNavigation(navigation_handle);
-}
-
 #if BUILDFLAG(IS_WIN)
 void ChromeContentBrowserClient::OnUiaProviderRequested(
     bool uia_provider_enabled) {

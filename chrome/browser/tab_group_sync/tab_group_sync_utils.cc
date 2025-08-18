@@ -15,6 +15,7 @@ namespace tab_groups {
 
 // static
 bool TabGroupSyncUtils::IsSaveableNavigation(
+    bool is_extension_navigation_allowed,
     content::NavigationHandle* navigation_handle) {
   ui::PageTransition page_transition = navigation_handle->GetPageTransition();
 
@@ -61,7 +62,13 @@ bool TabGroupSyncUtils::IsSaveableNavigation(
   // auto triggered on restoration. So there is no need to save them.
   if (navigation_handle->IsRendererInitiated() &&
       !navigation_handle->HasUserGesture()) {
-    return false;
+    // For navigations without initiator origin, they are likely from an
+    // extension.
+    if (!is_extension_navigation_allowed ||
+        navigation_handle->GetInitiatorOrigin().has_value() ||
+        navigation_handle->IsHistory()) {
+      return false;
+    }
   }
 
   return true;

@@ -1159,9 +1159,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
           callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  bool IsSaveableNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
 #if BUILDFLAG(IS_WIN)
   void OnUiaProviderRequested(bool uia_provider_enabled) override;
   void OnUiaProviderDisabled() override;

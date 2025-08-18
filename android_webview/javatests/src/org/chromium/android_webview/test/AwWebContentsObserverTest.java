@@ -296,7 +296,6 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                /* isSaveableNavigation= */ false,
                 page);
         mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(navigation);
 

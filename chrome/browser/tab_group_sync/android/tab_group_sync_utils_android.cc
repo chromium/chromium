@@ -98,3 +98,14 @@ static jboolean JNI_TabGroupSyncUtils_IsUrlInTabRedirectChain(
 
   return tab->IsURLInRedirectChain(url);
 }
+
+static jboolean JNI_TabGroupSyncUtils_IsSaveableNavigation(
+    JNIEnv* env,
+    jboolean is_extension_navigation_allowed,
+    jlong navigation_handle_ptr) {
+  auto* navigation_handle =
+      reinterpret_cast<content::NavigationHandle*>(navigation_handle_ptr);
+
+  return tab_groups::TabGroupSyncUtils::IsSaveableNavigation(
+      is_extension_navigation_allowed, navigation_handle);
+}

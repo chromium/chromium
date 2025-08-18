@@ -261,7 +261,8 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     TabGroupSyncTabState::Reset(contents());
   }
 
-  if (!TabGroupSyncUtils::IsSaveableNavigation(navigation_handle)) {
+  if (!TabGroupSyncUtils::IsSaveableNavigation(
+          group->collaboration_id().has_value(), navigation_handle)) {
     return;
   }
 

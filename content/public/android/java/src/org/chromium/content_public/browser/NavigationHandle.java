@@ -53,7 +53,6 @@ public class NavigationHandle {
     private @Nullable UserDataHost mUserDataHost;
     private boolean mIsPdf;
     private @Nullable String mMimeType;
-    private boolean mIsSaveableNavigation;
     private @Nullable WebContents mWebContents;
     private @Nullable Page mCommittedPage;
 
@@ -71,8 +70,7 @@ public class NavigationHandle {
                 isRendererInitiated,
                 transition,
                 hasUserGesture,
-                /* isReload= */ false,
-                /* isSaveableNavigation= */ false);
+                /* isReload= */ false);
     }
 
     public static NavigationHandle createForTesting(
@@ -83,26 +81,6 @@ public class NavigationHandle {
             @PageTransition int transition,
             boolean hasUserGesture,
             boolean isReload) {
-        return createForTesting(
-                url,
-                isInPrimaryMainFrame,
-                isSameDocument,
-                isRendererInitiated,
-                transition,
-                hasUserGesture,
-                isReload,
-                /* isSaveableNavigation= */ false);
-    }
-
-    public static NavigationHandle createForTesting(
-            GURL url,
-            boolean isInPrimaryMainFrame,
-            boolean isSameDocument,
-            boolean isRendererInitiated,
-            @PageTransition int transition,
-            boolean hasUserGesture,
-            boolean isReload,
-            boolean isSaveableNavigation) {
         NavigationHandle handle =
                 new NavigationHandle(
                         0,
@@ -128,7 +106,6 @@ public class NavigationHandle {
                 /* isPageActivation= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                isSaveableNavigation,
                 /* webContents= */ null);
         return handle;
     }
@@ -169,7 +146,6 @@ public class NavigationHandle {
             boolean isPageActivation,
             boolean isPdf,
             String mimeType,
-            boolean isSaveableNavigation,
             @Nullable WebContents webContents) {
         mReferrerUrl = referrerUrl;
         mBaseUrlForDataUrl = baseUrlForDataUrl;
@@ -183,7 +159,6 @@ public class NavigationHandle {
         mIsExternalProtocol = isExternalProtocol;
         mNavigationId = navigationId;
         mIsPdf = isPdf;
-        mIsSaveableNavigation = isSaveableNavigation;
         mIsPageActivation = isPageActivation;
         mMimeType = mimeType;
         mWebContents = webContents;
@@ -220,7 +195,6 @@ public class NavigationHandle {
             boolean isExternalProtocol,
             boolean isPdf,
             String mimeType,
-            boolean isSaveableNavigation,
             Page currentPage) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
@@ -234,7 +208,6 @@ public class NavigationHandle {
         mIsExternalProtocol = isExternalProtocol;
         mIsPdf = isPdf;
         mMimeType = mimeType;
-        mIsSaveableNavigation = isSaveableNavigation;
         if (mHasCommitted && !mIsSameDocument && mIsInPrimaryMainFrame) {
             mCommittedPage = currentPage;
         }
@@ -471,12 +444,6 @@ public class NavigationHandle {
     public String getMimeType() {
         assert mStarted;
         return assumeNonNull(mMimeType);
-    }
-
-    /** Whether this navigation can be saved so that it be reloaded or synced. */
-    public boolean isSaveableNavigation() {
-        assert mStarted;
-        return mIsSaveableNavigation;
     }
 
     /** A navigation is always taking place inside of a WebContents, so this will never be null. */

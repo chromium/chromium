@@ -236,6 +236,19 @@ public final class TabGroupSyncUtils {
                 .isUrlInTabRedirectChain(tab.getProfile(), localTabGroupId, tab.getId(), url);
     }
 
+    /**
+     * Called to check whether the navigation can be saved to sync.
+     *
+     * @param isExtensionNavigationAllowed Whether navigation from extension is allowed.
+     * @param navigationHandle Navigation handle associated with the navigation.
+     */
+    public static boolean isSaveableNavigation(
+            boolean isExtensionNavigationAllowed, NavigationHandle navigationHandle) {
+        return TabGroupSyncUtilsJni.get()
+                .isSaveableNavigation(
+                        isExtensionNavigationAllowed, navigationHandle.nativeNavigationHandlePtr());
+    }
+
     @NativeMethods
     interface Natives {
         void onDidFinishNavigation(
@@ -255,5 +268,8 @@ public final class TabGroupSyncUtils {
                 LocalTabGroupId groupId,
                 int tabId,
                 @JniType("GURL") GURL url);
+
+        boolean isSaveableNavigation(
+                boolean isExtensionNavigationAllowed, long navigationHandlePtr);
     }
 }

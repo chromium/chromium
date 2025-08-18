@@ -42,8 +42,8 @@ TEST_F(TabGroupSyncUtilsTest, FragmentChangeIsNotSaveable) {
       GURL("http://www.foo.com#2"));
   EXPECT_CALL(*navigation_handle_, ShouldUpdateHistory())
       .WillOnce(Return(true));
-  EXPECT_FALSE(
-      TabGroupSyncUtils::IsSaveableNavigation(navigation_handle_.get()));
+  EXPECT_FALSE(TabGroupSyncUtils::IsSaveableNavigation(
+      /*is_extension_navigation_allowed=*/true, navigation_handle_.get()));
 }
 
 class TabGroupSyncUtilsResponseCodeTest
@@ -62,8 +62,10 @@ TEST_P(TabGroupSyncUtilsResponseCodeTest, IsSaveableNavigation404) {
   bool are_404_navigations_included_in_history = GetParam();
   EXPECT_CALL(*navigation_handle_, ShouldUpdateHistory())
       .WillOnce(Return(are_404_navigations_included_in_history));
-  EXPECT_EQ(TabGroupSyncUtils::IsSaveableNavigation(navigation_handle_.get()),
-            are_404_navigations_included_in_history);
+  EXPECT_EQ(
+      TabGroupSyncUtils::IsSaveableNavigation(
+          /*is_extension_navigation_allowed=*/true, navigation_handle_.get()),
+      are_404_navigations_included_in_history);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

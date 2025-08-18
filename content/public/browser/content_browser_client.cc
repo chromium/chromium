@@ -1931,11 +1931,6 @@ void ContentBrowserClient::QueryInstalledWebAppsByManifestId(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-bool ContentBrowserClient::IsSaveableNavigation(
-    NavigationHandle* navigation_handle) {
-  return false;
-}
-
 #if BUILDFLAG(IS_WIN)
 void ContentBrowserClient::OnUiaProviderRequested(bool uia_provider_enabled) {}
 void ContentBrowserClient::OnUiaProviderDisabled() {}
