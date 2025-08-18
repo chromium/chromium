@@ -8409,6 +8409,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="393" label="With"/>
   <int value="394" label="HtmlWrapperMethods"/>
   <int value="395" label="RegexpStaticProperties"/>
+  <int value="396" label="JsonModules"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

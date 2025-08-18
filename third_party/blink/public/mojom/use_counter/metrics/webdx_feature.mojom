@@ -455,6 +455,7 @@ enum WebDXFeature {
   kWith = 393,
   kHtmlWrapperMethods = 394,
   kRegexpStaticProperties = 395,
+  kJsonModules = 396,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

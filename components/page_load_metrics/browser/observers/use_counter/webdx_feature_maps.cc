@@ -443,6 +443,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kV8WasmTypedFuncRef, WebDXFeature::kWasmTypedFunRefs},
           {WebFeature::kV8WasmMemory64, WebDXFeature::kWasmMemory64},
           {WebFeature::kV8WasmExnRef, WebDXFeature::kWasmExnrefExceptions},
+          {WebFeature::kCreateJSONModuleScript, WebDXFeature::kJsonModules},
           // Add new features above this line.
       }};
 
