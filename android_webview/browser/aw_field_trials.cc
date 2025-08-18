@@ -125,6 +125,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       blink::features::kSecurePaymentConfirmationAvailabilityAPI);
 
+  // WebView does not support handling payment links.
+  aw_feature_overrides.DisableFeature(blink::features::kPaymentLinkDetection);
+
   // WebView does not support overlay fullscreen yet for video overlays.
   aw_feature_overrides.DisableFeature(media::kOverlayFullscreenVideo);
 
