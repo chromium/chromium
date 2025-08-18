@@ -153,14 +153,14 @@ void ExpectAllAcceleratorsEqual(
 
 namespace ash {
 
-class AshAcceleratorConfigurationTest : public AshTestBase {
+class AshAcceleratorConfigurationTest : public NoSessionAshTestBase {
  public:
   AshAcceleratorConfigurationTest() = default;
 
   ~AshAcceleratorConfigurationTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
     config_ = std::make_unique<AshAcceleratorConfiguration>();
     config_->AddObserver(&observer_);
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -168,7 +168,7 @@ class AshAcceleratorConfigurationTest : public AshTestBase {
 
   void TearDown() override {
     config_->RemoveObserver(&observer_);
-    AshTestBase::TearDown();
+    NoSessionAshTestBase::TearDown();
     histogram_tester_.reset();
   }
 
@@ -1527,14 +1527,14 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorPref) {
       override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
 
-  // Simulate login on another account, expect the pref to not be present.
-  GetSessionControllerClient()->LockScreen();
+  // Simulate login on another user, expect the pref to not be present.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
 
-  // Now re-login to the original profile.
-  GetSessionControllerClient()->LockScreen();
+  // Now re-login to the original user.
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -1608,8 +1608,8 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetAllPref) {
       override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
 
-  // Now re-login to the original profile.
-  GetSessionControllerClient()->LockScreen();
+  // Now re-login to the original user.
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -1637,7 +1637,7 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetAllPref) {
   EXPECT_TRUE(GetOverridePref().empty());
 
   // Relogin, expect shortcuts to be back to default.
-  GetSessionControllerClient()->LockScreen();
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& reset_pref_overrides = GetOverridePref();
@@ -1698,8 +1698,8 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetPref) {
       override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
 
-  // Now re-login to the original profile.
-  GetSessionControllerClient()->LockScreen();
+  // Now re-login to the original user.
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -1723,7 +1723,7 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetPref) {
   EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
 
   // Relogin, expect shortcuts to be back to default.
-  GetSessionControllerClient()->LockScreen();
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& reset_pref_overrides = GetOverridePref();
@@ -1787,14 +1787,14 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithPrefs) {
 
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
 
-  // Simulate login on another account, expect the pref to not be present.
-  GetSessionControllerClient()->LockScreen();
+  // Simulate login on another user, expect the pref to not be present.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
 
-  // Now re-login to the original profile.
-  GetSessionControllerClient()->LockScreen();
+  // Now re-login to the original user.
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -1863,14 +1863,14 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithConflictWithPrefs) {
   // accelerators.
   ExpectAllAcceleratorsEqual(expected_test_data, config_->GetAllAccelerators());
 
-  // Lock screen and sign into another user.
-  GetSessionControllerClient()->LockScreen();
+  // Sign into another user.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
 
-  // Now re-login to the original profile.
-  GetSessionControllerClient()->LockScreen();
+  // Now re-login to the original user.
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -1985,16 +1985,16 @@ TEST_F(AshAcceleratorConfigurationTest,
   ExpectAllAcceleratorsEqual(expected_test_data_2,
                              config_->GetAllAccelerators());
 
-  // Lock screen and sign into another user.
-  GetSessionControllerClient()->LockScreen();
+  // Sign into another user.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 0, 4);
 
-  // Now re-login to the original profile.
-  GetSessionControllerClient()->LockScreen();
+  // Now re-login to the original user.
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -2154,14 +2154,14 @@ TEST_F(AshAcceleratorConfigurationTest,
   };
   ExpectAllAcceleratorsEqual(expected_test_data_3,
                              config_->GetAllAccelerators());
-  // Lock screen and sign into another user.
-  GetSessionControllerClient()->LockScreen();
+  // Sign into another user.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
 
-  // Now re-login to the original profile.
-  GetSessionControllerClient()->LockScreen();
+  // Now re-login to the original user.
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -2249,14 +2249,14 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveThenAddAcceleratorWithPrefs) {
   };
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
 
-  // Simulate login on another account, expect the pref to not be present.
-  GetSessionControllerClient()->LockScreen();
+  // Simulate login on another user, expect the pref to not be present.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
 
-  // Now re-login to the original profile.
-  GetSessionControllerClient()->LockScreen();
+  // Now re-login to the original user.
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -2329,14 +2329,14 @@ TEST_F(AshAcceleratorConfigurationTest, ReplaceAcceleratorWithPrefs) {
   };
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
 
-  // Simulate login on another account, expect the pref to not be present.
-  GetSessionControllerClient()->LockScreen();
+  // Simulate login on another user, expect the pref to not be present.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
 
-  // Now re-login to the original profile.
-  GetSessionControllerClient()->LockScreen();
+  // Now re-login to the original user.
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -2369,15 +2369,15 @@ TEST_F(AshAcceleratorConfigurationTest, IgnoreBadActionIdPrefs) {
   SetOverridePref(bad_accelerator, AcceleratorModificationAction::kAdd,
                   /*action_id*/ 7777777);
 
-  // Simulate login on another account, expect the pref to not be present.
-  GetSessionControllerClient()->LockScreen();
+  // Simulate login on another user, expect the pref to not be present.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
 
-  // Now re-login to the original profile, expect that no prefs are available
+  // Now re-login to the original user, expect that no prefs are available
   // since the bad pref should've been removed.
-  GetSessionControllerClient()->LockScreen();
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -2410,15 +2410,15 @@ TEST_F(AshAcceleratorConfigurationTest, IgnoreBadAcceleratorPrefs) {
   SetOverridePref(bad_accelerator, AcceleratorModificationAction::kRemove,
                   kSwitchToLastUsedIme);
 
-  // Simulate login on another account, expect the pref to not be present.
-  GetSessionControllerClient()->LockScreen();
+  // Simulate login on another user, expect the pref to not be present.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
 
-  // Now re-login to the original profile, expect that no prefs are available
+  // Now re-login to the original user, expect that no prefs are available
   // since the bad pref should've been removed.
-  GetSessionControllerClient()->LockScreen();
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -2500,14 +2500,14 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithPrefReleasedState) {
 
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
 
-  // Simulate login on another account, expect the pref to not be present.
-  GetSessionControllerClient()->LockScreen();
+  // Simulate login on another user, expect the pref to not be present.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
 
-  // Now re-login to the original profile.
-  GetSessionControllerClient()->LockScreen();
+  // Now re-login to the original user.
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -2568,8 +2568,8 @@ TEST_F(AshAcceleratorConfigurationTest, SwitchUserPrefsAreSeparate) {
 
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
 
-  // Simulate login on another account, expect the pref to not be present.
-  GetSessionControllerClient()->LockScreen();
+  // Simulate login on another user, expect the pref to not be present.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
@@ -2577,8 +2577,8 @@ TEST_F(AshAcceleratorConfigurationTest, SwitchUserPrefsAreSeparate) {
   // Expect the second user to have all defaults.
   ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
 
-  // Now re-login to the original profile.
-  GetSessionControllerClient()->LockScreen();
+  // Now re-login to the original user.
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
@@ -2646,15 +2646,15 @@ TEST_F(AshAcceleratorConfigurationTest, PrefsResetWithFlag) {
 
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
 
-  // Simulate login on another account, expect the pref to not be present.
-  GetSessionControllerClient()->LockScreen();
+  // Simulate login on another user, expect the pref to not be present.
+  ClearLogin();
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
 
-  // Now re-login to the original profile. Since #reset-shortcut-customizations
+  // Now re-login to the original user. Since #reset-shortcut-customizations
   // is enabled, expect that no prefs were saved.
-  GetSessionControllerClient()->LockScreen();
+  ClearLogin();
   config_->Initialize(test_data);
   SimulateUserLogin({kFakeUserEmail});
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
