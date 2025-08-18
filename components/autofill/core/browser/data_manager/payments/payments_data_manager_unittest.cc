@@ -3660,6 +3660,28 @@ TEST_F(PaymentsDataManagerTest, SaveCardLocallyIfNewWithExistingCard) {
   EXPECT_THAT(saved_credit_cards, testing::ElementsAre(credit_card));
 }
 
+TEST_F(PaymentsDataManagerTest, SaveCardLocallyIfNewWithDisallowedCvcStripped) {
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         kSettingsOrigin);
+  test::SetCreditCardInfo(&credit_card, "Sunraku Emul",
+                          /*card_number=*/"4111 1111 1111 1111" /* Visa */,
+                          /*expiration_month=*/"01", /*expiration_year=*/"2999",
+                          /*billing_address_id=*/"", /*cvc=*/u"123");
+  prefs::SetPaymentCvcStorage(prefs_.get(), false);
+  ResetPaymentsDataManager();
+
+  EXPECT_EQ(0U, payments_data_manager().GetCreditCards().size());
+
+  // Add the credit card to the database.
+  bool is_saved = payments_data_manager().SaveCardLocallyIfNew(credit_card);
+  WaitForOnPaymentsDataChanged();
+
+  // Expect that the credit card was saved.
+  EXPECT_TRUE(is_saved);
+  ASSERT_EQ(1U, payments_data_manager().GetCreditCards().size());
+  EXPECT_TRUE(payments_data_manager().GetCreditCards()[0]->cvc().empty());
+}
+
 TEST_F(PaymentsDataManagerTest, GetAccountInfoForPaymentsServer) {
   // Make the IdentityManager return a non-empty AccountInfo when
   // GetPrimaryAccountInfo() is called.

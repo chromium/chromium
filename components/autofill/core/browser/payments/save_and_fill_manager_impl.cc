@@ -295,9 +295,6 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
   if (result != PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     // If card creation fails, save the card locally instead. All card
     // information should exist, except for the optional CVC.
-    // TODO(crbug.com/378164165): Add CVC pref check in SaveCardLocallyIfNew so
-    // we don't need to strip the CVC from upload_details_.card. The missing
-    // check may be causing issue for CVC saving flows.
     autofill_metrics::LogCreditCardUploadRanLocalSaveFallbackMetric(
         /*new_local_card_added=*/payments_autofill_client()
             ->GetPaymentsDataManager()
