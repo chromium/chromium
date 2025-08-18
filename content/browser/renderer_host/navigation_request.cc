@@ -9598,11 +9598,6 @@ ChildProcessId NavigationRequest::GetExpectedRenderProcessHostId() {
   return expected_render_process_host_id_;
 }
 
-bool NavigationRequest::IsServedFromBackForwardCache() {
-  const NavigationRequest& request = *this;
-  return request.IsServedFromBackForwardCache();
-}
-
 void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
   // Only add specific headers when creating a NavigationRequest before the
   // network request is made, not at commit time.

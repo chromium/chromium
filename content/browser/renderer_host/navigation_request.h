@@ -460,7 +460,7 @@ class CONTENT_EXPORT NavigationRequest
       blink::mojom::TransferrableURLLoaderPtr transferrable_loader) override;
   GlobalRenderFrameHostId GetPreviousRenderFrameHostId() override;
   ChildProcessId GetExpectedRenderProcessHostId() override;
-  bool IsServedFromBackForwardCache() override;
+  bool IsServedFromBackForwardCache() const override;
   void SetIsOverridingUserAgent(bool override_ua) override;
   void SetSilentlyIgnoreErrors() override;
   void SetVisitedLinkSalt(uint64_t salt) override;
@@ -1068,10 +1068,6 @@ class CONTENT_EXPORT NavigationRequest
   // The previous main frame URL. This may be empty if there was no last
   // committed entry.
   const GURL& GetPreviousMainFrameURL() const;
-
-  // This is the same as |NavigationHandle::IsServedFromBackForwardCache|, but
-  // adds a const qualifier.
-  bool IsServedFromBackForwardCache() const;
 
   // Whether this navigation is activating an existing page (e.g. served from
   // the BackForwardCache or Prerender)

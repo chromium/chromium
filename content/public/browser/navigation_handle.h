@@ -294,7 +294,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual bool IsExternalProtocol() = 0;
 
   // Whether the navigation is restoring a page from back-forward cache.
-  virtual bool IsServedFromBackForwardCache() = 0;
+  virtual bool IsServedFromBackForwardCache() const = 0;
 
   // Whether this navigation is activating an existing page (e.g. served from
   // the BackForwardCache or Prerender).

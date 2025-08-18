@@ -99,7 +99,7 @@ class MockNavigationHandle : public NavigationHandle {
   }
   MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
   MOCK_METHOD(ChildProcessId, GetExpectedRenderProcessHostId, ());
-  bool IsServedFromBackForwardCache() override {
+  bool IsServedFromBackForwardCache() const override {
     return is_served_from_bfcache_;
   }
   bool IsPageActivation() const override {
