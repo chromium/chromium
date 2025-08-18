@@ -43,6 +43,10 @@ export function getHtml(this: WebuiBrowserAppElement) {
       .disabled="${this.forwardButtonDisabled_}"
       @click="${this.onForwardClick_}"></cr-icon-button>
     <cr-searchbox id="address"></cr-searchbox>
+    <cr-icon-button id="avatarButton" iron-icon="cr:person"
+      @click="${this.onAvatarClick_}"></cr-icon-button>
+    <cr-icon-button id="appMenuButton" iron-icon="cr:more-vert"
+      @click="${this.onAppMenuClick_}"></cr-icon-button>
   </div>
   <webui-browser-bookmark-bar
     id="bookmarkBar"

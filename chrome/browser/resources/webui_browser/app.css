@@ -37,6 +37,14 @@
   margin-right: 8px;
 }
 
+cr-icon-button {
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 35px;
+  --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
+}
+
 cr-searchbox {
   --cr-searchbox-height: 35px;
   --cr-searchbox-shadow: 0 0 0px 1px #20212451;
@@ -85,4 +93,8 @@ cr-searchbox[dropdown-is-visible] {
   display: flex;
   flex: none;
   padding: 7px;
+}
+
+#searchBar #address {
+  flex: 1;
 }

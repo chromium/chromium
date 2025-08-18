@@ -79,6 +79,10 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     BrowserProxy.getPageHandler().openAppMenu();
   }
 
+  protected onAvatarClick_(_: Event) {
+    BrowserProxy.getPageHandler().openProfileMenu();
+  }
+
   protected onMinimizeClick_(_: Event) {
     BrowserProxy.getPageHandler().minimize();
   }
