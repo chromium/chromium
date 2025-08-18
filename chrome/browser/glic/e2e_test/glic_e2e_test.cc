@@ -62,6 +62,7 @@ const char kGlicE2ETestModeSwitch[] = "glic-e2e-test-mode";
 const char kHostResolverRulesValue[] =
     "MAP *:80 127.0.0.1:8080,MAP *:443 127.0.0.1:8081,EXCLUDE localhost";
 constexpr char kEnableActorTests[] = "enable-actor-tests";
+const char kEnableLowBandwidthTestsSwitch[] = "enable-low-bandwidth-tests";
 
 // The first 2 is from WPR code readme. The last one is from
 // |kWebPageReplayCertSPKI| in
@@ -93,6 +94,8 @@ void GlicE2ETest::SetUp() {
       command_line_of_test->GetSwitchValueASCII(kGlicE2ETestModeSwitch);
 
   running_actor_tests_ = command_line_of_test->HasSwitch(kEnableActorTests);
+  enable_low_bandwidth_tests_ =
+      command_line_of_test->HasSwitch(kEnableLowBandwidthTestsSwitch);
 
   if (test_mode_value.empty() || test_mode_value == "real_backend") {
     test_mode_ = kRealBackend;
