@@ -1268,20 +1268,15 @@ group("android_webview") {
   ]
 }
 
-# The shared library used by standalone WebView.
-template("libwebviewchromium_tmpl") {
-  shared_library_with_jni(target_name) {
+template("webview_chromium_library") {
+  chrome_common_shared_library(target_name) {
     forward_variables_from(invoker, "*")
     deps = [
       ":android_webview",
       "//android_webview/lib:webview_entry_point",
     ]
-    configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-    configs += [
-      "//build/config/android:hide_all_but_jni",
-      "//build/config/compiler:chrome_orderfile_config",
-      "//build/config/compiler:prevent_unsafe_narrowing",
-    ]
+    extra_configs = [ "//build/config/compiler:prevent_unsafe_narrowing" ]
+    is_webview = true
     java_targets = webview_java_for_jni_targets
 
     # WebView's native side has more JNI present than the Java side. This is
@@ -1290,18 +1285,19 @@ template("libwebviewchromium_tmpl") {
     # To fix, we can just remove any uncalled Java->Native methods.
     remove_uncalled_jni = true
 
-    if (!(defined(testonly) && testonly)) {
-      configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
-      configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+    if (android_64bit_target_cpu) {
+      # To be compatible with the other ABI library.
+      never_omit_switch_num = true
     }
   }
 }
 
-libwebviewchromium_tmpl("libwebviewchromium") {
+# The shared library used by standalone WebView.
+webview_chromium_library("libwebviewchromium") {
 }
 
 if (_is_default_toolchain && enable_resource_allowlist_generation) {
-  libwebviewchromium_tmpl("system_webview_pak_allowlist_inputs") {
+  webview_chromium_library("system_webview_pak_allowlist_inputs") {
     ldflags = [ "--collect-inputs-only" ]
   }
   generate_resource_allowlist("system_webview_pak_allowlist") {
@@ -1311,7 +1307,7 @@ if (_is_default_toolchain && enable_resource_allowlist_generation) {
   }
 }
 
-# This template is used to define WebView's alternate-ABI libraries, which are
+# These are the definitions for the WebView's alternate-ABI libraries, which are
 # used by Monochrome and Trichrome on 64-bit devices which support both 32 and
 # 64-bit ABIs. WebView's browser process must use the same ABI as the embedding
 # app (renderer processes used the ABI defined in the WebView APK manifest),
@@ -1323,30 +1319,11 @@ if (_is_default_toolchain && enable_resource_allowlist_generation) {
 # Note that this library does also include code needed for the embedded usecase,
 # because even though it's not used in normal circumstances, it is required on
 # a 64-bit-only device where the nonembedded process will also be 64-bit.
-template("webview_alternate_library") {
-  chrome_common_shared_library(target_name) {
-    forward_variables_from(invoker, "*")
-    deps = [
-      ":android_webview",
-      "//android_webview/lib:webview_entry_point",
-    ]
-    is_webview = true
-    java_targets = webview_java_for_jni_targets
-
-    # Webview's native side naturally will have more JNI present than the Java
-    # side. We can just remove any uncalled Java->Native methods.
-    remove_uncalled_jni = true
-
-    # To be compatible with primary ABI library.
-    never_omit_switch_num = true
-  }
-}
-
 if (android_64bit_target_cpu && defined(android_app_secondary_abi)) {
   # Note here that on a given system, the webview-only library needs the same
   # library name as the browser library, since the system webview factory will
   # differentiate only by ABI.
-  webview_alternate_library("monochrome_64") {
+  webview_chromium_library("monochrome_64") {
     # This target is the 32-bit WebView library that pairs with a 64-bit
     # browser. It is suffixed with _64 because its name must match the 64-bit
     # browser library.
@@ -1354,7 +1331,7 @@ if (android_64bit_target_cpu && defined(android_app_secondary_abi)) {
   }
 
   # Inverse of above, for the original 32-bit case.
-  webview_alternate_library("monochrome") {
+  webview_chromium_library("monochrome") {
     enable_target = current_toolchain != android_secondary_abi_toolchain
   }
 }

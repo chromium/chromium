@@ -70,10 +70,12 @@ template("chrome_common_shared_library") {
   }
 
   target(_target_type, target_name) {
-    forward_variables_from(
-        invoker,
-        "*",
-        TESTONLY_AND_VISIBILITY + [ "define_unwind_table_target" ])
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [
+                                 "define_unwind_table_target",
+                                 "extra_configs",
+                               ])
 
     if (!defined(deps)) {
       deps = []
@@ -143,6 +145,10 @@ template("chrome_common_shared_library") {
     # See crbug.com/705088.
     if (target_cpu == "arm" && is_asan) {
       ldflags += [ "-Wl,--long-plt" ]
+    }
+
+    if (defined(invoker.extra_configs)) {
+      configs += invoker.extra_configs
     }
   }
 
