@@ -252,4 +252,14 @@ class UiUtils {
     public static boolean isInstanceSwitcherV2Enabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.INSTANCE_SWITCHER_V2);
     }
+
+    /**
+     * Checks whether the Robust Window Management feature is enabled.
+     *
+     * @return {@code true} if the Robust Window Management feature is enabled, {@code false}
+     *     otherwise.
+     */
+    public static boolean isRobustWindowManagementEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT);
+    }
 }

@@ -474,7 +474,9 @@ public class InstanceSwitcherCoordinator {
     private void buildMoreMenu(PropertyModel.Builder builder, InstanceInfo item) {
         ModelList moreMenu = new ModelList();
         if (UiUtils.isInstanceSwitcherV2Enabled()) {
-            moreMenu.add(buildSimpleMenuItem(R.string.instance_switcher_name_window));
+            if (UiUtils.isRobustWindowManagementEnabled()) {
+                moreMenu.add(buildSimpleMenuItem(R.string.instance_switcher_name_window));
+            }
             moreMenu.add(buildSimpleMenuItem(R.string.close));
         } else {
             moreMenu.add(buildSimpleMenuItem(R.string.instance_switcher_close_window));
