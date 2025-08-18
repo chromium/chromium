@@ -91,6 +91,20 @@ export class ReadAloudHighlighter {
     }
   }
 
+  onWillMoveToNextGranularity() {
+    const highlightGranularity = this.getEffectiveHighlightingGranularity_();
+    if (highlightGranularity === chrome.readingMode.sentenceHighlighting) {
+      return;
+    }
+
+    // When we're about to move to the next granularity, ensure the rest of the
+    // sentence we are about to skip is still highlighted for previous
+    // highlight formatting.
+    this.highlightCurrentSentence_(
+        chrome.readingMode.getCurrentText(), /*scrollIntoView=*/ false,
+        /* previousHighlightOnly=*/ true);
+  }
+
   // Resets formatting on the current highlight, including previous highlight
   // formatting.
   removeCurrentHighlight() {
@@ -278,7 +292,8 @@ export class ReadAloudHighlighter {
   }
 
   private highlightCurrentSentence_(
-      nodeIds: number[], scrollIntoView: boolean) {
+      nodeIds: number[], scrollIntoView: boolean,
+      previousHighlightOnly: boolean = false) {
     if (!nodeIds.length) {
       return;
     }
@@ -286,7 +301,8 @@ export class ReadAloudHighlighter {
     this.resetPreviousHighlight();
     for (const nodeId of nodeIds) {
       const element = this.nodeStore_.getDomNode(nodeId) as HTMLElement;
-      const highlighted = this.highlightCurrentElement_(nodeId, element);
+      const highlighted =
+          this.highlightCurrentElement_(nodeId, previousHighlightOnly, element);
       if (highlighted) {
         this.nodeStore_.replaceDomNode(element, highlighted);
       }
@@ -297,8 +313,9 @@ export class ReadAloudHighlighter {
     }
   }
 
-  private highlightCurrentElement_(nodeId: number, element?: HTMLElement):
-      HTMLElement|undefined {
+  private highlightCurrentElement_(
+      nodeId: number, previousHighlightOnly = false,
+      element?: HTMLElement): HTMLElement|undefined {
     if (!element) {
       return undefined;
     }
@@ -308,7 +325,8 @@ export class ReadAloudHighlighter {
       // If the start or end index is invalid, don't use this node.
       return undefined;
     }
-    return this.highlightCurrentText_(start, end, element);
+    return this.highlightCurrentText_(
+        start, end, element, previousHighlightOnly);
   }
 
   // The following results in

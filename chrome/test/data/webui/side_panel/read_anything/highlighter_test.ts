@@ -159,6 +159,36 @@ suite('Highlighter', () => {
         id);
   });
 
+  test(
+      'onWillMoveToNextGranularity with word highlighting highlights the rest of the sentence',
+      () => {
+        chrome.readingMode.onHighlightGranularityChanged(
+            chrome.readingMode.wordHighlighting);
+        wordBoundaries.updateBoundary(0);
+        const id = 10;
+        chrome.readingMode.getHighlightForCurrentSegmentIndex =
+            () => [{nodeId: id, start: 0, length: 3}];
+        const sentence = document.createElement('p');
+        const text = 'Do you believe in life after love?';
+        sentence.appendChild(document.createTextNode(text));
+        nodeStore.setDomNode(sentence, id);
+        chrome.readingMode.getCurrentText = () => [id];
+        chrome.readingMode.getTextContent = () => text;
+        chrome.readingMode.getCurrentTextStartIndex = () => 0;
+        chrome.readingMode.getCurrentTextEndIndex = () => text.length;
+
+        highlighter.highlightCurrentGranularity(
+            [id], /*scrollIntoView=*/ false,
+            /*shouldUpdateSentenceHighlight=*/ true);
+        highlighter.onWillMoveToNextGranularity();
+
+        assertFalse(highlighter.hasCurrentHighlights());
+        assertHtml(
+            '<span class="previous-read-highlight">Do you believe in life ' +
+                'after love?</span>',
+            id);
+      });
+
   test('word highlight across multiple nodes with engine length', () => {
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.wordHighlighting);
@@ -250,6 +280,36 @@ suite('Highlighter', () => {
             '</span> till we\'re 70.',
         id);
   });
+
+  test(
+      'onWillMoveToNextGranularity with phrase highlighting highlights the rest of the sentence',
+      () => {
+        chrome.readingMode.onHighlightGranularityChanged(
+            chrome.readingMode.autoHighlighting);
+        wordBoundaries.updateBoundary(0);
+        const id = 10;
+        chrome.readingMode.getHighlightForCurrentSegmentIndex =
+            () => [{nodeId: id, start: 0, length: 2}];
+        const sentence = document.createElement('p');
+        const text = 'I can feel something inside me say';
+        sentence.appendChild(document.createTextNode(text));
+        nodeStore.setDomNode(sentence, id);
+        chrome.readingMode.getCurrentText = () => [id];
+        chrome.readingMode.getTextContent = () => text;
+        chrome.readingMode.getCurrentTextStartIndex = () => 0;
+        chrome.readingMode.getCurrentTextEndIndex = () => text.length;
+
+        highlighter.highlightCurrentGranularity(
+            [id], /*scrollIntoView=*/ false,
+            /*shouldUpdateSentenceHighlight=*/ true);
+        highlighter.onWillMoveToNextGranularity();
+
+        assertFalse(highlighter.hasCurrentHighlights());
+        assertHtml(
+            '<span class="previous-read-highlight">I can feel something ' +
+                'inside me say</span>',
+            id);
+      });
 
   test('phrase highlight across multiple nodes', () => {
     chrome.readingMode.onHighlightGranularityChanged(

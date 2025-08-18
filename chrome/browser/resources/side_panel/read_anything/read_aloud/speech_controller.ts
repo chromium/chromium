@@ -249,12 +249,18 @@ export class SpeechController {
   }
 
   onNextGranularityClick() {
-    this.moveGranularity_();
-    chrome.readingMode.movePositionToNextGranularity();
-
+    this.moveToNextGranularity_();
+    this.onMovingGranularity_();
     if (!this.highlightAndPlayMessage_()) {
       this.onSpeechFinished_();
     }
+  }
+
+  // Prefer calling this rather than movePositionToNextGranularity directly so
+  // that the highlighter is always informed of the change.
+  private moveToNextGranularity_() {
+    this.highlighter_.onWillMoveToNextGranularity();
+    chrome.readingMode.movePositionToNextGranularity();
   }
 
   onPreviousGranularityClick() {
@@ -262,7 +268,7 @@ export class SpeechController {
     // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
     // determine what's currently being highlighted.
     this.highlighter_.removeCurrentHighlight();
-    this.moveGranularity_();
+    this.onMovingGranularity_();
     chrome.readingMode.movePositionToPreviousGranularity();
 
     if (!this.highlightAndPlayMessage_(
@@ -272,7 +278,7 @@ export class SpeechController {
     }
   }
 
-  private moveGranularity_() {
+  private onMovingGranularity_() {
     this.model_.setIsSpeechBeingRepositioned(true);
     this.highlighter_.resetPreviousHighlight();
 
@@ -464,7 +470,7 @@ export class SpeechController {
     if (isMovingBackward) {
       chrome.readingMode.movePositionToPreviousGranularity();
     } else {
-      chrome.readingMode.movePositionToNextGranularity();
+      this.moveToNextGranularity_();
     }
     return this.highlightAndPlayMessage_(isInterrupted, isMovingBackward);
   }
@@ -510,7 +516,7 @@ export class SpeechController {
       // Granularity state to point to the next one Reset the word
       // boundary index whenever we move the granularity position.
       this.wordBoundaries_.resetToDefaultState();
-      chrome.readingMode.movePositionToNextGranularity();
+      this.moveToNextGranularity_();
       // Continue speaking with the next block of text.
       if (!this.highlightAndPlayMessage_()) {
         this.onSpeechFinished_();
@@ -861,7 +867,7 @@ export class SpeechController {
           currentTextIds, /*scrollIntoView=*/ false,
           /*shouldUpdateSentenceHighlight=*/ true,
           /*shouldSetLastReadingPos=*/ false);
-      chrome.readingMode.movePositionToNextGranularity();
+      this.moveToNextGranularity_();
       currentTextIds = chrome.readingMode.getCurrentText();
       hasCurrentText = currentTextIds.length > 0;
       startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
