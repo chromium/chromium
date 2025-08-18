@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] [required] quantizeLinear float32 3D input with implicit block_size = [1, 2, 1].
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': QuantizeLinear can't support block-wise."
-[FAIL] [optional] quantizeLinear float16 3D input with implicit block_size = [1, 2, 1].
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': QuantizeLinear can't support block-wise."
-Harness: the test ran to completion.
-

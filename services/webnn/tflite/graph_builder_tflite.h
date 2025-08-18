@@ -24,6 +24,7 @@
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
@@ -322,7 +323,41 @@ class GraphBuilderTflite final {
   std::optional<QuantizateParametersOffset> SerializeQuantizeParams(
       OperandId zero_point_operand_id,
       OperandId scale_operand_id,
-      size_t input_rank);
+      base::span<const uint32_t> input_operand_shape);
+
+  // This function is called by `SerializeResample2d` to serialize WebNN
+  // resample2d operator or used to emulate WebNN operations.
+  OperatorOffset SerializeResizeOperation(
+      mojom::Resample2d::InterpolationMode mode,
+      TensorIndex input_tensor_index,
+      TensorIndex output_tensor_index,
+      int32_t output_height,
+      int32_t output_width);
+
+  // Create a uninitialized flatbuffers vector and return the buffer as span.
+  template <typename DataType>
+  std::tuple<flatbuffers::Offset<flatbuffers::Vector<DataType>>,
+             base::span<DataType>>
+  CreateUninitializedVector(size_t length);
+  // Block-wise expand constant scale and zero point.
+  template <typename DataType>
+    requires(std::is_same_v<DataType, float> ||
+             std::is_same_v<DataType, int64_t>)
+  flatbuffers::Offset<flatbuffers::Vector<DataType>> BlockwiseExpandConstant(
+      base::span<const DataType> values,
+      uint32_t block_size);
+  // Block-wise expand the dimension of input tensor along the given axis.
+  TensorIndex BlockwiseExpandAlongAxis(
+      base::span<const int32_t> input_dimensions,
+      TensorIndex input_tensor_index,
+      uint32_t block_size,
+      uint32_t axis);
+  // Block-wise expand the scale and zero point for quantize / dequantize.
+  std::tuple<TensorIndex, TensorIndex> BlockwiseExpandScaleAndZeroPoint(
+      TensorIndex scale_tensor_index,
+      TensorIndex zero_point_tensor_index,
+      base::span<const int32_t> scale_shape,
+      base::span<const int32_t> input_shape);
 
   // This function is called by `SerializeMatmul` to serialize WebNN
   // matmul operator or used to emulate WebNN operations.
