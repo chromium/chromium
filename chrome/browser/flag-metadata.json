@@ -6798,6 +6798,11 @@
     "owners": [ "meacer@chromium.org", "trusty-transport@chromium.org" ],
     "expiry_milestone": 114
   },
+    {
+    "name": "mobile-promo-on-desktop",
+    "owners": ["hiramahmood@google.com", "scottyoder@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 145
+  },
   {
     "name": "mojo-linux-sharedmem",
     "owners": ["bgeffon@chromium.org", "rockot@chromium.org"],

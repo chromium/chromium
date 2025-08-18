@@ -1547,6 +1547,9 @@ extern const char kLogJsConsoleMessagesDescription[];
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 
+extern const char kMobilePromoOnDesktopName[];
+extern const char kMobilePromoOnDesktopDescription[];
+
 extern const char kMojoLinuxChannelSharedMemName[];
 extern const char kMojoLinuxChannelSharedMemDescription[];
 

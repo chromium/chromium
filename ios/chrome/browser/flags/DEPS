@@ -6,6 +6,7 @@ specific_include_rules = {
     "+components/data_sharing/public/switches.h",
     "+components/page_content_annotations/core",
     "+components/page_image_service/features.h",
+    "+components/sharing_message/features.h",
     "+ios/chrome/browser",
   ],
   "^ios_chrome_field_trials.mm": [

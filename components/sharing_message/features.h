@@ -10,4 +10,12 @@
 
 BASE_DECLARE_FEATURE(kClickToCall);
 
+// If this feature is enabled, show mobile promo on desktop.
+BASE_DECLARE_FEATURE(kMobilePromoOnDesktop);
+
+// Parameter of `kMobilePromoOnDesktop` for promo type.
+extern const char kMobilePromoOnDesktopPromoTypeParam[];
+// Parameter of `kMobilePromoOnDesktop` for showing the iOS push notification.
+extern const char kMobilePromoOnDesktopNotificationParam[];
+
 #endif  // COMPONENTS_SHARING_MESSAGE_FEATURES_H_

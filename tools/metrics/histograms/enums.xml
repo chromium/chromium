@@ -15476,6 +15476,7 @@ from previous Chrome versions.
   <int value="469999350" label="NotificationScheduleService:disabled"/>
   <int value="470011024" label="NonValidatingReloadOnNormalReload:enabled"/>
   <int value="470307075" label="MessagesForAndroidChromeSurvey:enabled"/>
+  <int value="470645069" label="MobilePromoOnDesktop:enabled"/>
   <int value="471224152" label="WinUseHybridSpellChecker:enabled"/>
   <int value="471519375" label="NewOsSettingsSearch:disabled"/>
   <int value="471560693" label="webview-verbose-logging"/>
@@ -17147,6 +17148,7 @@ from previous Chrome versions.
   <int value="1093305266"
       label="AutofillRemovePaymentsButterDropdown:disabled"/>
   <int value="1093479250" label="AccessibilitySelectToSpeakShortcut:disabled"/>
+  <int value="1093750833" label="MobilePromoOnDesktop:disabled"/>
   <int value="1093763764" label="SafeSitesFilterBehaviorPolicyAndroid:enabled"/>
   <int value="1093859961" label="RelatedSearchesSimplifiedUx:disabled"/>
   <int value="1094095931" label="enable-vulkan"/>

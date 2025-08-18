@@ -610,6 +610,9 @@ extern const char kLockBottomToolbarDescription[];
 extern const char kMagicStackName[];
 extern const char kMagicStackDescription[];
 
+extern const char kMobilePromoOnDesktopName[];
+extern const char kMobilePromoOnDesktopDescription[];
+
 // Title and description for the flag to enable UMA log uploads after each page
 // in the FRE.
 extern const char kManualLogUploadsInFREName[];
