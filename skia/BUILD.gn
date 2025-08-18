@@ -742,6 +742,12 @@ skia_source_set("skia_core_and_effects") {
     ]
   }
   visibility = [ ":skia" ]
+
+  if (is_mac && current_cpu == "x64") {
+    # On x64 macOS, the Clang modules build emits a '-Wignored-attributes' error
+    # in SkOpts_SetTarget.h.
+    use_libcxx_modules = false
+  }
 }
 
 # Bits that involve special vector-y hardware.
