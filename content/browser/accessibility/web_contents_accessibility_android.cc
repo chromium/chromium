@@ -1818,8 +1818,6 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     return proxy_android_node->GetUniqueId();
   }
 
-  // TODO(mschillaci): The current max is set to 1000 microseconda, check scale
-  // after initial data.
   base::UmaHistogramCustomMicrosecondsTimes(
       "Accessibility.Android.Performance.OneShotTreeSearch",
       base::Microseconds(timer.Elapsed().InMicrosecondsF()),

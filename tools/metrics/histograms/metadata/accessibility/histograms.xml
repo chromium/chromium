@@ -451,7 +451,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.Android.Performance.OneShotTreeSearch"
     units="microseconds" expires_after="2026-06-01">
-  <owner>mschillaci@google.com</owner>
+  <owner>rickyyang@google.com</owner>
   <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -461,8 +461,8 @@ chromium-metrics-reviews@google.com.
     the next element in a tree for a move by granularity action. We only track
     this for a completed tree search (i.e. one that finds a node successfully),
     ignoring early-exits, to get an upper bound on the method cost. This metric
-    has a range of 1 to 1000 microseconds, with the expectation that we may
-    change this after initial data.
+    has a range of 1 to 1000 microseconds. UMA data analysis confirmed this
+    range is appropriate.
 
     Note: This metric is only recorded on devices with high-resolution clocks.
   </summary>
