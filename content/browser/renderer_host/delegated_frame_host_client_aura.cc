@@ -4,11 +4,8 @@
 
 #include "content/browser/renderer_host/delegated_frame_host_client_aura.h"
 
-#include "content/browser/renderer_host/frame_tree.h"
-#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
-#include "content/public/browser/render_view_host.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
@@ -38,24 +35,8 @@ SkColor DelegatedFrameHostClientAura::DelegatedFrameHostGetGutterColor() const {
       render_widget_host_view_->host()->delegate()->IsFullscreen()) {
     return SK_ColorBLACK;
   }
-
-  // Use the CSS background color if available.
-  if (render_widget_host_view_->GetBackgroundColor()) {
+  if (render_widget_host_view_->GetBackgroundColor())
     return *render_widget_host_view_->GetBackgroundColor();
-  }
-
-  // If the CSS background color is not available, use a transparent color for
-  // the main window to avoid flashes on a new tab. SK_ColorTRANSPARENT is not
-  // used here for the pop-up windows due to a flickering regression
-  // (crbug.com/347669724).
-  if (!render_widget_host_view_->host()
-           ->frame_tree()
-           ->GetMainFrame()
-           ->delegate()
-           ->IsPopup()) {
-    return SK_ColorTRANSPARENT;
-  }
-
   return SK_ColorWHITE;
 }
 
