@@ -273,6 +273,8 @@ scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
+// TODO: crbug.com/438030515 - Add a Tast or E2E test to verify that responses
+// with and without text are being parsed properly.
 // Attempts to parse the `response` as if it was a
 // `FetchQueryFormulationMetadataResponse` encoded in JSON, and store the
 // formatted text in `extracted_text`. Returns true if the response was
@@ -302,28 +304,28 @@ bool ParseQueryFormulationMetadataResponse(
   }
 
   // Deconstruct the metadata response in order to build our string for Copy
-  // Text.
+  // Text. If there is no `detected_text` object or the field is empty, then
+  // there might not be any text to detect, so we can return true.
   const base::Value::List* detected_text =
       (*metadata_response)[kQFMetadataResponseFieldDetectedText].GetIfList();
   if (!detected_text || detected_text->empty()) {
-    return false;
-  }
-
-  // If we don't have a `text_layout` object, then there may not be any text to
-  // detect, so we should return true.
-  const base::Value::List* text_layout =
-      (*detected_text)[kDetectedTextFieldTextLayout].GetIfList();
-  if (!text_layout) {
     return true;
   }
-  if (text_layout->empty()) {
-    return false;
+
+  // Similarly, if we don't have a `text_layout` object, then there may not be
+  // any text to detect, so we should return true.
+  const base::Value::List* text_layout =
+      (*detected_text)[kDetectedTextFieldTextLayout].GetIfList();
+  if (!text_layout || text_layout->empty()) {
+    return true;
   }
 
+  // Lastly, if we don't have a `paragraph_list` object, then there may not be
+  // any text to detect, so we should return true.
   const base::Value::List* paragraph_list =
       (*text_layout)[kTextLayoutFieldParagraphs].GetIfList();
   if (!paragraph_list || paragraph_list->empty()) {
-    return false;
+    return true;
   }
 
   // Begin constructing the extracted text by looping through a sequence of
