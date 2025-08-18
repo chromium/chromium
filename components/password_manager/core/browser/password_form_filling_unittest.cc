@@ -19,6 +19,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -517,6 +518,8 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageloadForSingleUsernameForm) {
 }
 
 TEST_F(PasswordFormFillingTest, NoFillOnPageLoadWhileActorTaskIsActive) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kActorLogin);
   base::HistogramTester histogram_tester;
   std::vector<PasswordForm> best_matches = {saved_match_};
   const std::vector<PasswordForm> federated_matches = {};
