@@ -28,113 +28,18 @@
 #include "net/base/trace_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-// TODO(crbug.com/40064248): Remove this once sufficient information is
-// collected.
-#include "base/debug/crash_logging.h"
-
 #if BUILDFLAG(IS_FUCHSIA)
 #include <poll.h>
 #include <sys/ioctl.h>
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-#if defined(DEBUG_CRBUG_40064248_STATISTICS)
-
-// TODO(crbug.com/40064248): Remove this once the crash is resolved.
-
 #if BUILDFLAG(IS_APPLE)
-#include <sys/syscall.h>
-#include <sys/sysctl.h>
-#include <sys/time.h>
-#include <unistd.h>
+#include "net/socket/socket_apple.h"
 #endif  // BUILDFLAG(IS_APPLE)
-
-#include "base/no_destructor.h"
-#include "base/strings/stringprintf.h"
-#include "base/synchronization/lock.h"
-
-#endif  // DEBUG_CRBUG_40064248_STATISTICS
 
 namespace net {
 
 namespace {
-
-#if defined(DEBUG_CRBUG_40064248_STATISTICS)
-
-// TODO(crbug.com/40064248): Remove this once the crash is resolved.
-
-#if BUILDFLAG(IS_APPLE)
-
-timespec TimespecSubtract(const timespec& minuend, const timespec& subtrahend) {
-  constexpr int kNanosecondsPerSecond = 1e9;
-
-  timespec difference{
-      .tv_sec = minuend.tv_sec - subtrahend.tv_sec,
-      .tv_nsec = minuend.tv_nsec - subtrahend.tv_nsec,
-  };
-  if (difference.tv_nsec < 0) {
-    --difference.tv_sec;
-    difference.tv_nsec += kNanosecondsPerSecond;
-  }
-  return difference;
-}
-
-// Returns the start time of the process, on the CLOCK_MONOTONIC_RAW time base.
-timespec ProcessStartTimeMonotonic() {
-  timespec now_real;
-  if (clock_gettime(CLOCK_REALTIME, &now_real) != 0) {
-    return {.tv_sec = -1, .tv_nsec = -1 - errno};
-  }
-
-  timespec now_monotonic;
-  if (clock_gettime(CLOCK_MONOTONIC_RAW, &now_monotonic) != 0) {
-    return {.tv_sec = -2, .tv_nsec = -1 - errno};
-  }
-
-  timespec monotonic_real_offset(TimespecSubtract(now_real, now_monotonic));
-  if (monotonic_real_offset.tv_sec < 0) {
-    return {.tv_sec = -3, .tv_nsec = -1};
-  }
-
-  kinfo_proc kern_proc_info;
-  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
-  size_t len = sizeof(kern_proc_info);
-  if (sysctl(mib, std::size(mib), &kern_proc_info, &len, nullptr, 0) != 0) {
-    return {.tv_sec = -4, .tv_nsec = -1 - errno};
-  }
-
-  timespec start_real;
-  TIMEVAL_TO_TIMESPEC(&kern_proc_info.kp_proc.p_starttime, &start_real);
-
-  return TimespecSubtract(start_real, monotonic_real_offset);
-}
-
-#endif  // BUILDFLAG(IS_APPLE)
-
-// Returns a string representation of `time`, taken relative to `start_time`.
-// The times must be on the same timebase, such as CLOCK_MONOTONIC_RAW.
-std::string ProcessTimeString(const timespec& time,
-                              const timespec& start_time) {
-  if (time.tv_sec == -1 && time.tv_nsec < 0) {
-    return base::StringPrintf("(time_errno=%d)", -1 - time.tv_nsec);
-  }
-
-  std::string s;
-  timespec print_time;
-  if (start_time.tv_sec <= -1 && start_time.tv_sec >= -4 &&
-      start_time.tv_nsec < 0) {
-    s.assign(base::StringPrintf("(start_time_errno=%d,%d)", -start_time.tv_sec,
-                                -1 - start_time.tv_nsec));
-    print_time = time;
-  } else {
-    print_time = TimespecSubtract(time, start_time);
-  }
-
-  base::StringAppendF(&s, "%d.%09d", print_time.tv_sec, print_time.tv_nsec);
-
-  return s;
-}
-
-#endif  // DEBUG_CRBUG_40064248_STATISTICS
 
 int MapAcceptError(int os_error) {
   switch (os_error) {
@@ -626,40 +531,18 @@ int SocketPosix::DoWrite(IOBuffer* buf, int buf_len) {
            buf_len, flags);
   base::debug::Alias(debug3);
 
-  ssize_t send_rv = HANDLE_EINTR(send(socket_fd_, buf->data(), buf_len, flags));
-  int send_errno = errno;
-
-#if defined(DEBUG_CRBUG_40064248_STATISTICS)
-  // TODO(crbug.com/40064248): Remove this once the crash is resolved.
-
-  // Do this once, as close to process start as is reasonably practical,
-  // because the OS records the start time on the CLOCK_REALTIME timebase,
-  // which can only drift (or even move backwards) relative to the
-  // CLOCK_MONOTONIC_RAW timebase as time elapses.
-  static timespec start_time(ProcessStartTimeMonotonic());
-
-  timespec now;
-  if (clock_gettime(CLOCK_MONOTONIC_RAW, &now) != 0) {
-    now.tv_sec = -1;
-    now.tv_nsec = -errno;
+#if defined(WORK_AROUND_CRBUG_40064248)
+  ssize_t send_rv = HANDLE_EINTR(
+      SendAndDetectBogusReturnValue(socket_fd_, buf->data(), buf_len, flags));
+  if (send_rv == kSendBogusReturnValueDetected) {
+    // https://crbug.com/40064248 is known to occur as a result of certain
+    // network configuration changes.
+    return ERR_NETWORK_CHANGED;
   }
-
-  static Statistics g_statistics;
-
-  // A single SocketPosix shouldn’t have DoWrite called on more than one thread,
-  // checked by its thread_checker_. Thus, access to its own statistics_ need
-  // not be thread-safe. It’s less certain that access to the global
-  // g_statistics can afford to not be thread-safe, because it’s conceivable
-  // (although unlikely) that different SocketPosix objects operate on different
-  // threads. Use a mutex to protect g_statistics and, incidentally, all
-  // SocketPosix::statistics_ objects. The mutex is not likely to be contended,
-  // and in any case, the critical section executes quickly.
-  static base::NoDestructor<base::Lock> statistics_lock;
-  base::ReleasableAutoLock statistics_auto_lock(statistics_lock.get());
-
-  statistics_.Update(socket_fd_, send_rv, send_errno, now);
-  g_statistics.Update(socket_fd_, send_rv, send_errno, now);
-#endif  // DEBUG_CRBUG_40064248_STATISTICS
+#else   // WORK_AROUND_CRBUG_40064248
+  ssize_t send_rv = HANDLE_EINTR(send(socket_fd_, buf->data(), buf_len, flags));
+#endif  // WORK_AROUND_CRBUG_40064248
+  int send_errno = errno;
 
   if (send_rv >= 0) {
     if (send_rv > buf_len) {
@@ -668,15 +551,6 @@ int SocketPosix::DoWrite(IOBuffer* buf, int buf_len) {
       snprintf(debug4, sizeof(debug4), "send_rv=%zd,send_errno=%d", send_rv,
                send_rv < 0 ? send_errno : 0);
       base::debug::Alias(debug4);
-
-#if defined(DEBUG_CRBUG_40064248_STATISTICS)
-      char debug5[4096];
-      snprintf(debug5, sizeof(debug5), "statistics_={%s},g_statistics={%s}",
-               statistics_.DebugInfo(start_time).c_str(),
-               g_statistics.DebugInfo(start_time).c_str());
-      base::debug::Alias(debug5);
-      statistics_auto_lock.Release();
-#endif  // DEBUG_CRBUG_40064248_STATISTICS
 
       // This duplicates the CHECK_LE below. Keep it here so that the aliased
       // debug buffers are in scope when the process crashes.
@@ -741,146 +615,5 @@ void SocketPosix::StopWatchingAndCleanUp(bool close_socket) {
   waiting_connect_ = false;
   peer_address_.reset();
 }
-
-#if defined(DEBUG_CRBUG_40064248_STATISTICS)
-
-// TODO(crbug.com/40064248): Remove this once the crash is resolved.
-
-SocketPosix::Statistics::Statistics() = default;
-
-void SocketPosix::Statistics::Update(const int socket_fd,
-                                     const ssize_t send_rv,
-                                     const int send_errno,
-                                     const timespec& now) {
-  if (send_rv < 0) {
-    if (sends_error_++ == 0) {
-      first_send_errno_ = send_errno;
-      first_send_error_time_ = now;
-    }
-    last_send_errno_ = send_errno;
-    last_send_error_time_ = now;
-    if (sends_error_consecutive_++ == 0) {
-      first_send_error_consecutive_time_ = now;
-    }
-
-    sends_suspicious_consecutive_ = 0;
-    send_bytes_suspicious_consecutive_ = 0;
-    first_send_suspicious_consecutive_time_ = {};
-  } else {
-    // Suspicious return values for `send` are those that are produced when the
-    // `sendto` system call returns from the kernel to user space without
-    // setting the return value register, leaving whatever contents had
-    // previously been there on the call into the kernel. The return value
-    // register is x0 on arm64 and rax on x86-64. When the `sendto` system call
-    // is made, user space places the first argument, the file descriptor
-    // number, in r0 (thus x0) on arm64, and the UNIX system call class (2) and
-    // `sendto` system call number (133) in eax (thus rax) on x86_64.
-    //
-    // A suspicious return isn’t necessarily a problem: it’s possible that only
-    // that many bytes were sent (or consumed from the buffer and queued to be
-    // sent). But it could also be an indication of https://crbug.com/40064248
-    // occurring before it’s unambiguously detectable as a bug.
-    //
-    // Suspicious returns become unambiguously detectable when they exceed the
-    // size of the buffer passed to `send`.
-    //
-    // This classifies returns into suspicious and not-suspicious, so that the
-    // extent of the bug can be understood better.
-#if BUILDFLAG(IS_APPLE)
-#if defined(ARCH_CPU_ARM64)
-    const ssize_t suspicious_rv = socket_fd;
-#elif defined(ARCH_CPU_X86_FAMILY)
-    // Definitions from xnu osfmk/mach/i386/syscall_sw.h, as used in its
-    // SYSCALL_CONSTRUCT_UNIX.
-    constexpr uint32_t SYSCALL_CLASS_SHIFT = 24;
-    constexpr uint32_t SYSCALL_CLASS_MASK = 0xff << SYSCALL_CLASS_SHIFT;
-    constexpr uint32_t SYSCALL_NUMBER_MASK = ~SYSCALL_CLASS_MASK;
-    constexpr uint32_t SYSCALL_CLASS_UNIX = 2;
-
-    const ssize_t suspicious_rv =
-        ((SYSCALL_CLASS_UNIX << SYSCALL_CLASS_SHIFT) & SYSCALL_CLASS_MASK) |
-        (SYS_sendto & SYSCALL_NUMBER_MASK);  // ((2 << 24) | 133) = 0x2000085
-#endif
-#endif  // BUILDFLAG(IS_APPLE)
-    const bool suspicious = send_rv == suspicious_rv;
-
-    if (!suspicious) {
-      if (sends_ok_++ == 0) {
-        first_send_ok_time_ = now;
-      }
-      send_bytes_ok_ += send_rv;
-      last_send_ok_time_ = now;
-
-      sends_suspicious_consecutive_ = 0;
-      send_bytes_suspicious_consecutive_ = 0;
-      first_send_suspicious_consecutive_time_ = {};
-    } else {
-      if (sends_suspicious_++ == 0) {
-        first_send_suspicious_time_ = now;
-      }
-      send_bytes_suspicious_ += send_rv;
-      last_send_suspicious_time_ = now;
-
-      if (sends_suspicious_consecutive_++ == 0) {
-        first_send_suspicious_consecutive_time_ = now;
-      }
-      send_bytes_suspicious_consecutive_ += send_rv;
-    }
-
-    sends_error_consecutive_ = 0;
-    first_send_error_consecutive_time_ = {};
-  }
-}
-
-std::string SocketPosix::Statistics::DebugInfo(
-    const timespec& start_time) const {
-  std::string s(base::StringPrintf(
-      "sends_ok_=%u,sends_suspicious_=%u,sends_suspicious_consecutive_=%u,"
-      "sends_error_=%u,sends_error_consecutive_=%u,send_bytes_ok_=%u,"
-      "send_bytes_suspicious_=%u,send_bytes_suspicious_consecutive_=%u",
-      sends_ok_, sends_suspicious_, sends_suspicious_consecutive_, sends_error_,
-      sends_error_consecutive_, send_bytes_ok_, send_bytes_suspicious_,
-      send_bytes_suspicious_consecutive_));
-
-  if (sends_ok_) {
-    base::StringAppendF(&s, ",first_send_ok_time_=%s,last_send_ok_time_=%s",
-                        ProcessTimeString(first_send_ok_time_, start_time),
-                        ProcessTimeString(last_send_ok_time_, start_time));
-  }
-
-  if (sends_suspicious_) {
-    base::StringAppendF(
-        &s, ",first_send_suspicious_time_=%s,last_send_suspicious_time_=%s",
-        ProcessTimeString(first_send_suspicious_time_, start_time),
-        ProcessTimeString(last_send_suspicious_time_, start_time));
-
-    if (sends_suspicious_consecutive_) {
-      base::StringAppendF(
-          &s, ",first_send_suspicious_consecutive_time_=%s",
-          ProcessTimeString(first_send_suspicious_consecutive_time_,
-                            start_time));
-    }
-  }
-
-  if (sends_error_) {
-    base::StringAppendF(
-        &s,
-        ",first_send_errno_=%d,last_send_errno_=%d,first_send_error_time_=%s,"
-        "last_send_error_time_=%s",
-        first_send_errno_, last_send_errno_,
-        ProcessTimeString(first_send_error_time_, start_time),
-        ProcessTimeString(last_send_error_time_, start_time));
-
-    if (sends_error_consecutive_) {
-      base::StringAppendF(
-          &s, ",first_send_error_consecutive_time_=%s",
-          ProcessTimeString(first_send_error_consecutive_time_, start_time));
-    }
-  }
-
-  return s;
-}
-
-#endif  // DEBUG_CRBUG_40064248_STATISTICS
 
 }  // namespace net
