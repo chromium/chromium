@@ -31,6 +31,11 @@ DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
 
 DesktopBrowserFrameAuraLinux::~DesktopBrowserFrameAuraLinux() = default;
 
+void DesktopBrowserFrameAuraLinux::OnHostClosed() {
+  host_ = nullptr;
+  DesktopBrowserFrameAura::OnHostClosed();
+}
+
 views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams(
     views::Widget::InitParams::Ownership ownership) {
   views::Widget::InitParams params(ownership);
@@ -68,6 +73,10 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams(
 }
 
 bool DesktopBrowserFrameAuraLinux::UseCustomFrame() const {
+  if (!browser_view()) {
+    return false;
+  }
+
   // If the platform does not support server side decorations, ignore the user
   // preference and return true.
   if (!ui::OzonePlatform::GetInstance()
@@ -102,6 +111,10 @@ bool DesktopBrowserFrameAuraLinux::ShouldDrawRestoredFrameShadow() const {
 }
 
 void DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged() {
+  if (!browser_frame()) {
+    return;
+  }
+
   // Tell the window manager to add or remove system borders.
   browser_frame()->set_frame_type(UseCustomFrame()
                                       ? views::Widget::FrameType::kForceCustom

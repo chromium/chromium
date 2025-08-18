@@ -43,6 +43,8 @@ DesktopBrowserFrameAura::~DesktopBrowserFrameAura() = default;
 // DesktopBrowserFrameAura, views::DesktopNativeWidgetAura overrides:
 
 void DesktopBrowserFrameAura::OnHostClosed() {
+  browser_frame_ = nullptr;
+  browser_view_ = nullptr;
   aura::client::SetVisibilityClient(GetNativeView()->GetRootWindow(), nullptr);
   DesktopNativeWidgetAura::OnHostClosed();
 }

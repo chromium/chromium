@@ -22,6 +22,9 @@ class DesktopBrowserFrameAuraLinux : public DesktopBrowserFrameAura {
   DesktopBrowserFrameAuraLinux& operator=(const DesktopBrowserFrameAuraLinux&) =
       delete;
 
+  // DesktopBrowserFrameAura:
+  void OnHostClosed() override;
+
   bool ShouldDrawRestoredFrameShadow() const;
 
   void set_host(BrowserDesktopWindowTreeHostLinux* host) { host_ = host; }
