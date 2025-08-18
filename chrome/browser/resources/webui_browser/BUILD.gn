@@ -27,6 +27,7 @@ if (is_chrome_branded) {
       "bookmark_element.html.ts",
       "bookmark_element.ts",
       "browser_proxy.ts",
+      "content_region.ts",
       "icons.html.ts",
       "tab_element.ts",
       "tab_element.html.ts",
@@ -40,6 +41,7 @@ if (is_chrome_branded) {
     css_files = [
       "app.css",
       "bookmark_element.css",
+      "content_region.css",
       "tab_element.css",
       "tab_strip.css",
       "webview.css",

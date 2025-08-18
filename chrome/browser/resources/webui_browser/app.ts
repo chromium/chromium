@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import './bookmark_bar.js';
+import './content_region.js';
 import './icons.html.js';
 import '/strings.m.js';
 import './tab_strip.js';
 import './webview.js';
 import '//resources/cr_components/searchbox/searchbox.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
@@ -17,11 +17,17 @@ import {getHtml} from './app.html.js';
 import type {BookmarkBar} from './bookmark_bar.js';
 import {BookmarkBarController} from './bookmark_bar_controller.js';
 import {BrowserProxy} from './browser_proxy.js';
+import type {ContentRegion} from './content_region.js';
+import type {TabStrip} from './tab_strip.js';
 import type {LayoutManager} from './tab_strip_controller.js';
 import {TabStripController} from './tab_strip_controller.js';
 
 export interface WebuiBrowserAppElement {
-  $: {bookmarkBar: BookmarkBar};
+  $: {
+    bookmarkBar: BookmarkBar,
+    contentRegion: ContentRegion,
+    tabstrip: TabStrip,
+  };
 }
 
 export class WebuiBrowserAppElement extends CrLitElement implements
@@ -38,16 +44,24 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      backButtonDisabled_: {state: true, type: Boolean},
+      forwardButtonDisabled_: {state: true, type: Boolean},
+    };
+  }
+
   private bookmarkBarController_: BookmarkBarController;
   private tabStripController_: TabStripController;
-  protected backButtonDisabled_: boolean = true;
-  protected forwardButtonDisabled_: boolean = true;
+  protected accessor backButtonDisabled_: boolean = true;
+  protected accessor forwardButtonDisabled_: boolean = true;
 
   constructor() {
     super();
 
     this.bookmarkBarController_ = new BookmarkBarController();
-    this.tabStripController_ = new TabStripController(this);
+    this.tabStripController_ =
+        new TabStripController(this, this.$.tabstrip, this.$.contentRegion);
   }
 
   override connectedCallback() {
@@ -56,20 +70,10 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     super.connectedCallback();
   }
 
-  static override get properties() {
-    return {
-      guestId_: {type: Number},
-      backButtonDisabled_: {state: true, type: Boolean},
-      forwardButtonDisabled_: {state: true, type: Boolean},
-    };
-  }
-
   // LayoutManager:
   refreshLayout() {
     this.updateToolbarButtons_();
   }
-
-  protected accessor guestId_: number = loadTimeData.getInteger('testGuestId');
 
   protected onLaunchDevtoolsClick_(_: Event) {
     BrowserProxy.getPageHandler().launchDevToolsForBrowser();
@@ -100,22 +104,19 @@ export class WebuiBrowserAppElement extends CrLitElement implements
   }
 
   protected onBackClick_(_: Event) {
-    /* TODO(webium): Once ContentRegion is implemented:
-    if (this.$.contentRegion.activeWebview_) {
-      this.$.contentRegion.activeWebview_.goBack();
-    }*/
+    if (this.$.contentRegion.activeWebview) {
+      this.$.contentRegion.activeWebview.goBack();
+    }
   }
 
   protected onForwardClick_(_: Event) {
-    /* TODO(webium): Once ContentRegion is implemented:
-    if (this.$.contentRegion.activeWebview_) {
-      this.$.contentRegion.activeWebview_.goForward();
-    }*/
+    if (this.$.contentRegion.activeWebview) {
+      this.$.contentRegion.activeWebview.goForward();
+    }
   }
 
   private async updateToolbarButtons_() {
-    /* TODO(webium): Once ContentRegion is implemented:
-    const webview = this.$.contentRegion.activeWebview_;
+    const webview = this.$.contentRegion.activeWebview;
     if (webview) {
       const [canGoBack, canGoForward] =
           await Promise.all([webview.canGoBack(), webview.canGoForward()]);
@@ -124,11 +125,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     } else {
       this.backButtonDisabled_ = true;
       this.forwardButtonDisabled_ = true;
-    }*/
-  }
-
-  protected onTabstripAdded_(e: CustomEvent) {
-    this.tabStripController_.init(e.detail.tabstrip);
+    }
   }
 
   protected onTabClick_(e: CustomEvent) {

@@ -53,19 +53,6 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
                               IDR_WEBUI_BROWSER_WEBUI_BROWSER_HTML);
 
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
-
-  // Make a guest contents handle for a test guest contents.
-  // TODO(webium): Remove once the tab strip is integrated.
-  test_guest_contents_ = content::WebContents::Create(
-      content::WebContents::CreateParams(browser_->profile()));
-  test_guest_contents_->GetController().LoadURL(
-      GURL("chrome://dino"), content::Referrer(), ui::PAGE_TRANSITION_FIRST,
-      std::string());
-  guest_contents::GuestId guest_id =
-      guest_contents::GuestContentsHandle::CreateForWebContents(
-          test_guest_contents_.get())
-          ->id();
-  source->AddInteger("testGuestId", guest_id);
 }
 
 WebUIBrowserUI::~WebUIBrowserUI() = default;

@@ -24,7 +24,6 @@ class Browser;
 
 namespace content {
 class BrowserContext;
-class WebContents;
 }  // namespace content
 
 namespace searchbox::mojom {
@@ -95,10 +94,6 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
 
   mojo::Receiver<webui_browser::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
-
-  // TODO(webium): this is for testing guest contents embedding. Remove once
-  // the tab strip is integrated.
-  std::unique_ptr<content::WebContents> test_guest_contents_;
 
   mojo::Receiver<bookmark_bar::mojom::PageHandlerFactory>
       bookmark_bar_page_factory_receiver_{this};

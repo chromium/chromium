@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/webui_browser/browser.mojom.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
@@ -36,7 +37,7 @@ class WebUIBrowserPageHandler
       WebUIBrowserUI* controller);
 
   // webui_browser::mojom::PageHandler
-  void GetGuestIdForTabId(int tab_id,
+  void GetGuestIdForTabId(const tabs_api::NodeId& tab_id,
                           GetGuestIdForTabIdCallback callback) override;
   void LoadTabSearch(LoadTabSearchCallback callback) override;
   void ShowTabSearchBubble(const std::string& anchor_name) override;

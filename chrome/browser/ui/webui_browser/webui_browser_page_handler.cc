@@ -11,6 +11,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
@@ -49,10 +50,15 @@ void WebUIBrowserPageHandler::CreateForRenderFrameHost(
 }
 
 void WebUIBrowserPageHandler::GetGuestIdForTabId(
-    int tab_id,
+    const tabs_api::NodeId& tab_id,
     GetGuestIdForTabIdCallback callback) {
-  tabs::TabInterface* tab = tabs::TabHandle(tab_id).Get();
-  if (tab == nullptr) {
+  tabs::TabInterface* tab = nullptr;
+  std::optional<tabs::TabHandle> maybe_tab_handle = tab_id.ToTabHandle();
+  if (maybe_tab_handle) {
+    tab = maybe_tab_handle->Get();
+  }
+
+  if (!tab) {
     mojo::ReportBadMessage("Invalid tab id");
     return;
   }

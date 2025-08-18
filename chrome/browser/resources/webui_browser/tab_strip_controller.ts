@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(webium): Once ContentRegion is implemented:
-// import {ContentRegion} from './content_region.js';
+import type {ContentRegion} from './content_region.js';
 import type {TabStrip} from './tab_strip.js';
 import type {TabStripApiProxy} from './tab_strip_api.js';
 import {TabStripApiProxyImpl} from './tab_strip_api.js';
@@ -21,27 +20,16 @@ export interface LayoutManager {
 export class TabStripController {
   private readonly layoutManager_: LayoutManager;
   private tabsApi_: TabStripApiProxy;
-
-  // @ts-expect-error: initialized in init_().
   private tabStrip_: TabStrip;
-  // TODO(webium): Once ContentRegion is implemented:
-  // // @ts-ignore: initialized in init_().
-  // private contentRegion_: ContentRegion;
+  private contentRegion_: ContentRegion;
 
-  constructor(layoutManager: LayoutManager) {
+  constructor(
+      layoutManager: LayoutManager, tabStrip: TabStrip,
+      contentRegion: ContentRegion) {
     this.layoutManager_ = layoutManager;
     this.tabsApi_ = TabStripApiProxyImpl.getInstance();
-  }
-
-  init(
-      tabStrip: TabStrip,
-      // TODO(webium): Once ContentRegion is implemented:
-      // contentRegion: ContentRegion
-  ) {
-    tabStrip.controller = this;
     this.tabStrip_ = tabStrip;
-    // TODO(webium): Once ContentRegion is implemented:
-    // this.contentRegion_ = contentRegion;
+    this.contentRegion_ = contentRegion;
 
     this.registerTabChangeCallbacks_();
     this.loadTabStripModel_();
@@ -133,9 +121,8 @@ export class TabStripController {
     if (tab.isActive) {
       this.tabStrip_.activateTab(tab.id);
     }
+    this.contentRegion_.createWebView(tab.id, tab.isActive);
     this.layoutManager_.refreshLayout();
-    // TODO(webium): Once ContentRegion is implemented:
-    // this.contentRegion_.createWebView_(tab.id, tab.active);
   }
 
   // tab_strip::mojom::Page implementation:
@@ -156,6 +143,7 @@ export class TabStripController {
     this.tabStrip_.updateTab(onTabDataChangedEvent.tab);
     if (onTabDataChangedEvent.tab.isActive) {
       this.tabStrip_.activateTab(onTabDataChangedEvent.tab.id);
+      this.contentRegion_.activateTab(onTabDataChangedEvent.tab.id);
     }
     this.layoutManager_.refreshLayout();
   }
@@ -171,8 +159,7 @@ export class TabStripController {
     const tabsClosed = tabsClosedEvent.tabs;
     tabsClosed.forEach((tabId: NodeId) => {
       this.tabStrip_.removeTab(tabId);
-      // TODO(webium): Once ContentRegion is implemented:
-      // this.contentRegion_.removeTab_(tabId);
+      this.contentRegion_.removeTab(tabId);
     });
   }
 }

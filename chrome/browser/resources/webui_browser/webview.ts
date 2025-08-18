@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
-import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {assert} from '//resources/js/assert.js';
+import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './webview.css.js';
@@ -34,19 +34,27 @@ export class WebviewElement extends CrLitElement {
   }
 
   protected accessor guestId: number = -1;
+  private attached: boolean = false;
 
   override async connectedCallback() {
     super.connectedCallback();
-    assert(this.guestId !== undefined);
-
-    // Wait until iframe.contentWindow becomes available.
-    await this.whenIframeContentWindowAvailable_(this.$.iframe);
-    if (this.isConnected) {
-      this.attachGuestToIframe_(this.guestId, this.$.iframe);
-    }
+    await this.tryToAttach();
   }
 
-  private attachGuestToIframe_(guestId: number, iframe: HTMLIFrameElement) {
+  protected async tryToAttach() {
+    if (this.attached || this.guestId === -1) {
+      return;
+    }
+    this.attached = true;
+
+    // Wait until iframe.contentWindow becomes available.
+    if (!this.$.iframe.contentWindow) {
+      await this.whenIframeContentWindowAvailable_(this.$.iframe);
+    }
+    this.attachGuestToIframe(this.guestId, this.$.iframe);
+  }
+
+  private attachGuestToIframe(guestId: number, iframe: HTMLIFrameElement) {
     const iframeContentWindow = iframe.contentWindow;
     assert(iframeContentWindow);
     chrome.browser.attachIframeGuest(guestId, iframeContentWindow);
@@ -88,10 +96,43 @@ export class WebviewElement extends CrLitElement {
   }
 }
 
+export class TabWebviewElement extends WebviewElement {
+  static override get is() {
+    return 'cr-tab-webview';
+  }
+
+  tabId: string;
+
+  constructor(tabId: string) {
+    super();
+    this.tabId = tabId;
+    this.attachTabContents();
+  }
+
+  setActive(active: boolean) {
+    if (active) {
+      this.classList.add('active');
+    } else {
+      this.classList.remove('active');
+    }
+  }
+
+  private attachTabContents() {
+    BrowserProxy.getPageHandler()
+        .getGuestIdForTabId(this.tabId)
+        .then(({guestId}) => {
+          this.guestId = guestId;
+          this.tryToAttach();
+        });
+  }
+}
+
 declare global {
   interface HTMLElementTagNameMap {
     'cr-webview': WebviewElement;
+    'cr-tab-webview': TabWebviewElement;
   }
 }
 
 customElements.define(WebviewElement.is, WebviewElement);
+customElements.define(TabWebviewElement.is, TabWebviewElement);

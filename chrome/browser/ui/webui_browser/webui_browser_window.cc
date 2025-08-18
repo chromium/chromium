@@ -66,7 +66,8 @@ class WebUIBrowserWindow::WidgetDelegate : public views::WidgetDelegate {
 WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
     : browser_(std::move(browser)) {
   location_bar_ = std::make_unique<WebUILocationBar>(browser_.get());
-  web_contents_delegate_ = std::make_unique<WebUIBrowserWebContentsDelegate>();
+  web_contents_delegate_ =
+      std::make_unique<WebUIBrowserWebContentsDelegate>(browser_.get());
   widget_delegate_ =
       std::make_unique<WidgetDelegate>(web_contents_delegate_.get());
   widget_ = std::make_unique<views::Widget>();

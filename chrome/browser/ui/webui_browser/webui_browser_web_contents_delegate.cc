@@ -5,13 +5,16 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_web_contents_delegate.h"
 
 #include "base/logging.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 
-WebUIBrowserWebContentsDelegate::WebUIBrowserWebContentsDelegate() = default;
+WebUIBrowserWebContentsDelegate::WebUIBrowserWebContentsDelegate(
+    Browser* browser)
+    : browser_(browser) {}
 
 WebUIBrowserWebContentsDelegate::~WebUIBrowserWebContentsDelegate() = default;
 
@@ -55,9 +58,5 @@ content::WebContents* WebUIBrowserWebContentsDelegate::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  // TODO(webium): Navigate the guest.
-  LOG(ERROR)
-      << "WebUIBrowserWebContentsDelegate::OpenURLFromTab unimplemented, url = "
-      << params.url;
-  return nullptr;
+  return browser_->OpenURL(params, std::move(navigation_handle_callback));
 }

@@ -7,8 +7,16 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-#exampleWebview {
-  height: 400px;
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-frame-active);
+  color: var(--color-toolbar-text);
+  position: relative; /* Needed for absolute positioning of controls */
+  overflow: hidden;
 }
 
 .caption-button {
@@ -97,4 +105,30 @@ cr-searchbox[dropdown-is-visible] {
 
 #searchBar #address {
   flex: 1;
+}
+
+#rootContainer {
+  display: grid;
+  height: 100%;
+  /* *
+   * #topContainer (natural height)
+   * #main (remaining height)
+   * */
+  grid-template-rows: auto 1fr;
+}
+
+#topContainer {
+  grid-row: 1;
+}
+
+#main {
+  grid-row: 2;
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  background-color: var(--color-toolbar);
+}
+
+content-region {
+  border-top: 1px var(--color-toolbar-separator) solid;
 }

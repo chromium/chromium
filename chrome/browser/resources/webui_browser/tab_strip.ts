@@ -45,13 +45,6 @@ export class TabStrip extends CrLitElement {
   private activeTab_: TabElement|null = null;
   protected tabs_: TabElement[] = [];
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.dispatchEvent(new CustomEvent(
-        'tabstrip-added',
-        {bubbles: true, composed: true, detail: {tabstrip: this}}));
-  }
-
   addTab(tab: TabData) {
     const tabElement = new TabElement(tab);
     this.tabs_ = [...this.tabs_, tabElement];

@@ -13,6 +13,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 
+class Browser;
+
 // The delegate for the WebContents managing the UI in WebUI-based browser.
 class WebUIBrowserWebContentsDelegate : public content::WebContentsDelegate,
                                         public content::WebContentsObserver {
@@ -23,7 +25,7 @@ class WebUIBrowserWebContentsDelegate : public content::WebContentsDelegate,
         const std::vector<blink::mojom::DraggableRegionPtr>& regions) = 0;
   };
 
-  WebUIBrowserWebContentsDelegate();
+  explicit WebUIBrowserWebContentsDelegate(Browser* browser);
   ~WebUIBrowserWebContentsDelegate() override;
 
   void SetUIWebContents(content::WebContents* ui_web_contents);
@@ -47,6 +49,7 @@ class WebUIBrowserWebContentsDelegate : public content::WebContentsDelegate,
 
   void EnableDraggableRegions();
 
+  raw_ptr<Browser> browser_;
   base::ObserverList<Observer> observers_;
 };
 

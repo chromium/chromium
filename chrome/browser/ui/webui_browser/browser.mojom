@@ -4,6 +4,7 @@
 
 module webui_browser.mojom;
 
+import "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
@@ -17,7 +18,7 @@ interface PageHandlerFactory {
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Get the guest id for a tab id.
-  GetGuestIdForTabId(int32 tab_id) => (int32 guest_id);
+  GetGuestIdForTabId(tabs_api.mojom.NodeId tab_id) => (int32 guest_id);
 
   // Load TabSearch in a guest contents and returns the guest id.
   LoadTabSearch() => (int32 guest_id);

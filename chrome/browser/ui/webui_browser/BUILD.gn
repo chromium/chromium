@@ -81,6 +81,7 @@ mojom("browser_mojo_bindings") {
     "browser.mojom",
   ]
   public_deps = [
+    "//chrome/browser/ui/tabs/tab_strip_api:mojom",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]

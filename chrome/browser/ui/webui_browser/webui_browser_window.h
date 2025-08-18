@@ -238,9 +238,9 @@ class WebUIBrowserWindow : public BrowserWindow,
   void OnWindowCloseRequested(views::Widget::ClosedReason close_reason);
   WebUIBrowserUI* GetWebUIBrowserUI() const;
 
+  std::unique_ptr<Browser> browser_;
   std::unique_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
   std::unique_ptr<WidgetDelegate> widget_delegate_;
-  std::unique_ptr<Browser> browser_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<views::WebView> web_view_ = nullptr;
   std::unique_ptr<WebUILocationBar> location_bar_;
