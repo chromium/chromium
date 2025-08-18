@@ -134,30 +134,30 @@ std::optional<AttributeType> GetAttributeType(EntityType entity,
   return std::nullopt;
 }
 
-// Adds to `attributes_by_field[i]` the static types of `fields[i]`. Returns
-// whether at least one relevant field has a static attribute type.
-bool AddStaticAttributeTypes(
-    base::span<const std::unique_ptr<AutofillField>> fields,
-    base::span<DenseSet<AttributeType>> attributes_by_field) {
-  DCHECK_EQ(fields.size(), attributes_by_field.size());
-  bool found_type = false;
-  for (auto [field, attributes] : base::zip(fields, attributes_by_field)) {
-    if (!IsRelevant(*field)) {
+// Returns the static AttributeTypes.
+// The `i`th value in the returned vector is the static type of `fields[i]`,
+// except if there is none, in which case the vector is empty.
+std::vector<DenseSet<AttributeType>> GetStaticAttributeTypes(
+    base::span<const std::unique_ptr<AutofillField>> fields) {
+  std::vector<DenseSet<AttributeType>> attributes_by_field;
+  for (size_t i = 0; i < fields.size(); ++i) {
+    const AutofillField& field = *fields[i];
+    if (!IsRelevant(field)) {
       continue;
     }
-    for (FieldType ft : field->Type().GetStaticAutofillAiTypes()) {
+    for (FieldType ft : field.Type().GetStaticAutofillAiTypes()) {
       std::optional<AttributeType> at = GetStaticAttributeType(ft);
       if (!at) {
         continue;
       }
-      attributes.insert(*at);
-      found_type = true;
+      attributes_by_field.resize(fields.size());
+      attributes_by_field[i].insert(*at);
     }
   }
-  return found_type;
+  return attributes_by_field;
 }
 
-// Adds to `attributes_by_field[i]` the dynamic types of `fields[i]`.
+// Adds the dynamic types of `fields[i]` to `attributes_by_field[i]`.
 void AddDynamicAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields,
     base::span<DenseSet<AttributeType>> attributes_by_field) {
@@ -222,12 +222,12 @@ void AddDynamicAttributeTypes(
 }
 
 // Returns the static and dynamic AttributeTypes.
-// The `i`th value in the returned vector is the dynamic type of `fields[i]`.
+// The `i`th value in the returned vector is the type of `fields[i]`.
 std::vector<DenseSet<AttributeType>> GetAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields) {
-  std::vector<DenseSet<AttributeType>> attributes_by_field(fields.size());
-  // Dynamic attributes exist only if there is at least one static attribute.
-  if (AddStaticAttributeTypes(fields, attributes_by_field)) {
+  std::vector<DenseSet<AttributeType>> attributes_by_field =
+      GetStaticAttributeTypes(fields);
+  if (!attributes_by_field.empty()) {
     AddDynamicAttributeTypes(fields, attributes_by_field);
   }
   return attributes_by_field;
