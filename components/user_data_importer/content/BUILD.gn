@@ -50,6 +50,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "content_bookmark_parser_unittest.cc",
     "content_bookmark_parser_utils_unittest.cc",
     "stable_portability_data_importer_unittest.cc",
   ]

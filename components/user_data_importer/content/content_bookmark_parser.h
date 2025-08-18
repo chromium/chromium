@@ -26,7 +26,6 @@ class BookmarkHtmlParser;
 //
 // Can be created on any sequence (e.g. on a UI thread), but there after, must
 // be used and destroyed on the same background sequence.
-// TODO(crbug.com/434664541): Add test coverage for ContentBookmarkParser.
 class ContentBookmarkParser : public BookmarkParser {
  public:
   ContentBookmarkParser();

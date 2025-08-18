@@ -14,6 +14,7 @@ FakeBookmarkHtmlParser::~FakeBookmarkHtmlParser() = default;
 
 void FakeBookmarkHtmlParser::Parse(const std::string& raw_html,
                                    ParseCallback callback) {
+  last_html_ = raw_html;
   std::move(callback).Run(ParseBookmarksUnsafe(std::move(raw_html)));
 }
 

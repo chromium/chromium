@@ -18,6 +18,11 @@ class FakeBookmarkHtmlParser : public mojom::BookmarkHtmlParser {
   ~FakeBookmarkHtmlParser() override;
 
   void Parse(const std::string& raw_html, ParseCallback callback) override;
+
+  const std::string& last_html() const { return last_html_; }
+
+ private:
+  std::string last_html_;
 };
 
 }  // namespace user_data_importer
