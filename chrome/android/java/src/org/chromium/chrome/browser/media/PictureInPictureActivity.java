@@ -96,7 +96,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;
 
     // The token and corresponding raw pointer to the native side.
-    private @Nullable UnguessableToken mNativeToken;
+    private UnguessableToken mNativeToken;
     private long mNativeOverlayWindowAndroid;
 
     private Tab mInitiatorTab;
@@ -609,40 +609,43 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     }
 
     @Override
+    @Initializer
+    protected void onPreCreate() {
+        super.onPreCreate();
+        final Intent intent = getIntent();
+        intent.setExtrasClassLoader(WebContents.class.getClassLoader());
+        mInitiatorTab = TabUtils.fromWebContents(intent.getParcelableExtra(WEB_CONTENTS_KEY));
+
+        // Look up the native side from our token.
+        UnguessableToken token = intent.getParcelableExtra(NATIVE_TOKEN_KEY);
+        mNativeToken = assumeNonNull(token);
+        if (token == null) {
+            this.finish();
+            return;
+        }
+    }
+
+    @Override
     @SuppressLint("NewAPI") // Picture-in-Picture API will not be enabled for oldver versions.
     @Initializer
     public void onStart() {
         super.onStart();
 
         final Intent intent = getIntent();
-        intent.setExtrasClassLoader(WebContents.class.getClassLoader());
 
-        // Look up the native side from our token.
-        mNativeToken = intent.getParcelableExtra(NATIVE_TOKEN_KEY);
-        if (mNativeToken == null) {
-            this.finish();
-            return;
-        }
-        continueInitializationWithNativeToken(intent, mNativeToken);
-    }
-
-    @Initializer
-    private void continueInitializationWithNativeToken(
-            Intent intent, UnguessableToken nativeToken) {
         // Finish the activity if OverlayWindowAndroid has already been destroyed
         // or InitiatorTab has been destroyed by user or crashed.
-        mInitiatorTab = TabUtils.fromWebContents(intent.getParcelableExtra(WEB_CONTENTS_KEY));
         if (TabUtils.getActivity(mInitiatorTab) == null) {
             onExitPictureInPicture(/* closeByNative= */ false);
             return;
         }
-        finishInitialize(intent, nativeToken, mInitiatorTab);
+        finishInitialize(intent);
     }
 
     @Initializer
-    private void finishInitialize(Intent intent, UnguessableToken nativeToken, Tab initiatorTab) {
+    private void finishInitialize(Intent intent) {
         mTabObserver = new InitiatorTabObserver();
-        initiatorTab.addObserver(mTabObserver);
+        mInitiatorTab.addObserver(mTabObserver);
 
         mMediaSessionReceiver = new MediaSessionBroadcastReceiver();
         ContextUtils.registerNonExportedBroadcastReceiver(
@@ -652,7 +655,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         mNativeOverlayWindowAndroid =
                 PictureInPictureActivityJni.get()
-                        .onActivityStart(nativeToken, this, getWindowAndroid());
+                        .onActivityStart(mNativeToken, this, getWindowAndroid());
         if (mNativeOverlayWindowAndroid == 0) {
             onExitPictureInPicture(/* closeByNative= */ true);
             return;

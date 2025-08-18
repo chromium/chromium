@@ -162,10 +162,14 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     public boolean shouldAllocateChildConnection() {
         boolean hasSpeculated = !TextUtils.isEmpty(mTabProvider.getSpeculatedUrl());
         int mode = mTabProvider.getInitialTabCreationMode();
-        return mode != TabCreationMode.EARLY
-                && mode != TabCreationMode.HIDDEN
-                && !hasSpeculated
-                && !WarmupManager.getInstance().hasSpareWebContents();
+        if (mode == TabCreationMode.EARLY || mode == TabCreationMode.HIDDEN) return false;
+        if (hasSpeculated) return false;
+        if (!mProfileProviderSupplier.hasValue()) return true;
+        Profile profile =
+                ProfileProvider.getOrCreateProfile(
+                        mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord());
+        return !WarmupManager.getInstance()
+                .hasSpareTab(profile, mIntentDataProvider.hasTargetNetwork());
     }
 
     public void detachAndStartReparenting(

@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.share.ShareHelper;
@@ -203,9 +204,12 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     /** Controls the parameter of {@link NativeInitializationController#startBackgroundTasks}. */
     @VisibleForTesting
     public boolean shouldAllocateChildConnection() {
-        // If a spare WebContents exists, a child connection has already been allocated that will be
+        if (!getProfileProviderSupplier().hasValue()) return true;
+
+        // If a spare Tab exists, a child connection has already been allocated that will be
         // used by the next created tab.
-        return !WarmupManager.getInstance().hasSpareWebContents();
+        Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
+        return !WarmupManager.getInstance().hasSpareTab(profile, /* targetsNetwork= */ false);
     }
 
     @Override
