@@ -385,7 +385,10 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       std::move(devtools_observer), std::move(device_bound_session_observer),
       std::move(accept_ch_frame_observer),
       resource_request.shared_storage_writable_eligible,
-      *context_->GetSharedResourceChecker());
+      *context_->GetSharedResourceChecker(),
+      context_->MaybeCreateDurableMessage(
+          resource_request.throttling_profile_id,
+          resource_request.devtools_request_id));
 
   cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
 }

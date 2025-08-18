@@ -100,6 +100,8 @@
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/cookie_settings.h"
+#include "services/network/devtools_durable_msg_accounting_delegate.h"
+#include "services/network/devtools_durable_msg_collector.h"
 #include "services/network/file_opener_for_upload.h"
 #include "services/network/observer_wrapper.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
@@ -655,6 +657,25 @@ MATCHER_P2(CookieOrLine, string, type, "") {
                                      result_listener);
 }
 
+// Mock implementation of durable message accounting delegate.
+class MockDurableMessageAccountingDelegate
+    : public DevtoolsDurableMessageAccountingDelegate {
+ public:
+  void WillAddBytes(DevtoolsDurableMessage& message,
+                    int64_t chunk_size) override {
+    size_ += chunk_size;
+  }
+
+  void WillRemoveBytes(DevtoolsDurableMessage& message) override {
+    size_ -= message.encoded_byte_size();
+  }
+
+  int64_t size() { return size_; }
+
+ private:
+  int64_t size_ = 0;
+};
+
 // Permits simply constructing a URLLoader object specifying only those options
 // which are non-default.
 // Replace:
@@ -691,7 +712,7 @@ struct URLLoaderOptions {
         ObserverWrapper(std::move(devtools_observer)),
         ObserverWrapper(std::move(device_bound_session_observer)),
         std::move(accept_ch_frame_observer), shared_storage_writable_eligible,
-        *shared_resource_checker);
+        *shared_resource_checker, std::move(maybe_durable_message));
   }
 
   int32_t options = mojom::kURLLoadOptionNone;
@@ -719,6 +740,7 @@ struct URLLoaderOptions {
   bool shared_storage_writable_eligible = false;
   CookieSettings cookie_settings;
   std::unique_ptr<SharedResourceChecker> shared_resource_checker;
+  base::WeakPtr<DevtoolsDurableMessage> maybe_durable_message;
 
  private:
   bool used = false;
@@ -906,6 +928,7 @@ class URLLoaderTest : public testing::Test {
     url_loader_options.accept_ch_frame_observer =
         accept_ch_frame_observer_ ? accept_ch_frame_observer_->Bind()
                                   : mojo::NullRemote();
+    url_loader_options.maybe_durable_message = std::move(durable_message_);
     url_loader = url_loader_options.MakeURLLoader(
         context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.BindNewPipeAndPassReceiver(), request, client_.CreateRemote());
@@ -1138,6 +1161,10 @@ class URLLoaderTest : public testing::Test {
       const net::CookieSettingOverrides& overrides) {
     cookie_setting_overrides_ = overrides;
   }
+  void set_durable_message(
+      base::WeakPtr<DevtoolsDurableMessage> durable_message) {
+    durable_message_ = std::move(durable_message);
+  }
 
   // Convenience methods after calling Load();
   std::string mime_type() const {
@@ -1283,6 +1310,7 @@ class URLLoaderTest : public testing::Test {
       mojom::IPAddressSpace::kUnknown;
   net::CookieSettingOverrides cookie_setting_overrides_;
   std::optional<int> partial_decoder_decoding_buffer_size_;
+  base::WeakPtr<DevtoolsDurableMessage> durable_message_;
 
   bool orb_enabled_ = false;
 
@@ -2991,6 +3019,215 @@ TEST_F(URLLoaderTest, CompressedResponseSniffMimeClienteSideDecoding) {
   EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
               ElementsAre(net::SourceStreamType::kGzip));
   EXPECT_EQ(body, ReadTestFile("content-sniffer-test0.html.gz"));
+}
+
+// Tests that URLLoader writes into given DurableMessage object when configured.
+TEST_F(URLLoaderTest, WritesToDurableMessage) {
+  MockDurableMessageAccountingDelegate accounting_delegate;
+  DevtoolsDurableMessage durable_message("test", accounting_delegate);
+  set_durable_message(durable_message.GetWeakPtr());
+  std::string body;
+  constexpr int kGzippedBodyLength = 60;
+  EXPECT_EQ(net::OK, Load(test_server()->GetURL("/hello.html.gz"), &body));
+  EXPECT_EQ(body, ReadTestFile("hello.html"));
+  EXPECT_TRUE(durable_message.is_complete());
+  ASSERT_EQ(accounting_delegate.size(), kGzippedBodyLength);
+  ASSERT_EQ(durable_message.encoded_byte_size(),
+            static_cast<size_t>(kGzippedBodyLength));
+  ASSERT_EQ(durable_message.byte_size(), body.size());
+  // Retrieve the stored body and verify that it is accurate.
+  std::vector<uint8_t> buffer(durable_message.byte_size());
+  EXPECT_TRUE(durable_message.CopyTo(buffer));
+  // TODO(414864477): Returned body should be in decoded form, regardless of
+  // whether body decoding was done or deferred by the Network stack. Once
+  // deferred decoding is implemented in durable messages, add a test for
+  // client-side-decoded response correctness.
+  EXPECT_EQ(buffer, base::as_byte_span(body));
+}
+
+TEST_F(URLLoaderTest, DurableMessageWorksWithMimeSniffing) {
+  MockDurableMessageAccountingDelegate accounting_delegate;
+  DevtoolsDurableMessage durable_message("test", accounting_delegate);
+  set_durable_message(durable_message.GetWeakPtr());
+  constexpr int kGzippedBodyLength = 142;
+  set_sniff();
+  set_client_side_content_decoding_enabled();
+  std::string encoded_body;
+  EXPECT_EQ(net::OK,
+            Load(test_server()->GetURL("/content-sniffer-test0.html.gz"),
+                 &encoded_body));
+  EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
+              ElementsAre(net::SourceStreamType::kGzip));
+  EXPECT_TRUE(did_mime_sniff());
+  EXPECT_EQ(encoded_body, ReadTestFile("content-sniffer-test0.html.gz"));
+  EXPECT_TRUE(durable_message.is_complete());
+  ASSERT_EQ(accounting_delegate.size(), kGzippedBodyLength);
+  ASSERT_EQ(durable_message.encoded_byte_size(),
+            static_cast<size_t>(kGzippedBodyLength));
+  ASSERT_EQ(durable_message.byte_size(), encoded_body.size());
+  // TODO(414864477): Returned body should be in decoded form, regardless of
+  // whether body decoding was done or deferred by the Network stack. Once
+  // deferred decoding is implemented in durable messages, add a test for
+  // client-side-decoded response correctness.
+  std::vector<uint8_t> buffer(durable_message.byte_size());
+  EXPECT_TRUE(durable_message.CopyTo(buffer));
+  EXPECT_EQ(buffer, base::as_byte_span(encoded_body));
+}
+
+// Tests a large response body, which would result in multiple asynchronous
+// chunks being written into the configured durable message.
+TEST_F(URLLoaderMockSocketTest, DurableMessageWorksWithLotsOfData) {
+  std::string response_body;
+  constexpr int kReadSize = 1024;
+  response_body.reserve(5 * kReadSize * kReadSize);
+  // Using a repeating patter with a length that's prime is more likely to spot
+  // out of order or repeated chunks of data.
+  while (response_body.size() < 5 * kReadSize * kReadSize) {
+    response_body.append("foppity");
+  }
+  const auto compressed = net::CompressGzip(response_body);
+  int seq = 1;
+  std::vector<net::MockRead> reads;
+  reads.emplace_back(net::ASYNC, /*seq=*/seq++,
+                     "HTTP/1.1 200 OK\r\n"
+                     "Content-Encoding: gzip\r\n\r\n");
+  for (size_t i = 0; i < compressed.size(); i += kReadSize) {
+    reads.emplace_back(net::ASYNC,
+                       base::as_string_view(compressed).substr(i, kReadSize),
+                       /*result=*/0, /*seq=*/seq++);
+  }
+  reads.emplace_back(net::ASYNC, net::OK, /*seq=*/seq);
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(reads, kOriginTestWrites);
+  socket_data_reads_writes.set_receive_buffer_size(1);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+
+  MockDurableMessageAccountingDelegate accounting_delegate;
+  DevtoolsDurableMessage durable_message("test", accounting_delegate);
+  set_durable_message(durable_message.GetWeakPtr());
+  set_sniff();
+  // Set the flag for ClientSideContentDecoding.
+  request.client_side_content_decoding_enabled = true;
+
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_TRUE(did_mime_sniff());
+  EXPECT_EQ(mime_type(), "text/plain");
+  EXPECT_THAT(body, base::as_string_view(compressed));
+  EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
+              ElementsAre(net::SourceStreamType::kGzip));
+  EXPECT_TRUE(durable_message.is_complete());
+  size_t compressed_size = compressed.size();
+  ASSERT_EQ(static_cast<size_t>(accounting_delegate.size()), compressed_size);
+  ASSERT_EQ(durable_message.encoded_byte_size(), compressed_size);
+  ASSERT_EQ(durable_message.byte_size(), compressed_size);
+  // TODO(414864477): Returned body should be in decoded form, regardless of
+  // whether body decoding was done or deferred by the Network stack. Once
+  // deferred decoding is implemented in durable messages, add a test for
+  // client-side-decoded response correctness.
+  std::vector<uint8_t> buffer(durable_message.byte_size());
+  EXPECT_TRUE(durable_message.CopyTo(buffer));
+  EXPECT_EQ(buffer, base::as_byte_span(compressed));
+}
+
+// Tests that URLLoader still completes the load without errors/crashing, but
+// does not write into the DurableMessage object when the original message has
+// been evicted.
+TEST_F(URLLoaderTest, DoesNotWriteToDurableMessageWithEvictedMessage) {
+  MockDurableMessageAccountingDelegate accounting_delegate;
+  std::unique_ptr<DevtoolsDurableMessage> durable_message =
+      std::make_unique<DevtoolsDurableMessage>("test", accounting_delegate);
+  set_durable_message(durable_message->GetWeakPtr());
+
+  // Simulate eviction of the durable message.
+  durable_message.reset();
+
+  std::string body;
+  EXPECT_EQ(net::OK, Load(test_server()->GetURL("/hello.html.gz"), &body));
+  EXPECT_EQ(body, ReadTestFile("hello.html"));
+  ASSERT_EQ(accounting_delegate.size(), 0);
+}
+
+// Tests Durable Message incomplete read scenarios.
+
+TEST_F(URLLoaderTest, ErrorBeforeHeadersWritesIncompleteDurableMessage) {
+  MockDurableMessageAccountingDelegate accounting_delegate;
+  DevtoolsDurableMessage durable_message("test", accounting_delegate);
+  set_durable_message(durable_message.GetWeakPtr());
+  EXPECT_EQ(net::ERR_EMPTY_RESPONSE,
+            Load(test_server()->GetURL("/close-socket"), nullptr));
+  EXPECT_FALSE(client()->response_body().is_valid());
+  EXPECT_FALSE(durable_message.is_complete());
+  ASSERT_EQ(accounting_delegate.size(), 0);
+}
+
+TEST_F(URLLoaderTest, SyncErrorWhileReadingBodyWritesDurableMessage) {
+  MockDurableMessageAccountingDelegate accounting_delegate;
+  DevtoolsDurableMessage durable_message("test", accounting_delegate);
+  set_durable_message(durable_message.GetWeakPtr());
+  std::string body;
+  EXPECT_EQ(net::ERR_FAILED,
+            Load(net::URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
+                     net::URLRequestFailedJob::READ_SYNC, net::ERR_FAILED),
+                 &body));
+  EXPECT_EQ("", body);
+  EXPECT_TRUE(durable_message.is_complete());
+  ASSERT_EQ(accounting_delegate.size(), 0);
+}
+
+TEST_F(URLLoaderTest, AsyncErrorWhileReadingBodyWritesDurableMessage) {
+  MockDurableMessageAccountingDelegate accounting_delegate;
+  DevtoolsDurableMessage durable_message("test", accounting_delegate);
+  set_durable_message(durable_message.GetWeakPtr());
+  std::string body;
+  EXPECT_EQ(net::ERR_FAILED,
+            Load(net::URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
+                     net::URLRequestFailedJob::READ_ASYNC, net::ERR_FAILED),
+                 &body));
+  EXPECT_EQ("", body);
+  EXPECT_TRUE(durable_message.is_complete());
+  ASSERT_EQ(accounting_delegate.size(), 0);
+}
+
+TEST_F(URLLoaderTest,
+       SyncErrorWhileReadingBodyAfterBytesReceivedWritesDurableMessage) {
+  MockDurableMessageAccountingDelegate accounting_delegate;
+  DevtoolsDurableMessage durable_message("test", accounting_delegate);
+  set_durable_message(durable_message.GetWeakPtr());
+
+  const std::string response_body("Foo.");
+  std::list<std::string> packets = {response_body};
+  AddMultipleWritesInterceptor(packets, net::ERR_ACCESS_DENIED,
+                               false /*async_reads*/);
+  std::string body_readback;
+  EXPECT_EQ(net::ERR_ACCESS_DENIED,
+            Load(MultipleWritesInterceptor::GetURL(), &body_readback));
+  EXPECT_EQ(response_body, body_readback);
+  EXPECT_TRUE(durable_message.is_complete());
+  ASSERT_GT(accounting_delegate.size(), 0);
+}
+
+TEST_F(
+    URLLoaderTest,
+    AsyncErrorWhileReadingBodyAfterBytesReceivedWritesIncompleteDurableMessage) {
+  MockDurableMessageAccountingDelegate accounting_delegate;
+  DevtoolsDurableMessage durable_message("test", accounting_delegate);
+  set_durable_message(durable_message.GetWeakPtr());
+  const std::string kBody("Foo.");
+
+  std::list<std::string> packets;
+  packets.push_back(kBody);
+  AddMultipleWritesInterceptor(packets, net::ERR_ACCESS_DENIED,
+                               true /*async_reads*/);
+  std::string body;
+  EXPECT_EQ(net::ERR_ACCESS_DENIED,
+            Load(MultipleWritesInterceptor::GetURL(), &body));
+  EXPECT_EQ(kBody, body);
+  EXPECT_TRUE(durable_message.is_complete());
+  ASSERT_GT(accounting_delegate.size(), 0);
 }
 
 class NeverFinishedBodyHttpResponse : public net::test_server::HttpResponse {

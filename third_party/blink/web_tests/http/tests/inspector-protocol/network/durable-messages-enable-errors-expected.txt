@@ -1,0 +1,24 @@
+Ensures that DurableMessages cannot be enabled twice
+{
+    error : {
+        code : -32602
+        message : maxTotalBufferSize is required with enableDurableMessages
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Durable messages already enabled
+    }
+    id : <number>
+    sessionId : <string>
+}
+

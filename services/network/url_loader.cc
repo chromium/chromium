@@ -85,6 +85,7 @@
 #include "services/network/accept_ch_frame_interceptor.h"
 #include "services/network/ad_heuristic_cookie_overrides.h"
 #include "services/network/cookie_settings.h"
+#include "services/network/devtools_durable_msg.h"
 #include "services/network/file_opener_for_upload.h"
 #include "services/network/orb/orb_impl.h"
 #include "services/network/public/cpp/client_hints.h"
@@ -371,7 +372,8 @@ URLLoader::URLLoader(
         device_bound_session_observer,
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
     bool shared_storage_writable_eligible,
-    SharedResourceChecker& shared_resource_checker)
+    SharedResourceChecker& shared_resource_checker,
+    base::WeakPtr<DevtoolsDurableMessage> devtools_durable_message)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
@@ -455,7 +457,8 @@ URLLoader::URLLoader(
           request.trusted_params.has_value()),
       provide_data_use_updates_(context.DataUseUpdatesEnabled()),
       partial_decoder_decoding_buffer_size_(net::kMaxBytesToSniff),
-      permissions_policy_(request.permissions_policy) {
+      permissions_policy_(request.permissions_policy),
+      devtools_durable_message_(devtools_durable_message) {
   DCHECK(delete_callback_);
 
   if (options_ & mojom::kURLLoadOptionReadAndDiscardBody) {
@@ -1471,6 +1474,7 @@ void URLLoader::ReadMore() {
       pending_write_buffer_offset_ = partial_decoder_result_->ConsumeRawData(
           base::as_writable_byte_span(*pending_write_));
       CHECK(pending_write_buffer_offset_);
+      MaybeCollectDurableMessage(0, pending_write_buffer_offset_);
       CompletePendingWrite(true);
     }
     // Check if the partial decoder finished with a specific status.
@@ -1612,6 +1616,8 @@ void URLLoader::DidRead(int num_bytes,
   url_read_state_ = URLReadState::kWaitMojoPipeWritable;
 
   size_t new_data_offset = pending_write_buffer_offset_;
+  MaybeCollectDurableMessage(new_data_offset, num_bytes);
+
   if (num_bytes > 0) {
     if (!into_slop_bucket) {
       pending_write_buffer_offset_ += num_bytes;
@@ -2585,6 +2591,28 @@ void URLLoader::ResetRawHeadersForRedirect() {
   raw_request_line_size_ = 0;
   raw_request_headers_size_ = 0;
   raw_response_headers_ = nullptr;
+}
+
+void URLLoader::MaybeCollectDurableMessage(size_t new_data_offset,
+                                           int num_bytes) {
+  if (!pending_write_ || !devtools_durable_message_) {
+    return;
+  }
+
+  if (num_bytes <= 0) {
+    devtools_durable_message_->MarkComplete();
+    return;
+  }
+
+  int64_t raw_bytes_cur_size = url_request_->GetRawBodyBytes();
+  int64_t raw_bytes_delta =
+      raw_bytes_cur_size - devtools_durable_message_raw_size_;
+  devtools_durable_message_->AddBytes(
+      base::as_byte_span(
+          base::span(*pending_write_)
+              .subspan(new_data_offset, static_cast<size_t>(num_bytes))),
+      raw_bytes_delta);
+  devtools_durable_message_raw_size_ = raw_bytes_cur_size;
 }
 
 }  // namespace network

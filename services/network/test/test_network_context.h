@@ -395,6 +395,11 @@ class TestNetworkContext : public mojom::NetworkContext {
   void GetDeviceBoundSessionManager(
       mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
           device_bound_session_manager) override {}
+  void ConfigureDurableMessageCollector(
+      const base::UnguessableToken& throttling_profile_id,
+      mojom::NetworkDurableMessageConfigPtr config,
+      mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver)
+      override {}
 };
 
 }  // namespace network

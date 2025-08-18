@@ -43,6 +43,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -94,6 +95,8 @@
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/network/devtools_durable_msg_collector.h"
+#include "services/network/devtools_durable_msg_collector_config.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
@@ -11775,6 +11778,54 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, RetryAfterInactive) {
         net::cookie_util::SecFetchStorageAccessOutcome::kValueNone,
         /*expected_count=*/1);
   }
+}
+
+TEST_F(NetworkContextTest, ConfigureDurableMessageCollector) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  const base::UnguessableToken kThrottlingProfileId =
+      base::UnguessableToken::Create();
+
+  EXPECT_EQ(
+      0u,
+      network_context->num_devtools_durable_message_collectors_for_testing());
+
+  // Add a collector.
+  mojo::Remote<mojom::DurableMessageCollector> collector;
+  network_context->ConfigureDurableMessageCollector(
+      kThrottlingProfileId, mojom::NetworkDurableMessageConfig::New(),
+      collector.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return network_context
+               ->num_devtools_durable_message_collectors_for_testing() == 1;
+  }));
+
+  EXPECT_EQ(
+      1u,
+      network_context->num_devtools_durable_message_collectors_for_testing());
+
+  // Configure the same collector again.
+  mojo::Remote<mojom::DurableMessageCollector> collector2;
+  network_context->ConfigureDurableMessageCollector(
+      kThrottlingProfileId, mojom::NetworkDurableMessageConfig::New(),
+      collector2.BindNewPipeAndPassReceiver());
+  collector2.FlushForTesting();
+
+  EXPECT_EQ(
+      1u,
+      network_context->num_devtools_durable_message_collectors_for_testing());
+
+  // Disconnect the mojo remote.
+  collector.reset();
+  collector2.reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return network_context
+               ->num_devtools_durable_message_collectors_for_testing() == 0;
+  }));
+
+  EXPECT_EQ(
+      0u,
+      network_context->num_devtools_durable_message_collectors_for_testing());
 }
 
 }  // namespace
