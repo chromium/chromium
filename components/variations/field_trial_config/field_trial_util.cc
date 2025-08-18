@@ -64,8 +64,9 @@ bool HasFormFactor(const FieldTrialTestingExperiment& experiment,
 // Returns true if the experiment config has a missing |min_os_version| or
 // GetOSVersion() >= |min_os_version|.
 bool HasMinOSVersion(const FieldTrialTestingExperiment& experiment) {
-  if (!experiment.min_os_version)
+  if (!experiment.min_os_version) {
     return true;
+  }
   return base::Version(experiment.min_os_version) <=
          ClientFilterableState::GetOSVersion();
 }
@@ -216,12 +217,13 @@ std::string EscapeValue(const std::string& value) {
   std::string escaped_str;
   escaped_str.reserve(net_escaped_str.length());
   for (const char ch : net_escaped_str) {
-    if (ch == '.')
+    if (ch == '.') {
       escaped_str.append("%2E");
-    else if (ch == '*')
+    } else if (ch == '*') {
       escaped_str.append("%2A");
-    else
+    } else {
       escaped_str.push_back(ch);
+    }
   }
   return escaped_str;
 }

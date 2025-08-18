@@ -93,8 +93,9 @@ class TestVariationsServiceClient : public VariationsServiceClient {
     return nullptr;
   }
   bool OverridesRestrictParameter(std::string* parameter) override {
-    if (restrict_parameter_.empty())
+    if (restrict_parameter_.empty()) {
       return false;
+    }
     *parameter = restrict_parameter_;
     return true;
   }

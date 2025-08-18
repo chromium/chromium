@@ -86,11 +86,13 @@ void LogRequestContextHistogram(RequestContextCategory result) {
 // is passed. This is needed for tests as EmbeddedTestServer is only
 // accessible using 127.0.0.1. See crrev.com/c/3507791 for details.
 URLValidationResult GetUrlValidationResult(const GURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return URLValidationResult::kNotValidInvalidUrl;
+  }
 
-  if (!url.SchemeIsHTTPOrHTTPS())
+  if (!url.SchemeIsHTTPOrHTTPS()) {
     return URLValidationResult::kNotValidNeitherHttpHttps;
+  }
 
 #if BUILDFLAG(IS_IOS)
   if (net::IsLocalhost(url) &&
@@ -100,14 +102,16 @@ URLValidationResult GetUrlValidationResult(const GURL& url) {
   }
 #endif  // BUILDFLAG(IS_IOS)
 
-  if (!google_util::IsGoogleAssociatedDomainUrl(url))
+  if (!google_util::IsGoogleAssociatedDomainUrl(url)) {
     return URLValidationResult::kNotValidNotGoogleDomain;
+  }
 
   // HTTPS is checked here, rather than before the IsGoogleAssociatedDomainUrl()
   // check, to know how many Google domains are rejected by the change to append
   // headers to only HTTPS requests.
-  if (!url.SchemeIs(url::kHttpsScheme))
+  if (!url.SchemeIs(url::kHttpsScheme)) {
     return URLValidationResult::kNotValidIsGoogleNotHttps;
+  }
 
   return URLValidationResult::kShouldAppend;
 }
@@ -258,11 +262,13 @@ class VariationsHeaderHelper {
     // 2. Only transmit for non-Incognito profiles.
     // 3. For the X-Client-Data header, only include non-empty variation IDs.
     if ((incognito == InIncognito::kYes) ||
-        !ShouldAppendVariationsHeader(url, "Append"))
+        !ShouldAppendVariationsHeader(url, "Append")) {
       return false;
+    }
 
-    if (variations_header_.empty())
+    if (variations_header_.empty()) {
       return false;
+    }
 
     // Set the variations header to cors_exempt_headers rather than headers to
     // be exempted from CORS checks, and to avoid exposing the header to service
@@ -285,8 +291,9 @@ class VariationsHeaderHelper {
         VariationsIdsProvider::GetInstance()->GetClientDataHeaders(
             signed_in == SignedIn::kYes);
 
-    if (variations_headers.is_null())
+    if (variations_headers.is_null()) {
       return "";
+    }
     return variations_headers->headers_map.at(
         GetVisibilityKey(owner, resource_request));
   }
@@ -334,8 +341,9 @@ void RemoveVariationsHeaderIfNeeded(
     const net::RedirectInfo& redirect_info,
     const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* to_be_removed_headers) {
-  if (!ShouldAppendVariationsHeader(redirect_info.new_url, "Remove"))
+  if (!ShouldAppendVariationsHeader(redirect_info.new_url, "Remove")) {
     to_be_removed_headers->push_back(kClientDataHeader);
+  }
 }
 
 std::unique_ptr<network::SimpleURLLoader>

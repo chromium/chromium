@@ -28,14 +28,18 @@ version_info::Channel VariationsServiceClient::GetChannelForVariations() {
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kFakeVariationsChannel);
   if (!forced_channel.empty()) {
-    if (forced_channel == "stable")
+    if (forced_channel == "stable") {
       return version_info::Channel::STABLE;
-    if (forced_channel == "beta")
+    }
+    if (forced_channel == "beta") {
       return version_info::Channel::BETA;
-    if (forced_channel == "dev")
+    }
+    if (forced_channel == "dev") {
       return version_info::Channel::DEV;
-    if (forced_channel == "canary")
+    }
+    if (forced_channel == "canary") {
       return version_info::Channel::CANARY;
+    }
     DVLOG(1) << "Invalid channel provided: " << forced_channel;
   }
 

@@ -109,8 +109,9 @@ namespace {
 // Format the provided |param_key| and |param_value| as commandline input.
 std::string GenerateParam(const std::string& param_key,
                           const std::string& param_value) {
-  if (!param_value.empty())
+  if (!param_value.empty()) {
     return " --" + param_key + "=\"" + param_value + "\"";
+  }
 
   return "";
 }

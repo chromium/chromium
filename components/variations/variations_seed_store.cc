@@ -81,8 +81,9 @@ bool AcceptEmptySeedSignatureForTesting(const std::string& signature) {
 VerifySignatureResult VerifySeedSignature(
     const std::string& seed_bytes,
     const std::string& base64_seed_signature) {
-  if (base64_seed_signature.empty())
+  if (base64_seed_signature.empty()) {
     return VerifySignatureResult::MISSING_SIGNATURE;
+  }
 
   std::string signature;
   if (!base::Base64Decode(base64_seed_signature, &signature))
@@ -95,8 +96,9 @@ VerifySignatureResult VerifySeedSignature(
   }
 
   verifier.VerifyUpdate(base::as_byte_span(seed_bytes));
-  if (!verifier.VerifyFinal())
+  if (!verifier.VerifyFinal()) {
     return VerifySignatureResult::INVALID_SEED;
+  }
 
   return VerifySignatureResult::VALID_SIGNATURE;
 }
@@ -121,8 +123,9 @@ base::Time TruncateToUTCDay(base::Time time) {
 UpdateSeedDateResult GetSeedDateChangeState(
     base::Time server_seed_date,
     base::Time stored_seed_date) {
-  if (server_seed_date < stored_seed_date)
+  if (server_seed_date < stored_seed_date) {
     return UpdateSeedDateResult::NEW_DATE_IS_OLDER;
+  }
 
   if (TruncateToUTCDay(server_seed_date) !=
       TruncateToUTCDay(stored_seed_date)) {
@@ -137,10 +140,12 @@ UpdateSeedDateResult GetSeedDateChangeState(
 // Returns success or error, populating result on success.
 StoreSeedResult Uncompress(const std::string& compressed, std::string* result) {
   DCHECK(result);
-  if (!compression::GzipUncompress(compressed, result))
+  if (!compression::GzipUncompress(compressed, result)) {
     return StoreSeedResult::kFailedUngzip;
-  if (result->empty())
+  }
+  if (result->empty()) {
     return StoreSeedResult::kFailedEmptyGzipContents;
+  }
   return StoreSeedResult::kSuccess;
 }
 
@@ -831,8 +836,9 @@ VariationsSeedStore::SeedProcessingResult VariationsSeedStore::ProcessSeedData(
   std::string ungzipped_data;
   if (seed_data.is_gzip_compressed) {
     StoreSeedResult result = Uncompress(*data, &ungzipped_data);
-    if (result != StoreSeedResult::kSuccess)
+    if (result != StoreSeedResult::kSuccess) {
       return {std::move(seed_data), result};
+    }
     data = &ungzipped_data;
   }
 
@@ -840,8 +846,9 @@ VariationsSeedStore::SeedProcessingResult VariationsSeedStore::ProcessSeedData(
   std::string patched_data;
   if (seed_data.is_delta_compressed) {
     DCHECK(!seed_data.existing_seed_bytes.empty());
-    if (!ApplyDeltaPatch(seed_data.existing_seed_bytes, *data, &patched_data))
+    if (!ApplyDeltaPatch(seed_data.existing_seed_bytes, *data, &patched_data)) {
       return {std::move(seed_data), StoreSeedResult::kFailedDeltaApply};
+    }
     data = &patched_data;
   }
 
@@ -866,13 +873,15 @@ StoreSeedResult VariationsSeedStore::ValidateSeedBytes(
     bool signature_verification_enabled,
     ValidatedSeed* result) {
   DCHECK(result);
-  if (seed_bytes.empty())
+  if (seed_bytes.empty()) {
     return StoreSeedResult::kFailedEmptyGzipContents;
+  }
 
   // Only store the seed data if it parses correctly.
   VariationsSeed seed;
-  if (!seed.ParseFromString(seed_bytes))
+  if (!seed.ParseFromString(seed_bytes)) {
     return StoreSeedResult::kFailedParse;
+  }
 
   // TODO(crbug.com/40228403): get rid of |signature_verification_enabled| and
   // only support switches::kAcceptEmptySeedSignatureForTesting.
@@ -919,8 +928,9 @@ bool VariationsSeedStore::ApplyDeltaPatch(const std::string& existing_data,
       static_cast<uint32_t>(existing_data.size());
   while (in.CurrentPosition() != static_cast<int>(patch.length())) {
     uint32_t value;
-    if (!in.ReadVarint32(&value))
+    if (!in.ReadVarint32(&value)) {
       return false;
+    }
 
     if (value != 0) {
       // A non-zero value indicates the number of bytes to copy from the patch
@@ -928,8 +938,9 @@ bool VariationsSeedStore::ApplyDeltaPatch(const std::string& existing_data,
 
       // No need to guard against bad data (i.e. very large |value|) because the
       // call below will fail if |value| is greater than the size of the patch.
-      if (!in.ReadString(&temp, value))
+      if (!in.ReadString(&temp, value)) {
         return false;
+      }
       output->append(temp);
     } else {
       // Otherwise, when it's zero, it indicates that it's followed by a pair of
@@ -937,14 +948,17 @@ bool VariationsSeedStore::ApplyDeltaPatch(const std::string& existing_data,
       // from |existing_data|.
       uint32_t offset;
       uint32_t length;
-      if (!in.ReadVarint32(&offset) || !in.ReadVarint32(&length))
+      if (!in.ReadVarint32(&offset) || !in.ReadVarint32(&length)) {
         return false;
+      }
 
       // Check for |offset + length| being out of range and for overflow.
       base::CheckedNumeric<uint32_t> end_offset(offset);
       end_offset += length;
-      if (!end_offset.IsValid() || end_offset.ValueOrDie() > existing_data_size)
+      if (!end_offset.IsValid() ||
+          end_offset.ValueOrDie() > existing_data_size) {
         return false;
+      }
       output->append(existing_data, offset, length);
     }
   }

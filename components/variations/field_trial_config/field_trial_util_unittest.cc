@@ -536,8 +536,9 @@ TEST_F(FieldTrialUtilTest,
       Study::MEET_DEVICE,
   };
   for (const Study::FormFactor form_factor : all_form_factors) {
-    if (form_factor == current_form_factor)
+    if (form_factor == current_form_factor) {
       continue;
+    }
     const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params[] =
         {{"x", "1"}, {"y", "2"}};
     ExperimentBuilder experiment_builder;

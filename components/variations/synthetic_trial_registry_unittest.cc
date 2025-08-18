@@ -64,8 +64,9 @@ class SyntheticTrialRegistryTest : public ::testing::Test {
     uint32_t trial_name_hash = HashName(trial_name);
     uint32_t trial_group_hash = HashName(trial_group);
     for (const ActiveGroupId& trial : synthetic_trials) {
-      if (trial.name == trial_name_hash && trial.group == trial_group_hash)
+      if (trial.name == trial_name_hash && trial.group == trial_group_hash) {
         return true;
+      }
     }
     return false;
   }

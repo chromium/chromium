@@ -61,8 +61,9 @@ void VariationsRequestScheduler::Start() {
 }
 
 void VariationsRequestScheduler::Reset() {
-  if (timer_.IsRunning())
+  if (timer_.IsRunning()) {
     timer_.Reset();
+  }
   one_shot_timer_.Stop();
 }
 
