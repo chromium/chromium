@@ -101,7 +101,7 @@ class EntityDataManager;
 class FieldClassificationModelHandler;
 class FormDataImporter;
 class LogManager;
-class OtpSuggestionDelegate;
+class OtpDelegate;
 class PersonalDataManager;
 class SingleFieldFillRouter;
 class StrikeDatabase;
@@ -362,9 +362,9 @@ class AutofillClient {
   virtual PasswordManagerDelegate* GetPasswordManagerDelegate(
       const FieldGlobalId& field_id);
 
-  // Returns the `OtpSuggestionDelegate` associated with the profile of
-  // the window of this tab.
-  virtual OtpSuggestionDelegate* GetOtpSuggestionDelegate();
+  // Returns the `OtpDelegate` associated with the profile of the window of
+  // this tab.
+  virtual OtpDelegate* GetOtpDelegate();
 
   // TODO(crbug.com/365494310): Move these methods to a plus-address-specific
   // client class.

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_OTP_SUGGESTION_DELEGATE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_OTP_SUGGESTION_DELEGATE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_OTP_DELEGATE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_OTP_DELEGATE_H_
 
 #include <map>
 #include <string>
@@ -20,9 +20,9 @@ using OtpFillData = std::map<FieldGlobalId, std::u16string>;
 // //components/password_manager depends on //components/autofill, so to allow
 // communication from //components/autofill to //components/password_manager,
 // this interface is injected via `AutofillClient`.
-class OtpSuggestionDelegate {
+class OtpDelegate {
  public:
-  virtual ~OtpSuggestionDelegate() = default;
+  virtual ~OtpDelegate() = default;
 
   // Returns whether OTP suggestions can be shown on `field` (if the field was
   // parsed as an OTP field, and a OTP value was successfully retrieved).
@@ -47,4 +47,4 @@ class OtpSuggestionDelegate {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_OTP_SUGGESTION_DELEGATE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_OTP_DELEGATE_H_

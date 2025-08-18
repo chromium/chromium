@@ -122,7 +122,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() final;
   PasswordManagerDelegate* GetPasswordManagerDelegate(
       const FieldGlobalId& field_id) final;
-  OtpSuggestionDelegate* GetOtpSuggestionDelegate() final;
+  OtpDelegate* GetOtpDelegate() final;
   void GetAiPageContent(GetAiPageContentCallback callback) final;
   AutofillAiManager* GetAutofillAiManager() final;
   AutofillAiModelCache* GetAutofillAiModelCache() final;

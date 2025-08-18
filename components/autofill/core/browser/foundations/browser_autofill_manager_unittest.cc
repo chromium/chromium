@@ -76,7 +76,7 @@
 #include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
-#include "components/autofill/core/browser/integrators/password_manager/mock_otp_suggestion_delegate.h"
+#include "components/autofill/core/browser/integrators/password_manager/mock_otp_delegate.h"
 #include "components/autofill/core/browser/integrators/password_manager/mock_password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
@@ -9122,13 +9122,11 @@ class BrowserAutofillManagerOtpSuggestionsTest
  protected:
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
-    client().set_otp_suggestion_delegate(
-        std::make_unique<NiceMock<MockOtpSuggestionDelegate>>());
+    client().set_otp_delegate(std::make_unique<NiceMock<MockOtpDelegate>>());
   }
 
-  MockOtpSuggestionDelegate& otp_suggestion_delegate() {
-    return static_cast<MockOtpSuggestionDelegate&>(
-        *client().GetOtpSuggestionDelegate());
+  MockOtpDelegate& otp_delegate() {
+    return static_cast<MockOtpDelegate&>(*client().GetOtpDelegate());
   }
 };
 
@@ -9152,20 +9150,20 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpSuggestions) {
 
   // Check that suggestions are offered for the first field if the OTP delegate
   // suggests that.
-  EXPECT_CALL(otp_suggestion_delegate(),
+  EXPECT_CALL(otp_delegate(),
               IsFieldEligibleForOtpFilling(form.global_id(),
                                            form.fields()[0].global_id()))
       .WillOnce(Return(true));
   const std::vector<std::string> otp_values = {"123456"};
   EXPECT_CALL(
-      otp_suggestion_delegate(),
+      otp_delegate(),
       GetOtpSuggestions(form.global_id(), form.fields()[0].global_id(), _))
       .WillOnce(RunOnceCallback<2>(otp_values));
   OnAskForValuesToFill(form, form.fields()[0]);
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 
   // Also check that there are no suggestions for the second field.
-  EXPECT_CALL(otp_suggestion_delegate(),
+  EXPECT_CALL(otp_delegate(),
               IsFieldEligibleForOtpFilling(form.global_id(),
                                            form.fields()[1].global_id()))
       .WillOnce(Return(false));

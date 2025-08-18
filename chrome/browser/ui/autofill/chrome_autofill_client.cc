@@ -492,7 +492,7 @@ PasswordManagerDelegate* ChromeAutofillClient::GetPasswordManagerDelegate(
   return client ? client->GetAutofillDelegate(field_id) : nullptr;
 }
 
-OtpSuggestionDelegate* ChromeAutofillClient::GetOtpSuggestionDelegate() {
+OtpDelegate* ChromeAutofillClient::GetOtpDelegate() {
   ChromePasswordManagerClient* client =
       ChromePasswordManagerClient::FromWebContents(web_contents());
   return client ? client->GetOtpManager() : nullptr;

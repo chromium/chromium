@@ -906,8 +906,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // suggestion of this type if the OTP delegate did not exist, and the
       // destruction of the delegate happens on the tab destruction, after
       // which no filling should happen.
-      const OtpSuggestionDelegate& otp_delegate =
-          CHECK_DEREF(manager_->client().GetOtpSuggestionDelegate());
+      const OtpDelegate& otp_delegate =
+          CHECK_DEREF(manager_->client().GetOtpDelegate());
       OtpFillData otp_fill_data = otp_delegate.GetFillDataForOtpSuggestion(
           query_form_.global_id(), query_field_.global_id(),
           suggestion.main_text.value);

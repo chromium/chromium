@@ -124,7 +124,7 @@ PasswordManagerDelegate* AutofillClient::GetPasswordManagerDelegate(
   return nullptr;
 }
 
-OtpSuggestionDelegate* AutofillClient::GetOtpSuggestionDelegate() {
+OtpDelegate* AutofillClient::GetOtpDelegate() {
   return nullptr;
 }
 

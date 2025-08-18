@@ -2,26 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_MOCK_OTP_SUGGESTION_DELEGATE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_MOCK_OTP_SUGGESTION_DELEGATE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_MOCK_OTP_DELEGATE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_MOCK_OTP_DELEGATE_H_
 
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "components/autofill/core/browser/integrators/password_manager/otp_suggestion_delegate.h"
+#include "components/autofill/core/browser/integrators/password_manager/otp_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
 
-class MockOtpSuggestionDelegate : public OtpSuggestionDelegate {
+class MockOtpDelegate : public OtpDelegate {
  public:
-  MockOtpSuggestionDelegate();
-  MockOtpSuggestionDelegate(const MockOtpSuggestionDelegate&) = delete;
-  MockOtpSuggestionDelegate& operator=(const MockOtpSuggestionDelegate&) =
-      delete;
-  ~MockOtpSuggestionDelegate() override;
+  MockOtpDelegate();
+  MockOtpDelegate(const MockOtpDelegate&) = delete;
+  MockOtpDelegate& operator=(const MockOtpDelegate&) = delete;
+  ~MockOtpDelegate() override;
 
   MOCK_METHOD(bool,
               IsFieldEligibleForOtpFilling,
@@ -43,4 +42,4 @@ class MockOtpSuggestionDelegate : public OtpSuggestionDelegate {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_MOCK_OTP_SUGGESTION_DELEGATE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_MOCK_OTP_DELEGATE_H_
