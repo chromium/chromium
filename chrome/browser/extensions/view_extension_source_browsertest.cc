@@ -44,9 +44,9 @@ IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
   // Go to the Chrome bookmarks URL.  It should redirect to the bookmark
   // manager Chrome extension.
   GURL bookmarks_url(chrome::kChromeUIBookmarksURL);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bookmarks_url));
-  EXPECT_TRUE(chrome::CanViewSource(browser()));
   content::WebContents* bookmarks_tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(bookmarks_tab, bookmarks_url));
+  EXPECT_TRUE(chrome::CanViewSource(browser()));
   GURL bookmarks_extension_url =
       bookmarks_tab->GetPrimaryMainFrame()->GetLastCommittedURL();
   EXPECT_TRUE(bookmarks_extension_url.SchemeIs(extensions::kExtensionScheme));

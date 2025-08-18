@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/test/browser_test.h"
@@ -532,11 +531,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   // Open a new tab for the extension to attach a debugger to.
   const GURL example_com =
       embedded_test_server()->GetURL("example.com", "/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example_com));
-  EXPECT_EQ(example_com, browser()
-                             ->tab_strip_model()
-                             ->GetActiveWebContents()
-                             ->GetLastCommittedURL());
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, example_com));
+  EXPECT_EQ(example_com, web_contents->GetLastCommittedURL());
 
   // Attach the extension debugger.
   EXPECT_EQ("attached",

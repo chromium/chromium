@@ -973,7 +973,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate current tab to new tab to engage v1 of the NTP extension to stay
   // non-idle.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url()));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), new_tab_url()));
 
   // Verify v1 of extension is responding to messages in the tab.
   std::u16string first_new_tab_title;
@@ -1026,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate again to new tab so we can confirm v1 is still running and v2
   // hasn't taken over future new tabs.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url()));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), new_tab_url()));
   std::u16string third_new_tab_title;
   ui_test_utils::GetCurrentTabTitle(browser(), &third_new_tab_title);
   ASSERT_EQ(u"Custom NTP test v1", third_new_tab_title);
@@ -1084,7 +1084,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to new tab page so we can confirm v2 is still running and v1
   // hasn't taken over future new tabs loads.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url()));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), new_tab_url()));
   std::u16string new_tab_title;
   ui_test_utils::GetCurrentTabTitle(browser(), &new_tab_title);
   ASSERT_EQ(u"Custom NTP test v2", new_tab_title);

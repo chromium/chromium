@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -419,20 +418,21 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
 
   // Opens a new tab to the given `domain`.
   void OpenDomain(std::string_view domain) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL(domain, "/simple.html")));
+    ASSERT_TRUE(
+        NavigateToURL(GetActiveWebContents(),
+                      embedded_test_server()->GetURL(domain, "/simple.html")));
   }
 
   // Opens a new tab to a Web UI page.
   void OpenWebUi() {
     ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings")));
+        NavigateToURL(GetActiveWebContents(), GURL("chrome://settings")));
   }
 
   // Opens a new tab to a page in the given `extension`.
   void OpenExtensionPage(const Extension& extension) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension.GetResourceURL("manifest.json")));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                              extension.GetResourceURL("manifest.json")));
   }
 
   // Opens a new tab to the given `domain` and waits for a content script to
@@ -446,8 +446,8 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   // Opens a new tab to the page with a sandboxed frame in the given
   // `extension`.
   void OpenExtensionPageWithSandboxedFrame(const Extension& extension) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension.GetResourceURL("parent.html")));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                              extension.GetResourceURL("parent.html")));
   }
 
   // Determines if a given `frame` is sandboxed. Sandboxed frames don't
@@ -570,11 +570,11 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 
   // Load a page and give it a sandboxed-srcdoc frame.
   ExtensionTestMessageListener listener_mainframe("dynamic import success");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.test", "/simple.html")));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/simple.html")));
   ASSERT_TRUE(listener_mainframe.WaitUntilSatisfied());
 
-  content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::TestNavigationObserver observer(web_contents, 1);
   ExtensionTestMessageListener listener_subframe("dynamic import success");
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, SandboxedWebPageEmbedsExtension) {
   GURL sandboxed_url =
       embedded_test_server()->GetURL("a.test", "/csp-sandbox.html");
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), sandboxed_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), sandboxed_url));
   content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* sandboxed_main_frame =
       web_contents->GetPrimaryMainFrame();
@@ -721,9 +721,9 @@ IN_PROC_BROWSER_TEST_F(
   const Extension* extension2 = LoadExtension(extension_dir2.UnpackedPath());
 
   // Load E1.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension1->GetResourceURL("main.html")));
   content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(
+      NavigateToURL(web_contents, extension1->GetResourceURL("main.html")));
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* sandboxed_a_frame =
       content::ChildFrameAt(main_frame, 0);
@@ -968,10 +968,10 @@ void ProcessMapBrowserTest::VerifyWhetherSubframesAreIsolated(
       AddExtensionWithSandboxedWebpage(frame_url, content);
   ASSERT_TRUE(extension);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("parent.html")));
-
   content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(
+      NavigateToURL(web_contents, extension->GetResourceURL("parent.html")));
+
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* sandboxed_child_frame =
       content::ChildFrameAt(main_frame, 0);
@@ -1068,10 +1068,10 @@ void ProcessMapBrowserTest::
         std::string_view parent_script,
         const bool is_subframe_data_url,
         const bool expects_api_access) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("parent.html")));
-
   content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(
+      NavigateToURL(web_contents, extension->GetResourceURL("parent.html")));
+
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   // Use JS to add content to the child frame.
   content::TestNavigationObserver observer(web_contents);
@@ -1163,10 +1163,10 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   ASSERT_TRUE(extension1);
   ASSERT_TRUE(extension2);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension2->GetResourceURL("parent.html")));
-
   content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(
+      NavigateToURL(web_contents, extension2->GetResourceURL("parent.html")));
+
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* sandboxed_child_frame =
       content::ChildFrameAt(main_frame, 0);
@@ -1279,10 +1279,10 @@ IN_PROC_BROWSER_TEST_P(ProcessMapAboutSrcdocBrowserTest,
           srcdoc_is_sandboxed);
   ASSERT_TRUE(extension);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("parent.html")));
-
   content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(
+      NavigateToURL(web_contents, extension->GetResourceURL("parent.html")));
+
   content::RenderFrameHost* extension_frame =
       web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* non_extension_frame =

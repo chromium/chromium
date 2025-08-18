@@ -6,7 +6,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -90,14 +89,14 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
         .ExtractBool();
   };
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webstore_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, webstore_url));
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             webstore_url);
   EXPECT_TRUE(is_api_available("webstorePrivate"));
   EXPECT_TRUE(is_api_available("management"));
   EXPECT_TRUE(is_api_available("runtime"));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), not_webstore_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, not_webstore_url));
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             not_webstore_url);
   EXPECT_FALSE(is_api_available("management"));
@@ -115,7 +114,7 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, CanReceiveEvents) {
 
   content::WebContents* web_contents = GetActiveWebContents();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webstore_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, webstore_url));
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             webstore_url);
   constexpr char kAddListener[] = R"(
@@ -126,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, CanReceiveEvents) {
   )";
   ASSERT_EQ("listener added", content::EvalJs(web_contents, kAddListener));
 
-  content::DOMMessageQueue message_queue(GetActiveWebContents());
+  content::DOMMessageQueue message_queue(web_contents);
   // Directly broadcast the management.onInstalled event from the EventRouter
   // and verify it arrived to the page without causing a crash.
   EventRouter* event_router = EventRouter::Get(profile());
@@ -149,7 +148,7 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, FrameWebstorePageBlocked) {
   GURL outer_frame_url = GURL(kNonWebstoreURL1).Resolve("/empty.html");
 
   content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), outer_frame_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, outer_frame_url));
   EXPECT_EQ(outer_frame_url, web_contents->GetLastCommittedURL());
 
   constexpr char kScript[] =

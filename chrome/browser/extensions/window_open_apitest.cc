@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -239,11 +238,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WindowOpenExtension) {
   GURL start_url(std::string(extensions::kExtensionScheme) +
                      url::kStandardSchemeSeparator +
                      last_loaded_extension_id() + "/test.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, start_url));
   WebContents* newtab = nullptr;
-  ASSERT_NO_FATAL_FAILURE(OpenWindow(GetActiveWebContents(),
-                                     start_url.Resolve("newtab.html"), true,
-                                     true, &newtab));
+  ASSERT_NO_FATAL_FAILURE(OpenWindow(
+      web_contents, start_url.Resolve("newtab.html"), true, true, &newtab));
 
   EXPECT_EQ(true, content::EvalJs(newtab, "testExtensionApi()"));
 }
@@ -256,15 +255,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WindowOpenInvalidExtension) {
   ASSERT_TRUE(extension);
 
   GURL start_url = extension->GetResourceURL("test.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, start_url));
   WebContents* newtab = nullptr;
   bool new_page_in_same_process = false;
   bool expect_success = false;
   GURL broken_extension_url(
       "chrome-extension://thisissurelynotavalidextensionid/newtab.html");
-  ASSERT_NO_FATAL_FAILURE(
-      OpenWindow(GetActiveWebContents(), broken_extension_url,
-                 new_page_in_same_process, expect_success, &newtab));
+  ASSERT_NO_FATAL_FAILURE(OpenWindow(web_contents, broken_extension_url,
+                                     new_page_in_same_process, expect_success,
+                                     &newtab));
 
   EXPECT_EQ(broken_extension_url,
             newtab->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -280,10 +280,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WindowOpenNoPrivileges) {
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("uitest").AppendASCII("window_open")));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL("about:blank")));
   WebContents* newtab = nullptr;
   ASSERT_NO_FATAL_FAILURE(
-      OpenWindow(GetActiveWebContents(),
+      OpenWindow(web_contents,
                  GURL(std::string(extensions::kExtensionScheme) +
                       url::kStandardSchemeSeparator +
                       last_loaded_extension_id() + "/newtab.html"),
@@ -301,13 +302,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
       test_data_dir_.AppendASCII("uitest").AppendASCII("window_open"));
   ASSERT_TRUE(extension);
 
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,foo")));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL("data:text/html,foo")));
 
   // test.html is not web-accessible and should not be loaded.
   GURL extension_url(extension->GetResourceURL("test.html"));
   content::CreateAndLoadWebContentsObserver windowed_observer;
-  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
+  ASSERT_TRUE(content::ExecJs(web_contents,
                               "window.open('" + extension_url.spec() + "');"));
   content::WebContents* newtab = windowed_observer.Wait();
   ASSERT_TRUE(newtab);
@@ -337,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   // chrome-search:// pages.  Verify that the page loads correctly.
   GURL history_url(chrome::kChromeUIHistoryURL);
   ASSERT_TRUE(history_url.SchemeIs(content::kChromeUIScheme));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), history_url));
+  ASSERT_TRUE(NavigateToURL(tab, history_url));
   EXPECT_EQ(history_url, tab->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   content::TestNavigationObserver observer(tab);

@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
@@ -84,10 +83,10 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, MAYBE_Registration) {
   const Extension* extension = LoadExtension(extension_path);
   ASSERT_TRUE(extension);
   GURL url = extension->GetResourceURL("test_registration.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   // Bypass permission dialogs for registering new protocol handlers.
-  content::WebContents* web_contents = GetActiveWebContents();
   permissions::PermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -156,12 +155,10 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, BrowserProcessSecurityLevel) {
       {.extension_url = "test_browser_process_security_level.html"}))
       << message_;
 
+  auto* web_contents = GetActiveWebContents();
   content::WebContentsDelegate* web_contents_delegate =
-      GetActiveWebContents()->GetDelegate();
-  content::RenderFrameHost* main_frame = browser()
-                                             ->tab_strip_model()
-                                             ->GetActiveWebContents()
-                                             ->GetPrimaryMainFrame();
+      web_contents->GetDelegate();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   std::vector<content::RenderFrameHost*> subframes =
       CollectAllRenderFrameHosts(main_frame);
   ASSERT_EQ(3u, subframes.size());

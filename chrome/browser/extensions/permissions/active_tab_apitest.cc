@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -62,12 +61,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, DISABLED_ActiveTab) {
   ASSERT_TRUE(extension);
   ASSERT_TRUE(background_page_ready.WaitUntilSatisfied());
 
+  auto* web_contents = GetActiveWebContents();
+
   // Shouldn't be initially granted based on activeTab.
   {
     ExtensionTestMessageListener navigation_count_listener("1");
     ResultCatcher catcher;
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(),
+    ASSERT_TRUE(NavigateToURL(
+        web_contents,
         embedded_test_server()->GetURL(
             "google.com", "/extensions/api_test/active_tab/page.html")));
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
@@ -78,8 +79,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, DISABLED_ActiveTab) {
   // extension shouldn't have access to tab.url.
   {
     ResultCatcher catcher;
-    ExtensionActionRunner::GetForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents())
+    ExtensionActionRunner::GetForWebContents(web_contents)
         ->RunAction(extension, false);
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
   }
@@ -87,8 +87,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, DISABLED_ActiveTab) {
   // Granting to the extension should give it access to page.html.
   {
     ResultCatcher catcher;
-    ExtensionActionRunner::GetForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents())
+    ExtensionActionRunner::GetForWebContents(web_contents)
         ->RunAction(extension, true);
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
   }
@@ -98,8 +97,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, DISABLED_ActiveTab) {
   {
     ExtensionTestMessageListener navigation_count_listener("2");
     ResultCatcher catcher;
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(),
+    ASSERT_TRUE(NavigateToURL(
+        web_contents,
         embedded_test_server()->GetURL(
             "google.com", "/extensions/api_test/active_tab/final_page.html")));
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
@@ -111,8 +110,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, DISABLED_ActiveTab) {
   {
     ExtensionTestMessageListener navigation_count_listener("3");
     ResultCatcher catcher;
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(),
+    ASSERT_TRUE(NavigateToURL(
+        web_contents,
         embedded_test_server()->GetURL(
             "example.com", "/extensions/api_test/active_tab/final_page.html")));
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
@@ -128,15 +127,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTabCors) {
       LoadExtension(test_data_dir_.AppendASCII("active_tab_cors"));
   ASSERT_TRUE(extension);
   ASSERT_TRUE(background_page_ready.WaitUntilSatisfied());
+  auto* web_contents = GetActiveWebContents();
 
   {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(),
+    ASSERT_TRUE(NavigateToURL(
+        web_contents,
         embedded_test_server()->GetURL(
             "google.com", "/extensions/api_test/active_tab_cors/page.html")));
     std::u16string title = u"page";
-    content::TitleWatcher watcher(
-        browser()->tab_strip_model()->GetActiveWebContents(), title);
+    content::TitleWatcher watcher(web_contents, title);
     ASSERT_EQ(title, watcher.WaitAndGetTitle());
   }
 
@@ -144,8 +143,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTabCors) {
     // The injected content script has an access to page's origin without
     // explicit permissions other than "activeTab".
     ResultCatcher catcher;
-    ExtensionActionRunner::GetForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents())
+    ExtensionActionRunner::GetForWebContents(web_contents)
         ->RunAction(extension, true);
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
   }
@@ -219,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
 
     // Sanity check the last committed url on the |file_iframe|.
     content::RenderFrameHost* file_iframe = content::FrameMatchingPredicate(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetPrimaryPage(),
+        GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameMatchesName, "file_iframe"));
     bool is_file_url = file_iframe->GetLastCommittedURL() == GURL("file:///");
     EXPECT_EQ(allowed, is_file_url)
@@ -259,8 +257,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
 
   auto get_active_tab_id = [this]() {
     sessions::SessionTabHelper* session_tab_helper =
-        sessions::SessionTabHelper::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents());
+        sessions::SessionTabHelper::FromWebContents(GetActiveWebContents());
     if (!session_tab_helper) {
       ADD_FAILURE();
       return extension_misc::kUnknownTabId;
@@ -272,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
   // in this case).
   GURL file_url_1 =
       net::FilePathToFileURL(extension->path().AppendASCII("manifest.json"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), file_url_1));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), file_url_1));
 
   // Assigned to |inactive_tab_id| since we open another foreground tab
   // subsequently.
@@ -299,8 +296,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
 
   // First don't grant the tab permission. Verify that the extension can't xhr
   // file urls, can't script the two tabs and can't embed file iframes.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ExtensionActionRunner::GetForWebContents(web_contents)
       ->RunAction(extension.get(), false /*grant_tab_permissions*/);
   EXPECT_FALSE(can_xhr_file_urls());
