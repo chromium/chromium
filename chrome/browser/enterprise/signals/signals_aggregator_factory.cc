@@ -52,7 +52,6 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "components/device_signals/core/browser/agent_signals_collector.h"
 #include "components/device_signals/core/browser/crowdstrike_client.h"
-#include "components/device_signals/core/browser/detected_agent_client.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace enterprise_signals {
@@ -116,8 +115,7 @@ SignalsAggregatorFactory::BuildServiceInstanceForBrowserContext(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   collectors.push_back(std::make_unique<device_signals::AgentSignalsCollector>(
-      device_signals::CrowdStrikeClient::Create(),
-      device_signals::DetectedAgentClient::Create()));
+      device_signals::CrowdStrikeClient::Create()));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

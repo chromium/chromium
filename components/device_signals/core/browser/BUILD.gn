@@ -73,13 +73,11 @@ static_library("browser") {
       "agent_signals_collector.h",
       "crowdstrike_client.h",
       "desktop/desktop_os_signals_collector.h",
-      "detected_agent_client.h",
     ]
     sources += [
       "agent_signals_collector.cc",
       "crowdstrike_client.cc",
       "desktop/desktop_os_signals_collector.cc",
-      "detected_agent_client.cc",
     ]
     deps += [ "//services/data_decoder/public/cpp" ]
   }
@@ -158,7 +156,6 @@ source_set("unit_tests") {
       "agent_signals_collector_unittest.cc",
       "crowdstrike_client_unittest.cc",
       "desktop/desktop_os_signals_collector_unittest.cc",
-      "detected_agent_client_unittest.cc",
     ]
     deps += [
       "//components/device_signals/core/common:test_support",

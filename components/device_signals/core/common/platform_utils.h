@@ -39,9 +39,6 @@ std::optional<base::FilePath> GetProcessExePath(base::ProcessId pid);
 // CrowdStrikeClient class.
 std::optional<CrowdStrikeSignals> GetCrowdStrikeSignals();
 
-// Returns the Crowdstrike Falcon agent install path.
-base::FilePath GetCrowdStrikeAgentInstallPath();
-
 base::FilePath GetCrowdStrikeZtaFilePath();
 
 std::string GetOsName();

@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/device_signals/core/browser/crowdstrike_client.h"
-#include "components/device_signals/core/browser/detected_agent_client.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/common_types.h"
@@ -43,20 +42,6 @@ class MockCrowdStrikeClient : public CrowdStrikeClient {
 MockCrowdStrikeClient::MockCrowdStrikeClient() = default;
 MockCrowdStrikeClient::~MockCrowdStrikeClient() = default;
 
-class MockDetectedAgentClient : public DetectedAgentClient {
- public:
-  MockDetectedAgentClient();
-  ~MockDetectedAgentClient() override;
-
-  MOCK_METHOD(void,
-              GetAgents,
-              (base::OnceCallback<void(std::vector<Agents>)>),
-              (override));
-};
-
-MockDetectedAgentClient::MockDetectedAgentClient() = default;
-MockDetectedAgentClient::~MockDetectedAgentClient() = default;
-
 SignalsAggregationRequest CreateRequest(bool add_crowdstrike_ids = true,
                                         bool add_detected_agents = true) {
   SignalsAggregationRequest request;
@@ -73,6 +58,13 @@ SignalsAggregationRequest CreateRequest(bool add_crowdstrike_ids = true,
   return request;
 }
 
+CrowdStrikeSignals GetValidSignals() {
+  CrowdStrikeSignals valid_signals;
+  valid_signals.agent_id = "1234";
+  valid_signals.customer_id = "abcd";
+  return valid_signals;
+}
+
 }  // namespace
 
 class AgentSignalsCollectorTest : public testing::Test,
@@ -86,40 +78,33 @@ class AgentSignalsCollectorTest : public testing::Test,
   bool is_detected_agent_signal_collection_enabled() { return GetParam(); }
 
   void CreateCollector() {
-    auto mocked_detected_agent_client =
-        std::make_unique<StrictMock<MockDetectedAgentClient>>();
-    mocked_detected_agent_client_ = mocked_detected_agent_client.get();
-
     auto mocked_crowdstrike_client =
         std::make_unique<StrictMock<MockCrowdStrikeClient>>();
     mocked_crowdstrike_client_ = mocked_crowdstrike_client.get();
 
     collector_ = std::make_unique<AgentSignalsCollector>(
-        std::move(mocked_crowdstrike_client),
-        std::move(mocked_detected_agent_client));
+        std::move(mocked_crowdstrike_client));
   }
 
-  void RunTest(std::optional<CrowdStrikeSignals> crowdstrike_signal,
-               std::vector<Agents> detected_agents,
-               std::optional<SignalCollectionError> crowdstrike_signal_error) {
-    CreateCollector();
+  void SetCrowdStrikeSignals(
+      const std::optional<CrowdStrikeSignals>& crowdstrike_signal,
+      const std::optional<SignalCollectionError>& crowdstrike_signal_error) {
     EXPECT_CALL(*mocked_crowdstrike_client_, GetIdentifiers(_))
         .WillOnce(Invoke(
-            [&crowdstrike_signal, &crowdstrike_signal_error](
+            [crowdstrike_signal, crowdstrike_signal_error](
                 base::OnceCallback<void(std::optional<CrowdStrikeSignals>,
                                         std::optional<SignalCollectionError>)>
                     callback) {
               std::move(callback).Run(crowdstrike_signal,
                                       crowdstrike_signal_error);
             }));
-    if (is_detected_agent_signal_collection_enabled()) {
-      EXPECT_CALL(*mocked_detected_agent_client_, GetAgents(_))
-          .WillOnce(Invoke(
-              [&detected_agents](
-                  base::OnceCallback<void(std::vector<Agents>)> callback) {
-                std::move(callback).Run(detected_agents);
-              }));
-    }
+  }
+
+  void RunTest(std::optional<CrowdStrikeSignals> crowdstrike_signal,
+               std::vector<Agents> detected_agents,
+               std::optional<SignalCollectionError> crowdstrike_signal_error) {
+    CreateCollector();
+    SetCrowdStrikeSignals(crowdstrike_signal, crowdstrike_signal_error);
 
     SignalsAggregationResponse captured_response;
 
@@ -179,13 +164,10 @@ class AgentSignalsCollectorTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<StrictMock<MockCrowdStrikeClient>, DanglingUntriaged>
-      mocked_crowdstrike_client_;
-  raw_ptr<StrictMock<MockDetectedAgentClient>, DanglingUntriaged>
-      mocked_detected_agent_client_;
-  std::unique_ptr<AgentSignalsCollector> collector_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<AgentSignalsCollector> collector_;
+  raw_ptr<StrictMock<MockCrowdStrikeClient>> mocked_crowdstrike_client_;
 };
 
 // Test that runs a sanity check on the set of signals supported by this
@@ -228,12 +210,7 @@ TEST_P(AgentSignalsCollectorTest,
   std::vector<Agents> detected_agents = {Agents::kCrowdStrikeFalcon};
   base::RunLoop run_loop;
   if (is_detected_agent_signal_collection_enabled()) {
-    EXPECT_CALL(*mocked_detected_agent_client_, GetAgents(_))
-        .WillOnce(
-            Invoke([&detected_agents](
-                       base::OnceCallback<void(std::vector<Agents>)> callback) {
-              std::move(callback).Run(detected_agents);
-            }));
+    SetCrowdStrikeSignals(GetValidSignals(), std::nullopt);
   }
 
   collector_->GetSignal(signal_name, UserPermission::kGranted,
@@ -261,18 +238,9 @@ TEST_P(AgentSignalsCollectorTest,
   CreateCollector();
   SignalName signal_name = SignalName::kAgent;
   SignalsAggregationResponse response;
-  CrowdStrikeSignals crowdstrike_signal;
-  crowdstrike_signal.agent_id = "1234";
-  crowdstrike_signal.customer_id = "abcd";
+  CrowdStrikeSignals crowdstrike_signal = GetValidSignals();
   base::RunLoop run_loop;
-  EXPECT_CALL(*mocked_crowdstrike_client_, GetIdentifiers(_))
-      .WillOnce(Invoke(
-          [&crowdstrike_signal](
-              base::OnceCallback<void(std::optional<CrowdStrikeSignals>,
-                                      std::optional<SignalCollectionError>)>
-                  callback) {
-            std::move(callback).Run(crowdstrike_signal, std::nullopt);
-          }));
+  SetCrowdStrikeSignals(crowdstrike_signal, std::nullopt);
 
   collector_->GetSignal(signal_name, UserPermission::kGranted,
                         CreateRequest(/*add_crowdstrike_ids=*/true,
@@ -300,12 +268,7 @@ TEST_P(AgentSignalsCollectorTest,
   std::vector<Agents> detected_agents = {Agents::kCrowdStrikeFalcon};
   base::RunLoop run_loop;
   if (is_detected_agent_signal_collection_enabled()) {
-    EXPECT_CALL(*mocked_detected_agent_client_, GetAgents(_))
-        .WillOnce(
-            Invoke([&detected_agents](
-                       base::OnceCallback<void(std::vector<Agents>)> callback) {
-              std::move(callback).Run(detected_agents);
-            }));
+    SetCrowdStrikeSignals(GetValidSignals(), std::nullopt);
   }
 
   collector_->GetSignal(signal_name, UserPermission::kMissingConsent,
@@ -334,11 +297,7 @@ TEST_P(AgentSignalsCollectorTest,
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
   if (is_detected_agent_signal_collection_enabled()) {
-    EXPECT_CALL(*mocked_detected_agent_client_, GetAgents(_))
-        .WillOnce(
-            Invoke([](base::OnceCallback<void(std::vector<Agents>)> callback) {
-              std::move(callback).Run({});
-            }));
+    SetCrowdStrikeSignals(std::nullopt, std::nullopt);
   }
 
   collector_->GetSignal(signal_name, UserPermission::kMissingConsent,
@@ -351,11 +310,7 @@ TEST_P(AgentSignalsCollectorTest,
 }
 
 TEST_P(AgentSignalsCollectorTest, GetSignal_Success) {
-  CrowdStrikeSignals valid_signals;
-  valid_signals.agent_id = "1234";
-  valid_signals.customer_id = "abcd";
-
-  RunTest(/*crowdstrike_signal=*/valid_signals,
+  RunTest(/*crowdstrike_signal=*/GetValidSignals(),
           /*detected_agents_signal=*/{Agents::kCrowdStrikeFalcon},
           /*crowdstrike_signal_error=*/std::nullopt);
 }

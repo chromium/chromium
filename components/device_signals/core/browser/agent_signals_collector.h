@@ -23,7 +23,6 @@ class TimeTicks;
 namespace device_signals {
 
 class CrowdStrikeClient;
-class DetectedAgentClient;
 struct CrowdStrikeSignals;
 enum class SignalCollectionError;
 
@@ -34,9 +33,8 @@ class AgentSignalsCollector : public BaseSignalsCollector {
   using AgentSignalsResponseCallback =
       base::RepeatingCallback<void(AgentSignalsResponse)>;
 
-  AgentSignalsCollector(
-      std::unique_ptr<CrowdStrikeClient> crowdstrike_client,
-      std::unique_ptr<DetectedAgentClient> detected_agent_client);
+  explicit AgentSignalsCollector(
+      std::unique_ptr<CrowdStrikeClient> crowdstrike_client);
 
   ~AgentSignalsCollector() override;
 
@@ -53,54 +51,29 @@ class AgentSignalsCollector : public BaseSignalsCollector {
                       SignalsAggregationResponse& response,
                       base::OnceClosure done_closure);
 
-  // Collection function for the Detected Agent signal. `request` contains the
-  // details on which agent signals should be collected.
-  // Invokes OnDetectedAgentSignalCollected when signal collection is complete.
-  void GetDetectedAgentSignal(const SignalsAggregationRequest request,
-                              SignalsAggregationResponse response,
-                              AgentSignalsResponseCallback agent_response_cb);
-
-  // Invoked when the detected `agent_signals` collection is complete.
-  // Will invoke `agent_response_cb` with the signal collection outcome to
-  // asynchronously notify the caller of the completion of this request.
-  void OnDetectedAgentSignalCollected(
-      SignalsAggregationResponse& response,
-      AgentSignalsResponseCallback agent_response_cb,
-      std::vector<Agents> agent_signals);
-
-  // Collection function for the Crowdstrike identifiers signal. `request`
-  // contains the details on which agent signals should be collected.
-  // Invokes OnCrowdStrikeSignalCollected when signal collection is complete.
-  void GetCrowdstrikeIdentifierSignals(
-      UserPermission permission,
-      const SignalsAggregationRequest request,
-      SignalsAggregationResponse response,
-      AgentSignalsResponseCallback agent_response_cb);
-
   // Invoked when the CrowdStrike client returns the collected agent
-  // signals as `agent_signals`. Will invoke `agent_response_cb` with the signal
+  // signals as `agent_signals`. Will invoke `callback` with the signal
   // collection outcome to asynchronously notify the caller of the completion of
-  // this request.
+  // this request. `should_return_detected_agents` and
+  // `should_return_crowdstrike_identifiers` determine what values will get
+  // mapped to the generated AgentSignalsResponse.
   void OnCrowdStrikeSignalCollected(
-      SignalsAggregationResponse& response,
-      AgentSignalsResponseCallback agent_response_cb,
+      bool should_return_detected_agents,
+      bool should_return_crowdstrike_identifiers,
+      base::OnceCallback<void(AgentSignalsResponse)> callback,
       std::optional<CrowdStrikeSignals> agent_signals,
       std::optional<SignalCollectionError> error);
 
-  // Invoked when all `agent_signals_responses` were collected. Updates the
-  // `response` with the collected `agent_signals_responses` and invokes the
-  // `done_closure` with the `response` once complete.
-  void OnSignalsCollected(
-      base::TimeTicks start_time,
-      SignalsAggregationResponse& response,
-      base::OnceClosure done_closure,
-      std::vector<AgentSignalsResponse> agent_signals_responses);
+  // Invoked when `agent_signals_response` is collected. Updates the
+  // `response` with the collected `agent_signals_response` and invokes the
+  // `done_closure` after.
+  void OnSignalsCollected(base::TimeTicks start_time,
+                          SignalsAggregationResponse& response,
+                          base::OnceClosure done_closure,
+                          AgentSignalsResponse agent_signals_response);
 
   // Instance used to collect signals from a CrowdStrike agent.
   std::unique_ptr<CrowdStrikeClient> crowdstrike_client_;
-
-  // Instance used to collect signals for installed security agents.
-  std::unique_ptr<DetectedAgentClient> detected_agent_client_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<AgentSignalsCollector> weak_factory_{this};

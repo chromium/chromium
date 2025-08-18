@@ -263,18 +263,6 @@ base::FilePath GetCrowdStrikeZtaFilePath() {
   return app_data_dir.Append(kZtaFilePathSuffix);
 }
 
-base::FilePath GetCrowdStrikeAgentInstallPath() {
-  static constexpr base::FilePath::CharType kCrowdstrikeAgentPathSuffix[] =
-      FILE_PATH_LITERAL("CrowdStrike\\FalconService.exe");
-
-  base::FilePath app_path;
-  if (!base::PathService::Get(base::DIR_PROGRAM_FILES, &app_path)) {
-    // Returning the empty path when failing.
-    return app_path;
-  }
-  return app_path.Append(kCrowdstrikeAgentPathSuffix);
-}
-
 std::string GetDeviceModel() {
   return base::SysInfo::HardwareModelName();
 }

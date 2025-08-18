@@ -57,12 +57,6 @@ std::string GetSerialNumber() {
   return ReadFile("/sys/class/dmi/id/product_serial");
 }
 
-base::FilePath GetCrowdStrikeAgentInstallPath() {
-  static constexpr base::FilePath::CharType kCrowdstrikeAgentPath[] =
-      FILE_PATH_LITERAL("/opt/CrowdStrike/");
-  return base::FilePath(kCrowdstrikeAgentPath);
-}
-
 base::FilePath GetCrowdStrikeZtaFilePath() {
   // ZTA files currently are not stored locally on linux platforms.
   return base::FilePath();
