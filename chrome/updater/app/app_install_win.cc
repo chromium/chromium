@@ -786,18 +786,22 @@ void AppInstallControllerImpl::StateChange(
     case UpdateService::UpdateState::State::kDownloading: {
       const auto pos = GetDownloadProgress(update_state.downloaded_bytes,
                                            update_state.total_bytes);
-      if (pos >= 0) {
-        download_progress_sampler_.AddSample(update_state.downloaded_bytes);
+      if (pos < 100) {
+        if (pos >= 0) {
+          download_progress_sampler_.AddSample(update_state.downloaded_bytes);
+        }
+        install_progress_observer_ipc_->OnDownloading(
+            app_id_, app_name_,
+            download_progress_sampler_.GetRemainingTime(
+                update_state.total_bytes),
+            pos >= 0 ? pos : 0);
+      } else {
+        install_progress_observer_ipc_->OnWaitingToInstall(app_id_, app_name_);
       }
-      install_progress_observer_ipc_->OnDownloading(
-          app_id_, app_name_,
-          download_progress_sampler_.GetRemainingTime(update_state.total_bytes),
-          pos >= 0 ? pos : 0);
       break;
     }
 
     case UpdateService::UpdateState::State::kInstalling: {
-      install_progress_observer_ipc_->OnWaitingToInstall(app_id_, app_name_);
       const int pos = update_state.install_progress;  // [0..100]
       if (pos >= 0) {
         install_progress_sampler_.AddSample(pos);
