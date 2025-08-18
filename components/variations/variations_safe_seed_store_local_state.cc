@@ -105,6 +105,11 @@ LoadSeedResult VariationsSafeSeedStoreLocalState::ReadSeedData(
   return seed_reader_writer_->ReadSeedData(seed_data, base64_seed_signature);
 }
 
+void VariationsSafeSeedStoreLocalState::ReadSeedData(
+    SeedReaderWriter::ReadSeedDataCallback done_callback) {
+  seed_reader_writer_->ReadSeedData(std::move(done_callback));
+}
+
 // static
 void VariationsSafeSeedStoreLocalState::RegisterPrefs(
     PrefRegistrySimple* registry) {

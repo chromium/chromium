@@ -56,6 +56,7 @@ struct COMPONENT_EXPORT(VARIATIONS) StoredSeed {
              std::string_view permanent_country_code,
              std::string_view permanent_country_version);
   ~StoredSeed();
+  StoredSeed(const StoredSeed& other);
 
   // The storage format of the seed. Seed-file-based seeds are compressed while
   // local-state-based seeds are compressed and base64 encoded.
@@ -115,6 +116,12 @@ COMPONENT_EXPORT(VARIATIONS) extern const SeedFieldsPrefs kSafeSeedFieldsPrefs;
 class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
     : public base::ImportantFileWriter::BackgroundDataSerializer {
  public:
+  // Call with the result of a seed read, the seed data, and the signature. The
+  // seed data and signature should only be used if the result is
+  // `LoadSeedResult::kSuccess`.
+  using ReadSeedDataCallback =
+      base::OnceCallback<void(LoadSeedResult, std::string, std::string)>;
+
   // `local_state` provides access to the local state prefs. Must not be null.
   // `seed_file_dir` denotes the directory for storing a seed file. Note that
   // Android Webview intentionally uses an empty path as it uses only local
@@ -185,10 +192,15 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
 
   // Reads seed data and returns the result of the load. If a pointer for the
   // signature is provided, the signature will be read and stored into
-  // |base64_seed_signature|. The value stored into |seed_data| should only be
+  // `base64_seed_signature`. The value stored into `seed_data` should only be
   // used if the result is `LoadSeedResult::kSuccess`.
   LoadSeedResult ReadSeedData(std::string* seed_data,
                               std::string* base64_seed_signature = nullptr);
+
+  // Reads and processes seed data and calls `done_callback` with the result of
+  // the load, the seed data, and the signature. The seed data and signature
+  // should only be used if the result is `LoadSeedResult::kSuccess`.
+  void ReadSeedData(ReadSeedDataCallback done_callback);
 
   // Stores the seed without applying any extra processing or validation. This
   // is used to store invalid data for testing.
@@ -199,6 +211,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   void StoreBase64EncodedSeedAndSignatureForTesting(
       std::string base64_compressed_data,
       std::string base64_signature);
+
+  // Returns true if the seed data is the same as the safe seed sentinel.
+  bool IsIdenticalToSafeSeedSentinel();
 
  private:
   // Returns the serialized data to be written to disk. This is done
@@ -233,6 +248,18 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Returns true if a seed file should be used.
   bool ShouldUseSeedFile() const;
 
+  // Calls `done_callback` with the result of the load, the seed data, and
+  // signature. The seed data and signature should only be used if the result is
+  // `LoadSeedResult::kSuccess`.
+  void ProcessStoredSeedDataAndRunCallback(ReadSeedDataCallback done_callback,
+                                           StoredSeed stored_seed);
+
+  // Calls `done_callback` with the result of the load. If the seed file needs
+  // to be read, the read will be done in a background thread. The seed data
+  // won't be processed, if the seed needs to be used, use ReadSeedData()
+  // instead.
+  void GetSeedData(base::OnceCallback<void(StoredSeed)> done_callback);
+
   // Pref service used to persist seeds and seed-related info.
   raw_ptr<PrefService> local_state_;
 
@@ -252,6 +279,8 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   StoredSeedInfo seed_info_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<SeedReaderWriter> weak_ptr_factory_{this};
 };
 
 }  // namespace variations

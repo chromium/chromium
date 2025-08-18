@@ -68,6 +68,13 @@ class VariationsSafeSeedStore {
   // Side-effect: If the read fails, clears the prefs associated with the seed.
   virtual LoadSeedResult ReadSeedData(std::string* seed_data,
                                       std::string* base64_seed_signature) = 0;
+
+  // Reads and processes seed data and calls `done_callback` with the result of
+  // the load, the seed data, and the signature. The seed data and signature
+  // should only be used if the result is `LoadSeedResult::kSuccess`.
+  // Side-effect: If the read fails, clears the prefs associated with the seed.
+  virtual void ReadSeedData(
+      SeedReaderWriter::ReadSeedDataCallback done_callback) = 0;
 };
 
 }  // namespace variations

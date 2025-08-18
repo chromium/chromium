@@ -62,6 +62,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
   void ClearState() override;
   LoadSeedResult ReadSeedData(std::string* seed_data,
                               std::string* base64_seed_signature) override;
+  void ReadSeedData(
+      SeedReaderWriter::ReadSeedDataCallback done_callback) override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

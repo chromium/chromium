@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
@@ -604,6 +605,95 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedDataExceedsSizeLimit) {
   EXPECT_EQ(result, LoadSeedResult::kExceedsUncompressedSizeLimit);
 }
 
+TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedDataCallback) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // Create and store seed.
+  const std::string seed_data = CreateVariationsSeed();
+  const std::string signature = "completely valid signature";
+  seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+      .seed_data = seed_data,
+      .signature = signature,
+  });
+
+  LoadSeedResult load_result;
+  std::string read_seed_data;
+  std::string read_signature;
+  auto lambda_cb = base::BindLambdaForTesting(
+      [&load_result, &read_seed_data, &read_signature](
+          LoadSeedResult result, std::string seed_data,
+          std::string base64_seed_signature) {
+        load_result = result;
+        read_seed_data = std::move(seed_data);
+        read_signature = std::move(base64_seed_signature);
+      });
+  seed_reader_writer.ReadSeedData(lambda_cb);
+
+  EXPECT_EQ(load_result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(read_seed_data, seed_data);
+  EXPECT_EQ(read_signature, signature);
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedDataCallbackCorruptGzip) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // Create and store seed.
+  std::string compressed_seed = CreateCompressedVariationsSeed();
+  compressed_seed[5] ^= 0xFF;
+  compressed_seed[10] ^= 0xFF;
+  seed_reader_writer.StoreRawSeedForTesting(compressed_seed);
+
+  LoadSeedResult load_result;
+  auto lambda_cb = base::BindLambdaForTesting(
+      [&load_result](LoadSeedResult result, std::string _seed_data,
+                     std::string _base64_seed_signature) {
+        load_result = result;
+      });
+  seed_reader_writer.ReadSeedData(lambda_cb);
+  EXPECT_EQ(load_result, LoadSeedResult::kCorruptGzip);
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       ReadSeedDataCallbackExceedsSizeLimit) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // 51MiB of uncompressed data to exceed 50MiB limit.
+  seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+      .seed_data = std::string(51 * 1024 * 1024, 'A'),
+      .signature = "ignored signature",
+  });
+
+  LoadSeedResult load_result;
+  auto lambda_cb = base::BindLambdaForTesting(
+      [&load_result](LoadSeedResult result, std::string _seed_data,
+                     std::string _base64_seed_signature) {
+        load_result = result;
+      });
+  seed_reader_writer.ReadSeedData(lambda_cb);
+  EXPECT_EQ(load_result, LoadSeedResult::kExceedsUncompressedSizeLimit);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     SeedReaderWriterSeedFilesGroupTest,
@@ -907,6 +997,125 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ReadSeedDataExceedsSizeLimit) {
   LoadSeedResult result =
       seed_reader_writer.ReadSeedData(&seed_data, &base64_seed_signature);
   EXPECT_EQ(result, LoadSeedResult::kExceedsUncompressedSizeLimit);
+}
+
+TEST_P(SeedReaderWriterLocalStateGroupsTest, ReadSeedDataCallback) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Initialize seed_reader_writer with test thread and timer and an empty file
+  // path.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_,
+      /*seed_file_dir=*/base::FilePath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // Create and store seed.
+  const std::string seed_data = CreateVariationsSeed();
+  const std::string signature = "seed signature";
+  seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+      .seed_data = seed_data,
+      .signature = signature,
+  });
+
+  LoadSeedResult load_result;
+  std::string read_seed_data;
+  std::string read_signature;
+  auto lambda_cb = base::BindLambdaForTesting(
+      [&load_result, &read_seed_data, &read_signature](
+          LoadSeedResult result, std::string seed_data,
+          std::string base64_seed_signature) {
+        load_result = result;
+        read_seed_data = std::move(seed_data);
+        read_signature = std::move(base64_seed_signature);
+      });
+  seed_reader_writer.ReadSeedData(lambda_cb);
+
+  EXPECT_EQ(load_result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(read_seed_data, seed_data);
+  EXPECT_EQ(read_signature, signature);
+}
+
+TEST_P(SeedReaderWriterLocalStateGroupsTest,
+       ReadSeedDataCallbackCorruptBase64) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Initialize seed_reader_writer with test thread and timer and an empty file
+  // path.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_,
+      /*seed_file_dir=*/base::FilePath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  seed_reader_writer.StoreRawSeedForTesting("invalid base64");
+
+  LoadSeedResult load_result;
+  auto lambda_cb = base::BindLambdaForTesting(
+      [&load_result](LoadSeedResult result, std::string _seed_data,
+                     std::string _base64_seed_signature) {
+        load_result = result;
+      });
+  seed_reader_writer.ReadSeedData(lambda_cb);
+  EXPECT_EQ(load_result, LoadSeedResult::kCorruptBase64);
+}
+
+TEST_P(SeedReaderWriterLocalStateGroupsTest, ReadSeedDataCallbackCorruptGzip) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Initialize seed_reader_writer with test thread and timer and an empty file
+  // path.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_,
+      /*seed_file_dir=*/base::FilePath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  std::string compressed_seed = CreateCompressedVariationsSeed();
+  compressed_seed[5] ^= 0xFF;
+  compressed_seed[10] ^= 0xFF;
+  const std::string base64_compressed_seed =
+      base::Base64Encode(compressed_seed);
+  seed_reader_writer.StoreRawSeedForTesting(base64_compressed_seed);
+
+  LoadSeedResult load_result;
+  auto lambda_cb = base::BindLambdaForTesting(
+      [&load_result](LoadSeedResult result, std::string _seed_data,
+                     std::string _base64_seed_signature) {
+        load_result = result;
+      });
+  seed_reader_writer.ReadSeedData(lambda_cb);
+  EXPECT_EQ(load_result, LoadSeedResult::kCorruptGzip);
+}
+
+TEST_P(SeedReaderWriterLocalStateGroupsTest,
+       ReadSeedDataCallbackExceedsSizeLimit) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Initialize seed_reader_writer with test thread and timer and an empty file
+  // path.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_,
+      /*seed_file_dir=*/base::FilePath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  const std::string base64_compressed_seed =
+      base::Base64Encode(Gzip(std::string(51 * 1024 * 1024, 'A')));
+  seed_reader_writer.StoreRawSeedForTesting(base64_compressed_seed);
+
+  LoadSeedResult load_result;
+  auto lambda_cb = base::BindLambdaForTesting(
+      [&load_result](LoadSeedResult result, std::string _seed_data,
+                     std::string _base64_seed_signature) {
+        load_result = result;
+      });
+  seed_reader_writer.ReadSeedData(lambda_cb);
+  EXPECT_EQ(load_result, LoadSeedResult::kExceedsUncompressedSizeLimit);
 }
 
 INSTANTIATE_TEST_SUITE_P(

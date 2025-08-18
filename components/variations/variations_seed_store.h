@@ -337,16 +337,47 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
                                             std::string* seed_data,
                                             std::string* base64_seed_signature);
 
-  // Reads the variations seed data from prefs into |seed_data|, and returns the
-  // result of the load. If a pointer for the signature is provided, the
-  // signature will be read and stored into |base64_seed_signature|. The value
-  // stored into |seed_data| should only be used if the result is SUCCESS. Reads
-  // either the latest or the safe seed, according to the specified |seed_type|.
-  // Side-effect: If the read fails, clears the prefs associated with the seed.
+  // Reads the variations seed data from SeedReaderWriter into |seed_data|, and
+  // returns the result of the load. If a pointer for the signature is provided,
+  // the signature will be read and stored into |base64_seed_signature|. The
+  // value stored into |seed_data| should only be used if the result is SUCCESS.
+  // Reads either the latest or the safe seed, according to the specified
+  // |seed_type|. Side-effect: If the read fails, clears the prefs associated
+  // with the seed.
   [[nodiscard]] LoadSeedResult ReadSeedData(
       SeedType seed_type,
       std::string* seed_data,
       std::string* base64_seed_signature = nullptr);
+
+  // Same as above, but allows for asynchronous reads if the seed has to be read
+  // from the seed file. The |done_callback| will be called when the read is
+  // complete. The result of the read will be handled by
+  // VariationsSeedStore::ReadSeedDataCallback().
+  void ReadSeedData(SeedType seed_type,
+                    bool require_synchronous,
+                    SeedReaderWriter::ReadSeedDataCallback done_callback);
+
+  // Callback for VariationsSeedStore::ReadSeedData(). If the read was
+  // successful, it will call the |done_callback| with the result of the read
+  // and the seed data. If the read was unsuccessful, it will clear the prefs
+  // associated with the seed and call the |done_callback| with empty seed data.
+  void CheckReadSeedDataResultAndRunCallback(
+      SeedType seed_type,
+      bool require_synchronous,
+      SeedReaderWriter::ReadSeedDataCallback done_callback,
+      LoadSeedResult load_seed_result,
+      std::string seed_data,
+      std::string base64_seed_signature);
+
+  // Processes the seed data (decompression, parsing and signature
+  // verification) and stores the result.
+  void ProcessAndStoreSeedData(
+      SeedData seed_data,
+      base::OnceCallback<void(bool, VariationsSeed)> done_callback,
+      bool require_synchronous,
+      LoadSeedResult read_result,
+      std::string existing_seed_bytes,
+      std::string existing_base64_seed_signature);
 
   // Called on the UI thread after the seed has been processed.
   void OnSeedDataProcessed(

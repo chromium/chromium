@@ -155,6 +155,58 @@ bool ShouldStoreWithoutProcessing(std::string_view seed_data) {
   return seed_data.empty() || seed_data == kIdenticalToSafeSeedSentinel;
 }
 
+// TODO(crbug.com/433877973): Execute in background thread if sync is not
+// required.
+LoadSeedResult ProcessStoredSeedData(StoredSeed stored_seed,
+                                     std::string* seed_data,
+                                     std::string* signature = nullptr) {
+  if (stored_seed.data.empty()) {
+    return LoadSeedResult::kEmpty;
+  }
+
+  // As a space optimization, the latest seed might not be stored directly, but
+  // rather aliased to the safe seed. We don't need to store the signature,
+  // since it is the same as the safe seed.
+  if (stored_seed.data == kIdenticalToSafeSeedSentinel) {
+    *seed_data = stored_seed.data;
+    return LoadSeedResult::kSuccess;
+  }
+
+  std::string_view compressed_data;
+  std::string decoded_data;
+  switch (stored_seed.storage_format) {
+    case StoredSeed::StorageFormat::kCompressed:
+      compressed_data = stored_seed.data;
+      break;
+    // Because clients not using a seed file get seed data from local state
+    // instead, they need to decode the base64-encoded seed data first.
+    case StoredSeed::StorageFormat::kCompressedAndBase64Encoded:
+      if (!base::Base64Decode(stored_seed.data, &decoded_data)) {
+        return LoadSeedResult::kCorruptBase64;
+      }
+      compressed_data = decoded_data;
+      break;
+  }
+
+  // A corrupt seed could result in a very large buffer being allocated which
+  // could crash the process.
+  // The maximum size of an uncompressed seed at 50 MiB.
+  constexpr std::size_t kMaxUncompressedSeedSize = 50 * 1024 * 1024;
+  if (compression::GetUncompressedSize(compressed_data) >
+      kMaxUncompressedSeedSize) {
+    return LoadSeedResult::kExceedsUncompressedSizeLimit;
+  }
+  if (!compression::GzipUncompress(compressed_data, seed_data)) {
+    return LoadSeedResult::kCorruptGzip;
+  }
+
+  if (signature) {
+    *signature = stored_seed.signature;
+  }
+
+  return LoadSeedResult::kSuccess;
+}
+
 }  // namespace
 
 const SeedFieldsPrefs kRegularSeedFieldsPrefs = {
@@ -199,6 +251,8 @@ StoredSeed::StoredSeed(StorageFormat storage_format,
       permanent_country_version(permanent_country_version) {}
 
 StoredSeed::~StoredSeed() = default;
+
+StoredSeed::StoredSeed(const StoredSeed& other) = default;
 
 SeedReaderWriter::SeedReaderWriter(
     PrefService* local_state,
@@ -367,52 +421,15 @@ LoadSeedResult SeedReaderWriter::ReadSeedData(
     std::string* seed_data,
     std::string* base64_seed_signature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const StoredSeed stored_seed = GetSeedData();
-  if (stored_seed.data.empty()) {
-    return LoadSeedResult::kEmpty;
-  }
+  return ProcessStoredSeedData(GetSeedData(), seed_data, base64_seed_signature);
+}
 
-  // As a space optimization, the latest seed might not be stored directly, but
-  // rather aliased to the safe seed. We don't need to store the signature,
-  // since it is the same as the safe seed.
-  if (stored_seed.data == kIdenticalToSafeSeedSentinel) {
-    *seed_data = stored_seed.data;
-    return LoadSeedResult::kSuccess;
-  }
-
-  std::string_view compressed_data;
-  std::string decoded_data;
-  switch (stored_seed.storage_format) {
-    case StoredSeed::StorageFormat::kCompressed:
-      compressed_data = stored_seed.data;
-      break;
-    // Because clients not using a seed file get seed data from local state
-    // instead, they need to decode the base64-encoded seed data first.
-    case StoredSeed::StorageFormat::kCompressedAndBase64Encoded:
-      if (!base::Base64Decode(stored_seed.data, &decoded_data)) {
-        return LoadSeedResult::kCorruptBase64;
-      }
-      compressed_data = decoded_data;
-      break;
-  }
-
-  // A corrupt seed could result in a very large buffer being allocated which
-  // could crash the process.
-  // The maximum size of an uncompressed seed at 50 MiB.
-  constexpr std::size_t kMaxUncompressedSeedSize = 50 * 1024 * 1024;
-  if (compression::GetUncompressedSize(compressed_data) >
-      kMaxUncompressedSeedSize) {
-    return LoadSeedResult::kExceedsUncompressedSizeLimit;
-  }
-  if (!compression::GzipUncompress(compressed_data, seed_data)) {
-    return LoadSeedResult::kCorruptGzip;
-  }
-
-  // Copy the signature from the loaded seed.
-  if (base64_seed_signature) {
-    *base64_seed_signature = stored_seed.signature;
-  }
-  return LoadSeedResult::kSuccess;
+void SeedReaderWriter::ReadSeedData(
+    SeedReaderWriter::ReadSeedDataCallback done_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  GetSeedData(
+      base::BindOnce(&SeedReaderWriter::ProcessStoredSeedDataAndRunCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(done_callback)));
 }
 
 void SeedReaderWriter::StoreRawSeedForTesting(std::string seed_data) {
@@ -440,6 +457,16 @@ void SeedReaderWriter::StoreBase64EncodedSeedAndSignatureForTesting(
                             std::move(base64_compressed_data));
     local_state_->SetString(fields_prefs_->signature,
                             std::move(base64_signature));
+  }
+}
+
+bool SeedReaderWriter::IsIdenticalToSafeSeedSentinel() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ShouldUseSeedFile()) {
+    return seed_info_.data() == kIdenticalToSafeSeedSentinel;
+  } else {
+    return local_state_->GetString(fields_prefs_->seed) ==
+           kIdenticalToSafeSeedSentinel;
   }
 }
 
@@ -683,6 +710,27 @@ bool SeedReaderWriter::ShouldUseSeedFile() const {
   // client-side in VariationsSeedStore SetUpSeedFileTrial().
   return seed_writer_ &&
          base::FieldTrialList::FindFullName(kSeedFileTrial) == kSeedFilesGroup;
+}
+
+void SeedReaderWriter::ProcessStoredSeedDataAndRunCallback(
+    ReadSeedDataCallback done_callback,
+    StoredSeed stored_seed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::string seed_data;
+  std::string base64_seed_signature;
+  LoadSeedResult result = ProcessStoredSeedData(
+      std::move(stored_seed), &seed_data, &base64_seed_signature);
+  std::move(done_callback)
+      .Run(result, std::move(seed_data), base64_seed_signature);
+}
+
+void SeedReaderWriter::GetSeedData(
+    base::OnceCallback<void(StoredSeed)> done_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/433877973): If the client is in the treatment group, read
+  // the seed from the seed file in a background thread. For now it's just a
+  // callback version of the existing GetSeedData() method.
+  std::move(done_callback).Run(GetSeedData());
 }
 
 }  // namespace variations
