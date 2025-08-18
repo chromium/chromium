@@ -10,71 +10,42 @@
       <img class="logo" alt="">
       <h1>$i18n{m1ConsentTitle}</h1>
     </div>
-    <template is="dom-if" if="[[!shouldShowV2()]]">
-      <div id="consentContent">
-        <div class="section cr-secondary-text">
-          $i18n{m1ConsentDescription1}
-        </div>
-        <div class="section cr-secondary-text">
-          $i18n{m1ConsentDescription2}
-        </div>
-        <div class="banner">
-          <img class="topics-banner" alt="">
-        </div>
-        <div class="section cr-secondary-text">
-          $i18n{m1ConsentDescription3}
-        </div>
-        <privacy-sandbox-dialog-learn-more class="learn-more-section"
-            expanded="{{expanded_}}"
-            title="$i18n{m1ConsentLearnMoreExpandLabel}">
-          <ul class="cr-secondary-text">
-            <li>$i18nRaw{m1ConsentLearnMoreBullet1}</li>
-            <li>$i18nRaw{m1ConsentLearnMoreBullet2}</li>
-            <li>$i18nRaw{m1ConsentLearnMoreBullet3}</li>
-          </ul>
-            <div id="privacyPolicyDiv" class="cr-secondary-text">
-              $i18nRaw{m1ConsentLearnMorePrivacyPolicyLink}</div>
-        </privacy-sandbox-dialog-learn-more>
-        <div class="section cr-secondary-text" id="lastTextElement">
-          $i18n{m1ConsentDescription4}
-        </div>
+    <div id="consentContentV2">
+      <div id="consentContentV2FirstDescription"
+          class="section cr-secondary-text">
+        [[consentContentV2FirstDescription_]]
       </div>
-    </template>
-    <template is="dom-if" if="[[shouldShowV2()]]">
-      <div id="consentContentV2">
-        <div id="consentContentV2FirstDescription" class="section cr-secondary-text">
-          [[consentContentV2FirstDescription_]]
-        </div>
-        <div class="banner">
-          <img class="topics-banner" alt="">
-        </div>
-        <div class="section cr-secondary-text">
-          $i18n{m1ConsentDescription3}
-        </div>
-        <privacy-sandbox-dialog-learn-more class="learn-more-section"
-            expanded="{{expanded_}}"
-            title="$i18n{m1ConsentLearnMoreExpandLabel}">
-          <ul class="cr-secondary-text">
-            <li>$i18nRaw{m1ConsentLearnmoreBullet1V2}</li>
-            <li>$i18nRaw{m1ConsentLearnmoreBullet2V2}</li>
-            <template is="dom-if" if="[[!shouldShowAdTopicsContentParity_]]">
-              <div id="learnMoreBulletDescription" class="learn-more-bullet-description">
-                $i18nRaw{m1ConsentLearnmoreBullet2Description}
-              </div>
-            </template>
-            <template is="dom-if" if="[[shouldShowAdTopicsContentParity_]]">
-              <div id="learnMoreBulletDescriptionContentParity" class="learn-more-bullet-description">
-                $i18nRaw{m1ConsentLearnMoreBullet2DescriptionContentParity}
-              </div>
-            </template>
-            <li>$i18nRaw{m1ConsentLearnmoreBullet3V2}</li>
-          </ul>
-        </privacy-sandbox-dialog-learn-more>
-        <div class="section cr-secondary-text" id="lastTextElementV2">
-          $i18n{m1ConsentDescription4V2}
-        </div>
+      <div class="banner">
+        <img class="topics-banner" alt="">
       </div>
-    </template>
+      <div class="section cr-secondary-text">
+        $i18n{m1ConsentDescription3}
+      </div>
+      <privacy-sandbox-dialog-learn-more class="learn-more-section"
+          expanded="{{expanded_}}"
+          title="$i18n{m1ConsentLearnMoreExpandLabel}">
+        <ul class="cr-secondary-text">
+          <li>$i18nRaw{m1ConsentLearnmoreBullet1V2}</li>
+          <li>$i18nRaw{m1ConsentLearnmoreBullet2V2}</li>
+          <template is="dom-if" if="[[!shouldShowAdTopicsContentParity_]]">
+            <div id="learnMoreBulletDescription"
+                class="learn-more-bullet-description">
+              $i18nRaw{m1ConsentLearnmoreBullet2Description}
+            </div>
+          </template>
+          <template is="dom-if" if="[[shouldShowAdTopicsContentParity_]]">
+            <div id="learnMoreBulletDescriptionContentParity"
+                class="learn-more-bullet-description">
+              $i18nRaw{m1ConsentLearnMoreBullet2DescriptionContentParity}
+            </div>
+          </template>
+          <li>$i18nRaw{m1ConsentLearnmoreBullet3V2}</li>
+        </ul>
+      </privacy-sandbox-dialog-learn-more>
+      <div class="section cr-secondary-text" id="lastTextElementV2">
+        $i18n{m1ConsentDescription4V2}
+      </div>
+    </div>
     <div class="buttons-container">
       <cr-button id="declineButton" class="tonal-button"
           on-click="onConsentDeclined_">

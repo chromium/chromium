@@ -259,8 +259,6 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
  public:
   PrivacySandboxDialogViewBrowserTest() {
     set_baseline("crrev.com/c/6391455");
-    scoped_feature_list_.InitAndDisableFeature(
-        privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements);
   }
 
   void SetUpOnMainThread() override {
@@ -310,47 +308,6 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
 };
 
 #if !BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Consent) {
-  base::WaitableEvent shown_waiter;
-  base::WaitableEvent closed_waiter;
-
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown,
-                           PrivacySandboxService::SurfaceType::kDesktop))
-      .WillOnce([&shown_waiter] { shown_waiter.Signal(); });
-  EXPECT_CALL(*mock_service(),
-              PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
-                  PrivacySandboxService::SurfaceType::kDesktop))
-      .WillOnce([&closed_waiter] { closed_waiter.Signal(); });
-  ShowAndVerifyUi();
-
-  shown_waiter.TimedWait(kMaxWaitTime);
-  closed_waiter.TimedWait(kMaxWaitTime);
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Notice) {
-  base::WaitableEvent shown_waiter;
-  base::WaitableEvent closed_waiter;
-
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown,
-                           PrivacySandboxService::SurfaceType::kDesktop))
-      .WillOnce([&shown_waiter] { shown_waiter.Signal(); });
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
-          PrivacySandboxService::SurfaceType::kDesktop))
-      .WillOnce([&closed_waiter] { closed_waiter.Signal(); });
-  ShowAndVerifyUi();
-
-  shown_waiter.TimedWait(kMaxWaitTime);
-  closed_waiter.TimedWait(kMaxWaitTime);
-}
-
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
                        InvokeUi_RestrictedNotice) {
   base::WaitableEvent shown_waiter;
@@ -380,7 +337,7 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementBrowserTest
   PrivacySandboxDialogViewAdsApiUxEnhancementBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         // Enabled Features
-        {privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements},
+        {},
         // Disabled Features
         {privacy_sandbox::kPrivacySandboxAdTopicsContentParity});
   }
@@ -410,23 +367,18 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewAdsApiUxEnhancementBrowserTest,
   closed_waiter.TimedWait(kMaxWaitTime);
 }
 
-// TODO(crbug.com/396446633): Add pixel tests for other dialogs with ads api ux
-// enhancements and ad topics content parity.
-
-class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
+class PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest
     : public PrivacySandboxDialogViewBrowserTest {
  public:
-  PrivacySandboxDialogViewPrivacyPolicyBrowserTest() {
+  PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        // Enabled
+        // Enabled Features
         {},
-        // Disabled
-        {privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements});
+        // Disabled Features
+        {privacy_sandbox::kPrivacySandboxAdTopicsContentParity});
   }
 
-  virtual std::string GetPrivacyPolicyLinkElementId() {
-    return "#privacyPolicyLink";
-  }
+  std::string GetPrivacyPolicyLinkElementId() { return "#privacyPolicyLinkV2"; }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -484,31 +436,6 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
 };
 
 // TODO(https://crbug.com/415305952): High failure rate.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewPrivacyPolicyBrowserTest,
-                       InvokeUi_PrivacyPolicy) {
-  ShowAndVerifyUi();
-}
-
-class PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest
-    : public PrivacySandboxDialogViewPrivacyPolicyBrowserTest {
- public:
-  PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        // Enabled Features
-        {privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements},
-        // Disabled Features
-        {privacy_sandbox::kPrivacySandboxAdTopicsContentParity});
-  }
-
-  std::string GetPrivacyPolicyLinkElementId() override {
-    return "#privacyPolicyLinkV2";
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// TODO(https://crbug.com/415305952): High failure rate.
 IN_PROC_BROWSER_TEST_F(
     PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest,
     InvokeUi_PrivacyPolicy) {
@@ -523,7 +450,7 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest
   PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         // Enabled Features
-        {privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements},
+        {},
         // Disabled Features
         {privacy_sandbox::kPrivacySandboxAdTopicsContentParity});
   }
