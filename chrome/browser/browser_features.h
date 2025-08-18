@@ -57,6 +57,7 @@ BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
 
 BASE_DECLARE_FEATURE(kNetworkAnnotationMonitoring);
 BASE_DECLARE_FEATURE(kNewTabPageTriggerForPrerender2);
+BASE_DECLARE_FEATURE(kNewTabPageTriggerForPrefetch);
 const base::FeatureParam<int>
     kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds{
         &features::kNewTabPageTriggerForPrerender2,

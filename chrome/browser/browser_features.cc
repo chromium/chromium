@@ -161,6 +161,12 @@ BASE_FEATURE(kNewTabPageTriggerForPrerender2,
              "NewTabPageTriggerForPrerender2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This flag is used for enabling New Tab Page triggered prefetch. See
+// crbug.com/421941586 for more details of New Tab Page triggered prefetching.
+BASE_FEATURE(kNewTabPageTriggerForPrefetch,
+             "NewTabPageTriggerForPrefetch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Adds an "Unsubscribe" action to web push notifications that allows stopping
 // notifications from a given origin with a single tap (with an option to undo).
