@@ -60,7 +60,6 @@ source_set("internal") {
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/interaction",
-      "//chrome/browser/ui/views/location_bar/cookie_controls",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
