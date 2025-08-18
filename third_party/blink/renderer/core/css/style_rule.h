@@ -658,7 +658,11 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleGroup {
                     HeapVector<Parameter> parameters,
                     HeapVector<Member<StyleRuleBase>> child_rules,
                     CSSSyntaxDefinition return_type);
-  StyleRuleFunction(const StyleRuleFunction&) = delete;
+  StyleRuleFunction(const StyleRuleFunction&) = default;
+
+  StyleRuleFunction* Copy() const {
+    return MakeGarbageCollected<StyleRuleFunction>(*this);
+  }
 
   const AtomicString& Name() const { return name_; }
   const HeapVector<Parameter>& GetParameters() const { return parameters_; }

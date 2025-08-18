@@ -91,6 +91,52 @@ TEST_F(StyleRuleTest, StyleRulePropertyCopy) {
   EXPECT_EQ(rule->GetInitialValue(), copy->GetInitialValue());
 }
 
+TEST_F(StyleRuleTest, StyleRuleFunctionCopy) {
+  auto* base_rule = css_test_helpers::ParseRule(GetDocument(), R"CSS(
+      @function --f(--p1, --p2) returns <length> {
+        @media (width > 0px) {
+          result: 50px;
+        }
+        result: 30px;
+      }
+    )CSS");
+
+  ASSERT_TRUE(base_rule);
+  auto* base_copy = base_rule->Copy();
+
+  EXPECT_NE(base_rule, base_copy);
+  EXPECT_EQ(base_rule->GetType(), base_copy->GetType());
+
+  auto* rule = DynamicTo<StyleRuleFunction>(base_rule);
+  auto* copy = DynamicTo<StyleRuleFunction>(base_copy);
+
+  ASSERT_TRUE(rule);
+  ASSERT_TRUE(copy);
+
+  EXPECT_EQ(rule->Name(), copy->Name());
+  EXPECT_EQ(rule->GetParameters().size(), copy->GetParameters().size());
+  ASSERT_EQ(2u, rule->GetParameters().size());
+
+  EXPECT_EQ(rule->GetParameters()[0].name, copy->GetParameters()[0].name);
+  EXPECT_EQ(rule->GetParameters()[0].type, copy->GetParameters()[0].type);
+  // Note: CSSVariableData is immutable, so the pointers are expected to match.
+  EXPECT_EQ(rule->GetParameters()[0].default_value,
+            copy->GetParameters()[0].default_value);
+
+  EXPECT_EQ(rule->GetParameters()[1].name, copy->GetParameters()[1].name);
+  EXPECT_EQ(rule->GetParameters()[1].type, copy->GetParameters()[1].type);
+  EXPECT_EQ(rule->GetParameters()[1].default_value,
+            copy->GetParameters()[1].default_value);
+
+  EXPECT_EQ(rule->GetReturnType(), copy->GetReturnType());
+  EXPECT_EQ(rule->ChildRules().size(), copy->ChildRules().size());
+
+  ASSERT_EQ(2u, rule->ChildRules().size());
+  // We should have done a deep copy; child rule pointers should not match.
+  EXPECT_NE(rule->ChildRules()[0], copy->ChildRules()[0]);
+  EXPECT_NE(rule->ChildRules()[1], copy->ChildRules()[1]);
+}
+
 TEST_F(StyleRuleTest, SetPreludeTextReparentsStyleRules) {
   CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
   auto* scope_rule = DynamicTo<CSSScopeRule>(
