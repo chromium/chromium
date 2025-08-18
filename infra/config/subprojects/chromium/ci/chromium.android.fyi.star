@@ -1365,13 +1365,9 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "android_specific_chromium_gtests",
+            "chromium_junit_tests_scripts",
         ],
         mixins = [
-            targets.mixin(
-                args = [
-                    "--emulator-debug-tags=all",
-                ],
-            ),
             "16-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",

@@ -1770,6 +1770,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "base_junit_tests": targets.per_test_modification(
@@ -1780,6 +1781,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "build_junit_tests": targets.per_test_modification(
@@ -1790,6 +1792,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "chrome_java_test_pagecontroller_junit_tests": targets.per_test_modification(
@@ -1800,6 +1803,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "chrome_junit_tests": targets.per_test_modification(
@@ -1810,6 +1814,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "components_junit_tests": targets.per_test_modification(
@@ -1820,6 +1825,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "content_junit_tests": targets.per_test_modification(
@@ -1830,6 +1836,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "device_junit_tests": targets.per_test_modification(
@@ -1840,6 +1847,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "junit_unit_tests": targets.per_test_modification(
@@ -1850,6 +1858,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "keyboard_accessory_junit_tests": targets.per_test_modification(
@@ -1860,6 +1869,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "media_base_junit_tests": targets.per_test_modification(
@@ -1870,6 +1880,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "module_installer_junit_tests": targets.per_test_modification(
@@ -1880,6 +1891,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "net_junit_tests": targets.per_test_modification(
@@ -1890,6 +1902,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "paint_preview_junit_tests": targets.per_test_modification(
@@ -1900,6 +1913,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "password_manager_junit_tests": targets.per_test_modification(
@@ -1910,6 +1924,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "services_junit_tests": targets.per_test_modification(
@@ -1920,6 +1935,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "touch_to_fill_junit_tests": targets.per_test_modification(
@@ -1930,6 +1946,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "ui_junit_tests": targets.per_test_modification(
@@ -1940,6 +1957,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "webapk_client_junit_tests": targets.per_test_modification(
@@ -1950,6 +1968,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "webapk_shell_apk_h2o_junit_tests": targets.per_test_modification(
@@ -1960,6 +1979,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "webapk_shell_apk_junit_tests": targets.per_test_modification(
@@ -1970,6 +1990,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
     },
