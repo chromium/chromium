@@ -262,6 +262,7 @@ if (!is_android) {
     sources = [
       "tab_strip_model.h",
       "tab_strip_model_delegate.h",
+      "tab_strip_model_selection_state.h",
       "tab_strip_model_stats_recorder.h",
       "tab_strip_prefs.h",
       "tab_strip_scrubbing_metrics.h",
@@ -286,6 +287,7 @@ if (!is_android) {
     sources = [
       "tab_strip_model.cc",
       "tab_strip_model_delegate.cc",
+      "tab_strip_model_selection_state.cc",
       "tab_strip_model_stats_recorder.cc",
       "tab_strip_prefs.cc",
       "tab_strip_scrubbing_metrics.cc",
@@ -721,6 +723,7 @@ if (!is_android) {
       "tab_model_unittest.cc",
       "tab_renderer_data_unittest.cc",
       "tab_strip_model_context_menu_unittest.cc",
+      "tab_strip_model_selection_state_unittest.cc",
       "tab_strip_model_stats_recorder_unittest.cc",
       "tab_strip_model_unittest.cc",
       "vertical_tab_strip_state_controller_unittest.cc",
@@ -776,6 +779,7 @@ if (!is_android) {
       "//components/sync/protocol",
       "//components/sync/service",
       "//components/sync_sessions",
+      "//components/tabs:test_support",
       "//components/web_modal",
       "//content/public/browser",
       "//content/test:test_support",
