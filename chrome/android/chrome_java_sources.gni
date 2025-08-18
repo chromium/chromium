@@ -555,6 +555,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeBottomSheetProperties.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeBottomSheetView.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeBottomSheetViewBinder.java",
+  "java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeIphController.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeToolbarButtonController.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/TabDistillabilityProvider.java",
