@@ -174,12 +174,18 @@ void MaybeExtendVariationsSafeMode(
       /*has_session_shutdown_cleanly=*/false,
       /*is_extended_safe_mode=*/true);
 }
-
 }  // namespace
 
 BASE_FEATURE(kForceFieldTrialSetupCrashForTesting,
              "ForceFieldTrialSetupCrashForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool CreateTrialsResult::AppliedSeedHasActiveLimitedLayer() const {
+  if (!applied_seed) {
+    return false;
+  }
+  return seed_has_active_limited_layer.value_or(false);
+}
 
 Study::Channel ConvertProductChannelToStudyChannel(
     version_info::Channel product_channel) {
@@ -245,10 +251,6 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   VariationsIdsProvider* http_header_provider =
       VariationsIdsProvider::GetInstance();
 
-  if (add_entropy_source_to_variations_ids) {
-    http_header_provider->SetLowEntropySourceValue(
-        metrics_state_manager->GetLowEntropySource());
-  }
   // Force the variation ids selected in chrome://flags and/or specified using
   // the command-line flag.
   auto result = http_header_provider->ForceVariationIds(
@@ -322,6 +324,14 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     create_trials_result = CreateTrialsFromSeed(
         entropy_providers, feature_list.get(), safe_seed_manager,
         std::move(client_filterable_state));
+  }
+
+  if (add_entropy_source_to_variations_ids &&
+      !create_trials_result.AppliedSeedHasActiveLimitedLayer()) {
+    // TODO(crbug.com/424154785): Consider no longer transmitting LES values
+    // alongside VariationsIDs.
+    http_header_provider->SetLowEntropySourceValue(
+        metrics_state_manager->GetLowEntropySource());
   }
 
   platform_field_trials->SetUpClientSideFieldTrials(
@@ -727,9 +737,7 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
       SeedHasMisconfiguredEntropy(*client_state, seed);
   if (result.is_misconfigured) {
     base::debug::DumpWithoutCrashing();
-    return CreateTrialsResult{
-        .applied_seed = false,
-        .seed_has_active_limited_layer = result.seed_has_active_limited_layer};
+    return CreateTrialsResult{.applied_seed = false};
   }
 
   // Note that passing base::Unretained(this) below is safe because the callback

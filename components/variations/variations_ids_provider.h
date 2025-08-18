@@ -22,6 +22,15 @@
 #include "components/variations/variations_associated_data.h"
 
 namespace variations {
+namespace internal {
+
+// Minimum and maximum (inclusive) low entropy source values as VariationIDs for
+// the X-Client-Data header. This 8,000-value range was reserved in cl/333331461
+// (internal CL).
+inline constexpr int kLowEntropySourceVariationIdRangeMin = 3320978;
+inline constexpr int kLowEntropySourceVariationIdRangeMax = 3328977;
+}  // namespace internal
+
 class VariationsClient;
 
 // The key for a VariationsIdsProvider's |variations_headers_map_|. A

@@ -25,11 +25,6 @@
 namespace variations {
 namespace {
 
-// Range of low entropy source values (8000) as variation ids for the
-// X-Client-Data header. This range is reserved in cl/333331461 (internal CL).
-const int kLowEntropySourceVariationIdRangeMin = 3320978;
-const int kLowEntropySourceVariationIdRangeMax = 3328977;
-
 VariationsIdsProvider* g_instance = nullptr;
 
 base::Lock& GetInstanceLock() {
@@ -542,9 +537,9 @@ VariationsIdsProvider::GetAllVariationIds() {
   // a later A/B study.
   if (low_entropy_source_value_.has_value()) {
     int source_value = low_entropy_source_value_.value() +
-                       kLowEntropySourceVariationIdRangeMin;
-    DCHECK_GE(source_value, kLowEntropySourceVariationIdRangeMin);
-    DCHECK_LE(source_value, kLowEntropySourceVariationIdRangeMax);
+                       internal::kLowEntropySourceVariationIdRangeMin;
+    DCHECK_GE(source_value, internal::kLowEntropySourceVariationIdRangeMin);
+    DCHECK_LE(source_value, internal::kLowEntropySourceVariationIdRangeMax);
     all_variation_ids_set.insert(
         VariationIDEntry(source_value, GOOGLE_WEB_PROPERTIES_ANY_CONTEXT));
   }

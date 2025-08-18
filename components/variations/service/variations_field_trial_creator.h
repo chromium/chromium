@@ -44,6 +44,7 @@ class EntropyProviders;
 struct CreateTrialsResult {
   bool applied_seed = false;
   std::optional<bool> seed_has_active_limited_layer;
+  bool AppliedSeedHasActiveLimitedLayer() const;
 };
 
 // Just maps one set of enum values to another. Nothing to see here.

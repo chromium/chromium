@@ -7,16 +7,24 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string_view>
 
+#include "base/base64.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
@@ -30,6 +38,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -40,11 +49,15 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/variations/pref_names.h"
+#include "components/variations/proto/layer.pb.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_features.h"
 #include "components/variations/variations_ids_provider.h"
+#include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -63,12 +76,99 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 
 namespace variations {
 namespace {
 
 constexpr char kTrialName[] = "t1";
+constexpr std::string_view kSomeStudyName = "SomeStudy";
+constexpr std::string_view kLimitedLayerStudyName = "LimitedLayerStudy";
+constexpr int kGenericExperimentGroupId = 12;
+constexpr int kGenericExperimentGroupTriggerId = 789;
+
+struct ExperimentIdOptions {
+  std::optional<int> id;
+  std::optional<int> trigger_id;
+};
+
+// Returns a group named "Group" with its weight equal to 1 and the specified
+// ID, if any. CHECKs if both IDs are given.
+Study::Experiment CreateExperimentGroup(
+    const ExperimentIdOptions& id_options = {}) {
+  Study::Experiment group;
+  group.set_name("Group");
+  group.set_probability_weight(1);
+
+  if (id_options.id.has_value()) {
+    CHECK(id_options.trigger_id == std::nullopt);
+    group.set_google_web_experiment_id(*id_options.id);
+  }
+  if (id_options.trigger_id.has_value()) {
+    CHECK(id_options.id == std::nullopt);
+    group.set_google_web_trigger_experiment_id(*id_options.trigger_id);
+  }
+  return group;
+}
+
+// Returns a seed with the following:
+// * A 100-slot limited layer with a 100-slot layer member.
+// * A limited-layer-constrained study with the given group and permanent
+//   consistency.
+// * A generic study not constrained to any layers.
+//
+// If a group isn't given, then the seed contains a limited layer, no
+// layer-constrained studies, and a generic study. In practice, clients aren't
+// expected to receive layers without studies that reference them.
+VariationsSeed CreateTestSeedWithLimitedEntropyLayer(
+    std::optional<Study::Experiment> limited_layer_study_group) {
+  VariationsSeed seed;
+
+  auto* layer = seed.add_layers();
+  layer->set_id(123);
+  layer->set_num_slots(100);
+  layer->set_entropy_mode(Layer::LIMITED);
+
+  auto* layer_member = layer->add_members();
+  layer_member->set_id(1);
+  auto* slot_range = layer_member->add_slots();
+  slot_range->set_start(0);
+  slot_range->set_end(99);
+
+  Study base_study;
+  base_study.set_consistency(Study::PERMANENT);
+  auto* filter = base_study.mutable_filter();
+  filter->add_channel(Study::UNKNOWN);
+  filter->add_channel(Study::CANARY);
+  filter->add_channel(Study::DEV);
+  filter->add_channel(Study::BETA);
+  filter->add_channel(Study::STABLE);
+  filter->add_platform(Study::PLATFORM_WINDOWS);
+  filter->add_platform(Study::PLATFORM_MAC);
+  filter->add_platform(Study::PLATFORM_LINUX);
+  filter->add_platform(Study::PLATFORM_CHROMEOS);
+
+  Study some_study = base_study;
+  some_study.set_name(kSomeStudyName);
+  *some_study.add_experiment() = CreateExperimentGroup();
+  *seed.add_study() = some_study;
+
+  if (!limited_layer_study_group.has_value()) {
+    // Skip creating a layer-constrained study.
+    return seed;
+  }
+
+  Study layer_study = base_study;
+  layer_study.set_name(kLimitedLayerStudyName);
+  *layer_study.add_experiment() = *limited_layer_study_group;
+  auto* layer_member_reference = layer_study.mutable_layer();
+  layer_member_reference->set_layer_id(123);
+  layer_member_reference->add_layer_member_ids(1);
+  *seed.add_study() = layer_study;
+
+  return seed;
+}
 
 class VariationHeaderSetter : public ChromeBrowserMainExtraParts {
  public:
@@ -83,7 +183,10 @@ class VariationHeaderSetter : public ChromeBrowserMainExtraParts {
   void PostEarlyInitialization() override {
     // Set up some fake variations.
     auto* variations_provider = VariationsIdsProvider::GetInstance();
-    variations_provider->ForceVariationIds({"12", "456", "t789"}, "");
+    variations_provider->ForceVariationIds(
+        {base::NumberToString(kGenericExperimentGroupId),
+         "t" + base::NumberToString(kGenericExperimentGroupTriggerId)},
+        "");
   }
 };
 
@@ -444,6 +547,87 @@ VariationsHttpHeadersBrowserTest::RequestHandler(
   return http_response;
 }
 
+struct LimitedLayerTestParams {
+  std::string test_name;
+  Study::Experiment group;
+};
+
+class VariationsHttpHeadersBrowserTestWithLimitedLayerBase
+    : public VariationsHttpHeadersBrowserTest {
+ public:
+  VariationsHttpHeadersBrowserTestWithLimitedLayerBase() = default;
+  ~VariationsHttpHeadersBrowserTestWithLimitedLayerBase() override = default;
+
+ protected:
+  // BrowserTestBase:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kAcceptEmptySeedSignatureForTesting);
+    DisableTestingConfig();
+    VariationsHttpHeadersBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  bool SetUpUserDataDirectoryWithGroup(std::optional<Study::Experiment> group) {
+    const base::FilePath user_data_dir =
+        base::PathService::CheckedGet(chrome::DIR_USER_DATA);
+    const base::FilePath seed_file_path =
+        user_data_dir.AppendASCII("VariationsSeedV1");
+    const base::FilePath local_state_path =
+        user_data_dir.Append(chrome::kLocalStateFilename);
+
+    std::string serialized_seed = CreateTestSeedWithLimitedEntropyLayer(
+                                      /*limited_layer_study_group=*/group)
+                                      .SerializeAsString();
+    std::string compressed_seed;
+    compression::GzipCompress(serialized_seed, &compressed_seed);
+
+    // Write the seed for the seed file experiment's treatment-group clients.
+    CHECK(base::WriteFile(seed_file_path, compressed_seed));
+
+    // Write the seed for the seed file experiment's control-group clients.
+    base::Value::Dict local_state;
+    local_state.SetByDottedPath(prefs::kVariationsCompressedSeed,
+                                base::Base64Encode(compressed_seed));
+    CHECK(JSONFileValueSerializer(local_state_path).Serialize(local_state));
+    return true;
+  }
+
+  bool IsPrefDefaultValue(std::string_view pref_name) {
+    return local_state()->FindPreference(pref_name)->IsDefaultValue();
+  }
+
+  PrefService* local_state() { return g_browser_process->local_state(); }
+};
+
+class VariationsHttpHeadersBrowserTestWithActiveLimitedLayer
+    : public VariationsHttpHeadersBrowserTestWithLimitedLayerBase,
+      public ::testing::WithParamInterface<LimitedLayerTestParams> {
+ public:
+  VariationsHttpHeadersBrowserTestWithActiveLimitedLayer() = default;
+  ~VariationsHttpHeadersBrowserTestWithActiveLimitedLayer() override = default;
+
+ protected:
+  // InProcessBrowserTest:
+  bool SetUpUserDataDirectory() override {
+    return VariationsHttpHeadersBrowserTestWithLimitedLayerBase::
+        SetUpUserDataDirectoryWithGroup(/*group=*/GetParam().group);
+  }
+};
+
+class VariationsHttpHeadersBrowserTestWithInactiveLimitedLayer
+    : public VariationsHttpHeadersBrowserTestWithLimitedLayerBase {
+ public:
+  VariationsHttpHeadersBrowserTestWithInactiveLimitedLayer() = default;
+  ~VariationsHttpHeadersBrowserTestWithInactiveLimitedLayer() override =
+      default;
+
+ protected:
+  // InProcessBrowserTest:
+  bool SetUpUserDataDirectory() override {
+    return VariationsHttpHeadersBrowserTestWithLimitedLayerBase::
+        SetUpUserDataDirectoryWithGroup(/*group=*/std::nullopt);
+  }
+};
+
 // Associates |id| with GOOGLE_WEB_PROPERTIES_SIGNED_IN and creates a field
 // trial for it.
 void CreateGoogleSignedInFieldTrial(VariationID id) {
@@ -689,6 +873,119 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   // entropy source. 33 is the group that is derived from the low entropy source
   // value of 5.
   EXPECT_TRUE(base::Contains(variation_ids, 33));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VariationsHttpHeadersBrowserTestWithActiveLimitedLayer,
+    ::testing::Values(
+        LimitedLayerTestParams{.test_name = "LimitedLayerStudyWithExperimentID",
+                               .group = CreateExperimentGroup({.id = 3389050})},
+        LimitedLayerTestParams{
+            .test_name = "LimitedLayerStudyWithTriggerExperimentID",
+            .group = CreateExperimentGroup({.trigger_id = 3389051})},
+        LimitedLayerTestParams{
+            .test_name = "LimitedLayerStudyWithoutExperimentIDs",
+            .group = CreateExperimentGroup()}),
+    [](const ::testing::TestParamInfo<LimitedLayerTestParams>& params) {
+      return params.param.test_name;
+    });
+
+// Verifies that a client's low entropy source value is omitted from the
+// X-Client-Data header when a seed with an active limited layer is applied. A
+// limited layer is active when a limited-layer-constrained study applies to the
+// client's channel, platform, and Chrome version.
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTestWithActiveLimitedLayer,
+                       OmitLowEntropySource) {
+  // Check that both the low and limited entropy sources have been generated.
+  ASSERT_FALSE(IsPrefDefaultValue(
+      metrics::prefs::kMetricsLimitedEntropyRandomizationSource));
+  ASSERT_FALSE(IsPrefDefaultValue(metrics::prefs::kMetricsLowEntropySource));
+
+  // Check that the seed was applied by checking that the generic study was
+  // registered.
+  ASSERT_TRUE(base::FieldTrialList::TrialExists(kSomeStudyName));
+
+  // Check that the limited-layer-constrained study was also registered.
+  ASSERT_TRUE(base::FieldTrialList::TrialExists(kLimitedLayerStudyName));
+
+  // Cause the study group's experiment ID (if any) to be included in eligible
+  // X-Client-Data headers.
+  base::FieldTrialList::Find(kLimitedLayerStudyName)->Activate();
+
+  // Make a request and get its VariationIDs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
+  std::optional<std::string> header =
+      GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
+  ASSERT_FALSE(header == std::nullopt);
+  std::set<VariationID> ids;
+  std::set<VariationID> trigger_ids;
+  ASSERT_TRUE(ExtractVariationIds(header.value(), &ids, &trigger_ids));
+
+  // Check that the client's offset low entropy source value was omitted from
+  // the X-Client-Data header.
+  const int low_entropy_source =
+      local_state()->GetInteger(metrics::prefs::kMetricsLowEntropySource);
+  const int offset_low_entropy_source =
+      low_entropy_source + internal::kLowEntropySourceVariationIdRangeMin;
+  EXPECT_FALSE(base::Contains(ids, offset_low_entropy_source));
+  EXPECT_FALSE(base::Contains(trigger_ids, offset_low_entropy_source));
+
+  std::set<VariationID> expected_ids{kGenericExperimentGroupId};
+  std::set<VariationID> expected_trigger_ids{kGenericExperimentGroupTriggerId};
+  std::optional<Study::Experiment> limited_layer_study_group = GetParam().group;
+  if (limited_layer_study_group.has_value() &&
+      limited_layer_study_group->has_google_web_experiment_id()) {
+    expected_ids.insert(limited_layer_study_group->google_web_experiment_id());
+  } else if (limited_layer_study_group.has_value() &&
+             limited_layer_study_group
+                 ->has_google_web_trigger_experiment_id()) {
+    expected_trigger_ids.insert(
+        limited_layer_study_group->google_web_trigger_experiment_id());
+  }
+  EXPECT_THAT(ids, ::testing::UnorderedElementsAreArray(expected_ids));
+  EXPECT_THAT(trigger_ids,
+              ::testing::UnorderedElementsAreArray(expected_trigger_ids));
+}
+
+// Verifies that a client's low entropy source value is included in the
+// X-Client-Data header when a seed with an inactive limited layer is applied. A
+// limited layer is inactive when the seed contains a limited layer but no
+// limited-layer-constrained studies apply to the client's channel, platform,
+// and Chrome version.
+IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTestWithInactiveLimitedLayer,
+                       SendLowEntropySource) {
+  // Check that both the low and limited entropy sources have been generated.
+  ASSERT_FALSE(IsPrefDefaultValue(
+      metrics::prefs::kMetricsLimitedEntropyRandomizationSource));
+  ASSERT_FALSE(IsPrefDefaultValue((metrics::prefs::kMetricsLowEntropySource)));
+
+  // Check that the seed was applied by checking that the generic study was
+  // registered.
+  ASSERT_TRUE(base::FieldTrialList::TrialExists(kSomeStudyName));
+
+  // Check that the limited-layer-constrained study was not registered.
+  ASSERT_FALSE(base::FieldTrialList::TrialExists(kLimitedLayerStudyName));
+
+  // Make a request and get its VariationIDs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
+  std::optional<std::string> header =
+      GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
+  ASSERT_FALSE(header == std::nullopt);
+  std::set<VariationID> ids;
+  std::set<VariationID> trigger_ids;
+  ASSERT_TRUE(ExtractVariationIds(header.value(), &ids, &trigger_ids));
+
+  // Check that the client's offset low entropy source value was included in
+  // the X-Client-Data header.
+  const int low_entropy_source =
+      local_state()->GetInteger(metrics::prefs::kMetricsLowEntropySource);
+  const int offset_low_entropy_source =
+      low_entropy_source + internal::kLowEntropySourceVariationIdRangeMin;
+  EXPECT_THAT(ids, ::testing::UnorderedElementsAreArray(
+                       {kGenericExperimentGroupId, offset_low_entropy_source}));
+  EXPECT_THAT(trigger_ids, ::testing::UnorderedElementsAreArray(
+                               {kGenericExperimentGroupTriggerId}));
 }
 
 // The PRE_ prefix ensures this runs before
