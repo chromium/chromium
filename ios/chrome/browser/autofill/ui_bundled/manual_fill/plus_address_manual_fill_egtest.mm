@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/base_paths.h"
+#import "base/ios/ios_util.h"
 #import "base/path_service.h"
 #import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
@@ -319,6 +320,11 @@ void CheckPlusAddressCellVisibility(std::u16string chip_button_text,
 // Tests that tapping on the select plus address action shows a sheet with the
 // list of all plus addresses from the password manual fill view.
 - (void)testSelectPlusAddressActionFromPasswordFillView {
+  // TODO(crbug.com/439547642): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
   }

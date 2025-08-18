@@ -222,6 +222,10 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 // test assumes removing accents from `kFindInPageTestWithSpanishAccentText`
 // yields `kFindInPageTestWithoutSpanishAccentText`.
 - (void)testFindInPageDifferentAccent {
+  // TODO(crbug.com/439548043): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
   [_helper helperTestFindInPageDifferentAccent];
 }
 
