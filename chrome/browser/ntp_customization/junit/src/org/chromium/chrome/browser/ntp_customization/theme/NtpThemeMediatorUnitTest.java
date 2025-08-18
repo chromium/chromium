@@ -37,6 +37,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -129,7 +130,11 @@ public class NtpThemeMediatorUnitTest {
         createMediator(/* shouldShowAlone= */ true);
 
         mMediator.handleChromeDefaultSectionClick(mView);
-        verify(mNtpCustomizationConfigManager).onBackgroundChanged(eq(null));
+        verify(mNtpCustomizationConfigManager)
+                .onBackgroundColorChanged(
+                        eq(mActivity),
+                        eq(NtpCustomizationConfigManager.COLOR_NOT_SET),
+                        eq(NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT));
     }
 
     @Test

@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
@@ -27,11 +31,14 @@ import java.util.concurrent.Executor;
 /** Manages the NTP's background configuration and notifies listeners of changes. */
 @NullMarked
 public class NtpCustomizationConfigManager {
+    public static final int COLOR_NOT_SET = -1;
     private static final Executor EXECUTOR =
             (Runnable r) -> PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, r);
+
     private boolean mIsInitialized;
     private @NtpBackgroundImageType int mBackgroundImageType;
     private @Nullable BitmapDrawable mBackgroundImageDrawable;
+    private @ColorInt int mNtpDefaultBackgroundColor;
     private @ColorInt int mBackgroundColor;
     private boolean mIsMvtToggleOn;
 
@@ -41,18 +48,18 @@ public class NtpCustomizationConfigManager {
         default void onMvtToggleChanged() {}
 
         /**
-         * Called when the homepage background is changed.
+         * Called when a customized homepage background image is chosen.
          *
          * @param backgroundDrawable The new background image drawable.
          * @param fromInitialization Whether the update of the background comes from the
          *     initialization of the {@link NtpCustomizationConfigManager}, i.e, loading the image
          *     from the device.
          */
-        default void onBackgroundChanged(
-                @Nullable Drawable backgroundDrawable, boolean fromInitialization) {}
+        default void onBackgroundChanged(Drawable backgroundDrawable, boolean fromInitialization) {}
 
         /**
-         * Called when the user chooses a customized homepage background color.
+         * Called when the user chooses a customized homepage background color or resets to the
+         * default Chrome's color.
          *
          * @param backgroundColor The new background color.
          * @param fromInitialization Whether the update of the background comes from the
@@ -89,6 +96,10 @@ public class NtpCustomizationConfigManager {
 
     private NtpCustomizationConfigManager() {
         mHomepageStateListeners = new ObserverList<>();
+        // Don't use the application's context to initialize these colors since only the Activity's
+        // context is themed. Otherwise a wrong color is provided.
+        mNtpDefaultBackgroundColor = COLOR_NOT_SET;
+        mBackgroundColor = COLOR_NOT_SET;
         maybeInitialize();
     }
 
@@ -100,13 +111,25 @@ public class NtpCustomizationConfigManager {
         mBackgroundImageType = NtpCustomizationUtils.getNtpBackgroundImageType();
         if (mBackgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK) {
             NtpCustomizationUtils.readNtpBackgroundImage(
-                    (bitmap) ->
-                            notifyBackgroundImageChanged(bitmap, /* fromInitialization= */ true),
+                    (bitmap) -> {
+                        if (bitmap == null) {
+                            // When failed to load image from the disk, resets to the default color.
+                            NtpCustomizationUtils.resetBackgroundColor();
+                            return;
+                        }
+
+                        notifyBackgroundImageChanged(bitmap, /* fromInitialization= */ true);
+                    },
                     EXECUTOR);
         } else if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
-            mBackgroundColor = NtpCustomizationUtils.getBackgroundColor();
-            notifyBackgroundColorChanged(mBackgroundColor, /* fromInitialization= */ true);
+            mBackgroundColor = NtpCustomizationUtils.getBackgroundColor(mNtpDefaultBackgroundColor);
+            // Skips notifying the observers if the default background color isn't initialized. Any
+            // observer can initialize the default color when calling #getBackgroundColor(Context).
+            if (mBackgroundColor != COLOR_NOT_SET) {
+                notifyBackgroundColorChanged(mBackgroundColor, /* fromInitialization= */ true);
+            }
         }
+
         mIsMvtToggleOn =
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.IS_MVT_VISIBLE, true);
@@ -122,9 +145,9 @@ public class NtpCustomizationConfigManager {
 
         switch (mBackgroundImageType) {
             case NtpBackgroundImageType.IMAGE_FROM_DISK -> listener.onBackgroundChanged(
-                    mBackgroundImageDrawable, /* fromInitialization= */ true);
-            case NtpBackgroundImageType.CHROME_COLOR -> listener.onBackgroundColorChanged(
-                    mBackgroundColor, /* fromInitialization= */ true);
+                    assumeNonNull(mBackgroundImageDrawable), /* fromInitialization= */ true);
+            case NtpBackgroundImageType.CHROME_COLOR, NtpBackgroundImageType.DEFAULT -> listener
+                    .onBackgroundColorChanged(mBackgroundColor, /* fromInitialization= */ true);
         }
     }
 
@@ -143,11 +166,8 @@ public class NtpCustomizationConfigManager {
      *
      * @param bitmap : The NTP's background image.
      */
-    public void onBackgroundChanged(@Nullable Bitmap bitmap) {
-        mBackgroundImageType =
-                bitmap == null
-                        ? NtpBackgroundImageType.DEFAULT
-                        : NtpBackgroundImageType.IMAGE_FROM_DISK;
+    public void onBackgroundChanged(Bitmap bitmap) {
+        mBackgroundImageType = NtpBackgroundImageType.IMAGE_FROM_DISK;
         NtpCustomizationUtils.setNtpBackgroundImageType(mBackgroundImageType);
 
         notifyBackgroundImageChanged(bitmap, /* fromInitialization= */ false);
@@ -156,18 +176,27 @@ public class NtpCustomizationConfigManager {
     }
 
     /**
-     * Notifies listeners about the NTP's background color change, and save the selected background
-     * color to the SharedPreference.
+     * Notifies listeners about the NTP's background color change: 1) If a new customized color is
+     * chosen: save the selected background color to the SharedPreference. 2) If resting to Chrome's
+     * default color: delete the color key from the SharedPreference.
      *
+     * @param context : The current Activity context.
      * @param color : The new NTP's background color.
+     * @param backgroundImageType : The new background image type.
      */
-    public void onBackgroundColorChanged(@ColorInt int color) {
-        mBackgroundImageType = NtpBackgroundImageType.CHROME_COLOR;
+    public void onBackgroundColorChanged(
+            Context context, @ColorInt int color, @NtpBackgroundImageType int backgroundImageType) {
+        mBackgroundImageType = backgroundImageType;
         NtpCustomizationUtils.setNtpBackgroundImageType(mBackgroundImageType);
 
-        notifyBackgroundColorChanged(color, /* fromInitialization= */ false);
-
-        NtpCustomizationUtils.setBackgroundColor(color);
+        if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
+            notifyBackgroundColorChanged(color, /* fromInitialization= */ false);
+            NtpCustomizationUtils.setBackgroundColor(color);
+        } else if (mBackgroundImageType == NtpBackgroundImageType.DEFAULT) {
+            notifyBackgroundColorChanged(
+                    getDefaultBackgroundColor(context), /* fromInitialization= */ false);
+            NtpCustomizationUtils.resetBackgroundColor();
+        }
     }
 
     /**
@@ -178,18 +207,14 @@ public class NtpCustomizationConfigManager {
      *     of the {@link NtpCustomizationConfigManager}, i.e, loading the image from the device.
      */
     @VisibleForTesting
-    public void notifyBackgroundImageChanged(
-            @Nullable Bitmap imageBitmap, boolean fromInitialization) {
-        if (imageBitmap != null) {
-            mBackgroundImageDrawable =
-                    new BitmapDrawable(
-                            ContextUtils.getApplicationContext().getResources(), imageBitmap);
-        } else {
-            mBackgroundImageDrawable = null;
-        }
+    public void notifyBackgroundImageChanged(Bitmap imageBitmap, boolean fromInitialization) {
+        mBackgroundImageDrawable =
+                new BitmapDrawable(
+                        ContextUtils.getApplicationContext().getResources(), imageBitmap);
 
         for (HomepageStateListener listener : mHomepageStateListeners) {
-            listener.onBackgroundChanged(mBackgroundImageDrawable, fromInitialization);
+            listener.onBackgroundChanged(
+                    assumeNonNull(mBackgroundImageDrawable), fromInitialization);
         }
     }
 
@@ -198,7 +223,7 @@ public class NtpCustomizationConfigManager {
         mBackgroundColor = color;
 
         for (HomepageStateListener listener : mHomepageStateListeners) {
-            listener.onBackgroundColorChanged(color, fromInitialization);
+            listener.onBackgroundColorChanged(mBackgroundColor, fromInitialization);
         }
     }
 
@@ -241,6 +266,35 @@ public class NtpCustomizationConfigManager {
     }
 
     /**
+     * Returns the current background color for NTP. Needs to use the Activity's context rather than
+     * the application's context, which isn't themed and will provide a wrong color.
+     *
+     * @param context The current Activity context. It is themed and can provide the correct color.
+     */
+    public @ColorInt int getBackgroundColor(Context context) {
+        if (mBackgroundColor == COLOR_NOT_SET) {
+            mBackgroundColor = getDefaultBackgroundColor(context);
+        }
+        return mBackgroundColor;
+    }
+
+    /**
+     * Returns the default background color for NTP. Needs to use the Activity's context rather than
+     * the application's context, which isn't themed and will provide a wrong color.
+     *
+     * @param context The current Activity context. It is themed and can provide the correct color.
+     */
+    @VisibleForTesting
+    @ColorInt
+    int getDefaultBackgroundColor(Context context) {
+        if (mNtpDefaultBackgroundColor == COLOR_NOT_SET) {
+            mNtpDefaultBackgroundColor =
+                    ContextCompat.getColor(context, R.color.home_surface_background_color);
+        }
+        return mNtpDefaultBackgroundColor;
+    }
+
+    /**
      * Sets a NtpCustomizationConfigManager instance for testing.
      *
      * @param instance The instance to set.
@@ -256,6 +310,10 @@ public class NtpCustomizationConfigManager {
 
     public @ColorInt int getBackgroundColorForTesting() {
         return mBackgroundColor;
+    }
+
+    public int getListenersSizeForTesting() {
+        return mHomepageStateListeners.size();
     }
 
     public void resetForTesting() {

@@ -301,9 +301,16 @@ public class NtpCustomizationUtils {
     }
 
     /** Gets the NTP's background color from the SharedPreference. */
-    static @ColorInt int getBackgroundColor() {
+    static @ColorInt int getBackgroundColor(@ColorInt int defaultColor) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        return prefsManager.readInt(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, -1);
+        return prefsManager.readInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, defaultColor);
+    }
+
+    /** Removes the NTP's background color key from the SharedPreference. */
+    static void resetBackgroundColor() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
     }
 
     /** Returns whether all flags are enabled to allow edge-to-edge for customized theme. */

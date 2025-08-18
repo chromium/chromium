@@ -29,6 +29,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
@@ -107,6 +108,10 @@ public class NtpThemeMediator {
                                         mContext,
                                         uri,
                                         bitmap -> {
+                                            // If failed to get the bitmap of the chosen image,
+                                            // don't update existing background type.
+                                            if (bitmap == null) return;
+
                                             mNtpCustomizationConfigManager.onBackgroundChanged(
                                                     bitmap);
                                         });
@@ -165,7 +170,10 @@ public class NtpThemeMediator {
     void handleChromeDefaultSectionClick(View view) {
         updateTrailingIconVisibilityForSectionType(CHROME_DEFAULT);
 
-        mNtpCustomizationConfigManager.onBackgroundChanged(/* bitmap= */ null);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(
+                mContext,
+                NtpCustomizationConfigManager.COLOR_NOT_SET,
+                NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT);
     }
 
     @VisibleForTesting

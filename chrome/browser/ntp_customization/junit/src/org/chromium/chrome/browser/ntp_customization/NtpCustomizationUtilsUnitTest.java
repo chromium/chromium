@@ -25,8 +25,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 
@@ -170,10 +173,18 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testSaveBackgroundColor() {
+    public void testUpdateBackgroundColor() {
+        @ColorInt int defaultColor = Color.WHITE;
         @ColorInt int color = Color.RED;
 
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
+        assertEquals(defaultColor, NtpCustomizationUtils.getBackgroundColor(defaultColor));
+
         NtpCustomizationUtils.setBackgroundColor(color);
-        assertEquals(color, NtpCustomizationUtils.getBackgroundColor());
+        assertEquals(color, NtpCustomizationUtils.getBackgroundColor(defaultColor));
+
+        NtpCustomizationUtils.resetBackgroundColor();
+        assertFalse(prefsManager.contains(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR));
     }
 }

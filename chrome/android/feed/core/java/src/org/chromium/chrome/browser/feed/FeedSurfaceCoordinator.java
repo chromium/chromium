@@ -529,7 +529,7 @@ public class FeedSurfaceCoordinator
                     new NtpCustomizationConfigManager.HomepageStateListener() {
                         @Override
                         public void onBackgroundChanged(
-                                @Nullable Drawable backgroundDrawable, boolean fromInitialization) {
+                                Drawable backgroundDrawable, boolean fromInitialization) {
                             setBackground(backgroundDrawable);
                         }
 
@@ -542,7 +542,7 @@ public class FeedSurfaceCoordinator
 
             mNtpCustomizationConfigManager.addListener(mHomepageStateListener);
         } else {
-            setBackground(null);
+            setBackgroundColor(mDefaultBackgroundColor);
         }
 
         mHandler = new Handler(Looper.getMainLooper());
@@ -638,14 +638,8 @@ public class FeedSurfaceCoordinator
     }
 
     // Sets the background image for the embedder NTP.
-    private void setBackground(@Nullable Drawable backgroundDrawable) {
-        if (backgroundDrawable == null) {
-            mRecyclerView.setBackgroundColor(mDefaultBackgroundColor);
-            if (mNtpHeader != null) {
-                mNtpHeader.setBackgroundColor(mDefaultBackgroundColor);
-            }
-            return;
-        }
+    private void setBackground(Drawable backgroundDrawable) {
+        assert backgroundDrawable != null;
 
         mRecyclerView.setBackground(backgroundDrawable);
         if (mNtpHeader != null) {
@@ -661,7 +655,11 @@ public class FeedSurfaceCoordinator
     private void setBackgroundColor(@ColorInt int backgroundColor) {
         mRecyclerView.setBackgroundColor(backgroundColor);
         if (mNtpHeader != null) {
-            mNtpHeader.setBackgroundColor(Color.TRANSPARENT);
+            if (backgroundColor != mDefaultBackgroundColor) {
+                mNtpHeader.setBackgroundColor(Color.TRANSPARENT);
+            } else {
+                mNtpHeader.setBackgroundColor(mDefaultBackgroundColor);
+            }
         }
     }
 
