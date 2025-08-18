@@ -12,22 +12,10 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 
-import java.util.concurrent.TimeUnit;
-
 /** A class to manage rate limiting of the reader mode contextual page action. */
 @NullMarked
 public class ReaderModeActionRateLimiter {
     private static final int INVALID_TIME = -1;
-
-    /** The number of times the CPA can be shown without interaction before being suppressed. */
-    private static final int SHOW_LIMIT = 3;
-
-    /** The window of time to track the CPA being shown. */
-    private static final long TRACKING_WINDOW_MS = TimeUnit.DAYS.toMillis(1);
-
-    /** The window of time to suppress the CPA after it's been shown without interaction. */
-    private static final long SUPPRESSION_DURATION_MS = TimeUnit.DAYS.toMillis(3);
-
     @Nullable private static ReaderModeActionRateLimiter sInstance;
 
     public static interface Observer {
@@ -98,7 +86,8 @@ public class ReaderModeActionRateLimiter {
         int showCount = prefs.readInt(ChromePreferenceKeys.READER_MODE_ACTION_SHOW_COUNT, 0);
 
         // The tracking window has elapsed, reset the variables.
-        if (System.currentTimeMillis() - firstShownTimestamp > TRACKING_WINDOW_MS) {
+        if (System.currentTimeMillis() - firstShownTimestamp
+                > DomDistillerFeatures.sReaderModeDistillInAppTrackingWindowMs.getValue()) {
             showCount = 0;
             firstShownTimestamp = INVALID_TIME;
         }
@@ -115,12 +104,15 @@ public class ReaderModeActionRateLimiter {
         prefs.writeInt(ChromePreferenceKeys.READER_MODE_ACTION_SHOW_COUNT, showCount);
 
         // If the CPA has been shown too many times, then suppress it for a window of time.
-        if (showCount >= SHOW_LIMIT) {
-            long suppressionEnd = System.currentTimeMillis() + SUPPRESSION_DURATION_MS;
+        if (showCount >= DomDistillerFeatures.sReaderModeDistillInAppCpaShowLimit.getValue()) {
+            long suppressionEnd =
+                    System.currentTimeMillis()
+                            + DomDistillerFeatures.sReaderModeDistillInAppSuppressionWindowMs
+                                    .getValue();
             prefs.writeLong(
                     ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP,
                     suppressionEnd);
-            if (showCount == SHOW_LIMIT) {
+            if (showCount == DomDistillerFeatures.sReaderModeDistillInAppCpaShowLimit.getValue()) {
                 for (Observer obs : mObservers) {
                     obs.onWillStartSuppression();
                 }
