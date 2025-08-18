@@ -9338,10 +9338,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAutofillDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAutofill)},
 
-    {"fedcm-cooldown-on-ignore", flag_descriptions::kFedCmCooldownOnIgnoreName,
-     flag_descriptions::kFedCmCooldownOnIgnoreDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmCooldownOnIgnore)},
-
     {"fedcm-delegation", flag_descriptions::kFedCmDelegationName,
      flag_descriptions::kFedCmDelegationDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmDelegation)},

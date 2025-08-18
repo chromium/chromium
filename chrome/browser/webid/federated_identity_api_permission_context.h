@@ -47,8 +47,6 @@ class FederatedIdentityApiPermissionContext
       const url::Origin& relying_party_embedder) override;
   void RemoveEmbargoAndResetCounts(
       const url::Origin& relying_party_embedder) override;
-  void RecordIgnoreAndEmbargo(
-      const url::Origin& relying_party_embedder) override;
 
   bool HasThirdPartyCookiesAccess(
       content::RenderFrameHost& host,

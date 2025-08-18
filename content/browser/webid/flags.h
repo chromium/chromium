@@ -38,9 +38,6 @@ bool IsLightweightModeEnabled();
 // Whether phone/username is supported and name/email are optional.
 bool IsAlternativeIdentifiersEnabled();
 
-// Whether cooldown on ignore is enabled.
-bool IsCooldownOnIgnoreEnabled();
-
 // Whether to support the newer syntax for the "Use Other Account"
 // and account labels features.
 bool IsUseOtherAccountAndLabelsNewSyntaxEnabled();

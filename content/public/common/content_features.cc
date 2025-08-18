@@ -441,11 +441,6 @@ BASE_FEATURE(kFedCmAutofill,
              "FedCmAutofill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables cooldown on ignore in FedCM API.
-BASE_FEATURE(kFedCmCooldownOnIgnore,
-             "FedCmCooldownOnIgnore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables usage of the FedCM Delegation API.
 BASE_FEATURE(kFedCmDelegation,
              "FedCmDelegation",

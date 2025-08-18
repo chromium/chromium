@@ -123,12 +123,6 @@ BASE_FEATURE(kCpssUseTfliteSignatureRunner,
              "CpssUseTfliteSignatureRunner",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, FederatedIdentityApiEmbargoDurationDismiss will use values from
-// a field trial.
-BASE_FEATURE(kFedCmUpdatedCooldownPeriod,
-             "FedCmUpdatedCooldownPeriod",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // When the kill switch is unset, some Chrome features such as
 // Javascript-Optimizers are gated on an additional OS-provided security

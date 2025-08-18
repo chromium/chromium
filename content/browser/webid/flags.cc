@@ -52,10 +52,6 @@ bool IsAlternativeIdentifiersEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmAlternativeIdentifiers);
 }
 
-bool IsCooldownOnIgnoreEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmCooldownOnIgnore);
-}
-
 bool IsUseOtherAccountAndLabelsNewSyntaxEnabled() {
   return base::FeatureList::IsEnabled(
       features::kFedCmUseOtherAccountAndLabelsNewSyntax);

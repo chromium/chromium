@@ -1219,9 +1219,6 @@ extern const char kFedCmAlternativeIdentifiersDescription[];
 extern const char kFedCmAutofillName[];
 extern const char kFedCmAutofillDescription[];
 
-extern const char kFedCmCooldownOnIgnoreName[];
-extern const char kFedCmCooldownOnIgnoreDescription[];
-
 extern const char kFedCmDelegationName[];
 extern const char kFedCmDelegationDescription[];
 

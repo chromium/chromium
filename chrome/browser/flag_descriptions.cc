@@ -2102,11 +2102,6 @@ const char kFedCmAutofillName[] = "FedCmAutofill";
 const char kFedCmAutofillDescription[] =
     "Allows RPs to enhance autofill with FedCM.";
 
-const char kFedCmCooldownOnIgnoreName[] = "FedCmCooldownOnIgnore";
-const char kFedCmCooldownOnIgnoreDescription[] =
-    "Enables cooldown of the FedCM API in passive mode whenever the dialog is "
-    "ignored by the user.";
-
 const char kFedCmDelegationName[] = "FedCM with delegation support";
 const char kFedCmDelegationDescription[] =
     "Enables IdPs to delegate presentation to the browser.";

@@ -5007,11 +5007,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "fedcm-cooldown-on-ignore",
-    "owners": ["yigu@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": -1
-  },
-  {
     "name": "fedcm-delegation",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 145

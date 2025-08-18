@@ -52,9 +52,6 @@ void InMemoryFederatedPermissionContext::RemoveEmbargoAndResetCounts(
   embargoed_origins_.erase(relying_party_embedder);
 }
 
-void InMemoryFederatedPermissionContext::RecordIgnoreAndEmbargo(
-    const url::Origin& relying_party_embedder) {}
-
 bool InMemoryFederatedPermissionContext::ShouldCompleteRequestImmediately()
     const {
   const base::CommandLine* current_command_line =
