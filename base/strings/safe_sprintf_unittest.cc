@@ -19,6 +19,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/types/fixed_array.h"
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -393,7 +394,7 @@ void PrintLongString(char* buf, size_t sz) {
   char* out = tmp.data();
   size_t out_sz = sz;
   size_t len;
-  for (std::unique_ptr<char[]> perfect_buf;;) {
+  for (base::HeapArray<char> perfect_buf;;) {
     size_t needed =
         SafeSNPrintf(out, out_sz,
 #if defined(NDEBUG)
@@ -424,10 +425,10 @@ void PrintLongString(char* buf, size_t sz) {
     // running SafeSNPrintf() the first time, it is possible to compute the
     // correct buffer size for this test. So, allocate a second buffer and run
     // the exact same SafeSNPrintf() command again.
-    if (!perfect_buf.get()) {
+    if (perfect_buf.empty()) {
       out_sz = std::min(needed, sz);
-      out = new char[out_sz];
-      perfect_buf.reset(out);
+      perfect_buf = base::HeapArray<char>::Uninit(out_sz);
+      out = perfect_buf.data();
     } else {
       break;
     }
