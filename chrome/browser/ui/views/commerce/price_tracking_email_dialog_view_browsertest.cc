@@ -6,34 +6,37 @@
 
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_test_widget.h"
 #include "components/commerce/core/pref_names.h"
+#include "content/public/test/browser_test.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
-class PriceTrackingEmailDialogViewUnitTest : public BrowserWithTestWindowTest {
+class PriceTrackingEmailDialogViewBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
 
     anchor_widget_ =
         views::UniqueWidgetPtr(std::make_unique<ChromeTestWidget>());
     views::Widget::InitParams widget_params(
-        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-    widget_params.context = GetContext();
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    widget_params.context = browser()->window()->GetNativeWindow();
     anchor_widget_->Init(std::move(widget_params));
 
     dialog_coordinator_ = std::make_unique<PriceTrackingEmailDialogCoordinator>(
         anchor_widget_->GetContentsView());
 
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(profile()), "test@example.com",
+        IdentityManagerFactory::GetForProfile(GetProfile()), "test@example.com",
         signin::ConsentLevel::kSync);
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     // Make sure the bubble is destroyed before the profile to avoid a crash.
     if (dialog_coordinator_->GetBubble()) {
       views::test::WidgetDestroyedWaiter destroyed_waiter(
@@ -45,42 +48,47 @@ class PriceTrackingEmailDialogViewUnitTest : public BrowserWithTestWindowTest {
     dialog_coordinator_.reset();
     anchor_widget_.reset();
 
-    BrowserWithTestWindowTest::TearDown();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactories();
-  }
-
+ protected:
   void CreateAndShowDialog() {
     dialog_coordinator_->Show(browser()->tab_strip_model()->GetWebContentsAt(0),
-                              profile(), base::DoNothing());
+                              GetProfile(), base::DoNothing());
   }
 
   PriceTrackingEmailDialogCoordinator* GetCoordinator() {
     return dialog_coordinator_.get();
   }
 
-  PrefService* GetPrefs() { return profile()->GetPrefs(); }
+  PrefService* GetPrefs() { return GetProfile()->GetPrefs(); }
+
+  void SetupDialogAndVerifyInitialState() {
+    CreateAndShowDialog();
+
+    EXPECT_FALSE(
+        GetPrefs()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
+    EXPECT_FALSE(
+        GetPrefs()->HasPrefPath(commerce::kPriceEmailNotificationsEnabled));
+  }
+
+  PriceTrackingEmailDialogView* GetAndVerifyBubble() {
+    auto* bubble = GetCoordinator()->GetBubble();
+    EXPECT_TRUE(bubble);
+    return bubble;
+  }
 
  private:
   views::UniqueWidgetPtr anchor_widget_;
   std::unique_ptr<PriceTrackingEmailDialogCoordinator> dialog_coordinator_;
 };
 
-// Accpting the dialog should result in setting the email preference to "true".
-TEST_F(PriceTrackingEmailDialogViewUnitTest, DialogAccepted) {
-  CreateAndShowDialog();
+// Accepting the dialog should result in setting the email preference to "true".
+IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogViewBrowserTest,
+                       DialogAccepted) {
+  SetupDialogAndVerifyInitialState();
 
-  EXPECT_FALSE(
-      GetPrefs()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
-  EXPECT_FALSE(
-      GetPrefs()->HasPrefPath(commerce::kPriceEmailNotificationsEnabled));
-
-  auto* bubble = GetCoordinator()->GetBubble();
-  EXPECT_TRUE(bubble);
-
+  auto* bubble = GetAndVerifyBubble();
   bubble->Accept();
 
   EXPECT_TRUE(
@@ -91,17 +99,11 @@ TEST_F(PriceTrackingEmailDialogViewUnitTest, DialogAccepted) {
 
 // Rejecting the dialog should result in setting the email preference to
 // "false".
-TEST_F(PriceTrackingEmailDialogViewUnitTest, DialogRejected) {
-  CreateAndShowDialog();
+IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogViewBrowserTest,
+                       DialogRejected) {
+  SetupDialogAndVerifyInitialState();
 
-  EXPECT_FALSE(
-      GetPrefs()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
-  EXPECT_FALSE(
-      GetPrefs()->HasPrefPath(commerce::kPriceEmailNotificationsEnabled));
-
-  auto* bubble = GetCoordinator()->GetBubble();
-  EXPECT_TRUE(bubble);
-
+  auto* bubble = GetAndVerifyBubble();
   bubble->Cancel();
 
   EXPECT_FALSE(
@@ -111,18 +113,13 @@ TEST_F(PriceTrackingEmailDialogViewUnitTest, DialogRejected) {
 }
 
 // Closing the dialog should result in no state change in preferences.
-TEST_F(PriceTrackingEmailDialogViewUnitTest, DialogClosed) {
-  CreateAndShowDialog();
+IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogViewBrowserTest, DialogClosed) {
+  SetupDialogAndVerifyInitialState();
 
-  EXPECT_FALSE(
-      GetPrefs()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
-  EXPECT_FALSE(
-      GetPrefs()->HasPrefPath(commerce::kPriceEmailNotificationsEnabled));
-
-  auto* bubble = GetCoordinator()->GetBubble();
-  EXPECT_TRUE(bubble);
-
-  bubble->Close();
+  auto* bubble = GetAndVerifyBubble();
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
+  bubble->GetWidget()->CloseNow();
+  destroyed_waiter.Wait();
 
   EXPECT_FALSE(
       GetPrefs()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
