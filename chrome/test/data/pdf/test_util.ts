@@ -608,7 +608,7 @@ export function setUpInkTestContext():
 
   // Initialize controller. This also calls setContent() on the viewport.
   const controller = PluginController.getInstance();
-  controller.init(mockPlugin, viewport, () => false, () => null);
+  controller.init(mockPlugin, viewport, () => false);
 
   // Initialize the ink manager and update its viewport parameters with the
   // new dummy viewport.

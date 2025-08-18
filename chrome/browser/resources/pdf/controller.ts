@@ -91,8 +91,6 @@ function createToken(): string {
 }
 
 export interface ContentController {
-  isActive: boolean;
-
   getEventTarget(): EventTarget;
   beforeZoom(): void;
   afterZoom(): void;
@@ -129,12 +127,6 @@ export interface ContentController {
    * @param index The index of the attachment to be saved.
    */
   saveAttachment(index: number): Promise<SaveAttachmentMessageData>;
-
-  /** Loads PDF document from `data` activates UI. */
-  load(fileName: string, data: ArrayBuffer): Promise<void>;
-
-  /** Unloads the current document and removes the UI. */
-  unload(): void;
 }
 
 /** Event types dispatched by the plugin controller. */
@@ -162,7 +154,6 @@ export class PluginController implements ContentController {
       null = [];
   private viewport_?: Viewport;
   private getIsUserInitiatedCallback_: () => boolean = () => false;
-  private getLoadedCallback_?: () => Promise<void>| null;
   private pendingSaveTokens_:
       Map<string,
           PromiseResolver<{fileName: string, dataToSave: ArrayBuffer}|null>> =
@@ -176,11 +167,9 @@ export class PluginController implements ContentController {
 
   init(
       plugin: HTMLEmbedElement, viewport: Viewport,
-      getIsUserInitiatedCallback: () => boolean,
-      getLoadedCallback: () => Promise<void>| null) {
+      getIsUserInitiatedCallback: () => boolean) {
     this.viewport_ = viewport;
     this.getIsUserInitiatedCallback_ = getIsUserInitiatedCallback;
-    this.getLoadedCallback_ = getLoadedCallback;
     this.pendingSaveTokens_ = new Map();
     this.pendingSaveDataBlockTokens_ = new Map();
     this.requestResolverMap_ = new Map();
@@ -540,27 +529,6 @@ export class PluginController implements ContentController {
       type: 'saveAttachment',
       attachmentIndex: index,
     });
-  }
-
-  async load(_fileName: string, data: ArrayBuffer) {
-    assert(this.viewport_);
-    assert(this.plugin_);
-    // Load `data` into the PDF plugin. The plugin transfers the data to be
-    // loaded within the inner frame.
-    this.viewport_.setRemoteContent(this.plugin_);
-    this.plugin_.postMessage({type: 'loadArray', dataToLoad: data}, [data]);
-
-    this.plugin_.style.display = 'block';
-    if (this.getLoadedCallback_) {
-      await this.getLoadedCallback_();
-    }
-    this.isActive = true;
-  }
-
-  unload() {
-    assert(this.plugin_);
-    this.plugin_.style.display = 'none';
-    this.isActive = false;
   }
 
   /**

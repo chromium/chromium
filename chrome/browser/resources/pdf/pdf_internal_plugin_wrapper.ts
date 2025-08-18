@@ -54,14 +54,6 @@ plugin.addEventListener('message', e => {
 let isPresentationMode = false;
 channel.port1.onmessage = e => {
   switch (e.data.type) {
-    case 'loadArray':
-      if (plugin.src.startsWith('blob:')) {
-        URL.revokeObjectURL(plugin.src);
-      }
-      plugin.src = URL.createObjectURL(new Blob([e.data.dataToLoad]));
-      plugin.setAttribute('has-edits', '');
-      return;
-
     case 'setPresentationMode':
       isPresentationMode = e.data.enablePresentationMode;
 

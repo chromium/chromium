@@ -188,8 +188,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
 
     const pluginController = PluginController.getInstance();
     pluginController.init(
-        this.plugin_, this.viewport_, () => this.isUserInitiatedEvent,
-        () => this.loaded);
+        this.plugin_, this.viewport_, () => this.isUserInitiatedEvent);
     pluginController.isActive = true;
     this.currentController = pluginController;
 
