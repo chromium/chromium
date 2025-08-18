@@ -230,9 +230,11 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
       context.quic_context->params()->exponential_backoff_on_initial_delay);
 
   if (!params_.disable_idle_sockets_close_on_memory_pressure) {
-    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-        FROM_HERE, base::BindRepeating(&HttpNetworkSession::OnMemoryPressure,
-                                       base::Unretained(this)));
+    memory_pressure_listener_ =
+        std::make_unique<base::AsyncMemoryPressureListener>(
+            FROM_HERE,
+            base::BindRepeating(&HttpNetworkSession::OnMemoryPressure,
+                                base::Unretained(this)));
   }
 
   http_stream_pool_ = std::make_unique<HttpStreamPool>(
