@@ -58,6 +58,13 @@ void LensSearchboxController::BindOverlayGhostLoader(
     mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
   overlay_ghost_loader_page_.reset();
   overlay_ghost_loader_page_.Bind(std::move(page));
+
+  // If the page is not context eligible, show the error state once the ghost
+  // loader is bound.
+  if (!lens_search_controller_->lens_search_contextualization_controller()
+           ->GetCurrentPageContextEligibility()) {
+    ShowGhostLoaderErrorState();
+  }
 }
 
 void LensSearchboxController::BindSidePanelGhostLoader(

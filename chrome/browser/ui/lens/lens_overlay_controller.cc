@@ -1805,21 +1805,15 @@ void LensOverlayController::InitializeOverlayUI(
 
   auto* lens_session_metrics_logger = GetLensSessionMetricsLogger();
 
-  bool should_show_csb = !init_data.page_contents_.empty() &&
-                         !init_data.page_contents_.front().bytes_.empty();
-  if (should_show_csb) {
-    lens_session_metrics_logger->OnContextualSearchboxShown();
-  }
+  lens_session_metrics_logger->OnContextualSearchboxShown();
   lens_session_metrics_logger->OnInitialPageContentRetrieved(
       /*page_content_type=*/init_data.page_contents_.empty()
           ? lens::MimeType::kUnknown
           : init_data.primary_content_type_);
 
-  page_->ShouldShowContextualSearchBox(should_show_csb);
-
+  page_->ShouldShowContextualSearchBox(/*should_show=*/true);
   // If should show CSB, and the CSB viewport thumbnail is enabled, send it now.
-  if (should_show_csb &&
-      lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail()) {
+  if (lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail()) {
     GetLensSearchboxController()->HandleThumbnailCreatedBitmap(
         init_data.initial_screenshot_);
   }
