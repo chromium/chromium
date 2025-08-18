@@ -485,10 +485,14 @@ void ThrottlingURLLoader::Start(
   }
 
   if (initiator_origin_trial_features &&
-      base::Contains(
-          *initiator_origin_trial_features,
-          static_cast<int>(
-              mojom::OriginTrialFeature::kDeviceBoundSessionCredentials))) {
+      (base::Contains(
+           *initiator_origin_trial_features,
+           static_cast<int>(
+               mojom::OriginTrialFeature::kDeviceBoundSessionCredentials)) ||
+       base::Contains(
+           *initiator_origin_trial_features,
+           static_cast<int>(
+               mojom::OriginTrialFeature::kDeviceBoundSessionCredentials2)))) {
     url_request->allows_device_bound_session_registration = true;
   }
 
