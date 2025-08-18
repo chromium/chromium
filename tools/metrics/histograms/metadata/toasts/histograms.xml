@@ -63,22 +63,6 @@ found in the LICENSE file.
   </token>
 </histogram>
 
-<histogram name="Toast.{ToastName}.DismissMenuClicked"
-    enum="ToastDismissMenuEntries" expires_after="2025-09-28">
-  <owner>agale@chromium.org</owner>
-  <owner>stluong@chromium.org</owner>
-  <owner>chrome-performance-ui-sea@google.com</owner>
-  <summary>
-    Logs the dismiss menu item a user clicked to dismiss the {ToastName} toast.
-    This is used to gain insight on which toasts a user dismisses.
-  </summary>
-  <token key="ToastName">
-    <variant name="ImageCopied" summary="image copied"/>
-    <variant name="LinkCopied" summary="link copied"/>
-    <variant name="LinkToHighlightCopied" summary="link to highlight"/>
-  </token>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
