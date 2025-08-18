@@ -28,6 +28,10 @@ extern NSString* const kHiddenPasskeyInfoButtonID;
 // The accessibility identifier of the hidden passkey info popover view.
 extern NSString* const kHiddenPasskeyInfoPopoverViewID;
 
+// Passkey help center article URL.
+inline constexpr char kAboutPasskeysURL[] =
+    "https://support.google.com/chrome/?p=passkeys";
+
 // UI items for password details
 typedef NS_ENUM(NSInteger, PasswordDetailsItemType) {
   PasswordDetailsItemTypeWebsite = kItemTypeEnumZero,

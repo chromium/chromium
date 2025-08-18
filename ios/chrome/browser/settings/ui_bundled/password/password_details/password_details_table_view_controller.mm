@@ -955,7 +955,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 #pragma mark - PopoverLabelViewControllerDelegate
 
 - (void)didTapLinkURL:(NSURL*)URL {
-  // TODO(crbug.com/435448217): Handle opening link.
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:GURL(kAboutPasskeysURL)];
+  [self.applicationHandler closePresentedViewsAndOpenURL:command];
 }
 
 #pragma mark - TableViewTextEditItemDelegate

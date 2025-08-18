@@ -2393,6 +2393,16 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kHiddenPasskeyInfoPopoverViewID)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the "About passkeys" link in the popup.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(@"About passkeys")]
+      performAction:grey_tap()];
+
+  // Check that the help center article was opened.
+  GREYAssertEqual(std::string("support.google.com"),
+                  [ChromeEarlGrey webStateVisibleURL].host(),
+                  @"Did not navigate to the help center article.");
 }
 
 // Checks that attempts to edit a username provide appropriate feedback.
