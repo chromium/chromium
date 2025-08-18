@@ -510,8 +510,8 @@ public class CustomTabsConnection {
                                 return;
                             }
                         }
-                        try (TraceEvent e = TraceEvent.scoped("CreateSpareWebContents")) {
-                            createSpareWebContents(ProfileManager.getLastUsedRegularProfile());
+                        try (TraceEvent e = TraceEvent.scoped("CreateSpareTab")) {
+                            createSpareTab(ProfileManager.getLastUsedRegularProfile());
                         }
                     });
         }
@@ -618,7 +618,7 @@ public class CustomTabsConnection {
     boolean lowConfidenceMayLaunchUrl(List<Bundle> likelyBundles) {
         ThreadUtils.assertOnUiThread();
         if (!preconnectUrls(likelyBundles)) return false;
-        createSpareWebContents(ProfileManager.getLastUsedRegularProfile());
+        createSpareTab(ProfileManager.getLastUsedRegularProfile());
         return true;
     }
 
@@ -1942,7 +1942,7 @@ public class CustomTabsConnection {
             launchUrlInHiddenTab(
                     session, profile, url, extras, useSeparateStoragePartitionForExperiment);
         } else {
-            createSpareWebContents(profile);
+            createSpareTab(profile);
         }
         warmupManager.maybePreconnectUrlAndSubResources(profile, url);
     }
@@ -2042,14 +2042,10 @@ public class CustomTabsConnection {
         return mHiddenTabHolder.getSpeculationParamsForTesting();
     }
 
-    public static void createSpareWebContents(Profile profile) {
+    public static void createSpareTab(Profile profile) {
         if (sSkipTabPrewarmingForTesting) return;
         if (SysUtils.isLowEndDevice()) return;
-        if (WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(true)) {
-            WarmupManager.getInstance().createRegularSpareTab(profile);
-        } else {
-            WarmupManager.getInstance().createSpareWebContents(profile);
-        }
+        WarmupManager.getInstance().createRegularSpareTab(profile);
     }
 
     public boolean receiveFile(

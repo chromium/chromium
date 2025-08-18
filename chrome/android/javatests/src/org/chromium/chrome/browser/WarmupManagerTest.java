@@ -32,7 +32,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -70,8 +69,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link WarmupManager} */
 @RunWith(ParameterizedRunner.class)
@@ -151,7 +148,6 @@ public class WarmupManagerTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mWarmupManager.destroySpareWebContents();
                     mWarmupManager.destroySpareTab();
                     WarmupManager.deInitForTesting();
                 });
@@ -254,98 +250,6 @@ public class WarmupManagerTest {
             default:
                 return getRegularProfile();
         }
-    }
-
-    @Test
-    @SmallTest
-    public void testCreateAndTakeSpareRenderer() {
-        final AtomicBoolean isRenderFrameLive = new AtomicBoolean();
-        final AtomicReference<WebContents> webContentsReference = new AtomicReference<>();
-
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    mWarmupManager.createSpareWebContents(mActivityTestRule.getProfile(false));
-                    Assert.assertTrue(mWarmupManager.hasSpareWebContents());
-                    WebContents webContents =
-                            mWarmupManager.takeSpareWebContents(
-                                    /* incognito= */ false,
-                                    /* initiallyHidden= */ false,
-                                    /* targetsNetwork= */ false);
-                    Assert.assertNotNull(webContents);
-                    Assert.assertFalse(mWarmupManager.hasSpareWebContents());
-
-                    if (webContents.getMainFrame().isRenderFrameLive()) {
-                        isRenderFrameLive.set(true);
-                    }
-
-                    webContentsReference.set(webContents);
-                });
-        CriteriaHelper.pollUiThread(
-                () -> isRenderFrameLive.get(), "Spare renderer is not initialized");
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> webContentsReference.get().destroy());
-    }
-
-    /** Tests that taking a spare WebContents makes it unavailable to subsequent callers. */
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testTakeSpareWebContents() {
-        mWarmupManager.createSpareWebContents(mActivityTestRule.getProfile(false));
-        WebContents webContents =
-                mWarmupManager.takeSpareWebContents(
-                        /* incognito= */ false,
-                        /* initiallyHidden= */ false,
-                        /* targetsNetwork= */ false);
-        Assert.assertNotNull(webContents);
-        Assert.assertFalse(mWarmupManager.hasSpareWebContents());
-        webContents.destroy();
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testTakeSpareWebContentsChecksArguments() {
-        mWarmupManager.createSpareWebContents(mActivityTestRule.getProfile(false));
-        // We don't expect tabs that are incognito, or targeting a network, to receive spare
-        // WebContents.
-        Assert.assertNull(
-                mWarmupManager.takeSpareWebContents(
-                        /* incognito= */ true,
-                        /* initiallyHidden= */ false,
-                        /* targetsNetwork= */ false));
-        Assert.assertNull(
-                mWarmupManager.takeSpareWebContents(
-                        /* incognito= */ false,
-                        /* initiallyHidden= */ false,
-                        /* targetsNetwork= */ true));
-        Assert.assertNull(
-                mWarmupManager.takeSpareWebContents(
-                        /* incognito= */ true,
-                        /* initiallyHidden= */ false,
-                        /* targetsNetwork= */ true));
-        Assert.assertTrue(mWarmupManager.hasSpareWebContents());
-        // Instead, we expect tabs that are not incognito, or not targeting a network, to receive
-        // spare WebContents.
-        Assert.assertNotNull(
-                mWarmupManager.takeSpareWebContents(
-                        /* incognito= */ false,
-                        /* initiallyHidden= */ true,
-                        /* targetsNetwork= */ false));
-        Assert.assertFalse(mWarmupManager.hasSpareWebContents());
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testClearsDeadWebContents() {
-        mWarmupManager.createSpareWebContents(mActivityTestRule.getProfile(false));
-        WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareWebContents);
-        Assert.assertNull(
-                mWarmupManager.takeSpareWebContents(
-                        /* incognito= */ false,
-                        /* initiallyHidden= */ false,
-                        /* targetsNetwork= */ false));
     }
 
     /** Checks that the View inflation works. */

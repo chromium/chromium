@@ -284,7 +284,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTOpenInBrowserButtonIfAllowedByEmbedder,
     &kCCTOpenInBrowserButtonIfEnabledByEmbedder,
     &kCCTPredictiveBackGesture,
-    &kCCTPrewarmTab,
     &kCCTRealtimeEngagementEventsInBackground,
     &kCCTReportParallelRequestStatus,
     &kCCTReportPrerenderEvents,
@@ -892,8 +891,6 @@ BASE_FEATURE(kHubBackButton,
 BASE_FEATURE(kHubSlideAnimation,
              "HubSlideAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTPrewarmTab, "CCTPrewarmTab", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTRealtimeEngagementEventsInBackground,
              "CCTRealtimeEngagementEventsInBackground",

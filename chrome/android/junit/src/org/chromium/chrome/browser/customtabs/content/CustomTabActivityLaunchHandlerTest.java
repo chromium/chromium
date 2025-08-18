@@ -48,7 +48,6 @@ import java.util.Objects;
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({
     ChromeFeatureList.CCT_EARLY_NAV,
-    ChromeFeatureList.CCT_PREWARM_TAB,
     ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER
 })
 public class CustomTabActivityLaunchHandlerTest {

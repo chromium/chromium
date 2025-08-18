@@ -4360,21 +4360,6 @@
             ]
         }
     ],
-    "CCTPrewarmTab": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CCTPrewarmTab"
-                    ]
-                }
-            ]
-        }
-    ],
     "CSSReadingFlow": [
         {
             "platforms": [

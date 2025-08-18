@@ -1717,16 +1717,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             mStylusWritingCoordinator = null;
         }
 
-        WarmupManager warmupManager = WarmupManager.getInstance();
-        if (!warmupManager.isCctPrewarmTabFeatureEnabled(false)) {
-            // Destroy spare tab on activity destruction.
-            warmupManager.destroySpareTab();
-        }
         // Ensure WarmupManager does not hold on to views created with old context, tied to old
         // Theme.
         // TODO(b/357901623): remove the line below once we have a reliable solution to the theming
         // problem, or after we stop supporting API levels < 29.
-        warmupManager.clearViewHierarchy();
+        WarmupManager.getInstance().clearViewHierarchy();
 
         mActivityTabProvider.destroy();
 

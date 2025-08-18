@@ -430,10 +430,9 @@ public class LaunchIntentDispatcher {
     }
 
     private boolean maybeStartNavigation() {
-        if (!WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(false)) return false;
+        if (!ProfileManager.isInitialized()) return false;
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)) return false;
         if (IntentHandler.willLaunchIncognitoCustomTab(mIntent)) return false;
-        if (!ProfileManager.isInitialized()) return false;
         if (clearTopIntentsForCustomTabsEnabled(mIntent)
                 && SessionDataHolder.getInstance()
                                 .getActiveHandlerClassInCurrentTask(mIntent, mActivity)

@@ -804,8 +804,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             RecordHistogram.recordBooleanHistogram("CustomTabs.SpareRenderer", true);
             Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
             PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> CustomTabsConnection.createSpareWebContents(profile));
+                    TaskTraits.UI_DEFAULT, () -> CustomTabsConnection.createSpareTab(profile));
         } else {
             RecordHistogram.recordBooleanHistogram("CustomTabs.SpareRenderer", false);
         }

@@ -335,8 +335,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_OPEN_IN_BROWSER_BUTTON_IF_ENABLED_BY_EMBEDDER =
             "CCTOpenInBrowserButtonIfEnabledByEmbedder";
     public static final String CCT_PREDICTIVE_BACK_GESTURE = "CCTPredictiveBackGesture";
-    // NOTE: Do not query this feature directly, use WarmupManager#isCCTPrewarmTabFeatureEnabled.
-    public static final String CCT_PREWARM_TAB = "CCTPrewarmTab";
     public static final String CCT_REALTIME_ENGAGEMENT_EVENTS_IN_BACKGROUND =
             "CCTRealtimeEngagementEventsInBackground";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =

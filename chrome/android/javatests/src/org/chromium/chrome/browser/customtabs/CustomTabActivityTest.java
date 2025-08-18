@@ -1868,23 +1868,21 @@ public class CustomTabActivityTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(WarmupManager.getInstance().hasSpareWebContents());
-                    final CustomTabActivity activity = mCustomTabActivityTestRule.getActivity();
-                    activity.getCustomTabActivityNavigationController().finish(FinishReason.OTHER);
-                });
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB)) {
-            CriteriaHelper.pollUiThread(
-                    () ->
+                    Assert.assertFalse(
                             WarmupManager.getInstance()
                                     .hasSpareTab(
                                             ProfileManager.getLastUsedRegularProfile(),
-                                            /* targetsNetwork= */ false),
-                    "No new spare tab");
-        } else {
-            CriteriaHelper.pollUiThread(
-                    () -> WarmupManager.getInstance().hasSpareWebContents(),
-                    "No new spare renderer");
-        }
+                                            /* targetsNetwork= */ false));
+                    final CustomTabActivity activity = mCustomTabActivityTestRule.getActivity();
+                    activity.getCustomTabActivityNavigationController().finish(FinishReason.OTHER);
+                });
+        CriteriaHelper.pollUiThread(
+                () ->
+                        WarmupManager.getInstance()
+                                .hasSpareTab(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        /* targetsNetwork= */ false),
+                "No new spare tab");
     }
 
     @Test

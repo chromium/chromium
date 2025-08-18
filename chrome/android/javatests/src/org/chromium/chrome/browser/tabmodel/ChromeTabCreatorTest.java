@@ -36,7 +36,6 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -145,28 +144,6 @@ public class ChromeTabCreatorTest {
         assertFalse(
                 "Should not request desktop sites by default.",
                 bgTab.getWebContents().getNavigationController().getUseDesktopUserAgent());
-    }
-
-    /** Verify that the spare WebContents is used. */
-    @Test
-    @MediumTest
-    @Feature({"Browser"})
-    public void testCreateNewTabTakesSpareWebContents() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
-                    WarmupManager.getInstance()
-                            .createSpareWebContents(mActivityTestRule.getProfile(false));
-                    assertTrue(WarmupManager.getInstance().hasSpareWebContents());
-                    mActivityTestRule
-                            .getActivity()
-                            .getCurrentTabCreator()
-                            .createNewTab(
-                                    new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
-                                    TabLaunchType.FROM_EXTERNAL_APP,
-                                    currentTab);
-                    assertFalse(WarmupManager.getInstance().hasSpareWebContents());
-                });
     }
 
     /** Verify that the tab position is set using the intent. */

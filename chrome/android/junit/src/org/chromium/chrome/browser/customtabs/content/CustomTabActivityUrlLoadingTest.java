@@ -57,7 +57,6 @@ import org.chromium.url.Origin;
         shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
 @Features.EnableFeatures({
     ChromeFeatureList.CCT_EARLY_NAV,
-    ChromeFeatureList.CCT_PREWARM_TAB,
     ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER
 })
 public class CustomTabActivityUrlLoadingTest {

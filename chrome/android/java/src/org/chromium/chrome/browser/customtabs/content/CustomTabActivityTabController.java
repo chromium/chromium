@@ -451,8 +451,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                             ReparentingDelegateFactory.createReparentingTaskDelegate(
                                     null, mWindowAndroid, mCustomTabDelegateFactory),
                             null);
-        } else if (WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(true)
-                && warmupManager.hasSpareTab(profile, mIntentDataProvider.hasTargetNetwork())) {
+        } else if (warmupManager.hasSpareTab(profile, mIntentDataProvider.hasTargetNetwork())) {
             // Start hidden as Tab needs to be shown after observers are attached.
             boolean startHidden = ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_SHOW_TAB_FIX);
             tab = warmupManager.takeSpareTab(profile, startHidden, TabLaunchType.FROM_EXTERNAL_APP);
@@ -506,17 +505,6 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         if (webContents != null) {
             recordWebContentsStateOnLaunch(WebContentsState.TRANSFERRED_WEBCONTENTS);
             webContents.resumeLoadingCreatedWebContents();
-            return webContents;
-        }
-
-        webContents =
-                WarmupManager.getInstance()
-                        .takeSpareWebContents(
-                                mIntentDataProvider.isOffTheRecord(),
-                                /* initiallyHidden= */ false,
-                                mIntentDataProvider.hasTargetNetwork());
-        if (webContents != null) {
-            recordWebContentsStateOnLaunch(WebContentsState.SPARE_WEBCONTENTS);
             return webContents;
         }
 
