@@ -148,7 +148,7 @@ void DrmWindowHost::MoveCursorTo(const gfx::Point& location) {
 }
 
 void DrmWindowHost::GenerateMouseMove(const gfx::PointF& location) {
-  window_manager_->ResetWindowMouseCurrentlyOn();
+  window_manager_->ForceCursorUpdateOnNextMouseMove();
   event_factory_->GenerateMouseMove(location);
 }
 
@@ -177,8 +177,8 @@ void DrmWindowHost::SizeConstraintsChanged() {
   NOTREACHED();
 }
 
-void DrmWindowHost::OnMouseEnter() {
-  delegate_->OnMouseEnter();
+void DrmWindowHost::OnCursorUpdate() {
+  delegate_->OnCursorUpdate();
 }
 
 bool DrmWindowHost::CanDispatchEvent(const PlatformEvent& event) {

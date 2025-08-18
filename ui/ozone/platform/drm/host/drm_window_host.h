@@ -91,7 +91,7 @@ class DrmWindowHost : public PlatformWindow,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
 
-  void OnMouseEnter();
+  void OnCursorUpdate();
   void GenerateMouseMove(const gfx::PointF& location);
 
   // PlatformEventDispatcher:

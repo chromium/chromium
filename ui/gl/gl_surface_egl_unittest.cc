@@ -58,7 +58,7 @@ class TestPlatformDelegate : public ui::PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
 };
 
 TEST_F(GLSurfaceEGLTest, FixedSizeExtension) {

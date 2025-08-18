@@ -76,7 +76,7 @@ void DrmWindowHostManager::UngrabEvents(gfx::AcceleratedWidget widget) {
   event_grabber_ = gfx::kNullAcceleratedWidget;
 }
 
-void DrmWindowHostManager::ResetWindowMouseCurrentlyOn() {
+void DrmWindowHostManager::ForceCursorUpdateOnNextMouseMove() {
   window_mouse_currently_on_ = nullptr;
 }
 
@@ -84,7 +84,7 @@ void DrmWindowHostManager::MouseOnWindow(DrmWindowHost* window) {
   if (window_mouse_currently_on_ == window)
     return;
   window_mouse_currently_on_ = window;
-  window->OnMouseEnter();
+  window->OnCursorUpdate();
 }
 
 }  // namespace ui

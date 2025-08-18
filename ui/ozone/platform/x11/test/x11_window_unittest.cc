@@ -85,7 +85,7 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
     widget_ = gfx::kNullAcceleratedWidget;
   }
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
   SkPath GetWindowMaskForWindowShapeInPixels() override {
     SkPath window_mask;
     int right = size_px_.width();

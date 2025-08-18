@@ -72,7 +72,7 @@ class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
   MOCK_METHOD0(OnWillDestroyAcceleratedWidget, void());
   MOCK_METHOD0(OnAcceleratedWidgetDestroyed, void());
   MOCK_METHOD1(OnActivationChanged, void(bool active));
-  MOCK_METHOD0(OnMouseEnter, void());
+  MOCK_METHOD0(OnCursorUpdate, void());
 };
 
 struct Environment {

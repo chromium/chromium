@@ -99,7 +99,7 @@ class TestPlatformDelegate : public ui::PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
 };
 
 void RunPendingTasks(scoped_refptr<base::TaskRunner> task_runner) {

@@ -96,7 +96,7 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void OnWillDestroyAcceleratedWidget() override;
   void OnAcceleratedWidgetDestroyed() override;
   void OnActivationChanged(bool active) override;
-  void OnMouseEnter() override;
+  void OnCursorUpdate() override;
   void OnOcclusionStateChanged(
       ui::PlatformWindowOcclusionState occlusion_state) override;
   int64_t OnStateUpdate(const PlatformWindowDelegate::State& old,

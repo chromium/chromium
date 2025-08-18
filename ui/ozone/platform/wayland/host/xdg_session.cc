@@ -61,7 +61,7 @@ class DummyDelegate final : public PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
   int64_t OnStateUpdate(const State&, const State&) override { return -1; }
 };
 

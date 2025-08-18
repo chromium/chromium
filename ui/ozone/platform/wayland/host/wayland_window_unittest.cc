@@ -186,7 +186,7 @@ class TestWaylandWindowDelegate : public PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
   void DispatchEvent(Event* event) override { std::move(callback_).Run(event); }
 
  private:

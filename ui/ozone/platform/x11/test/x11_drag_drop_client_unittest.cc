@@ -447,7 +447,7 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
   SkPath GetWindowMaskForWindowShapeInPixels() override { return {}; }
 };
 

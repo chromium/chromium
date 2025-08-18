@@ -54,7 +54,7 @@ class Window : public ui::PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
 
   std::unique_ptr<ui::PlatformWindow> platform_window_;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;

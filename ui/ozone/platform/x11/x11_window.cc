@@ -474,8 +474,8 @@ void X11Window::OnXWindowLostCapture() {
   platform_window_delegate_->OnLostCapture();
 }
 
-void X11Window::OnMouseEnter() {
-  platform_window_delegate_->OnMouseEnter();
+void X11Window::OnCursorUpdate() {
+  platform_window_delegate_->OnCursorUpdate();
 }
 
 gfx::AcceleratedWidget X11Window::GetWidget() const {

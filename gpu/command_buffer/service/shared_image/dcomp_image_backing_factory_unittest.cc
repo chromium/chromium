@@ -638,7 +638,7 @@ class DCompImageBackingFactoryVisualTreeTest
     void OnWillDestroyAcceleratedWidget() override {}
     void OnAcceleratedWidgetDestroyed() override {}
     void OnActivationChanged(bool active) override {}
-    void OnMouseEnter() override {}
+    void OnCursorUpdate() override {}
   };
 
   gfx::Size window_size_;

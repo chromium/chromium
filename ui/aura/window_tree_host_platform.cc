@@ -334,7 +334,7 @@ void WindowTreeHostPlatform::OnAcceleratedWidgetDestroyed() {
 
 void WindowTreeHostPlatform::OnActivationChanged(bool active) {}
 
-void WindowTreeHostPlatform::OnMouseEnter() {
+void WindowTreeHostPlatform::OnCursorUpdate() {
   client::CursorClient* cursor_client = client::GetCursorClient(window());
   if (cursor_client) {
     auto display =

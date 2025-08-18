@@ -216,10 +216,10 @@ TEST_F(X11WindowOzoneTest, GetWindowFromAcceleratedWigets) {
   EXPECT_EQ(nullptr, window_manager()->GetWindow(widget_2));
 }
 
-// This test case ensures that OnMouseEnter is called once when a mouse location
-// moved to the window, and |window_mouse_currently_on_| is properly reset when
-// the window is deleted.
-TEST_F(X11WindowOzoneTest, MouseEnterAndDelete) {
+// This test case ensures that OnCursorUpdate is called once when a mouse
+// location moved to the window, and |window_mouse_currently_on_| is properly
+// reset when the window is deleted.
+TEST_F(X11WindowOzoneTest, CursorUpdateEnterAndDelete) {
   gfx::Rect bounds_1(0, 0, 100, 100);
   MockPlatformWindowDelegate delegate_1;
   gfx::AcceleratedWidget widget_1;
@@ -232,12 +232,12 @@ TEST_F(X11WindowOzoneTest, MouseEnterAndDelete) {
   auto window_2 =
       CreatePlatformWindow(&delegate_2, bounds_2, &widget_2, nullptr);
 
-  EXPECT_CALL(delegate_1, OnMouseEnter()).Times(1);
+  EXPECT_CALL(delegate_1, OnCursorUpdate()).Times(1);
   window_manager()->MouseOnWindow(static_cast<X11Window*>(window_1.get()));
-  // The mouse is already on window_1, and this should not call OnMouseEnter.
+  // The mouse is already on window_1, and this should not call OnCursorUpdate.
   window_manager()->MouseOnWindow(static_cast<X11Window*>(window_1.get()));
 
-  EXPECT_CALL(delegate_2, OnMouseEnter()).Times(1);
+  EXPECT_CALL(delegate_2, OnCursorUpdate()).Times(1);
   window_manager()->MouseOnWindow(static_cast<X11Window*>(window_2.get()));
 
   EXPECT_EQ(window_2.get(),
@@ -245,7 +245,7 @@ TEST_F(X11WindowOzoneTest, MouseEnterAndDelete) {
 
   // Dispatch Event on window 1 while event is captured on window 2.
   ::testing::Mock::VerifyAndClearExpectations(&delegate_1);
-  EXPECT_CALL(delegate_1, OnMouseEnter()).Times(1);
+  EXPECT_CALL(delegate_1, OnCursorUpdate()).Times(1);
   window_2->SetCapture();
   ScopedXI2Event xi_event;
   xi_event.InitGenericButtonEvent(kPointerDeviceId, EventType::kMousePressed,

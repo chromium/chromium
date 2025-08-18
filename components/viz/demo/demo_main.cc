@@ -181,7 +181,7 @@ class DemoWindow : public ui::PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
   int64_t OnStateUpdate(const State& old, const State& latest) override {
     return -1;
   }

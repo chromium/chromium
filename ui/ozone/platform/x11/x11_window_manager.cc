@@ -96,7 +96,7 @@ void X11WindowManager::MouseOnWindow(X11Window* window) {
     return;
 
   window_mouse_currently_on_ = window;
-  window->OnMouseEnter();
+  window->OnCursorUpdate();
 }
 
 }  // namespace ui

@@ -73,7 +73,7 @@ class X11Window : public PlatformWindow,
   // X11WindowManager calls this.
   void OnXWindowLostCapture();
 
-  void OnMouseEnter();
+  void OnCursorUpdate();
 
   gfx::AcceleratedWidget GetWidget() const;
   gfx::Rect GetOuterBounds() const;

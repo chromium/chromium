@@ -184,10 +184,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // This is used to create the non-rectangular window shape.
   virtual SkPath GetWindowMaskForWindowShapeInPixels();
 
-  // Called when the location of mouse pointer entered the window.  This is
-  // different from ui::EventType::kMouseEntered which may not be generated when
-  // mouse is captured either by implicitly or explicitly.
-  virtual void OnMouseEnter() = 0;
+  // Called in an event that will cause cursor configurattion change, such as a
+  // cursor entering the window.
+  virtual void OnCursorUpdate() = 0;
 
   // Called when the occlusion state changes, if the underlying platform
   // is providing us with occlusion information.
