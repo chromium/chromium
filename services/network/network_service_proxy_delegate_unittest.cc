@@ -154,6 +154,14 @@ TEST_F(NetworkServiceProxyDelegateTest, NullConfigDoesNotCrash) {
   auto request = CreateRequest(GURL(kHttpUrl));
 }
 
+void DoNotCallCallback(
+    base::expected<net::HttpRequestHeaders, net::Error> result) {
+  // This should never be called since
+  // NetworkServiceProxyDelegate::OnBeforeTunnelRequest never returns
+  // net::ERR_IO_PENDING.
+  NOTREACHED();
+}
+
 TEST_F(NetworkServiceProxyDelegateTest, AddsHeadersToTunnelRequest) {
   auto config = mojom::CustomProxyConfig::New();
   config->rules.ParseFromString("https://proxy");
@@ -162,7 +170,8 @@ TEST_F(NetworkServiceProxyDelegateTest, AddsHeadersToTunnelRequest) {
 
   auto proxy_chain =
       net::ProxyChain(net::PacResultElementToProxyServer("HTTPS proxy"));
-  auto result = delegate->OnBeforeTunnelRequest(proxy_chain, /*chain_index=*/0);
+  auto result = delegate->OnBeforeTunnelRequest(
+      proxy_chain, /*chain_index=*/0, base::BindOnce(DoNotCallCallback));
   ASSERT_TRUE(result.has_value());
   EXPECT_THAT(result.value(), Contain("connect", "baz"));
 }

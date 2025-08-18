@@ -22,6 +22,7 @@
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_stream_parser.h"
@@ -241,6 +242,8 @@ int HttpProxyClientSocket::DidDrainBodyForAuthRestart() {
   http_stream_parser_.reset();
   request_line_.clear();
   request_headers_.Clear();
+  authorization_headers_.Clear();
+  proxy_delegate_headers_.Clear();
   response_ = HttpResponseInfo();
   return OK;
 }
@@ -276,6 +279,13 @@ int HttpProxyClientSocket::DoLoop(int last_io_result) {
         break;
       case STATE_GENERATE_AUTH_TOKEN_COMPLETE:
         rv = DoGenerateAuthTokenComplete(rv);
+        break;
+      case STATE_CALCULATE_HEADERS:
+        DCHECK_EQ(OK, rv);
+        rv = DoCalculateHeaders();
+        break;
+      case STATE_CALCULATE_HEADERS_COMPLETE:
+        rv = DoCalculateHeadersComplete(rv);
         break;
       case STATE_SEND_REQUEST:
         DCHECK_EQ(OK, rv);
@@ -323,8 +333,71 @@ int HttpProxyClientSocket::DoGenerateAuthToken() {
 
 int HttpProxyClientSocket::DoGenerateAuthTokenComplete(int result) {
   DCHECK_NE(ERR_IO_PENDING, result);
-  if (result == OK)
+  if (result == OK) {
+    next_state_ = STATE_CALCULATE_HEADERS;
+  }
+  return result;
+}
+
+int HttpProxyClientSocket::DoCalculateHeaders() {
+  if (!request_line_.empty()) {
     next_state_ = STATE_SEND_REQUEST;
+    return OK;
+  }
+  next_state_ = STATE_CALCULATE_HEADERS_COMPLETE;
+
+  authorization_headers_.Clear();
+  proxy_delegate_headers_.Clear();
+
+  if (auth_->HaveAuth()) {
+    auth_->AddAuthorizationHeader(&authorization_headers_);
+  }
+  // AddAuthorizationHeader() might not have added the header even if
+  // HaveAuth().
+  response_.did_use_http_auth =
+      authorization_headers_.HasHeader(HttpRequestHeaders::kProxyAuthorization);
+
+  if (proxy_delegate_) {
+    ASSIGN_OR_RETURN(
+        proxy_delegate_headers_,
+        proxy_delegate_->OnBeforeTunnelRequest(
+            proxy_chain_, proxy_chain_index_,
+            base::BindOnce(
+                &HttpProxyClientSocket::OnBeforeTunnelRequestComplete,
+                weak_factory_.GetWeakPtr())),
+        [](const auto& e) {
+          // Success should always be reported via a base::expected containing
+          // an HttpRequestHeaders, see ProxyDelegate::OnBeforeTunnelRequest.
+          CHECK_NE(OK, e);
+          return e;
+        });
+  }
+  return OK;
+}
+
+void HttpProxyClientSocket::OnBeforeTunnelRequestComplete(
+    base::expected<HttpRequestHeaders, Error> result) {
+  if (result.has_value()) {
+    proxy_delegate_headers_ = std::move(result.value());
+    OnIOComplete(OK);
+  } else {
+    // OnBeforeTunnelRequestComplete should never report ERR_IO_PENDING since
+    // it's used to signal that IO has completed.
+    CHECK_NE(ERR_IO_PENDING, result.error());
+    // Success should always be reported via a base::expected containing an
+    // HttpRequestHeaders, see ProxyDelegate::OnBeforeTunnelRequest.
+    CHECK_NE(OK, result.error());
+    OnIOComplete(result.error());
+  }
+}
+
+int HttpProxyClientSocket::DoCalculateHeadersComplete(int result) {
+  DCHECK_NE(ERR_IO_PENDING, result);
+  if (result != OK) {
+    return result;
+  }
+  next_state_ = STATE_SEND_REQUEST;
+
   return result;
 }
 
@@ -337,30 +410,8 @@ int HttpProxyClientSocket::DoSendRequest() {
     DCHECK(request_headers_.IsEmpty());
 
     HttpRequestHeaders extra_headers;
-    if (auth_->HaveAuth())
-      auth_->AddAuthorizationHeader(&extra_headers);
-    // AddAuthorizationHeader() might not have added the header even if
-    // HaveAuth().
-    response_.did_use_http_auth =
-        extra_headers.HasHeader(HttpRequestHeaders::kProxyAuthorization);
-
-    if (proxy_delegate_) {
-      ASSIGN_OR_RETURN(HttpRequestHeaders proxy_delegate_headers,
-                       proxy_delegate_->OnBeforeTunnelRequest(
-                           proxy_chain_, proxy_chain_index_),
-                       [](const auto& e) {
-                         // ProxyDelegate::OnBeforeTunnelRequest cannot block on
-                         // IO.
-                         CHECK_NE(ERR_IO_PENDING, e);
-                         // Success should always be reported via a
-                         // base::expected containing an HttpRequestHeaders, see
-                         // ProxyDelegate::OnBeforeTunnelRequest.
-                         CHECK_NE(OK, e);
-                         return e;
-                       });
-
-      extra_headers.MergeFrom(proxy_delegate_headers);
-    }
+    extra_headers.MergeFrom(authorization_headers_);
+    extra_headers.MergeFrom(proxy_delegate_headers_);
 
     BuildTunnelRequest(endpoint_, extra_headers, user_agent_, &request_line_,
                        &request_headers_);

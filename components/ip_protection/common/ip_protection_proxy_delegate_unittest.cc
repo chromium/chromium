@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -374,6 +375,14 @@ class IpProtectionProxyDelegateTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
+void DoNotCallCallback(
+    base::expected<net::HttpRequestHeaders, net::Error> result) {
+  // This should never be called since
+  // IpProtectionProxyDelegate::OnBeforeTunnelRequest never returns
+  // net::ERR_IO_PENDING.
+  NOTREACHED();
+}
+
 TEST_F(IpProtectionProxyDelegateTest, AddsTokenToTunnelRequest) {
   MaskedDomainListManager mdl_manager = CreateMdlManager(
       /*first_party_map=*/{});
@@ -387,8 +396,9 @@ TEST_F(IpProtectionProxyDelegateTest, AddsTokenToTunnelRequest) {
                                                "proxya", std::nullopt),
        net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxyb", std::nullopt)});
-  auto result = delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
-                                                /*chain_index=*/0);
+  auto result = delegate->OnBeforeTunnelRequest(
+      ip_protection_proxy_chain,
+      /*chain_index=*/0, base::BindOnce(DoNotCallCallback));
   ASSERT_TRUE(result.has_value());
   EXPECT_THAT(result.value(), Contain("Authorization", "Bearer: a-token"));
 }
@@ -406,12 +416,14 @@ TEST_F(IpProtectionProxyDelegateTest, ErrorIfConnectionWithNoTokens) {
                                                "proxya", std::nullopt),
        net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxyb", std::nullopt)});
-  auto result = delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
-                                                /*chain_index=*/0);
+  auto result = delegate->OnBeforeTunnelRequest(
+      ip_protection_proxy_chain,
+      /*chain_index=*/0, base::BindOnce(DoNotCallCallback));
   ASSERT_FALSE(result.has_value());
   EXPECT_THAT(result.error(), IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
   result = delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
-                                           /*chain_index=*/1);
+                                           /*chain_index=*/1,
+                                           base::BindOnce(DoNotCallCallback));
   ASSERT_FALSE(result.has_value());
   EXPECT_THAT(result.error(), IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
 }
@@ -437,7 +449,8 @@ TEST_F(IpProtectionProxyDelegateTest, AddsDebugExperimentArm) {
          net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                  "proxyb", std::nullopt)});
     auto result =
-        delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, chain_index);
+        delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, chain_index,
+                                        base::BindOnce(DoNotCallCallback));
     ASSERT_TRUE(result.has_value());
     EXPECT_THAT(result.value(),
                 Contain("Ip-Protection-Debug-Experiment-Arm", "13"));
@@ -464,8 +477,9 @@ TEST_F(IpProtectionProxyDelegateTest,
 
   auto non_ipp_chain = net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
       net::ProxyServer::SCHEME_HTTPS, "proxy.com", std::nullopt));
-  auto headers = delegate->OnBeforeTunnelRequest(non_ipp_chain,
-                                                 /*chain_index=*/0);
+  auto headers = delegate->OnBeforeTunnelRequest(
+      non_ipp_chain,
+      /*chain_index=*/0, base::BindOnce(DoNotCallCallback));
   ASSERT_TRUE(headers.has_value());
   EXPECT_TRUE(headers->IsEmpty());
 }

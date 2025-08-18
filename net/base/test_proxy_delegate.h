@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
@@ -65,6 +67,19 @@ class TestProxyDelegate : public ProxyDelegate {
   // value.
   void MakeOnTunnelHeadersReceivedFail(Error result);
 
+  // Makes subsequent calls to `OnBeforeTunnelRequest()` return ERR_IO_PENDING.
+  // Test code should then call `ResumeOnBeforeTunnelRequest()` to continue from
+  // where it left off.
+  void MakeOnBeforeTunnelRequestCompleteAsync();
+  // Resumes the execution of `OnBeforeTunnelRequest()` from where it was left
+  // off. Callers must have called `MakeOnBeforeTunnelRequestCompleteAsync()`
+  // first.
+  void ResumeOnBeforeTunnelRequest();
+  // Allows blocking until the `OnBeforeTunnelRequest()` has completed
+  // asynchronously. Callers must have called
+  // `MakeOnBeforeTunnelRequestCompleteAsync` first.
+  void WaitForOnBeforeTunnelRequestAsyncCompletion();
+
   // Checks whether the provided proxy chain, chain index, response header name,
   // and response header value were passed to a given
   // `OnTunnelHeadersReceived()` call.
@@ -85,7 +100,8 @@ class TestProxyDelegate : public ProxyDelegate {
   void OnFallback(const ProxyChain& bad_chain, int net_error) override;
   base::expected<HttpRequestHeaders, Error> OnBeforeTunnelRequest(
       const ProxyChain& proxy_chain,
-      size_t chain_index) override;
+      size_t chain_index,
+      OnBeforeTunnelRequestCallback callback) override;
   Error OnTunnelHeadersReceived(
       const ProxyChain& proxy_chain,
       size_t chain_index,
@@ -98,6 +114,14 @@ class TestProxyDelegate : public ProxyDelegate {
       const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
  private:
+  // Creates an internal run loop to allow waiting for the asynchronous
+  // completion of `OnBeforeTunnelCallback()`. Callers must have called
+  // `MakeOnBeforeTunnelRequestCompleteAsync()` first. We need to create the run
+  // loop multiple times to handle proxy chains: if multiple proxies are nested,
+  // `OnBeforeTunnelRequest()` will be called multiple times. As such, test code
+  // might want to wait for each of these calls.
+  void MaybeCreateOnBeforeTunnelRequestRunLoop();
+
   std::optional<ProxyChain> proxy_chain_;
   std::optional<ProxyList> proxy_list_;
   std::optional<std::string> extra_header_name_;
@@ -109,6 +133,10 @@ class TestProxyDelegate : public ProxyDelegate {
   std::vector<size_t> on_tunnel_headers_received_chain_indices_;
   std::vector<scoped_refptr<HttpResponseHeaders>>
       on_tunnel_headers_received_headers_;
+
+  bool on_before_tunnel_request_returns_async_ = false;
+  std::unique_ptr<base::RunLoop> on_before_tunnel_request_run_loop_;
+  base::OnceClosure on_before_tunnel_request_callback_;
 };
 
 }  // namespace net

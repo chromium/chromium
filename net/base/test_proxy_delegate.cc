@@ -48,6 +48,34 @@ void TestProxyDelegate::MakeOnTunnelHeadersReceivedFail(Error result) {
   on_tunnel_headers_received_result_ = result;
 }
 
+void TestProxyDelegate::MaybeCreateOnBeforeTunnelRequestRunLoop() {
+  if (on_before_tunnel_request_run_loop_) {
+    return;
+  }
+  on_before_tunnel_request_run_loop_ = std::make_unique<base::RunLoop>();
+}
+
+void TestProxyDelegate::MakeOnBeforeTunnelRequestCompleteAsync() {
+  CHECK(!on_before_tunnel_request_returns_async_);
+  on_before_tunnel_request_returns_async_ = true;
+}
+
+void TestProxyDelegate::ResumeOnBeforeTunnelRequest() {
+  CHECK(on_before_tunnel_request_returns_async_);
+  CHECK(on_before_tunnel_request_callback_);
+  std::move(on_before_tunnel_request_callback_).Run();
+}
+
+void TestProxyDelegate::WaitForOnBeforeTunnelRequestAsyncCompletion() {
+  CHECK(on_before_tunnel_request_returns_async_);
+  // We don't know whether WaitForOnBeforeTunnelRequestAsyncCompletion or
+  // OnBeforeTunnelRequest will execute first. Allow creating the run loop in
+  // both places to account for that.
+  MaybeCreateOnBeforeTunnelRequestRunLoop();
+  on_before_tunnel_request_run_loop_->Run();
+  on_before_tunnel_request_run_loop_.reset();
+}
+
 void TestProxyDelegate::VerifyOnTunnelHeadersReceived(
     const ProxyChain& proxy_chain,
     size_t chain_index,
@@ -99,8 +127,10 @@ std::string TestProxyDelegate::GetExtraHeaderValue(
 }
 
 base::expected<HttpRequestHeaders, Error>
-TestProxyDelegate::OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
-                                         size_t chain_index) {
+TestProxyDelegate::OnBeforeTunnelRequest(
+    const ProxyChain& proxy_chain,
+    size_t chain_index,
+    OnBeforeTunnelRequestCallback callback) {
   on_before_tunnel_request_call_count_++;
 
   HttpRequestHeaders extra_headers;
@@ -108,6 +138,17 @@ TestProxyDelegate::OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
     extra_headers.SetHeader(
         *extra_header_name_,
         GetExtraHeaderValue(proxy_chain.GetProxyServer(chain_index)));
+  }
+
+  if (on_before_tunnel_request_returns_async_) {
+    // We don't know whether OnBeforeTunnelRequest or
+    // WaitForOnBeforeTunnelRequestAsyncCompletion will execute first. Allow
+    // creating the run loop in both places to account for that.
+    MaybeCreateOnBeforeTunnelRequestRunLoop();
+    on_before_tunnel_request_run_loop_->Quit();
+    on_before_tunnel_request_callback_ =
+        base::BindOnce(std::move(callback), std::move(extra_headers));
+    return base::unexpected(ERR_IO_PENDING);
   }
 
   return extra_headers;

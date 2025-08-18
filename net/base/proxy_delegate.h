@@ -61,15 +61,25 @@ class NET_EXPORT ProxyDelegate {
   virtual void OnSuccessfulRequestAfterFailures(
       const ProxyRetryInfoMap& proxy_retry_info) = 0;
 
+  using OnBeforeTunnelRequestCallback =
+      base::OnceCallback<void(base::expected<HttpRequestHeaders, Error>)>;
+
   // Called immediately before a proxy tunnel request is sent. Provides the
-  // embedder an opportunity to return extra headers that will be added to the
-  // request. If no headers should be added, return an empty HttpRequestHeaders.
-  // Returning any error value will cause the connection to fail.
-  // Warning: OK is not an acceptable error value, success is always
-  // reported via a base::expected containing HttpRequestHeaders.
+  // embedder an opportunity to add extra request headers to the request.
+  // Returns:
+  // - The headers, if they could be computed without blocking. If no headers
+  //   should be added, an empty HttpRequestHeaders should be returned.
+  // - ERR_IO_PENDING, if the implementor must block to compute the headers.
+  // - Any error code, other than ERR_IO_PENDING and OK, if something went
+  //   wrong.
+  // If ERR_IO_PENDING is returned, `callback` will be called asynchronously.
+  // The value passed to `callback` is to be interpreted in the same way as the
+  // return value of this function. With the exception that ERR_IO_PENDING is
+  // no longer an acceptable error code.
   virtual base::expected<HttpRequestHeaders, Error> OnBeforeTunnelRequest(
       const ProxyChain& proxy_chain,
-      size_t chain_index) = 0;
+      size_t chain_index,
+      OnBeforeTunnelRequestCallback callback) = 0;
 
   // Called when the response headers for the proxy tunnel request have been
   // received. Allows the delegate to override the net error code of the tunnel

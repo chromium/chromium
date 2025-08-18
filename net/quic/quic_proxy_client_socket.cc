@@ -289,6 +289,13 @@ int QuicProxyClientSocket::DoLoop(int last_io_result) {
       case STATE_GENERATE_AUTH_TOKEN_COMPLETE:
         rv = DoGenerateAuthTokenComplete(rv);
         break;
+      case STATE_CALCULATE_HEADERS:
+        DCHECK_EQ(OK, rv);
+        rv = DoCalculateHeaders();
+        break;
+      case STATE_CALCULATE_HEADERS_COMPLETE:
+        rv = DoCalculateHeadersComplete(rv);
+        break;
       case STATE_SEND_REQUEST:
         DCHECK_EQ(OK, rv);
         net_log_.BeginEvent(
@@ -327,39 +334,56 @@ int QuicProxyClientSocket::DoGenerateAuthToken() {
 
 int QuicProxyClientSocket::DoGenerateAuthTokenComplete(int result) {
   DCHECK_NE(ERR_IO_PENDING, result);
-  if (result == OK)
-    next_state_ = STATE_SEND_REQUEST;
+  if (result == OK) {
+    next_state_ = STATE_CALCULATE_HEADERS;
+  }
+  return result;
+}
+
+int QuicProxyClientSocket::DoCalculateHeaders() {
+  next_state_ = STATE_CALCULATE_HEADERS_COMPLETE;
+
+  authorization_headers_.Clear();
+  proxy_delegate_headers_.Clear();
+
+  // Add Proxy-Authentication header if necessary.
+  if (auth_->HaveAuth()) {
+    auth_->AddAuthorizationHeader(&authorization_headers_);
+  }
+
+  if (proxy_delegate_) {
+    ASSIGN_OR_RETURN(
+        proxy_delegate_headers_,
+        proxy_delegate_->OnBeforeTunnelRequest(
+            proxy_chain_, proxy_chain_index_,
+            base::BindOnce(
+                &QuicProxyClientSocket::OnBeforeTunnelRequestComplete,
+                weak_factory_.GetWeakPtr())),
+        [](const auto& e) {
+          // Success should always be reported via a base::expected containing
+          // an HttpRequestHeaders, see ProxyDelegate::OnBeforeTunnelRequest.
+          CHECK_NE(OK, e);
+          return e;
+        });
+  }
+  return OK;
+}
+
+int QuicProxyClientSocket::DoCalculateHeadersComplete(int result) {
+  DCHECK_NE(ERR_IO_PENDING, result);
+  if (result != OK) {
+    return result;
+  }
+  next_state_ = STATE_SEND_REQUEST;
+  request_.extra_headers.MergeFrom(proxy_delegate_headers_);
   return result;
 }
 
 int QuicProxyClientSocket::DoSendRequest() {
   next_state_ = STATE_SEND_REQUEST_COMPLETE;
 
-  // Add Proxy-Authentication header if necessary.
-  HttpRequestHeaders authorization_headers;
-  if (auth_->HaveAuth()) {
-    auth_->AddAuthorizationHeader(&authorization_headers);
-  }
-
-  if (proxy_delegate_) {
-    ASSIGN_OR_RETURN(HttpRequestHeaders proxy_delegate_headers,
-                     proxy_delegate_->OnBeforeTunnelRequest(proxy_chain_,
-                                                            proxy_chain_index_),
-                     [](const auto& e) {
-                       // ProxyDelegate::OnBeforeTunnelRequest cannot block on
-                       // IO.
-                       CHECK_NE(ERR_IO_PENDING, e);
-                       // Success should always be reported via a base::expected
-                       // containing an HttpRequestHeaders, see
-                       // ProxyDelegate::OnBeforeTunnelRequest.
-                       CHECK_NE(OK, e);
-                       return e;
-                     });
-    request_.extra_headers.MergeFrom(proxy_delegate_headers);
-  }
-
   std::string request_line;
-  BuildTunnelRequest(endpoint_, authorization_headers, user_agent_,
+  BuildTunnelRequest(endpoint_, authorization_headers_, user_agent_,
                      &request_line, &request_.extra_headers);
 
   NetLogRequestHeaders(net_log_,
@@ -457,6 +481,22 @@ int QuicProxyClientSocket::ProcessResponseHeaders(
     return ERR_QUIC_PROTOCOL_ERROR;
   }
   return OK;
+}
+
+void QuicProxyClientSocket::OnBeforeTunnelRequestComplete(
+    base::expected<HttpRequestHeaders, Error> result) {
+  if (result.has_value()) {
+    proxy_delegate_headers_ = std::move(result.value());
+    OnIOComplete(OK);
+  } else {
+    // OnBeforeTunnelRequestComplete should never report ERR_IO_PENDING since
+    // it's used to signal that IO has completed.
+    CHECK_NE(ERR_IO_PENDING, result.error());
+    // Success should always be reported via a base::expected containing an
+    // HttpRequestHeaders, see ProxyDelegate::OnBeforeTunnelRequest.
+    CHECK_NE(OK, result.error());
+    OnIOComplete(result.error());
+  }
 }
 
 }  // namespace net

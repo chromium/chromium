@@ -87,7 +87,8 @@ CronetProxyDelegate::OnBeforeTunnelRequest(
     // Don't be confused, this is the index of the proxy within the chain, not
     // the index of the chain itself.
     const net::ProxyChain& proxy_chain,
-    size_t chain_index) {
+    size_t chain_index,
+    OnBeforeTunnelRequestCallback callback) {
   TRACE_EVENT_BEGIN("cronet", "CronetProxyDelegate::OnBeforeTunnelRequest",
                     "proxy_chain", proxy_chain.ToDebugString(), "chain_index",
                     chain_index);

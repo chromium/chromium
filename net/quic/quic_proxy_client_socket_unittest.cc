@@ -242,6 +242,70 @@ TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
                                                  kResponseHeaderValue);
 }
 
+TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeadersAsync) {
+  // TODO(crbug.com/40284947): Add a version of this test for multi-hop.
+  proxy_delegate_ = std::make_unique<TestProxyDelegate>();
+  proxy_delegate_->MakeOnBeforeTunnelRequestCompleteAsync();
+  proxy_delegate_->set_extra_header_name(kTestHeaderName);
+  // TODO(crbug.com/40181080) Construct `proxy_chain` with plain
+  // `proxy_endpoint_` once it supports `url::SchemeHostPort`.
+  ProxyChain proxy_chain(ProxyServer::SCHEME_HTTPS,
+                         HostPortPair::FromSchemeHostPort(proxy_endpoint_));
+
+  const char kResponseHeaderName[] = "bar";
+  const char kResponseHeaderValue[] = "testing";
+
+  int packet_number = 1;
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructConnectRequestPacketWithExtraHeaders(
+          packet_number++,
+          // Order matters! Keep these alphabetical.
+          {{kTestQuicHeaderName, ProxyServerToProxyUri(proxy_chain.First())},
+           {"user-agent", kUserAgent}}));
+  mock_quic_data_.AddRead(
+      ASYNC, ConstructServerConnectReplyPacketWithExtraHeaders(
+                 1, !kFin, {{kResponseHeaderName, kResponseHeaderValue}}));
+  mock_quic_data_.AddReadPauseForever();
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(packet_number++,
+                                            quic::QUIC_STREAM_CANCELLED, 1, 1));
+
+  InitializeSession();
+  InitializeClientSocket();
+
+  ASSERT_FALSE(sock_->IsConnected());
+
+  TestCompletionCallback callback;
+  ASSERT_THAT(sock_->Connect(callback.callback()),
+              test::IsError(ERR_IO_PENDING));
+
+  // This should let Connect run until the ERR_IO_PENDING returned by
+  // OnBeforeTunnelRequest. This means we should have not received the tunnel
+  // response headers yet.
+  proxy_delegate_->WaitForOnBeforeTunnelRequestAsyncCompletion();
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 0u);
+
+  // Once we let TestProxyDelegate continue, Connect should be able to terminate
+  // in a success.
+  proxy_delegate_->ResumeOnBeforeTunnelRequest();
+  ASSERT_THAT(callback.WaitForResult(), test::IsOk());
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 1u);
+
+  const HttpResponseInfo* response = sock_->GetConnectResponseInfo();
+  ASSERT_TRUE(response != nullptr);
+  ASSERT_EQ(200, response->headers->response_code());
+
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 1u);
+  proxy_delegate_->VerifyOnTunnelHeadersReceived(proxy_chain, /*chain_index=*/0,
+                                                 kResponseHeaderName,
+                                                 kResponseHeaderValue);
+}
+
 TEST_P(QuicProxyClientSocketTest, ConnectWithAuthRequested) {
   int packet_number = 1;
   mock_quic_data_.AddWrite(SYNCHRONOUS,

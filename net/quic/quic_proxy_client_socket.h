@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/proxy_chain.h"
 #include "net/http/proxy_client_socket.h"
@@ -85,6 +86,8 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
     STATE_DISCONNECTED,
     STATE_GENERATE_AUTH_TOKEN,
     STATE_GENERATE_AUTH_TOKEN_COMPLETE,
+    STATE_CALCULATE_HEADERS,
+    STATE_CALCULATE_HEADERS_COMPLETE,
     STATE_SEND_REQUEST,
     STATE_SEND_REQUEST_COMPLETE,
     STATE_READ_REPLY,
@@ -100,9 +103,15 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   void OnReadResponseHeadersComplete(int result);
   int ProcessResponseHeaders(const quiche::HttpHeaderBlock& headers);
 
+  // Callback for proxy_delegate_->OnBeforeTunnelRequest().
+  void OnBeforeTunnelRequestComplete(
+      base::expected<HttpRequestHeaders, Error> result);
+
   int DoLoop(int last_io_result);
   int DoGenerateAuthToken();
   int DoGenerateAuthTokenComplete(int result);
+  int DoCalculateHeaders();
+  int DoCalculateHeadersComplete(int result);
   int DoSendRequest();
   int DoSendRequestComplete(int result);
   int DoReadReply();
@@ -130,6 +139,9 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   // CONNECT request and response.
   HttpRequestInfo request_;
   HttpResponseInfo response_;
+
+  HttpRequestHeaders authorization_headers_;
+  HttpRequestHeaders proxy_delegate_headers_;
 
   quiche::HttpHeaderBlock response_header_block_;
 

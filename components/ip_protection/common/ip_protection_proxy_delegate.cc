@@ -217,7 +217,8 @@ void IpProtectionProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
 base::expected<net::HttpRequestHeaders, net::Error>
 IpProtectionProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyChain& proxy_chain,
-    size_t chain_index) {
+    size_t chain_index,
+    OnBeforeTunnelRequestCallback callback) {
   auto vlog = [](std::string message) {
     VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
   };

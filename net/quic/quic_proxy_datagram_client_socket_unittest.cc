@@ -233,6 +233,73 @@ TEST_P(QuicProxyDatagramClientSocketTest, ProxyDelegateHeaders) {
       kResponseHeaderValue);
 }
 
+TEST_P(QuicProxyDatagramClientSocketTest, ProxyDelegateHeadersAsync) {
+  proxy_delegate_ = std::make_unique<TestProxyDelegate>();
+  proxy_delegate_->MakeOnBeforeTunnelRequestCompleteAsync();
+  proxy_delegate_->set_extra_header_name(kTestHeaderName);
+
+  // TestProxyDelegate sets the header value to the proxy server URI.
+  HttpRequestHeaders extra_expected_headers;
+  extra_expected_headers.SetHeader(kTestHeaderName,
+                                   ProxyServerToProxyUri(proxy_chain_.Last()));
+
+  // Include a header in the response that the ProxyDelegate should see.
+  const char kResponseHeaderName[] = "bar";
+  const char kResponseHeaderValue[] = "testing";
+  HttpRequestHeaders response_headers;
+  response_headers.SetHeader(kResponseHeaderName, kResponseHeaderValue);
+
+  int packet_number = 1;
+
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructConnectRequestPacket(packet_number++, extra_expected_headers));
+  mock_quic_data_.AddRead(
+      ASYNC, ConstructServerConnectReplyPacket(
+                 /*packet_number=*/1, !kFin, /*header_length=*/nullptr,
+                 response_headers));
+  mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(
+                       packet_number++, quic::QUIC_STREAM_CANCELLED,
+                       /*largest_received=*/1, /*smallest_received=*/1));
+
+  InitializeSession();
+  InitializeClientSocket();
+
+  ASSERT_FALSE(sock_->IsConnected());
+
+  TestCompletionCallback callback;
+  ASSERT_THAT(
+      sock_->ConnectViaStream(local_addr_, peer_addr_,
+                              std::move(stream_handle_), callback.callback()),
+      IsError(ERR_IO_PENDING));
+
+  // This should let ConnectViaStream run until the ERR_IO_PENDING returned by
+  // OnBeforeTunnelRequest. This means we should have not received the tunnel
+  // response headers yet.
+  proxy_delegate_->WaitForOnBeforeTunnelRequestAsyncCompletion();
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 0u);
+
+  // Once we resume the tunnel request, ConnectViaStream should terminate in a
+  // success.
+  proxy_delegate_->ResumeOnBeforeTunnelRequest();
+  ASSERT_THAT(callback.WaitForResult(), test::IsOk());
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 1u);
+
+  const HttpResponseInfo* response = sock_->GetConnectResponseInfo();
+  ASSERT_TRUE(response != nullptr);
+  ASSERT_EQ(200, response->headers->response_code());
+
+  proxy_delegate_->VerifyOnTunnelHeadersReceived(
+      proxy_chain_, /*chain_index=*/0, kResponseHeaderName,
+      kResponseHeaderValue);
+}
+
 TEST_P(QuicProxyDatagramClientSocketTest, ProxyDelegateFails) {
   proxy_delegate_ = std::make_unique<TestProxyDelegate>();
   proxy_delegate_->MakeOnTunnelHeadersReceivedFail(

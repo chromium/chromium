@@ -130,6 +130,8 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
  private:
   enum State {
     STATE_DISCONNECTED,
+    STATE_CALCULATE_HEADERS,
+    STATE_CALCULATE_HEADERS_COMPLETE,
     STATE_SEND_REQUEST,
     STATE_SEND_REQUEST_COMPLETE,
     STATE_READ_REPLY,
@@ -144,7 +146,13 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   void OnReadResponseHeadersComplete(int result);
   int ProcessResponseHeaders(const quiche::HttpHeaderBlock& headers);
 
+  // Callback for proxy_delegate_->OnBeforeTunnelRequest().
+  void OnBeforeTunnelRequestComplete(
+      base::expected<HttpRequestHeaders, Error> result);
+
   int DoLoop(int last_io_result);
+  int DoCalculateHeaders();
+  int DoCalculateHeadersComplete(int result);
   int DoSendRequest();
   int DoSendRequestComplete(int result);
   int DoReadReply();
@@ -181,6 +189,8 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   // CONNECT request and response.
   HttpRequestInfo request_;
   HttpResponseInfo response_;
+
+  HttpRequestHeaders proxy_delegate_headers_;
 
   quiche::HttpHeaderBlock response_header_block_;
 

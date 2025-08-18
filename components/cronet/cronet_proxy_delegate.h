@@ -39,7 +39,8 @@ class CronetProxyDelegate final : public net::ProxyDelegate {
       const net::ProxyRetryInfoMap& proxy_retry_info) override;
   base::expected<net::HttpRequestHeaders, net::Error> OnBeforeTunnelRequest(
       const net::ProxyChain& proxy_chain,
-      size_t chain_index) override;
+      size_t chain_index,
+      OnBeforeTunnelRequestCallback callback) override;
   net::Error OnTunnelHeadersReceived(
       const net::ProxyChain& proxy_chain,
       size_t chain_index,

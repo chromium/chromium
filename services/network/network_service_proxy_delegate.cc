@@ -160,7 +160,8 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
 base::expected<net::HttpRequestHeaders, net::Error>
 NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyChain& proxy_chain,
-    size_t chain_index) {
+    size_t chain_index,
+    OnBeforeTunnelRequestCallback callback) {
   net::HttpRequestHeaders extra_headers;
   if (IsInProxyConfig(proxy_chain)) {
     MergeRequestHeaders(&extra_headers, proxy_config_->connect_tunnel_headers);

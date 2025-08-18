@@ -54,7 +54,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
   base::expected<net::HttpRequestHeaders, net::Error> OnBeforeTunnelRequest(
       const net::ProxyChain& proxy_chain,
-      size_t chain_index) override;
+      size_t chain_index,
+      OnBeforeTunnelRequestCallback callback) override;
   net::Error OnTunnelHeadersReceived(
       const net::ProxyChain& proxy_chain,
       size_t chain_index,
