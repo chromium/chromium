@@ -27,6 +27,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -111,6 +112,7 @@ public class SnackbarTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/439617848")
     public void testStackQueuePersistentOrder() {
         final Snackbar stackbar =
                 Snackbar.make(
