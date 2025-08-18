@@ -27,13 +27,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/multi_capture_notification_details_view.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/common/web_app_id.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"
@@ -132,15 +129,12 @@ MultiCaptureUsageIndicatorService::AllowListedAppNames::~AllowListedAppNames() =
 
 MultiCaptureUsageIndicatorService::MultiCaptureUsageIndicatorService(
     PrefService* prefs,
-    web_app::WebAppProvider* provider,
     NotificationDisplayService* notification_display_service,
     MultiCaptureDataService* data_service)
     : pref_service_(prefs),
-      provider_(provider),
       notification_display_service_(notification_display_service),
       data_service_(data_service) {
   CHECK(pref_service_);
-  CHECK(provider_);
   CHECK(notification_display_service_);
 
   data_service_observer_.Observe(data_service_);
@@ -153,14 +147,13 @@ MultiCaptureUsageIndicatorService::~MultiCaptureUsageIndicatorService() =
 std::unique_ptr<MultiCaptureUsageIndicatorService>
 MultiCaptureUsageIndicatorService::Create(
     PrefService* prefs,
-    web_app::WebAppProvider* provider,
     NotificationDisplayService* notification_display_service,
     MultiCaptureDataService* data_service) {
-  if (!prefs || !provider || !notification_display_service || !data_service) {
-    return nullptr;
-  }
+  CHECK(prefs);
+  CHECK(notification_display_service);
+  CHECK(data_service);
   return base::WrapUnique(new MultiCaptureUsageIndicatorService(
-      prefs, provider, notification_display_service, data_service));
+      prefs, notification_display_service, data_service));
 }
 
 void MultiCaptureUsageIndicatorService::MultiCaptureStarted(
@@ -318,7 +311,6 @@ MultiCaptureUsageIndicatorService::CreateActiveCaptureNotification(
 
 MultiCaptureUsageIndicatorService::AllowListedAppNames
 MultiCaptureUsageIndicatorService::GetInstalledAndAllowlistedAppNames() const {
-  CHECK(provider_);
   CHECK(data_service_);
 
   const std::map<webapps::AppId, std::string>&

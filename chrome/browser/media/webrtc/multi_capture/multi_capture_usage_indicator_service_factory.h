@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_MULTI_CAPTURE_MULTI_CAPTURE_USAGE_INDICATOR_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/webapps/isolated_web_apps/service/isolated_web_app_browser_context_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -19,7 +19,7 @@ class MultiCaptureUsageIndicatorService;
 // This factory reacts to profile creation and instantiates profile-keyed
 // services that manages usage indicators for the `getAllScreensMedia` API.
 class MultiCaptureUsageIndicatorServiceFactory
-    : public ProfileKeyedServiceFactory {
+    : public web_app::IsolatedWebAppBrowserContextServiceFactory {
  public:
   static MultiCaptureUsageIndicatorService* GetForBrowserContext(
       content::BrowserContext* context);
@@ -36,7 +36,7 @@ class MultiCaptureUsageIndicatorServiceFactory
   MultiCaptureUsageIndicatorServiceFactory();
   ~MultiCaptureUsageIndicatorServiceFactory() override;
 
-  // BrowserContextKeyedServiceFactory:
+  // web_app::ProfileKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;

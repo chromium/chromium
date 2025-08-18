@@ -26,10 +26,6 @@ namespace message_center {
 class Notification;
 }
 
-namespace web_app {
-class WebAppProvider;
-}  // namespace web_app
-
 namespace multi_capture {
 
 class MultiCaptureUsageIndicatorService
@@ -55,7 +51,6 @@ class MultiCaptureUsageIndicatorService
 
   static std::unique_ptr<MultiCaptureUsageIndicatorService> Create(
       PrefService* prefs,
-      web_app::WebAppProvider* provider,
       NotificationDisplayService* notification_display_service,
       MultiCaptureDataService* data_service);
 
@@ -78,7 +73,6 @@ class MultiCaptureUsageIndicatorService
  protected:
   explicit MultiCaptureUsageIndicatorService(
       PrefService* prefs,
-      web_app::WebAppProvider* provider,
       NotificationDisplayService* notification_display_service,
       MultiCaptureDataService* data_service);
 
@@ -110,13 +104,13 @@ class MultiCaptureUsageIndicatorService
   GetAllCaptureWithoutNotificationApps(
       const MultiCaptureUsageIndicatorService::AllowListedAppNames& apps) const;
 
-  // As the keyed service is bound to the profile / browser context and the
-  // web app provider keyed service is listed as dependency for this service,
-  // these raw pointers are safe because the profile and provider objects are
-  // guaranteed by the keyed service system to be alive at least until the
-  // `Shutdown` function is called.
+  // As the keyed service is bound to the browser context and the
+  // multi capture data service and notification display service keyed
+  // servicesare listed as dependency for this service, these raw pointers are
+  // safe because the profile and provider objects are guaranteed by the keyed
+  // service system to be alive at least until the `Shutdown` function is
+  // called.
   const raw_ptr<PrefService> pref_service_;
-  const raw_ptr<web_app::WebAppProvider> provider_;
   raw_ptr<NotificationDisplayService> notification_display_service_;
   const raw_ptr<MultiCaptureDataService> data_service_;
   base::Value::List multi_screen_capture_allow_list_on_login_;

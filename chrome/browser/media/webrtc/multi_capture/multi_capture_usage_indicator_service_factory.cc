@@ -36,11 +36,8 @@ MultiCaptureUsageIndicatorServiceFactory::GetInstance() {
 
 MultiCaptureUsageIndicatorServiceFactory::
     MultiCaptureUsageIndicatorServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "MultiCaptureUsageIndicatorServiceFactory",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {
+    : web_app::IsolatedWebAppBrowserContextServiceFactory(
+          "MultiCaptureUsageIndicatorServiceFactory") {
   DependsOn(MultiCaptureDataServiceFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
@@ -54,7 +51,7 @@ MultiCaptureUsageIndicatorServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(profile);
   return MultiCaptureUsageIndicatorService::Create(
-      profile->GetPrefs(), web_app::WebAppProvider::GetForWebApps(profile),
+      profile->GetPrefs(),
       NotificationDisplayServiceFactory::GetForProfile(profile),
       MultiCaptureDataServiceFactory::GetForProfile(profile));
 }

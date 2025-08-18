@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -29,11 +30,8 @@ MultiCaptureDataServiceFactory* MultiCaptureDataServiceFactory::GetInstance() {
 }
 
 MultiCaptureDataServiceFactory::MultiCaptureDataServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "MultiCaptureDataServiceFactory",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {
+    : web_app::IsolatedWebAppBrowserContextServiceFactory(
+          "MultiCaptureDataServiceFactory") {
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
 }
 
