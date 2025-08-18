@@ -114,7 +114,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread : public base::Thread {
   // simply delete the listener object. The implementation guarantees
   // that the callback will always be called on the thread that created
   // the listener.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
 
   base::WeakPtrFactory<CompositorGpuThread> weak_ptr_factory_;
 };

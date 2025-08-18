@@ -97,7 +97,7 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
   base::TimeTicks critical_memory_pressure_expiration_time_;
 #endif
 
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
 };
 
 }  // namespace viz

@@ -76,10 +76,11 @@ VulkanInProcessContextProvider::VulkanInProcessContextProvider(
       sync_cpu_memory_limit_(sync_cpu_memory_limit),
       cooldown_duration_at_memory_pressure_critical_(
           cooldown_duration_at_memory_pressure_critical) {
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
-      base::BindRepeating(&VulkanInProcessContextProvider::OnMemoryPressure,
-                          base::Unretained(this)));
+  memory_pressure_listener_ =
+      std::make_unique<base::AsyncMemoryPressureListener>(
+          FROM_HERE,
+          base::BindRepeating(&VulkanInProcessContextProvider::OnMemoryPressure,
+                              base::Unretained(this)));
 }
 
 VulkanInProcessContextProvider::~VulkanInProcessContextProvider() {

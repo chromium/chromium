@@ -201,7 +201,7 @@ class GraphiteVizMemoryAssistant
 
   // NOTE: The implementation guarantees that the callback will always be called
   // on the thread that created the listener.
-  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
+  std::optional<base::AsyncMemoryPressureListener> memory_pressure_listener_;
 
   raw_ptr<skgpu::graphite::Recorder> recorder_ = nullptr;
   raw_ptr<gpu::raster::GraphiteCacheController> cache_controller_ = nullptr;

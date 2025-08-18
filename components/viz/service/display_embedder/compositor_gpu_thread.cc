@@ -261,9 +261,11 @@ void CompositorGpuThread::Init() {
   // Making sure to create the |memory_pressure_listener_| on
   // CompositorGpuThread since this callback will be called on the thread it was
   // created on.
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(&CompositorGpuThread::HandleMemoryPressure,
-                                     base::Unretained(this))),
+  memory_pressure_listener_ =
+      std::make_unique<base::AsyncMemoryPressureListener>(
+          FROM_HERE,
+          base::BindRepeating(&CompositorGpuThread::HandleMemoryPressure,
+                              base::Unretained(this))),
   init_succeeded_ = true;
 }
 
