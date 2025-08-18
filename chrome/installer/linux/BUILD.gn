@@ -525,6 +525,8 @@ template("linux_package") {
         rebase_path("$root_out_dir/installer/rpm/build.sh", root_build_dir),
         "-a",
         rpm_arch,
+        "-b",
+        build_timestamp,
         "-c",
         invoker.channel,
         "-d",

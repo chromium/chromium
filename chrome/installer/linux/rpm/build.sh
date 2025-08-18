@@ -89,6 +89,9 @@ do_package() {
   DEPENDS=$(cat "${RPM_COMMON_DEPS}" | tr '\n' ',')
   gen_spec
 
+  # Reproducible builds: fix both payload and header timestamps.
+  export SOURCE_DATE_EPOCH="$BUILD_TIMESTAMP"
+
   # Create temporary rpmbuild dirs.
   mkdir -p "$RPMBUILD_DIR/BUILD"
   mkdir -p "$RPMBUILD_DIR/RPMS"
@@ -108,6 +111,10 @@ do_package() {
     --define "${COMPRESSION_OPT}" \
     --define "__os_install_post  %{nil}" \
     --define "_build_id_links none" \
+    --define "build_mtime_policy clamp_to_source_date_epoch" \
+    --define "clamp_mtime_to_source_date_epoch 1" \
+    --define "use_source_date_epoch_as_buildtime 1" \
+    --define "_buildhost reproducible" \
     "${SPEC}"
   PKGNAME="${PACKAGE}-${CHANNEL}-${VERSION}-${PACKAGE_RELEASE}"
   mv "$RPMBUILD_DIR/RPMS/$ARCHITECTURE/${PKGNAME}.${ARCHITECTURE}.rpm" \
@@ -128,8 +135,9 @@ cleanup() {
 
 usage() {
   echo "usage: $(basename $0) [-a target_arch] -c channel -d branding"
-  echo "                      [-f] [-o 'dir'] -t target_os"
+  echo "                      [-b epoch_secs] [-f] [-o 'dir'] -t target_os"
   echo "-a arch     rpm package architecture"
+  echo "-b epoch    build timestamp (seconds since epoch) for reproducible builds"
   echo "-c channel  the package channel (canary, unstable, beta, stable)"
   echo "-d brand    either chromium or google_chrome"
   echo "-f          indicates that this is an official build"
@@ -168,6 +176,9 @@ process_opts() {
     case $OPTNAME in
       a )
         ARCHITECTURE="$OPTARG"
+        ;;
+      b )
+        BUILD_TIMESTAMP="$OPTARG"
         ;;
       c )
         CHANNEL="$OPTARG"
