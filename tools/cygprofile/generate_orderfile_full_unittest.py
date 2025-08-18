@@ -28,17 +28,6 @@ class TestOrderfileGenerator(unittest.TestCase):
     self.assertLess(0, step_recorder.timings[1][1])
     self.assertTrue(step_recorder.ErrorRecorded())
 
-  def testGenerateHash(self):
-    try:
-      with tempfile.NamedTemporaryFile(mode='w', delete=False) as handle:
-        filename = handle.name
-        handle.write('foo')
-      self.assertEqual('0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33',
-                       generate_orderfile_full._GenerateHash(filename))
-    finally:
-      if filename:
-        os.unlink(filename)
-
 
 if __name__ == '__main__':
   unittest.main()

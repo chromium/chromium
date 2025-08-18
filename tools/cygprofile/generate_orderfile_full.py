@@ -29,6 +29,7 @@ import time
 from typing import Dict, List, Union
 
 import android_profile_tool
+import check_orderfile
 import orderfile_shared
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
@@ -55,19 +56,6 @@ _ARCH_GN_ARGS = {
 }
 
 _RESULTS_KEY_SPEEDOMETER = 'Speedometer2.0'
-
-
-def _GenerateHash(file_path):
-  """Calculates and returns the hash of the file at file_path."""
-  sha1 = hashlib.sha1()
-  with open(file_path, 'rb') as f:
-    while True:
-      # Read in 1mb chunks, so it doesn't all have to be loaded into memory.
-      chunk = f.read(1024 * 1024)
-      if not chunk:
-        break
-      sha1.update(chunk)
-  return sha1.hexdigest()
 
 
 class StepRecorder:
@@ -435,16 +423,9 @@ class OrderfileGenerator:
         self._options.arch, self._compiler.chrome_apk_path,
         str(self._instrumented_out_dir), self._compiler.webview_installer_path)
     self._MaybeSaveProfile()
-    try:
-      self._ProcessPhasedOrderfile(files)
-    except Exception:
-      for f in files:
-        self._SaveForDebugging(f)
-      self._SaveForDebugging(self._compiler.lib_chrome_so)
-      raise
-    finally:
-      if not self._options.save_profile_data:
-        self._profiler.Cleanup()
+    self._ProcessPhasedOrderfile(files)
+    if not self._options.save_profile_data:
+      self._profiler.Cleanup()
     logging.getLogger().setLevel(logging.INFO)
 
   def _ProcessPhasedOrderfile(self, files):
@@ -480,38 +461,8 @@ class OrderfileGenerator:
   def _VerifySymbolOrder(self):
     self._step_recorder.BeginStep('Verify Symbol Order')
     assert self._compiler is not None
-    cmd = [
-        str(self._CHECK_ORDERFILE_SCRIPT), self._compiler.lib_chrome_so,
-        self._GetPathToOrderfile()
-    ]
-    return_code = self._step_recorder.RunCommand(
-        cmd, raise_on_error=False).returncode
-    if return_code:
-      self._step_recorder.FailStep('Orderfile check returned %d.' % return_code)
-    return return_code == 0
-
-  def _RecordHash(self, file_name):
-    """Records the hash of the file into the output_data dictionary."""
-    self._output_data[os.path.basename(file_name) +
-                      '.sha1'] = _GenerateHash(file_name)
-
-  def _SaveFileLocally(self, file_name, file_sha1):
-    """Saves the file to a temporary location and prints the sha1sum."""
-    if not os.path.exists(self._DIRECTORY_FOR_DEBUG_FILES):
-      os.makedirs(self._DIRECTORY_FOR_DEBUG_FILES)
-    shutil.copy(file_name, self._DIRECTORY_FOR_DEBUG_FILES)
-    logging.info('File: %s, saved in: %s, sha1sum: %s', file_name,
-                 self._DIRECTORY_FOR_DEBUG_FILES, file_sha1)
-
-  def _SaveForDebugging(self, filename: str):
-    """Saves the file to a temporary location."""
-    file_sha1 = _GenerateHash(filename)
-    self._SaveFileLocally(filename, file_sha1)
-
-  def _MaybeArchiveOrderfile(self, filename: str):
-    """Computes and records the hash of the generated orderfile."""
-    self._step_recorder.BeginStep(f'Compute hash for {filename}')
-    self._RecordHash(filename)
+    return check_orderfile.ExtractAndVerifySymbolOrder(
+        self._compiler.lib_chrome_so, self._GetPathToOrderfile())
 
   def _WebViewStartupBenchmark(self, apk: str):
     """Runs system_health.webview_startup benchmark.
@@ -728,29 +679,29 @@ class OrderfileGenerator:
         else:
           self._compiler.CompileChromeApk(instrumented=True)
       self._GenerateAndProcessProfile()
-      self._MaybeArchiveOrderfile(self._GetUnpatchedOrderfileFilename())
 
     if self._options.profile:
       self._RemoveBlanks(self._GetUnpatchedOrderfileFilename(),
                          self._GetPathToOrderfile())
-    self._compiler = ClankCompiler(self._uninstrumented_out_dir,
-                                   self._step_recorder, self._options,
-                                   self._GetPathToOrderfile())
     self._AddDummyFunctions()
-    self._compiler.CompileLibchrome(instrumented=False, force_relink=False)
-    if self._VerifySymbolOrder():
-      self._MaybeArchiveOrderfile(self._GetPathToOrderfile())
-    else:
-      self._SaveForDebugging(self._GetPathToOrderfile())
+    if not self.CompileAndVerify():
+      return False
 
     if self._options.benchmark:
       self._SaveBenchmarkResultsToOutput(
           self.RunBenchmark(self._uninstrumented_out_dir),
           self.RunBenchmark(self._no_orderfile_out_dir, no_orderfile=True))
 
-
     self._step_recorder.EndStep()
     return not self._step_recorder.ErrorRecorded()
+
+  def CompileAndVerify(self):
+    """Compiles and verifies the orderfile."""
+    self._compiler = ClankCompiler(self._uninstrumented_out_dir,
+                                   self._step_recorder, self._options,
+                                   self._GetPathToOrderfile())
+    self._compiler.CompileLibchrome(instrumented=False, force_relink=False)
+    return self._VerifySymbolOrder()
 
   def GetReportingData(self):
     """Get a dictionary of reporting data (timings, output hashes)"""
@@ -775,11 +726,7 @@ def CreateArgumentParser():
       type=str,
       help="Device serial number on which to run profiling.",
   )
-  parser.add_argument(
-      "--verify",
-      action="store_true",
-      help="If true, the script only verifies the current orderfile.",
-  )
+
   parser.add_argument(
       "--skip-profile",
       action="store_false",
@@ -817,6 +764,12 @@ def CreateArgumentParser():
       help="Directory to save any profiles created. These can be used with "
       "--pregenerated-profiles. Cannot be used with --skip-profiles.",
   )
+  parser.add_argument(
+      "--verify",
+      action="store_true",
+      help="If true, the script avoids generation, only compiles the library "
+      "and verifies the current orderfile.",
+  )
   return parser
 
 
@@ -832,9 +785,11 @@ def main():
 
   generator = OrderfileGenerator(options)
   if options.verify:
-    generator._VerifySymbolOrder()
+    if not generator.CompileAndVerify():
+      sys.exit(1)
   else:
-    generator.Generate()
+    if not generator.Generate():
+      sys.exit(1)
 
 
 if __name__ == '__main__':

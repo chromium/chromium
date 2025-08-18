@@ -2,18 +2,21 @@
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Check that symbols are ordered into a binary as they appear in the orderfile.
 """
 
+import argparse
 import dataclasses
 import logging
-import optparse
+import pathlib
 import sys
 from typing import Dict
 from typing import Set
 
+import orderfile_shared
 import symbol_extractor
+
+_DEFAULT_THRESHOLD = 80
 
 
 @dataclasses.dataclass
@@ -115,31 +118,74 @@ def _VerifySymbolOrder(orderfile_symbols, symbol_infos, threshold):
   return True
 
 
-def main():
-  parser = optparse.OptionParser(usage=
-      'usage: %prog [options] <binary> <orderfile>')
-  parser.add_option('--target-arch', help='Unused')
-  parser.add_option('--threshold',
-                    action='store',
-                    dest='threshold',
-                    default=80,
-                    type=int,
-                    help='The maximum allowed number of out-of-order symbols.')
-  options, argv = parser.parse_args(sys.argv)
-  if len(argv) != 3:
-    parser.print_help()
-    return 1
-  (binary_filename, orderfile_filename) = argv[1:]
+def ExtractAndVerifySymbolOrder(binary_filename: str,
+                                orderfile_filename: str,
+                                threshold: int = _DEFAULT_THRESHOLD):
+  """Extracts symbols and verifies the ordering.
 
+  Args:
+    binary_filename: Path to the binary.
+    orderfile_filename: Path to the orderfile.
+    threshold: The number of misordered symbols beyond which we error.
+
+  Returns:
+    True iff the ordering is consistent within |threshold|.
+  """
   symbol_infos = symbol_extractor.SymbolInfosFromBinary(binary_filename)
+  with open(orderfile_filename, 'r') as f:
+    orderfile_symbols = [s.strip() for s in f]
+  return _VerifySymbolOrder(orderfile_symbols, symbol_infos, threshold)
 
-  if not _VerifySymbolOrder(
-      [sym.strip() for sym in open(orderfile_filename, 'r')], symbol_infos,
-      options.threshold):
-    return 1
-  return 0
+
+def CreateArgumentParser():
+  """Creates and returns the argument parser."""
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--target-arch',
+                      dest='arch',
+                      required=True,
+                      choices=['arm', 'arm64', 'x86', 'x64'],
+                      help='The target architecture for which to build.')
+  parser.add_argument('-C',
+                      '--out-dir',
+                      type=pathlib.Path,
+                      required=True,
+                      help='Path to the output directory.')
+  parser.add_argument('--orderfile-path',
+                      required=True,
+                      help='Path to the orderfile to verify.')
+  parser.add_argument(
+      '--threshold',
+      action='store',
+      dest='threshold',
+      default=_DEFAULT_THRESHOLD,
+      type=int,
+      help='The maximum allowed number of out-of-order symbols.')
+  parser.add_argument('-v',
+                      '--verbose',
+                      dest='verbosity',
+                      action='count',
+                      default=0,
+                      help='Increase verbosity for debugging.')
+  return parser
+
+
+def main():
+  parser = CreateArgumentParser()
+  options = parser.parse_args()
+  if options.verbosity >= 1:
+    level = logging.DEBUG
+  else:
+    level = logging.INFO
+  logging.basicConfig(level=level,
+                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+
+  lib_chrome_so = orderfile_shared.GetLibchromeSoPath(options.out_dir,
+                                                      options.arch)
+  if ExtractAndVerifySymbolOrder(lib_chrome_so, options.orderfile_path,
+                                 options.threshold):
+    return 0
+  return 1
 
 
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.INFO)
   sys.exit(main())

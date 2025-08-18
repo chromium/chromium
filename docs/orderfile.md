@@ -17,7 +17,8 @@ placing functions commonly called together closely in memory.
 To generate an orderfile you can run the `generate_orderfile_full.py`
 script. You will need an Android device connected with
 [adb](https://developer.android.com/tools/adb) to generate the orderfile as the
-generation pipeline will need to run benchmarks on a device.
+generation pipeline will need to run benchmarks on a device. The script will
+automatically verify the generated orderfile at the end of the process.
 
 Example:
 
@@ -35,6 +36,24 @@ NB: If your checkout is non-internal you must use the `--public` option.
 
 To build Chrome with a locally generated orderfile, use the
 `chrome_orderfile_path=<path_to_orderfile>` GN arg.
+
+To verify that an orderfile is valid for a given build, you can use the
+`check_orderfile.py` script. This is useful to ensure that the orderfile
+is compatible with the version of the library you are building.
+
+Example:
+
+```
+tools/cygprofile/check_orderfile.py --target-arch=arm64 \
+  -C out/Release --orderfile-path=clank/orderfiles/orderfile.arm64.out
+```
+
+Alternatively, you can use the `--verify` flag with `generate_orderfile_full.py`
+to build and verify in one step.
+
+```
+
+
 
 ## Orderfile Performance Testing
 
