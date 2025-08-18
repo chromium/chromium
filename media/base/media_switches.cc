@@ -764,7 +764,13 @@ const base::FeatureParam<std::string> kMediaFoundationClearKeyCdmPathForTesting{
 #endif  // BUILDFLAG(IS_WIN)
 
 // Enables the On-Device Web Speech feature on supported devices.
-BASE_FEATURE(OnDeviceWebSpeech, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(OnDeviceWebSpeech,
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_CHROMEOS)
+);
 
 // Enables the Live Caption feature on supported devices.
 BASE_FEATURE(LiveCaption, base::FEATURE_ENABLED_BY_DEFAULT);
