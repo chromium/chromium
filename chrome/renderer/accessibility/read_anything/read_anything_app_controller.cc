@@ -2031,8 +2031,10 @@ void ReadAnythingAppController::SetLanguageCode(const std::string& code) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingAppController::OnDeviceLocked() {
-  read_aloud_model_.LogSpeechStop(
-      ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice);
+  if (read_aloud_model_.speech_playing()) {
+    read_aloud_model_.LogSpeechStop(
+        ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice);
+  }
   RecordEstimatedWordsSeen();
   RecordEstimatedWordsHeard();
   // Signal to the WebUI that the device has been locked. We'll only receive
@@ -2047,16 +2049,20 @@ void ReadAnythingAppController::OnTtsEngineInstalled() {
 
 void ReadAnythingAppController::OnReadingModeHidden() {
   model_.set_will_hide(true);
-  read_aloud_model_.LogSpeechStop(
-      ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
+  if (read_aloud_model_.speech_playing()) {
+    read_aloud_model_.LogSpeechStop(
+        ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
+  }
   RecordEstimatedWordsSeen();
   RecordEstimatedWordsHeard();
 }
 
 void ReadAnythingAppController::OnTabWillDetach() {
   model_.set_will_hide(true);
-  read_aloud_model_.LogSpeechStop(
-      ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
+  if (read_aloud_model_.speech_playing()) {
+    read_aloud_model_.LogSpeechStop(
+        ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
+  }
   RecordEstimatedWordsSeen();
   RecordEstimatedWordsHeard();
 }

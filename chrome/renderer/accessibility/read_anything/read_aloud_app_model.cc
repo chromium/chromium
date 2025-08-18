@@ -741,7 +741,7 @@ void ReadAloudAppModel::IncrementMetric(const std::string& metric_name) {
 }
 
 void ReadAloudAppModel::LogSpeechStop(ReadAloudStopSource source) {
-  if (!features::IsReadAnythingReadAloudEnabled() || !speech_playing_) {
+  if (!features::IsReadAnythingReadAloudEnabled()) {
     return;
   }
 
@@ -749,7 +749,7 @@ void ReadAloudAppModel::LogSpeechStop(ReadAloudStopSource source) {
   // If speech started but audio is not playing yet when speech is stopped, log
   // the audio delay indicating that the user may have stopped speech because
   // audio wasn't starting.
-  if (!audio_currently_playing_) {
+  if (speech_playing_ && !audio_currently_playing_) {
     LogAudioDelay(/*success=*/false);
   }
 }

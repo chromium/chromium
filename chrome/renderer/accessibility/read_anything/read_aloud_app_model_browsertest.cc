@@ -256,6 +256,31 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
       ReadAloudAppModel::kAudioStartTimeFailureHistogramName, 0);
 }
 
+TEST_F(ReadAnythingReadAloudAppModelTest,
+       LogSpeechStop_WithReadAloud_LogsStopSourceWithSpeechNotPlaying) {
+  EnableReadAloud();
+  auto source = ReadAloudAppModel::ReadAloudStopSource::kFinishContent;
+  base::HistogramTester histogram_tester;
+
+  LogSpeechStop(source);
+
+  histogram_tester.ExpectUniqueSample(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName, source, 1);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest,
+       LogSpeechStop_WithReadAloud_LogsStopSourceWithSpeechPlaying) {
+  EnableReadAloud();
+  SetSpeechPlaying(true);
+  auto source = ReadAloudAppModel::ReadAloudStopSource::kFinishContent;
+  base::HistogramTester histogram_tester;
+
+  LogSpeechStop(source);
+
+  histogram_tester.ExpectUniqueSample(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName, source, 1);
+}
+
 TEST_F(ReadAnythingReadAloudAppModelTest, SetAudioCurrentlyPlaying_LogsDelay) {
   EnableReadAloud();
   SetSpeechPlaying(true);
