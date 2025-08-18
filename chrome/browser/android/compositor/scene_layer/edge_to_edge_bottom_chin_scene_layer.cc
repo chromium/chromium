@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/command_line.h"
 #include "cc/input/android/offset_tag_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/edge_to_edge/jni_headers/EdgeToEdgeBottomChinSceneLayer_jni.h"
 #include "components/viz/common/quads/offset_tag.h"
+#include "ui/base/ui_base_switches.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -41,7 +43,8 @@ EdgeToEdgeBottomChinSceneLayer::EdgeToEdgeBottomChinSceneLayer(
   divider_layer_->SetHideLayerAndSubtree(true);
   view_container_->AddChild(divider_layer_);
 
-  is_debugging_ = chrome::android::kEdgeToEdgeBottomChinDebugParam.Get();
+  is_debugging_ = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableEdgeToEdgeDebugLayers);
   if (is_debugging_) {
     debug_layer_->SetIsDrawable(true);
     debug_layer_->SetOpacity(0.5f);

@@ -54,6 +54,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.UiSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -413,7 +414,8 @@ public class EdgeToEdgeInstrumentationTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE + ":e2e_everywhere_debug/true")
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
+    @CommandLineFlags.Add(UiSwitches.ENABLE_EDGE_TO_EDGE_DEBUG_LAYERS)
     public void testPadWithEdgeToEdgeLayout() throws IOException {
         goToEdge();
         assertDrawingToEdge();

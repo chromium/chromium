@@ -20,6 +20,13 @@ inline constexpr char kDisableOverscrollEdgeEffect[] =
 // Disable the pull-to-refresh effect when vertically overscrolling content.
 inline constexpr char kDisablePullToRefreshEffect[] =
     "disable-pull-to-refresh-effect";
+
+// Enables drawing debug layers for edge-to-edge components to highlight the
+// system insets those components are drawing into.
+// LINT.IfChange(EnableEdgeToEdgeDebugLayers)
+inline constexpr char kEnableEdgeToEdgeDebugLayers[] =
+    "enable-edge-to-edge-debug-layers";
+// LINT.ThenChange(//ui/android/java/src/org/chromium/ui/UiSwitches.java:EnableEdgeToEdgeDebugLayers)
 #endif
 
 #if BUILDFLAG(IS_MAC)

@@ -1639,9 +1639,6 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, "use_gesture_insets", true);
 
-    public static final BooleanCachedFeatureParam sEdgeToEdgeEverywhereIsDebugging =
-            newBooleanCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_everywhere_debug", false);
-
     public static final IntCachedFeatureParam sEdgeToEdgeTabletInvisibleBottomChinMinWidth =
             newIntCachedFeatureParam(
                     EDGE_TO_EDGE_TABLET, "e2e_tablet_invisible_bottom_chin_min_width", -1);
@@ -1805,7 +1802,6 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeBottomChinOemList,
                     sEdgeToEdgeBottomChinOemMinVersions,
                     sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions,
-                    sEdgeToEdgeEverywhereIsDebugging,
                     sEdgeToEdgeEverywhereOemList,
                     sEdgeToEdgeUseBackupNavbarInsetsOemList,
                     sEdgeToEdgeUseBackupNavbarInsetsUseTappable,

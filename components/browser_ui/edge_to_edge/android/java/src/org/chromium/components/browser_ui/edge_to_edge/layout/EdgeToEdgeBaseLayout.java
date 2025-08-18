@@ -17,8 +17,10 @@ import android.widget.FrameLayout;
 import androidx.annotation.ColorInt;
 import androidx.core.graphics.Insets;
 
+import org.chromium.base.CommandLine;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.UiSwitches;
 import org.chromium.ui.insets.WindowInsetsUtils;
 
 /**
@@ -62,8 +64,6 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
     private Insets mCutoutInsetsRight = Insets.NONE;
     private Insets mCaptionBarInsets = Insets.NONE;
 
-    private boolean mIsDebugging;
-
     public EdgeToEdgeBaseLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
@@ -71,11 +71,11 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
         mNavBarPaint.setXfermode(new PorterDuffXfermode(Mode.SRC_OVER));
 
         mDisplayCutoutPaint.setColor(DISPLAY_CUTOUT_PAINT_COLOR);
+        mDebugPaint.setColor(isDebugging() ? DEBUG_PAINT_COLOR : Color.TRANSPARENT);
     }
 
-    void setIsDebugging(boolean isDebugging) {
-        mIsDebugging = isDebugging;
-        mDebugPaint.setColor(mIsDebugging ? DEBUG_PAINT_COLOR : Color.TRANSPARENT);
+    private static boolean isDebugging() {
+        return CommandLine.getInstance().hasSwitch(UiSwitches.ENABLE_EDGE_TO_EDGE_DEBUG_LAYERS);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
             colorRectOnDraw(canvas, mNavBarDividerRect, mNavBarDividerPaint);
         }
 
-        if (mIsDebugging) {
+        if (isDebugging()) {
             colorRectOnDraw(canvas, mStatusBarRectDebug, mDebugPaint);
             colorRectOnDraw(canvas, mNavBarRectDebug, mDebugPaint);
         }
@@ -153,7 +153,7 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
         // Set the nav bar divider the last after the nav bar adjustments.
         mNavBarDividerRect.set(getNavBarDividerRectFromInset(mNavigationBarInsets, mNavBarRect));
 
-        if (mIsDebugging) {
+        if (isDebugging()) {
             mStatusBarRectDebug.set(mStatusBarRect);
             mStatusBarRectDebug.inset(mStatusBarRect.width() / 4, 0);
             mNavBarRectDebug.set(mNavBarRect);

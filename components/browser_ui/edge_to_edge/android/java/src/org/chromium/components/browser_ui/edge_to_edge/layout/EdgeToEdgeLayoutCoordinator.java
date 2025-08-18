@@ -48,7 +48,6 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     private final Context mContext;
     private final @Nullable InsetObserver mInsetObserver;
     private @Nullable EdgeToEdgeBaseLayout mView;
-    private boolean mIsDebugging;
 
     private final boolean mUseBackupNavbarInsetsEnabled;
     private final @Nullable EdgeToEdgeFieldTrial mUseBackupNavbarInsetsFieldTrial;
@@ -104,12 +103,6 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
                 /* useBackupNavbarInsetsFieldTrial= */ null,
                 /* canUseTappableElementInsets= */ false,
                 /* canUseMandatoryGesturesInsets= */ false);
-    }
-
-    /** Whether enable the debug layer for edge to edge layout. */
-    public void setIsDebugging(boolean isDebugging) {
-        mIsDebugging = isDebugging;
-        if (mView != null) mView.setIsDebugging(mIsDebugging);
     }
 
     /**
@@ -255,8 +248,6 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         } else {
             ViewCompat.setOnApplyWindowInsetsListener(mView, this);
         }
-
-        mView.setIsDebugging(mIsDebugging);
 
         applyStatusBarColor();
         applyNavBarColor();
