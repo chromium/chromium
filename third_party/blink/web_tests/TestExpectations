@@ -3587,7 +3587,7 @@ crbug.com/403967924 [ Win ] external/wpt/css/css-ui/caret-eol-004.tentative.html
 [ Mac15 ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Failure ]
 crbug.com/431157700 [ Linux ] external/wpt/css/css-inline/text-box-trim/text-box-trim-initial-letter-start-001.html [ Failure ]
 crbug.com/431157700 [ Linux ] external/wpt/css/css-masking/clip-path/clip-path-inline-009.html [ Failure ]
-crbug.com/431157700 [ Linux ] external/wpt/css/css-ruby/ruby-text-combine-upright-002a.html [ Failure ]
+crbug.com/439640691 external/wpt/css/css-ruby/ruby-text-combine-upright-002a.html [ Failure Pass ]
 crbug.com/431157700 [ Linux ] external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure ]
 crbug.com/431157700 [ Linux ] external/wpt/css/css-writing-modes/text-combine-upright-decorations-001.html [ Failure ]
 crbug.com/431157700 [ Linux ] external/wpt/css/css-writing-modes/text-combine-upright-shadow.html [ Failure ]
@@ -9614,9 +9614,6 @@ crbug.com/413289778 [ Mac12 ] wpt_internal/fedcm/fedcm-cache-manifest.https.html
 
 # Gardener 2025-05-14
 crbug.com/417479566 [ Mac ] external/wpt/css/css-transitions/transitioncancel-003.html [ Failure Pass ]
-
-# Gardener 2025-05-15
-crbug.com/417921517 [ Win11-arm64 ] external/wpt/css/css-ruby/ruby-text-combine-upright-002a.html [ Failure Pass ]
 
 # Gardener 2025-05-19
 crbug.com/418572857 external/wpt/background-fetch/fetch.https.window.html [ Failure Pass Timeout ]
