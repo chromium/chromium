@@ -29,7 +29,7 @@ void DuplicateTokenType() {
 
 void NonCompatibleMultiTokenConstruction() {
   MultiToken<FooToken, BarToken, BazToken> foo_bar_baz_token;
-  MultiToken<FooToken, BarToken> foo_bar_token(foo_bar_baz_token);  // expected-error {{no matching constructor for initialization of 'MultiToken<FooToken, BarToken>' (aka 'MultiToken<TokenType<class FooTokenTag>, TokenType<class BarTokenTag>>')}}
+  MultiToken<FooToken, BarToken> foo_bar_token(foo_bar_baz_token);  // expected-error-re {{no matching constructor for initialization of 'MultiToken<FooToken, BarToken>' (aka 'MultiToken<{{(base::)?}}TokenType<class FooTokenTag>, {{(base::)?}}TokenType<class BarTokenTag>>')}}
 }
 
 void NonCompatibleMultiTokenAssignment() {
