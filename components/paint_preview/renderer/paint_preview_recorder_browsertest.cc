@@ -25,12 +25,17 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/native_theme/features/native_theme_features.h"
 
 namespace paint_preview {
 
 namespace {
+
+using testing::AllOf;
+using testing::Gt;
+using testing::Lt;
 
 constexpr char kCompositeAfterPaint[] = "CompositeAfterPaint";
 
@@ -52,11 +57,6 @@ std::string CompositeAfterPaintToString(
     return "WithCompositeAfterPaint";
   }
   return "NoCompositeAfterPaint";
-}
-
-MATCHER_P2(IsBetween, a, b, "") {
-  CHECK_LE(a, b);
-  return a <= arg && arg <= b;
 }
 
 }  // namespace
@@ -182,17 +182,17 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndClipping) {
   // This should be inside the top right corner of the first top level div.
   // Success means there was no horizontal clipping as this region is red,
   // matching the div.
-  EXPECT_EQ(bitmap.getColor(600, 50), 0xFFFF0000U);
+  EXPECT_EQ(bitmap.getColor(600, 50), SK_ColorRED);
   // This should be inside the bottom of the second top level div. Success means
   // there was no vertical clipping as this region is black matching the div. If
   // the yellow div within the orange div overflowed then this would be yellow
   // and fail.
-  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 150), 0xFF000000U);
+  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 150), SK_ColorBLACK);
   // This should be for the white background in the bottom right. This checks
   // that the background is not clipped.
   EXPECT_EQ(bitmap.getColor(pic->cullRect().width() - 50,
                             pic->cullRect().height() - 50),
-            0xFFFFFFFFU);
+            SK_ColorWHITE);
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameWithScroll) {
@@ -236,10 +236,10 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameWithScroll) {
   // This should be inside the top right corner of the top div. Success means
   // there was no horizontal or vertical clipping as this region is red,
   // matching the div.
-  EXPECT_EQ(bitmap.getColor(600, 50), 0xFFFF0000U);
+  EXPECT_EQ(bitmap.getColor(600, 50), SK_ColorRED);
   // This should be inside the bottom of the bottom div. Success means there was
   // no vertical clipping as this region is blue matching the div.
-  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 100), 0xFF00FF00U);
+  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 100), SK_ColorGREEN);
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest,
@@ -272,10 +272,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 
   // Scroll offset should be within the [0, 500] bounds.
-  EXPECT_GT(out_response->scroll_offsets.x(), 0);
-  EXPECT_LT(out_response->scroll_offsets.x(), 500);
-  EXPECT_GT(out_response->scroll_offsets.y(), 0);
-  EXPECT_LT(out_response->scroll_offsets.y(), 500);
+  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
+  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
 
   // Both frame offsets should be > 0 in this case.
   EXPECT_GT(out_response->frame_offsets.x(), 0);
@@ -295,8 +293,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
                                        pic->cullRect().height()));
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawPicture(pic);
-  EXPECT_EQ(bitmap.getColor(50, 10), 0xFF00FF00U);
-  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), 0xFF00FF00U);
+  EXPECT_EQ(bitmap.getColor(50, 10), SK_ColorGREEN);
+  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), SK_ColorGREEN);
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest,
@@ -330,10 +328,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 
   // Scroll offset should be within the [0, 500] bounds.
-  EXPECT_GT(out_response->scroll_offsets.x(), 0);
-  EXPECT_LT(out_response->scroll_offsets.x(), 500);
-  EXPECT_GT(out_response->scroll_offsets.y(), 0);
-  EXPECT_LT(out_response->scroll_offsets.y(), 500);
+  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
+  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
 
   // Only Y frame offset should be > 0 in this case.
   EXPECT_EQ(out_response->frame_offsets.x(), 0);
@@ -353,8 +349,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
                                        pic->cullRect().height()));
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawPicture(pic);
-  EXPECT_EQ(bitmap.getColor(50, 10), 0xFF00FF00U);
-  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), 0xFF00FF00U);
+  EXPECT_EQ(bitmap.getColor(50, 10), SK_ColorGREEN);
+  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), SK_ColorGREEN);
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest,
@@ -389,10 +385,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 
   // Scroll offset should be within the [0, 500] bounds.
-  EXPECT_GT(out_response->scroll_offsets.x(), 0);
-  EXPECT_LT(out_response->scroll_offsets.x(), 500);
-  EXPECT_GT(out_response->scroll_offsets.y(), 0);
-  EXPECT_LT(out_response->scroll_offsets.y(), 500);
+  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
+  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
 
   // Only X frame offset should be > 0 in this case.
   EXPECT_GT(out_response->frame_offsets.x(), 0);
@@ -412,8 +406,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
                                        pic->cullRect().height()));
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawPicture(pic);
-  EXPECT_EQ(bitmap.getColor(50, 10), 0xFFFFFFFFU);
-  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), 0xFF00FF00U);
+  EXPECT_EQ(bitmap.getColor(50, 10), SK_ColorWHITE);
+  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), SK_ColorGREEN);
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest,
@@ -447,8 +441,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
 
   // Scroll offset should be within the [0, 2000] bounds and closer to the
   // bottom as it was clamped.
-  EXPECT_GT(out_response->scroll_offsets.y(), 1100);
-  EXPECT_LT(out_response->scroll_offsets.y(), 2000);
+  EXPECT_THAT(out_response->scroll_offsets.y(), AllOf(Gt(1100), Lt(2000)));
 
   // Frame offset should be > 0 in this case.
   EXPECT_GT(out_response->frame_offsets.y(), 0);
@@ -469,8 +462,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
                                        pic->cullRect().height()));
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawPicture(pic);
-  EXPECT_EQ(bitmap.getColor(50, 10), 0xFF00FF00U);
-  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), 0xFF00FF00U);
+  EXPECT_EQ(bitmap.getColor(50, 10), SK_ColorGREEN);
+  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), SK_ColorGREEN);
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest,
@@ -522,8 +515,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
                                        pic->cullRect().height()));
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawPicture(pic);
-  EXPECT_EQ(bitmap.getColor(600, 50), 0xFFFF0000U);
-  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 100), 0xFF00FF00U);
+  EXPECT_EQ(bitmap.getColor(600, 50), SK_ColorRED);
+  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 100), SK_ColorGREEN);
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest,
@@ -577,8 +570,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
                                        pic->cullRect().height()));
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawPicture(pic);
-  EXPECT_EQ(bitmap.getColor(50, 10), 0xFF00FF00U);
-  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), 0xFF00FF00U);
+  EXPECT_EQ(bitmap.getColor(50, 10), SK_ColorGREEN);
+  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), SK_ColorGREEN);
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest,
@@ -629,7 +622,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   canvas.drawPicture(pic);
   // Top left of the capture should be green, since we scrolled to the start of
   // the green div.
-  EXPECT_EQ(bitmap.getColor(10, 10), 0xFF00FF00U);
+  EXPECT_EQ(bitmap.getColor(10, 10), SK_ColorGREEN);
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest,
@@ -666,9 +659,9 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
 
   // The capture origin is more than halfway scrolled in each dimension. The
   // exact placement depends on the size of the viewport.
-  EXPECT_THAT(out_response->frame_offsets.x(), IsBetween(1 + 5000 / 2, 5000));
+  EXPECT_THAT(out_response->frame_offsets.x(), AllOf(Gt(5000 / 2), Lt(5000)));
   EXPECT_THAT(out_response->frame_offsets.y(),
-              IsBetween(1 + (200 + 5000) / 2, 200 + 5000));
+              AllOf(Gt((200 + 5000) / 2), Lt(200 + 5000)));
 
   // Relaxed checks on dimensions and no checks on positions. This is not
   // intended to intensively test the rendering behavior of the page.
@@ -684,8 +677,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
                                        pic->cullRect().height()));
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawPicture(pic);
-  EXPECT_EQ(bitmap.getColor(50, 10), 0xFF00FF00U);
-  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), 0xFF00FF00U);
+  EXPECT_EQ(bitmap.getColor(50, 10), SK_ColorGREEN);
+  EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 10), SK_ColorGREEN);
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureFragment) {
@@ -840,8 +833,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureUnclippedLocalFrame) {
                                        pic->cullRect().height()));
   SkCanvas canvas(bitmap);
   canvas.drawPicture(pic);
-  EXPECT_EQ(bitmap.getColor(50, 50), 0xFF00FF00U);
-  EXPECT_EQ(bitmap.getColor(50, 800), 0xFFFF0000U);
+  EXPECT_EQ(bitmap.getColor(50, 50), SK_ColorGREEN);
+  EXPECT_EQ(bitmap.getColor(50, 800), SK_ColorRED);
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureCustomClipRect) {
@@ -880,7 +873,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureCustomClipRect) {
                                        pic->cullRect().height()));
   SkCanvas canvas(bitmap);
   canvas.drawPicture(pic);
-  EXPECT_EQ(bitmap.getColor(100, 100), 0xFFFFFF00U);
+  EXPECT_EQ(bitmap.getColor(100, 100), SK_ColorYELLOW);
 
   ASSERT_EQ(out_response->links.size(), 1U);
   EXPECT_EQ(out_response->links[0]->url, GURL("http://www.example.com"));
