@@ -221,6 +221,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
         mSavedTabGroup.localId = mLocalId;
         mSavedTabGroup.title = TAB_GROUP_TITLE;
+        mSavedTabGroup.color = TAB_GROUP_INDICATOR_COLOR_ID;
         when(mTabWindowManager.findWindowIdForTabGroup(TAB_GROUP_ID)).thenReturn(INSTANCE_ID_1);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {TAB_GROUP_ID_STRING});
         when(mTabGroupSyncService.getGroup(TAB_GROUP_ID_STRING)).thenReturn(mSavedTabGroup);

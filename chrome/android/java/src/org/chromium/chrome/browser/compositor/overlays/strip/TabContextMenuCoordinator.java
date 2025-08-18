@@ -26,6 +26,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
@@ -68,6 +69,7 @@ import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
@@ -79,10 +81,10 @@ import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * A coordinator for the context menu on the tab strip by long-pressing on a tab. It is responsible
@@ -380,8 +382,6 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 windowChecker.getSortedGroupList(
                         groupWindowState ->
                                 groupWindowState != IN_CURRENT_CLOSING
-                                        // TODO(crbug.com/437327793): Support group in other window
-                                        && groupWindowState != GroupWindowState.IN_ANOTHER
                                         && groupWindowState != GroupWindowState.HIDDEN,
                         (a, b) -> Long.compare(b.updateTimeMs, a.updateTimeMs));
 
@@ -389,11 +389,10 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
 
         // TODO(crbug.com/437327793): Stop filtering out Inactive windows if we can support moving a
         // tab to a group in an Inactive window.
-        Set<Integer> activeInstanceIds = new HashSet<>();
-        List<InstanceInfo> activeInstances =
-                assumeNonNull(mMultiInstanceManager).getInstanceInfo(ACTIVE);
+        Map<Integer, InstanceInfo> activeInstancesById = new HashMap<>();
+        List<InstanceInfo> activeInstances = assumeNonNull(mMultiInstanceManager).getInstanceInfo(ACTIVE);
         for (InstanceInfo activeInstance : activeInstances) {
-            activeInstanceIds.add(activeInstance.instanceId);
+            activeInstancesById.put(activeInstance.instanceId, activeInstance);
         }
 
         for (SavedTabGroup tabGroup : sortedTabGroups) {
@@ -405,7 +404,11 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
 
             TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
             @WindowId int windowId = tabWindowManager.findWindowIdForTabGroup(groupId);
-            if (!activeInstanceIds.contains(windowId)) continue; // Skip groups w/o active window.
+            boolean isGroupInCurrentWindow =
+                    windowId == mMultiInstanceManager.getCurrentInstanceId();
+            if (!activeInstancesById.containsKey(windowId)) {
+                continue; // Skip groups w/o active window.
+            }
 
             @Nullable Integer firstTabInGroupTabId = tabGroup.savedTabs.get(0).localId;
             assert firstTabInGroupTabId != null : "Tab groups shouldn't be empty";
@@ -413,24 +416,32 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                     TabGroupTitleUtils.getDefaultTitle(
                             mContext, mTabGroupModelFilter.getTabCountForGroup(groupId));
             String label = TextUtils.isEmpty(tabGroup.title) ? fallbackLabel : tabGroup.title;
+            OnClickListener clickListener =
+                    (v) -> {
+                        RecordUserAction.record("MobileToolbarTabMenu.MoveTabToGroup");
+                        if (isGroupInCurrentWindow) {
+                            // If the tab is already in the current window,
+                            // then just merge it to the group.
+                            mergeTabsToDest(
+                                    Collections.singletonList(tab),
+                                    firstTabInGroupTabId,
+                                    mTabGroupModelFilter,
+                                    /* tabMovedCallback= */ null);
+                        } else {
+                            mMultiInstanceManager.moveTabsToWindowAndMergeToDest(
+                                    activeInstancesById.get(windowId),
+                                    Collections.singletonList(tab),
+                                    firstTabInGroupTabId);
+                        }
+                    };
             result.add(
                     new ListItem(
                             MENU_ITEM,
                             new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                     .with(TITLE, label)
                                     .with(ENABLED, true)
-                                    .with(
-                                            CLICK_LISTENER,
-                                            (v) -> {
-                                                RecordUserAction.record(
-                                                        "MobileToolbarTabMenu.MoveTabToGroup");
-                                                mergeTabsToDest(
-                                                        List.of(tab),
-                                                        firstTabInGroupTabId,
-                                                        mTabGroupModelFilter,
-                                                        /* tabMovedCallback= */ null);
-                                            })
-                                    .with(START_ICON_DRAWABLE, getCircleDrawable(groupId))
+                                    .with(CLICK_LISTENER, clickListener)
+                                    .with(START_ICON_DRAWABLE, getCircleDrawable(tabGroup.color))
                                     .build()));
         }
         return result;
@@ -461,24 +472,23 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                                                         mTabGroupModelFilter,
                                                         /* tabMovedCallback= */ null);
                                             })
-                                    .with(START_ICON_DRAWABLE, getCircleDrawable(groupId))
+                                    .with(
+                                            START_ICON_DRAWABLE,
+                                            getCircleDrawable(
+                                                    mTabGroupModelFilter.getTabGroupColor(groupId)))
                                     .build()));
         }
         return result;
     }
 
-    private @Nullable GradientDrawable getCircleDrawable(Token groupId) {
-        @Nullable Drawable sourceDrawable =
-                mContext.getDrawable(R.drawable.tab_group_dialog_color_icon);
-        @Nullable GradientDrawable circleDrawable = null;
+    private @Nullable GradientDrawable getCircleDrawable(@TabGroupColorId int colorId) {
+        Drawable sourceDrawable = mContext.getDrawable(R.drawable.tab_group_dialog_color_icon);
+        GradientDrawable circleDrawable = null;
         if (sourceDrawable != null) {
             circleDrawable = (GradientDrawable) sourceDrawable.mutate();
             @ColorInt
             int color =
-                    getTabGroupColorPickerItemColor(
-                            mContext,
-                            mTabGroupModelFilter.getTabGroupColor(groupId),
-                            /* isIncognito= */ false);
+                    getTabGroupColorPickerItemColor(mContext, colorId, /* isIncognito= */ false);
             circleDrawable.setColor(color);
         }
         return circleDrawable;
