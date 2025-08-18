@@ -8,7 +8,6 @@ source_set("coordinator") {
     "safari_data_import_entry_point_mediator.mm",
     "safari_data_import_main_coordinator.h",
     "safari_data_import_main_coordinator.mm",
-    "safari_data_import_ui_handler.h",
   ]
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
   deps = [
@@ -20,6 +19,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/passwords/model:features",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/ui",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
@@ -107,7 +107,6 @@ source_set("promo") {
   ]
   public_deps = [ "//ios/chrome/browser/promos_manager/ui_bundled:promos" ]
   deps = [
-    ":coordinator",
     "//components/feature_engagement/public",
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/safari_data_import/public",

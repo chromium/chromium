@@ -9,6 +9,7 @@ source_set("public") {
     "password_import_item_favicon_data_source.h",
     "safari_data_import_entry_point.h",
     "safari_data_import_stage.h",
+    "safari_data_import_ui_handler.h",
     "safari_data_item.h",
     "safari_data_item.mm",
     "safari_data_item_consumer.h",
