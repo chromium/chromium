@@ -231,8 +231,8 @@ class TabStripModel {
   // is kNoTab is if the tab strip is being initialized or destroyed. Note that
   // tab strip destruction is an asynchronous process.
   int active_index() const {
-    return selection_model_.active().has_value()
-               ? static_cast<int>(selection_model_.active().value())
+    return selection_model_->active().has_value()
+               ? static_cast<int>(selection_model_->active().value())
                : kNoTab;
   }
 
@@ -1372,7 +1372,7 @@ class TabStripModel {
   bool closing_all_ = false;
 
   // This must be kept in sync with |contents_data_|.
-  ui::ListSelectionModel selection_model_;
+  std::unique_ptr<ui::ListSelectionModel> selection_model_;
 
   // TabStripModel is not re-entrancy safe. This member is used to guard public
   // methods that mutate state of |selection_model_| or |contents_data_|.

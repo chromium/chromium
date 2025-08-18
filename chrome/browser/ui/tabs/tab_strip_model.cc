@@ -243,7 +243,9 @@ constexpr int TabStripModel::kNoTab;
 TabStripModel::TabStripModel(TabStripModelDelegate* delegate,
                              Profile* profile,
                              TabGroupModelFactory* group_model_factory)
-    : delegate_(delegate), profile_(profile) {
+    : delegate_(delegate),
+      profile_(profile),
+      selection_model_(std::make_unique<ui::ListSelectionModel>()) {
   DCHECK(delegate_);
 
   contents_data_ = std::make_unique<tabs::TabStripCollection>();
@@ -625,21 +627,21 @@ void TabStripModel::UpdateSelectionModelForDetach(
   bool active_tab_removed = tab_indices.Contains(gfx::Range(active_index()));
 
   if (closed_all_tabs) {
-    selection_model_.Clear();
+    selection_model_->Clear();
   } else {
     // Remove all the selected tabs from the model.
     for (int index = static_cast<int>(tab_indices.end()) - 1;
          index >= static_cast<int>(tab_indices.start()); --index) {
-      selection_model_.DecrementFrom(index);
+      selection_model_->DecrementFrom(index);
     }
 
     if (active_tab_removed) {
-      if (!selection_model_.empty()) {
-        selection_model_.set_active(
-            *selection_model_.selected_indices().begin());
-        selection_model_.set_anchor(selection_model_.active());
+      if (!selection_model_->empty()) {
+        selection_model_->set_active(
+            *selection_model_->selected_indices().begin());
+        selection_model_->set_anchor(selection_model_->active());
       } else {
-        SetSelectedIndex(&selection_model_, next_selected_index.value());
+        SetSelectedIndex(selection_model_.get(), next_selected_index.value());
       }
     }
   }
@@ -664,8 +666,8 @@ std::unique_ptr<tabs::TabCollection> TabStripModel::DetachTabCollectionImpl(
   tabs::TabModel* active_tab_model = GetTabModelAtIndex(active_index());
   const ui::ListSelectionModel old_selection_model = selection_model();
   bool selected_tabs_removed = std::any_of(
-      selection_model_.selected_indices().begin(),
-      selection_model_.selected_indices().end(),
+      selection_model_->selected_indices().begin(),
+      selection_model_->selected_indices().end(),
       [&](int sel) { return tab_indices.Contains(gfx::Range(sel)); });
 
   // Pass the indices vector from above.
@@ -729,15 +731,15 @@ gfx::Range TabStripModel::InsertDetachedCollectionImpl(
        i < collection_insertion_index +
                static_cast<int>(collection->TabCountRecursive());
        i++) {
-    selection_model_.IncrementFrom(collection_insertion_index);
+    selection_model_->IncrementFrom(collection_insertion_index);
   }
 
   TabStripSelectionChange selection(old_active_tab, selection_model());
   if (active_index.has_value()) {
-    SetSelectedIndex(&selection_model_,
+    SetSelectedIndex(selection_model_.get(),
                      collection_insertion_index + active_index.value());
   } else if (tab_strip_empty_initially) {
-    SetSelectedIndex(&selection_model_, collection_insertion_index);
+    SetSelectedIndex(selection_model_.get(), collection_insertion_index);
   }
 
   ValidateTabStripModel();
@@ -882,7 +884,7 @@ void TabStripModel::ActivateTabAt(int index,
 
   scrubbing_metrics_.IncrementPressCount(user_gesture);
 
-  ui::ListSelectionModel new_model = selection_model_;
+  ui::ListSelectionModel new_model(*selection_model_.get());
   SetSelectedIndex(&new_model, index);
   SetSelection(
       std::move(new_model),
@@ -1327,7 +1329,7 @@ int TabStripModel::IndexOfFirstNonPinnedTab() const {
 
 void TabStripModel::ExtendSelectionTo(int index) {
   CHECK(ContainsIndex(index));
-  ui::ListSelectionModel new_model = selection_model_;
+  ui::ListSelectionModel new_model(*selection_model_.get());
   if (!selection_model().anchor().has_value()) {
     SetSelectedIndex(&new_model, index);
   } else {
@@ -1402,7 +1404,7 @@ void TabStripModel::DeselectTabAt(int index) {
 }
 
 void TabStripModel::AddSelectionFromAnchorTo(int index) {
-  ui::ListSelectionModel new_model = selection_model_;
+  ui::ListSelectionModel new_model(*selection_model_.get());
   if (!selection_model().anchor().has_value()) {
     SetSelectedIndex(&new_model, index);
   } else {
@@ -1439,7 +1441,7 @@ void TabStripModel::SetSelectionFromModel(ui::ListSelectionModel source) {
 }
 
 const ui::ListSelectionModel& TabStripModel::selection_model() const {
-  return selection_model_;
+  return *selection_model_.get();
 }
 
 bool TabStripModel::CanShowModalUI() const {
@@ -3526,7 +3528,7 @@ TabStripSelectionChange TabStripModel::SetSelection(
   // This is done after notifying TabDeactivated() because caller can assume
   // that TabStripModel::active_index() would return the index for
   // |selection.old_contents|.
-  selection_model_ = new_model;
+  selection_model_ = std::make_unique<ui::ListSelectionModel>(new_model);
   selection.new_tab = GetActiveTab();
   selection.new_contents = GetActiveWebContents();
 
@@ -3814,7 +3816,7 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
     const ui::ListSelectionModel old_selection_model = selection_model();
 
     for (auto split_tab : tabs_with_indices) {
-      selection_model_.AddIndexToSelection(split_tab.second);
+      selection_model_->AddIndexToSelection(split_tab.second);
     }
 
     TabStripSelectionChange selection(GetActiveTab(), old_selection_model);
@@ -3840,7 +3842,7 @@ void TabStripModel::RemoveSplitImpl(
 
   for (const auto& [_, i] : tabs_with_indices) {
     if (selection_model().IsSelected(i) && i != active_index()) {
-      selection_model_.RemoveIndexFromSelection(i);
+      selection_model_->RemoveIndexFromSelection(i);
     }
   }
 
@@ -4125,13 +4127,13 @@ void TabStripModel::InsertTabAtIndexImpl(
   contents_data_->AddTabRecursive(std::move(tab_model), index, group, pin);
 
   // Update selection model and send the notification.
-  selection_model_.IncrementFrom(index);
+  selection_model_->IncrementFrom(index);
 
   // Start computing selection change after updating the indices in
   // `selection_model_`.
   TabStripSelectionChange selection(old_active_tab, selection_model());
   if (active) {
-    ui::ListSelectionModel new_model = selection_model_;
+    ui::ListSelectionModel new_model(*selection_model_.get());
     SetSelectedIndex(&new_model, index);
     SetSelection(std::move(new_model),
                  TabStripModelObserver::CHANGE_REASON_NONE,
@@ -4177,31 +4179,29 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
           contents_data_->RemoveTabAtIndexRecursive(index).release()));
 
   if (empty()) {
-    selection_model_.Clear();
+    selection_model_->Clear();
   } else {
     int old_active = active_index();
-    selection_model_.DecrementFrom(index);
-    ui::ListSelectionModel old_model;
-    old_model = selection_model_;
+    selection_model_->DecrementFrom(index);
     if (index == old_active) {
       if (removed_tab_is_split) {
         // If the removed tab was part of a split, we should go to the first tab
         // in the split.
-        selection_model_.set_active(next_selected_index);
-        selection_model_.set_anchor(next_selected_index);
+        selection_model_->set_active(next_selected_index);
+        selection_model_->set_anchor(next_selected_index);
         if (next_selected_index.has_value()) {
-          selection_model_.AddIndexToSelection(next_selected_index.value());
+          selection_model_->AddIndexToSelection(next_selected_index.value());
         }
-      } else if (!selection_model_.empty()) {
+      } else if (!selection_model_->empty()) {
         // The active tab was removed, but there is still something selected.
         // Move the active and anchor to the first selected index.
-        selection_model_.set_active(
-            *selection_model_.selected_indices().begin());
-        selection_model_.set_anchor(selection_model_.active());
+        selection_model_->set_active(
+            *selection_model_->selected_indices().begin());
+        selection_model_->set_anchor(selection_model_->active());
       } else {
         // The active tab was removed and nothing is selected. Reset the
         // selection and send out notification.
-        SetSelectedIndex(&selection_model_, next_selected_index.value());
+        SetSelectedIndex(selection_model_.get(), next_selected_index.value());
       }
     }
   }
@@ -4461,9 +4461,9 @@ void TabStripModel::UpdateSelectionModelForMove(int initial_index,
     return;
   }
 
-  selection_model_.Move(initial_index, final_index, 1);
+  selection_model_->Move(initial_index, final_index, 1);
   if (!selection_model().IsSelected(final_index) && select_after_move) {
-    SetSelectedIndex(&selection_model_, final_index);
+    SetSelectedIndex(selection_model_.get(), final_index);
   }
 }
 
@@ -4475,7 +4475,7 @@ void TabStripModel::UpdateSelectionModelForMoves(
 
   for (std::pair<int, int> move : moved_indices) {
     if (move.first != move.second) {
-      selection_model_.Move(move.first, move.second, 1);
+      selection_model_->Move(move.first, move.second, 1);
     }
   }
 }
