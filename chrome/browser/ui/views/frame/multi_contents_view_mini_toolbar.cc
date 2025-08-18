@@ -25,7 +25,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/url_formatter/elide_url.h"
+#include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/skia/include/core/SkMatrix.h"
@@ -104,6 +104,7 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
           views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
           views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(4));
+  domain_label_->SetMaximumWidthSingleLine(kMiniToolbarDomainMaxWidth);
   domain_label_->SetElideBehavior(gfx::ELIDE_HEAD);
   domain_label_->SetSubpixelRenderingEnabled(false);
   domain_label_->SetEnabledColor(kColorMulitContentsViewMiniToolbarForeground);
@@ -337,9 +338,13 @@ void MultiContentsViewMiniToolbar::UpdateContents(TabRendererData tab_data) {
   } else if (domain_url.SchemeIsBlob()) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
   } else if (tab_data.should_display_url) {
-    domain = url_formatter::ElideUrl(
-        domain_url, domain_label_->font_list(),
-        std::min(kMiniToolbarDomainMaxWidth, domain_label_->width()));
+    domain = url_formatter::FormatUrl(
+        domain_url,
+        url_formatter::kFormatUrlOmitDefaults |
+            url_formatter::kFormatUrlOmitTrivialSubdomains |
+            url_formatter::kFormatUrlOmitHTTPS |
+            url_formatter::kFormatUrlTrimAfterHost,
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
   }
   domain_label_->SetText(domain);
 
