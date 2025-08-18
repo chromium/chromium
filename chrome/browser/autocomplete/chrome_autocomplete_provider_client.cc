@@ -669,9 +669,10 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
     return false;
   }
 
-  if (auto* history_clusters_side_panel_coordinator =
-          browser->GetFeatures().history_clusters_side_panel_coordinator()) {
-    history_clusters_side_panel_coordinator->Show(query);
+  auto* const history_clusters_side_panel_coordinator =
+      browser->GetFeatures().history_clusters_side_panel_coordinator();
+  if (history_clusters_side_panel_coordinator &&
+      history_clusters_side_panel_coordinator->Show(query)) {
     return true;
   }
 

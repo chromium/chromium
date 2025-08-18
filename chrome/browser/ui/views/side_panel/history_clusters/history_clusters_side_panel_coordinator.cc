@@ -131,6 +131,17 @@ void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
 }
 
 bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
+  // The history clusters side panel entry may be registered / deregistered in
+  // `OnHistoryClustersPreferenceChanged()` depending on profile policies and
+  // prefs, and thus the registry must be checked before attempting to show the
+  // side panel.
+  SidePanelRegistry* const global_registry =
+      side_panel_coordinator_->GetWindowRegistry();
+  if (!global_registry || !global_registry->GetEntryForKey(SidePanelEntry::Key(
+                              SidePanelEntry::Id::kHistoryClusters))) {
+    return false;
+  }
+
   if (history_clusters_ui_) {
     history_clusters_ui_->SetQuery(query);
   } else {
