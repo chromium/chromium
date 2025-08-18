@@ -34,7 +34,7 @@ inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
             << "}";
 }
 
-static constexpr base::TimeDelta kUpdateStateDebounceDelay =
+static constexpr base::TimeDelta kUpdateUiDebounceDelay =
     base::Milliseconds(150);
 
 class ActorUiTabControllerFactoryInterface {
@@ -50,7 +50,10 @@ class ActorUiTabControllerInterface {
  public:
   virtual ~ActorUiTabControllerInterface() = default;
 
-  // Called whenever the UiTabState changes.
+  // Called whenever the UiTabState changes. These calls will be debounced by a
+  // kUpdateUiDebounceDelay period of time. This means the callback will always
+  // be executed, however it may happen after the UI reaches a future state
+  // beyond the one the callback was passed to.
   virtual void OnUiTabStateChange(const UiTabState& ui_tab_state,
                                   UiResultCallback callback) = 0;
 

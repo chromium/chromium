@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
@@ -169,7 +170,7 @@ class ActorUiTabControllerTest : public testing::Test {
   MockTabInterface& mock_tab() { return mock_tab_; }
 
   void Debounce() {
-    task_environment_.FastForwardBy(kUpdateStateDebounceDelay +
+    task_environment_.FastForwardBy(kUpdateUiDebounceDelay +
                                     base::Milliseconds(1));
   }
 
@@ -398,6 +399,37 @@ TEST_F(ActorUiTabControllerTest,
   base::test::TestFuture<bool> future2;
   tab_controller()->OnUiTabStateChange(ui_tab_state, future2.GetCallback());
   EXPECT_TRUE(future2.Get());
+}
+
+TEST_F(ActorUiTabControllerTest,
+       OnUiTabStateChange_CallsCallbacksAndRecordsMetrics) {
+  base::HistogramTester histogram_tester;
+  HandoffButtonState handoff_button_state(
+      true, HandoffButtonState::ControlOwnership::kActor);
+  UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
+
+  base::test::TestFuture<bool> future1;
+  tab_controller()->OnUiTabStateChange(ui_tab_state, future1.GetCallback());
+
+  // Creates a new state to trigger another update ui call.
+  handoff_button_state.is_active = false;
+  UiTabState ui_tab_state1(ActorOverlayState(), handoff_button_state);
+
+  base::test::TestFuture<bool> future2;
+  tab_controller()->OnUiTabStateChange(ui_tab_state1, future2.GetCallback());
+
+  handoff_button_state.is_active = true;
+  UiTabState ui_tab_state2(ActorOverlayState(), handoff_button_state);
+  tab_controller()->OnUiTabStateChange(ui_tab_state2,
+                                       base::OnceCallback<void(bool)>());
+
+  Debounce();
+
+  EXPECT_TRUE(future1.Get());
+  EXPECT_TRUE(future2.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Actor.UiTabController.NumberOfPendingCallbacks", 2, 1);
 }
 
 using UiTabStateActivationParams =
