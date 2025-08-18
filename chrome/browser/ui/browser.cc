@@ -650,6 +650,8 @@ Browser::Browser(const CreateParams& params)
   ProfileMetrics::LogProfileLaunch(profile_);
 
   if (params.skip_window_init_for_testing) {
+    // This is as initialized as the window will ever get.
+    is_initialized_ = true;
     return;
   }
 
