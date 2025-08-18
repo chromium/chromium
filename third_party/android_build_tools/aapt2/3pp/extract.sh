@@ -11,3 +11,7 @@ PREFIX="$1"
 FILENAME=$(ls *.jar)
 
 unzip $FILENAME aapt2 -d "$PREFIX"/
+
+# Somehow the aapt2 binary is no longer executable:
+# https://ci.chromium.org/ui/p/chromium/builders/try/android-x86-rel/775186
+chmod ug+x "$PREFIX/aapt2"
