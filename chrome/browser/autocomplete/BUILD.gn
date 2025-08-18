@@ -16,11 +16,10 @@ source_set("autocomplete") {
 
 source_set("aim_eligibility_service") {
   sources = [
-    "aim_eligibility_service.cc",
-    "aim_eligibility_service.h",
     "aim_eligibility_service_factory.cc",
     "aim_eligibility_service_factory.h",
-    "aim_eligibility_service_observer.h",
+    "chrome_aim_eligibility_service.cc",
+    "chrome_aim_eligibility_service.h",
   ]
   deps = [
     "//base",

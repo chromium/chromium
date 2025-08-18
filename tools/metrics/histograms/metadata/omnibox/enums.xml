@@ -110,21 +110,6 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="GROUP_VISITED_DOC_RELATED"/>
 </enum>
 
-<!-- LINT.IfChange(GwsAimEligibilityRequestStatus) -->
-
-<enum name="GwsAimEligibilityRequestStatus">
-  <summary>
-    The status of a HTTP GET request sent to a GWS backend to fetch AIM
-    eligibility.
-  </summary>
-  <int value="0" label="kSent"/>
-  <int value="1" label="kErrorResponse"/>
-  <int value="2" label="kFailedToParse"/>
-  <int value="3" label="kSuccess"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/autocomplete/aim_eligibility_service.cc:GwsAimEligibilityRequestStatus) -->
-
 <enum name="HistoryClusterKeywordType">
   <int value="0" label="Unknown"/>
   <int value="1" label="EntityCategory"/>
@@ -340,6 +325,20 @@ chromium-metrics-reviews@google.com.
     Response was received asynchronously.
   </int>
 </enum>
+
+<!-- LINT.IfChange(ServerAimEligibilityRequestStatus) -->
+
+<enum name="ServerAimEligibilityRequestStatus">
+  <summary>
+    The status of a HTTP GET request sent to a backend to fetch AIM eligibility.
+  </summary>
+  <int value="0" label="kSent"/>
+  <int value="1" label="kErrorResponse"/>
+  <int value="2" label="kFailedToParse"/>
+  <int value="3" label="kSuccess"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.cc:ServerAimEligibilityRequestStatus) -->
 
 <enum name="SuggestionAnswerOptionalType">
   <summary>
