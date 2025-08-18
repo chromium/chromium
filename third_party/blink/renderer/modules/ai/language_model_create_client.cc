@@ -124,15 +124,6 @@ void LanguageModelCreateClient::Create(
     }
   }
 
-  // TODO(crbug.com/381974893): Remove this warning after a couple milestones.
-  if (options_->hasSystemPrompt()) {
-    GetExecutionContext()->AddConsoleMessage(
-        mojom::blink::ConsoleMessageSource::kJavaScript,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "`systemPrompt` is no longer supported. Use "
-        "`initialPrompts: [{role: 'system', content: ... }, ...]` instead.");
-  }
-
   if (!options_->hasInitialPrompts() || options_->initialPrompts().empty()) {
     OnInitialPromptsResolved(std::move(expected_in), std::move(expected_out),
                              /*initial_prompts=*/{});
