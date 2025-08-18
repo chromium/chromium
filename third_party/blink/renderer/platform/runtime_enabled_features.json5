@@ -2789,10 +2789,6 @@
       status: "stable",
     },
     {
-      name: "InteroperablePrivateAttribution",
-      status: "experimental",
-    },
-    {
       // If enabled, IntersectionObserverScrollMargin will be parsed.
       name: "IntersectionObserverScrollMargin",
       status: "stable",
