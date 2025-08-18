@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/webui/cr_components/history/history_util.h"
 #include "components/sync/service/sync_service_observer.h"
 
 class Profile;
@@ -17,8 +16,21 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-// Watches a profile for changes in the sign-in state - see
-// HistoryUtil::GetSignInState().
+// This enum is used to differentiate all the relevant sign-in/history-sync
+// states.
+// LINT.IfChange(HistorySignInState)
+enum class HistorySignInState {
+  kSignedOut = 0,
+  // TODO(crbug.com/418144047): Add additional signin states (like signed in
+  // without history). Also rename kSignedIn to better reflect what it actually
+  // means - currently it means "Sync-the-feature is enabled".
+  kSignedIn = 1,
+};
+// LINT.ThenChange(/chrome/browser/resources/history/constants.ts:HistorySignInState)
+
+HistorySignInState GetHistorySignInState(Profile* profile);
+
+// Watches a profile for changes in the sign-in state.
 class HistorySignInStateWatcher : public syncer::SyncServiceObserver {
  public:
   HistorySignInStateWatcher(Profile* profile, base::RepeatingClosure callback);

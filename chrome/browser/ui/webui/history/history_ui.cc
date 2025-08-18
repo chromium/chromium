@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/webui/history/browsing_history_handler.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/ui/webui/history/history_login_handler.h"
+#include "chrome/browser/ui/webui/history/history_sign_in_state_watcher.h"
 #include "chrome/browser/ui/webui/history/navigation_handler.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
@@ -266,8 +267,7 @@ void HistoryUI::UpdateDataSource() {
   Profile* profile = Profile::FromWebUI(web_ui());
 
   base::Value::Dict update;
-  update.Set(kSignInStateKey,
-             static_cast<int>(HistoryUtil::GetSignInState(profile)));
+  update.Set(kSignInStateKey, static_cast<int>(GetHistorySignInState(profile)));
 
   const bool is_managed = profile->GetPrefs()->IsManagedPreference(
       history_clusters::prefs::kVisible);
