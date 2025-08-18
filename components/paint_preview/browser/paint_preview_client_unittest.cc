@@ -7,10 +7,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -38,24 +40,32 @@ namespace paint_preview {
 
 using testing::AnyOf;
 
+using CaptureResultFuture =
+    base::test::TestFuture<base::UnguessableToken,
+                           mojom::PaintPreviewStatus,
+                           std::unique_ptr<CaptureResult>>;
+
 namespace {
 
 class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
  public:
   MockPaintPreviewRecorder() = default;
+
+  MockPaintPreviewRecorder(const MockPaintPreviewRecorder&) = delete;
+  MockPaintPreviewRecorder& operator=(const MockPaintPreviewRecorder&) = delete;
+
   ~MockPaintPreviewRecorder() override = default;
 
   void CapturePaintPreview(
       mojom::PaintPreviewCaptureParamsPtr params,
       mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback)
       override {
-    {
+    if (closure_) {
       base::ScopedAllowBlockingForTesting scope;
-      if (closure_)
-        std::move(closure_).Run();
-      CheckParams(std::move(params));
-      std::move(callback).Run(status_, std::move(response_));
+      std::move(closure_).Run();
     }
+    CheckParams(params);
+    std::move(callback).Run(status_, std::move(response_));
   }
 
   void SetExpectedParams(mojom::PaintPreviewCaptureParamsPtr params) {
@@ -78,7 +88,7 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
   }
 
  private:
-  void CheckParams(mojom::PaintPreviewCaptureParamsPtr input_params) {
+  void CheckParams(const mojom::PaintPreviewCaptureParamsPtr& input_params) {
     EXPECT_EQ(input_params->guid, expected_params_->guid);
     EXPECT_EQ(input_params->clip_rect, expected_params_->clip_rect);
     EXPECT_EQ(input_params->is_main_frame, expected_params_->is_main_frame);
@@ -92,9 +102,6 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
   mojom::PaintPreviewStatus status_;
   mojom::PaintPreviewCaptureResponsePtr response_;
   mojo::AssociatedReceiver<mojom::PaintPreviewRecorder> binding_{this};
-
-  MockPaintPreviewRecorder(const MockPaintPreviewRecorder&) = delete;
-  MockPaintPreviewRecorder& operator=(const MockPaintPreviewRecorder&) = delete;
 };
 
 // Convert |params| to the mojo::PaintPreviewServiceParams format. NOTE: this
@@ -102,7 +109,7 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
 // internals and should be treated as an opaque file (with an unknown path) in
 // the render frame's service.
 mojom::PaintPreviewCaptureParamsPtr ToMojoParams(
-    PaintPreviewClient::PaintPreviewParams params) {
+    const PaintPreviewClient::PaintPreviewParams& params) {
   mojom::PaintPreviewCaptureParamsPtr params_ptr =
       mojom::PaintPreviewCaptureParams::New();
   params_ptr->persistence = params.persistence;
@@ -219,60 +226,6 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   main_frame->set_frame_offset_x(20);
   main_frame->set_frame_offset_y(30);
 
-  base::RunLoop loop;
-  auto callback =
-      base::BindLambdaForTesting([&](base::UnguessableToken returned_guid,
-                                     mojom::PaintPreviewStatus status,
-                                     std::unique_ptr<CaptureResult> result) {
-        EXPECT_EQ(returned_guid, params.inner.document_guid);
-        EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
-
-        auto token = base::UnguessableToken::Deserialize(
-                         result->proto.root_frame().embedding_token_high(),
-                         result->proto.root_frame().embedding_token_low())
-                         .value();
-        EXPECT_NE(token, base::UnguessableToken::Null());
-
-        // The token for the main frame is set internally since the render frame
-        // host won't have one. To simplify the proto comparison using
-        // EqualsProto copy the generated one into |expected_proto|.
-        PaintPreviewFrameProto* main_frame =
-            expected_proto.mutable_root_frame();
-        main_frame->set_embedding_token_low(token.GetLowForSerialization());
-        main_frame->set_embedding_token_high(token.GetHighForSerialization());
-        if (GetParam() == RecordingPersistence::kFileSystem) {
-          main_frame->set_file_path(
-              temp_dir_.GetPath()
-                  .AppendASCII(base::StrCat({token.ToString(), ".skp"}))
-                  .AsUTF8Unsafe());
-        }
-
-        EXPECT_THAT(result->proto, EqualsProto(expected_proto));
-
-        switch (GetParam()) {
-          case RecordingPersistence::kFileSystem: {
-            base::ScopedAllowBlockingForTesting scope;
-#if BUILDFLAG(IS_WIN)
-            base::FilePath path = base::FilePath(
-                base::UTF8ToWide(result->proto.root_frame().file_path()));
-#else
-            base::FilePath path =
-                base::FilePath(result->proto.root_frame().file_path());
-#endif
-            EXPECT_TRUE(base::PathExists(path));
-          } break;
-
-          case RecordingPersistence::kMemoryBuffer: {
-            EXPECT_EQ(result->serialized_skps.size(), 1u);
-            EXPECT_TRUE(result->serialized_skps.contains(token));
-          } break;
-
-          default:
-            NOTREACHED();
-        }
-
-        loop.Quit();
-      });
   MockPaintPreviewRecorder service;
   service.SetExpectedParams(ToMojoParams(params));
   service.SetResponse(mojom::PaintPreviewStatus::kOk, std::move(response));
@@ -280,8 +233,54 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   PaintPreviewClient::CreateForWebContents(web_contents());
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
   ASSERT_NE(client, nullptr);
-  client->CapturePaintPreview(params, rfh, std::move(callback));
-  loop.Run();
+  CaptureResultFuture main_capture_future;
+  client->CapturePaintPreview(params, rfh, main_capture_future.GetCallback());
+
+  auto [returned_guid, status, result] = main_capture_future.Take();
+  EXPECT_EQ(returned_guid, params.inner.document_guid);
+  EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
+
+  auto token = base::UnguessableToken::Deserialize(
+                   result->proto.root_frame().embedding_token_high(),
+                   result->proto.root_frame().embedding_token_low())
+                   .value();
+  EXPECT_NE(token, base::UnguessableToken::Null());
+
+  // The token for the main frame is set internally since the render frame
+  // host won't have one. To simplify the proto comparison using
+  // EqualsProto copy the generated one into |expected_proto|.
+  main_frame->set_embedding_token_low(token.GetLowForSerialization());
+  main_frame->set_embedding_token_high(token.GetHighForSerialization());
+  if (GetParam() == RecordingPersistence::kFileSystem) {
+    main_frame->set_file_path(
+        temp_dir_.GetPath()
+            .AppendASCII(base::StrCat({token.ToString(), ".skp"}))
+            .AsUTF8Unsafe());
+  }
+
+  EXPECT_THAT(result->proto, EqualsProto(expected_proto));
+
+  switch (GetParam()) {
+    case RecordingPersistence::kFileSystem: {
+      base::ScopedAllowBlockingForTesting scope;
+#if BUILDFLAG(IS_WIN)
+      base::FilePath path = base::FilePath(
+          base::UTF8ToWide(result->proto.root_frame().file_path()));
+#else
+      base::FilePath path =
+          base::FilePath(result->proto.root_frame().file_path());
+#endif
+      EXPECT_TRUE(base::PathExists(path));
+    } break;
+
+    case RecordingPersistence::kMemoryBuffer: {
+      EXPECT_EQ(result->serialized_skps.size(), 1u);
+      EXPECT_TRUE(result->serialized_skps.contains(token));
+    } break;
+
+    default:
+      NOTREACHED();
+  }
 }
 
 TEST_P(PaintPreviewClientRenderViewHostTest, CaptureFailureMock) {
@@ -292,15 +291,6 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureFailureMock) {
   auto response = NewMockPaintPreviewCaptureResponse();
   response->skp = {mojo_base::BigBuffer()};
 
-  base::RunLoop loop;
-  auto callback =
-      base::BindLambdaForTesting([&](base::UnguessableToken returned_guid,
-                                     mojom::PaintPreviewStatus status,
-                                     std::unique_ptr<CaptureResult> result) {
-        EXPECT_EQ(returned_guid, params.inner.document_guid);
-        EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
-        loop.Quit();
-      });
   MockPaintPreviewRecorder recorder;
   recorder.SetExpectedParams(ToMojoParams(params));
   recorder.SetResponse(mojom::PaintPreviewStatus::kCaptureFailed,
@@ -309,8 +299,13 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureFailureMock) {
   PaintPreviewClient::CreateForWebContents(web_contents());
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
   ASSERT_NE(client, nullptr);
-  client->CapturePaintPreview(params, main_rfh(), std::move(callback));
-  loop.Run();
+  CaptureResultFuture main_capture_future;
+  client->CapturePaintPreview(params, main_rfh(),
+                              main_capture_future.GetCallback());
+
+  auto [returned_guid, status, result] = main_capture_future.Take();
+  EXPECT_EQ(returned_guid, params.inner.document_guid);
+  EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
 }
@@ -350,21 +345,16 @@ TEST_F(PaintPreviewClientRenderViewHostTestBase, SubframeFileCreationFails) {
                                         subframe);
   }));
 
-  base::RunLoop loop;
-  client->CapturePaintPreview(
-      params, main_rfh(),
-      base::BindLambdaForTesting([&](base::UnguessableToken returned_guid,
-                                     mojom::PaintPreviewStatus status,
-                                     std::unique_ptr<CaptureResult> result) {
-        EXPECT_EQ(returned_guid, params.inner.document_guid);
-        // The precise status from the client depends on thread scheduling.
-        EXPECT_THAT(status, AnyOf(mojom::PaintPreviewStatus::kFileCreationError,
-                                  mojom::PaintPreviewStatus::kFailed));
-        EXPECT_EQ(result, nullptr);
-        loop.QuitClosure().Run();
-      }));
+  CaptureResultFuture main_capture_future;
+  client->CapturePaintPreview(params, main_rfh(),
+                              main_capture_future.GetCallback());
 
-  loop.Run();
+  auto [returned_guid, status, result] = main_capture_future.Take();
+  EXPECT_EQ(returned_guid, params.inner.document_guid);
+  // The precise status from the client depends on thread scheduling.
+  EXPECT_THAT(status, AnyOf(mojom::PaintPreviewStatus::kFileCreationError,
+                            mojom::PaintPreviewStatus::kFailed));
+  EXPECT_EQ(result, nullptr);
 }
 #endif
 
@@ -388,15 +378,6 @@ TEST_P(PaintPreviewClientRenderViewHostTest, RenderFrameDeletedDuringCapture) {
   auto response = NewMockPaintPreviewCaptureResponse();
   response->embedding_token = std::nullopt;
 
-  base::RunLoop loop;
-  auto callback =
-      base::BindLambdaForTesting([&](base::UnguessableToken returned_guid,
-                                     mojom::PaintPreviewStatus status,
-                                     std::unique_ptr<CaptureResult> result) {
-        EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
-        EXPECT_EQ(result, nullptr);
-        loop.Quit();
-      });
   MockPaintPreviewRecorder service;
   service.SetExpectedParams(ToMojoParams(params));
   service.SetResponse(mojom::PaintPreviewStatus::kOk, std::move(response));
@@ -406,8 +387,12 @@ TEST_P(PaintPreviewClientRenderViewHostTest, RenderFrameDeletedDuringCapture) {
   ASSERT_NE(client, nullptr);
   service.SetResponseAction(
       base::BindLambdaForTesting([&]() { client->RenderFrameDeleted(rfh); }));
-  client->CapturePaintPreview(params, rfh, std::move(callback));
-  loop.Run();
+  CaptureResultFuture main_capture_future;
+  client->CapturePaintPreview(params, rfh, main_capture_future.GetCallback());
+
+  auto [guid, status, result] = main_capture_future.Take();
+  EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
+  EXPECT_EQ(result, nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
