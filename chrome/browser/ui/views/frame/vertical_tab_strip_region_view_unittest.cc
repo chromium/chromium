@@ -70,3 +70,22 @@ TEST_F(VerticalTabStripRegionViewTest, ResizeAreaBounds) {
   EXPECT_EQ(VerticalTabStripRegionView::kResizeAreaWidth,
             region_view()->resize_area_for_testing()->bounds().width());
 }
+
+// Verify that the pinned tabs container will never be larger than the unpinned
+// tabs area.
+TEST_F(VerticalTabStripRegionViewTest, PinnedTabsAreaSmallerThanUnpinned) {
+  region_view()->SetBounds(0, 0, 200, 600);
+  region_view()->pinned_tabs_container_for_testing()->SetPreferredSize(
+      gfx::Size(100, 500));
+  region_view()->unpinned_tabs_container_for_testing()->SetPreferredSize(
+      gfx::Size(100, 400));
+  EXPECT_LE(
+      region_view()->pinned_tabs_container_for_testing()->bounds().height(),
+      region_view()->unpinned_tabs_container_for_testing()->bounds().height());
+
+  region_view()->unpinned_tabs_container_for_testing()->SetPreferredSize(
+      gfx::Size(100, 50));
+  EXPECT_LE(
+      region_view()->pinned_tabs_container_for_testing()->bounds().height(),
+      region_view()->unpinned_tabs_container_for_testing()->bounds().height());
+}
