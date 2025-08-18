@@ -4841,6 +4841,7 @@ const FeatureEntry::FeatureVariation kAndroidTabHighlightingVariations[] = {
 
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kWebiumFlag[] = "webium";
+constexpr char kWebiumFeatures[] = "Webium,AttachUnownedInnerWebContents";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kMobilePromoOnDesktopLens[] = {
@@ -13060,7 +13061,10 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {kWebiumFlag, flag_descriptions::kWebiumName,
      flag_descriptions::kWebiumDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kWebium)},
+     ENABLE_DISABLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
+                                         kWebiumFeatures,
+                                         switches::kDisableFeatures,
+                                         kWebiumFeatures)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
