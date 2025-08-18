@@ -1034,8 +1034,9 @@ void OnListFamilyMembersResponse(
     }
     NSString* newGaiaID = base::SysUTF8ToNSString(newGaia);
 
+    ProfileIOS* profile = self.profile->GetOriginalProfile();
     AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(self.profile);
+        AuthenticationServiceFactory::GetForProfile(profile);
     id<SystemIdentity> identityOnDevice =
         authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
     gaiaInApp = identityOnDevice.gaiaID;
