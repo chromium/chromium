@@ -44,31 +44,53 @@ namespace webnn {
 class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
 
+// Ensures the sequence is destroyed when this context is destroyed.
+// The sequence must be destroyed even if context creation fails,
+// because gpu::Scheduler will DCHECK if any sequences remain alive
+// when it is destroyed.
+// TODO(crbug.com/345352987): move out into seperate cpp.
+class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedSequence {
+ public:
+  ScopedSequence(gpu::Scheduler& scheduler,
+                 scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                 gpu::CommandBufferId command_buffer_id);
+  ~ScopedSequence();
+
+  // Move and copy not allowed.
+  ScopedSequence(ScopedSequence&&) = delete;
+  ScopedSequence& operator=(ScopedSequence&&) = delete;
+
+  ScopedSequence(const ScopedSequence&) = delete;
+  ScopedSequence& operator=(const ScopedSequence&) = delete;
+
+  gpu::SequenceId sequence_id() const { return sequence_id_; }
+
+ private:
+  raw_ref<gpu::Scheduler> scheduler_;
+  const gpu::SequenceId sequence_id_;
+};
+
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
-    : public mojom::WebNNContext,
+    : public WebNNReceiverImpl<mojom::WebNNContext>,
       public WebNNObjectImpl<blink::WebNNContextToken> {
  public:
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
-  WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                   WebNNContextProviderImpl* context_provider,
-                   ContextProperties properties,
-                   mojom::CreateContextOptionsPtr options);
+  WebNNContextImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+      WebNNContextProviderImpl* context_provider,
+      ContextProperties properties,
+      mojom::CreateContextOptionsPtr options,
+      gpu::CommandBufferId command_buffer_id,
+      std::unique_ptr<ScopedSequence> sequence,
+      scoped_refptr<gpu::SchedulerTaskRunner> task_runner);
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
 
-  ~WebNNContextImpl() override;
-
   virtual base::WeakPtr<WebNNContextImpl> AsWeakPtr()
       VALID_CONTEXT_REQUIRED(sequence_checker_) = 0;
-
-#if DCHECK_IS_ON()
-  // Callers which obtain a WeakPtr from the method above may use this helper to
-  // assert that the WeakPtr is being used correctly.
-  void AssertCalledOnValidSequence() const;
-#endif  // DCHECK_IS_ON()
 
   // Disassociates a `WebNNTensor` instance owned by this context by its handle.
   // Called when a `WebNNTensor` instance has a connection error. After this
@@ -145,7 +167,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   gpu::SyncToken GenVerifiedSyncToken();
 
  protected:
-  void OnConnectionError();
+  ~WebNNContextImpl() override;
 
   // mojom::WebNNContext
   void CreateGraphBuilder(
@@ -197,7 +219,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       tensor_impls_;
 
  private:
-  void ResetReceiverWithReason(const std::string& message);
+  void OnDisconnect() override;
 
   // Graph builders owned by this context.
   mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraphBuilder>
@@ -215,14 +237,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // WebNN context API operations execute tasks in a sequence.
   // Within a WebNN context, tasks are orderered, but remain async with respect
   // to tasks in other WebNN contexts or sequences.
-  const gpu::SequenceId sequence_id_;
+  std::unique_ptr<ScopedSequence> sequence_;
 
   // WebNN IPC operations without a SyncToken are re-posted to the scheduled
   // task runner to ensure they execute in the same sequence and order as those
   // with a SyncToken.
   const scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner_;
-
-  mojo::Receiver<mojom::WebNNContext> receiver_;
 
   // Marks the completion of previously scheduled tasks.
   // Used to generate a SyncToken for the renderer which can be passed

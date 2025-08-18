@@ -20,19 +20,23 @@ namespace tflite {
 // for creating a `GraphImplTflite` which uses TFLite for inference.
 class ContextImplTflite final : public WebNNContextImpl {
  public:
-  ContextImplTflite(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                    WebNNContextProviderImpl* context_provider,
-                    mojom::CreateContextOptionsPtr options);
+  ContextImplTflite(
+      mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+      WebNNContextProviderImpl* context_provider,
+      mojom::CreateContextOptionsPtr options,
+      gpu::CommandBufferId command_buffer_id,
+      std::unique_ptr<ScopedSequence> sequence,
+      scoped_refptr<gpu::SchedulerTaskRunner> task_runner);
 
   ContextImplTflite(const WebNNContextImpl&) = delete;
   ContextImplTflite& operator=(const ContextImplTflite&) = delete;
-
-  ~ContextImplTflite() override;
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
  private:
+  ~ContextImplTflite() override;
+
   void CreateGraphImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,

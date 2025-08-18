@@ -121,7 +121,7 @@ struct CreateTensorSuccess {
 };
 
 CreateTensorSuccess CreateWebNNTensor(
-    mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
+    mojo::AssociatedRemote<mojom::WebNNContext>& webnn_context_remote,
     OperandDataType data_type,
     std::vector<uint32_t> shape) {
   base::test::TestFuture<mojom::CreateTensorResultPtr> create_tensor_future;
@@ -176,7 +176,7 @@ class WebNNContextDMLImplTest : public TestBase {
 
  protected:
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
-  mojo::Remote<mojom::WebNNContext> webnn_context_remote_;
+  mojo::AssociatedRemote<mojom::WebNNContext> webnn_context_remote_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -252,7 +252,7 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
     create_graph_result.value()->graph_remote.reset();
   }
 
-  // Ensure `WebNNContextImpl::OnConnectionError()` is called and
+  // Ensure `WebNNContextImpl::RemoveWebNNContextImpl()` is called and
   // `WebNNContextImpl` is released.
   webnn_context_remote_.reset();
   webnn_provider_remote_.reset();

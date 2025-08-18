@@ -22,19 +22,23 @@ namespace coreml {
 class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
     : public WebNNContextImpl {
  public:
-  ContextImplCoreml(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                    WebNNContextProviderImpl* context_provider,
-                    mojom::CreateContextOptionsPtr options);
+  ContextImplCoreml(
+      mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+      WebNNContextProviderImpl* context_provider,
+      mojom::CreateContextOptionsPtr options,
+      gpu::CommandBufferId command_buffer_id,
+      std::unique_ptr<ScopedSequence> sequence,
+      scoped_refptr<gpu::SchedulerTaskRunner> task_runner);
 
   ContextImplCoreml(const WebNNContextImpl&) = delete;
   ContextImplCoreml& operator=(const ContextImplCoreml&) = delete;
-
-  ~ContextImplCoreml() override;
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
  private:
+  ~ContextImplCoreml() override;
+
   void CreateGraphImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,

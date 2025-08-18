@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/types/optional_ref.h"
+#include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
@@ -20,10 +21,12 @@
 
 namespace gpu {
 class Scheduler;
+class SchedulerTaskRunner;
 }  // namespace gpu
 
 namespace webnn {
 
+class ScopedSequence;
 class WebNNContextImpl;
 
 // Maintain a set of WebNNContextImpl instances that are created by the context
@@ -65,7 +68,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   // Called when a WebNNContextImpl has a connection error. After this call, it
   // is no longer safe to access |impl|.
-  void OnConnectionError(WebNNContextImpl* impl);
+  void RemoveWebNNContextImpl(WebNNContextImpl* impl);
 
 #if BUILDFLAG(IS_WIN)
   // Send the contexts lost reason to the renderer process and kill the GPU
@@ -79,16 +82,19 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       const blink::WebNNContextToken& handle);
 
   using WebNNContextImplSet = base::flat_set<
-      std::unique_ptr<WebNNContextImpl>,
+      scoped_refptr<WebNNContextImpl>,
       WebNNObjectImpl<blink::WebNNContextToken>::Comparator<WebNNContextImpl>>;
 
   // The test cases can override the context creating behavior by implementing
   // this class and setting its instance by SetBackendForTesting().
   class BackendForTesting {
    public:
-    virtual std::unique_ptr<WebNNContextImpl> CreateWebNNContext(
+    virtual scoped_refptr<WebNNContextImpl> CreateWebNNContext(
         WebNNContextProviderImpl* context_provider_impl,
         mojom::CreateContextOptionsPtr options,
+        gpu::CommandBufferId command_buffer_id,
+        std::unique_ptr<ScopedSequence> sequence,
+        scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
         CreateWebNNContextCallback callback) = 0;
   };
 

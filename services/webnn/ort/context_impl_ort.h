@@ -23,15 +23,17 @@ namespace ort {
 // for creating a `GraphImplOrt` which uses ONNX Runtime for inference.
 class ContextImplOrt final : public WebNNContextImpl {
  public:
-  ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
+  ContextImplOrt(mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
                  WebNNContextProviderImpl* context_provider,
                  mojom::CreateContextOptionsPtr options,
-                 scoped_refptr<Environment> env);
+                 scoped_refptr<Environment> env,
+                 gpu::CommandBufferId command_buffer_id,
+                 std::unique_ptr<ScopedSequence> sequence,
+                 scoped_refptr<gpu::SchedulerTaskRunner> task_runner);
 
   ContextImplOrt(const WebNNContextImpl&) = delete;
   ContextImplOrt& operator=(const ContextImplOrt&) = delete;
 
-  ~ContextImplOrt() override;
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
@@ -49,6 +51,8 @@ class ContextImplOrt final : public WebNNContextImpl {
   }
 
  private:
+  ~ContextImplOrt() override;
+
   void CreateGraphImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,

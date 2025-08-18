@@ -17,13 +17,19 @@
 namespace webnn::tflite {
 
 ContextImplTflite::ContextImplTflite(
-    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
-    mojom::CreateContextOptionsPtr options)
+    mojom::CreateContextOptionsPtr options,
+    gpu::CommandBufferId command_buffer_id,
+    std::unique_ptr<ScopedSequence> sequence,
+    scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GraphBuilderTflite::GetContextProperties(),
-                       std::move(options)) {}
+                       std::move(options),
+                       command_buffer_id,
+                       std::move(sequence),
+                       std::move(task_runner)) {}
 
 ContextImplTflite::~ContextImplTflite() = default;
 

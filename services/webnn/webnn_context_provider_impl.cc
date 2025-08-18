@@ -127,7 +127,7 @@ void WebNNContextProviderImpl::BindWebNNContextProvider(
   provider_receivers_.Add(this, std::move(receiver));
 }
 
-void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
+void WebNNContextProviderImpl::RemoveWebNNContextImpl(WebNNContextImpl* impl) {
   auto it = impls_.find(impl->handle());
   CHECK(it != impls_.end());
   impls_.erase(it);
@@ -154,15 +154,33 @@ void WebNNContextProviderImpl::SetBackendForTesting(
 void WebNNContextProviderImpl::CreateWebNNContext(
     CreateContextOptionsPtr options,
     WebNNContextProvider::CreateWebNNContextCallback callback) {
+  // Generates unique IDs for WebNNContextImpl.
+  static base::AtomicSequenceNumber g_next_route_id;
+
+  // WebNN IPC operations without a SyncToken are re-posted to the scheduled
+  // task runner to ensure they execute in the same sequence and order as those
+  // with a SyncToken.
+  const gpu::CommandBufferId command_buffer_id =
+      gpu::CommandBufferIdFromChannelAndRoute(client_id_,
+                                              g_next_route_id.GetNext());
+
+  // TODO(crbug.com/428021763): create sequence from a thread pool task runner.
+  auto sequence = std::make_unique<ScopedSequence>(
+      *scheduler_, main_thread_task_runner_, command_buffer_id);
+
+  auto scheduler_task_runner = base::MakeRefCounted<gpu::SchedulerTaskRunner>(
+      *scheduler_, sequence->sequence_id());
+
   if (g_backend_for_testing) {
     impls_.emplace(g_backend_for_testing->CreateWebNNContext(
-        this, std::move(options), std::move(callback)));
+        this, std::move(options), command_buffer_id, std::move(sequence),
+        std::move(scheduler_task_runner), std::move(callback)));
     return;
   }
 
-  std::unique_ptr<WebNNContextImpl> context_impl;
-  mojo::PendingRemote<mojom::WebNNContext> remote;
-  auto receiver = remote.InitWithNewPipeAndPassReceiver();
+  scoped_refptr<WebNNContextImpl> context_impl;
+  mojo::PendingAssociatedRemote<mojom::WebNNContext> remote;
+  auto receiver = remote.InitWithNewEndpointAndPassReceiver();
 
   RecordDeviceType(options->device);
 
@@ -174,15 +192,18 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       LOG(ERROR) << "[WebNN] Failed to create ONNX Runtime context: "
                  << env_creation_results.error();
     } else {
-      context_impl = std::make_unique<ort::ContextImplOrt>(
+      context_impl = base::MakeRefCounted<ort::ContextImplOrt>(
           std::move(receiver), this, std::move(options),
-          std::move(env_creation_results.value()));
+          std::move(env_creation_results.value()), command_buffer_id,
+          std::move(sequence), std::move(scheduler_task_runner));
     }
   } else if (dml::ShouldCreateDmlContext(*options)) {
-    base::expected<std::unique_ptr<WebNNContextImpl>, mojom::ErrorPtr>
+    base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
         context_creation_results = dml::CreateContextFromOptions(
             std::move(options), gpu_feature_info_, gpu_info_,
-            shared_context_state_.get(), std::move(receiver), this);
+            shared_context_state_.get(), std::move(receiver), this,
+            command_buffer_id, std::move(sequence),
+            std::move(scheduler_task_runner));
     if (!context_creation_results.has_value()) {
       std::move(callback).Run(mojom::CreateContextResult::NewError(
           std::move(context_creation_results.error())));
@@ -199,16 +220,18 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         && base::mac::GetCPUType() == base::mac::CPUType::kArm
 #endif  // BUILDFLAG(IS_MAC)
     ) {
-      context_impl = std::make_unique<coreml::ContextImplCoreml>(
-          std::move(receiver), this, std::move(options));
+      context_impl = base::MakeRefCounted<coreml::ContextImplCoreml>(
+          std::move(receiver), this, std::move(options), command_buffer_id,
+          std::move(sequence), std::move(scheduler_task_runner));
     }
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
   if (!context_impl) {
-    context_impl = std::make_unique<tflite::ContextImplTflite>(
-        std::move(receiver), this, std::move(options));
+    context_impl = base::MakeRefCounted<tflite::ContextImplTflite>(
+        std::move(receiver), this, std::move(options), command_buffer_id,
+        std::move(sequence), std::move(scheduler_task_runner));
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 

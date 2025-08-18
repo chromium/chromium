@@ -573,15 +573,21 @@ ContextProperties ContextImplDml::GetProperties(
 
 ContextImplDml::ContextImplDml(
     scoped_refptr<Adapter> adapter,
-    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
     std::unique_ptr<CommandRecorder> command_recorder,
-    const gpu::GpuFeatureInfo& gpu_feature_info)
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    gpu::CommandBufferId command_buffer_id,
+    std::unique_ptr<ScopedSequence> sequence,
+    scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GetProperties(adapter->max_supported_feature_level()),
-                       std::move(options)),
+                       std::move(options),
+                       command_buffer_id,
+                       std::move(sequence),
+                       std::move(task_runner)),
       adapter_(std::move(adapter)),
       command_recorder_(std::move(command_recorder)),
       gpu_feature_info_(gpu_feature_info) {
