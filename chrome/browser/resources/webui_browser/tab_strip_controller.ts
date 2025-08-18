@@ -31,7 +31,6 @@ export class TabStripController {
     this.tabStrip_ = tabStrip;
     this.contentRegion_ = contentRegion;
 
-    this.registerTabChangeCallbacks_();
     this.loadTabStripModel_();
   }
 
@@ -67,14 +66,12 @@ export class TabStripController {
   }
 
   // Private methods:
-  private registerTabChangeCallbacks_() {
-    this.tabsApi_.getTabs().then((tabsSnapshot: TabsSnapshot) => {
-      // Bind the observer stream from the snapshot to the callback router
-      if (tabsSnapshot.stream && (tabsSnapshot.stream as any).handle) {
-        this.tabsApi_.getCallbackRouter().$.bindHandle(
-            (tabsSnapshot.stream as any).handle);
-      }
-    });
+  private registerTabChangeCallbacks_(tabsSnapshot: TabsSnapshot) {
+    // Bind the observer stream from the snapshot to the callback router
+    if (tabsSnapshot.stream && (tabsSnapshot.stream as any).handle) {
+      this.tabsApi_.getCallbackRouter().$.bindHandle(
+          (tabsSnapshot.stream as any).handle);
+    }
 
     const callbackRouter = this.tabsApi_.getCallbackRouter();
     // TODO(webium): implement these callbacks.
@@ -100,6 +97,7 @@ export class TabStripController {
 
   private async loadTabStripModel_() {
     const tabSnapshot = await this.tabsApi_.getTabs();
+    this.registerTabChangeCallbacks_(tabSnapshot);
     const tabStrip = tabSnapshot.tabStrip;
     const processContainer = (container: Container) => {
       if (!container || !container.children) {
