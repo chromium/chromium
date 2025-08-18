@@ -64,9 +64,9 @@ class VulkanMetric final
   }
 
  private:
-  std::optional<uint64_t> Measure() const override {
+  std::optional<base::ByteCount> Measure() const override {
     auto allocated_used = vma::GetTotalAllocatedAndUsedMemory(vma_allocator_);
-    return allocated_used.first;
+    return base::ByteCount::FromUnsigned(allocated_used.first);
   }
   VmaAllocator vma_allocator_;
 };

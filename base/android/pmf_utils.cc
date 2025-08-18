@@ -14,7 +14,7 @@
 
 namespace base::android {
 namespace {
-std::optional<uint64_t> CalculateProcessMemoryFootprint(
+std::optional<ByteCount> CalculateProcessMemoryFootprint(
     base::File& statm_file,
     base::File& status_file) {
   // Get total resident and shared sizes from statm file.
@@ -22,13 +22,13 @@ std::optional<uint64_t> CalculateProcessMemoryFootprint(
   uint64_t resident_pages = 0;
   uint64_t shared_pages = 0;
   uint64_t vm_size_pages = 0;
-  uint64_t swap_footprint = 0;
+  uint64_t swap_footprint_kb = 0;
   constexpr uint32_t kMaxLineSize = 4096;
   char line[kMaxLineSize];
 
   int n = UNSAFE_TODO(statm_file.ReadAtCurrentPos(line, sizeof(line) - 1));
   if (n <= 0) {
-    return std::optional<size_t>();
+    return std::optional<ByteCount>();
   }
   UNSAFE_TODO(line[n]) = '\0';
 
@@ -36,40 +36,41 @@ std::optional<uint64_t> CalculateProcessMemoryFootprint(
       UNSAFE_TODO(sscanf(line, "%" SCNu64 " %" SCNu64 " %" SCNu64,
                          &vm_size_pages, &resident_pages, &shared_pages));
   if (num_scanned != 3) {
-    return std::optional<size_t>();
+    return std::optional<ByteCount>();
   }
 
   // Get swap size from status file. The format is: VmSwap :  10 kB.
   n = UNSAFE_TODO(status_file.ReadAtCurrentPos(line, sizeof(line) - 1));
   if (n <= 0) {
-    return std::optional<size_t>();
+    return std::optional<ByteCount>();
   }
   UNSAFE_TODO(line[n]) = '\0';
 
   char* swap_line = UNSAFE_TODO(strstr(line, "VmSwap"));
   if (!swap_line) {
-    return std::optional<size_t>();
+    return std::optional<ByteCount>();
   }
-  num_scanned =
-      UNSAFE_TODO(sscanf(swap_line, "VmSwap: %" SCNu64 " kB", &swap_footprint));
+  num_scanned = UNSAFE_TODO(
+      sscanf(swap_line, "VmSwap: %" SCNu64 " kB", &swap_footprint_kb));
   if (num_scanned != 1) {
-    return std::optional<size_t>();
+    return std::optional<ByteCount>();
   }
 
-  swap_footprint *= 1024;
-  return (resident_pages - shared_pages) * page_size + swap_footprint;
+  return ByteCount::FromUnsigned((resident_pages - shared_pages) * page_size) +
+         KiB(swap_footprint_kb);
 }
 }  // namespace
 
 // static
-std::optional<uint64_t> PmfUtils::CalculatePrivateMemoryFootprintForTesting(
+std::optional<ByteCount> PmfUtils::CalculatePrivateMemoryFootprintForTesting(
     base::File& statm_file,
     base::File& status_file) {
   return CalculateProcessMemoryFootprint(statm_file, status_file);
 }
 
 // static
-std::optional<uint64_t> PmfUtils::GetPrivateMemoryFootprintForCurrentProcess() {
+std::optional<ByteCount>
+PmfUtils::GetPrivateMemoryFootprintForCurrentProcess() {
   // ScopedAllowBlocking is required to use base::File, but /proc/{pid}/status
   // and /proc/{pid}/statm are not regular files. For example, regarding linux,
   // proc_pid_statm() defined in fs/proc/array.c is invoked when reading
@@ -86,7 +87,7 @@ std::optional<uint64_t> PmfUtils::GetPrivateMemoryFootprintForCurrentProcess() {
       proc_self_dir.Append("statm"),
       base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
   if (!status_file.IsValid() || !statm_file.IsValid()) {
-    return std::optional<size_t>();
+    return std::optional<ByteCount>();
   }
 
   return CalculateProcessMemoryFootprint(statm_file, status_file);
