@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/watermarking/content/watermark_text_container.h"
 #include "components/enterprise/watermarking/watermark.h"
 #include "components/tabs/public/tab_interface.h"
@@ -122,6 +125,43 @@ void DataProtectionNavigationController::
     clear_screenshot_protection_on_page_load_ = false;
   }
 #endif
+}
+
+void DataProtectionNavigationController::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // The referrer chain should stay the same in the cache for as long as the
+  // document doesn't change.
+  if (navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  auto* service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          navigation_handle->GetWebContents()->GetBrowserContext());
+  if (!service) {
+    return;
+  }
+
+  // Only cache referrer chain data if a policy that uses it has been enabled.
+  if (service->IsConnectorEnabled(
+          enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY) ||
+      service->IsConnectorEnabled(
+          enterprise_connectors::AnalysisConnector::FILE_ATTACHED) ||
+      service->IsConnectorEnabled(
+          enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED) ||
+#if BUILDFLAG(IS_CHROMEOS)
+      service->IsConnectorEnabled(
+          enterprise_connectors::AnalysisConnector::FILE_TRANSFER) ||
+#endif
+      service->IsConnectorEnabled(
+          enterprise_connectors::AnalysisConnector::PRINT) ||
+      service->GetReportingSettings().has_value() ||
+      service->GetAppliedRealTimeUrlCheck() ==
+          enterprise_connectors::EnterpriseRealTimeUrlCheckMode::
+              REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED) {
+    enterprise_connectors::SetReferrerChain(
+        navigation_handle->GetURL(), *navigation_handle->GetWebContents());
+  }
 }
 
 void DataProtectionNavigationController::

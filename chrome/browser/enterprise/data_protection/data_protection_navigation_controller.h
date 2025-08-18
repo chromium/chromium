@@ -42,6 +42,8 @@ class DataProtectionNavigationController
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // DataProtectionNavigationDelegate
   void Cleanup(int64_t navigation_id) override;

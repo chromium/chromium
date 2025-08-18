@@ -424,9 +424,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   Data data_;
   Result result_;
 
-  // The tab ID of the WebContents that triggered the scan.
-  SessionID tab_id_;
-
   // Indices of warned files.
   std::vector<size_t> warned_file_indices_;
 

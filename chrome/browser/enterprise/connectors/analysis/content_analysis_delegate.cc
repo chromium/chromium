@@ -33,6 +33,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/page_print_request_handler.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -499,7 +500,6 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
     CompletionCallback callback,
     DeepScanAccessPoint access_point)
     : data_(std::move(data)),
-      tab_id_(sessions::SessionTabHelper::IdForTab(web_contents)),
       callback_(std::move(callback)),
       access_point_(access_point),
       web_contents_(web_contents->GetWeakPtr()) {
@@ -1017,11 +1017,10 @@ ContentAnalysisRequest::Reason ContentAnalysisDelegate::reason() const {
 
 google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
 ContentAnalysisDelegate::referrer_chain() const {
-  ReferrerChain referrers;
-  GetNavigationObserverManager()->IdentifyReferrerChainByEventURL(
-      url_, tab_id_, enterprise_connectors::kReferrerUserGestureLimit,
-      &referrers);
-  return referrers;
+  if (!web_contents_) {
+    return {};
+  }
+  return GetReferrerChain(url_, *web_contents_);
 }
 
 google::protobuf::RepeatedPtrField<std::string>
