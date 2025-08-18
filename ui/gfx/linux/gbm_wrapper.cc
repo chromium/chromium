@@ -32,6 +32,11 @@
 #include "base/strings/stringize_macros.h"
 #endif
 
+extern "C" {
+int gbm_bo_get_fd_for_plane(struct gbm_bo* bo, int plane)
+    __attribute__((weak_import));
+}
+
 namespace ui {
 namespace gbm_wrapper {
 namespace {
@@ -56,12 +61,23 @@ base::ScopedFD GetPlaneFdForBo(gbm_bo* bo, size_t plane) {
 #if defined(MINIGBM)
   return base::ScopedFD(gbm_bo_get_plane_fd(bo, plane));
 #else
+  // System linux gbm (or Mesa gbm) has fd per plane support
+  if (gbm_bo_get_fd_for_plane) {
+    int fd = gbm_bo_get_fd_for_plane(bo, static_cast<int>(plane));
+    if (fd >= 0) {
+      return base::ScopedFD(fd);
+    }
+  }
+
+  // Systems which use a libgbm < 21.1.0 do not have fds per plane support
+  // Thus, get plane handle and use drm ioctl to get a prime fd out of it.
+
+  // TODO(crbug.com/439501268): Check if this fallback can be removed once the
+  // sysroot is updated to include libgbm >= 21.1.0 (e.g. debian bookworm) with
+  // gbm_bo_get_fd_for_plane support.
   const int plane_count = GetPlaneCount(bo);
   DCHECK(plane_count > 0 && plane < static_cast<size_t>(plane_count));
 
-  // System linux gbm (or Mesa gbm) does not provide fds per plane basis. Thus,
-  // get plane handle and use drm ioctl to get a prime fd out of it avoid having
-  // two different branches for minigbm and Mesa gbm here.
   gbm_device* gbm_dev = gbm_bo_get_device(bo);
   int dev_fd = gbm_device_get_fd(gbm_dev);
   DCHECK_GE(dev_fd, 0);
