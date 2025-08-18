@@ -183,6 +183,7 @@
           'cros_test_names_exclude_from_file': [
             'chromeos/tast_control_disabled_tests.txt',
           ],
+          'cros_ctp_suite_name': 'chrome-uprev-hw',
         },
       },
     },
@@ -2440,17 +2441,26 @@
   'matrix_compound_suites': {
 
     'chromeos_brya_skylab_tests': {
-      'chromeos_chrome_all_tast_tests': {
+      'chromeos_chrome_all_tast_tests_tfc': {
+        'mixins': [
+          'skylab-40-tests-per-shard',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
-      'chromeos_chrome_criticalstaging_tast_tests': {
+      'chromeos_chrome_criticalstaging_tast_tests_tfc': {
+        'mixins': [
+          'skylab-40-tests-per-shard',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
-      'chromeos_chrome_disabled_tast_tests': {
+      'chromeos_chrome_disabled_tast_tests_tfc': {
+        'mixins': [
+          'skylab-20-tests-per-shard',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],

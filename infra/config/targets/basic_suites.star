@@ -111,6 +111,7 @@ targets.legacy_basic_suite(
                 # tast-specific logic relying on tast_expr to be non-empty.
                 tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
                 timeout_sec = 14400,
+                cros_ctp_suite_name = "chrome-uprev-hw",
                 cros_test_names_exclude_from_file = ["chromeos/tast_control_disabled_tests.txt"],
                 cros_test_tags = ["group:mainline", "dep:chrome"],
                 cros_test_tags_exclude = ["informational", "dep:no_chrome_dcheck"],
