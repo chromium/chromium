@@ -18,7 +18,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
@@ -115,17 +114,6 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
         value: false,
         observer: 'onBlockedSitesExpanded_',
       },
-
-      /**
-       * If true, the Ads API UX Enhancement should be shown.
-       */
-      shouldShowV2_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isPrivacySandboxAdsApiUxEnhancementsEnabled');
-        },
-      },
     };
   }
 
@@ -141,7 +129,6 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
   declare private isLearnMoreDialogOpen_: boolean;
   declare private seeAllSitesExpanded_: boolean;
   declare private blockedSitesExpanded_: boolean;
-  declare private shouldShowV2_: boolean;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =

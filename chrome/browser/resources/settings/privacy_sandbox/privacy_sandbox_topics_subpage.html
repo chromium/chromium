@@ -180,25 +180,18 @@
       </cr-link-row>
   </div>
 </template>
-<template is="dom-if" if="[[!shouldShowV2_]]">
-  <div id="footer" class="cr-secondary-text hr footer">
-    $i18nRaw{topicsPageFooter}
+<div id="footerV2" class="cr-secondary-text hr footer">
+  $i18nRaw{adTopicsPageFooterV2Desktop}
+</div>
+<template is="dom-if" if="[[shouldShowAdTopicsContentParity_]]">
+  <div id="footerDisclaimerV2" class="cr-secondary-text footer">
+    $i18nRaw{adTopicsPageDisclaimerV2Desktop}
   </div>
 </template>
-<template is="dom-if" if="[[shouldShowV2_]]">
-  <div id="footerV2" class="cr-secondary-text hr footer">
-    $i18nRaw{adTopicsPageFooterV2Desktop}
+<template is="dom-if" if="[[!shouldShowAdTopicsContentParity_]]">
+  <div id="footerDisclaimer" class="cr-secondary-text footer">
+    $i18nRaw{adTopicsPageDisclaimer}
   </div>
-  <template is="dom-if" if="[[shouldShowAdTopicsContentParity_]]">
-    <div id="footerDisclaimerV2" class="cr-secondary-text footer">
-      $i18nRaw{adTopicsPageDisclaimerV2Desktop}
-    </div>
-  </template>
-  <template is="dom-if" if="[[!shouldShowAdTopicsContentParity_]]">
-    <div id="footerDisclaimer" class="cr-secondary-text footer">
-      $i18nRaw{adTopicsPageDisclaimer}
-    </div>
-  </template>
 </template>
 <cr-toast id="unblockTopicToast" duration="10000">
   <div id="unblockTopicToastBody">$i18n{unblockTopicToastBody}</div>

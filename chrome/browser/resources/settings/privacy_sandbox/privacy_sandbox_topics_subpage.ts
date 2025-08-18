@@ -106,17 +106,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
       },
 
       /**
-       * If true, the Ads API UX Enhancement should be shown.
-       */
-      shouldShowV2_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isPrivacySandboxAdsApiUxEnhancementsEnabled');
-        },
-      },
-
-      /**
        * If true, the Ad Topics Content parity should be shown.
        */
       shouldShowAdTopicsContentParity_: {
@@ -148,7 +137,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   declare private shouldShowBlockTopicDialog_: boolean;
   declare private blockTopicDialogTitle_: string;
   declare private blockTopicDialogBody_: string;
-  declare private shouldShowV2_: boolean;
   declare private shouldShowAdTopicsContentParity_: boolean;
   declare private adTopicsToggleSubLabel_: string;
 

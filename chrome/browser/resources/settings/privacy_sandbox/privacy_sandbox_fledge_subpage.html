@@ -77,34 +77,20 @@
 
 <settings-subpage page-title="$i18n{fledgePageTitle}"
     learn-more-url="$i18n{adPrivacyLearnMoreURL}">
-<template is="dom-if" if="[[!shouldShowV2_]]">
-  <settings-toggle-button
-      id="fledgeToggle"
-      pref="{{prefs.privacy_sandbox.m1.fledge_enabled}}"
-      label="$i18n{fledgePageToggleLabel}"
-      sub-label="$i18n{fledgePageToggleSubLabel}"
-      on-settings-boolean-control-change="onToggleChange_">
-  </settings-toggle-button>
-  <div id="secondDescription" class="cr-secondary-text">
-    $i18n{fledgePageExplanation}
-  </div>
-</template>
-<template is="dom-if" if="[[shouldShowV2_]]">
-  <settings-toggle-button
-      id="siteSuggestedAdsToggleV2"
-      pref="{{prefs.privacy_sandbox.m1.fledge_enabled}}"
-      label="$i18n{fledgePageToggleLabel}"
-      sub-label="$i18n{siteSuggestedAdsPageToggleSubLabelV2}"
-      on-settings-boolean-control-change="onToggleChange_">
-  </settings-toggle-button>
-  <div id="secondDescriptionV2" class="cr-secondary-text">
-    $i18n{siteSuggestedAdsPageExplanationV2}
-    <button id="learnMoreLinkV2" on-click="onLearnMoreClick_"
-        aria-label="$i18n{siteSuggestedAdsPageExplanationV2LinkAriaDescription}">
-      $i18n{siteSuggestedAdsPageExplanationV2LinkText}
-    </button>
-  </div>
-</template>
+<settings-toggle-button
+    id="siteSuggestedAdsToggleV2"
+    pref="{{prefs.privacy_sandbox.m1.fledge_enabled}}"
+    label="$i18n{fledgePageToggleLabel}"
+    sub-label="$i18n{siteSuggestedAdsPageToggleSubLabelV2}"
+    on-settings-boolean-control-change="onToggleChange_">
+</settings-toggle-button>
+<div id="secondDescriptionV2" class="cr-secondary-text">
+  $i18n{siteSuggestedAdsPageExplanationV2}
+  <button id="learnMoreLinkV2" on-click="onLearnMoreClick_"
+      aria-label="$i18n{siteSuggestedAdsPageExplanationV2LinkAriaDescription}">
+    $i18n{siteSuggestedAdsPageExplanationV2LinkText}
+  </button>
+</div>
 <template is="dom-if" if="[[!isFledgePrefManaged_(
     prefs.privacy_sandbox.m1.fledge_enabled.enforcement)]]" restamp>
   <div id="currentSitesSection">
@@ -114,12 +100,6 @@
       </h2>
       <div id="currentSitesDescription" class="cr-secondary-text">
         $i18n{fledgePageCurrentSitesDescription}
-        <!-- TODO(b/264024469): Add "Learn more" into current sites description
-             string. -->
-        <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
-            "$i18n{fledgePageCurrentSitesDescriptionLearnMoreA11yLabel}" hidden$="[[shouldShowV2_]]">
-          $i18n{fledgePageCurrentSitesDescriptionLearnMore}
-        </button>
       </div>
       <template is="dom-if" if="[[isFledgeEnabledAndLoaded_(
           prefs.privacy_sandbox.m1.fledge_enabled.value, isSitesListLoaded_)]]"
@@ -182,36 +162,20 @@
   </div>
 </cr-collapse>
 
-<template is="dom-if" if="[[!shouldShowV2_]]">
-  <div id="footer" class="cr-secondary-text hr footer">
-    $i18nRaw{fledgePageFooter}
-  </div>
-</template>
-<template is="dom-if" if="[[shouldShowV2_]]">
-  <div id="footerV2" class="cr-secondary-text hr footer">
-    $i18nRaw{siteSuggestedAdsFooterV2Desktop}
-  </div>
-  <div id="disclaimer" class="cr-secondary-text footer">
-    $i18nRaw{siteSuggestedAdsPageDisclaimer}
-  </div>
-</template>
+<div id="footerV2" class="cr-secondary-text hr footer">
+  $i18nRaw{siteSuggestedAdsFooterV2Desktop}
+</div>
+<div id="disclaimer" class="cr-secondary-text footer">
+  $i18nRaw{siteSuggestedAdsPageDisclaimer}
+</div>
 <template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
   <cr-dialog id="dialog" on-close="onCloseDialog_" show-on-attach>
     <div slot="title">$i18n{fledgePageLearnMoreHeading}</div>
-    <template is="dom-if" if="[[!shouldShowV2_]]">
-      <div id="body" slot="body">
-        <p>$i18n{fledgePageLearnMoreBullet1}</p>
-        <p>$i18n{fledgePageLearnMoreBullet2}</p>
-        <p>$i18nRaw{fledgePageLearnMoreBullet3}</p>
-      </div>
-    </template>
-    <template is="dom-if" if="[[shouldShowV2_]]">
-      <div id="bodyV2" slot="body">
-        <p>$i18n{siteSuggestedAdsPageLearnMoreBullet1V2}</p>
-        <p>$i18n{siteSuggestedAdsPageLearnMoreBullet2V2}</p>
-        <p>$i18nRaw{siteSuggestedAdsPageLearnMoreBullet3V2}</p>
-      </div>
-    </template>
+    <div id="bodyV2" slot="body">
+      <p>$i18n{siteSuggestedAdsPageLearnMoreBullet1V2}</p>
+      <p>$i18n{siteSuggestedAdsPageLearnMoreBullet2V2}</p>
+      <p>$i18nRaw{siteSuggestedAdsPageLearnMoreBullet3V2}</p>
+    </div>
     <div slot="button-container">
       <cr-button id="closeButton" class="cancel-button" autofocus
           on-click="onCloseDialog_">
