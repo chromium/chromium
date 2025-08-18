@@ -32,6 +32,7 @@
 #include "base/uuid.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/entropy_state.h"
@@ -526,6 +527,7 @@ void MetricsStateManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
   EntropyState::RegisterPrefs(registry);
   ClonedInstallDetector::RegisterPrefs(registry);
+  CleanExitBeacon::RegisterPrefs(registry);
 }
 
 void MetricsStateManager::BackUpCurrentClientInfo() {

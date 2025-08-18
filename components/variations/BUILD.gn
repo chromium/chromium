@@ -347,6 +347,7 @@ if (use_fuzzing_engine_with_lpm) {
       "proto",
       "//base/test:test_support",
       "//components/metrics",
+      "//components/metrics:test_support",
       "//components/prefs:test_support",
       "//components/variations/service",
       "//third_party/libprotobuf-mutator",

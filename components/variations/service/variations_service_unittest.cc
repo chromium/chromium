@@ -324,9 +324,8 @@ class VariationsServiceTest : public ::testing::Test {
       : network_tracker_(network::TestNetworkConnectionTracker::GetInstance()),
         enabled_state_provider_(
             new metrics::TestEnabledStateProvider(false, false)) {
-    metrics::CleanExitBeacon::RegisterPrefs(prefs_.registry());
-    VariationsService::RegisterPrefs(prefs_.registry());
     metrics::MetricsStateManager::RegisterPrefs(prefs_.registry());
+    VariationsService::RegisterPrefs(prefs_.registry());
   }
 
   VariationsServiceTest(const VariationsServiceTest&) = delete;

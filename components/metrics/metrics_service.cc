@@ -313,7 +313,6 @@ void RecordUserLogStoreState(UserLogStoreState state) {
 
 // static
 void MetricsService::RegisterPrefs(PrefRegistrySimple* registry) {
-  CleanExitBeacon::RegisterPrefs(registry);
   MetricsStateManager::RegisterPrefs(registry);
   MetricsLog::RegisterPrefs(registry);
   StabilityMetricsProvider::RegisterPrefs(registry);

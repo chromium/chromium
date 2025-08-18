@@ -14,6 +14,7 @@
 #include "components/metrics/entropy_state.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
@@ -29,9 +30,14 @@ namespace variations {
 namespace {
 
 struct Environment {
-  Environment() { base::CommandLine::Init(0, nullptr); }
+  Environment() : enabled_state_provider(/*consent=*/true, /*enabled=*/true) {
+    base::CommandLine::Init(0, nullptr);
+    metrics::MetricsStateManager::RegisterPrefs(pref_service.registry());
+  }
 
   base::AtExitManager at_exit_manager;
+  TestingPrefServiceSimple pref_service;
+  metrics::TestEnabledStateProvider enabled_state_provider;
 };
 
 std::unique_ptr<ClientFilterableState> CreateClientFilterableState(
@@ -112,8 +118,8 @@ std::unique_ptr<ClientFilterableState> CreateClientFilterableState(
 std::unique_ptr<metrics::MetricsStateManager>
 CreateMetricsStateManagerForFuzzer(
     const CreateTrialsFromSeedTestCase::EntropyValues& entropy_values,
-    TestingPrefServiceSimple* pref_service) {
-  metrics::MetricsStateManager::RegisterPrefs(pref_service->registry());
+    TestingPrefServiceSimple* pref_service,
+    metrics::EnabledStateProvider* enabled_state_provider) {
   pref_service->SetInteger(metrics::prefs::kMetricsLowEntropySource,
                            entropy_values.low_entropy());
   pref_service->SetString(
@@ -123,13 +129,15 @@ CreateMetricsStateManagerForFuzzer(
                           entropy_values.client_id());
 
   return metrics::MetricsStateManager::Create(
-      pref_service, /*enabled_state_provider=*/nullptr,
+      pref_service, enabled_state_provider,
       /*backup_registry_key=*/std::wstring(),
       /*user_data_dir=*/base::FilePath());
 }
 
 void CreateTrialsFromSeedFuzzer(
-    const variations::CreateTrialsFromSeedTestCase& test_case) {
+    const variations::CreateTrialsFromSeedTestCase& test_case,
+    TestingPrefServiceSimple* pref_service,
+    metrics::EnabledStateProvider* enabled_state_provider) {
   base::FieldTrialList field_trial_list;
   base::FeatureList feature_list;
 
@@ -138,13 +146,12 @@ void CreateTrialsFromSeedFuzzer(
           ? test_case.client_filterable_state()
           : variations::CreateTrialsFromSeedTestCase::ClientFilterableState());
 
-  TestingPrefServiceSimple pref_service;
   const auto& entropy_values =
       test_case.has_entropy()
           ? test_case.entropy()
           : variations::CreateTrialsFromSeedTestCase::EntropyValues();
-  auto state_manager =
-      CreateMetricsStateManagerForFuzzer(entropy_values, &pref_service);
+  auto state_manager = CreateMetricsStateManagerForFuzzer(
+      entropy_values, pref_service, enabled_state_provider);
   auto entropy_providers = state_manager->CreateEntropyProviders(
       /*enable_limited_entropy_mode=*/true);
 
@@ -177,7 +184,8 @@ void CreateTrialsFromSeedFuzzer(
 
 DEFINE_PROTO_FUZZER(const variations::CreateTrialsFromSeedTestCase& test_case) {
   static Environment env;
-  CreateTrialsFromSeedFuzzer(test_case);
+  CreateTrialsFromSeedFuzzer(test_case, &env.pref_service,
+                             &env.enabled_state_provider);
 }
 
 }  // namespace variations
