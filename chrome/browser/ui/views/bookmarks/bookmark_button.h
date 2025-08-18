@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "content/public/browser/prerender_handle.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -89,7 +88,6 @@ class BookmarkButton : public BookmarkButtonBase, public views::WidgetObserver {
   const raw_ref<const GURL> url_;
   const raw_ptr<Browser> browser_;
   base::RetainingOneShotTimer preconnect_timer_;
-  base::WeakPtr<BookmarkBarPreloadPipelineManager> bookmarkbar_preload_manager_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

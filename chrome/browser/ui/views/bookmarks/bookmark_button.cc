@@ -11,6 +11,7 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -195,9 +196,14 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
 void BookmarkButton::OnMouseExited(const ui::MouseEvent& event) {
   BookmarkButtonBase::OnMouseExited(event);
   preconnect_timer_.Stop();
-  if (bookmarkbar_preload_manager_) {
-    bookmarkbar_preload_manager_->ResetPrerender();
+  auto* active_web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!active_web_contents) {
+    return;
   }
+  BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
+      active_web_contents)
+      ->ResetPrerender();
 }
 
 bool BookmarkButton::OnMousePressed(const ui::MouseEvent& event) {
@@ -222,11 +228,15 @@ void BookmarkButton::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 void BookmarkButton::StartPreconnecting(GURL url) {
+  CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPreconnect));
   // TODO(crbug.com/413259638): Introduce preconnect related tests once the
   // related infrastructure is completed.
-  CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPreconnect));
-  if (bookmarkbar_preload_manager_ &&
-      bookmarkbar_preload_manager_->IsPreloadingStarted()) {
+  auto* active_web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (active_web_contents &&
+      BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
+          active_web_contents)
+          ->IsPreloadingStarted()) {
     return;
   }
 
@@ -246,11 +256,9 @@ void BookmarkButton::StartPrerendering(GURL url) {
     return;
   }
 
-  bookmarkbar_preload_manager_ =
-      BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
-          active_web_contents)
-          ->GetWeakPtr();
-  bookmarkbar_preload_manager_->StartPrerender(url);
+  BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
+      active_web_contents)
+      ->StartPrerender(url);
 }
 
 void BookmarkButton::UpdateMaxTooltipWidth() {
