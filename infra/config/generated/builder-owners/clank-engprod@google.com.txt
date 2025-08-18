@@ -70,7 +70,6 @@ try/android-arm-compile-dbg
 try/android-arm64-compile-dbg
 try/android-clobber-rel
 try/android-desktop-15-x64-fyi-rel
-try/android-desktop-15-x64-rel
 try/android-desktop-arm64-clobber-rel
 try/android-desktop-arm64-compile-dbg
 try/android-desktop-arm64-compile-rel

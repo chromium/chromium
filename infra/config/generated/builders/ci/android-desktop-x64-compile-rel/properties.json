@@ -89,10 +89,6 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "android-desktop-15-x64-rel",
-          "group": "tryserver.chromium.android"
-        },
-        {
           "builder": "android-desktop-x64-rel",
           "group": "tryserver.chromium.android"
         }

@@ -45,7 +45,6 @@ chromium/try/android-cronet-x86-dbg-nougat-tests
 chromium/try/android-cronet-x86-dbg-oreo-tests
 chromium/try/android-cronet-x86-dbg-pie-tests
 chromium/try/android-cronet-x86-rel
-chromium/try/android-desktop-15-x64-rel
 chromium/try/android-desktop-x64-rel
 chromium/try/android-official
 chromium/try/android-webview-10-x86-rel-tests
