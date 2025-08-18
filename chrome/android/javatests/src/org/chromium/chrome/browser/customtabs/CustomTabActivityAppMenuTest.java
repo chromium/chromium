@@ -724,7 +724,7 @@ public class CustomTabActivityAppMenuTest {
 
         callbackTriggered.waitForCallback(0);
 
-        CriteriaHelper.pollInstrumentationThread(
+        CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
                             RecordHistogram.getHistogramValueCountForTesting(

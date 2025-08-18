@@ -506,7 +506,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         // When we select a tab in this model it should become the active model. This is the
         // existing behavior of TabModelImpl.
-        if (!isActiveModel()) mModelDelegate.selectModel(isIncognitoBranded());
+        if (!isActiveModel()) mModelDelegate.selectModel(isIncognito());
 
         Tab oldSelectedTab = mCurrentTabSupplier.get();
         int lastId = (oldSelectedTab == null) ? Tab.INVALID_TAB_ID : oldSelectedTab.getId();
@@ -598,7 +598,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public TabCreator getTabCreator() {
         assertOnUiThread();
-        return getTabCreator(isIncognitoBranded());
+        return getTabCreator(isIncognito());
     }
 
     @Override
@@ -620,7 +620,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         boolean hasAnyTabs = mCurrentTabSupplier.hasValue();
         boolean selectTab =
-                mOrderController.willOpenInForeground(type, isIncognitoBranded())
+                mOrderController.willOpenInForeground(type, isIncognito())
                         || (!hasAnyTabs && type == TabLaunchType.FROM_LONGPRESS_BACKGROUND);
         index = mOrderController.determineInsertionIndex(type, index, tab);
 
@@ -800,7 +800,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         } else if (params.tabCloseType == TabCloseType.ALL) {
             for (TabModelObserver obs : mTabModelObservers) {
-                obs.willCloseAllTabs(isIncognitoBranded());
+                obs.willCloseAllTabs(isIncognito());
             }
         }
 
@@ -1564,8 +1564,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (updatePendingTabClosureManager) commitAllTabClosures();
 
         Tab nearbyTab = null;
-        boolean nextIsIncognito = nextTab == null ? false : nextTab.isIncognitoBranded();
-        boolean nextIsInOtherModel = nextIsIncognito != isIncognitoBranded();
+        boolean nextIsIncognito = nextTab != null && nextTab.isOffTheRecord();
+        boolean nextIsInOtherModel = nextIsIncognito != isIncognito();
         if ((nextTab == null || nextIsInOtherModel) && closeType != TabCloseType.ALL) {
             nearbyTab =
                     TabModelImplUtil.findNearbyNotClosingTab(

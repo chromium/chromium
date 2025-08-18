@@ -1091,6 +1091,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//chrome/browser/tabpersistence:java",
+      "//components/visited_url_ranking/public:public_java",
     ]
   }
 
