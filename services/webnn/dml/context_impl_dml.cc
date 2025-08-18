@@ -747,9 +747,18 @@ void ContextImplDml::ReadTensor(
 
   HRESULT hr = S_OK;
 
+  // Fast-path UMA mapping must be disabled for WebGPU interop since another
+  // queue could be writing to the buffer, and the CPU could read stale data
+  // unless the GPU waits on the appropriate fence.
+  // TODO(crbug.com/434683792): consider re-enabling this by checking the
+  // external fence.
+  const bool is_uma_mapping_allowed =
+      !src_tensor->usage().Has(MLTensorUsageFlags::kWebGpuInterop);
+
   // Map entire buffer to readback the output data.
-  if (adapter_->IsUMA() && adapter_->command_queue()->GetCompletedValue() >=
-                               src_tensor->last_submission_fence_value()) {
+  if (is_uma_mapping_allowed && adapter_->IsUMA() &&
+      adapter_->command_queue()->GetCompletedValue() >=
+          src_tensor->last_submission_fence_value()) {
     ContextImplDml::OnReadbackComplete(src_tensor->buffer(), src_tensor_size,
                                        std::move(callback), hr);
     return;
@@ -833,10 +842,19 @@ void ContextImplDml::WriteTensor(TensorImplDml* dst_tensor,
   HRESULT hr = S_OK;
   ComPtr<ID3D12Resource> buffer_to_map = dst_tensor->buffer();
 
+  // Fast-path UMA mapping must be disabled for WebGPU interop since another
+  // queue could be reading from the buffer, and the CPU could overwrite
+  // in-flight GPU data unless the GPU waits on the appropriate fence.
+  // TODO(crbug.com/434683792): consider re-enabling this by checking the
+  // external fence.
+  const bool is_uma_mapping_allowed =
+      !dst_tensor->usage().Has(MLTensorUsageFlags::kWebGpuInterop);
+
   // Create a staging buffer to upload data into when the existing buffer
   // cannot be updated by the CPU.
-  if (!adapter_->IsUMA() || adapter_->command_queue()->GetCompletedValue() <
-                                dst_tensor->last_submission_fence_value()) {
+  if (!is_uma_mapping_allowed || !adapter_->IsUMA() ||
+      adapter_->command_queue()->GetCompletedValue() <
+          dst_tensor->last_submission_fence_value()) {
     hr = CreateUploadBuffer(adapter_->d3d12_device(), src_buffer.size(),
                             L"WebNN_Upload_Buffer", buffer_to_map);
     if (FAILED(hr)) {
