@@ -97,7 +97,7 @@ SearchPreloadSignalResult SearchPreloadPipeline::StartPrefetch(
   if (!is_navigation_likely) {
     prefetch_handle_->SetOnPrefetchCompletedOrFailedCallback(
         base::BindRepeating(
-            &SearchPreloadService::OnOnSuggestPrefetchCompletedOrFailed,
+            &SearchPreloadService::OnSuggestPrefetchCompletedOrFailed,
             search_preload_service));
   }
 

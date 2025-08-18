@@ -115,7 +115,7 @@ void SearchPreloadService::OnPrefetchHeadReceived(
   }
 }
 
-void SearchPreloadService::OnOnSuggestPrefetchCompletedOrFailed(
+void SearchPreloadService::OnSuggestPrefetchCompletedOrFailed(
     const network::URLLoaderCompletionStatus& completion_status,
     const std::optional<int>& response_code) {
   const bool is_2xx = response_code.has_value() &&

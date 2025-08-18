@@ -73,7 +73,7 @@ class SearchPreloadService : public KeyedService,
   void ClearPreloads();
 
   void OnPrefetchHeadReceived(const network::mojom::URLResponseHead& head);
-  void OnOnSuggestPrefetchCompletedOrFailed(
+  void OnSuggestPrefetchCompletedOrFailed(
       const network::URLLoaderCompletionStatus& completion_status,
       const std::optional<int>& response_code);
 
