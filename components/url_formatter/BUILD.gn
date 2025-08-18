@@ -81,6 +81,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/url_formatter/spoof_checks/top_domains:generate_idn_top_domains_test_trie",
+    "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
     "//net",
     "//net:preload_decoder",
     "//testing/gtest",

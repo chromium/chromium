@@ -188,15 +188,16 @@ LookalikeUrlService::CheckUrlForLookalikes(
     }
   }
 
+  if (url_formatter::IsTopDomain(url)) {
+    return result;
+  }
+
   // GetDomainInfo() is expensive, so do possible early-abort checks first.
   base::TimeTicks get_domain_info_start = base::TimeTicks::Now();
   const DomainInfo navigated_domain = lookalikes::GetDomainInfo(url);
   result.get_domain_info_duration =
       base::TimeTicks::Now() - get_domain_info_start;
 
-  if (IsTopDomain(navigated_domain)) {
-    return result;
-  }
 
   // Ensure that this URL is not already engaged. We can't use the synchronous
   // SiteEngagementService::IsEngagementAtLeast as it has side effects. We check

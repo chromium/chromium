@@ -19,6 +19,7 @@
 #include "base/threading/thread_local_storage.h"
 #include "build/build_config.h"
 #include "net/base/lookup_string_in_fixed_set.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/icu/source/common/unicode/schriter.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
@@ -583,6 +584,54 @@ TopDomainEntry IDNSpoofChecker::GetSimilarTopDomain(
 Skeletons IDNSpoofChecker::GetSkeletons(std::u16string_view hostname) const {
   return skeleton_generator_ ? skeleton_generator_->GetSkeletons(hostname)
                              : Skeletons();
+}
+
+bool IDNSpoofChecker::IsTopDomain(const GURL& url) {
+  if (!url.is_valid() || !url.has_host()) {
+    return false;
+  }
+  std::string domain_and_registry =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          url.host(),
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+  return IsDomainAndRegistryATopDomain(domain_and_registry);
+}
+
+bool IDNSpoofChecker::IsDomainAndRegistryATopDomain(
+    const std::string& domain_and_registry) {
+  if (domain_and_registry.empty()) {
+    return false;
+  }
+
+  // Convert the hostname to std::u16string_view as GetSkeletons expects it.
+  std::u16string domain16;
+  if (!base::UTF8ToUTF16(domain_and_registry.data(),
+                         domain_and_registry.length(), &domain16)) {
+    // Failed to convert, which is unlikely for a valid GURL host.
+    // Treat as not a top domain.
+    return false;
+  }
+
+  // Top domains are only accessible through their skeletons, so query the top
+  // domains trie for each skeleton of this domain.
+  for (const std::string& skeleton : GetSkeletons(domain16)) {
+    if (skeleton.empty()) {
+      continue;
+    }
+    const TopDomainEntry top_domain = LookupSkeletonInTopDomains(
+        skeleton, url_formatter::SkeletonType::kFull);
+    if (top_domain.domain.empty()) {
+      continue;
+    }
+
+    const std::u16string top_domain_utf16 =
+        base::UTF8ToUTF16(top_domain.domain);
+    if (domain16 == top_domain_utf16 ||
+        IsSubdomainOf(domain16, top_domain_utf16)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 TopDomainEntry IDNSpoofChecker::LookupSkeletonInTopDomains(

@@ -18,6 +18,7 @@
 #include "third_party/icu/source/common/unicode/uniset.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
+#include "url/gurl.h"
 
 // 'icu' does not work. Use U_ICU_NAMESPACE.
 namespace U_ICU_NAMESPACE {
@@ -140,6 +141,17 @@ class IDNSpoofChecker {
   //   2. Look up the diacritic-free version of |hostname| in the list of
   //   top domains. Note that non-IDN hostnames will not get here.
   TopDomainEntry GetSimilarTopDomain(std::u16string_view hostname);
+
+  // Returns true if the domain represented by |url| is one of the top domains
+  // listed in domains.list or is a subdomain of one of the top domains.
+  bool IsTopDomain(const GURL& url);
+
+  // Checks if the given |domain_and_registry| string (representing the
+  // registrable domain, or eTLD+1) is one of the top domains listed in
+  // domains.list or is a subdomain of one of the top domains. This functions
+  // calculates the skeleton of |domain_and_registry| and looks it up in the
+  // pre-calculated skeleton list of top domains.
+  bool IsDomainAndRegistryATopDomain(const std::string& domain_and_registry);
 
   // Returns skeleton strings computed from |hostname|. This function can apply
   // extra mappings to some characters to produce multiple skeletons.

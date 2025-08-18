@@ -854,6 +854,15 @@ Skeletons GetSkeletons(const std::u16string& host) {
   return GetIDNSpoofChecker().GetSkeletons(host);
 }
 
+bool IsTopDomain(const GURL& url) {
+  return GetIDNSpoofChecker().IsTopDomain(url);
+}
+
+bool IsDomainAndRegistryATopDomain(const std::string& domain_and_registry) {
+  return GetIDNSpoofChecker().IsDomainAndRegistryATopDomain(
+      domain_and_registry);
+}
+
 TopDomainEntry LookupSkeletonInTopDomains(const std::string& skeleton,
                                           const SkeletonType type) {
   return GetIDNSpoofChecker().LookupSkeletonInTopDomains(skeleton, type);

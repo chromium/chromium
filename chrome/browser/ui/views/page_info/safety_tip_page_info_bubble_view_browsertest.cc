@@ -262,7 +262,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
 
     LookalikeTestHelper::SetUpLookalikeTestParams();
     // Check that the test top domain list contains google.
-    ASSERT_TRUE(IsTopDomain(lookalikes::GetDomainInfo("google.com")));
+    ASSERT_TRUE(url_formatter::IsTopDomain(GetURL("google.com")));
 
     InProcessBrowserTest::SetUpOnMainThread();
   }
@@ -968,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SafetyTipPageInfoBubbleViewBrowserTest,
     DoesntTriggerOnCharacterSwap_TopSiteWithDifferentRegistry) {
-  ASSERT_TRUE(IsTopDomain(lookalikes::GetDomainInfo("google.rs")));
+  ASSERT_TRUE(url_formatter::IsTopDomain(GetURL("google.rs")));
 
   base::HistogramTester histograms;
   // google.sr is within one character swap of google.rs which is a top domain.
