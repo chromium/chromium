@@ -30,6 +30,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
@@ -821,6 +822,16 @@ SyncService::TransportState SyncServiceImpl::GetTransportState() const {
     return TransportState::INITIALIZING;
   }
 
+  if (base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus)) {
+    // Determining the account's managed-ness status is also considered part of
+    // initialization.
+    if (!IsLocalSyncEnabled() &&
+        auth_manager_->GetActiveAccountInfo().managed_status ==
+            signin::AccountManagedStatusFinderOutcome::kPending) {
+      return TransportState::INITIALIZING;
+    }
+  }
+
   // At this point we should usually be able to configure our data types (so the
   // DataTypeManager should not be STOPPED anymore), unless setup is in
   // progress. But it can also happen if this gets called from DataTypeManager
@@ -1205,7 +1216,8 @@ void SyncServiceImpl::SyncAuthAccountStateChanged() {
     DCHECK(!engine_);
   } else {
     // Either a new account was signed in, or the existing account's
-    // `is_sync_consented` bit was changed. Start up or reconfigure.
+    // `is_sync_consented` and/or `managed_status` have changed. Start up or
+    // reconfigure.
     if (!engine_) {
       TryStart();
       NotifyObservers();
@@ -1592,7 +1604,7 @@ void SyncServiceImpl::ConfigureDataTypeManager(
   // Don't configure datatypes if the setup UI is still on the screen - this
   // is to help multi-screen setting UIs (like iOS) where they don't want to
   // start syncing data until the user is done configuring encryption options,
-  // etc. ReconfigureDatatypeManager() will get called again once the last
+  // etc. ConfigureDatatypeManager() will get called again once the last
   // SyncSetupInProgressHandle is released.
   if (!engine_ || !engine_->IsInitialized() ||
       (!bypass_setup_in_progress_check && IsSetupInProgress())) {
@@ -1602,12 +1614,24 @@ void SyncServiceImpl::ConfigureDataTypeManager(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus)) {
+    // If the account type hasn't been determined yet, don't configure. A
+    // configuration will be triggered again once the type has been determined.
+    if (!IsLocalSyncEnabled() &&
+        auth_manager_->GetActiveAccountInfo().managed_status ==
+            signin::AccountManagedStatusFinderOutcome::kPending) {
+      return;
+    }
+  }
+
   DCHECK(!engine_->GetCacheGuid().empty());
   DVLOG(1) << "Started DataTypeManager configuration, reason: "
            << static_cast<int>(reason);
 
   ConfigureContext configure_context;
   configure_context.authenticated_gaia_id = GetAccountInfo().gaia;
+  configure_context.account_managed_status =
+      auth_manager_->GetActiveAccountInfo().managed_status;
   configure_context.cache_guid = engine_->GetCacheGuid();
   configure_context.sync_mode = SyncMode::kFull;
   configure_context.reason = reason;

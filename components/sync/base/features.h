@@ -174,6 +174,11 @@ BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements);
 // Google Wallet.
 BASE_DECLARE_FEATURE(kSyncWalletPublicPasses);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+BASE_DECLARE_FEATURE(kSyncDetermineAccountManagedStatus);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kSyncDetermineAccountManagedStatusTimeout);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

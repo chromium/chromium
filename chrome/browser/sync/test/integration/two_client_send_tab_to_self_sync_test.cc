@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfWithTransportModeSyncTest,
   // Set up one client syncing and the other signed-in but not syncing.
   ASSERT_TRUE(GetClient(0)->SetupSync());
   secondary_account_helper::SignInUnconsentedAccount(
-      GetProfile(1), &test_url_loader_factory_, "user@g.com");
+      GetProfile(1), &test_url_loader_factory_, "user@gmail.com");
   ASSERT_TRUE(GetClient(1)->AwaitSyncTransportActive());
 
   DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))

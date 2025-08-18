@@ -5,11 +5,16 @@
 #include "components/sync/service/sync_auth_manager.h"
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "net/base/net_errors.h"
@@ -945,6 +950,160 @@ TEST_F(SyncAuthManagerTest, DetectsInvalidRefreshTokenAtStartup) {
 
   EXPECT_TRUE(auth_manager->GetLastAuthError().IsPersistentError());
 }
+
+class SyncAuthManagerWithDetermineAccountTypeTest : public SyncAuthManagerTest {
+ public:
+  SyncAuthManagerWithDetermineAccountTypeTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kSyncDetermineAccountManagedStatus);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
+       DeterminesAccountTypeSynchronously) {
+  // There is a primary account. It's @gmail.com so it's managed status can be
+  // determined synchronously.
+  AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kUnknown);
+
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
+
+  base::HistogramTester histograms;
+
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
+  auth_manager->RegisterForAuthNotifications();
+  ASSERT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
+            account_info.account_id);
+
+  // The managed status should be known synchronously, with no notification.
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kConsumerGmail);
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusSynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kConsumerGmail, 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusAsynchronousOutcome",
+                              0);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 0);
+
+  // Even when the hosted domain gets determined later, there should be no
+  // notification (since nothing relevant changed).
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  account_info.hosted_domain = signin::constants::kNoHostedDomainFound;
+  identity_env()->UpdateAccountInfoForAccount(account_info);
+
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kConsumerGmail);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusSynchronousOutcome", 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusAsynchronousOutcome",
+                              0);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 0);
+}
+
+TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
+       DeterminesAccountTypeAsynchronously) {
+  // There is a primary account, whose managed-ness status isn't known yet.
+  AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
+      "test@consumer.com", signin::ConsentLevel::kSignin);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kUnknown);
+
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
+
+  base::HistogramTester histograms;
+
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
+  auth_manager->RegisterForAuthNotifications();
+  ASSERT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
+            account_info.account_id);
+
+  // The managed status should initially be unknown (pending).
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kPending);
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusSynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kPending, 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusAsynchronousOutcome",
+                              0);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 0);
+
+  // Once the account's hosted domain is determined, the managed status should
+  // become known too, and this should trigger a notification.
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged);
+  account_info.hosted_domain = signin::constants::kNoHostedDomainFound;
+  identity_env()->UpdateAccountInfoForAccount(account_info);
+
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusSynchronousOutcome", 1);
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusAsynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown, 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 1);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
+       AccountChangeWhileDeterminingAccountType) {
+  // There is a primary account, whose managed-ness status isn't known yet.
+  AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
+      "test@consumer.com", signin::ConsentLevel::kSignin);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kUnknown);
+
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
+
+  base::HistogramTester histograms;
+
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
+  auth_manager->RegisterForAuthNotifications();
+  ASSERT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
+            account_info.account_id);
+
+  // The managed status should initially be unknown (pending).
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kPending);
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusSynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kPending, 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusAsynchronousOutcome",
+                              0);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 0);
+
+  // Before the account type can be determined, the account signs out again, and
+  // a different account signs in (whose status is also not known yet).
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(2);
+  identity_env()->ClearPrimaryAccount();
+  AccountInfo account_info2 = identity_env()->MakePrimaryAccountAvailable(
+      "test2@consumer.com", signin::ConsentLevel::kSignin);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kUnknown);
+
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusSynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kPending, 2);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusAsynchronousOutcome",
+                              0);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 0);
+
+  // Once the second account's hosted domain is determined, the managed status
+  // should become known too, and this should trigger a notification.
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged);
+  account_info2.hosted_domain = signin::constants::kNoHostedDomainFound;
+  identity_env()->UpdateAccountInfoForAccount(account_info2);
+
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusSynchronousOutcome", 2);
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusAsynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown, 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

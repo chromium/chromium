@@ -33,6 +33,10 @@ class FakeDataTypeController : public DataTypeController {
   // `enable_transport_mode` is set upon construction.
   FakeDataTypeControllerDelegate* model(SyncMode sync_mode = SyncMode::kFull);
 
+  const ConfigureContext& last_configure_context() {
+    return last_configure_context_;
+  }
+
   int activate_call_count() const { return activate_call_count_; }
 
   // Mimics the advanced/hypothetical scenario where a custom controller
@@ -42,10 +46,13 @@ class FakeDataTypeController : public DataTypeController {
   void SimulateControllerError(const base::Location& location);
 
   // DataTypeController overrides.
+  void LoadModels(const ConfigureContext& configure_context,
+                  const ModelLoadCallback& model_load_callback) override;
   PreconditionState GetPreconditionState() const override;
   std::unique_ptr<DataTypeActivationResponse> Connect() override;
 
  private:
+  ConfigureContext last_configure_context_;
   PreconditionState precondition_state_ = PreconditionState::kPreconditionsMet;
   int activate_call_count_ = 0;
 };

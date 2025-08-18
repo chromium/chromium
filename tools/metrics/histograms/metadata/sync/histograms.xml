@@ -148,6 +148,41 @@ chromium-metrics-reviews@google.com.
                last day (wrt recording the metrics)."/>
 </variants>
 
+<histogram name="Sync.AccountManagedStatusAsynchronousOutcome"
+    enum="AccountManagedStatusFinderOutcome" expires_after="2026-02-28">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the account managed status that was asynchronously determined during
+    sync startup. Only recorded if the status was not known synchronously (see
+    `Sync.AccountManagedStatusSynchronousOutcome`). Also see
+    `Sync.AccountManagedStatusDuration` for timings.
+  </summary>
+</histogram>
+
+<histogram name="Sync.AccountManagedStatusDuration" units="ms"
+    expires_after="2026-02-28">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the time it took to determine the account managed status during sync
+    startup. Only recorded if the status was not known synchronously (see
+    `Sync.AccountManagedStatusSynchronousOutcome` and
+    `Sync.AccountManagedStatusAsynchronousOutcome`).
+  </summary>
+</histogram>
+
+<histogram name="Sync.AccountManagedStatusSynchronousOutcome"
+    enum="AccountManagedStatusFinderOutcome" expires_after="2026-02-28">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the account managed status during sync startup, or
+    &quot;pending&quot; if the status wasn't known yet - in that case, see
+    `Sync.AccountManagedStatusAsynchronousOutcome`.
+  </summary>
+</histogram>
+
 <histogram name="Sync.AccountMenu.UserActionableError"
     enum="UserActionableError" expires_after="2025-11-14">
   <owner>rgod@google.com</owner>

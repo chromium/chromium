@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/service/sync_token_status.h"
@@ -23,6 +24,7 @@
 namespace signin {
 class AccessTokenFetcher;
 struct AccessTokenInfo;
+class AccountManagedStatusFinder;
 }  // namespace signin
 
 namespace syncer {
@@ -32,6 +34,8 @@ struct SyncCredentials;
 struct SyncAccountInfo {
   CoreAccountInfo account_info;
   bool is_sync_consented = false;
+  signin::AccountManagedStatusFinderOutcome managed_status =
+      signin::AccountManagedStatusFinderOutcome::kPending;
 };
 
 // SyncAuthManager tracks the account to be used for Sync and its authentication
@@ -136,14 +140,18 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   void ResetRequestAccessTokenBackoffForTest();
 
  private:
-  SyncAccountInfo DetermineAccountToUse() const;
-
   // Updates `sync_account_` to the appropriate account (i.e.
   // DetermineAccountToUse) if necessary, and notifies observers of any changes
   // (sign-in/sign-out/"primary" bit change). Note that changing from one
   // account to another is exposed to observers as a sign-out + sign-in.
   // Returns whether the syncing account was updated.
   bool UpdateSyncAccountIfNecessary();
+
+  // Starts the process of determining the account type (managed or not) of
+  // `sync_account_`. This may be synchronous or asynchronous.
+  void StartDeterminingAccountType();
+  // Callback for the async case.
+  void AccountTypeDetermined();
 
   // Invalidates any current access token, which means invalidating it with the
   // IdentityManager and also dropping our own cached copy. Meant to be called
@@ -168,6 +176,8 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   void AccessTokenFetched(GoogleServiceAuthError error,
                           signin::AccessTokenInfo access_token_info);
 
+  void SetSyncAccount(const SyncAccountInfo& new_account);
+
   void SetLastAuthError(const GoogleServiceAuthError& error);
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -182,6 +192,9 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   // *not* necessarily imply that Sync is actually running, e.g. because of
   // delayed startup.
   SyncAccountInfo sync_account_;
+
+  std::unique_ptr<signin::AccountManagedStatusFinder> managed_status_finder_;
+  base::Time managed_status_finder_start_time_;
 
   // This is a cache of the last authentication response we received from
   // Chrome's identity/token management system.

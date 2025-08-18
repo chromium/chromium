@@ -7,10 +7,13 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/oauth_consumer_ids.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -50,7 +53,7 @@ constexpr net::BackoffEntry::Policy
 };
 
 SyncAccountInfo DetermineAccountToUse(
-    signin::IdentityManager* identity_manager) {
+    const signin::IdentityManager* identity_manager) {
   // TODO(crbug.com/40246339): During signout, it can happen that the primary
   // account temporarily doesn't have a refresh token (before the account
   // itself gets removed). As a workaround for crbug.com/1383912 /
@@ -96,9 +99,11 @@ void SyncAuthManager::RegisterForAuthNotifications() {
   identity_manager_observation_.Observe(identity_manager_);
   registered_for_auth_notifications_ = true;
 
-  // Also initialize the sync account here, but *without* notifying the
-  // SyncService.
-  sync_account_ = DetermineAccountToUse();
+  // Initialize the sync account, without (immediately) notifying the delegate
+  // aka the SyncService. (If the account's managed-ness isn't known yet and
+  // gets determined later, that should and will notify the delegate.)
+  SetSyncAccount(DetermineAccountToUse(identity_manager_));
+
   // If there's already a persistent auth error, also propagate that into our
   // local state. Note that (as of 2021-01) this shouldn't happen in practice:
   // Auth errors are not persisted, so it's unlikely that at this point in time
@@ -402,55 +407,92 @@ void SyncAuthManager::ResetRequestAccessTokenBackoffForTest() {
   request_access_token_backoff_.Reset();
 }
 
-SyncAccountInfo SyncAuthManager::DetermineAccountToUse() const {
-  DCHECK(registered_for_auth_notifications_);
-  return syncer::DetermineAccountToUse(identity_manager_);
-}
-
 bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
   DCHECK(registered_for_auth_notifications_);
 
-  const SyncAccountInfo new_account = DetermineAccountToUse();
+  const SyncAccountInfo new_account = DetermineAccountToUse(identity_manager_);
 
-  if (new_account.account_info.account_id ==
-      sync_account_.account_info.account_id) {
-    // We're already using this account (or there was and is no account to use).
-    // If the `is_sync_consented` bit hasn't changed either, then there's
-    // nothing to do.
-    if (new_account.is_sync_consented == sync_account_.is_sync_consented) {
-      return false;
+  if (sync_account_.account_info.account_id !=
+      new_account.account_info.account_id) {
+    // Either this is a sign-in or sign-out, or the account changed.
+
+    // Sign out of the old account (if any).
+    if (!sync_account_.account_info.account_id.empty()) {
+      SetSyncAccount(SyncAccountInfo());
+      // Let the client (SyncService) know of the removed account *before*
+      // throwing away the access token, so it can do "unregister" tasks.
+      delegate_->SyncAuthAccountStateChanged();
+      // Also clear any pending request or auth errors we might have, since they
+      // aren't meaningful anymore.
+      partial_token_status_ = SyncTokenStatus();
+      ClearAccessTokenAndRequest();
+      SetLastAuthError(GoogleServiceAuthError::AuthErrorNone());
     }
-    // The `is_sync_consented` bit *has* changed, so update our state and
-    // notify.
-    sync_account_ = new_account;
-    delegate_->SyncAuthAccountStateChanged();
+
+    // Sign in to the new account (if any).
+    if (!new_account.account_info.account_id.empty()) {
+      DCHECK_EQ(GoogleServiceAuthError::NONE, last_auth_error_.state());
+      SetSyncAccount(new_account);
+      delegate_->SyncAuthAccountStateChanged();
+    }
+
     return true;
   }
+  // Else: The account is still the same, but `is_sync_consented` and/or
+  // `managed_status` may have changed.
+  const SyncAccountInfo old_account = sync_account_;
+  SetSyncAccount(new_account);
 
-  // Something has changed: Either this is a sign-in or sign-out, or the account
-  // changed.
-
-  // Sign out of the old account (if any).
-  if (!sync_account_.account_info.account_id.empty()) {
-    sync_account_ = SyncAccountInfo();
-    // Let the client (SyncService) know of the removed account *before*
-    // throwing away the access token, so it can do "unregister" tasks.
-    delegate_->SyncAuthAccountStateChanged();
-    // Also clear any pending request or auth errors we might have, since they
-    // aren't meaningful anymore.
-    partial_token_status_ = SyncTokenStatus();
-    ClearAccessTokenAndRequest();
-    SetLastAuthError(GoogleServiceAuthError::AuthErrorNone());
+  if (old_account.is_sync_consented == sync_account_.is_sync_consented &&
+      old_account.managed_status == sync_account_.managed_status) {
+    return false;
   }
 
-  // Sign in to the new account (if any).
-  if (!new_account.account_info.account_id.empty()) {
-    DCHECK_EQ(GoogleServiceAuthError::NONE, last_auth_error_.state());
-    sync_account_ = new_account;
-    delegate_->SyncAuthAccountStateChanged();
-  }
-
+  delegate_->SyncAuthAccountStateChanged();
   return true;
+}
+
+void SyncAuthManager::StartDeterminingAccountType() {
+  CHECK(registered_for_auth_notifications_);
+  if (!base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus)) {
+    return;
+  }
+  if (sync_account_.account_info.account_id.empty()) {
+    managed_status_finder_.reset();
+    return;
+  }
+  // If there wasn't an account previously, or the account has changed,
+  // recreate the managed-status finder.
+  if (!managed_status_finder_ ||
+      managed_status_finder_->GetAccountInfo().account_id !=
+          sync_account_.account_info.account_id) {
+    managed_status_finder_start_time_ = base::Time::Now();
+    managed_status_finder_ =
+        std::make_unique<signin::AccountManagedStatusFinder>(
+            identity_manager_, sync_account_.account_info,
+            base::BindOnce(&SyncAuthManager::AccountTypeDetermined,
+                           base::Unretained(this)),
+            kSyncDetermineAccountManagedStatusTimeout.Get());
+    base::UmaHistogramEnumeration("Sync.AccountManagedStatusSynchronousOutcome",
+                                  managed_status_finder_->GetOutcome());
+  }
+  // Whether the `AccountManagedStatusFinder` was recreated or not, re-populate
+  // the managed status. It's possible the managed status is not known yet, in
+  // which case it'll be updated later in `AccountTypeDetermined()`.
+  sync_account_.managed_status = managed_status_finder_->GetOutcome();
+}
+
+void SyncAuthManager::AccountTypeDetermined() {
+  CHECK(base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus));
+
+  const base::TimeDelta duration =
+      base::Time::Now() - managed_status_finder_start_time_;
+
+  base::UmaHistogramEnumeration("Sync.AccountManagedStatusAsynchronousOutcome",
+                                managed_status_finder_->GetOutcome());
+  base::UmaHistogramTimes("Sync.AccountManagedStatusDuration", duration);
+
+  UpdateSyncAccountIfNecessary();
 }
 
 void SyncAuthManager::RequestAccessToken() {
@@ -520,6 +562,11 @@ void SyncAuthManager::AccessTokenFetched(
   }
 
   delegate_->SyncAuthCredentialsChanged();
+}
+
+void SyncAuthManager::SetSyncAccount(const SyncAccountInfo& new_account) {
+  sync_account_ = new_account;
+  StartDeterminingAccountType();
 }
 
 void SyncAuthManager::SetLastAuthError(const GoogleServiceAuthError& error) {
