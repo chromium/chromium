@@ -53,14 +53,6 @@ build_webui_tests("build") {
     "zoom_manager_test.ts",
   ]
 
-  if (enable_ink) {
-    files += [
-      "annotations_feature_enabled_test.ts",
-      "annotations_toolbar_test.ts",
-      "viewer_toolbar_dropdown_test.ts",
-    ]
-  }
-
   if (enable_pdf_ink2) {
     files += [
       "caret_browsing_mode_test.ts",
@@ -111,10 +103,6 @@ build_webui_tests("build") {
     "//tools/typescript/definitions/pdf_viewer_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
   ]
-  if (enable_ink) {
-    ts_definitions +=
-        [ "//chrome/browser/resources/pdf/ink/drawing_canvas.d.ts" ]
-  }
 
   ts_deps = [
     "../webui:build_ts",
