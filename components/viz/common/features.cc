@@ -201,7 +201,7 @@ BASE_FEATURE(kUseSurfaceLayerForVideoDefault,
 
 BASE_FEATURE(kWebViewNewInvalidateHeuristic,
              "WebViewNewInvalidateHeuristic",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled and the device's SOC manufacturer satisifes the allowlist and
 // blocklist rules, WebView reports the set of threads involved in frame
