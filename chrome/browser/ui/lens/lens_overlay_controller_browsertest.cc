@@ -7538,6 +7538,122 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(fake_query_controller->last_queried_text(), "oranges");
 }
 
+// TODO(crbug.com/413042395): This test is not testing overlay logic, but
+// instead the side panel logic. Therefore, this test should be moved to a side
+// panel browsertest file.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       IssueTextSearchRequest_Contextualizes) {
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay by issuing a text search request without suppressing
+  // contextualization.
+  GetLensSearchController()->IssueTextSearchRequest(
+      LensOverlayInvocationSource::kContentAreaContextMenuText, "test",
+      /*additional_query_parameters=*/{},
+      AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      /*suppress_contextualization=*/false);
+
+  // Wait for the side panel to load.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetSidePanelWebContentsForTesting(); }));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Verify we entered the live page state.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Make another query to build the history stack.
+  content::TestNavigationObserver observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueSearchBoxRequestForTesting(
+      kTestTime, "apples", AutocompleteMatchType::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      /*additional_query_params=*/{});
+
+  // Wait for the side panel to load.
+  observer.WaitForNavigationFinished();
+
+  // Pop last query from history.
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
+  observer.WaitForNavigationFinished();
+
+  // An interaction request should have been sent for each contextualized query.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->num_interaction_requests_sent() == 3;
+  }));
+}
+
+// TODO(crbug.com/413042395): This test is not testing overlay logic, but
+// instead the side panel logic. Therefore, this test should be moved to a side
+// panel browsertest file.
+// TODO(crbug.com/439622878): Test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_IssueTextSearchRequest_SuppressesContextualization \
+  DISABLED_IssueTextSearchRequest_SuppressesContextualization
+#else
+#define MAYBE_IssueTextSearchRequest_SuppressesContextualization \
+  IssueTextSearchRequest_SuppressesContextualization
+#endif
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayControllerBrowserTest,
+    MAYBE_IssueTextSearchRequest_SuppressesContextualization) {
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay by issuing a text search request and suppressing
+  // contextualization.
+  GetLensSearchController()->IssueTextSearchRequest(
+      LensOverlayInvocationSource::kContentAreaContextMenuText, "test",
+      /*additional_query_parameters=*/{},
+      AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      /*suppress_contextualization=*/true);
+
+  // Wait for the side panel to load.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetSidePanelWebContentsForTesting(); }));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Verify we entered the live page state.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Make another query to build the history stack.
+  content::TestNavigationObserver observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueSearchBoxRequestForTesting(
+      kTestTime, "apples", AutocompleteMatchType::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      /*additional_query_params=*/{});
+
+  // Wait for the side panel to load.
+  observer.WaitForNavigationFinished();
+
+  // Pop last query from history.
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
+  observer.WaitForNavigationFinished();
+
+  // No interaction requests should have been sent as contextualization was
+  // suppressed.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_EQ(fake_query_controller->num_interaction_requests_sent(), 0);
+}
+
 // This test checks that there is no crash when showing lens overlay when
 // screenshot is not available.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

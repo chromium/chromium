@@ -4758,14 +4758,17 @@ void RenderViewContextMenu::OpenTextQueryInLens() {
   auto* const controller =
       LensSearchController::FromTabWebContents(source_web_contents_);
   CHECK(controller);
-  controller->IssueContextualSearchRequestWithQuery(
+  controller->IssueTextSearchRequest(
       lens::LensOverlayInvocationSource::kContentAreaContextMenuText,
       base::UTF16ToUTF8(params_.selection_text),
       /*additional_query_parameters=*/{},
       // TODO(crbug.com/432490312): Match type here is likely not ideal.
       // Investigate removing match type from this function.
       AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
-      /*is_zero_prefix_suggestion=*/false);
+      /*is_zero_prefix_suggestion=*/false,
+      /*suppress_contextualization=*/
+      !lens::features::
+          IsLensOverlayTextSelectionContextMenuEntrypointContextualized());
 }
 
 Browser* RenderViewContextMenu::GetBrowser() const {

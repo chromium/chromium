@@ -124,16 +124,22 @@ class LensSearchController {
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion);
 
-  // Issues a contextual search request for Lens to fulfill using query text.
+  // Issues a text search request for Lens to fulfill using query text.
   // Starts contextualization flow if its not already in progress. If the Lens
   // Overlay is in the process of opening, the request will be queued until the
   // overlay is fully opened.
-  void IssueContextualSearchRequestWithQuery(
+  // If `suppress_contextualization` is true, queries will not be performed with
+  // contextualization for the duration of the session. However,
+  // contextualization may still be initialized as normal.
+  // TODO(crbug.com/439082079): Remove `suppress_contextualization` after
+  // experiment completes as it is not intended to launch.
+  void IssueTextSearchRequest(
       lens::LensOverlayInvocationSource invocation_source,
       std::string query_text,
       std::map<std::string, std::string> additional_query_parameters,
       AutocompleteMatchType::Type match_type,
-      bool is_zero_prefix_suggestion);
+      bool is_zero_prefix_suggestion,
+      bool suppress_contextualization);
 
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:
@@ -321,7 +327,8 @@ class LensSearchController {
 
   // Creates all state necessary to start a Lens session. This method contains
   // shared state that is used no matter the entrypoint.
-  void StartLensSession(lens::LensOverlayInvocationSource invocation_source);
+  void StartLensSession(lens::LensOverlayInvocationSource invocation_source,
+                        bool suppress_contextualization = false);
 
   // Runs the eligibility checks necessary for Lens to open on this tab. If the
   // user has not granted permission to use Lens on this tab, the permission
