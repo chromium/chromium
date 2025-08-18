@@ -138,6 +138,15 @@ class ChromeFileSystemAccessPermissionContext
     kDontBlockChildren
   };
 
+  // The initialization status of `block_path_rules_`.
+  // `block_path_rules_` is initialized asynchronously on the first call to
+  // `CheckPathAgainstBlocklist`.
+  enum class BlockPathRulesStatus {
+    kNotInitialized,
+    kInitializationStarted,
+    kInitialized
+  };
+
   // Describes a rule for blocking a directory, which can be
   // - constructed dynamically based on the profile path
   // - provided by the caller
@@ -399,8 +408,8 @@ class ChromeFileSystemAccessPermissionContext
   // This is needed when updating path with ScopedPathOverride.
   void ResetBlockPathsForTesting();
 
-  bool GetIsBlockPathRulesInitCompleteForTesting() {
-    return is_block_path_rules_init_complete_;
+  BlockPathRulesStatus GetBlockPathRulesStatusForTesting() {
+    return block_path_rules_status_;
   }
 
  protected:
@@ -584,7 +593,8 @@ class ChromeFileSystemAccessPermissionContext
   bool RevokeActiveGrants(const url::Origin& origin,
                           base::FilePath file_path = base::FilePath());
 
-  void ResetBlockPaths();
+  void InitializeBlockPaths();
+  void InitializeBlockPathsInternal();
   void UpdateBlockPaths(std::unique_ptr<BlockPathRules> block_path_rules);
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
@@ -632,7 +642,8 @@ class ChromeFileSystemAccessPermissionContext
   // blocked, we need to wait until the initialization completes, hence the
   // `CallbackListSubscription` and `OnceCallbackList`.
   std::unique_ptr<BlockPathRules> block_path_rules_;
-  bool is_block_path_rules_init_complete_ = false;
+  BlockPathRulesStatus block_path_rules_status_ =
+      BlockPathRulesStatus::kNotInitialized;
   std::vector<base::CallbackListSubscription> block_rules_check_subscription_;
   base::OnceCallbackList<void(BlockPathRules)> block_rules_check_callbacks_;
 

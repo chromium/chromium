@@ -1325,15 +1325,21 @@ ChromeFileSystemAccessPermissionContext::
     }
   }
 #endif
-
-  ResetBlockPaths();
 }
 
 ChromeFileSystemAccessPermissionContext::
     ~ChromeFileSystemAccessPermissionContext() = default;
 
-void ChromeFileSystemAccessPermissionContext::ResetBlockPaths() {
-  is_block_path_rules_init_complete_ = false;
+void ChromeFileSystemAccessPermissionContext::InitializeBlockPaths() {
+  // This method should only be called when the `block_path_rules_status_` are
+  // not initialized.
+  CHECK_EQ(block_path_rules_status_, ChromeFileSystemAccessPermissionContext::
+                                         BlockPathRulesStatus::kNotInitialized);
+  InitializeBlockPathsInternal();
+}
+
+void ChromeFileSystemAccessPermissionContext::InitializeBlockPathsInternal() {
+  block_path_rules_status_ = BlockPathRulesStatus::kInitializationStarted;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GenerateBlockPaths, should_normalize_file_path_),
@@ -1342,13 +1348,13 @@ void ChromeFileSystemAccessPermissionContext::ResetBlockPaths() {
 }
 
 void ChromeFileSystemAccessPermissionContext::ResetBlockPathsForTesting() {
-  ResetBlockPaths();
+  InitializeBlockPathsInternal();
 }
 
 void ChromeFileSystemAccessPermissionContext::UpdateBlockPaths(
     std::unique_ptr<BlockPathRules> block_path_rules) {
   block_path_rules_ = std::move(block_path_rules);
-  is_block_path_rules_init_complete_ = true;
+  block_path_rules_status_ = BlockPathRulesStatus::kInitialized;
   block_rules_check_callbacks_.Notify(*block_path_rules_.get());
 }
 
@@ -1984,20 +1990,32 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
         BlockType::kBlockAllChildren);
   }
 
-  if (is_block_path_rules_init_complete_) {
-    // The rules initialization is completed, we can just post the task to a
-    // anonymous blocking traits.
-    CheckShouldBlockAccessToPathAndReply(path_info.path, handle_type,
-                                         extra_rules, std::move(callback),
-                                         *block_path_rules_.get());
-    return;
+  switch (block_path_rules_status_) {
+    case BlockPathRulesStatus::kInitialized:
+      // If the `block_path_rules_status_` is already initilizaed, we can just
+      // post the task to a anonymous blocking traits.
+      CheckShouldBlockAccessToPathAndReply(path_info.path, handle_type,
+                                           extra_rules, std::move(callback),
+                                           *block_path_rules_.get());
+      return;
+
+    case BlockPathRulesStatus::kNotInitialized:
+      // If the `block_path_rules_status_` is `kNotInitialized`, lazy initialize
+      // the `block_path_rules_`.
+      // This will make the status `kInitializationStarted`, so fallthrough to
+      // the next block.
+      InitializeBlockPaths();
+      [[fallthrough]];
+
+    case BlockPathRulesStatus::kInitializationStarted:
+      // The check must be performed after the rules initialization is done.
+      block_rules_check_subscription_.push_back(
+          block_rules_check_callbacks_.Add(
+              base::BindOnce(&ChromeFileSystemAccessPermissionContext::
+                                 CheckShouldBlockAccessToPathAndReply,
+                             weak_factory_.GetWeakPtr(), path_info.path,
+                             handle_type, extra_rules, std::move(callback))));
   }
-  // The check must be performed after the rules initialization is done.
-  block_rules_check_subscription_.push_back(block_rules_check_callbacks_.Add(
-      base::BindOnce(&ChromeFileSystemAccessPermissionContext::
-                         CheckShouldBlockAccessToPathAndReply,
-                     weak_factory_.GetWeakPtr(), path_info.path, handle_type,
-                     extra_rules, std::move(callback))));
 }
 
 void ChromeFileSystemAccessPermissionContext::PerformAfterWriteChecks(

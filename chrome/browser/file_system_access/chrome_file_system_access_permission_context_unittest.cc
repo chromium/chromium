@@ -498,10 +498,13 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   const PathInfo kTestPathInfo2 = PathInfo(FILE_PATH_LITERAL("/baz/"));
   const url::Origin kChromeOrigin = url::Origin::Create(GURL("chrome://test"));
 
+  // Resets the block path rules and waits for the initialization to complete.
   void ResetBlockPath() {
     permission_context_->ResetBlockPathsForTesting();
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      return permission_context_->GetIsBlockPathRulesInitCompleteForTesting();
+      return permission_context_->GetBlockPathRulesStatusForTesting() ==
+             ChromeFileSystemAccessPermissionContext::BlockPathRulesStatus::
+                 kInitialized;
     }));
   }
 
@@ -580,7 +583,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DontBlockAllChildren) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
-  ResetBlockPath();
 
   // The Home directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -607,7 +609,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_BlockAllChildren) {
   base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
   base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
-  ResetBlockPath();
 
   // The App directory itself should not be allowed.
   EXPECT_TRUE(IsOpenAbort(app_dir, HandleType::kDirectory));
@@ -725,7 +726,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::ScopedPathOverride app_override(base::DIR_EXE, temp_dir_.GetPath(),
                                         true, true);
   base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
-  ResetBlockPath();
 
   // `base::DIR_HOME` and paths inside of it should not be allowed.
   EXPECT_FALSE(IsOpenAllowed(home_dir, HandleType::kDirectory));
@@ -750,7 +750,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_RelativePathBlock) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
-  ResetBlockPath();
 
   // ~/.ssh should be blocked.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -803,7 +802,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DontBlockAllChildren_Overlapping) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
-  ResetBlockPath();
 
   // The Home directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -868,7 +866,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_BlockAllChildren_UserApplicationsDir) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
-  ResetBlockPath();
 
   // User's Applications directory should be blocked.
   base::FilePath user_applications_dir(home_dir.AppendASCII("Applications"));
@@ -892,7 +889,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   ASSERT_FALSE(outer_bundle_path.empty());
   base::ScopedPathOverride bundle_override(chrome::DIR_OUTER_BUNDLE,
                                            outer_bundle_path, true, true);
-  ResetBlockPath();
 
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathInfo(outer_bundle_path),
@@ -1005,7 +1001,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest,
   ASSERT_TRUE(base::CreateDirectory(app_dir));
 
   base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
-  ResetBlockPath();
 
   CreateSymbolicLinkResult result =
       CreateSymbolicLinkForTesting(app_dir, symlink1);
@@ -1052,7 +1047,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest,
 
   // Set the blocked path to a symbolic link.
   base::ScopedPathOverride app_override(base::DIR_EXE, symlink1, true, true);
-  ResetBlockPath();
   // The target of the blocked symbolic link should be blocked.
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(permission_context(), PathInfo(app_dir),
@@ -1064,7 +1058,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DangerousFile) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
-  ResetBlockPath();
 
   // Saving files with a harmless extension should be allowed.
   EXPECT_EQ(
@@ -3509,7 +3502,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath home_dir(FILE_PATH_LITERAL("C:PC\\Documents"));
   ScopedHomeDirOverride home_override =
       OverrideHomeDir(home_dir, /*should_skip_check=*/true);
-  ResetBlockPath();
 
   // The path should not have any effect, and path like the `temp_dir_` should
   // not be blocked. There should be no crash either.
@@ -3528,7 +3520,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath absolute_home_dir = base::MakeAbsoluteFilePath(home_dir);
   ScopedHomeDirOverride home_override =
       OverrideHomeDir(home_dir, /*should_skip_check=*/true);
-  ResetBlockPath();
 
   // The home path itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
