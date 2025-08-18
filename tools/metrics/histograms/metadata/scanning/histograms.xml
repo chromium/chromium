@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Scanning.CombinedImageSizeInKbBeforePdf" units="KB"
-    expires_after="2025-09-27">
+    expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.CombinedImageSizeInKbBeforePdf"
-    units="KB" expires_after="2025-09-27">
+    units="KB" expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.NumPagesScanned" units="pages"
-    expires_after="2025-09-27">
+    expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.PDFGenerationTime" units="ms"
-    expires_after="2025-09-27">
+    expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.SessionDuration" units="ms"
-    expires_after="2025-09-27">
+    expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.ToolbarAction"
-    enum="ScanMultiPageToolbarAction" expires_after="2025-09-27">
+    enum="ScanMultiPageToolbarAction" expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumFilesCreated" units="files"
-    expires_after="2025-09-27">
+    expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumPagesScanned" units="pages"
-    expires_after="2025-09-27">
+    expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumScanSettingChanges" units="changes"
-    expires_after="2025-09-27">
+    expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.PDFGenerationTime" units="ms"
-    expires_after="2025-09-27">
+    expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanCompleteAction" enum="ScanCompleteAction"
-    expires_after="2025-09-27">
+    expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -226,14 +226,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobFailureReason" enum="ScanJobFailureReason"
-    expires_after="2025-09-27">
+    expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>Records the reason a scan job failed.</summary>
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.ColorMode"
-    enum="ScanJobSettingsColorMode" expires_after="2025-09-27">
+    enum="ScanJobSettingsColorMode" expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -243,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.FileType"
-    enum="ScanJobSettingsFileType" expires_after="2025-09-27">
+    enum="ScanJobSettingsFileType" expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.PageSize"
-    enum="ScanJobSettingsPageSize" expires_after="2025-09-27">
+    enum="ScanJobSettingsPageSize" expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.Resolution"
-    enum="ScanJobSettingsResolution" expires_after="2025-09-27">
+    enum="ScanJobSettingsResolution" expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -273,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.Source" enum="ScanJobSettingsSource"
-    expires_after="2025-09-27">
+    expires_after="2026-09-27">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
