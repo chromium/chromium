@@ -974,7 +974,7 @@ class QuicSessionPool::QuicCryptoClientConfigOwner {
   int num_refs_ = 0;
   quic::QuicCryptoClientConfig config_;
   raw_ptr<base::Clock> clock_;
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
   const raw_ptr<QuicSessionPool> quic_session_pool_;
 };
 
