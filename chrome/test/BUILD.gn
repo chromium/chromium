@@ -9307,6 +9307,7 @@ test("unit_tests") {
       "../common/extensions/manifest_tests/extension_manifests_override_unittest.cc",
       "../common/extensions/manifest_tests/extension_manifests_portsinpermissions_unittest.cc",
       "../common/extensions/manifest_tests/extension_manifests_sample_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_theme_unittest.cc",
       "../common/extensions/manifest_tests/extension_manifests_ui_unittest.cc",
       "../common/extensions/manifest_tests/extension_manifests_validapp_unittest.cc",
       "../common/extensions/manifest_tests/extension_manifests_web_accessible_resources_unittest.cc",

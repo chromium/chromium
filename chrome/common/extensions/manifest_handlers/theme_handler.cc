@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,6 +17,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_resource.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handler_helpers.h"
@@ -51,17 +54,18 @@ bool IsThemeImageMimeTypeValid(const base::FilePath& relative_path,
   return true;
 }
 
-bool LoadImages(const base::Value::Dict& theme_dict,
+bool LoadImages(const Extension& extension,
+                const base::Value::Dict& theme_dict,
                 std::u16string* error,
                 std::vector<std::string>* warnings,
                 ThemeInfo* theme_info) {
   if (const base::Value::Dict* images_dict =
           theme_dict.FindDict(keys::kThemeImages)) {
-    base::Value::Dict theme_images;
+    ThemeInfo::ThemeImages theme_images;
 
     // Validate that the images are all strings.
     for (const auto [key, value] : *images_dict) {
-      bool is_valid = true;
+      std::vector<ThemeInfo::ThemeResource> theme_resources;
 
       // The value may be a dictionary of scales and files paths.
       // Or the value may be a file path, in which case a scale
@@ -69,32 +73,43 @@ bool LoadImages(const base::Value::Dict& theme_dict,
       if (value.is_dict()) {
         for (const auto [inner_key, inner_value] : value.GetDict()) {
           if (!inner_value.is_string()) {
-            *error = errors::kInvalidThemeImages;
+            *error = errors::kInvalidThemeImagesValueType;
             return false;
           }
 
-          if (!IsThemeImageMimeTypeValid(
-                  base::FilePath::FromUTF8Unsafe(inner_value.GetString()),
-                  warnings)) {
-            is_valid = false;
+          ExtensionResource local_path =
+              extension.GetResource(inner_value.GetString());
+          if (local_path.empty()) {
+            *error = errors::kInvalidThemeImagesPath;
+            return false;
+          }
+
+          if (!IsThemeImageMimeTypeValid(local_path.relative_path(),
+                                         warnings)) {
+            theme_resources.clear();
             break;
           }
+
+          theme_resources.emplace_back(std::move(local_path), inner_key);
         }
       } else if (value.is_string()) {
-        if (!IsThemeImageMimeTypeValid(
-                base::FilePath::FromUTF8Unsafe(value.GetString()), warnings)) {
-          is_valid = false;
+        ExtensionResource local_path = extension.GetResource(value.GetString());
+        if (local_path.empty()) {
+          *error = errors::kInvalidThemeImagesPath;
+          return false;
+        }
+
+        if (IsThemeImageMimeTypeValid(local_path.relative_path(), warnings)) {
+          theme_resources.emplace_back(std::move(local_path), std::string());
         }
       } else {
-        *error = errors::kInvalidThemeImages;
+        *error = errors::kInvalidThemeImagesValueType;
         return false;
       }
 
-      if (!is_valid) {
-        continue;
+      if (!theme_resources.empty()) {
+        theme_images[key] = std::move(theme_resources);
       }
-
-      theme_images.Set(key, value.Clone());
     }
     theme_info->theme_images_ = std::move(theme_images);
   }
@@ -230,7 +245,7 @@ ThemeInfo::ThemeInfo() = default;
 ThemeInfo::~ThemeInfo() = default;
 
 // static
-const base::Value::Dict* ThemeInfo::GetImages(const Extension* extension) {
+const ThemeInfo::ThemeImages* ThemeInfo::GetImages(const Extension* extension) {
   const ThemeInfo* theme_info = GetInfo(extension);
   return theme_info ? &theme_info->theme_images_ : nullptr;
 }
@@ -274,7 +289,8 @@ bool ThemeHandler::Parse(Extension* extension, std::u16string* error) {
   }
   std::unique_ptr<ThemeInfo> theme_info(new ThemeInfo);
   std::vector<std::string> image_warnings;
-  if (!LoadImages(*theme_dict, error, &image_warnings, theme_info.get())) {
+  if (!LoadImages(*extension, *theme_dict, error, &image_warnings,
+                  theme_info.get())) {
     return false;
   }
   if (!LoadColors(*theme_dict, error, theme_info.get())) {
@@ -303,31 +319,26 @@ bool ThemeHandler::Validate(const Extension& extension,
                             std::vector<InstallWarning>* warnings) const {
   // Validate that theme images exist.
   if (extension.is_theme()) {
-    const base::Value::Dict* images_value =
+    const ThemeInfo::ThemeImages* theme_images =
         extensions::ThemeInfo::GetImages(&extension);
-    if (images_value) {
-      for (const auto [key, value] : *images_value) {
-        if (value.is_string()) {
-          const std::string& val = value.GetString();
-          base::FilePath image_path = extension.GetResource(val).GetFilePath();
+    if (theme_images) {
+      for (const auto& [theme_image_name, theme_resources] : *theme_images) {
+        for (const auto& theme_resource : theme_resources) {
+          base::FilePath image_path = theme_resource.resource.GetFilePath();
           if (image_path.empty() || !base::PathExists(image_path)) {
-            *error = l10n_util::GetStringFUTF8(IDS_EXTENSION_INVALID_IMAGE_PATH,
-                                               base::UTF8ToUTF16(val));
-            return false;
-          }
-        } else if (value.is_dict()) {
-          for (const auto [scale, path] : value.GetDict()) {
-            if (path.is_string()) {
-              const std::string& val = path.GetString();
-              base::FilePath image_path =
-                  extension.GetResource(val).GetFilePath();
-              if (image_path.empty() || !base::PathExists(image_path)) {
-                // This is a warning and not a hard-error for backwards
-                // compatibility with existing themes.
-                warnings->emplace_back(ErrorUtils::FormatErrorMessage(
-                    errors::kInvalidThemeDictImagePath, key, scale, val));
-              }
+            // Bad entry.
+            if (theme_resource.scale.empty()) {
+              *error = l10n_util::GetStringFUTF8(
+                  IDS_EXTENSION_INVALID_IMAGE_PATH,
+                  theme_resource.resource.relative_path().AsUTF16Unsafe());
+              return false;
             }
+            // This is a warning and not a hard-error for backwards
+            // compatibility with existing themes.
+            warnings->emplace_back(ErrorUtils::FormatErrorMessage(
+                errors::kInvalidThemeDictImagePath, theme_image_name,
+                theme_resource.scale,
+                theme_resource.resource.relative_path().AsUTF8Unsafe()));
           }
         }
       }

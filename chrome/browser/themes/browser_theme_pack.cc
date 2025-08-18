@@ -18,6 +18,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -1595,28 +1596,25 @@ void BrowserThemePack::SetDisplayPropertiesFromJSON(
 }
 
 void BrowserThemePack::ParseImageNamesFromJSON(
-    const base::Value::Dict* images_value,
+    const extensions::ThemeInfo::ThemeImages* theme_images,
     const base::FilePath& images_path,
     FilePathMap* file_paths) const {
-  if (!images_value) {
+  if (!theme_images) {
     return;
   }
 
-  for (const auto [key, value] : *images_value) {
-    if (value.is_dict()) {
-      for (const auto [inner_key, inner_value] : value.GetDict()) {
-        ui::ResourceScaleFactor scale_factor = ui::kScaleFactorNone;
-        if (GetScaleFactorFromManifestKey(inner_key, &scale_factor) &&
-            inner_value.is_string()) {
-          AddFileAtScaleToMap(key, scale_factor,
-                              images_path.AppendASCII(inner_value.GetString()),
-                              file_paths);
-        }
+  for (const auto& [theme_image_name, theme_resources] : *theme_images) {
+    for (const auto& theme_resource : theme_resources) {
+      ui::ResourceScaleFactor scale_factor = ui::k100Percent;
+      if (!theme_resource.scale.empty() &&
+          !GetScaleFactorFromManifestKey(theme_resource.scale, &scale_factor)) {
+        // Invalid scale factor; skip.
+        continue;
       }
-    } else if (value.is_string()) {
-      AddFileAtScaleToMap(key, ui::k100Percent,
-                          images_path.AppendASCII(value.GetString()),
-                          file_paths);
+      AddFileAtScaleToMap(
+          theme_image_name, scale_factor,
+          images_path.Append(theme_resource.resource.relative_path()),
+          file_paths);
     }
   }
 }

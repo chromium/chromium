@@ -586,8 +586,10 @@ inline constexpr char kInvalidStartupOverrideURL[] =
 inline constexpr char16_t kInvalidTheme[] = u"Invalid value for 'theme'.";
 inline constexpr char16_t kInvalidThemeColors[] =
     u"Invalid value for theme colors - colors must be integers";
-inline constexpr char16_t kInvalidThemeImages[] =
+inline constexpr char16_t kInvalidThemeImagesValueType[] =
     u"Invalid value for theme images - images must be strings.";
+inline constexpr char16_t kInvalidThemeImagesPath[] =
+    u"Invalid path for theme images.";
 inline constexpr char kInvalidThemeImageMimeType[] =
     "Invalid mime type for theme image '*'.";
 inline constexpr char kThemeImageMissingFileExtension[] =

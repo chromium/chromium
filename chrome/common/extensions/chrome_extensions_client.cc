@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -188,19 +189,12 @@ std::set<base::FilePath> ChromeExtensionsClient::GetBrowserImagePaths(
   std::set<base::FilePath> image_paths =
       ExtensionsClient::GetBrowserImagePaths(extension);
 
-  // Theme images
-  const base::Value::Dict* theme_images = ThemeInfo::GetImages(extension);
+  // Theme images.
+  const ThemeInfo::ThemeImages* theme_images = ThemeInfo::GetImages(extension);
   if (theme_images) {
-    for (const auto [key, value] : *theme_images) {
-      if (value.is_string()) {
-        image_paths.insert(base::FilePath::FromUTF8Unsafe(value.GetString()));
-      } else if (value.is_dict()) {
-        for (const auto [scale, path] : value.GetDict()) {
-          if (path.is_string()) {
-            image_paths.insert(
-                base::FilePath::FromUTF8Unsafe(path.GetString()));
-          }
-        }
+    for (const auto& [theme_image_name, theme_resources] : *theme_images) {
+      for (const auto& theme_resource : theme_resources) {
+        image_paths.insert(theme_resource.resource.relative_path());
       }
     }
   }
