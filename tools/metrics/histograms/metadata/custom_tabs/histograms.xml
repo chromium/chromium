@@ -602,7 +602,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.Omnibox.EnabledState" units="BooleanEnabled"
+<histogram name="CustomTabs.Omnibox.EnabledState" enum="BooleanEnabled"
     expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>sinansahin@google.com</owner>
@@ -612,7 +612,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.Omnibox.FocusResultedInNavigation" units="Boolean"
+<histogram name="CustomTabs.Omnibox.FocusResultedInNavigation" enum="Boolean"
     expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>sinansahin@google.com</owner>
