@@ -259,9 +259,9 @@ void VideoEffectsProcessorWebGpu::PostProcess(
   }
 
   const uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-      "VideoEffectsProcessorWebGpu::PostProcess", trace_id);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                    "VideoEffectsProcessorWebGpu::PostProcess",
+                    perfetto::Track(trace_id));
 
   // Note: this CHECK is not strictly required, but the code below assumes it
   // holds. In order to relax this requirement, we'd need to audit the code
@@ -511,7 +511,8 @@ void VideoEffectsProcessorWebGpu::QueryDone(
     mojom::VideoEffectsProcessor::PostProcessCallback post_process_cb) {
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-      "VideoEffectsProcessorWebGpu::PostProcess", trace_id);
+      /* VideoEffectsProcessorWebGpu::PostProcess */,
+      perfetto::Track(trace_id));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   gpu::raster::RasterInterface* raster_interface =

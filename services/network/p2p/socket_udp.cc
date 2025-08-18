@@ -24,6 +24,7 @@
 #include "services/network/throttling/throttling_controller.h"
 #include "services/network/throttling/throttling_network_interceptor.h"
 #include "services/network/throttling/throttling_p2p_network_interceptor.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
@@ -381,8 +382,8 @@ bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
     }
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("p2p", "UdpAsyncSendTo", packet.id, "size",
-                                    packet.size);
+  TRACE_EVENT_BEGIN("p2p", "UdpAsyncSendTo", perfetto::Track(packet.id), "size",
+                    packet.size);
   // Don't try to set DSCP in following conditions,
   // 1. If the outgoing packet is set to DSCP_NO_CHANGE
   // 2. If no change in DSCP value from last packet
@@ -463,8 +464,7 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
                                     int32_t transport_sequence_number,
                                     int64_t send_time_ms,
                                     int result) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("p2p", "UdpAsyncSendTo", packet_id);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("p2p", "Send", packet_id, "result", result);
+  TRACE_EVENT_END("p2p", perfetto::Track(packet_id), "result", result);
   if (result < 0) {
     if (!IsTransientError(result)) {
       LOG(ERROR) << "Error when sending data in UDP socket: " << result;

@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace webnn::dml {
 
@@ -158,8 +159,7 @@ HRESULT CommandQueue::WaitSync() {
 
 void CommandQueue::OnObjectSignaled(HANDLE object) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("gpu", "dml::CommandQueue::WaitAsync",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("gpu", perfetto::Track::FromPointer(this));
   CHECK_EQ(object, fence_event_.get());
   ReleaseCompletedResources();
 
@@ -193,8 +193,8 @@ void CommandQueue::WaitAsync(base::OnceCallback<void(HRESULT hr)> callback) {
     std::move(callback).Run(hr);
     return;
   }
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu", "dml::CommandQueue::WaitAsync",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("gpu", "dml::CommandQueue::WaitAsync",
+                    perfetto::Track::FromPointer(this));
   queued_callbacks_.push_back(
       {last_fence_value_, base::BindOnce(std::move(callback), S_OK)});
 }

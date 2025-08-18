@@ -14,6 +14,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace network {
 
@@ -115,18 +116,16 @@ net::Error AcceptCHFrameInterceptor::OnConnected(
   // started. Otherwise, the callback to continue the network transaction will
   // be called and the URLLoader will continue as normal.
   auto record = [](net::CompletionOnceCallback callback,
-                   base::TimeTicks call_time, uint64_t trace_id, int status) {
+                   base::TimeTicks call_time, perfetto::Track track,
+                   int status) {
     base::UmaHistogramMicrosecondsTimes("Net.URLLoader.AcceptCH.RoundTripTime",
                                         base::TimeTicks::Now() - call_time);
     base::UmaHistogramSparse("Net.URLLoader.AcceptCH.Status", -status);
-    TRACE_EVENT_NESTABLE_ASYNC_END1(
-        "loading", "AcceptCHObserver::OnAcceptCHFrameReceived call",
-        TRACE_ID_LOCAL(trace_id), "status", status);
+    TRACE_EVENT_END("loading", track, "status", status);
     std::move(callback).Run(status);
   };
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "loading", "AcceptCHObserver::OnAcceptCHFrameReceived call",
-      TRACE_ID_LOCAL(this), "url", url);
+  TRACE_EVENT_BEGIN("loading", "AcceptCHObserver::OnAcceptCHFrameReceived call",
+                    perfetto::Track::FromPointer(this), "url", url);
 
   // Explanation of callback lifetime safety:
   // The `callback` originates from a net/ layer object (e.g.,
@@ -137,7 +136,7 @@ net::Error AcceptCHFrameInterceptor::OnConnected(
   accept_ch_frame_observer_->OnAcceptCHFrameReceived(
       url::Origin::Create(url), hints,
       base::BindOnce(record, std::move(callback), base::TimeTicks::Now(),
-                     TRACE_ID_LOCAL(this).raw_id()));
+                     perfetto::Track::FromPointer(this)));
   return net::ERR_IO_PENDING;
 }
 

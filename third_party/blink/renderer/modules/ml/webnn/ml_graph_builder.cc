@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
@@ -1720,15 +1721,13 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
       MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor));
 
   UMA_HISTOGRAM_MEMORY_KB("WebNN.ConstantDataSizeInKB", bytes.size() / 1024);
-  scoped_trace.AddStep(
-      String::Format("copy constant bytes into BigBuffer, size: %zu",
-                     bytes.size())
-          .Utf8()
-          .c_str());
+  TRACE_EVENT_BEGIN("webnn", "copy constant bytes into BigBuffer",
+                    scoped_trace.track(), "size", bytes.size());
   mojo_base::BigBuffer constant_data = mojo_base::BigBuffer(bytes);
   scoped_trace.AddStep("post mojo message: CreatePendingConstant");
   remote_->CreatePendingConstant(constant->handle(), data_type,
                                  std::move(constant_data));
+  TRACE_EVENT_END("webnn", scoped_trace.track());
   return constant;
 }
 
