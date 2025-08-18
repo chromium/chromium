@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -354,7 +355,11 @@ void CollaborationControllerDelegateDesktop::ShowErrorDialog(
       .AddParagraph(ui::DialogModelLabel(base::UTF8ToUTF16(error.error_body)))
       .AddOkButton(
           base::BindOnce(
-              &CollaborationControllerDelegateDesktop::OnErrorDialogOk,
+              error.type() ==
+                      ErrorInfo::Type::kUpdateChromeUiForVersionOutOfDate
+                  ? &CollaborationControllerDelegateDesktop::
+                        OnErrorDialogOkForUpdate
+                  : &CollaborationControllerDelegateDesktop::OnErrorDialogOk,
               weak_ptr_factory_.GetWeakPtr()),
           ui::DialogModel::Button::Params()
               .SetLabel(l10n_util::GetStringUTF16(
@@ -490,6 +495,17 @@ void CollaborationControllerDelegateDesktop::OnErrorDialogOk() {
     std::move(error_ui_callback_)
         .Run(CollaborationControllerDelegate::Outcome::kSuccess);
   }
+}
+
+void CollaborationControllerDelegateDesktop::OnErrorDialogOkForUpdate() {
+  if (browser_) {
+    NavigateParams params(browser_, GURL("chrome://settings/help"),
+                          ui::PAGE_TRANSITION_LINK);
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+  }
+
+  OnErrorDialogOk();
 }
 
 void CollaborationControllerDelegateDesktop::MaybeCloseDialogs() {
