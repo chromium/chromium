@@ -162,7 +162,9 @@ public class SplitChromeApplication extends SplitCompatApplication {
     protected void performBrowserProcessPreloading(Context context) {
         // Only load the native library early for non-test builds since some tests use the
         // "--disable-native-initialization" switch and test the native library loading.
-        if (!BuildConfig.IS_FOR_TEST && ChromeFeatureList.sLoadNativeEarly.isEnabled()) {
+        if (!BuildConfig.IS_FOR_TEST
+                && ChromeFeatureList.sLoadNativeEarly.isEnabled()
+                && !ChromeFeatureList.sLoadNativeEarlyConcurrentLoad.getValue()) {
             LibraryLoader.getInstance().ensureInitialized();
         }
 
@@ -230,6 +232,14 @@ public class SplitChromeApplication extends SplitCompatApplication {
                         return createContextForSplitNoWait(name);
                     }
                 });
+
+        // Only load the native library early for non-test builds since some tests use the
+        // "--disable-native-initialization" switch and test the native library loading.
+        if (!BuildConfig.IS_FOR_TEST
+                && ChromeFeatureList.sLoadNativeEarly.isEnabled()
+                && ChromeFeatureList.sLoadNativeEarlyConcurrentLoad.getValue()) {
+            LibraryLoader.getInstance().ensureInitialized();
+        }
     }
 
     @Override

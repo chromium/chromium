@@ -14849,6 +14849,15 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_ConcurrentLoad",
+                    "params": {
+                        "concurrent_load": "true"
+                    },
+                    "enable_features": [
+                        "LoadNativeEarly"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "enable_features": [
                         "LoadNativeEarly"
