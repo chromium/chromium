@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
@@ -12,11 +14,11 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -46,6 +48,7 @@ import java.util.Locale;
  * This is a utility class for managing features related to returning to Chrome after haven't used
  * Chrome for a while.
  */
+@NullMarked
 public final class ReturnToChromeUtil {
     /**
      * The reasons of failing to show the home surface UI on a NTP.
@@ -153,9 +156,9 @@ public final class ReturnToChromeUtil {
      * @param lastActiveTab The object of the last active Tab. It is non-null after TabModel is
      *     initialized, e.g., in warm startup.
      */
-    public static Tab createNewTabAndShowHomeSurfaceUi(
-            @NonNull TabCreator tabCreator,
-            @NonNull HomeSurfaceTracker homeSurfaceTracker,
+    public static @Nullable Tab createNewTabAndShowHomeSurfaceUi(
+            TabCreator tabCreator,
+            HomeSurfaceTracker homeSurfaceTracker,
             @Nullable TabModelSelector tabModelSelector,
             @Nullable String lastActiveTabUrl,
             @Nullable Tab lastActiveTab) {
@@ -165,6 +168,7 @@ public final class ReturnToChromeUtil {
         Tab ntpTab =
                 tabCreator.createNewTab(
                         new LoadUrlParams(UrlConstants.NTP_URL), TabLaunchType.FROM_STARTUP, null);
+        assumeNonNull(ntpTab);
         boolean isNtpUrl = UrlUtilities.isNtpUrl(ntpTab.getUrl());
         assert isNtpUrl : "The URL of the newly created NTP doesn't match NTP URL!";
         if (!isNtpUrl) {
@@ -179,6 +183,7 @@ public final class ReturnToChromeUtil {
             // find the Tab instance with the given last active Tab's URL. The last active Tab is
             // always the first one to be restored.
             assert lastActiveTabUrl != null;
+            assumeNonNull(tabModelSelector);
             TabModelObserver observer =
                     new TabModelObserver() {
                         @Override
@@ -254,6 +259,7 @@ public final class ReturnToChromeUtil {
             if (indexOfFirstNtp != TabModel.INVALID_TAB_INDEX) {
                 Tab ntpTab = currentTabModel.getTabAt(indexOfFirstNtp);
                 assert indexOfFirstNtp != index;
+                assumeNonNull(ntpTab);
                 boolean isNtpUrl = UrlUtilities.isNtpUrl(ntpTab.getUrl());
                 assert isNtpUrl
                         : "The URL of the first NTP found onResume doesn't match a NTP URL!";

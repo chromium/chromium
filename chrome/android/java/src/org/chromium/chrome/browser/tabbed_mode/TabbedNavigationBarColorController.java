@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -14,8 +16,6 @@ import android.graphics.Color;
 import android.view.Window;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -23,6 +23,9 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -58,6 +61,7 @@ import org.chromium.ui.util.ColorUtils;
 import java.util.Optional;
 
 /** Controls the bottom system navigation bar color for the provided {@link Window}. */
+@NullMarked
 class TabbedNavigationBarColorController
         implements BottomAttachedUiObserver.Observer, NavigationBarColorProvider {
     /** The amount of time transitioning from one color to another should take in ms. */
@@ -70,11 +74,10 @@ class TabbedNavigationBarColorController
     private final @Nullable TabModelSelector mTabModelSelector;
     private final @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
     private final Callback<TabModel> mCurrentTabModelObserver;
-    private final @Nullable FullscreenManager.Observer mFullscreenObserver;
+    private final FullscreenManager.@Nullable Observer mFullscreenObserver;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private final @NonNull ObservableSupplier<Integer> mOverviewColorSupplier;
-    private final @NonNull Callback<Integer> mOnOverviewColorChanged =
-            color -> updateNavigationBarColor();
+    private final ObservableSupplier<Integer> mOverviewColorSupplier;
+    private final Callback<Integer> mOnOverviewColorChanged = color -> updateNavigationBarColor();
     private final Callback<EdgeToEdgeController> mEdgeToEdgeRegisterChangeObserverCallback;
     private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
     private final BottomAttachedUiObserver mBottomAttachedUiObserver;
@@ -101,13 +104,13 @@ class TabbedNavigationBarColorController
     private boolean mForceDarkNavigationBarColor;
     private boolean mIsInFullscreen;
     private @ColorInt int mCurrentScrimColor;
-    private EdgeToEdgeController mEdgeToEdgeController;
+    private @Nullable EdgeToEdgeController mEdgeToEdgeController;
     private @Nullable ChangeObserver mEdgeToEdgeChangeObserver;
     private @Nullable Tab mActiveTab;
     private @Nullable @ColorInt Integer mBottomAttachedUiColor;
     private boolean mForceShowDivider;
     private boolean mOverviewMode;
-    private ValueAnimator mNavbarColorTransitionAnimation;
+    private @Nullable ValueAnimator mNavbarColorTransitionAnimation;
     private @Nullable Boolean mEnabledBottomChinForTesting;
 
     /**
@@ -147,16 +150,16 @@ class TabbedNavigationBarColorController
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            @NonNull BottomControlsStacker bottomControlsStacker,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
-            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
-            @NonNull BottomSheetController bottomSheetController,
+            BottomControlsStacker bottomControlsStacker,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            Supplier<SnackbarManager> snackbarManagerSupplier,
+            ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
+            BottomSheetController bottomSheetController,
             Optional<OmniboxSuggestionsVisualState> omniboxSuggestionsVisualState,
-            @NonNull ManualFillingComponentSupplier manualFillingComponentSupplier,
-            @NonNull ObservableSupplier<Integer> overviewColorSupplier,
+            ManualFillingComponentSupplier manualFillingComponentSupplier,
+            ObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,
-            @NonNull EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
+            EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
         this(
                 context,
                 tabModelSelector,
@@ -183,8 +186,8 @@ class TabbedNavigationBarColorController
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            @NonNull ObservableSupplier<Integer> overviewColorSupplier,
-            @NonNull EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
+            ObservableSupplier<Integer> overviewColorSupplier,
+            EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             BottomAttachedUiObserver bottomAttachedUiObserver) {
         mContext = context;
         mFullScreenManager = fullscreenManager;
@@ -234,7 +237,8 @@ class TabbedNavigationBarColorController
         mEdgeToEdgeRegisterChangeObserverCallback =
                 (controller) -> {
                     if (mEdgeToEdgeController != null) {
-                        mEdgeToEdgeController.unregisterObserver(mEdgeToEdgeChangeObserver);
+                        mEdgeToEdgeController.unregisterObserver(
+                                assumeNonNull(mEdgeToEdgeChangeObserver));
                     }
                     mEdgeToEdgeController = controller;
                     mEdgeToEdgeChangeObserver =
@@ -258,6 +262,7 @@ class TabbedNavigationBarColorController
     }
 
     /** Destroy this {@link TabbedNavigationBarColorController} instance. */
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mTabModelSelector != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
@@ -288,7 +293,7 @@ class TabbedNavigationBarColorController
 
     @Override
     public void onBottomAttachedColorChanged(
-            @Nullable @ColorInt Integer color, boolean forceShowDivider, boolean disableAnimation) {
+            @ColorInt @Nullable Integer color, boolean forceShowDivider, boolean disableAnimation) {
         mBottomAttachedUiColor = color;
         updateNavigationBarColor(forceShowDivider, disableAnimation);
     }
@@ -299,7 +304,7 @@ class TabbedNavigationBarColorController
      */
     private void setLayoutManager(LayoutManager layoutManager) {
         if (mLayoutManager != null) {
-            mLayoutManager.removeObserver(mLayoutStateObserver);
+            mLayoutManager.removeObserver(assumeNonNull(mLayoutStateObserver));
         }
 
         mLayoutManager = layoutManager;
@@ -341,7 +346,7 @@ class TabbedNavigationBarColorController
     }
 
     private void updateActiveTab() {
-        @Nullable Tab activeTab = mTabModelSelector.getCurrentTab();
+        @Nullable Tab activeTab = assumeNonNull(mTabModelSelector).getCurrentTab();
         if (activeTab == mActiveTab) return;
 
         if (mActiveTab != null) mActiveTab.removeObserver(mTabObserver);
@@ -359,6 +364,7 @@ class TabbedNavigationBarColorController
 
     @SuppressLint("NewApi")
     private void updateNavigationBarColor(boolean forceShowDivider, boolean disableAnimation) {
+        assumeNonNull(mTabModelSelector);
         mForceDarkNavigationBarColor = mTabModelSelector.isIncognitoSelected() || mIsInFullscreen;
 
         final @ColorInt int newNavigationBarColor =
@@ -494,10 +500,12 @@ class TabbedNavigationBarColorController
         mOverviewMode = false;
     }
 
+    @EnsuresNonNullIf("mBottomAttachedUiColor")
     private boolean useBottomAttachedUiColor() {
         return mBottomAttachedUiColor != null;
     }
 
+    @EnsuresNonNullIf("mActiveTab")
     private boolean useActiveTabColor() {
         return mLayoutManager != null
                 && mLayoutManager.getActiveLayoutType() == LayoutType.BROWSING
@@ -520,7 +528,7 @@ class TabbedNavigationBarColorController
         mEdgeToEdgeSystemBarColorHelper = helper;
     }
 
-    public ValueAnimator getNavbarColorTransitionAnimationForTesting() {
+    public @Nullable ValueAnimator getNavbarColorTransitionAnimationForTesting() {
         return mNavbarColorTransitionAnimation;
     }
 

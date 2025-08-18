@@ -8,15 +8,14 @@ import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.BuildInfo;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -55,18 +54,19 @@ import org.chromium.url.GURL;
  * A helper class for IPH shown on the toolbar. TODO(crbug.com/40585866): Remove feature-specific
  * IPH from here.
  */
+@NullMarked
 public class ToolbarButtonInProductHelpController
         implements ScreenshotMonitorDelegate, PauseResumeWithNativeObserver {
     private final CurrentTabObserver mPageLoadObserver;
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Nullable private ScreenshotMonitor mScreenshotMonitor;
+    private @Nullable ScreenshotMonitor mScreenshotMonitor;
     private final View mMenuButtonAnchorView;
     private final AppMenuHandler mAppMenuHandler;
     private final UserEducationHelper mUserEducationHelper;
     private final Profile mProfile;
-    private final Supplier<Tab> mCurrentTabSupplier;
+    private final Supplier<@Nullable Tab> mCurrentTabSupplier;
     private final Supplier<Boolean> mIsInOverviewModeSupplier;
 
     /**
@@ -81,14 +81,14 @@ public class ToolbarButtonInProductHelpController
      * @param menuButtonAnchorView The menu button view to serve as an anchor.
      */
     public ToolbarButtonInProductHelpController(
-            @NonNull Activity activity,
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull AppMenuCoordinator appMenuCoordinator,
-            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
-            @NonNull Profile profile,
-            @NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull Supplier<Boolean> isInOverviewModeSupplier,
-            @NonNull View menuButtonAnchorView) {
+            Activity activity,
+            WindowAndroid windowAndroid,
+            AppMenuCoordinator appMenuCoordinator,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            Profile profile,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
+            Supplier<Boolean> isInOverviewModeSupplier,
+            View menuButtonAnchorView) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mAppMenuHandler = appMenuCoordinator.getAppMenuHandler();

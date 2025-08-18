@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
@@ -12,7 +14,6 @@ import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -25,6 +26,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -85,6 +87,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /** An {@link AppMenuPropertiesDelegateImpl} for ChromeTabbedActivity. */
+@NullMarked
 public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
     @IntDef({TabbedAppMenuItemType.UPDATE_ITEM, TabbedAppMenuItemType.NEW_INCOGNITO_TAB})
     @Retention(RetentionPolicy.SOURCE)
@@ -129,9 +132,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             WebFeedSnackbarController.FeedLauncher feedLauncher,
             ModalDialogManager modalDialogManager,
             SnackbarManager snackbarManager,
-            @NonNull
-                    OneshotSupplier<IncognitoReauthController>
-                            incognitoReauthControllerOneshotSupplier,
+            OneshotSupplier<IncognitoReauthController> incognitoReauthControllerOneshotSupplier,
             Supplier<ReadAloudController> readAloudControllerSupplier) {
         super(
                 context,
@@ -215,7 +216,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (mUpdateMenuItemVisible) {
             modelList.add(buildUpdateItem());
             mUpdateStateChangeObserver = buildUpdateStateChangedObserver();
-            UpdateMenuItemHelper.getInstance(mTabModelSelector.getModel(false).getProfile())
+            UpdateMenuItemHelper.getInstance(getProfileFromTabModel())
                     .registerObserver(mUpdateStateChangeObserver);
         }
 
@@ -393,7 +394,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 assert false : "ModelList should not be null";
                 return;
             }
-            for (MVCListAdapter.ListItem listItem : getModelList()) {
+            for (MVCListAdapter.ListItem listItem : modelList) {
                 if (listItem.model.get(AppMenuItemProperties.MENU_ITEM_ID) == R.id.update_menu_id) {
                     updateUpdateItemData(listItem.model);
                     return;
@@ -449,9 +450,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private void updateUpdateItemData(PropertyModel model) {
         MenuItemState itemState =
-                UpdateMenuItemHelper.getInstance(mTabModelSelector.getModel(false).getProfile())
-                        .getUiState()
-                        .itemState;
+                UpdateMenuItemHelper.getInstance(getProfileFromTabModel()).getUiState().itemState;
         if (itemState == null) {
             assert false : "The update state should be non-null";
             model.set(AppMenuItemProperties.ENABLED, false);
@@ -626,7 +625,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private boolean shouldShowExtensionsItem() {
         // TODO(crbug.com/422307625): Remove this check once extensions are ready for dogfooding.
-        return ExtensionUi.isEnabled(mTabModelSelector.getCurrentModel().getProfile());
+        return ExtensionUi.isEnabled(getProfileFromTabModel());
     }
 
     private MVCListAdapter.ListItem buildExtensionsItem() {
@@ -887,7 +886,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private boolean shouldShowFindInPageItem(@Nullable Tab currentTab) {
         return currentTab != null
                 && (shouldShowWebContentsDependentMenuItem(currentTab)
-                        || (currentTab.isNativePage() && currentTab.getNativePage().isPdf()));
+                        || (currentTab.isNativePage()
+                                && assumeNonNull(currentTab.getNativePage()).isPdf()));
     }
 
     private MVCListAdapter.ListItem buildFindInPageItem(@Nullable Tab currentTab) {
@@ -900,7 +900,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.ic_find_in_page : 0));
     }
 
-    private MVCListAdapter.ListItem maybeBuildAiMenuItem(@Nullable Tab currentTab) {
+    private MVCListAdapter.@Nullable ListItem maybeBuildAiMenuItem(@Nullable Tab currentTab) {
         if (currentTab == null
                 || currentTab.getWebContents() == null
                 || !ChromeFeatureList.isEnabled(
@@ -1002,9 +1002,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
      * @return Whether the update Chrome menu item should be displayed.
      */
     protected boolean shouldShowUpdateMenuItem() {
-        return UpdateMenuItemHelper.getInstance(mTabModelSelector.getModel(false).getProfile())
-                        .getUiState()
-                        .itemState
+        return UpdateMenuItemHelper.getInstance(getProfileFromTabModel()).getUiState().itemState
                 != null;
     }
 
@@ -1090,12 +1088,17 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         super.onMenuDismissed();
         if (mUpdateMenuItemVisible) {
             UpdateMenuItemHelper updateHelper =
-                    UpdateMenuItemHelper.getInstance(
-                            mTabModelSelector.getModel(false).getProfile());
+                    UpdateMenuItemHelper.getInstance(getProfileFromTabModel());
             updateHelper.onMenuDismissed();
-            updateHelper.unregisterObserver(mUpdateStateChangeObserver);
+            updateHelper.unregisterObserver(assumeNonNull(mUpdateStateChangeObserver));
             mUpdateMenuItemVisible = false;
             mUpdateStateChangeObserver = null;
         }
+    }
+
+    private Profile getProfileFromTabModel() {
+        var profile = mTabModelSelector.getModel(false).getProfile();
+        assert profile != null;
+        return profile;
     }
 }

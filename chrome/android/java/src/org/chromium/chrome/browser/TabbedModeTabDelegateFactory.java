@@ -6,13 +6,12 @@ package org.chromium.chrome.browser;
 
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -59,6 +58,7 @@ import java.util.List;
  * {@link TabDelegateFactory} class to be used in all {@link Tab} instances owned by a {@link
  * ChromeTabbedActivity}.
  */
+@NullMarked
 public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Activity mActivity;
     private final BrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
@@ -76,19 +76,19 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final BrowserControlsManager mBrowserControlsManager;
-    private final Supplier<Tab> mCurrentTabSupplier;
+    private final Supplier<@Nullable Tab> mCurrentTabSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final WindowAndroid mWindowAndroid;
     private final JankTracker mJankTracker;
     private final Supplier<Toolbar> mToolbarSupplier;
-    private final HomeSurfaceTracker mHomeSurfaceTracker;
+    private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
     private final StartupMetricsTracker mStartupMetricsTracker;
-    @Nullable private final ExclusiveAccessManager mExclusiveAccessManager;
-    private NativePageFactory mNativePageFactory;
+    private final @Nullable ExclusiveAccessManager mExclusiveAccessManager;
+    private @Nullable NativePageFactory mNativePageFactory;
 
     public TabbedModeTabDelegateFactory(
             Activity activity,
@@ -106,16 +106,16 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<SnackbarManager> snackbarManagerSupplier,
             BrowserControlsManager browserControlsManager,
-            Supplier<Tab> currentTabSupplier,
+            Supplier<@Nullable Tab> currentTabSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             WindowAndroid windowAndroid,
             JankTracker jankTracker,
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
-            @NonNull OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            ObservableSupplier<Integer> tabStripHeightSupplier,
+            OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
             StartupMetricsTracker startupMetricsTracker,
             @Nullable ExclusiveAccessManager exclusiveAccessManager) {
@@ -196,7 +196,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
 
     @Override
     public NativePage createNativePage(
-            String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo) {
+            String url, @Nullable NativePage candidatePage, Tab tab, @Nullable PdfInfo pdfInfo) {
         if (mNativePageFactory == null) {
             mNativePageFactory =
                     new NativePageFactory(
