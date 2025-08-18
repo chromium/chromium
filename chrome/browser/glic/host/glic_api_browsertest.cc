@@ -934,8 +934,16 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
   ExecuteJsTest();
 }
 
+// Win-ASAN is flaky.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_testGetContextFromFocusedTabWithAllRequestedData \
+  DISABLED_testGetContextFromFocusedTabWithAllRequestedData
+#else
+#define MAYBE_testGetContextFromFocusedTabWithAllRequestedData \
+  testGetContextFromFocusedTabWithAllRequestedData
+#endif
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
-                       testGetContextFromFocusedTabWithAllRequestedData) {
+                       MAYBE_testGetContextFromFocusedTabWithAllRequestedData) {
   ExecuteJsTest();
 }
 
@@ -1461,7 +1469,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
 }
 
 // TODO(b/431837630): Make this work on mac.
-#if BUILDFLAG(IS_MAC)
+// Win-asan is flaky.
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_testFetchInactiveTabScreenshot \
   DISABLED_testFetchInactiveTabScreenshot
 #else
@@ -1479,7 +1488,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
 }
 
 // TODO(b/431837630): Make this work on mac.
-#if BUILDFLAG(IS_MAC)
+// Win-asan is flaky.
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_testFetchInactiveTabScreenshotWhileMinimized \
   DISABLED_testFetchInactiveTabScreenshotWhileMinimized
 #else
