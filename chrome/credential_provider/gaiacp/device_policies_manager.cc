@@ -80,15 +80,21 @@ std::unique_ptr<PolicyFetchResponse> ReadOmahaPolicyFromDisk() {
   base::FilePath policy_file_path = GetOmahaPolicyFilePath();
   std::string policy_blob;
 
-  if (!base::PathExists(policy_file_path) ||
-      !base::ReadFileToString(policy_file_path, &policy_blob)) {
-    LOGFN(WARNING) << "Omaha policy not found in " << policy_file_path;
+  if (!base::PathExists(policy_file_path)) {
+    LOGFN(ERROR) << "Omaha policy not found in " << policy_file_path;
+    return nullptr;
+  }
+  if (!base::ReadFileToString(policy_file_path, &policy_blob)) {
+    LOGFN(ERROR) << "Cannot read Omaha policy file in " << policy_file_path;
     return nullptr;
   }
 
   auto policy_fetch_response = std::make_unique<PolicyFetchResponse>();
-  if (policy_blob.empty() ||
-      !policy_fetch_response->ParseFromString(policy_blob)) {
+  if (policy_blob.empty()) {
+    LOGFN(ERROR) << "Omaha policy is empty!";
+    return nullptr;
+  }
+  if (!policy_fetch_response->ParseFromString(policy_blob)) {
     LOGFN(ERROR) << "Omaha policy corrupted!";
     return nullptr;
   }
