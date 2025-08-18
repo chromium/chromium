@@ -64,7 +64,6 @@ struct IndexedDBValue;
 namespace level_db {
 
 class AutoDidCommitTransaction;
-class BackingStoreTest;
 
 class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                                     public LevelDBCleanupScheduler::Delegate {
@@ -545,10 +544,10 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                 bool create_if_missing);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(BackingStoreTestWithExternalObjects,
+  FRIEND_TEST_ALL_PREFIXES(LevelDbBackingStoreTestWithExternalObjects,
                            ActiveBlobJournal);
-  FRIEND_TEST_ALL_PREFIXES(BackingStoreTest, CompactionTaskTiming);
-  FRIEND_TEST_ALL_PREFIXES(BackingStoreTest, TombstoneSweeperTiming);
+  FRIEND_TEST_ALL_PREFIXES(LevelDbBackingStoreTest, CompactionTaskTiming);
+  FRIEND_TEST_ALL_PREFIXES(LevelDbBackingStoreTest, TombstoneSweeperTiming);
 
   friend class AutoDidCommitTransaction;
   friend class indexed_db::BucketContext;

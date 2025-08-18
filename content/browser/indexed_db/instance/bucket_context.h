@@ -54,11 +54,6 @@ class QuotaManagerProxy;
 
 namespace content::indexed_db {
 
-namespace level_db {
-class BackingStore;
-class BackingStoreTest;
-}  // namespace level_db
-
 class BackingStore;
 class BucketContextHandle;
 class Database;
@@ -315,7 +310,7 @@ class CONTENT_EXPORT BucketContext
 
  private:
   friend BucketContextHandle;
-  friend class level_db::BackingStoreTest;
+  friend class BackingStoreTestBase;
   friend class DatabaseTest;
   friend class IndexedDBTest;
   friend class TransactionTest;

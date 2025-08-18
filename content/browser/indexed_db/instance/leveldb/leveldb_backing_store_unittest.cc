@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include <array>
 #include <memory>
-#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
-#include <tuple>
-#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -23,164 +18,57 @@
 #include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/files/important_file_writer.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom-shared.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
+#include "content/browser/indexed_db/instance/backing_store_test_base.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/leveldb/cleanup_scheduler.h"
 #include "content/browser/indexed_db/instance/mock_file_system_access_context.h"
 #include "content/browser/indexed_db/status.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
-#include "net/base/schemeful_site.h"
-#include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/fake_blob.h"
-#include "storage/browser/test/mock_quota_manager.h"
-#include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
-using blink::IndexedDBIndexMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
 using blink::IndexedDBKeyRange;
 using blink::IndexedDBObjectStoreMetadata;
 using blink::StorageKey;
-using url::Origin;
 
 namespace content::indexed_db::level_db {
 
 namespace {
 
 using DatabaseMetadata = BackingStore::DatabaseMetadata;
-
-struct BlobWrite {
-  BlobWrite() = default;
-  BlobWrite(BlobWrite&& other) {
-    blob = std::move(other.blob);
-    path = std::move(other.path);
-  }
-  BlobWrite(mojo::PendingRemote<::blink::mojom::Blob> blob, base::FilePath path)
-      : blob(std::move(blob)), path(path) {}
-  ~BlobWrite() = default;
-
-  int64_t GetBlobNumber() const {
-    int64_t result;
-    EXPECT_TRUE(base::StringToInt64(path.BaseName().AsUTF8Unsafe(), &result));
-    return result;
-  }
-
-  mojo::Remote<::blink::mojom::Blob> blob;
-  base::FilePath path;
-};
-
-BlobWriteCallback CreateBlobWriteCallback(
-    bool* succeeded,
-    base::OnceClosure on_done = base::DoNothing()) {
-  *succeeded = false;
-  return base::BindOnce(
-      [](bool* succeeded, base::OnceClosure on_done, BlobWriteResult result,
-         storage::mojom::WriteBlobToFileResult error) {
-        switch (result) {
-          case BlobWriteResult::kFailure:
-            NOTREACHED();
-          case BlobWriteResult::kRunPhaseTwoAsync:
-          case BlobWriteResult::kRunPhaseTwoAndReturnResult:
-            DCHECK_EQ(error, storage::mojom::WriteBlobToFileResult::kSuccess);
-            *succeeded = true;
-            break;
-        }
-        std::move(on_done).Run();
-        return Status::OK();
-      },
-      succeeded, std::move(on_done));
-}
-
-class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
- public:
-  ~MockBlobStorageContext() override = default;
-
-  void RegisterFromDataItem(mojo::PendingReceiver<::blink::mojom::Blob> blob,
-                            const std::string& uuid,
-                            storage::mojom::BlobDataItemPtr item) override {
-    NOTREACHED();
-  }
-  void RegisterFromMemory(mojo::PendingReceiver<::blink::mojom::Blob> blob,
-                          const std::string& uuid,
-                          ::mojo_base::BigBuffer data) override {
-    NOTREACHED();
-  }
-  void WriteBlobToFile(mojo::PendingRemote<::blink::mojom::Blob> blob,
-                       const base::FilePath& path,
-                       bool flush_on_write,
-                       std::optional<base::Time> last_modified,
-                       WriteBlobToFileCallback callback) override {
-    writes_.emplace_back(std::move(blob), path);
-
-    if (write_files_to_disk_) {
-      base::ImportantFileWriter::WriteFileAtomically(path, "fake contents");
-    }
-
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       storage::mojom::WriteBlobToFileResult::kSuccess));
-  }
-  void Clone(mojo::PendingReceiver<::storage::mojom::BlobStorageContext>
-                 receiver) override {
-    receivers_.Add(this, std::move(receiver));
-  }
-
-  const std::vector<BlobWrite>& writes() { return writes_; }
-  void ClearWrites() { writes_.clear(); }
-
-  // If true, writes a fake file for each blob file to disk.
-  // The contents are bogus, but the files will exist.
-  void SetWriteFilesToDisk(bool write) { write_files_to_disk_ = write; }
-
- private:
-  std::vector<BlobWrite> writes_;
-  bool write_files_to_disk_ = false;
-  mojo::ReceiverSet<::storage::mojom::BlobStorageContext> receivers_;
-};
 
 class FakeFileSystemAccessTransferToken
     : public ::blink::mojom::FileSystemAccessTransferToken {
@@ -205,150 +93,27 @@ class FakeFileSystemAccessTransferToken
 
 }  // namespace
 
-class BackingStoreTest : public testing::Test {
+class LevelDbBackingStoreTest : public BackingStoreTestBase {
  public:
-  BackingStoreTest() = default;
-  BackingStoreTest(const BackingStoreTest&) = delete;
-  BackingStoreTest& operator=(const BackingStoreTest&) = delete;
-
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
-    blob_context_ = std::make_unique<MockBlobStorageContext>();
-    file_system_access_context_ =
-        std::make_unique<test::MockFileSystemAccessContext>();
-
-    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        /*is_incognito=*/false, temp_dir_.GetPath(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr);
-    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(),
-        base::SingleThreadTaskRunner::GetCurrentDefault());
-
-    CreateFactoryAndBackingStore();
-
-    // useful keys and values during tests
-    value1_ = IndexedDBValue("value1", {});
-    value2_ = IndexedDBValue("value2", {});
-
-    key1_ = IndexedDBKey(99, blink::mojom::IDBKeyType::Number);
-    key2_ = IndexedDBKey(u"key2");
-  }
-
-  void CreateFactoryAndBackingStore() {
-    const blink::StorageKey storage_key =
-        blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-    auto bucket_info = storage::BucketInfo();
-    bucket_info.id = storage::BucketId::FromUnsafeValue(1);
-    bucket_info.storage_key = storage_key;
-    bucket_info.name = storage::kDefaultBucketName;
-    auto bucket_locator = bucket_info.ToBucketLocator();
-
-    mojo::PendingRemote<storage::mojom::BlobStorageContext>
-        blob_storage_context;
-    blob_context_->Clone(blob_storage_context.InitWithNewPipeAndPassReceiver());
-
-    mojo::PendingRemote<storage::mojom::FileSystemAccessContext> fsa_context;
-    file_system_access_context_->Clone(
-        fsa_context.InitWithNewPipeAndPassReceiver());
-
-    bucket_context_ = std::make_unique<BucketContext>(
-        bucket_info, temp_dir_.GetPath(), BucketContext::Delegate(),
-        scoped_refptr<base::UpdateableSequencedTaskRunner>(),
-        quota_manager_proxy_, std::move(blob_storage_context),
-        std::move(fsa_context));
-    std::tie(std::ignore, std::ignore, data_loss_info_) =
-        bucket_context_->InitBackingStoreIfNeeded(/*create_if_missing=*/true);
-
-    backing_store_ =
-        reinterpret_cast<BackingStore*>(bucket_context_->backing_store());
-  }
+  LevelDbBackingStoreTest() = default;
+  LevelDbBackingStoreTest(const LevelDbBackingStoreTest&) = delete;
+  LevelDbBackingStoreTest& operator=(const LevelDbBackingStoreTest&) = delete;
 
   int64_t GetId(indexed_db::BackingStore::Database& db) const {
     return *reinterpret_cast<const DatabaseMetadata&>(db.GetMetadata()).id;
   }
 
-  void UpdateDatabaseVersion(indexed_db::BackingStore::Database& db,
-                             int64_t version) {
-    auto transaction =
-        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
-                             blink::mojom::IDBTransactionMode::VersionChange);
-    transaction->Begin(CreateDummyLock());
-    EXPECT_TRUE(transaction->SetDatabaseVersion(version).ok());
-    CommitTransaction(*transaction);
+  level_db::BackingStore* backing_store() {
+    return static_cast<level_db::BackingStore*>(
+        BackingStoreTestBase::backing_store());
   }
-
-  std::unique_ptr<indexed_db::BackingStore::Transaction>
-  CreateAndBeginTransaction(indexed_db::BackingStore::Database& db,
-                            blink::mojom::IDBTransactionMode mode) {
-    std::unique_ptr<indexed_db::BackingStore::Transaction> transaction =
-        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
-                             mode);
-    transaction->Begin(CreateDummyLock());
-    return transaction;
-  }
-
-  void CommitTransaction(indexed_db::BackingStore::Transaction& transaction) {
-    bool succeeded = false;
-    EXPECT_TRUE(transaction
-                    .CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                    base::DoNothing())
-                    .ok());
-    EXPECT_TRUE(succeeded);
-    EXPECT_TRUE(transaction.CommitPhaseTwo().ok());
-  }
-
-  std::vector<PartitionedLock> CreateDummyLock() {
-    base::RunLoop loop;
-    PartitionedLockHolder locks_receiver;
-    bucket_context_->lock_manager().AcquireLocks(
-        {{{0, "01"}, PartitionedLockManager::LockType::kShared}},
-        locks_receiver, base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
-    loop.Run();
-    return std::move(locks_receiver.locks);
-  }
-
-  void DestroyFactoryAndBackingStore() {
-    backing_store_ = nullptr;
-    bucket_context_ = nullptr;
-  }
-
-  void TearDown() override {
-    DestroyFactoryAndBackingStore();
-    if (temp_dir_.IsValid()) {
-      ASSERT_TRUE(temp_dir_.Delete());
-    }
-  }
-
-  BackingStore* backing_store() { return backing_store_; }
-
- protected:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  base::ScopedTempDir temp_dir_;
-  std::unique_ptr<MockBlobStorageContext> blob_context_;
-  std::unique_ptr<test::MockFileSystemAccessContext>
-      file_system_access_context_;
-  scoped_refptr<storage::MockQuotaManager> quota_manager_;
-  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-
-  std::unique_ptr<BucketContext> bucket_context_;
-  raw_ptr<BackingStore> backing_store_ = nullptr;
-  IndexedDBDataLossInfo data_loss_info_;
-
-  // Sample keys and values that are consistent.
-  IndexedDBKey key1_;
-  IndexedDBKey key2_;
-  IndexedDBValue value1_;
-  IndexedDBValue value2_;
 };
 
-class BackingStoreTestForThirdPartyStoragePartitioning
+class LevelDbBackingStoreTestForThirdPartyStoragePartitioning
     : public testing::WithParamInterface<bool>,
-      public BackingStoreTest {
+      public LevelDbBackingStoreTest {
  public:
-  BackingStoreTestForThirdPartyStoragePartitioning() {
+  LevelDbBackingStoreTestForThirdPartyStoragePartitioning() {
     scoped_feature_list_.InitWithFeatureState(
         net::features::kThirdPartyStoragePartitioning,
         IsThirdPartyStoragePartitioningEnabled());
@@ -362,7 +127,7 @@ class BackingStoreTestForThirdPartyStoragePartitioning
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    BackingStoreTestForThirdPartyStoragePartitioning,
+    LevelDbBackingStoreTestForThirdPartyStoragePartitioning,
     testing::Bool());
 
 enum class ExternalObjectTestType {
@@ -371,16 +136,16 @@ enum class ExternalObjectTestType {
   kBlobsAndFileSystemAccessHandles
 };
 
-class BackingStoreTestWithExternalObjects
+class LevelDbBackingStoreTestWithExternalObjects
     : public testing::WithParamInterface<ExternalObjectTestType>,
-      public BackingStoreTest {
+      public LevelDbBackingStoreTest {
  public:
-  BackingStoreTestWithExternalObjects() = default;
+  LevelDbBackingStoreTestWithExternalObjects() = default;
 
-  BackingStoreTestWithExternalObjects(
-      const BackingStoreTestWithExternalObjects&) = delete;
-  BackingStoreTestWithExternalObjects& operator=(
-      const BackingStoreTestWithExternalObjects&) = delete;
+  LevelDbBackingStoreTestWithExternalObjects(
+      const LevelDbBackingStoreTestWithExternalObjects&) = delete;
+  LevelDbBackingStoreTestWithExternalObjects& operator=(
+      const LevelDbBackingStoreTestWithExternalObjects&) = delete;
 
   virtual ExternalObjectTestType TestType() { return GetParam(); }
 
@@ -393,7 +158,7 @@ class BackingStoreTestWithExternalObjects
   }
 
   void SetUp() override {
-    BackingStoreTest::SetUp();
+    LevelDbBackingStoreTest::SetUp();
 
     const int64_t kTime1 = 13255919133000000ll;
     const int64_t kTime2 = 13287455133000000ll;
@@ -571,7 +336,8 @@ class BackingStoreTestWithExternalObjects
       return false;
     }
     for (size_t i = 0; i < blob_context_->writes().size(); ++i) {
-      const BlobWrite& desc = blob_context_->writes()[i];
+      const MockBlobStorageContext::BlobWrite& desc =
+          blob_context_->writes()[i];
       const IndexedDBExternalObject& info = external_objects_[i];
       if (!info.size()) {
         continue;
@@ -658,67 +424,21 @@ class BackingStoreTestWithExternalObjects
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    BackingStoreTestWithExternalObjects,
+    LevelDbBackingStoreTestWithExternalObjects,
     ::testing::Values(
         ExternalObjectTestType::kOnlyBlobs,
         ExternalObjectTestType::kOnlyFileSystemAccessHandles,
         ExternalObjectTestType::kBlobsAndFileSystemAccessHandles));
 
-class BackingStoreTestWithBlobs : public BackingStoreTestWithExternalObjects {
+class LevelDbBackingStoreTestWithBlobs
+    : public LevelDbBackingStoreTestWithExternalObjects {
  public:
   ExternalObjectTestType TestType() override {
     return ExternalObjectTestType::kOnlyBlobs;
   }
 };
 
-TEST_F(BackingStoreTest, PutGetConsistency) {
-  base::RunLoop loop;
-  const IndexedDBKey& key = key1_;
-  IndexedDBValue& value = value1_;
-  BackingStore::Database db(*backing_store(),
-                            BackingStore::DatabaseMetadata{u"name"});
-  db.metadata().id = 1;
-  {
-    auto txn =
-        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
-                             blink::mojom::IDBTransactionMode::ReadWrite);
-
-    BackingStore::Transaction& transaction1 =
-        *reinterpret_cast<BackingStore::Transaction*>(txn.get());
-    transaction1.Begin(CreateDummyLock());
-    EXPECT_TRUE(transaction1.PutRecord(1, key, value.Clone()).has_value());
-    bool succeeded = false;
-    EXPECT_TRUE(transaction1
-                    .CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                    base::DoNothing())
-                    .ok());
-    EXPECT_TRUE(succeeded);
-    EXPECT_TRUE(transaction1.CommitPhaseTwo().ok());
-  }
-
-  {
-    auto txn =
-        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
-                             blink::mojom::IDBTransactionMode::ReadWrite);
-
-    BackingStore::Transaction& transaction2 =
-        *reinterpret_cast<BackingStore::Transaction*>(txn.get());
-
-    transaction2.Begin(CreateDummyLock());
-    auto result = transaction2.GetRecord(1, key);
-    EXPECT_TRUE(result.has_value());
-    bool succeeded = false;
-    EXPECT_TRUE(transaction2
-                    .CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                    base::DoNothing())
-                    .ok());
-    EXPECT_TRUE(succeeded);
-    EXPECT_TRUE(transaction2.CommitPhaseTwo().ok());
-    EXPECT_EQ(value.bits, result->bits);
-  }
-}
-
-TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
+TEST_P(LevelDbBackingStoreTestWithExternalObjects, PutGetConsistency) {
   BackingStore::Database db(*backing_store(),
                             BackingStore::DatabaseMetadata{u"name"});
   db.metadata().id = 1;
@@ -734,9 +454,9 @@ TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
   base::RunLoop phase_one_wait;
   EXPECT_TRUE(
       transaction1
-          ->CommitPhaseOne(
-              CreateBlobWriteCallback(&succeeded, phase_one_wait.QuitClosure()),
-              base::DoNothing())
+          ->CommitPhaseOne(MockBlobStorageContext::CreateBlobWriteCallback(
+                               &succeeded, phase_one_wait.QuitClosure()),
+                           base::DoNothing())
           .ok());
   EXPECT_FALSE(succeeded);
   phase_one_wait.Run();
@@ -759,10 +479,12 @@ TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
 
   // Finish up transaction2, verifying blob reads.
   succeeded = false;
-  EXPECT_TRUE(transaction2
-                  .CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                  base::DoNothing())
-                  .ok());
+  EXPECT_TRUE(
+      transaction2
+          .CommitPhaseOne(
+              MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+              base::DoNothing())
+          .ok());
   EXPECT_TRUE(succeeded);
   EXPECT_TRUE(transaction2.CommitPhaseTwo().ok());
   EXPECT_EQ(value3_.bits, result_value.bits);
@@ -783,10 +505,12 @@ TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
               1, IndexedDBKeyRange(key3_.Clone(), key3_.Clone(), false, false))
           .ok());
   succeeded = false;
-  EXPECT_TRUE(transaction3
-                  ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                   base::DoNothing())
-                  .ok());
+  EXPECT_TRUE(
+      transaction3
+          ->CommitPhaseOne(
+              MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+              base::DoNothing())
+          .ok());
   EXPECT_TRUE(succeeded);
   task_environment_.RunUntilIdle();
 
@@ -800,7 +524,7 @@ TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
 // http://crbug.com/1131151
 // Validate that recovery journal cleanup during a transaction does
 // not delete blobs that were just written.
-TEST_P(BackingStoreTestWithExternalObjects, BlobWriteCleanup) {
+TEST_P(LevelDbBackingStoreTestWithExternalObjects, BlobWriteCleanup) {
   BackingStore::Database db(*backing_store(),
                             BackingStore::DatabaseMetadata{u"name"});
   db.metadata().id = 1;
@@ -840,10 +564,12 @@ TEST_P(BackingStoreTestWithExternalObjects, BlobWriteCleanup) {
 
   // Start committing transaction1.
   bool succeeded = false;
-  EXPECT_TRUE(transaction1
-                  ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                   base::DoNothing())
-                  .ok());
+  EXPECT_TRUE(
+      transaction1
+          ->CommitPhaseOne(
+              MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+              base::DoNothing())
+          .ok());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(CheckBlobWrites());
 
@@ -855,7 +581,7 @@ TEST_P(BackingStoreTestWithExternalObjects, BlobWriteCleanup) {
   VerifyNumBlobsRemoved(0);
 }
 
-TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
+TEST_P(LevelDbBackingStoreTestWithExternalObjects, DeleteRange) {
   BackingStore::Database db(*backing_store(),
                             BackingStore::DatabaseMetadata{u"name"});
   db.metadata().id = 1;
@@ -907,10 +633,12 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
 
     // Start committing transaction1.
     bool succeeded = false;
-    EXPECT_TRUE(transaction1
-                    ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                     base::DoNothing())
-                    .ok());
+    EXPECT_TRUE(
+        transaction1
+            ->CommitPhaseOne(
+                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+                base::DoNothing())
+            .ok());
     task_environment_.RunUntilIdle();
 
     // Finish committing transaction1.
@@ -927,10 +655,12 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
 
     // Start committing transaction2.
     succeeded = false;
-    EXPECT_TRUE(transaction2
-                    ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                     base::DoNothing())
-                    .ok());
+    EXPECT_TRUE(
+        transaction2
+            ->CommitPhaseOne(
+                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+                base::DoNothing())
+            .ok());
     task_environment_.RunUntilIdle();
 
     // Finish committing transaction2.
@@ -943,7 +673,7 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
   }
 }
 
-TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
+TEST_P(LevelDbBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
   BackingStore::Database db(*backing_store(),
                             BackingStore::DatabaseMetadata{u"name"});
   db.metadata().id = 1;
@@ -996,10 +726,12 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     }
     // Start committing transaction1.
     bool succeeded = false;
-    EXPECT_TRUE(transaction1
-                    ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                     base::DoNothing())
-                    .ok());
+    EXPECT_TRUE(
+        transaction1
+            ->CommitPhaseOne(
+                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+                base::DoNothing())
+            .ok());
     task_environment_.RunUntilIdle();
 
     // Finish committing transaction1.
@@ -1015,10 +747,12 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
 
     // Start committing transaction2.
     succeeded = false;
-    EXPECT_TRUE(transaction2
-                    ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                     base::DoNothing())
-                    .ok());
+    EXPECT_TRUE(
+        transaction2
+            ->CommitPhaseOne(
+                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+                base::DoNothing())
+            .ok());
     task_environment_.RunUntilIdle();
 
     // Finish committing transaction2.
@@ -1030,7 +764,7 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
   }
 }
 
-TEST_P(BackingStoreTestWithExternalObjects,
+TEST_P(LevelDbBackingStoreTestWithExternalObjects,
        BlobJournalInterleavedTransactions) {
   BackingStore::Database db(*backing_store(),
                             BackingStore::DatabaseMetadata{u"name"});
@@ -1042,10 +776,12 @@ TEST_P(BackingStoreTestWithExternalObjects,
   transaction1->Begin(CreateDummyLock());
   EXPECT_TRUE(transaction1->PutRecord(1, key3_, value3_.Clone()).has_value());
   bool succeeded = false;
-  EXPECT_TRUE(transaction1
-                  ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                   base::DoNothing())
-                  .ok());
+  EXPECT_TRUE(
+      transaction1
+          ->CommitPhaseOne(
+              MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+              base::DoNothing())
+          .ok());
   task_environment_.RunUntilIdle();
 
   // Verify transaction1 phase one completed.
@@ -1061,10 +797,12 @@ TEST_P(BackingStoreTestWithExternalObjects,
   transaction2->Begin(CreateDummyLock());
   EXPECT_TRUE(transaction2->PutRecord(1, key1_, value1_.Clone()).has_value());
   succeeded = false;
-  EXPECT_TRUE(transaction2
-                  ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                   base::DoNothing())
-                  .ok());
+  EXPECT_TRUE(
+      transaction2
+          ->CommitPhaseOne(
+              MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+              base::DoNothing())
+          .ok());
   task_environment_.RunUntilIdle();
 
   // Verify transaction2 phase one completed.
@@ -1080,7 +818,7 @@ TEST_P(BackingStoreTestWithExternalObjects,
   VerifyNumBlobsRemoved(0);
 }
 
-TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
+TEST_P(LevelDbBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   BackingStore::Database db(*backing_store(),
                             BackingStore::DatabaseMetadata{u"name"});
   db.metadata().id = 1;
@@ -1090,10 +828,12 @@ TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   transaction1->Begin(CreateDummyLock());
   EXPECT_TRUE(transaction1->PutRecord(1, key3_, value3_.Clone()).has_value());
   bool succeeded = false;
-  EXPECT_TRUE(transaction1
-                  ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                   base::DoNothing())
-                  .ok());
+  EXPECT_TRUE(
+      transaction1
+          ->CommitPhaseOne(
+              MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+              base::DoNothing())
+          .ok());
 
   task_environment_.RunUntilIdle();
 
@@ -1111,10 +851,12 @@ TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   IndexedDBValue read_result_value = std::move(result.value());
   succeeded = false;
 
-  EXPECT_TRUE(transaction2
-                  ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                   base::DoNothing())
-                  .ok());
+  EXPECT_TRUE(
+      transaction2
+          ->CommitPhaseOne(
+              MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+              base::DoNothing())
+          .ok());
 
   EXPECT_TRUE(succeeded);
   EXPECT_TRUE(transaction2->CommitPhaseTwo().ok());
@@ -1137,10 +879,12 @@ TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
           ->DeleteRange(1, IndexedDBKeyRange(key3_.Clone(), {}, false, false))
           .ok());
   succeeded = false;
-  EXPECT_TRUE(transaction3
-                  ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                   base::DoNothing())
-                  .ok());
+  EXPECT_TRUE(
+      transaction3
+          ->CommitPhaseOne(
+              MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+              base::DoNothing())
+          .ok());
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(succeeded);
@@ -1170,76 +914,19 @@ TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   EXPECT_FALSE(backing_store()->IsBlobCleanupPending());
 }
 
-// Deleting an index should delete the index metadata and the index data.
-TEST_F(BackingStoreTest, CreateAndDeleteIndex) {
-  const int64_t object_store_id = 99;
-  const IndexedDBKeyPath object_store_key_path(u"object_store_key");
+TEST_F(LevelDbBackingStoreTest, DatabaseIdsAreNonzeroAndIncreaseMonotonically) {
+  auto db1 = backing_store()->CreateOrOpenDatabase(u"db1");
+  ASSERT_TRUE(db1.has_value());
+  EXPECT_GT(GetId(**db1), 0);
 
-  const int64_t index_id = 999;
-  const IndexedDBKeyPath index_key_path(u"index_key");
-
-  auto db = backing_store()->CreateOrOpenDatabase(u"database_name");
-  ASSERT_TRUE(db.has_value());
-
-  {
-    auto transaction = CreateAndBeginTransaction(
-        **db, blink::mojom::IDBTransactionMode::VersionChange);
-
-    EXPECT_TRUE(transaction
-                    ->CreateObjectStore(object_store_id, u"object_store_name",
-                                        object_store_key_path,
-                                        /*auto_increment=*/true)
-                    .ok());
-
-    EXPECT_TRUE(
-        transaction
-            ->CreateIndex(object_store_id, blink::IndexedDBIndexMetadata(
-                                               u"index_name", index_id,
-                                               index_key_path, /*unique=*/true,
-                                               /*multi_entry=*/true))
-            .ok());
-
-    CommitTransaction(*transaction);
-  }
-
-  EXPECT_EQ((*db)->GetMetadata().object_stores.size(), 1U);
-  auto object_store_it =
-      (*db)->GetMetadata().object_stores.find(object_store_id);
-  ASSERT_NE(object_store_it, (*db)->GetMetadata().object_stores.end());
-  const IndexedDBObjectStoreMetadata& object_store = object_store_it->second;
-  EXPECT_NE(object_store.indexes.end(), object_store.indexes.find(index_id));
-
-  {
-    auto transaction = CreateAndBeginTransaction(
-        **db, blink::mojom::IDBTransactionMode::VersionChange);
-
-    auto record =
-        transaction->PutRecord(object_store_id, key1_, value1_.Clone());
-    EXPECT_TRUE(record.has_value());
-    EXPECT_TRUE(
-        transaction
-            ->PutIndexDataForRecord(object_store_id, index_id, key2_, *record)
-            .ok());
-    auto pk = transaction->GetFirstPrimaryKeyForIndexKey(object_store_id,
-                                                         index_id, key2_);
-    EXPECT_TRUE(pk.has_value());
-    EXPECT_TRUE(pk->IsValid());
-
-    EXPECT_TRUE(transaction->DeleteIndex(object_store_id, index_id).ok());
-    pk = transaction->GetFirstPrimaryKeyForIndexKey(object_store_id, index_id,
-                                                    key2_);
-    EXPECT_TRUE(pk.has_value());
-    EXPECT_FALSE(pk->IsValid());
-
-    CommitTransaction(*transaction);
-  }
-
-  EXPECT_EQ(object_store.indexes.end(), object_store.indexes.find(index_id));
+  auto db2 = backing_store()->CreateOrOpenDatabase(u"db2");
+  ASSERT_TRUE(db2.has_value());
+  EXPECT_GT(GetId(**db2), GetId(**db1));
 }
 
 // Make sure that using very high ( more than 32 bit ) values for
 // database_id and object_store_id still work.
-TEST_F(BackingStoreTest, HighIds) {
+TEST_F(LevelDbBackingStoreTest, HighIds) {
   IndexedDBKey& key1 = key1_;
   IndexedDBKey& key2 = key2_;
   IndexedDBValue& value1 = value1_;
@@ -1277,10 +964,12 @@ TEST_F(BackingStoreTest, HighIds) {
     EXPECT_TRUE(s.ok());
 
     bool succeeded = false;
-    EXPECT_TRUE(transaction1
-                    .CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                    base::DoNothing())
-                    .ok());
+    EXPECT_TRUE(
+        transaction1
+            .CommitPhaseOne(
+                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+                base::DoNothing())
+            .ok());
     EXPECT_TRUE(succeeded);
     EXPECT_TRUE(transaction1.CommitPhaseTwo().ok());
   }
@@ -1306,17 +995,19 @@ TEST_F(BackingStoreTest, HighIds) {
     EXPECT_TRUE(new_primary_key->Equals(key1));
 
     bool succeeded = false;
-    EXPECT_TRUE(transaction2
-                    .CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                    base::DoNothing())
-                    .ok());
+    EXPECT_TRUE(
+        transaction2
+            .CommitPhaseOne(
+                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+                base::DoNothing())
+            .ok());
     EXPECT_TRUE(succeeded);
     EXPECT_TRUE(transaction2.CommitPhaseTwo().ok());
   }
 }
 
 // Make sure that other invalid ids do not crash.
-TEST_F(BackingStoreTest, InvalidIds) {
+TEST_F(LevelDbBackingStoreTest, InvalidIds) {
   const IndexedDBKey& key = key1_;
   IndexedDBValue& value = value1_;
 
@@ -1388,114 +1079,7 @@ TEST_F(BackingStoreTest, InvalidIds) {
           .has_value());
 }
 
-TEST_F(BackingStoreTest, CreateDatabase) {
-  const std::u16string database_name(u"db1");
-  int64_t database_id;
-  const int64_t version = 9;
-
-  const int64_t object_store_id = 99;
-  const std::u16string object_store_name(u"object_store1");
-  const bool auto_increment = true;
-  const IndexedDBKeyPath object_store_key_path(u"object_store_key");
-
-  const int64_t index_id = 999;
-  const std::u16string index_name(u"index1");
-  const bool unique = true;
-  const bool multi_entry = true;
-  const IndexedDBKeyPath index_key_path(u"index_key");
-
-  {
-    auto db1 = backing_store()->CreateOrOpenDatabase(database_name);
-    ASSERT_TRUE(db1.has_value());
-    UpdateDatabaseVersion(**db1, version);
-    database_id = GetId(**db1);
-    EXPECT_GT(database_id, 0);
-
-    std::unique_ptr<indexed_db::BackingStore::Transaction> transaction =
-        (*db1)->CreateTransaction(
-            blink::mojom::IDBTransactionDurability::Relaxed,
-            blink::mojom::IDBTransactionMode::VersionChange);
-    transaction->Begin(CreateDummyLock());
-
-    Status s =
-        transaction->CreateObjectStore(object_store_id, object_store_name,
-                                       object_store_key_path, auto_increment);
-    EXPECT_TRUE(s.ok());
-
-    const IndexedDBObjectStoreMetadata& object_store =
-        (*db1)->GetMetadata().object_stores.find(object_store_id)->second;
-    EXPECT_EQ(object_store.id, object_store_id);
-
-    s = transaction->CreateIndex(
-        object_store.id,
-        blink::IndexedDBIndexMetadata(index_name, index_id, index_key_path,
-                                      unique, multi_entry));
-    EXPECT_TRUE(s.ok());
-
-    const IndexedDBIndexMetadata& index =
-        object_store.indexes.find(index_id)->second;
-    EXPECT_EQ(index.id, index_id);
-
-    bool succeeded = false;
-    EXPECT_TRUE(transaction
-                    ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                     base::DoNothing())
-                    .ok());
-    EXPECT_TRUE(succeeded);
-    EXPECT_TRUE(transaction->CommitPhaseTwo().ok());
-  }
-
-  {
-    auto db1 = backing_store()->CreateOrOpenDatabase(database_name);
-    EXPECT_TRUE(db1.has_value());
-
-    const blink::IndexedDBDatabaseMetadata& database = (*db1)->GetMetadata();
-    // database.name is not filled in by the implementation.
-    EXPECT_EQ(version, database.version);
-    EXPECT_EQ(database_id, GetId(**db1));
-
-    EXPECT_EQ(1UL, database.object_stores.size());
-    const IndexedDBObjectStoreMetadata& object_store =
-        database.object_stores.find(object_store_id)->second;
-    EXPECT_EQ(object_store_name, object_store.name);
-    EXPECT_EQ(object_store_key_path, object_store.key_path);
-    EXPECT_EQ(auto_increment, object_store.auto_increment);
-
-    EXPECT_EQ(1UL, object_store.indexes.size());
-    const IndexedDBIndexMetadata& index =
-        object_store.indexes.find(index_id)->second;
-    EXPECT_EQ(index_name, index.name);
-    EXPECT_EQ(index_key_path, index.key_path);
-    EXPECT_EQ(unique, index.unique);
-    EXPECT_EQ(multi_entry, index.multi_entry);
-  }
-}
-
-TEST_F(BackingStoreTest, DatabaseExists) {
-  auto db1 = backing_store()->CreateOrOpenDatabase(u"db1");
-
-  ASSERT_TRUE(db1.has_value());
-  EXPECT_GT(GetId(**db1), 0);
-
-  auto db2 = backing_store()->CreateOrOpenDatabase(u"db2");
-
-  ASSERT_TRUE(db2.has_value());
-  EXPECT_GT(GetId(**db2), GetId(**db1));
-
-  // Only databases with non-default versions should be counted as existing by
-  // `DatabaseExists()`.
-  UpdateDatabaseVersion(*db1.value(), 1);
-
-  StatusOr<bool> db1_exists = backing_store()->DatabaseExists(u"db1");
-  ASSERT_TRUE(db1_exists.has_value());
-  EXPECT_TRUE(*db1_exists);
-
-  StatusOr<bool> db2_exists = backing_store()->DatabaseExists(u"db2");
-  ASSERT_TRUE(db2_exists.has_value());
-  EXPECT_FALSE(*db2_exists);
-}
-
-TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,
+TEST_P(LevelDbBackingStoreTestForThirdPartyStoragePartitioning,
        ReadCorruptionInfoForOpaqueStorageKey) {
   storage::BucketLocator bucket_locator;
   bucket_locator.storage_key =
@@ -1507,7 +1091,7 @@ TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,
       indexed_db::ReadCorruptionInfo(base::FilePath(), bucket_locator).empty());
 }
 
-TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,
+TEST_P(LevelDbBackingStoreTestForThirdPartyStoragePartitioning,
        ReadCorruptionInfoForFirstPartyStorageKey) {
   storage::BucketLocator bucket_locator;
   const base::FilePath path_base = temp_dir_.GetPath();
@@ -1580,7 +1164,7 @@ TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,
   EXPECT_EQ("foo", message);
 }
 
-TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,
+TEST_P(LevelDbBackingStoreTestForThirdPartyStoragePartitioning,
        ReadCorruptionInfoForThirdPartyStorageKey) {
   storage::BucketLocator bucket_locator;
   bucket_locator.storage_key = blink::StorageKey::Create(
@@ -1658,7 +1242,6 @@ TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,
   EXPECT_FALSE(PathExists(info_path));
   EXPECT_EQ("foo", message);
 }
-
 namespace {
 
 // v3 Blob Data is encoded as a series of:
@@ -1690,7 +1273,8 @@ std::string EncodeV3BlobInfos(
 
 int64_t GetTotalBlobSize(MockBlobStorageContext* blob_context) {
   int64_t space_used = 0;
-  for (const BlobWrite& write : blob_context->writes()) {
+  for (const MockBlobStorageContext::BlobWrite& write :
+       blob_context->writes()) {
     space_used += base::GetFileSize(write.path).value_or(0);
   }
   return space_used;
@@ -1702,7 +1286,7 @@ int64_t GetTotalBlobSize(MockBlobStorageContext* blob_context) {
 // in abort scenarios, specifically verifying that blob writes are rolled back
 // and no orphaned blobs are left on disk after an abort.
 // For more details, refer to https://crbug.com/41460842
-TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
+TEST_P(LevelDbBackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
   // Enable writing files to disk for the blob context.
   blob_context_->SetWriteFilesToDisk(true);
 
@@ -1737,12 +1321,13 @@ TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
   // Commit the initial transaction (Phase 1 and Phase 2).
   bool initial_succeeded = false;
   base::RunLoop initial_write_blobs_loop;
-  EXPECT_TRUE(initial_transaction
-                  .CommitPhaseOne(CreateBlobWriteCallback(
-                                      &initial_succeeded,
-                                      initial_write_blobs_loop.QuitClosure()),
-                                  base::DoNothing())
-                  .ok());
+  EXPECT_TRUE(
+      initial_transaction
+          .CommitPhaseOne(
+              MockBlobStorageContext::CreateBlobWriteCallback(
+                  &initial_succeeded, initial_write_blobs_loop.QuitClosure()),
+              base::DoNothing())
+          .ok());
   initial_write_blobs_loop.Run();
   EXPECT_TRUE(initial_succeeded);
   EXPECT_TRUE(initial_transaction.CommitPhaseTwo().ok());
@@ -1780,7 +1365,7 @@ TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
   base::RunLoop write_blobs_loop;
   EXPECT_TRUE(
       transaction
-          .CommitPhaseOne(CreateBlobWriteCallback(
+          .CommitPhaseOne(MockBlobStorageContext::CreateBlobWriteCallback(
                               &succeeded, write_blobs_loop.QuitClosure()),
                           base::DoNothing())
           .ok());
@@ -1794,7 +1379,7 @@ TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
             disk_space_after_committed_transaction);
 
   // Set the condition to trigger immediate journal cleaning.
-  backing_store_->SetNumAggregatedJournalCleaningRequestsForTesting(
+  backing_store()->SetNumAggregatedJournalCleaningRequestsForTesting(
       BackingStore::kMaxJournalCleanRequests - 1);
 
   // Introduce the rollback: Simulate a failure or abort in the transaction.
@@ -1810,7 +1395,8 @@ TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
   EXPECT_EQ(blob_context_->writes().size(), 2u);
   // After the rollback, verify that the blobs inserted in the transaction are
   // cleaned up.
-  for (const BlobWrite& write : blob_context_->writes()) {
+  for (const MockBlobStorageContext::BlobWrite& write :
+       blob_context_->writes()) {
     if (write.path == initial_blob_path) {
       // Ensure initial blob still exists.
       EXPECT_TRUE(base::PathExists(write.path));
@@ -1826,7 +1412,7 @@ TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
   ASSERT_EQ(disk_space_after_committed_transaction, disk_space_after_rollback);
 }
 
-TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
+TEST_F(LevelDbBackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   const int64_t object_store_id = 99;
 
   const std::u16string database_name(u"db1");
@@ -1858,10 +1444,12 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
     EXPECT_EQ(object_store.id, object_store_id);
 
     bool succeeded = false;
-    EXPECT_TRUE(transaction
-                    .CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                    base::DoNothing())
-                    .ok());
+    EXPECT_TRUE(
+        transaction
+            .CommitPhaseOne(
+                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+                base::DoNothing())
+            .ok());
     EXPECT_TRUE(succeeded);
     EXPECT_TRUE(transaction.CommitPhaseTwo().ok());
   }
@@ -1878,7 +1466,7 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   base::RunLoop write_blobs_loop;
   EXPECT_TRUE(
       transaction1
-          ->CommitPhaseOne(CreateBlobWriteCallback(
+          ->CommitPhaseOne(MockBlobStorageContext::CreateBlobWriteCallback(
                                &succeeded, write_blobs_loop.QuitClosure()),
                            base::DoNothing())
           .ok());
@@ -1963,17 +1551,19 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
 
   // Finish up transaction2, verifying blob reads.
   succeeded = false;
-  EXPECT_TRUE(transaction2
-                  .CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                  base::DoNothing())
-                  .ok());
+  EXPECT_TRUE(
+      transaction2
+          .CommitPhaseOne(
+              MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+              base::DoNothing())
+          .ok());
   EXPECT_TRUE(succeeded);
   EXPECT_TRUE(transaction2.CommitPhaseTwo().ok());
   EXPECT_EQ(value3_.bits, result_value.bits);
   EXPECT_TRUE(CheckBlobInfoMatches(result_value.external_objects));
 }
 
-TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
+TEST_F(LevelDbBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   const int64_t object_store_id = 99;
 
   const std::u16string database_name(u"db1");
@@ -2014,10 +1604,12 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
     EXPECT_EQ(object_store.id, object_store_id);
 
     bool succeeded = false;
-    EXPECT_TRUE(transaction
-                    .CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                    base::DoNothing())
-                    .ok());
+    EXPECT_TRUE(
+        transaction
+            .CommitPhaseOne(
+                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+                base::DoNothing())
+            .ok());
     EXPECT_TRUE(succeeded);
     EXPECT_TRUE(transaction.CommitPhaseTwo().ok());
   }
@@ -2038,7 +1630,7 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   base::RunLoop write_blobs_loop;
   EXPECT_TRUE(
       transaction
-          ->CommitPhaseOne(CreateBlobWriteCallback(
+          ->CommitPhaseOne(MockBlobStorageContext::CreateBlobWriteCallback(
                                &succeeded, write_blobs_loop.QuitClosure()),
                            base::DoNothing())
           .ok());
@@ -2101,7 +1693,7 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
 // This tests that external objects are deleted when ClearObjectStore is called.
 // See: http://crbug.com/488851
 // TODO(enne): we could use more comprehensive testing for ClearObjectStore.
-TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
+TEST_P(LevelDbBackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
   const auto keys =
       std::to_array({IndexedDBKey(u"key0"), IndexedDBKey(u"key1"),
                      IndexedDBKey(u"key2"), IndexedDBKey(u"key3")});
@@ -2144,10 +1736,12 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
 
     // Start committing transaction1.
     bool succeeded = false;
-    EXPECT_TRUE(transaction1
-                    ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                     base::DoNothing())
-                    .ok());
+    EXPECT_TRUE(
+        transaction1
+            ->CommitPhaseOne(
+                MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+                base::DoNothing())
+            .ok());
     task_environment_.RunUntilIdle();
 
     // Finish committing transaction1.
@@ -2166,10 +1760,12 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
 
   // Start committing transaction2.
   bool succeeded = false;
-  EXPECT_TRUE(transaction2
-                  ->CommitPhaseOne(CreateBlobWriteCallback(&succeeded),
-                                   base::DoNothing())
-                  .ok());
+  EXPECT_TRUE(
+      transaction2
+          ->CommitPhaseOne(
+              MockBlobStorageContext::CreateBlobWriteCallback(&succeeded),
+              base::DoNothing())
+          .ok());
   task_environment_.RunUntilIdle();
 
   // Finish committing transaction2.
@@ -2181,9 +1777,10 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
   CheckFirstNBlobsRemoved(4);
 }
 
-class BackingStoreTestForCleanupScheduler : public BackingStoreTest {
+class LevelDbBackingStoreTestForCleanupScheduler
+    : public LevelDbBackingStoreTest {
  public:
-  BackingStoreTestForCleanupScheduler() {
+  LevelDbBackingStoreTestForCleanupScheduler() {
     scoped_feature_list_.InitAndEnableFeature(kIdbInSessionDbCleanup);
   }
 
@@ -2191,19 +1788,21 @@ class BackingStoreTestForCleanupScheduler : public BackingStoreTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(BackingStoreTestForCleanupScheduler,
+TEST_F(LevelDbBackingStoreTestForCleanupScheduler,
        SchedulerInitializedIfTombstoneThresholdExceeded) {
-  backing_store_->OnTransactionComplete(false);
-  EXPECT_FALSE(backing_store_->GetLevelDBCleanupSchedulerForTesting()
+  backing_store()->OnTransactionComplete(false);
+  EXPECT_FALSE(backing_store()
+                   ->GetLevelDBCleanupSchedulerForTesting()
                    .GetRunningStateForTesting()
                    .has_value());
-  backing_store_->OnTransactionComplete(true);
-  EXPECT_TRUE(backing_store_->GetLevelDBCleanupSchedulerForTesting()
+  backing_store()->OnTransactionComplete(true);
+  EXPECT_TRUE(backing_store()
+                  ->GetLevelDBCleanupSchedulerForTesting()
                   .GetRunningStateForTesting()
                   .has_value());
 }
 
-TEST_F(BackingStoreTest, TombstoneSweeperTiming) {
+TEST_F(LevelDbBackingStoreTest, TombstoneSweeperTiming) {
   // Open a connection.
   EXPECT_FALSE(backing_store()->ShouldRunTombstoneSweeper());
 
@@ -2224,7 +1823,7 @@ TEST_F(BackingStoreTest, TombstoneSweeperTiming) {
   EXPECT_TRUE(backing_store()->ShouldRunTombstoneSweeper());
 }
 
-TEST_F(BackingStoreTest, CompactionTaskTiming) {
+TEST_F(LevelDbBackingStoreTest, CompactionTaskTiming) {
   EXPECT_FALSE(backing_store()->ShouldRunCompaction());
 
   // Move the clock to run the tasks in the next close sequence.
