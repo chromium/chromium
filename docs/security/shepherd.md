@@ -357,7 +357,7 @@ pass it along to / include someone who can direct it more precisely.
       memory corruption.
     * Set a provisional `Found In` of the current Extended Stable.
     * Assign it to the current [V8
-      Sheriff](https://goto.google.com/current-v8-sheriff) with
+      Shepherd](https://goto.google.com/current-v8-sheriff) with
       a comment explaining that the severity and `Found In` are provisional.
       Note that V8 CHECK failure crashes can have security implications, so
       don't triage it yourself.
@@ -373,7 +373,7 @@ pass it along to / include someone who can direct it more precisely.
     * Set a provisional severity of Medium (S2).
     * Set a provisional priority of P1.
     * Assign to the current [V8
-      Sheriff](https://goto.google.com/current-v8-sheriff).
+      Shepherd](https://goto.google.com/current-v8-sheriff).
     * Apply the `Security_Impact-None` hotlist (hotlistID:5433277).
     * If possible, please also apply the `V8 Sandbox` hotlist
       (hotlistID:4802478).
