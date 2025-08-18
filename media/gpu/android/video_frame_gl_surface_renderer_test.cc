@@ -38,6 +38,13 @@ class VideoFrameGLSurfaceRendererTest
 
  protected:
   void SetUp() override {
+    if (__builtin_available(android 35, *)) {
+      // Negation of __builtin_available results in compiler warning.
+    } else {
+      GTEST_SKIP() << "Not supported Android version. "
+                   << "This test needs Android 15 and up.";
+    }
+
     ASSERT_TRUE(gl::init::InitializeGLOneOff(gl::GpuPreference::kDefault));
 
     AImageReader* image_reader_ptr = nullptr;
