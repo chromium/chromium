@@ -27,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/skcolorspace_trfn.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/color_space.h"
 
 extern "C" {
@@ -517,8 +518,8 @@ void OnTransactionCompletedOnAnyThread(void* context,
                                        ASurfaceTransactionStats* stats) {
   auto* ack_ctx = static_cast<TransactionAckCtx*>(context);
   auto transaction_stats = ToTransactionStats(stats);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("gpu,benchmark", "SurfaceControlTransaction",
-                                  ack_ctx->id);
+  TRACE_EVENT_END("gpu,benchmark", /*"SurfaceControlTransaction"*/
+                  perfetto::Track(ack_ctx->id));
   TRACE_EVENT_WITH_FLOW0(
       "toplevel.flow", "gfx::SurfaceControlTransaction completed",
       GetTraceIdForTransaction(ack_ctx->id), TRACE_EVENT_FLAG_FLOW_IN);
@@ -996,8 +997,8 @@ void SurfaceControl::Transaction::SetOnCommitCb(
 }
 
 void SurfaceControl::Transaction::Apply() {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu,benchmark",
-                                    "SurfaceControlTransaction", id_);
+  TRACE_EVENT_BEGIN("gpu,benchmark", "SurfaceControlTransaction",
+                    perfetto::Track(id_));
 
   PrepareCallbacks();
   SurfaceControlMethods::Get().ASurfaceTransaction_applyFn(transaction_);

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -358,8 +359,8 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
 
   DCHECK(empty_frame || !connection_->presentation() ||
          frame->pending_feedback || frame->feedback.has_value());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "wayland", "WaylandFrameManager.PlaybackFrame", frame->frame_id);
+  TRACE_EVENT_BEGIN("wayland", "WaylandFrameManager.PlaybackFrame",
+                    perfetto::Track(frame->frame_id));
   root_surface->Commit(true);
 
   frame->root_config = wl::WaylandOverlayConfig();
@@ -884,8 +885,8 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
 
       // The presentation info entries are sent with the last OnSubmission()
       // call.
-      TRACE_EVENT_NESTABLE_ASYNC_END0(
-          "wayland", "WaylandFrameManager.PlaybackFrame", (*iter)->frame_id);
+      TRACE_EVENT_END("wayland", /*"WaylandFrameManager.PlaybackFrame"*/
+                      perfetto::Track((*iter)->frame_id));
       auto swap_result = (*iter)->swap_result_recreate_buffers
                              ? gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS
                              : gfx::SwapResult::SWAP_ACK;

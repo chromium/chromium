@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/metrics/custom_metrics_recorder.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
@@ -208,8 +209,8 @@ void WindowEventDispatcher::HoldPointerMoves() {
     held_event_factory_.InvalidateWeakPtrs();
   }
   ++move_hold_count_;
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "ui", "WindowEventDispatcher::HoldPointerMoves", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("ui", "WindowEventDispatcher::HoldPointerMoves",
+                    perfetto::Track::FromPointer(this));
 }
 
 void WindowEventDispatcher::ReleasePointerMoves() {
@@ -242,8 +243,8 @@ void WindowEventDispatcher::ReleasePointerMoves() {
       }
     }
   }
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "ui", "WindowEventDispatcher::HoldPointerMoves", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("ui", /*"WindowEventDispatcher::HoldPointerMoves"*/
+                  perfetto::Track::FromPointer(this));
 }
 
 gfx::Point WindowEventDispatcher::GetLastMouseLocationInRoot() const {

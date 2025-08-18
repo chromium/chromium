@@ -24,6 +24,7 @@
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gpu_fence.h"
@@ -668,16 +669,16 @@ void NativeViewGLSurfaceEGL::TraceSwapEvents(EGLuint64KHR oldFrameId) {
   auto epsilon = base::Microseconds(1);
   static const char* SwapEvents = "SwapEvents";
   const int64_t trace_id = oldFrameId;
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kSwapEventTraceCategories, SwapEvents, trace_id, tracePairs.front().time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-      kSwapEventTraceCategories, SwapEvents, trace_id,
-      tracePairs.back().time + epsilon, "id", trace_id);
+  TRACE_EVENT_BEGIN(kSwapEventTraceCategories,
+                    perfetto::StaticString(SwapEvents),
+                    perfetto::Track(trace_id), tracePairs.front().time);
+  TRACE_EVENT_END(kSwapEventTraceCategories, perfetto::Track(trace_id),
+                  tracePairs.back().time + epsilon, "id", trace_id);
 
   // Trace the first event, which does not have a range before it.
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT_WITH_TIMESTAMP0(
-      kSwapEventTraceCategories, tracePairs.front().name, trace_id,
-      tracePairs.front().time);
+  TRACE_EVENT_INSTANT(kSwapEventTraceCategories,
+                      perfetto::StaticString(tracePairs.front().name),
+                      perfetto::Track(trace_id), tracePairs.front().time);
 
   // Trace remaining events and their ranges.
   // Use the first characters to represent events still pending.
@@ -698,9 +699,9 @@ void NativeViewGLSurfaceEGL::TraceSwapEvents(EGLuint64KHR oldFrameId) {
     TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
         kSwapEventTraceCategories, pending_symbols, trace_id,
         tracePairs[i].time);
-    TRACE_EVENT_NESTABLE_ASYNC_INSTANT_WITH_TIMESTAMP0(
-        kSwapEventTraceCategories, tracePairs[i].name, trace_id,
-        tracePairs[i].time);
+    TRACE_EVENT_INSTANT(kSwapEventTraceCategories,
+                        perfetto::StaticString(tracePairs[i].name),
+                        perfetto::Track(trace_id), tracePairs[i].time);
   }
 }
 
