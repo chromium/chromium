@@ -145,8 +145,8 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   bool for_touch_handle() const { return for_touch_handle_; }
 
   float GetRawXPix(size_t pointer_index) const;
-  virtual float GetXPix(size_t pointer_index) const = 0;
-  virtual float GetYPix(size_t pointer_index) const = 0;
+  float GetXPix(size_t pointer_index) const;
+  float GetYPix(size_t pointer_index) const;
 
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 

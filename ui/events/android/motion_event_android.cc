@@ -281,6 +281,22 @@ float MotionEventAndroid::GetRawXPix(size_t pointer_index) const {
   return GetRawX(pointer_index) / pix_to_dip();
 }
 
+float MotionEventAndroid::GetXPix(size_t pointer_index) const {
+  DCHECK_LT(pointer_index, GetPointerCount());
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerPosition(pointer_index).x() / pix_to_dip();
+  }
+  return source()->GetXPix(pointer_index);
+}
+
+float MotionEventAndroid::GetYPix(size_t pointer_index) const {
+  DCHECK_LT(pointer_index, GetPointerCount());
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerPosition(pointer_index).y() / pix_to_dip();
+  }
+  return source()->GetYPix(pointer_index);
+}
+
 ScopedJavaLocalRef<jobject> MotionEventAndroid::GetJavaObject() const {
   DUMP_WILL_BE_NOTREACHED();
   return nullptr;

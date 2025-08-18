@@ -67,11 +67,4 @@ MotionEventAndroidNative::MotionEventAndroidNative(
                          pointer1,
                          std::move(source)) {}
 
-float MotionEventAndroidNative::GetXPix(size_t pointer_index) const {
-  return GetX(pointer_index) / pix_to_dip();
-}
-float MotionEventAndroidNative::GetYPix(size_t pointer_index) const {
-  return GetY(pointer_index) / pix_to_dip();
-}
-
 }  // namespace ui

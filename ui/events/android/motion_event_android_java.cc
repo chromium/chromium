@@ -87,22 +87,6 @@ ScopedJavaLocalRef<jobject> MotionEventAndroidJava::GetJavaObject() const {
   return source()->GetJavaObject();
 }
 
-float MotionEventAndroidJava::GetXPix(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerPosition(pointer_index).x() / pix_to_dip();
-  }
-  return source()->GetXPix(pointer_index);
-}
-
-float MotionEventAndroidJava::GetYPix(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerPosition(pointer_index).y() / pix_to_dip();
-  }
-  return source()->GetYPix(pointer_index);
-}
-
 bool MotionEventAndroidJava::IsLatestEventTimeResampled() const {
   return source()->IsLatestEventTimeResampled();
 }

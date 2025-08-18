@@ -41,8 +41,6 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
   // Start MotionEventAndroid overrides
   std::unique_ptr<MotionEventAndroid> CreateFor(
       const gfx::PointF& point) const override;
-  float GetXPix(size_t pointer_index) const override;
-  float GetYPix(size_t pointer_index) const override;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
   // End MotionEventAndroid overrides
 

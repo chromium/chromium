@@ -32,8 +32,6 @@ class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
   // End ui::MotionEvent overrides
 
   // Start MotionEventAndroid overrides
-  float GetXPix(size_t pointer_index) const override;
-  float GetYPix(size_t pointer_index) const override;
   // End MotionEventAndroid overrides
 
  private:
