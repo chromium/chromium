@@ -693,6 +693,65 @@ TEST_P(PrintContextTest, LinkedTargetRootMargin) {
   EXPECT_SKRECT_EQ(0, 183, 0, 0, (*operations)[1].rect);
 }
 
+TEST_P(PrintContextTest, LinkedTargetInAbsPos) {
+  SetBodyInnerHTML(R"HTML(
+    <a style="display:block; width:33px; height:33px;" href="#target">link</a>
+    <div style="break-before:page; position:relative;">
+      <div id="target" style="position:absolute; top:100px; width:20px; height:20px;"></div>
+    </div>
+  )HTML");
+
+  // The link is on the first page.
+  testing::NiceMock<MockPageContextCanvas> first_canvas;
+  PrintSinglePage(first_canvas, 0);
+  const Vector<MockPageContextCanvas::Operation>* operations =
+      &first_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+
+  // The destination is on the second page.
+  testing::NiceMock<MockPageContextCanvas> second_canvas;
+  PrintSinglePage(second_canvas, 1);
+  operations = &second_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+
+  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, (*operations)[0].type);
+  EXPECT_SKRECT_EQ(0, 100, 0, 0, (*operations)[0].rect);
+}
+
+TEST_P(PrintContextTest, LinkedTargetInAbsPosNextPage) {
+  SetBodyInnerHTML(R"HTML(
+    <a style="display:block; width:33px; height:33px;" href="#target">link</a>
+    <div style="break-before:page; position:relative;">
+      <div style="height:10px;"></div>
+      <div style="break-before:page;">
+        <div id="target" style="position:absolute; width:20px; height:20px;"></div>
+      </div>
+    </div>
+  )HTML");
+
+  // The link is on the first page.
+  testing::NiceMock<MockPageContextCanvas> first_canvas;
+  PrintSinglePage(first_canvas, 0);
+  const Vector<MockPageContextCanvas::Operation>* operations =
+      &first_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+
+  // Nothing interesting on the second page.
+  testing::NiceMock<MockPageContextCanvas> second_canvas;
+  PrintSinglePage(second_canvas, 1);
+  operations = &second_canvas.RecordedOperations();
+  ASSERT_EQ(0u, operations->size());
+
+  // The destination is on the third page.
+  testing::NiceMock<MockPageContextCanvas> third_canvas;
+  PrintSinglePage(third_canvas, 2);
+  operations = &third_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+
+  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, (*operations)[0].type);
+  EXPECT_SKRECT_EQ(0, 0, 0, 0, (*operations)[0].rect);
+}
+
 // Here are a few tests to check that shrink to fit doesn't mess up page count.
 
 TEST_P(PrintContextTest, ScaledVerticalRL1) {

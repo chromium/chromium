@@ -357,6 +357,18 @@ void UpdateChildLayoutBoxLocations(const PhysicalBoxFragment& fragment) {
       }
       PhysicalRect rect = StitchedPageContentRect(page_area, *first_page_area,
                                                   previous_break_token);
+
+      // A page area, being a fragmentainer, acts as the containing block for
+      // out-of-flow positioned descendants on the page. As such, its (stitched)
+      // offset from the first page will be needed, in order to calculate the
+      // location of any OOFs. We need to do this manually here, since we cannot
+      // process the page area as part of normal subtree processing, because the
+      // page area is the boundary between the page container coordinate system
+      // (with page margin boxes and so on), and the stitched coordinate system
+      // of the fragmented flow.
+      auto mutator = page_area.GetMutableForContainerLayout();
+      mutator.SetOffsetFromRootFragmentationContext(rect.offset);
+
       UpdateOffsetsFromRootFragmentationContext(page_area, rect.offset);
       previous_break_token = page_area.GetBreakToken();
     }
