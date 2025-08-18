@@ -23,6 +23,8 @@ ExtensionCreatorFilter::ExtensionCreatorFilter(
     const base::FilePath& extension_dir)
     : reserved_metadata_dir_(extension_dir.Append(kMetadataFolder)) {}
 
+ExtensionCreatorFilter::~ExtensionCreatorFilter() = default;
+
 bool ExtensionCreatorFilter::ShouldPackageFile(
     const base::FilePath& file_path) {
   const base::FilePath& base_name = file_path.BaseName();

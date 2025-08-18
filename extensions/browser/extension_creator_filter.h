@@ -25,7 +25,7 @@ class ExtensionCreatorFilter : public base::RefCounted<ExtensionCreatorFilter> {
 
  private:
   friend class base::RefCounted<ExtensionCreatorFilter>;
-  ~ExtensionCreatorFilter() {}
+  ~ExtensionCreatorFilter();
 
   const base::FilePath reserved_metadata_dir_;
 };
