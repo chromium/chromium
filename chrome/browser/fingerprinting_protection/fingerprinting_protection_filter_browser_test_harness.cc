@@ -41,7 +41,9 @@ FingerprintingProtectionFilterBrowserTest::
       {{features::kEnableFingerprintingProtectionFilter,
         {{"activation_level", "enabled"},
          {"performance_measurement_rate", "0.0"}}}},
-      /*disabled_features=*/{});
+      /*disabled_features=*/{
+          {features::kEnableFingerprintingProtectionFilterInIncognito},
+          {privacy_sandbox::kFingerprintingProtectionUx}});
 }
 
 FingerprintingProtectionFilterBrowserTest::
@@ -208,7 +210,9 @@ FingerprintingProtectionFilterDryRunBrowserTest::
       {{features::kEnableFingerprintingProtectionFilter,
         {{"activation_level", "dry_run"},
          {"performance_measurement_rate", "0.0"}}}},
-      /*disabled_features=*/{});
+      /*disabled_features=*/{
+          {features::kEnableFingerprintingProtectionFilterInIncognito},
+          {privacy_sandbox::kFingerprintingProtectionUx}});
 }
 
 FingerprintingProtectionFilterDryRunBrowserTest::
@@ -226,7 +230,8 @@ FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kEnableFingerprintingProtectionFilterInIncognito,
-        {{"performance_measurement_rate", "0.0"}}}},
+        {{"performance_measurement_rate", "0.0"}}},
+       {privacy_sandbox::kFingerprintingProtectionUx, {}}},
       /*disabled_features=*/{
           {features::kEnableFingerprintingProtectionFilter}});
 }
@@ -250,7 +255,8 @@ FingerprintingProtectionFilterDisabledBrowserTest::
         false},
        {fingerprinting_protection_filter::features::
             kEnableFingerprintingProtectionFilter,
-        false}});
+        false},
+       {privacy_sandbox::kFingerprintingProtectionUx, false}});
 }
 
 FingerprintingProtectionFilterDisabledBrowserTest::
@@ -271,7 +277,8 @@ FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest::
       {{features::kEnableFingerprintingProtectionFilter,
         {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}},
        {features::kEnableFingerprintingProtectionFilterInIncognito,
-        {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}}},
+        {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}},
+       {privacy_sandbox::kFingerprintingProtectionUx, {}}},
       /*disabled_features=*/{});
 }
 
