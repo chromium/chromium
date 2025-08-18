@@ -7,16 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class BWGFREWrapperViewController;
 @protocol BWGConsentMutator;
-
-// Delegate for `BWGFREWrapperViewController`.
-@protocol BWGFREWrapperViewControllerDelegate <NSObject>
-
-// Informs the delegate that promo was dismissed.
-- (void)promoWasDismissed:(BWGFREWrapperViewController*)wrapperViewController;
-
-@end
 
 // UIViewController that owns BWGPromo and BWGConsent view controllers and
 // manages their transitions.
@@ -40,10 +31,6 @@
 
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<BWGConsentMutator> mutator;
-
-// The delegate for this view controller to communicate to `BWGCoordinator`.
-@property(nonatomic, weak) id<BWGFREWrapperViewControllerDelegate>
-    BWGFREWrapperViewControllerDelegate;
 
 @end
 

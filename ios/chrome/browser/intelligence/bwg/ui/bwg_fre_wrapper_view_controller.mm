@@ -356,8 +356,4 @@ const CGFloat kDamping = 0.85;
       }];
 }
 
-- (void)promoViewControllerWasDismissed {
-  [self.BWGFREWrapperViewControllerDelegate promoWasDismissed:self];
-}
-
 @end

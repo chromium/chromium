@@ -86,7 +86,6 @@ const CGFloat kBaselineAdjustment = 10.0;
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
-  [self.BWGPromoDelegate promoViewControllerWasDismissed];
 }
 
 #pragma mark - BWGFREViewControllerProtocol

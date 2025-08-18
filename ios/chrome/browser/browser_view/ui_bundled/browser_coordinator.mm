@@ -3037,7 +3037,6 @@ enum class ToolbarKind {
       [[BWGCoordinator alloc] initWithBaseViewController:self.viewController
                                                  browser:self.browser
                                           fromEntryPoint:entryPoint];
-  _BWGCoordinator.promosUIHandler = self.promosManagerCoordinator;
   [_BWGCoordinator start];
 }
 
