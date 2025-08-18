@@ -106,4 +106,14 @@ TEST(PdfRectTest, Intersect) {
   EXPECT_EQ(2.0f, rect.top());
 }
 
+TEST(PdfRectTest, Union) {
+  PdfRect rect(0.0f, 0.0f, 2.0f, 2.0f);
+  static constexpr PdfRect kRect(1.0f, 1.0f, 3.0f, 3.0f);
+  rect.Union(kRect);
+  EXPECT_EQ(0.0f, rect.left());
+  EXPECT_EQ(0.0f, rect.bottom());
+  EXPECT_EQ(3.0f, rect.right());
+  EXPECT_EQ(3.0f, rect.top());
+}
+
 }  // namespace chrome_pdf

@@ -333,20 +333,10 @@ bool AreTextStyleEqual(FPDF_PAGEOBJECT text_object,
          char_style.is_bold == style.is_bold;
 }
 
-// Returns the bounds with the smallest left, smallest bottom, largest right,
-// and largest top.
-FS_RECTF GetLargestBounds(const FS_RECTF& largest_bounds,
-                          const FS_RECTF& bounds) {
-  return {std::min(largest_bounds.left, bounds.left),
-          std::max(largest_bounds.top, bounds.top),
-          std::max(largest_bounds.right, bounds.right),
-          std::min(largest_bounds.bottom, bounds.bottom)};
-}
-
 gfx::RectF GetRotatedRectF(PageRotation rotation,
                            gfx::SizeF page_size,
-                           const FS_RECTF& original_bounds) {
-  FS_RECTF bounds;
+                           const PdfRect& original_bounds) {
+  PdfRect bounds;
 
   // When the page is rotated 90 degrees or 270 degrees, the page width and
   // height are swapped. Swap it back for calculations.
@@ -361,30 +351,33 @@ gfx::RectF GetRotatedRectF(PageRotation rotation,
       break;
     }
     case PageRotation::kRotate90: {
-      bounds.left = original_bounds.bottom;
-      bounds.top = page_size.width() - original_bounds.left;
-      bounds.right = original_bounds.top;
-      bounds.bottom = page_size.width() - original_bounds.right;
+      bounds = PdfRect(
+          /*left=*/original_bounds.bottom(),
+          /*bottom=*/page_size.width() - original_bounds.right(),
+          /*right=*/original_bounds.top(),
+          /*top=*/page_size.width() - original_bounds.left());
       break;
     }
     case PageRotation::kRotate180: {
-      bounds.left = page_size.width() - original_bounds.right;
-      bounds.top = page_size.height() - original_bounds.bottom;
-      bounds.right = page_size.width() - original_bounds.left;
-      bounds.bottom = page_size.height() - original_bounds.top;
+      bounds = PdfRect(
+          /*left=*/page_size.width() - original_bounds.right(),
+          /*bottom=*/page_size.height() - original_bounds.top(),
+          /*right=*/page_size.width() - original_bounds.left(),
+          /*top=*/page_size.height() - original_bounds.bottom());
       break;
     }
     case PageRotation::kRotate270: {
-      bounds.left = page_size.height() - original_bounds.top;
-      bounds.top = original_bounds.right;
-      bounds.right = page_size.height() - original_bounds.bottom;
-      bounds.bottom = original_bounds.left;
+      bounds = PdfRect(
+          /*left=*/page_size.height() - original_bounds.top(),
+          /*bottom=*/original_bounds.left(),
+          /*right=*/page_size.height() - original_bounds.bottom(),
+          /*top=*/original_bounds.right());
       break;
     }
   }
 
-  return gfx::RectF(bounds.left, bounds.bottom, bounds.right - bounds.left,
-                    bounds.top - bounds.bottom);
+  return gfx::RectF(bounds.left(), bounds.bottom(), bounds.width(),
+                    bounds.height());
 }
 
 // Get the effective crop box. If empty or failed to calculate the effective
@@ -396,8 +389,8 @@ gfx::RectF GetEffectiveCropBox(FPDF_PAGE page,
   gfx::RectF effective_crop_box;
   const std::optional<PdfRect> maybe_crop_bounds = GetPageBoundingBox(page);
   if (maybe_crop_bounds.has_value()) {
-    effective_crop_box = GetRotatedRectF(
-        rotation, page_size, FsRectFFromPdfRect(maybe_crop_bounds.value()));
+    effective_crop_box =
+        GetRotatedRectF(rotation, page_size, maybe_crop_bounds.value());
   }
 
   if (effective_crop_box.IsEmpty()) {
@@ -818,7 +811,8 @@ gfx::RectF PDFiumPage::GetBoundingBox() {
   // Start with bounds with the left and bottom values at the max possible
   // bounds and the right and top values at the min possible bounds. Bounds are
   // relative to the media box.
-  FS_RECTF largest_bounds = {page_size.width(), 0, 0, page_size.height()};
+  PdfRect largest_bounds(/*left=*/page_size.width(),
+                         /*bottom=*/page_size.height(), /*right=*/0, /*top=*/0);
   for (int i = 0; i < FPDFPage_CountObjects(page); ++i) {
     FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, i);
     if (!page_object) {
@@ -831,8 +825,7 @@ gfx::RectF PDFiumPage::GetBoundingBox() {
       continue;
     }
 
-    const auto& bounds = FsRectFFromPdfRect(maybe_bounds.value());
-    largest_bounds = GetLargestBounds(largest_bounds, bounds);
+    largest_bounds.Union(maybe_bounds.value());
   }
   for (int i = 0; i < FPDFPage_GetAnnotCount(page); ++i) {
     ScopedFPDFAnnotation annotation(FPDFPage_GetAnnot(page, i));
@@ -845,8 +838,7 @@ gfx::RectF PDFiumPage::GetBoundingBox() {
       continue;
     }
 
-    const auto& bounds = FsRectFFromPdfRect(maybe_bounds.value());
-    largest_bounds = GetLargestBounds(largest_bounds, bounds);
+    largest_bounds.Union(maybe_bounds.value());
   }
 
   gfx::RectF bounding_box =
@@ -1594,14 +1586,16 @@ void PDFiumPage::PopulateHighlight(FPDF_ANNOTATION annot) {
     return;
   }
 
-  const auto& rect = FsRectFFromPdfRect(maybe_rect.value());
+  const auto& rect = maybe_rect.value();
   Highlight highlight;
   // We use the bounding box of the highlight as the bounding rect.
-  highlight.bounding_rect = PageToScreen(gfx::Point(), 1.0, maybe_rect.value(),
-                                         PageOrientation::kOriginal);
+  highlight.bounding_rect =
+      PageToScreen(gfx::Point(), 1.0, rect, PageOrientation::kOriginal);
+  // TODO(thestig): Check to see if std::abs() calls should be removed in favor
+  // of using PdfRect::Normalize().
   GetUnderlyingTextRangeForRect(
-      gfx::RectF(rect.left, rect.bottom, std::abs(rect.right - rect.left),
-                 std::abs(rect.bottom - rect.top)),
+      gfx::RectF(rect.left(), rect.bottom(), std::abs(rect.width()),
+                 std::abs(rect.height())),
       &highlight.start_char_index, &highlight.char_count);
 
   // Retrieve the color of the highlight.

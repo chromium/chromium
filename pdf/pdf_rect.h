@@ -49,6 +49,8 @@ class PdfRect {
 
   void Intersect(const PdfRect& rect);
 
+  void Union(const PdfRect& rect);
+
   // Exposes offsetof() values for the private variables.
   static constexpr size_t offsetof_left() { return offsetof(PdfRect, left_); }
   static constexpr size_t offsetof_bottom() {

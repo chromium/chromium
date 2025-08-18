@@ -39,4 +39,11 @@ void PdfRect::Intersect(const PdfRect& rect) {
   bottom_ = std::max(bottom_, rect.bottom_);
 }
 
+void PdfRect::Union(const PdfRect& rect) {
+  left_ = std::min(left_, rect.left());
+  top_ = std::max(top_, rect.top());
+  right_ = std::max(right_, rect.right());
+  bottom_ = std::min(bottom_, rect.bottom());
+}
+
 }  // namespace chrome_pdf
