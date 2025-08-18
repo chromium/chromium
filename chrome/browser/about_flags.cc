@@ -3367,18 +3367,6 @@ const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kDeleteLegacyMigratedTabStatesAfterRestore[] =
-    {
-        {"delete_migrated_files_after_restore", "true"},
-};
-
-const FeatureEntry::FeatureVariation kLegacyTabStateDeprecationVariations[] = {
-    {"Delete migrated files", kDeleteLegacyMigratedTabStatesAfterRestore,
-     std::size(kDeleteLegacyMigratedTabStatesAfterRestore), nullptr},
-};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kLensOverlayImageContextMenuActionsCopy[] = {
     {"enable-copy-as-image", "true"},
@@ -9387,9 +9375,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-legacy-tabstate-deprecation",
      flag_descriptions::kLegacyTabStateDeprecationName,
      flag_descriptions::kLegacyTabStateDeprecationDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kLegacyTabStateDeprecation,
-                                    kLegacyTabStateDeprecationVariations,
-                                    "LegacyTabStateDeprecation")},
+     FEATURE_VALUE_TYPE(chrome::android::kLegacyTabStateDeprecation)},
+
+    {"enable-cleanup-legacy-tabstate",
+     flag_descriptions::kCleanupLegacyTabStateName,
+     flag_descriptions::kCleanupLegacyTabStateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCleanupLegacyTabState)},
 
     {"biometric-reauth-password-filling",
      flag_descriptions::kBiometricReauthForPasswordFillingName,

@@ -14714,30 +14714,6 @@
             ]
         }
     ],
-    "LegacyTabStateDeprecation": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Delete_Migrated_Files_After_Restore_20250319",
-                    "params": {
-                        "delete_migrated_files_after_restore": "true"
-                    },
-                    "enable_features": [
-                        "LegacyTabStateDeprecation"
-                    ]
-                },
-                {
-                    "name": "Enabled_20250319",
-                    "enable_features": [
-                        "LegacyTabStateDeprecation"
-                    ]
-                }
-            ]
-        }
-    ],
     "LensOverlayBackToLivePage": [
         {
             "platforms": [

@@ -353,6 +353,7 @@ public abstract class ChromeFeatureList {
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLAMP_AUTOMOTIVE_SCALING = "ClampAutomotiveScaling";
     public static final String CLANK_STARTUP_LATENCY_INJECTION = "ClankStartupLatencyInjection";
+    public static final String CLEANUP_LEGACY_TABSTATE = "CleanupLegacyTabState";
     public static final String CLANK_WHATS_NEW = "ClankWhatsNew";
     public static final String CLEAR_BROWSING_DATA_ANDROID_SURVEY =
             "ClearBrowsingDataAndroidSurvey";
@@ -868,6 +869,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CLAMP_AUTOMOTIVE_SCALING, true);
     public static final CachedFlag sClankStartupLatencyInjection =
             newCachedFlag(CLANK_STARTUP_LATENCY_INJECTION, false);
+    public static final CachedFlag sCleanupLegacyTabState =
+            newCachedFlag(
+                    CLEANUP_LEGACY_TABSTATE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
             newCachedFlag(
                     COLLECT_ANDROID_FRAME_TIMELINE_METRICS,
@@ -950,7 +956,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sLegacyTabStateDeprecation =
             newCachedFlag(
                     LEGACY_TAB_STATE_DEPRECATION,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sLoadNativeEarly =
             newCachedFlag(
@@ -1157,6 +1163,7 @@ public abstract class ChromeFeatureList {
                     sCctResetTimeoutEnabled,
                     sClampAutomotiveScaling,
                     sClankStartupLatencyInjection,
+                    sCleanupLegacyTabState,
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,
                     sContextMenuPictureInPictureAndroid,
@@ -1555,24 +1562,16 @@ public abstract class ChromeFeatureList {
                     newIntCachedFeatureParam(
                             COLLECT_ANDROID_FRAME_TIMELINE_METRICS, "delayed_start_ms", 3000);
 
-    /***
-     * Feature parameter for TabState deprecation which indicates that legacy TabState
-     * files should be deleted after restore if they have been migrated to FlatBuffer.
-     */
-    public static final BooleanCachedFeatureParam sDeleteMigratedLegacyTabStateFilesAfterRestore =
-            newBooleanCachedFeatureParam(
-                    LEGACY_TAB_STATE_DEPRECATION, "delete_migrated_files_after_restore", false);
-
     /** Batch size for number of legacy TabState files that should be deleted in a batch. */
-    public static final IntCachedFeatureParam sDeleteLegacyTabStateFilesBatchSize =
+    public static final IntCachedFeatureParam sCleanupLegacyTabStateBatchSize =
             newIntCachedFeatureParam(
-                    LEGACY_TAB_STATE_DEPRECATION, "delete_legacy_tabstate_files_batch_size", 5);
+                    CLEANUP_LEGACY_TABSTATE, "cleanup_legacy_tab_state_batch_size", 5);
 
     /** Maximum number of legacy TabState files that can be deleted per session. */
-    public static final IntCachedFeatureParam sMaxLegacyTabStateFilesDeletedPerSession =
+    public static final IntCachedFeatureParam sMaxLegacyTabStateFilesCleanedUpPerSession =
             newIntCachedFeatureParam(
-                    LEGACY_TAB_STATE_DEPRECATION,
-                    "max_legacy_tab_state_files_deleted_per_session",
+                    CLEANUP_LEGACY_TABSTATE,
+                    "max_legacy_tab_state_files_cleaned_up_per_session",
                     100);
 
     public static final IntCachedFeatureParam sDisableInstanceLimitMemoryThresholdMb =
@@ -1799,8 +1798,7 @@ public abstract class ChromeFeatureList {
                     sClampAutomotiveScalingMaxScalingPercentage,
                     sClankStartupLatencyInjectionAmountMs,
                     sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs,
-                    sDeleteLegacyTabStateFilesBatchSize,
-                    sDeleteMigratedLegacyTabStateFilesAfterRestore,
+                    sCleanupLegacyTabStateBatchSize,
                     sDisableInstanceLimitMaxCount,
                     sDisableInstanceLimitMemoryThresholdMb,
                     sEdgeToEdgeBottomChinOemList,
@@ -1816,7 +1814,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeTabletMinWidthThreshold,
                     sMagicStackAndroidShowAllModules,
                     sMaliciousApkDownloadCheckTelemetryOnly,
-                    sMaxLegacyTabStateFilesDeletedPerSession,
+                    sMaxLegacyTabStateFilesCleanedUpPerSession,
                     sMostVisitedTilesReselectLaxPath,
                     sMostVisitedTilesReselectLaxQuery,
                     sMostVisitedTilesReselectLaxRef,

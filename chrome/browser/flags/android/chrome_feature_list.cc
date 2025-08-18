@@ -306,6 +306,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kClankStartupLatencyInjection,
     &kClankWhatsNew,
     &kClearBrowsingDataAndroidSurvey,
+    &kCleanupLegacyTabState,
     &kClearInstanceInfoWhenClosedIntentionally,
     &kCommandLineOnNonRooted,
     &kAndroidComposeplate,
@@ -940,6 +941,10 @@ BASE_FEATURE(kDisableInstanceLimit,
              "DisableInstanceLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCleanupLegacyTabState,
+             "CleanupLegacyTabState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDontAutoHideBrowserControls,
              "DontAutoHideBrowserControls",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1096,7 +1101,7 @@ BASE_FEATURE(kHomepageIsNewTabPagePolicyAndroid,
 
 BASE_FEATURE(kLegacyTabStateDeprecation,
              "LegacyTabStateDeprecation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLoadNativeEarly,
              "LoadNativeEarly",

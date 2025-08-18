@@ -192,9 +192,7 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(
-            ChromeFeatureList.LEGACY_TAB_STATE_DEPRECATION
-                    + ":delete_migrated_files_after_restore/true")
+    @EnableFeatures(ChromeFeatureList.CLEANUP_LEGACY_TABSTATE)
     public void testLegacyTabStateFileMarkedForDeletion() throws ExecutionException {
         TabState state = getTestTabState(/* isIncognito= */ false);
         File legacyTabStateFile =
@@ -225,9 +223,7 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(
-            ChromeFeatureList.LEGACY_TAB_STATE_DEPRECATION
-                    + ":delete_migrated_files_after_restore/true")
+    @EnableFeatures(ChromeFeatureList.CLEANUP_LEGACY_TABSTATE)
     public void testUnmigratedLegacyTabStateFileNotMarkedForDeletion() throws ExecutionException {
         TabState state = getTestTabState(/* isIncognito= */ false);
         File legacyTabStateFile =

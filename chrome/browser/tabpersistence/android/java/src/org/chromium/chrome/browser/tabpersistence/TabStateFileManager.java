@@ -239,9 +239,7 @@ public class TabStateFileManager {
         long startTime = SystemClock.elapsedRealtime();
         TabState tabState = restoreTabStateInternal(file, encrypted, cipherFactory);
         if (tabState != null) {
-            if (useFlatBuffer
-                    && ChromeFeatureList.sDeleteMigratedLegacyTabStateFilesAfterRestore
-                            .getValue()) {
+            if (useFlatBuffer && ChromeFeatureList.sCleanupLegacyTabState.isEnabled()) {
                 tabState.legacyFileToDelete =
                         getTabStateFile(stateFolder, id, encrypted, /* isFlatbuffer= */ false);
             }

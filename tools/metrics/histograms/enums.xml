@@ -10519,6 +10519,7 @@ from previous Chrome versions.
   <int value="-1337433513" label="FilesGoogleDriveSettingsPage:disabled"/>
   <int value="-1337331698" label="WebRtcPqcForDtls:enabled"/>
   <int value="-1337185440" label="enable-webvr"/>
+  <int value="-1336701086" label="CleanupLegacyTabState:enabled"/>
   <int value="-1336110789" label="CastMediaRouteProvider:disabled"/>
   <int value="-1335360580" label="ReduceTransferSizeUpdatedIPC:enabled"/>
   <int value="-1335017208" label="KeyboardLockAPI:enabled"/>
@@ -11396,6 +11397,7 @@ from previous Chrome versions.
   <int value="-1017686690" label="CrosMall:enabled"/>
   <int value="-1017396114" label="FastEnumeratePrinters:enabled"/>
   <int value="-1016669222" label="CloudPrinterHandler:enabled"/>
+  <int value="-1016236134" label="CleanupLegacyTabState:disabled"/>
   <int value="-1016202433" label="disable-add-to-shelf"/>
   <int value="-1016196171"
       label="MaintainShelfStateWhenEnteringOverview:enabled"/>

@@ -84,6 +84,7 @@ BASE_DECLARE_FEATURE(kBrowserControlsEarlyResize);
 BASE_DECLARE_FEATURE(kCacheActivityTaskID);
 BASE_DECLARE_FEATURE(kCacheIsMultiInstanceApi31Enabled);
 BASE_DECLARE_FEATURE(kCastDeviceFilter);
+BASE_DECLARE_FEATURE(kCleanupLegacyTabState);
 BASE_DECLARE_FEATURE(kCCTAdaptiveButton);
 BASE_DECLARE_FEATURE(kCCTAdaptiveButtonTestSwitch);
 BASE_DECLARE_FEATURE(kCCTAuthTab);

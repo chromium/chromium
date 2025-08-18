@@ -888,7 +888,7 @@ public class TabPersistentStore {
 
             if (tabState.legacyFileToDelete != null
                     && mLegacyTabStateFilesToDelete.size()
-                            < ChromeFeatureList.sMaxLegacyTabStateFilesDeletedPerSession
+                            < ChromeFeatureList.sMaxLegacyTabStateFilesCleanedUpPerSession
                                     .getValue()) {
                 mLegacyTabStateFilesToDelete.add(tabState.legacyFileToDelete);
                 tabState.legacyFileToDelete = null;
@@ -1310,7 +1310,7 @@ public class TabPersistentStore {
         List<File> filesToDelete = new LinkedList<>();
         for (int i = 0;
                 !mLegacyTabStateFilesToDelete.isEmpty()
-                        && i < ChromeFeatureList.sDeleteLegacyTabStateFilesBatchSize.getValue();
+                        && i < ChromeFeatureList.sCleanupLegacyTabStateBatchSize.getValue();
                 i++) {
             filesToDelete.add(mLegacyTabStateFilesToDelete.poll());
         }

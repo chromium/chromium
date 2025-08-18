@@ -2868,6 +2868,9 @@ extern const char kClankDefaultBrowserPromoDescription[];
 extern const char kClankDefaultBrowserPromoRoleManagerName[];
 extern const char kClankDefaultBrowserPromoRoleManagerDescription[];
 
+extern const char kCleanupLegacyTabStateName[];
+extern const char kCleanupLegacyTabStateDescription[];
+
 extern const char kAndroidComposeplateName[];
 extern const char kAndroidComposeplateDescription[];
 

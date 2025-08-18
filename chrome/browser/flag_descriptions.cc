@@ -4945,6 +4945,11 @@ const char kClankDefaultBrowserPromoDescription[] =
     "to set Chrome as their default browser, if the trigger conditions are "
     "met.";
 
+const char kCleanupLegacyTabStateName[] = "Cleanup Legacy TabState";
+const char kCleanupLegacyTabStateDescription[] =
+    "When enabled, delete legacy TabState files for Tabs which "
+    "have been migrated to the new FlatBuffer format";
+
 const char kAndroidComposeplateName[] = "Enable composeplate on New Tab Page";
 const char kAndroidComposeplateDescription[] =
     "Show a composeplate on New Tab Page.";

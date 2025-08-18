@@ -3021,6 +3021,11 @@
    "expiry_milestone": 140
   },
   {
+    "name": "enable-cleanup-legacy-tabstate",
+    "owners": [ "davidjm@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-clipboard-data-controls-android",
     "owners": ["clhager@google.com", "clank-app-team@google.com"],
     "expiry_milestone": 145
