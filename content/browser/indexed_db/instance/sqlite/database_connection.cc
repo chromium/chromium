@@ -18,6 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/record.h"
@@ -26,7 +27,9 @@
 #include "content/browser/indexed_db/instance/sqlite/record_iterator.h"
 #include "content/browser/indexed_db/status.h"
 #include "sql/database.h"
+#include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
+#include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
@@ -41,6 +44,15 @@
 
 // TODO(crbug.com/40253999): Remove after handling all error cases.
 #define TRANSIENT_CHECK(condition) CHECK(condition)
+
+// Returns an error if the given SQL statement has not succeeded/is no longer
+// valid (`Succeeded()` returns false; `db_` has an error).
+//
+// This should be used after `Statement::Step()` returns false.
+#define RETURN_IF_STATEMENT_ERRORED(statement) \
+  if (!statement.Succeeded()) {                \
+    return base::unexpected(Status(*db_));     \
+  }
 
 namespace content::indexed_db::sqlite {
 namespace {
@@ -155,8 +167,11 @@ void InitializeNewDatabase(sql::Database* db,
                   "(row_id INTEGER PRIMARY KEY,"
                   " object_store_id INTEGER NOT NULL,"
                   " key BLOB NOT NULL,"
-                  " value BLOB NOT NULL,"
-                  " UNIQUE (object_store_id, key))"));
+                  " value BLOB NOT NULL)"));
+  // Create the index separately so it can be given a name (which is referenced
+  // by tests).
+  TRANSIENT_CHECK(db->Execute(
+      "CREATE UNIQUE INDEX records_by_key ON records(object_store_id, key)"));
   // Stores references from index keys to object store records:
   // [object_store_id, index_id, key] -> record_row_id. There should always be
   // one (and only one) row in the records table with row_id = record_row_id.
@@ -762,6 +777,26 @@ DatabaseConnection::~DatabaseConnection() {
   if (IsZygotic() && !path_.empty()) {
     db_.reset();
     sql::Database::Delete(path_);
+  } else if (db_ && !sql::IsSqliteSuccessCode(
+                        sql::ToSqliteResultCode(db_->GetErrorCode()))) {
+    // Note that `DatabaseConnection` does not set an error callback on
+    // sql::Database. Instead, errors are returned for individual operations,
+    // which will trickle up through backing store agnostic code and close all
+    // `Transaction`s, `Connection`s and `Database`s. When the last
+    // `BackingStore::Database` is deleted, `this` will be deleted, at which
+    // point recovery will be attempted if appropriate.
+#if BUILDFLAG(IS_FUCHSIA)
+    // Recovery is not supported with WAL mode DBs in Fuchsia.
+    if (db_->is_open() && sql::IsErrorCatastrophic(db_->GetErrorCode())) {
+      db_->RazeAndPoison();
+    }
+#else
+    // `RecoverIfPossible` will no-op for several reasons including if the error is
+    // thought to be transient.
+    std::ignore = sql::Recovery::RecoverIfPossible(
+        db_.get(), db_->GetErrorCode(),
+        sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
+#endif
   }
 }
 
@@ -1261,11 +1296,11 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
     statement.BindInt64(0, object_store_id);
     statement.BindBlob(1, EncodeSortableIDBKey(key));
     if (!statement.Step()) {
-      TRANSIENT_CHECK(statement.Succeeded());
+      RETURN_IF_STATEMENT_ERRORED(statement);
       return IndexedDBValue();
     }
     record_row_id = statement.ColumnInt64(0);
-    TRANSIENT_CHECK(statement.ColumnBlobAsVector(1, &value.bits));
+    statement.ColumnBlobAsVector(1, &value.bits);
   }
 
   return AddExternalObjectMetadataToValue(std::move(value), record_row_id);
