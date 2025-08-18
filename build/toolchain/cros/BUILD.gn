@@ -8,34 +8,56 @@ import("//build/toolchain/cros/cros_config.gni")
 import("//build/toolchain/cros_toolchain.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 
+# This is mostly identical to gcc_toolchain, but handles relativizing toolchain
+# paths. This is needed for CrOS since these paths often change based on the
+# environment. For example, cxx is a relative path picked up on $PATH in the
+# chroot. But in Simple Chrome, cxx is a system-absolute path.
+template("cros_toolchain") {
+  if (lacros_use_chromium_toolchain) {
+    clang_toolchain(target_name) {
+      forward_variables_from(invoker, "*")
+    }
+  } else {
+    clang_toolchain(target_name) {
+      forward_variables_from(invoker, "*")
+
+      toolchain_args.clang_use_chrome_plugins = false
+    }
+  }
+}
+
 # This is the normal toolchain for most targets.
-clang_toolchain("target") {
+cros_toolchain("target") {
   toolchain_args = {
     current_cpu = target_cpu
     current_os = "chromeos"
     sysroot = target_sysroot
   }
 
-  extra_cflags = cros_target_extra_cflags
-  extra_cppflags = cros_target_extra_cppflags
-  extra_cxxflags = cros_target_extra_cxxflags
-  extra_ldflags = cros_target_extra_ldflags
+  if (!lacros_use_chromium_toolchain) {
+    extra_cflags = cros_target_extra_cflags
+    extra_cppflags = cros_target_extra_cppflags
+    extra_cxxflags = cros_target_extra_cxxflags
+    extra_ldflags = cros_target_extra_ldflags
+  }
 }
 
-clang_toolchain("host") {
+cros_toolchain("host") {
   toolchain_args = {
     current_cpu = host_cpu
     current_os = "linux"
     sysroot = cros_host_sysroot
   }
 
-  extra_cflags = cros_host_extra_cflags
-  extra_cppflags = cros_host_extra_cppflags
-  extra_cxxflags = cros_host_extra_cxxflags
-  extra_ldflags = cros_host_extra_ldflags
+  if (!lacros_use_chromium_toolchain) {
+    extra_cflags = cros_host_extra_cflags
+    extra_cppflags = cros_host_extra_cppflags
+    extra_cxxflags = cros_host_extra_cxxflags
+    extra_ldflags = cros_host_extra_ldflags
+  }
 }
 
-clang_toolchain("v8_snapshot") {
+cros_toolchain("v8_snapshot") {
   toolchain_args = {
     if (target_cpu == "x86" || target_cpu == "arm" || target_cpu == "mipsel") {
       current_cpu = "x86"
@@ -47,8 +69,10 @@ clang_toolchain("v8_snapshot") {
     sysroot = cros_v8_snapshot_sysroot
   }
 
-  extra_cflags = cros_v8_snapshot_extra_cflags
-  extra_cppflags = cros_v8_snapshot_extra_cppflags
-  extra_cxxflags = cros_v8_snapshot_extra_cxxflags
-  extra_ldflags = cros_v8_snapshot_extra_ldflags
+  if (!lacros_use_chromium_toolchain) {
+    extra_cflags = cros_v8_snapshot_extra_cflags
+    extra_cppflags = cros_v8_snapshot_extra_cppflags
+    extra_cxxflags = cros_v8_snapshot_extra_cxxflags
+    extra_ldflags = cros_v8_snapshot_extra_ldflags
+  }
 }
