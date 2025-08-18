@@ -33,7 +33,7 @@ void BrowserControls::ResetBaseline() {
 }
 
 float BrowserControls::UnreportedSizeAdjustment() {
-  return (ShrinkViewport() ? TopHeight() : 0) - ContentOffset();
+  return (ShrinkViewport() ? TopHeight() : TopMinHeight()) - ContentOffset();
 }
 
 float BrowserControls::ContentOffset() {
