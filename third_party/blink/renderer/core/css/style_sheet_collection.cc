@@ -62,35 +62,57 @@ void StyleSheetCollection::FinishUpdateActiveStyleSheets(
   pending_active_style_sheets_.clear();
 }
 
-// FIXME(sesse): Store this somewhere (including the two-level Eval() form),
-// so that we know when we need to invalidate.
-static bool MatchMediaForMixins(const MediaQueryEvaluator& evaluator,
-                                const MediaQuerySet* media_queries) {
+// Similar to RuleSet::MatchMediaForAddRules().
+static bool MatchMediaForMixins(
+    const MediaQueryEvaluator& evaluator,
+    const MediaQuerySet* media_queries,
+    MediaQueryResultFlags& media_query_result_flags,
+    HeapVector<MediaQuerySetResult>& media_query_set_results) {
   if (!media_queries) {
     return true;
   }
-  return evaluator.Eval(*media_queries);
+  bool match_media = evaluator.Eval(*media_queries, &media_query_result_flags);
+  media_query_set_results.push_back(
+      MediaQuerySetResult(*media_queries, match_media));
+  return match_media;
 }
 
-static void ExtractMixinsFromRules(
+// Returns true if at least one @mixin rule was found.
+static bool ExtractMixinsFromRules(
     base::span<const Member<StyleRuleBase>> rules,
     const MediaQueryEvaluator& medium,
     MixinMap& mixins) {
+  bool found = false;
   for (StyleRuleBase* rule : rules) {
     // TODO(sesse): @container, @layer, @scope, @starting-style are waiting for
     // a resolution in https://github.com/w3c/csswg-drafts/issues/12417.
     if (auto* media_rule = DynamicTo<StyleRuleMedia>(rule)) {
-      if (MatchMediaForMixins(medium, media_rule->MediaQueries())) {
-        ExtractMixinsFromRules(media_rule->ChildRules(), medium, mixins);
+      // We don't update media_query_result_flags right away, because
+      // there may not be mixins within this @media. Instead, we store
+      // the flags and only set them if we actually see a @mixin.
+      MediaQueryResultFlags flags_if_found;
+      HeapVector<MediaQuerySetResult> media_query_set_results_if_found;
+      if (MatchMediaForMixins(medium, media_rule->MediaQueries(),
+                              flags_if_found,
+                              media_query_set_results_if_found)) {
+        if (ExtractMixinsFromRules(media_rule->ChildRules(), medium, mixins)) {
+          found = true;
+          mixins.media_query_result_flags.Add(flags_if_found);
+          mixins.media_query_set_results.AppendVector(
+              std::move(media_query_set_results_if_found));
+        }
       }
     } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
       if (supports_rule->ConditionIsSupported()) {
-        ExtractMixinsFromRules(supports_rule->ChildRules(), medium, mixins);
+        found |=
+            ExtractMixinsFromRules(supports_rule->ChildRules(), medium, mixins);
       }
     } else if (auto* mixin_rule = DynamicTo<StyleRuleMixin>(rule)) {
-      mixins.Set(mixin_rule->GetName(), mixin_rule);
+      mixins.mixins.Set(mixin_rule->GetName(), mixin_rule);
+      found = true;
     }
   }
+  return found;
 }
 
 static void ExtractMixinsFromSheet(const StyleSheetContents& contents,
@@ -103,7 +125,9 @@ static void ExtractMixinsFromSheet(const StyleSheetContents& contents,
     if (!import_rule->IsSupported()) {
       continue;
     }
-    if (!MatchMediaForMixins(medium, import_rule->MediaQueries())) {
+    if (!MatchMediaForMixins(medium, import_rule->MediaQueries(),
+                             mixins.media_query_result_flags,
+                             mixins.media_query_set_results)) {
       continue;
     }
     ExtractMixinsFromSheet(*import_rule->GetStyleSheet(), medium, mixins);
@@ -256,7 +280,7 @@ void StyleSheetCollection::PrepareUpdateActiveStyleSheets(
     }
   }
 
-  mixins_.clear();
+  mixins_ = MixinMap();
   for (auto& [css_sheet, rule_set] : new_active_style_sheets) {
     ExtractMixinsFromSheet(*css_sheet->Contents(), medium, mixins_);
   }

@@ -705,8 +705,6 @@ class CORE_EXPORT StyleRuleMixin : public StyleRuleBase {
   Member<StyleRule> fake_parent_rule_;
 };
 
-using MixinMap = HeapHashMap<AtomicString, Member<StyleRuleMixin>>;
-
 // An @apply rule, representing applying a mixin.
 class CORE_EXPORT StyleRuleApplyMixin : public StyleRuleBase {
  public:

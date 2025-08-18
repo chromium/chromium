@@ -1023,8 +1023,9 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                     container_query, cascade_layer, style_scope,
                     apply_mixins_stack);
     } else if (auto* apply_mixin_rule = DynamicTo<StyleRuleApplyMixin>(rule)) {
-      auto it = mixins.find(apply_mixin_rule->GetName());
-      if (it != mixins.end() && it->value->FakeParentRule().ChildRules()) {
+      auto it = mixins.mixins.find(apply_mixin_rule->GetName());
+      if (it != mixins.mixins.end() &&
+          it->value->FakeParentRule().ChildRules()) {
         if (std::ranges::find_if(apply_mixins_stack,
                                  [&](const ApplyingMixin& entry) {
                                    return entry.mixin == it->value;
@@ -1040,6 +1041,14 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                       medium, mixins, add_rule_flags, container_query,
                       cascade_layer, style_scope, apply_mixins_stack);
         apply_mixins_stack.pop_back();
+
+        // If the @mixin we are applying (or currently: any @mixin) was defined
+        // inside a media query, we now need to take on the same dependency.
+        // This makes sure that if this media query changes, we will also
+        // re-evaluate this RuleSet.
+        features_.MutableMediaQueryResultFlags().Add(
+            mixins.media_query_result_flags);
+        media_query_set_results_.AppendVector(mixins.media_query_set_results);
       }
     } else if (auto* contents_rule =
                    DynamicTo<StyleRuleContentsStatement>(rule)) {

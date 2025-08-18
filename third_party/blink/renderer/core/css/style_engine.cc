@@ -741,13 +741,19 @@ MixinMap StyleEngine::EffectiveMixinsForTreeScope(TreeScope& tree_scope) {
   }
 
   MixinMap inherited_mixins = EffectiveMixinsForTreeScope(*parent_scope);
-  if (inherited_mixins.empty()) {
+  if (inherited_mixins.mixins.empty() &&
+      inherited_mixins.media_query_set_results.empty()) {
     return collection->Mixins();
   }
 
-  for (const auto& [name, value] : collection->Mixins()) {
-    inherited_mixins.insert(name, value);
+  const MixinMap& child_mixins = collection->Mixins();
+  for (const auto& [name, value] : child_mixins.mixins) {
+    inherited_mixins.mixins.insert(name, value);
   }
+  inherited_mixins.media_query_result_flags.Add(
+      child_mixins.media_query_result_flags);
+  inherited_mixins.media_query_set_results.AppendVector(
+      child_mixins.media_query_set_results);
   return inherited_mixins;
 }
 

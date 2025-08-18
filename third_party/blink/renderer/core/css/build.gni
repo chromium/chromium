@@ -544,6 +544,7 @@ blink_core_sources_css = [
   "media_values_cached.h",
   "media_values_dynamic.cc",
   "media_values_dynamic.h",
+  "mixin_map.h",
   "native_paint_image_generator.h",
   "offscreen_font_selector.cc",
   "offscreen_font_selector.h",
