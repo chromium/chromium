@@ -8,6 +8,11 @@ found in the LICENSE file.
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    android:key="languages_list_category">
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="languages_list_description_preference"
+        android:summary="@string/languages_list_description" />
+
     <org.chromium.chrome.browser.language.settings.ContentLanguagesPreference
         android:key="preferred_languages"
         android:layout="@layout/languages_preference"
