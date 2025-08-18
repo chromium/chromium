@@ -54,7 +54,6 @@ class CastGpuFactoryImpl : public CastGpuFactory,
   // media::GpuVideoAcceleratorFactories implementation.
   bool IsGpuVideoDecodeAcceleratorEnabled() override;
   bool IsGpuVideoEncodeAcceleratorEnabled() override;
-  base::UnguessableToken GetChannelToken() override;
   int32_t GetCommandBufferRouteId() override;
   ::media::GpuVideoAcceleratorFactories::Supported IsDecoderConfigSupported(
       const ::media::VideoDecoderConfig& config) override;
@@ -73,11 +72,9 @@ class CastGpuFactoryImpl : public CastGpuFactory,
   CreateVideoEncodeAccelerator() override;
   bool ShouldUseGpuMemoryBuffersForVideoFrames(
       bool for_media_stream) const override;
-  unsigned ImageTextureTarget(gfx::BufferFormat format) override;
   OutputFormat VideoFrameOutputFormat(
       ::media::VideoPixelFormat pixel_format) override;
   gpu::SharedImageInterface* SharedImageInterface() override;
-  gpu::GpuMemoryBufferManager* GpuMemoryBufferManager() override;
   base::UnsafeSharedMemoryRegion CreateSharedMemoryRegion(size_t size) override;
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() override;
   viz::RasterContextProvider* GetMediaContextProvider() override;

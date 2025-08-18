@@ -118,15 +118,7 @@ bool CastGpuFactoryImpl::IsGpuVideoEncodeAcceleratorEnabled() {
   return true;
 }
 
-// Return the channel token, or an empty token if the channel is unusable.
-base::UnguessableToken CastGpuFactoryImpl::GetChannelToken() {
-  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
-  if (CheckContextLost()) {
-    return base::UnguessableToken();
-  }
 
-  return channel_token_;
-}
 
 // Returns the |route_id| of the command buffer, or 0 if there is none.
 int32_t CastGpuFactoryImpl::GetCommandBufferRouteId() {
@@ -227,10 +219,6 @@ bool CastGpuFactoryImpl::ShouldUseGpuMemoryBuffersForVideoFrames(
   return false;
 }
 
-unsigned CastGpuFactoryImpl::ImageTextureTarget(gfx::BufferFormat format) {
-  return 0;
-}
-
 media::GpuVideoAcceleratorFactories::OutputFormat
 CastGpuFactoryImpl::VideoFrameOutputFormat(
     ::media::VideoPixelFormat pixel_format) {
@@ -239,10 +227,6 @@ CastGpuFactoryImpl::VideoFrameOutputFormat(
 
 gpu::SharedImageInterface* CastGpuFactoryImpl::SharedImageInterface() {
   return nullptr;
-}
-
-gpu::GpuMemoryBufferManager* CastGpuFactoryImpl::GpuMemoryBufferManager() {
-  return gpu_->gpu_memory_buffer_manager();
 }
 
 base::UnsafeSharedMemoryRegion CastGpuFactoryImpl::CreateSharedMemoryRegion(
