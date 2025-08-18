@@ -31,7 +31,7 @@ declare_args() {
   enable_message_center =
       is_win || is_mac || is_linux || is_chromeos || is_fuchsia
 
-  enable_hidpi = true
+  enable_hidpi = !is_android
 }
 
 # Android does have platform accessibility support that's implemented using
