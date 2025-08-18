@@ -95,11 +95,10 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
   void ClearFocusGroup();
   HeapVector<Member<Element>>& ScrollMarkers() { return focus_group_; }
 
-  // Set selected scroll marker.
-  // Actually sets the pending_selected_marker_ to be updated at the next
-  // snapshot.
-  CORE_EXPORT void SetPendingSelectedMarker(Element* scroll_marker,
-                                            bool apply_snap_alignment);
+  // Sets the pending_selected_marker_ to be updated at the next
+  // snapshot, if it's not pinned.
+  CORE_EXPORT void MaybeSetPendingSelectedMarker(Element* scroll_marker,
+                                                 bool apply_snap_alignment);
   // Returns the currently selected scroll marker (selected_marker_).
   // Might be replaced by pending_selected_marker_ at the next snapshot.
   Element* Selected() const;
@@ -129,6 +128,10 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
   bool SelectedMarkerIsPinned() const { return selected_marker_is_pinned_; }
 
  private:
+  // Sets the pending_selected_marker_ to be updated at the next
+  // snapshot.
+  void SetPendingSelectedMarker(Element* scroll_marker,
+                                bool apply_snap_alignment);
   // Applies the pending scroll marker update to the selected_marker_.
   // If the selected_marker_is_invalid_ is true, it clears the selected_marker_,
   // notifying it of a pseudo class change.
