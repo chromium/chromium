@@ -11,30 +11,19 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/i18n/time_formatting.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/types/optional_util.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/common/common_types.h"
@@ -46,20 +35,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
-#include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/interest_group_manager.h"
-#include "content/public/common/content_features.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
-#include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -82,7 +65,6 @@ using PromptType = ::PrivacySandboxService::PromptType;
 using NoticeSurfaceType = ::privacy_sandbox::SurfaceType;
 using PromptStartupState = ::PrivacySandboxService::PromptStartupState;
 using ::privacy_sandbox::EligibilityLevel;
-using ::privacy_sandbox::NoticeId;
 using ::privacy_sandbox::PrivacySandboxNoticeServiceInterface;
 using ::privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 using ::privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;

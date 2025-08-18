@@ -1366,6 +1366,7 @@ static_library("ui") {
       "//chrome/browser/first_party_sets",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/password_manager/factories",
+      "//chrome/browser/privacy_sandbox:countries",
       "//chrome/browser/privacy_sandbox/notice:desktop_entrypoint_handlers_helper",
       "//chrome/browser/privacy_sandbox/notice:notice_mojom",
       "//chrome/browser/ui/interaction",

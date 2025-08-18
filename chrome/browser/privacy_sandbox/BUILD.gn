@@ -13,20 +13,12 @@ source_set("headers") {
   ]
 
   public_deps = [
-    ":countries",
     "notice:notice_definitions",
     "//base",
-    "//chrome/browser/first_party_sets",
     "//chrome/browser/profiles:profile",
-    "//components/content_settings/core/browser",
     "//components/keyed_service/core",
-    "//components/prefs",
     "//components/privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
-    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
-    "//components/profile_metrics",
-    "//components/user_education/common",
-    "//content/public/browser",
     "//net",
   ]
 }
