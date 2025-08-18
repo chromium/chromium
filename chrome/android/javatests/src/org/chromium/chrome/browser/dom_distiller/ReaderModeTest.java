@@ -42,10 +42,12 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
 import org.chromium.chrome.browser.download.DownloadTestRule;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -133,13 +135,18 @@ public class ReaderModeTest implements CustomMainActivityStart {
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
 
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "DomDistiller.Android.EntryPoint", EntryPoint.TOOLBAR_BUTTON);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     originalTab
                             .getUserDataHost()
                             .getUserData(ReaderModeManager.USER_DATA_KEY)
-                            .activateReaderMode();
+                            .activateReaderMode(EntryPoint.TOOLBAR_BUTTON);
                 });
+        watcher.assertExpected();
+
         CustomTabActivity customTabActivity = waitForCustomTabActivity();
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(customTabActivity.getActivityTab(), notNullValue()));
@@ -161,7 +168,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
                     originalTab
                             .getUserDataHost()
                             .getUserData(ReaderModeManager.USER_DATA_KEY)
-                            .activateReaderMode();
+                            .activateReaderMode(EntryPoint.APP_MENU);
                 });
         waitForDistillation(PAGE_TITLE, originalTab);
     }
@@ -182,7 +189,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
                     originalTab
                             .getUserDataHost()
                             .getUserData(ReaderModeManager.USER_DATA_KEY)
-                            .activateReaderMode();
+                            .activateReaderMode(EntryPoint.APP_MENU);
                 });
         CustomTabActivity customTabActivity = waitForCustomTabActivity();
         CriteriaHelper.pollUiThread(
@@ -240,7 +247,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
                     originalTab
                             .getUserDataHost()
                             .getUserData(ReaderModeManager.USER_DATA_KEY)
-                            .activateReaderMode();
+                            .activateReaderMode(EntryPoint.APP_MENU);
                 });
         CustomTabActivity customTabActivity = waitForCustomTabActivity();
         CriteriaHelper.pollUiThread(
@@ -293,7 +300,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
                     originalTab
                             .getUserDataHost()
                             .getUserData(ReaderModeManager.USER_DATA_KEY)
-                            .activateReaderMode();
+                            .activateReaderMode(EntryPoint.APP_MENU);
                 });
         CustomTabActivity customTabActivity = waitForCustomTabActivity();
         CriteriaHelper.pollUiThread(() -> customTabActivity.getActivityTab() != null);

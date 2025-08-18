@@ -2405,7 +2405,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             RecordUserAction.record("MobileMenuHideReaderMode");
         } else {
             // Show Reading Mode menu option is visible.
-            readerModeManager.activateReaderMode();
+            readerModeManager.activateReaderMode(ReaderModeManager.EntryPoint.APP_MENU);
             RecordUserAction.record("MobileMenuShowReaderMode");
         }
     }

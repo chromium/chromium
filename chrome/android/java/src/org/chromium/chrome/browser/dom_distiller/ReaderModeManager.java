@@ -94,6 +94,38 @@ import java.util.LinkedHashSet;
 @NullMarked
 public class ReaderModeManager extends EmptyTabObserver
         implements UserData, NightModeStateProvider.Observer {
+
+    // LINT.IfChange(DomDistillerEntryPoint)
+
+    /**
+     * Possible entry-points into reader mode. These entries are used to record an UMA histogram,
+     * don't reorder to change existing values.
+     */
+    @IntDef({
+        EntryPoint.UNKNOWN,
+        EntryPoint.MESSAGE,
+        EntryPoint.APP_MENU,
+        EntryPoint.TOOLBAR_BUTTON,
+        EntryPoint.MAX_VALUE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface EntryPoint {
+        int UNKNOWN = 0;
+
+        /** The user opened reader mode through an app message. */
+        int MESSAGE = 1;
+
+        /** The user opened reader mode through the app menu. */
+        int APP_MENU = 2;
+
+        /** The user opened reader mode through the toolbar button. */
+        int TOOLBAR_BUTTON = 3;
+
+        int MAX_VALUE = TOOLBAR_BUTTON;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:DomDistillerEntryPoint)
+
     /** Possible states that the distiller can be in on a web page. */
     @IntDef({
         DistillationStatus.POSSIBLE,
@@ -606,7 +638,7 @@ public class ReaderModeManager extends EmptyTabObserver
                         .with(
                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
-                                    activateReaderMode();
+                                    activateReaderMode(EntryPoint.MESSAGE);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
                         .with(
@@ -643,7 +675,7 @@ public class ReaderModeManager extends EmptyTabObserver
         sMutedSites.remove(urlToHash(url));
     }
 
-    public void activateReaderMode() {
+    public void activateReaderMode(@EntryPoint int entryPoint) {
         // Contextual page action buttons can't be dismissed, instead we consider a shown but unused
         // button as "dismissed" and mute the site on setReaderModeUiShown(). When the button gets
         // clicked we un-mute the site to prevent the rate limiting logic from showing the CPA
@@ -662,6 +694,9 @@ public class ReaderModeManager extends EmptyTabObserver
                     AdaptiveToolbarButtonVariant.READER_MODE,
                     AdaptiveToolbarButtonVariant.MAX_VALUE);
         }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "DomDistiller.Android.EntryPoint", entryPoint, EntryPoint.MAX_VALUE);
     }
 
     private boolean shouldUseRegularTabsForDistillation() {

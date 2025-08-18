@@ -1626,7 +1626,19 @@ Unknown properties are collapsed to zero. -->
              desktop version of the site."/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java.java:DistillationResult) -->
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java:DistillationResult) -->
+
+<!-- LINT.IfChange(DomDistillerEntryPoint)-->
+
+<enum name="DomDistillerEntryPoint">
+  <summary>Describes the end-state of the distillation result.</summary>
+  <int value="0" label="Through an unknown source"/>
+  <int value="1" label="Through a message"/>
+  <int value="2" label="Through the app menu item"/>
+  <int value="3" label="Through the toolbar button"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java:EntryPoint) -->
 
 <!-- LINT.IfChange(JAWSMajorVersion)-->
 

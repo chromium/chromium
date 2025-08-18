@@ -45,6 +45,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationResult;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -493,7 +494,7 @@ public class ReaderModeManagerTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("CustomTab.AdaptiveToolbarButton.FallbackUi")
                         .build();
-        mManager.activateReaderMode();
+        mManager.activateReaderMode(EntryPoint.APP_MENU);
         watcher.assertExpected();
     }
 
@@ -526,7 +527,7 @@ public class ReaderModeManagerTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("CustomTab.AdaptiveToolbarButton.FallbackUi")
                         .build();
-        mManager.activateReaderMode();
+        mManager.activateReaderMode(EntryPoint.APP_MENU);
         watcher.assertExpected();
     }
 
@@ -556,7 +557,7 @@ public class ReaderModeManagerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "CustomTab.AdaptiveToolbarButton.FallbackUi",
                         AdaptiveToolbarButtonVariant.READER_MODE);
-        mManager.activateReaderMode();
+        mManager.activateReaderMode(EntryPoint.APP_MENU);
         watcher.assertExpected();
     }
 
@@ -590,7 +591,7 @@ public class ReaderModeManagerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "CustomTab.AdaptiveToolbarButton.FallbackUi",
                         AdaptiveToolbarButtonVariant.READER_MODE);
-        mManager.activateReaderMode();
+        mManager.activateReaderMode(EntryPoint.APP_MENU);
         watcher.assertExpected();
     }
 

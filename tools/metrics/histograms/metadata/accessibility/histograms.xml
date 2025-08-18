@@ -3952,6 +3952,15 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="DomDistiller.Android.EntryPoint" enum="DomDistillerEntryPoint"
+    expires_after="2026-06-01">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    The entry-point into Reader Mode, recorded when the user enters reader mode.
+  </summary>
+</histogram>
+
 <histogram
     name="DomDistiller.Android.OnDistillableResult.AccessibilitySettingEnabled"
     enum="Boolean" expires_after="2026-06-01">

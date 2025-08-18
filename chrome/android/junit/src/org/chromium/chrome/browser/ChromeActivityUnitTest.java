@@ -283,7 +283,7 @@ public class ChromeActivityUnitTest {
         assertTrue(
                 chromeActivity.onMenuOrKeyboardAction(
                         R.id.reader_mode_menu_id, /* fromMenu= */ true));
-        verify(mReaderModeManager).activateReaderMode();
+        verify(mReaderModeManager).activateReaderMode(ReaderModeManager.EntryPoint.APP_MENU);
         assertEquals(1, userActionTester.getActionCount("MobileMenuShowReaderMode"));
     }
 

@@ -31,6 +31,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -111,7 +112,7 @@ public class ReaderModeToolbarButtonControllerTest {
         ButtonData readerModeButton = controller.get(mMockTab);
         readerModeButton.getButtonSpec().getOnClickListener().onClick(null);
         verify(mReaderModeActionRateLimiter).onActionClicked();
-        verify(mMockReaderModeManager).activateReaderMode();
+        verify(mMockReaderModeManager).activateReaderMode(EntryPoint.TOOLBAR_BUTTON);
     }
 
     @Test

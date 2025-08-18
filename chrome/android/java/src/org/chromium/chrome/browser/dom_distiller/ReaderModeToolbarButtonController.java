@@ -18,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
@@ -143,7 +144,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
             return;
         }
 
-        readerModeManager.activateReaderMode();
+        readerModeManager.activateReaderMode(EntryPoint.TOOLBAR_BUTTON);
     }
 
     @Override
