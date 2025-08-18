@@ -31,9 +31,6 @@ enum class ForceDarkImageBehavior {
   // Same as ForceDarkInversionMethod::kUseBlinkSettings above.
   kUseBlinkSettings,
 
-  // Do not invert any images.
-  kInvertNone,
-
   // Invert only some images. Images that act as icons or text should be
   // inverted, but photos, avatars, etc. should not be.
   kInvertSelectively

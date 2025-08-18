@@ -813,19 +813,16 @@ const FeatureEntry::Choice kSafetyHubUnifiedPasswordsModuleChoices[] = {
 #if !BUILDFLAG(IS_CHROMEOS)
 const FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
     {"inversion_method", "hsl_based"},
-    {"image_behavior", "none"},
     {"foreground_lightness_threshold", "150"},
     {"background_lightness_threshold", "205"}};
 
 const FeatureEntry::FeatureParam kForceDark_SimpleCielab[] = {
     {"inversion_method", "cielab_based"},
-    {"image_behavior", "none"},
     {"foreground_lightness_threshold", "150"},
     {"background_lightness_threshold", "205"}};
 
 const FeatureEntry::FeatureParam kForceDark_SimpleRgb[] = {
     {"inversion_method", "rgb_based"},
-    {"image_behavior", "none"},
     {"foreground_lightness_threshold", "150"},
     {"background_lightness_threshold", "205"}};
 
@@ -839,7 +836,6 @@ const FeatureEntry::FeatureParam kForceDark_SelectiveImageInversion[] = {
 
 const FeatureEntry::FeatureParam kForceDark_SelectiveElementInversion[] = {
     {"inversion_method", "cielab_based"},
-    {"image_behavior", "none"},
     {"foreground_lightness_threshold", "150"},
     {"background_lightness_threshold", "205"}};
 

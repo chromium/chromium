@@ -1036,7 +1036,6 @@ const base::FeatureParam<ForceDarkImageBehavior>::Option
     forcedark_image_behavior_options[] = {
         {ForceDarkImageBehavior::kUseBlinkSettings,
          "use_blink_settings_for_images"},
-        {ForceDarkImageBehavior::kInvertNone, "none"},
         {ForceDarkImageBehavior::kInvertSelectively, "selective"}};
 
 BASE_FEATURE_ENUM_PARAM(ForceDarkImageBehavior,

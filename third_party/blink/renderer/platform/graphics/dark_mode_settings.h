@@ -21,10 +21,9 @@ enum class DarkModeInversionAlgorithm {
 // This enum will be removed soon to make dark mode simpler.
 enum class DarkModeImagePolicy {
   kFilterSmart,  // Apply dark-mode based on image content.
-  kFilterNone,   // Never apply dark-mode filter to any images.
 
   kFirst = kFilterSmart,  // First enum value.
-  kLast = kFilterNone,    // Last enum value.
+  kLast = kFilterSmart,   // Last enum value.
 };
 
 enum class DarkModeImageClassifierPolicy {
@@ -45,7 +44,7 @@ struct DarkModeSettings {
   DarkModeInversionAlgorithm mode =
       DarkModeInversionAlgorithm::kInvertLightnessLAB;
   float contrast = 0.0;                 // Valid range from -1.0 to 1.0
-  DarkModeImagePolicy image_policy = DarkModeImagePolicy::kFilterNone;
+  DarkModeImagePolicy image_policy = DarkModeImagePolicy::kFilterSmart;
   DarkModeImageClassifierPolicy image_classifier_policy =
       DarkModeImageClassifierPolicy::kNumColorsWithMlFallback;
 

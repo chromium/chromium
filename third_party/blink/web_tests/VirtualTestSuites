@@ -635,26 +635,6 @@
     "expires": "Jul 1, 2026"
   },
   {
-    "prefix": "dark-mode-images-filter-none",
-    "owners": [
-      "peconn@chromium.org",
-      "pdr@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "dark-mode/images"
-    ],
-    "args": [
-      "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
-      "--dark-mode-settings=ImagePolicy=1"
-    ],
-    "expires": "Jul 1, 2026"
-  },
-  {
     "prefix": "dbsc-enabled",
     "owners": [
       "thefrog@chromium.org",

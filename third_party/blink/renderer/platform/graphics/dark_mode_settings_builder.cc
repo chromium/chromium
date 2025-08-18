@@ -115,8 +115,6 @@ DarkModeImagePolicy GetImagePolicy(const SwitchParams& switch_params) {
     case ForceDarkImageBehavior::kUseBlinkSettings:
       return GetIntegerSwitchParamValue<DarkModeImagePolicy>(
           switch_params, "ImagePolicy", kDefaultDarkModeImagePolicy);
-    case ForceDarkImageBehavior::kInvertNone:
-      return DarkModeImagePolicy::kFilterNone;
     case ForceDarkImageBehavior::kInvertSelectively:
       return DarkModeImagePolicy::kFilterSmart;
   }
