@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_icon.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/grit/generated_resources.h"
@@ -182,7 +183,7 @@ void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
   } else if (alert_state.has_value()) {
     const tabs::TabAlert alert = alert_state.value();
     SetContent(tabs::GetAlertImageModel(alert, GetTabAlertColor(alert)),
-               GetTabAlertStateText(alert));
+               tabs::TabAlertController::GetTabAlertStateText(alert));
   } else {
     SetContent(ui::ImageModel(), std::u16string());
   }

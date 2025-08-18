@@ -49,6 +49,9 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   static const TabAlertController* From(const TabInterface* tab);
   static TabAlertController* From(TabInterface* tab);
 
+  // Returns a localized string describing the `alert_state`.
+  static std::u16string GetTabAlertStateText(const tabs::TabAlert alert_state);
+
   using AlertToShowChangedCallback =
       base::RepeatingCallback<void(std::optional<TabAlert>)>;
   base::CallbackListSubscription AddAlertToShowChangedCallback(
