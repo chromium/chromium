@@ -22,10 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AIPageContentMode">
+  <variant name="ActionableElements" summary="actionable elements mode"/>
+  <variant name="Default" summary="default mode"/>
+</variants>
+
 <variants name="AnnotationType">
   <variant name="ContentVisibility" summary="Content Visibility"/>
   <variant name="Deprecated PageEntities" summary="Deprecated - Page Entities"/>
   <variant name="Unknown" summary="Unknown"/>
+</variants>
+
+<variants name="CriticalPath">
+  <variant name="CriticalPath" summary="on the critical path"/>
+  <variant name="NotCriticalPath" summary="not on the critical path"/>
 </variants>
 
 <variants name="FrameType">
@@ -579,6 +589,20 @@ chromium-metrics-reviews@google.com.
     process across all frames for the Document displayed by the primary main
     frame.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.AIPageContent.TotalLatency.{AIPageContentMode}.{CriticalPath}"
+    units="ms" expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>gklassen@chromium.org</owner>
+  <summary>
+    The total end-to-end latency for extracting AIPageContent in
+    {AIPageContentMode} when the request is {CriticalPath}.
+  </summary>
+  <token key="AIPageContentMode" variants="AIPageContentMode"/>
+  <token key="CriticalPath" variants="CriticalPath"/>
 </histogram>
 
 <histogram name="OptimizationGuide.AnnotatedPageContent.ComputeMetricsLatency"

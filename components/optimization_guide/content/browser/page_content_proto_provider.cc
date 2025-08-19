@@ -237,6 +237,8 @@ void ComputeContentNodeMetrics(
 }
 
 void RecordPageContentExtractionMetrics(
+    blink::mojom::AIPageContentMode mode,
+    bool on_critical_path,
     base::TimeDelta total_latency,
     ukm::SourceId source_id,
     optimization_guide::proto::AnnotatedPageContent proto) {
@@ -247,6 +249,30 @@ void RecordPageContentExtractionMetrics(
   ComputeContentNodeMetrics(proto.root_node(), &metrics);
   UMA_HISTOGRAM_TIMES("OptimizationGuide.AIPageContent.TotalLatency",
                       total_latency);
+  if (mode == blink::mojom::AIPageContentMode::kDefault) {
+    if (on_critical_path) {
+      UMA_HISTOGRAM_TIMES(
+          "OptimizationGuide.AIPageContent.TotalLatency.Default.CriticalPath",
+          total_latency);
+    } else {
+      UMA_HISTOGRAM_TIMES(
+          "OptimizationGuide.AIPageContent.TotalLatency.Default."
+          "NotCriticalPath",
+          total_latency);
+    }
+  } else if (mode == blink::mojom::AIPageContentMode::kActionableElements) {
+    if (on_critical_path) {
+      UMA_HISTOGRAM_TIMES(
+          "OptimizationGuide.AIPageContent.TotalLatency.ActionableElements."
+          "CriticalPath",
+          total_latency);
+    } else {
+      UMA_HISTOGRAM_TIMES(
+          "OptimizationGuide.AIPageContent.TotalLatency.ActionableElements."
+          "NotCriticalPath",
+          total_latency);
+    }
+  }
   // 10KB bucket up to 5MB.
   // TODO(crbug.com/392115749): Use provided metrics when available.
   UMA_HISTOGRAM_CUSTOM_COUNTS(
@@ -292,6 +318,8 @@ void OnGotAIPageContentForAllFrames(
     OnAIPageContentDone done_callback) {
   optimization_guide::AIPageContentResult page_content;
   optimization_guide::FrameTokenSet frame_token_set;
+  auto mode = main_frame_options->mode;
+  auto on_critical_path = main_frame_options->on_critical_path;
 
   if (auto result = optimization_guide::ConvertAIPageContentToProto(
           std::move(main_frame_options), main_frame_token, *page_content_map,
@@ -318,7 +346,7 @@ void OnGotAIPageContentForAllFrames(
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(RecordPageContentExtractionMetrics,
+      base::BindOnce(RecordPageContentExtractionMetrics, mode, on_critical_path,
                      elapsed_timer.Elapsed(), source_id, page_content.proto));
   std::move(done_callback).Run(std::move(page_content));
 }
