@@ -1054,6 +1054,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/timing/performance_resource_timing.cc'
+        ],
+        'allowed': [
+            'base::MakeFixedFlatSet',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core',
             'third_party/blink/public/common/messaging/accelerated_image_info.h',
             'third_party/blink/public/common/messaging/accelerated_static_bitmap_image_mojom_traits.h',

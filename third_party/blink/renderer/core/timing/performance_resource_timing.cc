@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/notreached.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-blink-forward.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -64,6 +65,31 @@
 
 namespace blink {
 
+namespace {
+// The below is the list of initiatorType values compliant to
+// PerformanceResourceTiming specification
+// (https://www.w3.org/TR/resource-timing/#dom-performanceresourcetiming-initiatortype).
+// Chromium uses additional initiatorType values that are not in this list.
+// These values should be converted to "other" according to the
+// PerformanceResourceTiming specification.
+constexpr auto kInitiatorTypeValues = base::MakeFixedFlatSet<std::string_view>({
+    "navigation", "body",   "css",         "script", "xmlhttprequest", "font",
+    "fetch",      "beacon", "video",       "audio",  "track",          "img",
+    "image",      "input",  "ping",        "iframe", "frame",          "embed",
+    "link",       "object", "early-hints",
+});
+
+AtomicString GetFilteredInitiatorType(const AtomicString& initiator_type) {
+  if (initiator_type.IsNull() || initiator_type.empty()) {
+    return fetch_initiator_type_names::kOther;
+  }
+  if (kInitiatorTypeValues.contains(initiator_type.GetString().Ascii())) {
+    return initiator_type;
+  }
+  return fetch_initiator_type_names::kOther;
+}
+}  // namespace
+
 using network::mojom::blink::NavigationDeliveryType;
 
 PerformanceResourceTiming::PerformanceResourceTiming(
@@ -87,9 +113,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
               cross_origin_isolated_capability),
           DynamicTo<LocalDOMWindow>(context),
           navigation_id),
-      initiator_type_(initiator_type.empty() || initiator_type.IsNull()
-                          ? fetch_initiator_type_names::kOther
-                          : initiator_type),
+      initiator_type_(GetFilteredInitiatorType(initiator_type)),
       time_origin_(time_origin),
       cross_origin_isolated_capability_(cross_origin_isolated_capability),
       server_timing_(
