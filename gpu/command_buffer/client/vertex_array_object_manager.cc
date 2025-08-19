@@ -10,12 +10,9 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
-#include "gpu/command_buffer/common/gles2_cmd_utils.h"
 
-namespace gpu {
-namespace gles2 {
+namespace gpu::gles2 {
 
 template <typename T>
 static T RoundUpToMultipleOf4(T size) {
@@ -334,29 +331,14 @@ const VertexArrayObject::VertexAttrib* VertexArrayObject::GetAttrib(
   return nullptr;
 }
 
-VertexArrayObjectManager::VertexArrayObjectManager(
-    GLuint max_vertex_attribs,
-    GLuint array_buffer_id,
-    GLuint element_array_buffer_id,
-    bool support_client_side_arrays)
+VertexArrayObjectManager::VertexArrayObjectManager(GLuint max_vertex_attribs)
     : max_vertex_attribs_(max_vertex_attribs),
-      array_buffer_id_(array_buffer_id),
-      array_buffer_size_(0),
-      array_buffer_offset_(0),
-      element_array_buffer_id_(element_array_buffer_id),
-      element_array_buffer_size_(0),
       collection_buffer_size_(0),
       default_vertex_array_object_(
           std::make_unique<VertexArrayObject>(max_vertex_attribs)),
-      bound_vertex_array_object_(default_vertex_array_object_.get()),
-      support_client_side_arrays_(support_client_side_arrays) {}
+      bound_vertex_array_object_(default_vertex_array_object_.get()) {}
 
 VertexArrayObjectManager::~VertexArrayObjectManager() = default;
-
-bool VertexArrayObjectManager::IsReservedId(GLuint id) const {
-  return (id != 0 &&
-          (id == array_buffer_id_ || id == element_array_buffer_id_));
-}
 
 GLuint VertexArrayObjectManager::bound_element_array_buffer() const {
   return bound_vertex_array_object_->bound_element_array_buffer();
@@ -481,180 +463,4 @@ bool VertexArrayObjectManager::IsDefaultVAOBound() const {
   return bound_vertex_array_object_ == default_vertex_array_object_.get();
 }
 
-bool VertexArrayObjectManager::SupportsClientSideBuffers() {
-  return support_client_side_arrays_ &&
-         bound_vertex_array_object_->HaveEnabledClientSideBuffers();
-}
-
-// Returns true if buffers were setup.
-bool VertexArrayObjectManager::SetupSimulatedClientSideBuffers(
-    const char* function_name,
-    GLES2Implementation* gl,
-    GLES2CmdHelper* gl_helper,
-    GLsizei num_elements,
-    GLsizei primcount,
-    bool* simulated) {
-  *simulated = false;
-  if (!SupportsClientSideBuffers())
-    return false;
-
-  if (!IsDefaultVAOBound()) {
-    gl->SetGLError(
-        GL_INVALID_OPERATION, function_name,
-        "client side arrays not allowed with vertex array object");
-    return false;
-  }
-  *simulated = true;
-  base::CheckedNumeric<GLsizei> checked_total_size = 0;
-  // Compute the size of the buffer we need.
-  const VertexArrayObject::VertexAttribs& vertex_attribs =
-      bound_vertex_array_object_->vertex_attribs();
-  for (GLuint ii = 0; ii < vertex_attribs.size(); ++ii) {
-    const VertexArrayObject::VertexAttrib& attrib = vertex_attribs[ii];
-    if (attrib.IsClientSide() && attrib.enabled()) {
-      uint32_t bytes_per_element =
-          GLES2Util::GetGroupSizeForBufferType(attrib.size(), attrib.type());
-      GLsizei elements = (primcount && attrib.divisor() > 0) ?
-          ((primcount - 1) / attrib.divisor() + 1) : num_elements;
-      checked_total_size +=
-          RoundUpToMultipleOf4(base::CheckMul(bytes_per_element, elements));
-    }
-  }
-  GLsizei total_size = 0;
-  if (!checked_total_size.AssignIfValid(&total_size)) {
-    gl->SetGLError(GL_INVALID_OPERATION, function_name,
-                   "size overflow for client side arrays");
-    return false;
-  }
-  gl_helper->BindBuffer(GL_ARRAY_BUFFER, array_buffer_id_);
-  array_buffer_offset_ = 0;
-  if (total_size > array_buffer_size_) {
-    gl->BufferDataHelper(GL_ARRAY_BUFFER, total_size, nullptr, GL_DYNAMIC_DRAW);
-    array_buffer_size_ = total_size;
-  }
-  for (GLuint ii = 0; ii < vertex_attribs.size(); ++ii) {
-    const VertexArrayObject::VertexAttrib& attrib = vertex_attribs[ii];
-    if (attrib.IsClientSide() && attrib.enabled()) {
-      uint32_t bytes_per_element =
-          GLES2Util::GetGroupSizeForBufferType(attrib.size(), attrib.type());
-      GLsizei real_stride = attrib.stride() ?
-          attrib.stride() : static_cast<GLsizei>(bytes_per_element);
-      GLsizei elements = (primcount && attrib.divisor() > 0) ?
-          ((primcount - 1) / attrib.divisor() + 1) : num_elements;
-      GLsizei bytes_collected = CollectData(
-          attrib.pointer(), bytes_per_element, real_stride, elements);
-      gl->BufferSubDataHelper(
-          GL_ARRAY_BUFFER, array_buffer_offset_, bytes_collected,
-          collection_buffer_.get());
-      gl_helper->VertexAttribPointer(
-          ii, attrib.size(), attrib.type(), attrib.normalized(), 0,
-          array_buffer_offset_);
-      array_buffer_offset_ += RoundUpToMultipleOf4(bytes_collected);
-      DCHECK_LE(array_buffer_offset_, array_buffer_size_);
-    }
-  }
-  return true;
-}
-
-// Copies in indices to the service and returns the highest index accessed + 1
-bool VertexArrayObjectManager::SetupSimulatedIndexAndClientSideBuffers(
-    const char* function_name,
-    GLES2Implementation* gl,
-    GLES2CmdHelper* gl_helper,
-    GLsizei count,
-    GLenum type,
-    GLsizei primcount,
-    const void* indices,
-    GLuint* offset,
-    bool* simulated) {
-  *simulated = false;
-  *offset = ToGLuint(indices);
-  if (!support_client_side_arrays_)
-    return true;
-  GLsizei num_elements = 0;
-  if (bound_vertex_array_object_->bound_element_array_buffer() == 0) {
-    *simulated = true;
-    *offset = 0;
-    GLsizei max_index = -1;
-    switch (type) {
-      case GL_UNSIGNED_BYTE: {
-        const uint8_t* src = static_cast<const uint8_t*>(indices);
-        for (GLsizei ii = 0; ii < count; ++ii) {
-          if (UNSAFE_TODO(src[ii]) > max_index) {
-            max_index = UNSAFE_TODO(src[ii]);
-          }
-        }
-        break;
-      }
-      case GL_UNSIGNED_SHORT: {
-        const uint16_t* src = static_cast<const uint16_t*>(indices);
-        for (GLsizei ii = 0; ii < count; ++ii) {
-          if (UNSAFE_TODO(src[ii]) > max_index) {
-            max_index = UNSAFE_TODO(src[ii]);
-          }
-        }
-        break;
-      }
-      case GL_UNSIGNED_INT: {
-        uint32_t max_glsizei =
-            static_cast<uint32_t>(std::numeric_limits<GLsizei>::max());
-        const uint32_t* src = static_cast<const uint32_t*>(indices);
-        for (GLsizei ii = 0; ii < count; ++ii) {
-          // Other parts of the API use GLsizei (signed) to store limits.
-          // As such, if we encounter a index that cannot be represented with
-          // an unsigned int we need to flag it as an error here.
-          if (UNSAFE_TODO(src[ii]) > max_glsizei) {
-            gl->SetGLError(
-                GL_INVALID_OPERATION, function_name, "index too large.");
-            return false;
-          }
-          GLsizei signed_index = static_cast<GLsizei>(UNSAFE_TODO(src[ii]));
-          if (signed_index > max_index) {
-            max_index = signed_index;
-          }
-        }
-        break;
-      }
-      default:
-        break;
-    }
-    gl_helper->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_array_buffer_id_);
-    uint32_t bytes_per_element = GLES2Util::GetGLTypeSizeForBuffers(type);
-    GLsizei bytes_needed = 0;
-    if (!base::CheckMul(bytes_per_element, count)
-             .AssignIfValid(&bytes_needed)) {
-      gl->SetGLError(GL_INVALID_OPERATION, function_name,
-                     "size overflow for client side index arrays");
-      return false;
-    }
-    if (bytes_needed > element_array_buffer_size_) {
-      element_array_buffer_size_ = bytes_needed;
-      gl->BufferDataHelper(GL_ELEMENT_ARRAY_BUFFER, bytes_needed, nullptr,
-                           GL_DYNAMIC_DRAW);
-    }
-    gl->BufferSubDataHelper(
-        GL_ELEMENT_ARRAY_BUFFER, 0, bytes_needed, indices);
-
-    num_elements = max_index + 1;
-  } else if (bound_vertex_array_object_->HaveEnabledClientSideBuffers()) {
-    // Index buffer is GL buffer. Ask the service for the highest vertex
-    // that will be accessed. Note: It doesn't matter if another context
-    // changes the contents of any of the buffers. The service will still
-    // validate the indices. We just need to know how much to copy across.
-    num_elements = gl->GetMaxValueInBufferCHROMIUMHelper(
-        bound_vertex_array_object_->bound_element_array_buffer(),
-        count, type, ToGLuint(indices)) + 1;
-  }
-
-  bool simulated_client_side_buffers = false;
-  SetupSimulatedClientSideBuffers(
-      function_name, gl, gl_helper, num_elements, primcount,
-      &simulated_client_side_buffers);
-  *simulated = *simulated || simulated_client_side_buffers;
-  return true;
-}
-
-}  // namespace gles2
-}  // namespace gpu
-
-
+}  // namespace gpu::gles2

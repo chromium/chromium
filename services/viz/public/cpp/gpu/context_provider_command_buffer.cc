@@ -256,13 +256,10 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
 
     // The GLES2Implementation exposes the OpenGLES2 API, as well as the
     // gpu::ContextSupport interface.
-    constexpr bool support_client_side_arrays = false;
-
     auto gles2_impl = std::make_unique<gpu::gles2::GLES2Implementation>(
         gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
         /*bind_generates_resource=*/false,
-        attributes_.lose_context_when_out_of_memory, support_client_side_arrays,
-        command_buffer_.get());
+        attributes_.lose_context_when_out_of_memory, command_buffer_.get());
     bind_result_ = gles2_impl->Initialize(memory_limits_);
     if (bind_result_ != gpu::ContextResult::kSuccess) {
       DLOG(ERROR) << "Failed to initialize GLES2Implementation.";

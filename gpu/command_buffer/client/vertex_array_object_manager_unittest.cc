@@ -21,16 +21,9 @@ namespace gles2 {
 class VertexArrayObjectManagerTest : public testing::Test {
  protected:
   static const GLuint kMaxAttribs = 4;
-  static const GLuint kClientSideArrayBuffer = 0x1234;
-  static const GLuint kClientSideElementArrayBuffer = 0x1235;
-  static const bool kSupportClientSideArrays = true;
 
   void SetUp() override {
-    manager_.reset(new VertexArrayObjectManager(
-        kMaxAttribs,
-        kClientSideArrayBuffer,
-        kClientSideElementArrayBuffer,
-        kSupportClientSideArrays));
+    manager_ = std::make_unique<VertexArrayObjectManager>(kMaxAttribs);
   }
   void TearDown() override {}
 
@@ -38,8 +31,6 @@ class VertexArrayObjectManagerTest : public testing::Test {
 };
 
 const GLuint VertexArrayObjectManagerTest::kMaxAttribs;
-const GLuint VertexArrayObjectManagerTest::kClientSideArrayBuffer;
-const GLuint VertexArrayObjectManagerTest::kClientSideElementArrayBuffer;
 
 TEST_F(VertexArrayObjectManagerTest, Basic) {
   EXPECT_FALSE(manager_->HaveEnabledClientSideBuffers());
@@ -269,14 +260,5 @@ TEST_F(VertexArrayObjectManagerTest, GenBindDelete) {
   EXPECT_FALSE(changed);
 }
 
-TEST_F(VertexArrayObjectManagerTest, IsReservedId) {
-  EXPECT_TRUE(manager_->IsReservedId(kClientSideArrayBuffer));
-  EXPECT_TRUE(manager_->IsReservedId(kClientSideElementArrayBuffer));
-  EXPECT_FALSE(manager_->IsReservedId(0));
-  EXPECT_FALSE(manager_->IsReservedId(1));
-  EXPECT_FALSE(manager_->IsReservedId(2));
-}
-
 }  // namespace gles2
 }  // namespace gpu
-

@@ -21,7 +21,6 @@ class GLES2ImplementationWithGrContextSupport
       gpu::TransferBufferInterface* transfer_buffer,
       bool bind_generates_resource,
       bool lose_context_when_out_of_memory,
-      bool support_client_side_arrays,
       gpu::GpuControl* gpu_control);
 
   ~GLES2ImplementationWithGrContextSupport() override;

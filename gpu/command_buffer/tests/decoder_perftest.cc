@@ -217,11 +217,9 @@ class RecordReplayContext : public GpuControl {
 
     // Create the object exposing the OpenGL API.
     const bool lose_context_when_out_of_memory = false;
-    const bool support_client_side_arrays = false;
     gles2_implementation_ = std::make_unique<gles2::GLES2Implementation>(
         gles2_helper_.get(), nullptr, transfer_buffer_.get(),
-        bind_generates_resource, lose_context_when_out_of_memory,
-        support_client_side_arrays, this);
+        bind_generates_resource, lose_context_when_out_of_memory, this);
 
     result = gles2_implementation_->Initialize(limits);
     DCHECK_EQ(result, ContextResult::kSuccess);

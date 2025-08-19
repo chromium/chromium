@@ -256,12 +256,10 @@ void GLManager::InitializeWithWorkaroundsImpl(
   transfer_buffer_.reset(new TransferBuffer(gles2_helper_.get()));
 
   // Create the object exposing the OpenGL API.
-  const bool support_client_side_arrays = true;
   gles2_implementation_.reset(new gles2::GLES2Implementation(
       gles2_helper_.get(), std::move(client_share_group),
       transfer_buffer_.get(), bind_generates_resource,
-      options.lose_context_when_out_of_memory, support_client_side_arrays,
-      this));
+      options.lose_context_when_out_of_memory, this));
 
   ASSERT_EQ(gles2_implementation_->Initialize(limits),
             gpu::ContextResult::kSuccess)
