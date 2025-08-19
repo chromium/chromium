@@ -406,6 +406,44 @@ IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest, GetActiveUser) {
   ASSERT_EQ(expected_active_email(),
             ContentAreaUserProvider::GetUser(browser()->profile(),
                                              /*web_contents=*/nullptr, url()));
+
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  ASSERT_EQ(expected_active_email(),
+            GetActiveContentAreaUser(identity_manager, url()));
+  ASSERT_EQ(expected_active_email(),
+            GetURLFActiveContentAreaUser(identity_manager, url()));
+}
+
+IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest,
+                       GetActiveUser_URLUnsupportedByURLF) {
+  // The point of this test is to validate a domain that only the non-URLF
+  // getter functions can obtain, so non-google.com test cases are skipped.
+  if (url().DomainIs("invalid.case.com")) {
+    return;
+  }
+
+  // Replace only the host by one not allowlisted by the URLF getter so as to
+  // validate that it always return an empty string, while still validating the
+  // non-URLF getters can still use the `/u/<id>/` and `authuser=<id>` logic to
+  // identify the right user.
+  GURL::Replacements replace_host;
+  replace_host.SetHostStr("notebooklm.google.com");
+  GURL non_urlf_url = url().ReplaceComponents(replace_host);
+
+  active_user_test_mixin_->SetFakeCookieValue();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_urlf_url));
+  ASSERT_EQ(
+      expected_active_email(),
+      ContentAreaUserProvider::GetUser(browser()->profile(),
+                                       /*web_contents=*/nullptr, non_urlf_url));
+
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  ASSERT_EQ(expected_active_email(),
+            GetActiveContentAreaUser(identity_manager, non_urlf_url));
+  ASSERT_TRUE(
+      GetURLFActiveContentAreaUser(identity_manager, non_urlf_url).empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

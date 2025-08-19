@@ -39,7 +39,7 @@ namespace {
 constexpr char kWorkspaceUrlForUser0[] = "https://docs.google.com/u/0/";
 constexpr char kWorkspaceUrlForUser1[] =
     "https://mail.google.com/foo/bar?authuser=1";
-constexpr char kNonWorkspaceUrl[] = "https://google.com/u/0/";
+constexpr char kNonWorkspaceUrl[] = "https://google.com/";
 constexpr char kUserName[] = "test-user@chromium.org";
 
 constexpr char kContentAreaUser0[] = "foo@gmail.com";

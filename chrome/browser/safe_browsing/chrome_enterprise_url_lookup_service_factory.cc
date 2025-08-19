@@ -113,7 +113,7 @@ std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
       policy::ManagementServiceFactory::GetForProfile(profile),
       profile->IsOffTheRecord(), profile->IsGuestSession(),
       base::BindRepeating(&GetProfileEmail, profile),
-      base::BindRepeating(&enterprise_connectors::GetActiveContentAreaUser,
+      base::BindRepeating(&enterprise_connectors::GetURLFActiveContentAreaUser,
                           IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(&enterprise_util::IsProfileAffiliated, profile),
       /*is_command_line_switch_supported=*/IsCommandLineSwitchSupported());
