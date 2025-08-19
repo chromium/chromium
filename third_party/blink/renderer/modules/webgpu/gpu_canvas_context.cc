@@ -867,6 +867,7 @@ void GPUCanvasContext::CopyToSwapTexture() {
 bool GPUCanvasContext::CopyTextureToResourceProvider(
     const wgpu::Texture& texture,
     CanvasResourceProvider* resource_provider) const {
+#if BUILDFLAG(USE_DAWN)
   DCHECK(resource_provider);
 
   gfx::Size size(texture.GetWidth(), texture.GetHeight());
@@ -895,28 +896,22 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   if (!GetContextProviderWeakPtr()) {
     return false;
   }
-  // todo(crbug/1267244) Use WebGPUMailboxTexture here instead of doing things
-  // manually.
+
   gpu::webgpu::WebGPUInterface* webgpu =
       GetContextProviderWeakPtr()->ContextProvider().WebGPUInterface();
-  gpu::webgpu::ReservedTexture reservation =
-      webgpu->ReserveTexture(device_->GetHandle().Get());
-  DCHECK(reservation.texture);
-  wgpu::Texture reserved_texture = wgpu::Texture::Acquire(reservation.texture);
 
-  webgpu->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   wgpu::TextureUsage usage =
       wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::RenderAttachment;
-  webgpu->AssociateMailbox(reservation.deviceId, reservation.deviceGeneration,
-                           reservation.id, reservation.generation,
-                           static_cast<uint64_t>(usage),
-                           dst_client_si->mailbox());
+  std::unique_ptr<gpu::WebGPUTextureScopedAccess> scoped_access =
+      dst_client_si->BeginWebGPUTextureAccess(
+          webgpu, sync_token, device_->GetHandle(), wgpu::TextureDescriptor(),
+          static_cast<uint64_t>(usage), gpu::webgpu::WEBGPU_MAILBOX_NONE);
   wgpu::TexelCopyTextureInfo source = {
       .texture = texture,
       .aspect = wgpu::TextureAspect::All,
   };
   wgpu::TexelCopyTextureInfo destination = {
-      .texture = reserved_texture,
+      .texture = scoped_access->texture(),
       .aspect = wgpu::TextureAspect::All,
   };
   wgpu::Extent3D copy_size = {
@@ -983,12 +978,15 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     device_->queue()->GetHandle().Submit(1u, &command_buffer);
     command_buffer = nullptr;
   }
+  sync_token =
+      gpu::WebGPUTextureScopedAccess::EndAccess(std::move(scoped_access));
 
-  webgpu->DissociateMailbox(reservation.id, reservation.generation);
-  webgpu->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   resource_provider->EndExternalWrite(sync_token);
 
   return true;
+#else
+  NOTREACHED();
+#endif
 }
 
 scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
