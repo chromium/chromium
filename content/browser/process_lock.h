@@ -114,16 +114,6 @@ class CONTENT_EXPORT ProcessLock {
                                   : AgentClusterKey();
   }
 
-  // Returns whether this ProcessLock is specific to an origin rather than
-  // including subdomains, such as due to opt-in origin isolation. This resolves
-  // an ambiguity of whether a process with a lock_url() like
-  // "https://foo.example" is allowed to include "https://sub.foo.example" or
-  // not.
-  bool is_origin_keyed_process() const {
-    return site_info_.has_value() &&
-           site_info_->requires_origin_keyed_process();
-  }
-
   // True if this ProcessLock is for a sandboxed iframe without
   // allow-same-origin.
   // TODO(wjmaclean): This function's return type could mutate to an enum in

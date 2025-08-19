@@ -30,7 +30,6 @@ ProcessLock ProcessLock::CreateAllowAnySite(
   return ProcessLock(SiteInfo(
       agent_cluster_key,
       /*site_url=*/GURL(), /*process_lock_url=*/GURL(),
-      /*requires_origin_keyed_process=*/false,
       AgentClusterKey::OACStatus::kSiteKeyedByDefault,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       storage_partition_config, web_exposed_isolation_info,
@@ -170,8 +169,9 @@ std::string ProcessLock::ToString() const {
   if (site_info_.has_value()) {
     ret += lock_url().possibly_invalid_spec();
 
-    if (is_origin_keyed_process())
+    if (agent_cluster_key().IsOriginKeyed()) {
       ret += " origin-keyed";
+    }
 
     if (is_sandboxed()) {
       ret += " sandboxed";

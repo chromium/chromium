@@ -1013,23 +1013,24 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
 }
 
 // A test to make sure that loading a page with DIP sets
-// requires_origin_keyed_process() on the SiteInstance's SiteInfo.
+// creates an origin-keyed AgentClusterKey in the SiteInstance's SiteInfo.
 IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest, DipOriginKeyed) {
   GURL isolated_page = GetDocumentIsolationPolicyURL("a.test");
 
   EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
   SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
   EXPECT_TRUE(current_si->IsCrossOriginIsolated());
-  // Currently, use of the DIP header does not cause
-  // SiteInfo::requires_origin_keyed_process() to return true. In practice, the
-  // process will be origin-keyed because the AgentClusterKey is. Once we
-  // refactor Origin-Agent-Cluster to use the AgentClusterKey, using DIP should
-  // also cause SiteInfo::requires_origin_keyed_process() to return true.
-  // Note: if kOriginKeyedProcessesByDefault is enabled, then
-  // requires_origin_keyed_process() will return true.
-  EXPECT_EQ(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(),
-            current_si->GetSiteInfo().requires_origin_keyed_process());
   EXPECT_TRUE(current_si->GetSiteInfo().agent_cluster_key().IsOriginKeyed());
+
+  // While the AgentClusterKey is origin-keyed, this should not impact the OAC
+  // status of the SiteInfo.
+  if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+    EXPECT_EQ(AgentClusterKey::OACStatus::kOriginKeyedByDefault,
+              current_si->GetSiteInfo().oac_status());
+  } else {
+    EXPECT_EQ(AgentClusterKey::OACStatus::kSiteKeyedByDefault,
+              current_si->GetSiteInfo().oac_status());
+  }
 }
 
 // Tests that main frame navigations are correctly assigned cross-origin

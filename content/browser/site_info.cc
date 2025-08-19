@@ -180,7 +180,6 @@ SiteInfo SiteInfo::CreateForErrorPage(
   return SiteInfo(
       agent_cluster_key, GetErrorPageSiteAndLockURL() /* site_url */,
       GetErrorPageSiteAndLockURL() /* process_lock_url */,
-      false /* requires_origin_keyed_process */,
       AgentClusterKey::OACStatus::kSiteKeyedByDefault, false /* is_sandboxed */,
       UrlInfo::kInvalidUniqueSandboxId, storage_partition_config,
       web_exposed_isolation_info, web_exposed_isolation_level, is_guest,
@@ -221,7 +220,6 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
   return SiteInfo(agent_cluster_key,
                   /*site_url=*/SiteInstanceImpl::GetDefaultSiteURL(),
                   /*process_lock_url=*/SiteInstanceImpl::GetDefaultSiteURL(),
-                  /*requires_origin_keyed_process=*/false,
                   AgentClusterKey::OACStatus::kSiteKeyedByDefault,
                   /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                   storage_partition_config, web_exposed_isolation_info,
@@ -245,7 +243,6 @@ SiteInfo SiteInfo::CreateForGuest(
   return SiteInfo(
       AgentClusterKey(),
       /*site_url=*/GURL(), /*process_lock_url=*/GURL(),
-      /*requires_origin_keyed_process=*/false,
       AgentClusterKey::OACStatus::kSiteKeyedByDefault,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       partition_config, WebExposedIsolationInfo::CreateNonIsolated(),
@@ -443,8 +440,7 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   // the default WebExposedIsolationInfo value. Callers should specify why it is
   // appropriate to disregard WebExposedIsolationInfo and override it manually
   // to what they expect the other value to be.
-  return SiteInfo(agent_cluster_key, site_url, lock_url,
-                  requires_origin_keyed_process, oac_status,
+  return SiteInfo(agent_cluster_key, site_url, lock_url, oac_status,
                   url_info.is_sandboxed, url_info.unique_sandbox_id,
                   storage_partition_config.value(), web_exposed_isolation_info,
                   web_exposed_isolation_level, isolation_context.is_guest(),
@@ -462,7 +458,6 @@ SiteInfo SiteInfo::CreateForTesting(const IsolationContext& isolation_context,
 SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
                    const GURL& site_url,
                    const GURL& process_lock_url,
-                   bool requires_origin_keyed_process,
                    AgentClusterKey::OACStatus oac_status,
                    bool is_sandboxed,
                    int unique_sandbox_id,
@@ -478,7 +473,6 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
     : site_url_(site_url),
       agent_cluster_key_(agent_cluster_key),
       process_lock_url_(process_lock_url),
-      requires_origin_keyed_process_(requires_origin_keyed_process),
       oac_status_(oac_status),
       is_sandboxed_(is_sandboxed),
       unique_sandbox_id_(unique_sandbox_id),
@@ -496,7 +490,7 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
          unique_sandbox_id_ == UrlInfo::kInvalidUniqueSandboxId);
   DCHECK((oac_status_ != AgentClusterKey::OACStatus::kOriginKeyedByHeader &&
           oac_status_ != AgentClusterKey::OACStatus::kOriginKeyedByDefault) ||
-         requires_origin_keyed_process_);
+         agent_cluster_key_.IsOriginKeyed());
 }
 SiteInfo::SiteInfo(const SiteInfo& rhs) = default;
 
@@ -506,7 +500,6 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
     : SiteInfo(AgentClusterKey(),
                /*site_url=*/GURL(),
                /*process_lock_url=*/GURL(),
-               /*requires_origin_keyed_process=*/false,
                AgentClusterKey::OACStatus::kSiteKeyedByDefault,
                /*is_sandboxed*/ false,
                UrlInfo::kInvalidUniqueSandboxId,
@@ -528,23 +521,15 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
   // site-isolated due to COOP should still share a SiteInstance with other
   // same-site frames in the BrowsingInstance, even if those frames lack the
   // COOP isolation request.
-  return std::tie(
-      site_info.site_url_.possibly_invalid_spec(),
-      site_info.process_lock_url_.possibly_invalid_spec(),
-      // Here we only compare |requires_origin_keyed_process_| since
-      // we currently don't create SiteInfos where
-      // |is_origin_agent_cluster_| differs from
-      // |requires_origin_keyed_process_|. In fact, we don't even
-      // have |is_origin_agent_cluster| in SiteInfo at this time,
-      // but that could change.
-      // TODO(wjmaclean): Update this if we ever start to create
-      // separate SiteInfos for same-process OriginAgentCluster.
-      site_info.requires_origin_keyed_process_, site_info.is_sandboxed_,
-      site_info.unique_sandbox_id_, site_info.storage_partition_config_,
-      site_info.web_exposed_isolation_info_,
-      site_info.web_exposed_isolation_level_, site_info.is_guest_,
-      site_info.is_jit_disabled_, site_info.are_v8_optimizations_disabled_,
-      site_info.is_pdf_, site_info.is_fenced_, site_info.agent_cluster_key_);
+  return std::tie(site_info.site_url_.possibly_invalid_spec(),
+                  site_info.process_lock_url_.possibly_invalid_spec(),
+                  site_info.is_sandboxed_, site_info.unique_sandbox_id_,
+                  site_info.storage_partition_config_,
+                  site_info.web_exposed_isolation_info_,
+                  site_info.web_exposed_isolation_level_, site_info.is_guest_,
+                  site_info.is_jit_disabled_,
+                  site_info.are_v8_optimizations_disabled_, site_info.is_pdf_,
+                  site_info.is_fenced_, site_info.agent_cluster_key_);
 }
 
 SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
@@ -554,10 +539,9 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
   // Do not convert cross-origin isolated SiteInfos back into site keyed ones as
   // cross-origin isolated agent clusters are required by spec to be
   // origin-keyed, regardless of the Origin-Agent-Cluster header.
-  if (requires_origin_keyed_process() &&
+  if (agent_cluster_key_.IsOriginKeyed() &&
       !agent_cluster_key_.GetCrossOriginIsolationKey().has_value()) {
     DCHECK(process_lock_url_.SchemeIs(url::kHttpsScheme));
-    non_oac_site_info.requires_origin_keyed_process_ = false;
 
     // TODO(wjmaclean): It would probably be better if we just changed
     // SiteInstanceImpl::original_url_ to be SiteInfo::original_url_info_ and
@@ -600,6 +584,10 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
     // one.
     non_oac_site_info.agent_cluster_key_ =
         AgentClusterKey::CreateSiteKeyed(non_oac_site_info.site_url_);
+
+    // Update the OAC status of the site-keyed SiteInfo.
+    non_oac_site_info.oac_status_ =
+        AgentClusterKey::OACStatus::kSiteKeyedByDefault;
   }
   return non_oac_site_info;
 }
@@ -614,7 +602,6 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
   bool is_match =
       site_url_ == other.site_url_ &&
       process_lock_url_ == other.process_lock_url_ &&
-      requires_origin_keyed_process_ == other.requires_origin_keyed_process_ &&
       is_sandboxed_ == other.is_sandboxed_ &&
       unique_sandbox_id_ == other.unique_sandbox_id_ &&
       storage_partition_config_ == other.storage_partition_config_ &&
@@ -648,10 +635,10 @@ auto SiteInfo::MakeProcessLockComparisonKey() const {
   // leads to crashes in https://crbug.com/1279453.
   // TODO(ellyjones): Same as above, but about are_v8_optimizations_disabled_
   // (presumably).
-  return std::tie(process_lock_url_, requires_origin_keyed_process_,
-                  is_sandboxed_, unique_sandbox_id_, is_pdf_, is_guest_,
-                  web_exposed_isolation_info_, web_exposed_isolation_level_,
-                  storage_partition_config_, is_fenced_, agent_cluster_key_);
+  return std::tie(process_lock_url_, is_sandboxed_, unique_sandbox_id_, is_pdf_,
+                  is_guest_, web_exposed_isolation_info_,
+                  web_exposed_isolation_level_, storage_partition_config_,
+                  is_fenced_, agent_cluster_key_);
 }
 
 int SiteInfo::ProcessLockCompareTo(const SiteInfo& other) const {
@@ -775,7 +762,7 @@ bool SiteInfo::RequiresDedicatedProcess(
   return RequiresDedicatedProcessInternal(
       site_url_, isolation_context, browser_context, is_error_page(),
       does_site_request_dedicated_process_for_coop_,
-      requires_origin_keyed_process_, is_sandboxed_, is_pdf_);
+      agent_cluster_key_.IsOriginKeyed(), is_sandboxed_, is_pdf_);
 }
 
 bool SiteInfo::ShouldLockProcessToSite(
@@ -853,7 +840,7 @@ void SiteInfo::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("site_url", site_url());
   dict.Add("process_lock_url", process_lock_url());
-  dict.Add("requires_origin_keyed_process", requires_origin_keyed_process_);
+  dict.Add("origin_keyed", agent_cluster_key_.IsOriginKeyed());
   dict.Add("is_sandboxed", is_sandboxed_);
   dict.Add("is_guest", is_guest_);
   dict.Add("is_fenced", is_fenced_);

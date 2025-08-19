@@ -2077,7 +2077,8 @@ bool HasOriginKeyedProcess(RenderFrameHost* frame) {
   return static_cast<RenderFrameHostImpl*>(frame)
       ->GetSiteInstance()
       ->GetSiteInfo()
-      .requires_origin_keyed_process();
+      .agent_cluster_key()
+      .IsOriginKeyed();
 }
 
 bool HasSandboxedSiteInstance(RenderFrameHost* frame) {

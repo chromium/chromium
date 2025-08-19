@@ -189,7 +189,6 @@ class CONTENT_EXPORT SiteInfo {
   SiteInfo(const AgentClusterKey& agent_cluster_key,
            const GURL& site_url,
            const GURL& process_lock_url,
-           bool requires_origin_keyed_process,
            AgentClusterKey::OACStatus oac_status,
            bool is_sandboxed,
            int unique_sandbox_id,
@@ -207,9 +206,8 @@ class CONTENT_EXPORT SiteInfo {
   ~SiteInfo();
 
   // This function returns a new SiteInfo which is equivalent to the original,
-  // except that (1) is_origin_keyed is false, and (2) the remaining SiteInfo
-  // state is used to compute a new SiteInfo from a UrlInfo reconstructed from
-  // the original SiteInfo, minus any OAC opt-in request.
+  // except that its AgentClusterKey is made site-keyed if it had been created
+  // as origin-keyed due to an OAC opt-in request.
   SiteInfo GetNonOriginKeyedEquivalentForMetrics(
       const IsolationContext& isolation_context) const;
 
@@ -232,6 +230,32 @@ class CONTENT_EXPORT SiteInfo {
   const GURL& site_url() const { return site_url_; }
 
   // Returns the AgentClusterKey of the execution contexts within this SiteInfo.
+  // The AgentClusterKey can be origin-keyed, in which case all the execution
+  // contexts in the SiteInfo will belong to a specific origin. Or the
+  // AgentClusterKey can be site-keyed. In this case, execution contexts in the
+  // SiteInfo will belong to a specific origin and its subdomains. This is the
+  // case for most SiteInfos (unless features::kOriginKeyedProcessesByDefault is
+  // enabled), and in particular of command-line isolated origins and legacy
+  // isolated origins added via
+  // ChildProcessSecurityPolicy::AddFutureIsolatedOrigins().
+  //
+  // Origin-keyed AgentClusterKeys can be a result of an explicit
+  // Origin-Agent-Cluster opt-in. They are also the default when
+  // features::kOriginKeyedProcessesByDefault is true. In both cases, the OAC
+  // status of the SiteInfo will be tracked in |oac_status_|, with values of
+  // kOriginKeyedByHeader and kOriginKeyedByDefault.
+  //
+  // The AgentClusterKey can also be origin-keyed due to other factors beyond
+  // OAC. In this case, origin-keying will not be shown in the |oac_status_|.
+  // This is for example the case for documents cross-origin isolated through
+  // DocumentIsolationPolicy.
+  //
+  // Finally, some AgentClusterKeys are site-keyed, but with a site URL that is
+  // scoped in practice to an origin. This is the case when
+  // features::kStrictOriginIsolation is enabled, or for sandboxed data URLs
+  // with origin isolation.
+  // TODO(crbug.com/433443082): Refactor those cases so that they create an
+  // origin-keyed AgentClusterKey instead of a SiteKeyed one.
   const AgentClusterKey& agent_cluster_key() const {
     return agent_cluster_key_;
   }
@@ -250,19 +274,6 @@ class CONTENT_EXPORT SiteInfo {
   // TODO(alexmos): See if we can clean this up and not set |process_lock_url_|
   //                if the SiteInstance's process isn't going to be locked.
   const GURL& process_lock_url() const { return process_lock_url_; }
-
-  // Returns whether this SiteInfo requires an origin-keyed process, such as for
-  // an OriginAgentCluster response header. This resolves an ambiguity of
-  // whether a process with a lock_url() like "https://foo.example" is allowed
-  // to include "https://sub.foo.example" or not. In opt-in isolation, it is
-  // possible for example.com to be isolated, and sub.example.com not be
-  // isolated. In contrast, if command-line isolation is used to isolate
-  // example.com, then sub.example.com is also (automatically) isolated.
-  // Also note that opt-in isolated origins will include ports (if non-default)
-  // in their site urls.
-  bool requires_origin_keyed_process() const {
-    return requires_origin_keyed_process_;
-  }
 
   // The status of the Origin-Agent-Cluster header request for this SiteInfo.
   // This is mainly used to distinguish between SiteInfos that received process
@@ -440,9 +451,9 @@ class CONTENT_EXPORT SiteInfo {
   // The AgentClusterKey for the execution context. This represents the
   // set of contexts that has synchronous access to each other and must be
   // placed in the same process. Currently, it duplicates part of the
-  // information stored in the SiteInfo (such as requires_origin_keyed_process_
-  // and process_lock_url_). We plan to refactor SiteInfo so that the
-  // AgentClusterKey eventually replaces the duplicated members.
+  // information stored in the SiteInfo (such as process_lock_url_). We plan to
+  // refactor SiteInfo so that the AgentClusterKey eventually replaces the
+  // duplicated members.
   // TODO(crbug.com/342365078): Refactor the Origin-Agent-Cluster code to take
   // advantage of AgentClusterKeys.
   // TODO(crbug.com/342365083): Documents crossOriginIsolated through the use of
@@ -457,15 +468,6 @@ class CONTENT_EXPORT SiteInfo {
   // TODO(crbug.com/342572253): Now that we have AgentClusterKeys for all
   // navigation, this is redundant with the AgentClusterKey. Remove it.
   GURL process_lock_url_;
-
-  // Indicates whether this SiteInfo is specific to a single origin and requires
-  // an origin-keyed process, rather than including all subdomains of that
-  // origin. Only used for OriginAgentCluster header opt-ins. In contrast, the
-  // site-level URLs that are typically used in SiteInfo include subdomains, as
-  // do command-line isolated origins.
-  // TODO(crbug.com/342365078): Now that we have AgentClusterKeys for all
-  // navigation, this is redundant with the AgentClusterKey. Remove it.
-  bool requires_origin_keyed_process_ = false;
 
   // Tracks the status of the OAC header opt-in request for this SiteInfo.
   // Note: this is not taken into account in

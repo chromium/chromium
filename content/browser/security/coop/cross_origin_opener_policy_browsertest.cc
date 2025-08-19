@@ -2921,10 +2921,11 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyNoOKPBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
   SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
   EXPECT_TRUE(current_si->IsCrossOriginIsolated());
-  // Use of COOP/COEP headers should not cause SiteInfo::is_origin_keyed() to
-  // return true. The metrics that track OriginAgentCluster isolation expect
-  // is_origin_keyed() to refer only to the OriginAgentCluster header.
-  EXPECT_FALSE(current_si->GetSiteInfo().requires_origin_keyed_process());
+  // Use of COOP/COEP headers should not cause SiteInfo::oac_status() to
+  // return origin-keyed. The metrics that track OriginAgentCluster isolation
+  // expect oac_status() to refer only to the OriginAgentCluster header.
+  EXPECT_EQ(AgentClusterKey::OACStatus::kSiteKeyedByDefault,
+            current_si->GetSiteInfo().oac_status());
 }
 
 // TODO(crbug.com/40924316): Disable flaky test in Linux.

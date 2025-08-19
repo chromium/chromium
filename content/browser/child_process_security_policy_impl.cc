@@ -2101,10 +2101,10 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
     // BrowsingInstance IDs are solved.
     url::Origin origin(url::Origin::Create(url));
     bool matches_origin_keyed_process =
-        actual_process_lock.is_origin_keyed_process() &&
+        actual_process_lock.agent_cluster_key().IsOriginKeyed() &&
         actual_process_lock.lock_url() == origin.GetURL();
     bool matches_site_keyed_process =
-        !actual_process_lock.is_origin_keyed_process() &&
+        actual_process_lock.agent_cluster_key().IsSiteKeyed() &&
         actual_process_lock.lock_url() == SiteInfo::GetSiteForOrigin(origin);
     // ProcessLocks with is_pdf() = true actually means that the process is not
     // supposed to access certain resources from the lock's site/origin, so it's

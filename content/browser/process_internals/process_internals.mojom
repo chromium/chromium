@@ -42,9 +42,10 @@ struct SiteInstanceInfo {
   // The URL to which the SiteInstance's process is locked.
   url.mojom.Url? process_lock_url;
 
-  // Specifies whether the SiteInstance requires an origin-keyed process. This
-  // is true for opt-in origin isolation via the OriginAgentCluster header,
-  // false otherwise.
+  // Specifies whether the SiteInstance uses an origin-keyed agent cluster.
+  // TODO(crbug.com/342365078): Once we pass the AgentClusterKey from the
+  // browser to the renderer process and we have a mojom version of
+  // AgentClusterKey, replace this by an AgentClusterKey.
   bool requires_origin_keyed_process;
 
   // Specifies if the SiteInstance is for sandboxed iframe isolation.

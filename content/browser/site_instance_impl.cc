@@ -683,8 +683,7 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     // lock URL would already correspond to a site (since we isolate sites, not
     // origins, by default), but this isn't always the case.  For example, this
     // SiteInstance could be isolated with the origin granularity due to
-    // Origin-Agent-Cluster (see site_info_.requires_origin_keyed_process()
-    // above).
+    // Origin-Agent-Cluster (see site_info_.oac_status() above).
     url::Origin origin(url::Origin::Create(site_info_.process_lock_url()));
     GURL site(SiteInfo::GetSiteForOrigin(origin));
     ChildProcessSecurityPolicyImpl* policy =
@@ -996,17 +995,6 @@ bool SiteInstanceImpl::RequiresDedicatedProcess() {
     return false;
 
   return site_info_.RequiresDedicatedProcess(GetIsolationContext());
-}
-
-bool SiteInstanceImpl::RequiresOriginKeyedProcess() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!has_site_)
-    return false;
-
-  // TODO(wjmaclean): once SiteInstanceGroups are ready we may give logically
-  // (same-process) isolated origins their own SiteInstances ... in that case we
-  // should consider updating this function.
-  return site_info_.requires_origin_keyed_process();
 }
 
 bool SiteInstanceImpl::IsSandboxed() {

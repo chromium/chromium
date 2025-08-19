@@ -98,7 +98,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
           : std::nullopt;
 
   frame_info->site_instance->requires_origin_keyed_process =
-      site_instance->GetSiteInfo().requires_origin_keyed_process();
+      site_instance->GetSiteInfo().agent_cluster_key().IsOriginKeyed();
 
   return frame_info;
 }
