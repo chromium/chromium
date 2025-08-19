@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/user_education/common/user_education_context.h"
 #include "components/user_education/webui/help_bubble_handler.h"
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -26,7 +26,8 @@ BrowserFeaturePromoControllerBase::GetContextForHelpBubbleImpl(
           anchor_element->AsA<views::TrackedElementViews>()) {
     browser = GetBrowserForView(view_element->view());
   } else if (auto* const webui_element =
-                 anchor_element->AsA<user_education::TrackedElementWebUI>()) {
+                 anchor_element->AsA<
+                     user_education::TrackedElementHelpBubbleWebUIAnchor>()) {
     browser = webui::GetBrowserWindowInterface(
         webui_element->handler()->GetWebContents());
   }

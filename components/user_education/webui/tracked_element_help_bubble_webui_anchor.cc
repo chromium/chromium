@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 
 #include "base/check.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
@@ -16,18 +16,19 @@
 
 namespace user_education {
 
-TrackedElementWebUI::TrackedElementWebUI(HelpBubbleHandlerBase* handler,
-                                         ui::ElementIdentifier identifier,
-                                         ui::ElementContext context)
+TrackedElementHelpBubbleWebUIAnchor::TrackedElementHelpBubbleWebUIAnchor(
+    HelpBubbleHandlerBase* handler,
+    ui::ElementIdentifier identifier,
+    ui::ElementContext context)
     : TrackedElement(identifier, context), handler_(handler) {
   DCHECK(handler);
 }
 
-TrackedElementWebUI::~TrackedElementWebUI() {
+TrackedElementHelpBubbleWebUIAnchor::~TrackedElementHelpBubbleWebUIAnchor() {
   SetVisible(false);
 }
 
-gfx::Rect TrackedElementWebUI::GetScreenBounds() const {
+gfx::Rect TrackedElementHelpBubbleWebUIAnchor::GetScreenBounds() const {
   gfx::Rect result;
   content::WebContents* const contents =
       handler_->GetController()->web_ui()->GetWebContents();
@@ -48,7 +49,8 @@ gfx::Rect TrackedElementWebUI::GetScreenBounds() const {
   return result;
 }
 
-void TrackedElementWebUI::SetVisible(bool visible, gfx::RectF bounds) {
+void TrackedElementHelpBubbleWebUIAnchor::SetVisible(bool visible,
+                                                     gfx::RectF bounds) {
   if (visible == visible_) {
     if (visible && last_known_bounds_ != bounds) {
       last_known_bounds_ = bounds;
@@ -69,17 +71,18 @@ void TrackedElementWebUI::SetVisible(bool visible, gfx::RectF bounds) {
   }
 }
 
-void TrackedElementWebUI::Activate() {
+void TrackedElementHelpBubbleWebUIAnchor::Activate() {
   DCHECK(visible_);
   ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(this);
 }
 
-void TrackedElementWebUI::CustomEvent(ui::CustomElementEventType event_type) {
+void TrackedElementHelpBubbleWebUIAnchor::CustomEvent(
+    ui::CustomElementEventType event_type) {
   DCHECK(visible_);
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(this,
                                                                 event_type);
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementWebUI)
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementHelpBubbleWebUIAnchor)
 
 }  // namespace user_education

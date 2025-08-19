@@ -19,7 +19,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/help_bubble_webui.h"
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -132,14 +132,15 @@ FloatingWebUIHelpBubbleFactoryBrowser::
 
 bool FloatingWebUIHelpBubbleFactoryBrowser::CanBuildBubbleForTrackedElement(
     const ui::TrackedElement* element) const {
-  if (!element->IsA<user_education::TrackedElementWebUI>()) {
+  if (!element->IsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()) {
     return false;
   }
 
   // If this is a WebUI in a tab, then don't use this factory.
-  const auto* contents = element->AsA<user_education::TrackedElementWebUI>()
-                             ->handler()
-                             ->GetWebContents();
+  const auto* contents =
+      element->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()
+          ->handler()
+          ->GetWebContents();
   // Note: this checks all tabs for their WebContents.
   if (chrome::FindBrowserWithTab(contents)) {
     return false;

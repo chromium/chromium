@@ -7,7 +7,7 @@
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/webui/help_bubble_handler.h"
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
@@ -39,12 +39,14 @@ views::WebView* FindWebViewWithContentsRecursive(
 }
 
 // Attempts to extract the host WebView from `element`; returns null if
-// `element` is not a TrackedElementWebUI or the host view cannot be determined.
+// `element` is not a TrackedElementHelpBubbleWebUIAnchor or the host view
+// cannot be determined.
 views::WebView* GetWebViewForElement(const ui::TrackedElement* element) {
-  if (!element->IsA<TrackedElementWebUI>()) {
+  if (!element->IsA<TrackedElementHelpBubbleWebUIAnchor>()) {
     return nullptr;
   }
-  const auto* const element_webui = element->AsA<TrackedElementWebUI>();
+  const auto* const element_webui =
+      element->AsA<TrackedElementHelpBubbleWebUIAnchor>();
   auto* const contents = element_webui->handler()->GetWebContents();
   if (!contents) {
     return nullptr;
@@ -73,8 +75,9 @@ std::unique_ptr<HelpBubble> FloatingWebUIHelpBubbleFactory::CreateBubble(
   anchor.view = GetWebViewForElement(element);
   anchor.rect = element->GetScreenBounds();
   auto result = CreateBubbleImpl(element, anchor, std::move(params), nullptr);
-  element->AsA<TrackedElementWebUI>()->handler()->OnFloatingHelpBubbleCreated(
-      element->identifier(), result.get());
+  element->AsA<TrackedElementHelpBubbleWebUIAnchor>()
+      ->handler()
+      ->OnFloatingHelpBubbleCreated(element->identifier(), result.get());
   return result;
 }
 

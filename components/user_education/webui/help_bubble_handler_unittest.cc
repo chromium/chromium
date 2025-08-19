@@ -16,7 +16,7 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/test/test_help_bubble.h"
 #include "components/user_education/webui/help_bubble_webui.h"
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -142,7 +142,8 @@ MATCHER_P(MatchesHelpBubbleParams, expected, "") {
 }  // namespace
 
 // Tests the interaction of HelpBubbleHandler, HelpBubbleWebUI, and
-// TrackedElementWebUI. The three form a single system that all work together.
+// TrackedElementHelpBubbleWebUIAnchor. The three form a single system that all
+// work together.
 class HelpBubbleHandlerTest : public testing::Test {
  public:
   HelpBubbleHandlerTest() {

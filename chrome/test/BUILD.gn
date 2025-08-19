@@ -8653,6 +8653,7 @@ test("unit_tests") {
       "//ui/web_dialogs:web_dialogs_unittests",
       "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
       "//ui/webui/resources/js/browser_command:mojo_bindings",
+      "//ui/webui/tracked_element:unit_tests",
     ]
 
     if (enable_video_effects) {

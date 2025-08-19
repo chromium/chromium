@@ -33,7 +33,7 @@
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/help_bubble_views.h"
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -171,7 +171,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
     return InAnyContext(CheckElement(
         NewTabPageUI::kCustomizeChromeButtonElementId,
         [](ui::TrackedElement* el) {
-          return el->AsA<user_education::TrackedElementWebUI>()
+          return el->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()
               ->handler()
               ->IsHelpBubbleShowingForTesting(el->identifier());
         },

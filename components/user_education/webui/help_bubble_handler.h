@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
-#include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -34,6 +33,7 @@ class HelpBubbleWebUI;
 
 // Base class abstracting away IPC so that handler functionality can be tested
 // entirely with mocks.
+// TODO(crbug.com/40243115): remove inheritance from TrackedElementHandler.
 class HelpBubbleHandlerBase
     : public help_bubble::mojom::HelpBubbleHandler,
       public tracked_element::mojom::TrackedElementHandler {
@@ -178,6 +178,8 @@ class HelpBubbleHandlerBase
   const ui::ElementContext context_;
   std::map<ui::ElementIdentifier, ElementData> element_data_;
 
+  // TODO(crbug.com/40243115): create a TrackedElementHandler, pass the pending
+  // receiver to it, and remove this receiver.
   mojo::Receiver<tracked_element::mojom::TrackedElementHandler>
       tracked_element_handler_receiver_{this};
 
@@ -198,8 +200,8 @@ class HelpBubbleHandlerBase
 // triggering a recreate). If a class has a raw_ptr to a
 // HelpBubbleHandler[Base], then a test MUST be added to ensure that the class
 // releases the reference when the HelpBubbleHandler is destroyed. Tests are
-// already provided for `HelpBubbleWebUI` and `TrackedElementWebUI` in
-// help_bubble_handler_unittest.cc.
+// already provided for `HelpBubbleWebUI` and
+// `TrackedElementHelpBubbleWebUIAnchor` in help_bubble_handler_unittest.cc.
 class HelpBubbleHandler : public HelpBubbleHandlerBase {
  public:
   // Create a help bubble handler (called from the HelpBubbleHandlerFactory

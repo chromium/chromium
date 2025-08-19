@@ -27,7 +27,7 @@
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/help_bubble_handler.h"
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -62,7 +62,8 @@ user_education::FeaturePromoResult WindowActivePrecondition::CheckPrecondition(
   if (auto* const view_el = element_ref.get_as<views::TrackedElementViews>()) {
     widget = view_el->view()->GetWidget();
   } else if (auto* web_el =
-                 element_ref.get_as<user_education::TrackedElementWebUI>()) {
+                 element_ref.get_as<
+                     user_education::TrackedElementHelpBubbleWebUIAnchor>()) {
     auto* const contents = web_el->handler()->GetWebContents();
     widget = views::Widget::GetWidgetForNativeWindow(
         contents->GetTopLevelNativeWindow());

@@ -23,7 +23,7 @@
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/webui/help_bubble_webui.h"
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -122,7 +122,7 @@ struct HelpBubbleHandlerBase::ElementData {
   bool visible = false;
   gfx::RectF last_known_bounds;
 
-  std::unique_ptr<TrackedElementWebUI> element;
+  std::unique_ptr<TrackedElementHelpBubbleWebUIAnchor> element;
   std::unique_ptr<HelpBubbleParams> params;
   raw_ptr<HelpBubbleWebUI> help_bubble = nullptr;
   base::CallbackListSubscription external_bubble_subscription;
@@ -154,7 +154,8 @@ HelpBubbleHandlerBase::HelpBubbleHandlerBase(
     const auto it = element_data_.emplace(identifier, ElementData());
     DCHECK(it.second) << "Duplicate identifier not allowed: " << identifier;
     it.first->second.element =
-        std::make_unique<TrackedElementWebUI>(this, identifier, context);
+        std::make_unique<TrackedElementHelpBubbleWebUIAnchor>(this, identifier,
+                                                              context);
   }
 }
 

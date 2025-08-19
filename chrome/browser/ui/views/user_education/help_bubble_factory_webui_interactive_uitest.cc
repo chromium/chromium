@@ -39,7 +39,7 @@
 #include "components/user_education/common/user_education_events.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/webui/help_bubble_handler.h"
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -165,7 +165,8 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
         CheckElement(
             anchor,
             [](ui::TrackedElement* el) {
-              return el->AsA<user_education::TrackedElementWebUI>()
+              return el
+                  ->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()
                   ->handler()
                   ->IsHelpBubbleShowingForTesting(el->identifier());
             },
