@@ -757,21 +757,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.SurfaceAggregator.CopyUs" units="microseconds"
-    expires_after="2026-08-03">
-  <owner>kylechar@chromium.org</owner>
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Time spent copying quads during surface aggregation. This is a subset of the
-    time recorded for Compositing.SurfaceAggregator.AggregateUs and is logged
-    once per frame.
-
-    Warning: This metric does not include reports from clients with
-    low-resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.SurfaceAggregator.ExcessPixelsClipped"
     units="pixels" expires_after="2025-06-08">
   <owner>petermcneeley@chromium.org</owner>
@@ -796,21 +781,6 @@ chromium-metrics-reviews@google.com.
     <variant name="PixelMovingFilters"/>
     <variant name="UnembeddedRenderPasses"/>
   </token>
-</histogram>
-
-<histogram name="Compositing.SurfaceAggregator.PrewalkUs" units="microseconds"
-    expires_after="2026-08-03">
-  <owner>kylechar@chromium.org</owner>
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Time spent doing prewalk during surface aggregation. This is a subset of the
-    time recorded for Compositing.SurfaceAggregator.AggregateUs and is logged
-    once per frame.
-
-    Warning: This metric does not include reports from clients with
-    low-resolution clocks.
-  </summary>
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.RenderPassDamageType"
