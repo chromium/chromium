@@ -9453,6 +9453,8 @@ from previous Chrome versions.
   <int value="-1713566603" label="CrOSLateBootAudioStyleTransfer:enabled"/>
   <int value="-1713564656" label="ProtectSyncCredentialOnReauth:enabled"/>
   <int value="-1712124814" label="NoWakeUpsForCanceledTasks:disabled"/>
+  <int value="-1711899909"
+      label="LensOverlayTextSelectionContextMenuEntrypoint:enabled"/>
   <int value="-1711751318" label="enable-data-reduction-proxy-lo-fi-preview"/>
   <int value="-1710901763" label="AccessibilityMagnifierFollowsSts:disabled"/>
   <int value="-1710772665" label="disable-my-files-navigation"/>
@@ -14348,6 +14350,8 @@ from previous Chrome versions.
   <int value="65245449" label="FilesBannerFramework:enabled"/>
   <int value="65750425" label="OmniboxMostVisitedTilesDynamicSpacing:disabled"/>
   <int value="66897259" label="ModalPermissionDialogView:enabled"/>
+  <int value="67343657"
+      label="LensOverlayTextSelectionContextMenuEntrypoint:disabled"/>
   <int value="67639499" label="stop-loading-in-background:disabled"/>
   <int value="68506319" label="TabStripGroupCollapseAndroid:disabled"/>
   <int value="69571279" label="ExperimentalRgbKeyboardPatterns:disabled"/>

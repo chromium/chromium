@@ -2590,6 +2590,11 @@ const char kLensOverlaySimplifiedSelectionName[] =
 const char kLensOverlaySimplifiedSelectionDescription[] =
     "Enables simplified selection in the Lens overlay.";
 
+const char kLensOverlayTextSelectionContextMenuEntrypointName[] =
+    "Lens overlay text selection context menu entrypoint";
+const char kLensOverlayTextSelectionContextMenuEntrypointDescription[] =
+    "Enables invoking the Lens overlay from the selected text context menu.";
+
 const char kLensOverlayTranslateButtonName[] = "Lens overlay translate button";
 const char kLensOverlayTranslateButtonDescription[] =
     "Enables translate button via the Lens overlay.";

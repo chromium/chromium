@@ -3391,6 +3391,22 @@ const FeatureEntry::FeatureVariation
          kLensOverlayImageContextMenuActionsCopyAndSave,
          std::size(kLensOverlayImageContextMenuActionsCopyAndSave), nullptr},
 };
+
+const FeatureEntry::FeatureParam
+    kLensOverlayTextSelectionContextMenuEntrypointContextualized{
+        "contextualize", "true"};
+const FeatureEntry::FeatureParam
+    kLensOverlayTextSelectionContextMenuEntrypointNonContextualized{
+        "contextualize", "false"};
+const FeatureEntry::FeatureVariation
+    kLensOverlayTextSelectionContextMenuEntrypointVariations[] = {
+        {"contextualized",
+         &kLensOverlayTextSelectionContextMenuEntrypointContextualized, 1,
+         nullptr},
+        {"non-contextualized",
+         &kLensOverlayTextSelectionContextMenuEntrypointNonContextualized, 1,
+         nullptr},
+};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -13187,7 +13203,16 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kAutofillReintroduceHybridPasskeyDropdownItem)},
-#endif
+    {"enable-lens-overlay-text-selection-context-menu-entrypoint",
+     flag_descriptions::kLensOverlayTextSelectionContextMenuEntrypointName,
+     flag_descriptions::
+         kLensOverlayTextSelectionContextMenuEntrypointDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         lens::features::kLensOverlayTextSelectionContextMenuEntrypoint,
+         kLensOverlayTextSelectionContextMenuEntrypointVariations,
+         "LensOverlayTextSelectionContextMenuEntrypoint")},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
 
