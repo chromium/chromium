@@ -604,9 +604,10 @@ DeviceManagementService::JobImpl::OnURLLoaderCompleteInternal(
   LOG_POLICY(WARNING, CBCM_ENROLLMENT)
       << "Request of type "
       << JobConfiguration::GetJobTypeAsString(config_->GetType())
-      << " failed (net_error = " << net_error
-      << ", response_code = " << response_code << "), retrying in "
-      << retry_delay << "ms.";
+      << " failed (net_error = " << net::ErrorToString(net_error) << " ("
+      << net_error
+      << "), response_code = " << ResponseCodeToString(response_code) << "( "
+      << response_code << ")), retrying in " << retry_delay << "ms.";
   if (!is_test) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
