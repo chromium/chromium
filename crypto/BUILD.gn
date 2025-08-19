@@ -45,6 +45,8 @@ component("crypto") {
     "obsolete/md5.h",
     "openssl_util.cc",
     "openssl_util.h",
+    "pem.cc",
+    "pem.h",
     "process_bound_string.cc",
     "process_bound_string.h",
     "random.cc",
@@ -183,6 +185,7 @@ test("crypto_unittests") {
     "kex_unittest.cc",
     "keypair_unittest.cc",
     "obsolete/md5_unittest.cc",
+    "pem_unittest.cc",
     "process_bound_string_unittest.cc",
     "random_unittest.cc",
     "secure_hash_unittest.cc",
@@ -190,6 +193,16 @@ test("crypto_unittests") {
     "sign_unittest.cc",
     "signature_verifier_unittest.cc",
     "unexportable_key_unittest.cc",
+  ]
+
+  deps = [
+    ":crypto",
+    ":test_support",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 
   if (is_win || is_mac) {
@@ -206,6 +219,10 @@ test("crypto_unittests") {
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+    deps += [ ":unittests_bundle_data" ]
+  } else {
+    data = [ "test/data/" ]
   }
 
   if (is_mac) {
@@ -228,16 +245,6 @@ test("crypto_unittests") {
   if (is_win) {
     libs = [ "ncrypt.lib" ]
   }
-
-  deps = [
-    ":crypto",
-    ":test_support",
-    "//base",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
 
   if (is_apple) {
     deps += [ ":mock_apple_keychain" ]
@@ -295,4 +302,11 @@ static_library("test_support") {
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+bundle_data("unittests_bundle_data") {
+  testonly = true
+  sources = [ "test/data" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_root_relative_dir}}/" +
+              "{{source_file_part}}" ]
 }
