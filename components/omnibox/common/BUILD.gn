@@ -78,3 +78,14 @@ if (is_android) {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "string_cleaning_unittest.cc" ]
+  deps = [
+    ":common",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}

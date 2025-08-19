@@ -266,6 +266,7 @@ test("components_unittests") {
     "//components/ntp_tiles:unit_tests",
     "//components/offline_items_collection/core:unit_tests",
     "//components/omnibox/browser:unit_tests",
+    "//components/omnibox/common:unit_tests",
     "//components/omnibox/composebox:unit_tests",
     "//components/open_from_clipboard:unit_tests",
     "//components/openscreen_platform:unittests",
