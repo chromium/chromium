@@ -105,9 +105,11 @@ class ExecutionEngine : public ToolDelegate {
 
   // ToolDelegate:
   AggregatedJournal& GetJournal() override;
+  favicon::FaviconService* GetFaviconService() override;
   actor_login::ActorLoginService& GetActorLoginService() override;
   void PromptToSelectCredential(
       const std::vector<actor_login::Credential>& credentials,
+      const base::flat_map<GURL, gfx::Image>& favicons,
       ToolDelegate::CredentialSelectedCallback callback) override;
 
   static std::string StateToString(State state);

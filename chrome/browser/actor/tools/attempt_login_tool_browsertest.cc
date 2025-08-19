@@ -13,9 +13,13 @@
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor.mojom.h"
+#include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "url/gurl.h"
 
 using base::test::TestFuture;
 using ::testing::_;
@@ -26,20 +30,34 @@ namespace actor {
 
 namespace {
 
+const SkBitmap GenerateSquareBitmap(int size, SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocPixels(SkImageInfo::MakeN32(size, size, kOpaque_SkAlphaType));
+  bitmap.eraseColor(color);
+  bitmap.setImmutable();
+  return bitmap;
+}
+
 class MockExecutionEngine : public ExecutionEngine {
  public:
   explicit MockExecutionEngine(Profile* profile) : ExecutionEngine(profile) {}
   ~MockExecutionEngine() override = default;
 
+  // Type alias to get around the comma in the flat_map template. MOCK_METHOD
+  // breaks up the argument using commas.
+  using FaviconMap = base::flat_map<GURL, gfx::Image>;
+
   MOCK_METHOD(void,
               PromptToSelectCredential,
               (const std::vector<actor_login::Credential>&,
+               const FaviconMap&,
                ToolDelegate::CredentialSelectedCallback),
               (override));
   MOCK_METHOD(actor_login::ActorLoginService&,
               GetActorLoginService,
               (),
               (override));
+  MOCK_METHOD(favicon::FaviconService*, GetFaviconService, (), (override));
 };
 
 class ActorAttemptLoginToolTest : public ActorToolsTest {
@@ -60,12 +78,16 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
         .WillByDefault(ReturnRef(mock_login_service_));
 
     // Returns the first credential by default.
-    ON_CALL(mock_execution_engine(), PromptToSelectCredential(_, _))
+    ON_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
         .WillByDefault(
             [](const std::vector<actor_login::Credential>& credentials,
+               const MockExecutionEngine::FaviconMap&,
                ToolDelegate::CredentialSelectedCallback callback) {
               std::move(callback).Run(credentials[0]);
             });
+
+    ON_CALL(mock_execution_engine(), GetFaviconService())
+        .WillByDefault(Return(nullptr));
   }
 
   std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
@@ -136,12 +158,12 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
                        MultipleCredentialsSelectSecond) {
-  ON_CALL(mock_execution_engine(), PromptToSelectCredential(_, _))
-      .WillByDefault(
-          [](const std::vector<actor_login::Credential>& credentials,
-             ToolDelegate::CredentialSelectedCallback callback) {
-            std::move(callback).Run(credentials[1]);
-          });
+  ON_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+      .WillByDefault([](const std::vector<actor_login::Credential>& credentials,
+                        const MockExecutionEngine::FaviconMap&,
+                        ToolDelegate::CredentialSelectedCallback callback) {
+        std::move(callback).Run(credentials[1]);
+      });
 
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
@@ -301,6 +323,196 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, FailedAttemptLogin) {
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
+}
+
+class ActorAttemptLoginToolTestWithFaviconService
+    : public ActorAttemptLoginToolTest {
+ public:
+  ActorAttemptLoginToolTestWithFaviconService() = default;
+  ~ActorAttemptLoginToolTestWithFaviconService() override = default;
+
+  void SetUpOnMainThread() override {
+    ActorAttemptLoginToolTest::SetUpOnMainThread();
+    ON_CALL(mock_execution_engine(), GetFaviconService())
+        .WillByDefault(Return(&mock_favicon_service_));
+
+    // Empty favicon by default.
+    ON_CALL(mock_favicon_service_, GetFaviconImageForPageURL(_, _, _))
+        .WillByDefault([](const GURL& page_url,
+                          favicon_base::FaviconImageCallback callback,
+                          base::CancelableTaskTracker* tracker) {
+          favicon_base::FaviconImageResult result;
+          result.image = gfx::Image();
+          std::move(callback).Run(std::move(result));
+          return static_cast<base::CancelableTaskTracker::TaskId>(1);
+        });
+  }
+
+  favicon::MockFaviconService& mock_favicon_service() {
+    return mock_favicon_service_;
+  }
+
+ private:
+  favicon::MockFaviconService mock_favicon_service_;
+};
+
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService, NoService) {
+  ON_CALL(mock_execution_engine(), GetFaviconService())
+      .WillByDefault(Return(nullptr));
+  EXPECT_CALL(mock_favicon_service(), GetFaviconImageForPageURL(_, _, _))
+      .Times(0);
+
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::vector<actor_login::Credential> credentials =
+      std::vector{MakeTestCredential(u"username1", url,
+                                     /*immediately_available_to_login=*/true)};
+  EXPECT_CALL(
+      mock_execution_engine(),
+      PromptToSelectCredential(/*credentials=*/credentials,
+                               /*favicons=*/MockExecutionEngine::FaviconMap{},
+                               /*callback=*/_));
+
+  mock_login_service().SetCredentials(credentials);
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(u"username1", mock_login_service().last_credential_used().username);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
+                       EmptyFavicons) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  GURL origin = url.GetWithEmptyPath();
+  std::vector<actor_login::Credential> credentials =
+      std::vector{MakeTestCredential(u"username1", url,
+                                     /*immediately_available_to_login=*/true)};
+  EXPECT_CALL(
+      mock_execution_engine(),
+      PromptToSelectCredential(/*credentials=*/credentials,
+                               /*favicons=*/MockExecutionEngine::FaviconMap{},
+                               /*callback=*/_));
+  EXPECT_CALL(mock_favicon_service(), GetFaviconImageForPageURL(origin, _, _));
+
+  mock_login_service().SetCredentials(credentials);
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(u"username1", mock_login_service().last_credential_used().username);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
+                       OneFavicon) {
+  const SkBitmap bitmap = GenerateSquareBitmap(/*size=*/10, SK_ColorRED);
+  auto image = gfx::Image::CreateFrom1xBitmap(bitmap);
+  ON_CALL(mock_favicon_service(), GetFaviconImageForPageURL(_, _, _))
+      .WillByDefault([&](const GURL& page_url,
+                         favicon_base::FaviconImageCallback callback,
+                         base::CancelableTaskTracker* tracker) {
+        favicon_base::FaviconImageResult result;
+        result.image = image;
+        std::move(callback).Run(std::move(result));
+        return static_cast<base::CancelableTaskTracker::TaskId>(1);
+      });
+
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  GURL origin = url.GetWithEmptyPath();
+  std::vector<actor_login::Credential> credentials =
+      std::vector{MakeTestCredential(u"username1", url,
+                                     /*immediately_available_to_login=*/true)};
+  EXPECT_CALL(mock_execution_engine(),
+              PromptToSelectCredential(
+                  /*credentials=*/credentials,
+                  /*favicons=*/MockExecutionEngine::FaviconMap{{origin, image}},
+                  /*callback=*/_));
+  EXPECT_CALL(mock_favicon_service(), GetFaviconImageForPageURL(origin, _, _));
+
+  mock_login_service().SetCredentials(credentials);
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(u"username1", mock_login_service().last_credential_used().username);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
+                       TwoFavicons) {
+  auto blank_icon = gfx::Image::CreateFrom1xBitmap(
+      GenerateSquareBitmap(/*size=*/10, SK_ColorWHITE));
+  auto link_icon = gfx::Image::CreateFrom1xBitmap(
+      GenerateSquareBitmap(/*size=*/15, SK_ColorBLUE));
+
+  const GURL blank_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), blank_url));
+  const GURL link_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/link.html");
+
+  ON_CALL(mock_favicon_service(), GetFaviconImageForPageURL(_, _, _))
+      .WillByDefault([&](const GURL& page_url,
+                         favicon_base::FaviconImageCallback callback,
+                         base::CancelableTaskTracker* tracker) {
+        favicon_base::FaviconImageResult result;
+        if (page_url == blank_url.GetWithEmptyPath()) {
+          result.image = blank_icon;
+        } else if (page_url == link_url.GetWithEmptyPath()) {
+          result.image = link_icon;
+        }
+        std::move(callback).Run(std::move(result));
+        return static_cast<base::CancelableTaskTracker::TaskId>(1);
+      });
+
+  GURL blank_origin = blank_url.GetWithEmptyPath();
+  GURL link_origin = link_url.GetWithEmptyPath();
+  std::vector<actor_login::Credential> credentials =
+      std::vector{MakeTestCredential(u"username1", blank_url,
+                                     /*immediately_available_to_login=*/true),
+                  MakeTestCredential(u"username2", link_url,
+                                     /*immediately_available_to_login=*/true)};
+  EXPECT_CALL(mock_execution_engine(),
+              PromptToSelectCredential(
+                  /*credentials=*/credentials,
+                  /*favicons=*/
+                  MockExecutionEngine::FaviconMap{{blank_origin, blank_icon},
+                                                  {link_origin, link_icon}},
+                  /*callback=*/_));
+  EXPECT_CALL(mock_favicon_service(),
+              GetFaviconImageForPageURL(blank_origin, _, _));
+  EXPECT_CALL(mock_favicon_service(),
+              GetFaviconImageForPageURL(link_origin, _, _));
+
+  mock_login_service().SetCredentials(credentials);
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(u"username1", mock_login_service().last_credential_used().username);
 }
 
 }  // namespace

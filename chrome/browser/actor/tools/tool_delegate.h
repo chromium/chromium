@@ -8,12 +8,22 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "url/gurl.h"
 
 namespace actor_login {
 class ActorLoginService;
 struct Credential;
 }  // namespace actor_login
+
+namespace favicon {
+class FaviconService;
+}  // namespace favicon
+
+namespace gfx {
+class Image;
+}  // namespace gfx
 
 namespace actor {
 
@@ -31,13 +41,19 @@ class ToolDelegate {
   // Returns the login service associated with the task.
   virtual actor_login::ActorLoginService& GetActorLoginService() = 0;
 
-  // Prompts the user to select a credential from the list of credentials.
+  // Returns the favicon service for the profile associated with the task.
+  virtual favicon::FaviconService* GetFaviconService() = 0;
+
+  // Prompts the user to select a credential from the list of credentials, and
+  // with optional favicons for each site or app that is associated with the
+  // credential.
   // The callback is called with the selected credential or with an empty
   // credential if the user closed the prompt without making a selection.
   using CredentialSelectedCallback =
       base::OnceCallback<void(const std::optional<actor_login::Credential>&)>;
   virtual void PromptToSelectCredential(
       const std::vector<actor_login::Credential>& credentials,
+      const base::flat_map<GURL, gfx::Image>& favicons,
       CredentialSelectedCallback callback) = 0;
 };
 
