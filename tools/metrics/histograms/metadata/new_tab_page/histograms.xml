@@ -1103,7 +1103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoDownloadOutcome"
-    enum="NewTabPageLogoDownloadOutcome" expires_after="2025-09-28">
+    enum="NewTabPageLogoDownloadOutcome" expires_after="2025-12-28">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1127,7 +1127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoImageDownloaded" enum="BooleanFromHTTPCache"
-    expires_after="2025-09-28">
+    expires_after="2025-12-28">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1138,7 +1138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoShownTime2" units="ms"
-    expires_after="2025-09-28">
+    expires_after="2025-12-28">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1352,7 +1352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.DataRequest" enum="NtpModules"
-    expires_after="2025-09-28">
+    expires_after="2025-12-28">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1509,7 +1509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.InstanceCount" units="count"
-    expires_after="2025-09-14">
+    expires_after="2025-12-28">
   <owner>romanarora@chromium.org</owner>
   <owner>danpeng@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1522,7 +1522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.LoadDuration{NewTabPageModules}" units="ms"
-    expires_after="2025-09-14">
+    expires_after="2025-12-28">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1550,7 +1550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.LoadedModulesCount" units="count"
-    expires_after="2025-09-28">
+    expires_after="2025-12-28">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1674,7 +1674,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.ShownTime" units="ms"
-    expires_after="2025-09-14">
+    expires_after="2025-12-28">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2043,52 +2043,6 @@ chromium-metrics-reviews@google.com.
     Logs how many times the user saw the mobile promo before manually dismissing
     it. Only logged on the 1P NTP and when #ntp-mobile-promo is enabled.
   </summary>
-</histogram>
-
-<histogram name="NewTabPage.Promos.MobilePromo.DismissUndone" units="count"
-    expires_after="2025-08-10">
-  <owner>rkgibson@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs how many times the user saw the mobile promo before undoing a manual
-    dismissal. Only logged on the 1P NTP and when #ntp-mobile-promo is enabled.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Promos.MobilePromo.Displayed" units="count"
-    expires_after="2025-10-26">
-  <owner>rkgibson@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs how many times the user has seen the mobile promo in total each time
-    the promo is displayed. Recorded at most once per NTP load. Only logged on
-    the 1P NTP and when #ntp-mobile-promo is enabled.
-  </summary>
-</histogram>
-
-<histogram
-    name="NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.{ResponseStatus}.Duration"
-    units="ms" expires_after="2025-10-12">
-  <owner>rkgibson@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    When Mobile Promo eligibility is being checked, this logs the duration of
-    the query to the segmentation platform, broken down by the response status.
-    Eligibility is checked at most once per NTP load when the promo is enabled
-    and the user has not seen the promo too many times before. Only logged on
-    the 1P NTP and when #ntp-mobile-promo is enabled.
-  </summary>
-  <token key="ResponseStatus">
-    <variant name="Failed" summary="Segmentation Platform request failed"/>
-    <variant name="NotReady" summary="Segmentation Platform was not ready"/>
-    <variant name="Succeeded"
-        summary="Segmentation Platform request succeeded"/>
-    <variant name="Unknown"
-        summary="Segmentation Platform response type was unknown"/>
-  </token>
 </histogram>
 
 <histogram name="NewTabPage.Promos.PromoBrowserCommand"
