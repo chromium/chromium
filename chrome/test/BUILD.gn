@@ -9888,6 +9888,7 @@ test("unit_tests") {
       "../browser/safe_browsing/extension_telemetry/potential_password_theft_signal_processor_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/remote_host_contacted_signal_processor_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/remote_host_contacted_signal_unittest.cc",
+      "../browser/safe_browsing/extension_telemetry/search_hijacking_detector_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/tabs_api_signal_processor_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/tabs_api_signal_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor_unittest.cc",

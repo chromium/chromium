@@ -286,6 +286,14 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                              base::Time::Now());
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig);
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryFileData);
+  registry->RegisterTimePref(
+      prefs::kExtensionTelemetrySearchHijackingLastCheckTime, base::Time());
+  registry->RegisterDictionaryPref(
+      prefs::kExtensionTelemetrySearchHijackingSignalData);
+  registry->RegisterIntegerPref(
+      prefs::kExtensionTelemetrySearchHijackingOmniboxSearchCount, 0);
+  registry->RegisterIntegerPref(
+      prefs::kExtensionTelemetrySearchHijackingSerpLandingCount, 0);
   registry->RegisterBooleanPref(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
                                 true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingSurveysEnabled, true);

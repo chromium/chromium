@@ -2733,7 +2733,25 @@ message ExtensionTelemetryReportRequest {
   // platform and the browser.
   optional ManagementAuthority management_authority = 6;
 
-  // Next available tag number: 7.
+  // Search hijacking telemetry signal
+  // A client-side heuristic signal that is generated if the number of Omnibox
+  // search events exceeds the number of Search Engine Results Page (SERP)
+  // landing events by a specified threshold during a specified interval.
+  message SearchHijackingSignal {
+    // The timestamp of the successful heuristic match (in milliseconds since
+    // Unix epoch)
+    optional int64 detection_timestamp = 1;
+    // The number of Omnibox search events detected during the heuristic match
+    // interval.
+    optional uint32 omnibox_search_count = 2;
+    // The number of SERP landing events detected during the heuristic match
+    // interval.
+    optional uint32 serp_landing_count = 3;
+  }
+
+  optional SearchHijackingSignal search_hijacking_signal = 7;
+
+  // Next available tag number: 8.
 }
 
 message ExtensionTelemetryReportResponse {

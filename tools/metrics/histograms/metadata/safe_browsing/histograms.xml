@@ -1195,6 +1195,33 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.ExtensionTelemetry.SearchHijackingDetector.HeuristicMatch"
+    enum="Boolean" expires_after="2026-08-18">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the search hijacking detector's heuristic has been matched.
+    A match is triggered when the number of omnibox searches exceeds the number
+    of search engine results page (SERP) landings by a certain threshold within
+    a given time interval. This is logged each time the heuristic check is
+    performed.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.ExtensionTelemetry.SearchHijackingDetector.SearchVsSerpCount"
+    enum="SBExtensionTelemetrySearchVsSerpCount" expires_after="2026-08-18">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records a comparison of the omnibox search and search engine results page
+    (SERP) landing counts at a given time interval. This is logged each time the
+    heuristic check is performed if at least one of the two counts is greater
+    than 0.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ExtensionTelemetry.Signals.Discarded"
     enum="SBExtensionTelemetrySignalsSignalType" expires_after="2025-10-31">
   <owner>anunoy@chromium.org</owner>

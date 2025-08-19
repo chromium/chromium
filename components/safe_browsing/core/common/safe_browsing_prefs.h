@@ -250,6 +250,22 @@ inline constexpr char kExtensionTelemetryConfig[] =
 inline constexpr char kExtensionTelemetryFileData[] =
     "safebrowsing.extension_telemetry_file_data";
 
+// The last time the search hijacking heuristic was checked.
+inline constexpr char kExtensionTelemetrySearchHijackingLastCheckTime[] =
+    "safebrowsing.extension_telemetry.search_hijacking_last_check_time";
+
+// The data associated with a search hijacking signal.
+inline constexpr char kExtensionTelemetrySearchHijackingSignalData[] =
+    "safebrowsing.extension_telemetry.search_hijacking_signal_data";
+
+// The number of omnibox searches observed.
+inline constexpr char kExtensionTelemetrySearchHijackingOmniboxSearchCount[] =
+    "safebrowsing.extension_telemetry.search_hijacking_omnibox_search_count";
+
+// The number of SERP landings observed.
+inline constexpr char kExtensionTelemetrySearchHijackingSerpLandingCount[] =
+    "safebrowsing.extension_telemetry.search_hijacking_serp_landing_count";
+
 // A boolean indicating if hash-prefix real-time lookups are allowed by policy.
 // If false, the lookups will instead be hash-prefix database lookups. If true,
 // there is no such override; the hash-prefix real-time lookups might still not

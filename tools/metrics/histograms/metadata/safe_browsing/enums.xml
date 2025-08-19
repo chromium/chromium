@@ -601,6 +601,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Malware"/>
 </enum>
 
+<!-- LINT.IfChange(SBExtensionTelemetrySearchVsSerpCount) -->
+
+<enum name="SBExtensionTelemetrySearchVsSerpCount">
+  <int value="0" label="SearchCountIsLessThanSerpCount"/>
+  <int value="1" label="SearchCountEqualsSerpCount"/>
+  <int value="2" label="SearchCountIsGreaterThanSerpCount"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/extension_telemetry/search_hijacking_detector.cc:SearchVsSerpCount) -->
+
 <enum name="SBExtensionTelemetrySignalsSignalType">
   <int value="0" label="TabsExecuteScript"/>
   <int value="1" label="RemoteHostsContacted"/>
