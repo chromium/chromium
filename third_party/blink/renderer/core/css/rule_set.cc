@@ -1024,8 +1024,7 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                     apply_mixins_stack);
     } else if (auto* apply_mixin_rule = DynamicTo<StyleRuleApplyMixin>(rule)) {
       auto it = mixins.mixins.find(apply_mixin_rule->GetName());
-      if (it != mixins.mixins.end() &&
-          it->value->FakeParentRule().ChildRules()) {
+      if (it != mixins.mixins.end()) {
         if (std::ranges::find_if(apply_mixins_stack,
                                  [&](const ApplyingMixin& entry) {
                                    return entry.mixin == it->value;
@@ -1037,9 +1036,9 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
         }
         apply_mixins_stack.push_back(ApplyingMixin{
             .mixin = it->value.Get(), .invoking_apply_rule = apply_mixin_rule});
-        AddChildRules(parent_rule, *it->value->FakeParentRule().ChildRules(),
-                      medium, mixins, add_rule_flags, container_query,
-                      cascade_layer, style_scope, apply_mixins_stack);
+        AddChildRules(parent_rule, it->value->ChildRules(), medium, mixins,
+                      add_rule_flags, container_query, cascade_layer,
+                      style_scope, apply_mixins_stack);
         apply_mixins_stack.pop_back();
 
         // If the @mixin we are applying (or currently: any @mixin) was defined

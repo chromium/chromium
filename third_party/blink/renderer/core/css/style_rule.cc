@@ -1061,14 +1061,12 @@ void StyleRuleFunction::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(layer_);
 }
 
-StyleRuleMixin::StyleRuleMixin(AtomicString name, StyleRule* fake_parent_rule)
-    : StyleRuleBase(kMixin),
-      name_(std::move(name)),
-      fake_parent_rule_(fake_parent_rule) {}
+StyleRuleMixin::StyleRuleMixin(AtomicString name,
+                               HeapVector<Member<StyleRuleBase>> child_rules)
+    : StyleRuleGroup(kMixin, child_rules), name_(std::move(name)) {}
 
 void StyleRuleMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
-  StyleRuleBase::TraceAfterDispatch(visitor);
-  visitor->Trace(fake_parent_rule_);
+  StyleRuleGroup::TraceAfterDispatch(visitor);
 }
 
 void StyleRuleApplyMixin::TraceAfterDispatch(blink::Visitor* visitor) const {

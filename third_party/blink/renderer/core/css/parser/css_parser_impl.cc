@@ -2376,7 +2376,19 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
     base::AutoReset<bool> reset_in_nested_style_rule(&in_mixin_, true);
     fake_parent_rule = ConsumeDeclarationListForMixins(stream);
   }
-  return MakeGarbageCollected<StyleRuleMixin>(name, fake_parent_rule);
+
+  // ConsumeDeclarationListForMixins() must have a fake parent rule in case
+  // there are any rules containing parent selectors (including raw
+  // declarations, as they are wrapped in an implicit nested block); however,
+  // StyleRuleMixin is a StyleRuleGroup and expects to own its rules itself.
+  // This means that even though fake_parent_rule is the parent pointed to by
+  // the selectors (and will be kept alive by them), it doesn't actually
+  // contain the child rules and isn't used for anything anymore. Once
+  // a mixin is actually used (in @apply), we clone all the rules and call
+  // Renest(), which changes all the parent references to @apply's parent.
+  fake_parent_rule->EnsureChildRules();
+  return MakeGarbageCollected<StyleRuleMixin>(
+      name, HeapVector{std::move(*fake_parent_rule->ChildRules())});
 }
 
 StyleRule* CSSParserImpl::ConsumeDeclarationListForMixins(

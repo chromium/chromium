@@ -687,22 +687,22 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleGroup {
 };
 
 // An @mixin rule, representing a CSS mixin. We store all of the rules
-// and declarations under a dummy rule that serves as the parent;
-// when @apply comes, we clone all the children below that rule and
-// reparent them into the point of @apply.
-class CORE_EXPORT StyleRuleMixin : public StyleRuleBase {
+// and declarations in child_rules_ as usual (but with their selectors
+// pointing to a fake parent rule; see comment in
+// CSSParserImpl::ConsumeMixinRule()), and when @apply comes,
+// we clone all the children and reparent them into the point of @apply.
+class CORE_EXPORT StyleRuleMixin : public StyleRuleGroup {
  public:
-  StyleRuleMixin(AtomicString name, StyleRule* fake_parent_rule);
+  StyleRuleMixin(AtomicString name,
+                 HeapVector<Member<StyleRuleBase>> child_rules);
   StyleRuleMixin(const StyleRuleMixin&) = delete;
 
   const AtomicString& GetName() const { return name_; }
-  StyleRule& FakeParentRule() const { return *fake_parent_rule_; }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   AtomicString name_;
-  Member<StyleRule> fake_parent_rule_;
 };
 
 // An @apply rule, representing applying a mixin.
