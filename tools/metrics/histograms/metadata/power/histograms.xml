@@ -576,7 +576,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AvgCpuLoad.{ProcessType}" units="%"
-    expires_after="2025-12-14">
+    expires_after="2026-02-15">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1046,7 +1046,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerThreadType.{ProcessType}"
-    enum="CpuTimeMetricsThreadType" expires_after="2025-12-14">
+    enum="CpuTimeMetricsThreadType" expires_after="2026-02-15">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1073,7 +1073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerThreadType.{ProcessType}.{Visibility}"
-    enum="CpuTimeMetricsThreadType" expires_after="2025-12-14">
+    enum="CpuTimeMetricsThreadType" expires_after="2026-02-15">
   <owner>eseckler@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <owner>woa-performance@google.com</owner>

@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.ToBlob.InitialEncodingDelay.{Type}"
-    units="microseconds" expires_after="2025-12-14">
+    units="microseconds" expires_after="2026-02-15">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -585,7 +585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.ToBlob.TotalEncodingDelay.{Type}"
-    units="microseconds" expires_after="2025-12-14">
+    units="microseconds" expires_after="2026-02-15">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -620,7 +620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.ToDataURLCompressionRatio.PNG"
-    units="encoded bytes per 100 image bytes" expires_after="2025-12-14">
+    units="encoded bytes per 100 image bytes" expires_after="2026-02-15">
   <owner>lukasza@chromium.org</owner>
   <owner>danieldilan@google.com</owner>
   <owner>fmalita@chromium.org</owner>
@@ -639,7 +639,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Canvas.ToDataURLScaledDuration{BlinkCanvasToDataURLMimeType}"
-    units="microseconds/sqrt(pixels)" expires_after="2025-12-14">
+    units="microseconds/sqrt(pixels)" expires_after="2026-02-15">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -1394,7 +1394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.AutoReauthn.Succeeded" enum="Boolean"
-    expires_after="2025-12-14">
+    expires_after="2026-02-15">
   <owner>npm@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -1650,7 +1650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.HasSigninAccount" enum="BooleanYesNo"
-    expires_after="2025-12-14">
+    expires_after="2026-02-15">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1753,7 +1753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.IsSignInUser" enum="Boolean"
-    expires_after="2025-12-14">
+    expires_after="2026-02-15">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1807,7 +1807,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.MismatchDialogShown" enum="BooleanHit"
-    expires_after="2025-12-14">
+    expires_after="2026-02-15">
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>Records a 1 each time a mismatch dialog is shown.</summary>
@@ -1886,7 +1886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.RpContext" enum="FedCmRpContext"
-    expires_after="2025-12-14">
+    expires_after="2026-02-15">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2021,7 +2021,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Status.RequestIdToken"
-    enum="FedCmRequestIdTokenStatus" expires_after="2025-12-14">
+    enum="FedCmRequestIdTokenStatus" expires_after="2026-02-15">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2040,7 +2040,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Timing.AccountsDialogShownDuration2" units="ms"
-    expires_after="2025-12-14">
+    expires_after="2026-02-15">
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2094,7 +2094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Timing.ContinueOnDialog" units="ms"
-    expires_after="2025-12-14">
+    expires_after="2026-02-15">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2141,7 +2141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Timing.MismatchDialogShownDuration" units="ms"
-    expires_after="2025-12-14">
+    expires_after="2026-02-15">
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
