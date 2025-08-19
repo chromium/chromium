@@ -25,3 +25,4 @@ Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] text-decoration uses discrete animation when animating between "underline" and "overline" with keyframe easing
   assert_equals: The value should be underline at 0ms expected "underline" but got "underline rgb(0, 0, 0)"
 Harness: the test ran to completion.
+
