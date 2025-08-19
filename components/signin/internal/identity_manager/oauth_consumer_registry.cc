@@ -40,6 +40,7 @@ constexpr char kEnclaveManagerName[] = "enclave_manager";
 constexpr char kNtpDriveServiceName[] = "ntp_drive_service";
 constexpr char kForceSigninVerifierName[] = "force_signin_verifier";
 constexpr char kCaptureModeDelegateName[] = "capture_mode_delegate";
+constexpr char kFcmInvalidationName[] = "fcm_invalidation";
 
 }  // namespace
 
@@ -176,6 +177,10 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kCaptureModeDelegateName,
           /*scopes=*/{GaiaConstants::kSupportContentOAuth2Scope});
+    case OAuthConsumerId::kFcmInvalidation:
+      return OAuthConsumer(
+          /*name=*/kFcmInvalidationName,
+          /*scopes=*/{GaiaConstants::kFCMOAuthScope});
   }
   NOTREACHED();
 }

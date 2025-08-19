@@ -729,6 +729,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Ntp Drive Service"/>
   <int value="23" label="Force Signin Verifier"/>
   <int value="24" label="Capture Mode Delegate"/>
+  <int value="25" label="Fcm Invalidation"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

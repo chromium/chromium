@@ -36,7 +36,9 @@ enum class OAuthConsumerId {
   kNtpDriveService = 22,
   kForceSigninVerifier = 23,
   kCaptureModeDelegate = 24,
-  kMaxValue = kCaptureModeDelegate,
+  // TODO(crbug.com/434619290): Remove this once not used anymore.
+  kFcmInvalidation = 25,
+  kMaxValue = kFcmInvalidation,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 
