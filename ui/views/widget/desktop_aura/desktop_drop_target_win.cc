@@ -55,7 +55,9 @@ int ConvertKeyStateToAuraEventFlags(DWORD key_state) {
 namespace views {
 
 DesktopDropTargetWin::DesktopDropTargetWin(aura::Window* root_window)
-    : root_window_(root_window) {}
+    : root_window_(root_window) {
+  root_window_observation_.Observe(root_window_);
+}
 
 DesktopDropTargetWin::~DesktopDropTargetWin() = default;
 
@@ -114,8 +116,18 @@ DWORD DesktopDropTargetWin::OnDrop(IDataObject* data_object,
 }
 
 void DesktopDropTargetWin::OnWindowDestroyed(aura::Window* window) {
-  DCHECK(target_window_observation_.IsObservingSource(window));
-  target_window_observation_.Reset();
+  // If we were observing the target window under the cursor, clear that
+  // observation.
+  if (target_window_observation_.IsObservingSource(window)) {
+    target_window_observation_.Reset();
+  }
+
+  // If the root window is destroyed, stop observing it and clear the raw
+  // pointer to avoid future dereferences.
+  if (root_window_observation_.IsObservingSource(window)) {
+    root_window_observation_.Reset();
+    root_window_ = nullptr;
+  }
 }
 
 void DesktopDropTargetWin::Translate(
@@ -126,6 +138,10 @@ void DesktopDropTargetWin::Translate(
     std::unique_ptr<OSExchangeData>* data,
     std::unique_ptr<ui::DropTargetEvent>* event,
     DragDropDelegate** delegate) {
+  if (!root_window_) {
+    return;
+  }
+
   gfx::Point location(position.x, position.y);
   gfx::Point root_location = location;
   root_window_->GetHost()->ConvertScreenInPixelsToDIP(&root_location);
