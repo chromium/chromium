@@ -986,6 +986,8 @@ public class AccessibilityNodeInfoBuilder {
         setTextAttributeRangesMapValue(map, value, starts, ends);
     }
 
+    // TODO(crbug.com/439665919): refactor setTextAttributeRangesMapValue and callers to an utility
+    // class.
     public static <T> void setTextAttributeRangesMapValue(
             Map<T, int[][]> map, T value, int[] starts, int[] ends) {
         if (map == null || value == null || starts == null || ends == null) {

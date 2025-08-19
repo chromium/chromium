@@ -432,6 +432,85 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   bool IsAccessibilityFocused(BrowserAccessibilityAndroid* node) const;
 
+  void PopulateAccessibilityNodeInfoChildIds(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
+  void PopulateAccessibilityNodeInfoBooleanAttributes(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
+  void PopulateAccessibilityNodeInfoActionAttributes(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
+  void PopulateAccessibilityNodeInfoBaseAttributes(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node,
+      int parent_id);
+
+  void PopulateAccessibilityNodeInfoText(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
+  void PopulateAccessibilityNodeInfoTextWithFormatting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
+  void PopulateAccessibilityNodeInfoTextWithoutFormatting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
+  void PopulateAccessibilityNodeInfoViewIdResourceName(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
+  void PopulateAccessibilityNodeInfoCollectionInfo(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
+  void PopulateAccessibilityNodeInfoCollectionItemInfo(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
+  void PopulateAccessibilityNodeInfoRangeInfo(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
+  void PopulateAccessibilityNodeInfoPaneTitle(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
+  void PopulateAccessibilityNodeInfoSelection(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& info,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      BrowserAccessibilityAndroid* node);
+
   void UpdateAccessibilityNodeInfoBoundsRect(
       JNIEnv* env,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
