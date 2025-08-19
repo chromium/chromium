@@ -371,8 +371,9 @@ const char kCrosSwitcherDescription[] =
 const char kStylusHandwritingWinName[] = "Stylus Handwriting for Windows.";
 const char kStylusHandwritingWinDescription[] =
     "Enables an experimental feature that lets users handwrite into text "
-    "fields using a compatible stylus. Only supported on Windows builds "
-    "greater than or equal to 26100.3624";
+    "fields using a compatible stylus. Only supported on Windows builds 22621 "
+    "(patch 5126 and newer), 22631 (patch 5126 and newer) and all builds equal "
+    "to or newer than 26100.3624";
 #endif  // BUILDFLAG(IS_WIN)
 
 const char kCssGamutMappingName[] = "CSS Gamut Mapping";

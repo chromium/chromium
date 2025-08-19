@@ -18,8 +18,6 @@ namespace content {
 
 namespace {
 
-inline constexpr uint32_t kHandwritingSupportMinBuild = 26100;
-inline constexpr uint32_t kHandwritingSupportMinPatch = 3624;
 StylusHandwritingControllerWin* g_instance = nullptr;
 ITfThreadMgr* g_thread_manager_instance_for_testing = nullptr;
 bool g_bind_interfaces_called_for_testing = false;
@@ -65,23 +63,27 @@ bool StylusHandwritingControllerWin::IsHandwritingAPIAvailable() {
 
 // static
 bool StylusHandwritingControllerWin::StylusHandwritingSupportedOnBuild() {
-  const uint32_t build =
-      base::win::OSInfo::GetInstance()->version_number().build;
+  const base::win::Version build = static_cast<base::win::Version>(
+      base::win::OSInfo::GetInstance()->version_number().build);
   const uint32_t patch =
       base::win::OSInfo::GetInstance()->version_number().patch;
-  return (build == kHandwritingSupportMinBuild &&
-          patch >= kHandwritingSupportMinPatch) ||
-         (build > kHandwritingSupportMinBuild);
+  // These range checks are helpful in determining safe builds for providing the
+  // handwriting experience. We can't remove the version checks and solely rely
+  // on the presence of handwriting APIs because there are currently builds that
+  // have the handwriting APIs (which would cause the QI to pass), but lack some
+  // necessary OS fixes. We don't want users to trigger handwriting on those
+  // builds. Additionally, the Windows team can't backport fixes to all
+  // handwriting supported builds due to code divergence.
+  return (((build == base::win::Version::WIN11_22H2) ||
+           (build == base::win::Version::WIN11_23H2)) &&
+          patch >= 5126) ||
+         ((build == base::win::Version::WIN11_24H2) && patch >= 3624) ||
+         (build > base::win::Version::WIN11_24H2);
 }
 
 // static
 void StylusHandwritingControllerWin::Initialize() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // TODO(arakeri): This is being done as a workaround for an OS bug (see
-  // crbug.com/372506009). The Windows team has fixed it but hasn't fully
-  // backported it to older builds where the issue still exists. This guard will
-  // be removed once the backporting is complete.
   static bool handwriting_supported_on_winbuild =
       StylusHandwritingSupportedOnBuild();
 
