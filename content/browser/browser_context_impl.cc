@@ -56,8 +56,7 @@ void NotifyContextWillBeDestroyed(StoragePartition* partition) {
 
 // Kill switch that controls whether to cancel navigations as part of
 // BrowserContext shutdown. See https://crbug.com/40274462.
-BASE_FEATURE(kCancelNavigationsDuringBrowserContextShutdown,
-             "CancelNavigationsDuringBrowserContextShutdown",
+BASE_FEATURE(CancelNavigationsDuringBrowserContextShutdown,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

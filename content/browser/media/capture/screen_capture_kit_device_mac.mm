@@ -205,8 +205,7 @@ namespace content {
 
 namespace {
 
-BASE_FEATURE(kScreenCaptureKitFullDesktopFallback,
-             "ScreenCaptureKitFullDesktopFallback",
+BASE_FEATURE(ScreenCaptureKitFullDesktopFallback,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac

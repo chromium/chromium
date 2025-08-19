@@ -128,16 +128,14 @@ namespace {
 // Feature to skip a redundant NavigationRequest creation for bfcache
 // activations, per https://crbug.com/417251428.
 // TODO(crbug.com/420275259): Diagnose crashes and enable by default.
-BASE_FEATURE(kSkipExtraBfcacheNavigationRequest,
-             "SkipExtraBfcacheNavigationRequest",
+BASE_FEATURE(SkipExtraBfcacheNavigationRequest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a CHECK in RendererDidNavigate to ensure that session
 // history navigations commit in the expected SiteInstance when the
 // document sequence number matches. Helps detect navigation process
 // mismatches and potential security issues.
-BASE_FEATURE(kCheckSiteInstanceOnHistoryNavigation,
-             "CheckSiteInstanceOnHistoryNavigation",
+BASE_FEATURE(CheckSiteInstanceOnHistoryNavigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Invoked when entries have been pruned, or removed. For example, if the

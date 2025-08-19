@@ -17,16 +17,14 @@ namespace content::features {
 //
 // When enabled, GetFile() and GetEntries() on a directory handle performs
 // the blocklist check on child file handles.
-BASE_FEATURE(kFileSystemAccessDirectoryIterationBlocklistCheck,
-             "FileSystemAccessDirectoryIterationBlocklistCheck",
+BASE_FEATURE(FileSystemAccessDirectoryIterationBlocklistCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, sites are limited in how much underlying operating resources
 // they can access through the `FileSystemObserver` API. This limit is called
 // the quota limit. Without this enabled, sites will be limited by the system
 // limit.
-BASE_FEATURE(kFileSystemAccessObserverQuotaLimit,
-             "FileSystemAccessObserverQuotaLimit",
+BASE_FEATURE(FileSystemAccessObserverQuotaLimit,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // On Linux, the quota limit is found by:

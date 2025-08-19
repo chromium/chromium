@@ -6,8 +6,7 @@
 
 namespace content::features {
 
-BASE_FEATURE(kSharedStorageSelectURLLimit,
-             "SharedStorageSelectURLLimit",
+BASE_FEATURE(SharedStorageSelectURLLimit,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(double,
                    kSharedStorageSelectURLBitBudgetPerPageLoad,

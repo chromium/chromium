@@ -64,8 +64,7 @@ bool IsAndroidSurfaceControlMagnifierEnabled() {
   return enabled;
 }
 
-BASE_FEATURE(kDismissMagnifierOnViewSwap,
-             "DismissMagnifierOnViewSwap",
+BASE_FEATURE(DismissMagnifierOnViewSwap,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

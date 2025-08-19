@@ -78,8 +78,7 @@ using storage::BucketLocator;
 // `IdbPrioritizeForegroundClients` affects relative ordering of transactions
 // for a single client. This feature affects which backends are run at a higher
 // task priority. See crbug.com/329221141
-BASE_FEATURE(kIdbExpediteBackendProcessingForForegroundClients,
-             "IdbExpediteBackendProcessingForForegroundClients",
+BASE_FEATURE(IdbExpediteBackendProcessingForForegroundClients,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

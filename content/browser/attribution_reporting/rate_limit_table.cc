@@ -54,8 +54,7 @@ namespace content {
 namespace {
 
 // Kill switch.
-BASE_FEATURE(kAttributionReportingRateLimitCheckSourceTime,
-             "AttributionReportingRateLimitCheckSourceTime",
+BASE_FEATURE(AttributionReportingRateLimitCheckSourceTime,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAttribution(RateLimitTable::Scope scope) {

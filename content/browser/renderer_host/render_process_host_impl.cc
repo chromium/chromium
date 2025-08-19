@@ -1199,8 +1199,7 @@ void InvokeVideoDecoderEventCB(RenderProcessHostImpl::VideoDecoderEvent event) {
 #if !BUILDFLAG(IS_ANDROID)
 // Enables kUserVisible process priority. Otherwise when feature is disabled,
 // Priority::kUserVisible has same behavior as Priority::kUserBlocking.
-BASE_FEATURE(kUserVisibleProcessPriority,
-             "UserVisibleProcessPriority",
+BASE_FEATURE(UserVisibleProcessPriority,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

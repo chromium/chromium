@@ -98,8 +98,7 @@ namespace {
 // called after a delay. This is done as `updateWindows` can be quite
 // costly, and if the text input state is changing rapidly there is no need to
 // update it immediately.
-BASE_FEATURE(kDelayUpdateWindowsAfterTextInputStateChanged,
-             "DelayUpdateWindowsAfterTextInputStateChanged",
+BASE_FEATURE(DelayUpdateWindowsAfterTextInputStateChanged,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

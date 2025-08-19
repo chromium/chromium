@@ -77,8 +77,7 @@ TokenFrameMap& GetTokenFrameProxyMap() {
 
 // TODO(https://crbug.com/339512240): Remove this killswitch once the
 // optimization for postMessage proxy creation finishes rolling out.
-BASE_FEATURE(kSkipPostMessageProxyCreationWithinFrameTree,
-             "SkipPostMessageProxyCreationWithinFrameTree",
+BASE_FEATURE(SkipPostMessageProxyCreationWithinFrameTree,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

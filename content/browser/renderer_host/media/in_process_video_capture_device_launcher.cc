@@ -94,8 +94,7 @@ const int kMaxNumberOfBuffers = media::kVideoCaptureDefaultMaxBufferPoolSize;
 #if BUILDFLAG(IS_MAC)
 // If this feature is enabled, ScreenCaptureKit will be used for screen
 // capturing.
-BASE_FEATURE(kScreenCaptureKitMacScreen,
-             "ScreenCaptureKitMacScreen",
+BASE_FEATURE(ScreenCaptureKitMacScreen,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 

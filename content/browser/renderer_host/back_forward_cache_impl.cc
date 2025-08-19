@@ -69,8 +69,7 @@ class RenderProcessHostInternalObserver;
 // Enables BackForwardCache size for
 //  - desktop: https://crbug.com/1291435.
 //  - android: https://crbug.com/1395281.
-BASE_FEATURE(kBackForwardCacheSize,
-             "BackForwardCacheSize",
+BASE_FEATURE(BackForwardCacheSize,
              base::FEATURE_ENABLED_BY_DEFAULT);
 // Sets BackForwardCache cache_size=6.
 const base::FeatureParam<int> kBackForwardCacheSizeCacheSize{

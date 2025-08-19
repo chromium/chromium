@@ -294,8 +294,7 @@ enum class CrashRepHandlingOutcome {
 constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 
 // Kill switch for inner WebContents visibility updates.
-BASE_FEATURE(kUpdateInnerWebContentsVisibility,
-             "UpdateInnerWebContentsVisibility",
+BASE_FEATURE(UpdateInnerWebContentsVisibility,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 using LifecycleState = RenderFrameHost::LifecycleState;

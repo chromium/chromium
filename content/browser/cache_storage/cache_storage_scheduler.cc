@@ -53,8 +53,7 @@ bool OpPointerLessThan(const std::unique_ptr<CacheStorageOperation>& left,
 
 // Enables support for parallel cache_storage operations via the
 // "max_shared_ops" fieldtrial parameter.
-BASE_FEATURE(kCacheStorageParallelOps,
-             "CacheStorageParallelOps",
+BASE_FEATURE(CacheStorageParallelOps,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 CacheStorageScheduler::CacheStorageScheduler(

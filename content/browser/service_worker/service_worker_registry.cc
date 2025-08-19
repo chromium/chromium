@@ -48,21 +48,16 @@ namespace {
 // Another switch for `kServiceWorkerBackgroundUpdateForRegisteredStorageKeys`
 // intended to be controlled from Field Trial (e.g. kill-switch). The original
 // flag may be overridden by `AwFieldTrials::RegisterFeatureOverrides`.
-BASE_FEATURE(
-    kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled,
-    "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled",
+BASE_FEATURE(ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled,
     base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kServiceWorkerBackgroundUpdateForServiceWorkerScopeCache,
-             "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache",
+BASE_FEATURE(ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl,
-             "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl",
+BASE_FEATURE(ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReduceCallingServiceWorkerRegisteredStorageKeysOnStartup,
-             "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
+BASE_FEATURE(ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ReduceCallingServiceWorkerRegisteredStorageKeysOnStartupEnabled() {
@@ -180,8 +175,7 @@ constexpr size_t kServiceWorkerRegistrationCacheSize = 100;
 }  // namespace
 
 // Enables merging duplicate calls of FindRegistrationForClientUrl.
-BASE_FEATURE(kServiceWorkerMergeFindRegistrationForClientUrl,
-             "ServiceWorkerMergeFindRegistrationForClientUrl",
+BASE_FEATURE(ServiceWorkerMergeFindRegistrationForClientUrl,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 template <typename... ReplyArgs>

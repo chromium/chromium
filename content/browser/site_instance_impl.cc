@@ -70,8 +70,7 @@ SiteInstanceId::Generator g_site_instance_id_generator;
 // These calls should either be replaced with GetOrCreateProcess() if process
 // creation was intentional, or the caller should be changed to avoid
 // unnecessarily creating a process.
-BASE_FEATURE(kTraceSiteInstanceGetProcessCreation,
-             "TraceSiteInstanceGetProcessCreation",
+BASE_FEATURE(TraceSiteInstanceGetProcessCreation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to crash if GetProcess is called on a SiteInstance without a process.

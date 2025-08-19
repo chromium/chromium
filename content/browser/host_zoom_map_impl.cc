@@ -66,7 +66,7 @@ std::string GetHostFromProcessFrame(RenderFrameHostImpl* rfh) {
 }
 
 // Allows HostZoomMap to grant independent zoom to subframes.
-BASE_FEATURE(kSubframeZoom, "SubframeZoom", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(SubframeZoom, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns true if local root subframes may have different zoom levels than
 // the primary main frame.

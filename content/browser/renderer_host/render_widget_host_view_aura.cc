@@ -155,8 +155,7 @@ namespace {
 // `RenderWidgetHost` is hidden.
 // TODO(crbug.com/330301468): Remove this once we determine the cause of failure
 // to reallocate an LSI for the UI compositor.
-BASE_FEATURE(kRenderWidgetHostHiddenCheck,
-             "RenderWidgetHostHiddenCheck",
+BASE_FEATURE(RenderWidgetHostHiddenCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 

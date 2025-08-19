@@ -23,8 +23,7 @@ namespace content {
 #if BUILDFLAG(IS_ANDROID)
 namespace {
 
-BASE_FEATURE(kNavigationEntryScreenshotCompression,
-             "NavigationEntryScreenshotCompression",
+BASE_FEATURE(NavigationEntryScreenshotCompression,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 static bool g_disable_compression_for_testing = false;

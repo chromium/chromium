@@ -37,8 +37,7 @@ namespace {
 // Killswitch to turn off this feature remotely in case it affects ATs in a way
 // we didn't expect. This is temporary.
 // TODO(crbug.com/407891291): Remove this feature flag in Chrome 139.
-BASE_FEATURE(kDisableUiaProviderWhenJawsIsRunning,
-             "DisableUiaProviderWhenJawsIsRunning",
+BASE_FEATURE(DisableUiaProviderWhenJawsIsRunning,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";

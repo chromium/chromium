@@ -945,8 +945,7 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
 // The flag below is provided in case the workaround had a bug. Use the flag to
 // revert back to the previous behavior.
 // TODO(crbug.com/399478939): Remove the workaround and this flag.
-BASE_FEATURE(kPrerenderActivationMismatchWebViewWorkaround,
-             "PrerenderActivationMismatchWebViewWorkaround",
+BASE_FEATURE(PrerenderActivationMismatchWebViewWorkaround,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 

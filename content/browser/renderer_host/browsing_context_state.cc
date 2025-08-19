@@ -15,8 +15,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 
 namespace features {
-BASE_FEATURE(kNewBrowsingContextStateOnBrowsingContextGroupSwap,
-             "NewBrowsingContextStateOnBrowsingContextGroupSwap",
+BASE_FEATURE(NewBrowsingContextStateOnBrowsingContextGroupSwap,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BrowsingContextStateImplementationType GetBrowsingContextMode() {

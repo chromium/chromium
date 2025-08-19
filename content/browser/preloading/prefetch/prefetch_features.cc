@@ -10,24 +10,20 @@
 
 namespace features {
 
-BASE_FEATURE(kPrefetchTesting,
-             "PrefetchTesting",
+BASE_FEATURE(PrefetchTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // 4MiB, 2**20 * 4.
 const base::FeatureParam<int> kPrefetchReusableBodySizeLimit{
     &kPrefetchTesting, "kPrefetchReusableBodySizeLimit", 4194304};
 
-BASE_FEATURE(kPrefetchUseContentRefactor,
-             "PrefetchUseContentRefactor",
+BASE_FEATURE(PrefetchUseContentRefactor,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchNIKScope,
-             "PrefetchNIKScope",
+BASE_FEATURE(PrefetchNIKScope,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchClientHints,
-             "PrefetchClientHints",
+BASE_FEATURE(PrefetchClientHints,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<PrefetchClientHintsCrossSiteBehavior>::Option
@@ -42,28 +38,23 @@ const base::FeatureParam<PrefetchClientHintsCrossSiteBehavior>
         PrefetchClientHintsCrossSiteBehavior::kLowEntropy,
         &kPrefetchClientHintsCrossSiteBehaviorOptions};
 
-BASE_FEATURE(kPrefetchStateContaminationMitigation,
-             "PrefetchStateContaminationMitigation",
+BASE_FEATURE(PrefetchStateContaminationMitigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool>
     kPrefetchStateContaminationSwapsBrowsingContextGroup{
         &kPrefetchStateContaminationMitigation, "swaps_bcg", true};
 
-BASE_FEATURE(kPrefetchServiceWorkerNoFetchHandlerFix,
-             "PrefetchServiceWorkerNoFetchHandlerFix",
+BASE_FEATURE(PrefetchServiceWorkerNoFetchHandlerFix,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchNetworkPriorityForEmbedders,
-             "PrefetchNetworkPriorityForEmbedders",
+BASE_FEATURE(PrefetchNetworkPriorityForEmbedders,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchBumpNetworkPriorityAfterBeingServed,
-             "PrefetchBumpNetworkPriorityAfterBeingServed",
+BASE_FEATURE(PrefetchBumpNetworkPriorityAfterBeingServed,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchServiceWorker,
-             "PrefetchServiceWorker",
+BASE_FEATURE(PrefetchServiceWorker,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPrefetchServiceWorkerEnabled(content::BrowserContext* browser_context) {
@@ -72,18 +63,15 @@ bool IsPrefetchServiceWorkerEnabled(content::BrowserContext* browser_context) {
              browser_context);
 }
 
-BASE_FEATURE(kPrefetchBrowsingDataRemoval,
-             "PrefetchBrowsingDataRemoval",
+BASE_FEATURE(PrefetchBrowsingDataRemoval,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchScheduler,
-             "PrefetchScheduler",
+BASE_FEATURE(PrefetchScheduler,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kPrefetchSchedulerProgressSyncBestEffort{
     &kPrefetchScheduler, "kPrefetchSchedulerProgressSyncBestEffort", true};
 
-BASE_FEATURE(kPrefetchSchedulerTesting,
-             "PrefetchSchedulerTesting",
+BASE_FEATURE(PrefetchSchedulerTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<size_t>
     kPrefetchSchedulerTestingActiveSetSizeLimitForBase{
@@ -94,16 +82,13 @@ const base::FeatureParam<size_t>
         &kPrefetchSchedulerTesting,
         "kPrefetchSchedulerTestingActiveSetSizeLimitForBurst", 1};
 
-BASE_FEATURE(kPrefetchQueueingPartialFixWithoutScheduler,
-             "PrefetchQueueingPartialFixWithoutScheduler",
+BASE_FEATURE(PrefetchQueueingPartialFixWithoutScheduler,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchCanaryCheckerParams,
-             "PrefetchCanaryCheckerParams",
+BASE_FEATURE(PrefetchCanaryCheckerParams,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchMultipleActiveSetSizeLimitForBase,
-             "PrefetchMultipleActiveSetSizeLimitForBase",
+BASE_FEATURE(PrefetchMultipleActiveSetSizeLimitForBase,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<size_t>
     kPrefetchMultipleActiveSetSizeLimitForBaseValue{

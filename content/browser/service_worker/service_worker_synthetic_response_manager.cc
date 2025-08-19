@@ -47,8 +47,7 @@ enum class SyntheticResponseReloadReason {
 // When this is enabled, the browser stores response headers for synthetic
 // responses even if there is no opt-in header in its response. This is for
 // local development and testing.
-BASE_FEATURE(kServiceWorkerBypassSyntheticResponseHeaderCheck,
-             "ServiceWorkerBypassSyntheticResponseHeaderCheck",
+BASE_FEATURE(ServiceWorkerBypassSyntheticResponseHeaderCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string>

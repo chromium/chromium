@@ -258,8 +258,7 @@ constexpr char kNavigationRequestScope[] = "NavigationRequestScope";
 // Flag to control whether redirect URLs are being sanitized before sending
 // them to the renderer process as part of the navigation.
 // See https://crbug.com/40095391.
-BASE_FEATURE(kSanitizeRedirectUrlsDuringNavigation,
-             "SanitizeRedirectUrlsDuringNavigation",
+BASE_FEATURE(SanitizeRedirectUrlsDuringNavigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kDeferSpeculativeRFHWaitUntilFinalResponse{

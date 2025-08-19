@@ -351,8 +351,7 @@
 
 namespace features {
 
-BASE_FEATURE(kDoNotEvictOnAXLocationChange,
-             "DoNotEvictOnAXLocationChange",
+BASE_FEATURE(DoNotEvictOnAXLocationChange,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

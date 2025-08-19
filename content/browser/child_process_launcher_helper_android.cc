@@ -49,8 +49,7 @@ namespace internal {
 namespace {
 
 // Controls whether to explicitly enable service group importance logic.
-BASE_FEATURE(kServiceGroupImportance,
-             "ServiceGroupImportance",
+BASE_FEATURE(ServiceGroupImportance,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Stops a child process based on the handle returned from StartChildProcess.

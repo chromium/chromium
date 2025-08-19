@@ -29,8 +29,7 @@
 
 namespace content {
 
-BASE_FEATURE(kCacheStorageTaskPriority,
-             "CacheStorageTaskPriority",
+BASE_FEATURE(CacheStorageTaskPriority,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 CacheStorageContextImpl::CacheStorageContextImpl(

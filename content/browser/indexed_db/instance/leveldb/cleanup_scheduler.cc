@@ -12,8 +12,7 @@
 
 namespace content::indexed_db::level_db {
 
-BASE_FEATURE(kIdbInSessionDbCleanup,
-             "IdbInSessionDbCleanup",
+BASE_FEATURE(IdbInSessionDbCleanup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

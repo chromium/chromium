@@ -38,8 +38,7 @@ namespace content {
 namespace {
 
 // NOTE: This is flag is intended for local testing and debugging only.
-BASE_FEATURE(kDisableExclusiveLockingOnDipsDatabase,
-             "DisableExclusiveLockingOnDipsDatabase",
+BASE_FEATURE(DisableExclusiveLockingOnDipsDatabase,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr char kTimerLastFiredKey[] = "timer_last_fired";

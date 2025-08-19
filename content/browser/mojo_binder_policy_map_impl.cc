@@ -39,8 +39,7 @@ namespace content {
 
 #if BUILDFLAG(IS_MAC)
 // Put crbug.com/115920 fix under flag, so we can measure its CWV impact.
-BASE_FEATURE(kTextInputHostMojoCapabilityControlWorkaround,
-             "TextInputHostMojoCapabilityControlWorkaround",
+BASE_FEATURE(TextInputHostMojoCapabilityControlWorkaround,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
