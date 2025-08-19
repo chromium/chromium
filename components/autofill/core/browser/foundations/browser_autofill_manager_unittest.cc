@@ -7436,6 +7436,11 @@ class BrowserAutofillManagerTest_AutofillAi_WithModel
 // available and the form is not contained in the cache.
 TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
        AutofillAiServerModelRun) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiServerModel,
+      {{"autofill_ai_model_send_apc", "false"}});
+
   ON_CALL(cache(), Contains).WillByDefault(Return(false));
   EXPECT_CALL(client(), GetAiPageContent).Times(0);
   EXPECT_CALL(executor(), GetPredictions);

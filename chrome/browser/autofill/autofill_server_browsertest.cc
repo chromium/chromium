@@ -224,6 +224,7 @@ MATCHER_P(EqualsQueryProto, expected_const, "") {
   // used for fetching PWM predictions. When alternative signature is deprecated
   // in favor of structural signature and three-bit hashes, we should update the
   // test to check that these fields are set correctly.
+  request.mutable_experiments()->Clear();
   for (int i = 0; i < request.forms_size(); ++i) {
     request.mutable_forms(i)->clear_structural_signature();
     request.mutable_forms(i)->clear_three_bit_hashed_form_metadata();

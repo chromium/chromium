@@ -2050,27 +2050,6 @@
             ]
         }
     ],
-    "AutofillAiUs": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithApc",
-                    "enable_features": [
-                        "AutofillAiServerModel",
-                        "AutofillAiUploadModelRequestAndResponse",
-                        "AutofillAiWithDataSchema",
-                        "FormsClassificationsMqlsLogging"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAiVoteForFormatStringsForAffixes": [
         {
             "platforms": [

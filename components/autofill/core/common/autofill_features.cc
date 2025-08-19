@@ -8,6 +8,12 @@
 
 namespace autofill::features {
 
+namespace {
+constexpr bool IS_AUTOFILL_AI_PLATFORM = BUILDFLAG(IS_CHROMEOS) ||
+                                         BUILDFLAG(IS_LINUX) ||
+                                         BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
+}
+
 // LINT.IfChange(autofill_across_iframes_ios)
 // Controls whether to flatten and fill cross-iframe forms on iOS.
 // TODO(crbug.com/40266699) Remove once launched.
@@ -177,7 +183,8 @@ BASE_FEATURE(kAutofillAiPreferModelResponseOverHeuristics,
 // predictions.
 BASE_FEATURE(kAutofillAiServerModel,
              "AutofillAiServerModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
+                                     : base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The maximum duration for which an AutofillAI server model response is kept in
 // the local cache. NOTE: It is advisable to choose a value that is at least as
@@ -194,12 +201,12 @@ const base::FeatureParam<int> kAutofillAiServerModelCacheSize{
 const base::FeatureParam<base::TimeDelta>
     kAutofillAiServerModelExecutionTimeout{
         &kAutofillAiServerModel, "autofill_ai_model_execution_timeout",
-        base::Seconds(10)};
+        base::Seconds(60)};
 
 // Whether AnnotatedPageContent is included in the request to the AutofillAI
 // model.
 const base::FeatureParam<bool> kAutofillAiServerModelSendPageContent{
-    &kAutofillAiServerModel, "autofill_ai_model_send_apc", false};
+    &kAutofillAiServerModel, "autofill_ai_model_send_apc", true};
 
 // Whether the page's full URL is included in the data sent to the model.
 const base::FeatureParam<bool> kAutofillAiServerModelSendPageUrl{
@@ -221,19 +228,22 @@ BASE_FEATURE(kAutofillAiVoteForFormatStringsForAffixes,
 // Enables the second iteration AutofillAI.
 BASE_FEATURE(kAutofillAiWithDataSchema,
              "AutofillAiWithDataSchema",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
+                                     : base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This parameter enables adding an experiment id to requests to the Autofill
 // to enable Autofill AI predictions. The experiment id is not used for other
 // backends.
 const base::FeatureParam<int> kAutofillAiWithDataSchemaServerExperimentId{
-    &kAutofillAiWithDataSchema, "autofill_ai_server_experiment_id", 0};
+    &kAutofillAiWithDataSchema, "autofill_ai_server_experiment_id",
+    IS_AUTOFILL_AI_PLATFORM ? 3314871 : 0};
 
 // When enabled, requests and responses of client-triggered Autofill AI model
 // runs are uploaded to MQLS.
 BASE_FEATURE(kAutofillAiUploadModelRequestAndResponse,
              "AutofillAiUploadModelRequestAndResponse",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
+                                     : base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Guards the refactoring to allow showing Autofill and Password suggestions in
 // the same surface instead of being mutually exclusive.
@@ -915,6 +925,7 @@ BASE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+
 // If enabled, on Android desktop, the Autofill keyboard accessory will have a
 // new behavior and design.
 // TODO(crbug.com/438125774): Remove when launched.

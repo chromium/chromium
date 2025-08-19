@@ -1375,9 +1375,13 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
     AutofillPageQueryRequest query_contents;
     ASSERT_TRUE(query_contents.ParseFromString(payloads()[0]));
 
-    ASSERT_EQ(2, query_contents.experiments_size());
-    EXPECT_EQ(3312923, query_contents.experiments(0));
-    EXPECT_EQ(3314883, query_contents.experiments(1));
+    if constexpr (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
+                  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) {
+      EXPECT_THAT(query_contents.experiments(),
+                  ElementsAre(3312923, 3314883, 3314871));
+    } else {
+      EXPECT_THAT(query_contents.experiments(), ElementsAre(3312923, 3314883));
+    }
   }
 
   // Query a third time (will experiments still enabled). This should go to the
