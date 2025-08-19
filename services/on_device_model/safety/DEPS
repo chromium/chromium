@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/optimization_guide/core/tflite_op_resolver.h",
+  "+third_party/tensorflow-text",
+]

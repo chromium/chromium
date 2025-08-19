@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/optimization_guide/features.gni")
+
+static_library("bert_safety_op_resolver") {
+  sources = [
+    "bert_safety_op_resolver.cc",
+    "bert_safety_op_resolver.h",
+  ]
+
+  deps = [
+    "//components/optimization_guide/core/inference:op_resolver",
+    "//third_party/tensorflow-text:shimed_bert_model_ops",
+    "//third_party/tflite",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
+  ]
+}
