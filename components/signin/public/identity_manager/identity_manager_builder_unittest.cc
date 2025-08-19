@@ -84,7 +84,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   base::FilePath dest_path = temp_dir.GetPath();
 
 #if BUILDFLAG(IS_ANDROID)
-  SetUpMockAccountManagerFacade();
+  SetUpFakeAccountManagerFacade();
 #endif
 
   IdentityManagerBuildParams params;

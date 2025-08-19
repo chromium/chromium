@@ -58,7 +58,7 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
     testing::Test::SetUp();
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     account_tracker_service_.Initialize(&pref_service_, base::FilePath());
-    SetUpMockAccountManagerFacade();
+    SetUpFakeAccountManagerFacade();
     delegate_ = std::make_unique<OAuth2TokenServiceDelegateAndroidForTest>(
         &account_tracker_service_);
     delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
@@ -73,7 +73,7 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
 
   AccountTrackerService CreateAccountTrackerService() {
 #if BUILDFLAG(IS_ANDROID)
-    SetUpMockAccountManagerFacade();
+    SetUpFakeAccountManagerFacade();
 #endif
     return AccountTrackerService();
   }

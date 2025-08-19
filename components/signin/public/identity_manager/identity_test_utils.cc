@@ -675,8 +675,8 @@ void DisableAccessTokenFetchRetries(IdentityManager* identity_manager) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void SetUpMockAccountManagerFacade() {
-  Java_AccountManagerFacadeUtil_setUpMockFacade(
+void SetUpFakeAccountManagerFacade() {
+  Java_AccountManagerFacadeUtil_setUpFakeFacade(
       base::android::AttachCurrentThread());
 }
 #endif

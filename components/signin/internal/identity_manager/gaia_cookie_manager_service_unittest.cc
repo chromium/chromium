@@ -242,7 +242,7 @@ class GaiaCookieManagerServiceTest : public testing::Test {
  private:
   std::unique_ptr<AccountTrackerService> CreateAccountTrackerService() {
 #if BUILDFLAG(IS_ANDROID)
-    signin::SetUpMockAccountManagerFacade();
+    signin::SetUpFakeAccountManagerFacade();
 #endif
     return std::make_unique<AccountTrackerService>();
   }

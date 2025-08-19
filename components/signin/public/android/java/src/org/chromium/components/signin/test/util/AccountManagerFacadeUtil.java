@@ -12,7 +12,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 final class AccountManagerFacadeUtil {
     /** Stubs AccountManagerFacade for native tests. */
     @CalledByNative
-    private static void setUpMockFacade() {
+    private static void setUpFakeFacade() {
         AccountManagerFacadeProvider.setInstanceForTests(new FakeAccountManagerFacade());
     }
 }

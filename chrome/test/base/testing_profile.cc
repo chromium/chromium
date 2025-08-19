@@ -354,7 +354,7 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  signin::SetUpMockAccountManagerFacade();
+  signin::SetUpFakeAccountManagerFacade();
 #endif
 
   // Normally this would happen during browser startup, but for tests
