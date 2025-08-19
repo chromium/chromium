@@ -69,6 +69,14 @@
     "expiry_milestone": 133
   },
   {
+    "name": "ai-hub-new-badge",
+    "owners": [
+      "joemerramos@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ai-mode-omnibox-entry-point",
     "owners": [
       "khalidpeer@chromium.org",

@@ -21,6 +21,10 @@ const char kAIMPrototypeDescription[] =
     "When enabled the AIM ZPS entrypoint will open the AIM prototype which "
     "contains temporary UI exploration for AIM.";
 
+const char kAIHubNewBadgeName[] = "AI Hub New Badge";
+const char kAIHubNewBadgeDescription[] =
+    "Enables showing a new badge on the AI Hub button in the toolbar.";
+
 const char kAppBackgroundRefreshName[] = "Enable app background refresh";
 const char kAppBackgroundRefreshDescription[] =
     "Schedules app background refresh after some minimum period of time has "

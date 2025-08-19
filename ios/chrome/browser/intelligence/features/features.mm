@@ -129,3 +129,7 @@ BASE_FEATURE(kGeminiForManagedAccounts,
 bool IsGeminiAvailableForManagedAccounts() {
   return base::FeatureList::IsEnabled(kGeminiForManagedAccounts);
 }
+
+BASE_FEATURE(kAIHubNewBadge,
+             "AIHubNewBadge",
+             base::FEATURE_DISABLED_BY_DEFAULT);

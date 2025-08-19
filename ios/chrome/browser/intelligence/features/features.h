@@ -92,4 +92,7 @@ BASE_DECLARE_FEATURE(kGeminiForManagedAccounts);
 // be disabled by an Enterprise policy.
 bool IsGeminiAvailableForManagedAccounts();
 
+// Feature flag to show the AI Hub new badge.
+BASE_DECLARE_FEATURE(kAIHubNewBadge);
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
