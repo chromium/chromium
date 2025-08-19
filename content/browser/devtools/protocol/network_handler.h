@@ -9,9 +9,9 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -19,7 +19,6 @@
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
@@ -113,8 +112,7 @@ class NetworkHandler : public DevToolsDomainHandler,
   Response Enable(std::optional<int> max_total_size,
                   std::optional<int> max_resource_size,
                   std::optional<int> max_post_data_size,
-                  std::optional<bool> report_direct_socket_traffic,
-                  std::optional<bool> enable_durable_messages) override;
+                  std::optional<bool> report_direct_socket_traffic) override;
   Response Disable() override;
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -376,12 +374,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                                      std::string content);
   void RequestIntercepted(std::unique_ptr<InterceptedRequestInfo> request_info);
   void SetNetworkConditions(network::mojom::NetworkConditionsPtr conditions);
-  void ConfigureDurableMessageCollector(
-      network::mojom::NetworkDurableMessageConfigPtr config);
-  void ProcessDurableMessageOrGetLocalData(
-      const String& request_id,
-      std::unique_ptr<GetResponseBodyCallback> callback,
-      std::optional<mojo_base::BigBuffer> durable_message);
+
   void OnResponseBodyPipeTaken(
       std::unique_ptr<TakeResponseBodyForInterceptionAsStreamCallback> callback,
       Response response,
@@ -424,8 +417,6 @@ class NetworkHandler : public DevToolsDomainHandler,
   std::unordered_map<String, std::pair<String, bool>> received_body_data_;
   bool did_modifications_ = false;
   base::OnceClosure cleanup_after_modifications_callback_;
-  mojo::Remote<network::mojom::DurableMessageCollector>
-      durable_message_collector_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 };
 

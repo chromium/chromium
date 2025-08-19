@@ -1462,30 +1462,8 @@ Response NetworkHandler::Enable(
     std::optional<int> max_total_size,
     std::optional<int> max_resource_size,
     std::optional<int> max_post_data_size,
-    std::optional<bool> report_direct_socket_traffic,
-    std::optional<bool> enable_durable_messages) {
+    std::optional<bool> report_direct_socket_traffic) {
   enabled_ = true;
-  network::mojom::NetworkDurableMessageConfigPtr durable_messages_config;
-  if (enable_durable_messages.value_or(false)) {
-    if (!storage_partition_ || devtools_token_.is_empty()) {
-      return Response::ServerError(
-          "Durable messages cannot be enabled without a valid "
-          "storage partition and devtools token");
-    }
-    if (durable_message_collector_.is_bound()) {
-      return Response::InvalidParams("Durable messages already enabled");
-    }
-    if (!max_total_size.has_value()) {
-      return Response::InvalidParams(
-          "maxTotalBufferSize is required with enableDurableMessages");
-    }
-    durable_messages_config =
-        network::mojom::NetworkDurableMessageConfig::New();
-    durable_messages_config->http_storage_max_size = max_total_size.value();
-    ConfigureDurableMessageCollector(std::move(durable_messages_config));
-  } else {
-    durable_message_collector_.reset();
-  }
   return Response::FallThrough();
 }
 
@@ -1493,7 +1471,6 @@ Response NetworkHandler::Disable() {
   enabled_ = false;
   url_loader_interceptor_.reset();
   SetNetworkConditions(nullptr);
-  durable_message_collector_.reset();
   extra_headers_.clear();
   ClearAcceptedEncodingsOverride();
   enable_third_party_cookie_restriction_ = false;
@@ -3127,45 +3104,15 @@ void NetworkHandler::BodyDataReceived(const String& request_id,
   received_body_data_[request_id] = {body, is_base64_encoded};
 }
 
-void NetworkHandler::ProcessDurableMessageOrGetLocalData(
+void NetworkHandler::GetResponseBody(
     const String& request_id,
-    std::unique_ptr<GetResponseBodyCallback> callback,
-    std::optional<mojo_base::BigBuffer> durable_message) {
-  if (durable_message.has_value()) {
-    // TODO(crbug.com/414864477): Read initial chunk of data and if non-ascii
-    // characters are found, return in base64 encoded form.
-    // callback->sendSuccess(
-    //     base::Base64Encode(std::string_view(
-    //         reinterpret_cast<const char*>(message.data()), message.size())),
-    //     true);
-    std::string response(base::as_string_view(durable_message->byte_span()));
-    callback->sendSuccess(response, false);
-    return;
-  }
-
+    std::unique_ptr<GetResponseBodyCallback> callback) {
   auto it = received_body_data_.find(request_id);
   if (it != received_body_data_.end()) {
     callback->sendSuccess(it->second.first, it->second.second);
   } else {
     callback->fallThrough();
   }
-}
-
-void NetworkHandler::GetResponseBody(
-    const String& request_id,
-    std::unique_ptr<GetResponseBodyCallback> callback) {
-  if (durable_message_collector_.is_bound()) {
-    CHECK(storage_partition_);
-    CHECK(devtools_token_);
-    durable_message_collector_->Retrieve(
-        request_id,
-        base::BindOnce(&NetworkHandler::ProcessDurableMessageOrGetLocalData,
-                       weak_factory_.GetWeakPtr(), request_id,
-                       std::move(callback)));
-    return;
-  }
-  ProcessDurableMessageOrGetLocalData(request_id, std::move(callback),
-                                      std::nullopt);
 }
 
 void NetworkHandler::TakeResponseBodyForInterceptionAsStream(
@@ -3371,17 +3318,6 @@ void NetworkHandler::SetNetworkConditions(
   background_sync_restorer_.reset(
       offline ? new BackgroundSyncRestorer(host_id_, storage_partition_)
               : nullptr);
-}
-
-void NetworkHandler::ConfigureDurableMessageCollector(
-    network::mojom::NetworkDurableMessageConfigPtr config) {
-  CHECK(storage_partition_);
-  CHECK(devtools_token_);
-  network::mojom::NetworkContext* context =
-      storage_partition_->GetNetworkContext();
-  context->ConfigureDurableMessageCollector(
-      devtools_token_, std::move(config),
-      durable_message_collector_.BindNewPipeAndPassReceiver());
 }
 
 namespace {

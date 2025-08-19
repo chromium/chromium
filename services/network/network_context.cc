@@ -108,8 +108,6 @@
 #include "services/network/cookie_manager.h"
 #include "services/network/data_remover_util.h"
 #include "services/network/device_bound_session_manager.h"
-#include "services/network/devtools_durable_msg_collector.h"
-#include "services/network/devtools_durable_msg_collector_config.h"
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
 #include "services/network/host_resolver.h"
 #include "services/network/http_auth_cache_copier.h"
@@ -1755,34 +1753,6 @@ void NetworkContext::SetNetworkConditions(
   }
   ThrottlingController::SetConditions(throttling_profile_id,
                                       std::move(network_conditions));
-}
-
-void NetworkContext::OnDevToolsDurableMessageClientsDisconnected(
-    const base::UnguessableToken& throttling_profile_id) {
-  devtools_profile_to_durable_message_collectors_.erase(throttling_profile_id);
-}
-
-void NetworkContext::ConfigureDurableMessageCollector(
-    const base::UnguessableToken& throttling_profile_id,
-    mojom::NetworkDurableMessageConfigPtr mojo_config,
-    mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver) {
-  CHECK(mojo_config);
-  DevtoolsDurableMessageCollectorConfig config(
-      mojo_config->http_storage_max_size);
-
-  auto [it, inserted] =
-      devtools_profile_to_durable_message_collectors_.try_emplace(
-          throttling_profile_id);
-  if (inserted) {
-    auto disconnect_callback = base::BindOnce(
-        &NetworkContext::OnDevToolsDurableMessageClientsDisconnected,
-        base::Unretained(this), throttling_profile_id);
-    it->second = std::make_unique<DevtoolsDurableMessageCollector>(
-        std::move(disconnect_callback));
-  }
-
-  it->second->Configure(config);
-  it->second->AddReceiver(std::move(receiver));
 }
 
 void NetworkContext::SetAcceptLanguage(const std::string& new_accept_language) {
@@ -3585,23 +3555,6 @@ void NetworkContext::InitializePrefetchURLLoaderFactory() {
       prefetch_url_loader_factory_remote_.BindNewPipeAndPassReceiver();
   CreateURLLoaderFactory(std::move(pending_receiver),
                          CreateURLLoaderFactoryParamsForPrefetch());
-}
-
-base::WeakPtr<DevtoolsDurableMessage> NetworkContext::MaybeCreateDurableMessage(
-    const std::optional<base::UnguessableToken>& throttling_profile_id,
-    const std::optional<std::string>& devtools_request_id) {
-  if (!throttling_profile_id.has_value() || !devtools_request_id.has_value()) {
-    return nullptr;
-  }
-
-  auto collector_it = devtools_profile_to_durable_message_collectors_.find(
-      throttling_profile_id.value());
-  if (collector_it == devtools_profile_to_durable_message_collectors_.end()) {
-    return nullptr;
-  }
-
-  return collector_it->second->CreateDurableMessage(
-      devtools_request_id.value());
 }
 
 }  // namespace network

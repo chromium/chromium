@@ -48,7 +48,6 @@
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_controller.h"
-#include "services/network/devtools_durable_msg_collector.h"
 #include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 #include "services/network/http_cache_data_counter.h"
 #include "services/network/http_cache_data_remover.h"
@@ -79,7 +78,6 @@
 #include "services/network/socket_factory.h"
 #include "services/network/url_request_context_owner.h"
 #include "services/network/web_bundle/web_bundle_manager.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "net/reporting/reporting_cache_observer.h"
@@ -325,11 +323,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void CloseIdleConnections(CloseIdleConnectionsCallback callback) override;
   void SetNetworkConditions(const base::UnguessableToken& throttling_profile_id,
                             mojom::NetworkConditionsPtr conditions) override;
-  void ConfigureDurableMessageCollector(
-      const base::UnguessableToken& throttling_profile_id,
-      mojom::NetworkDurableMessageConfigPtr config,
-      mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver)
-      override;
   void SetAcceptLanguage(const std::string& new_accept_language) override;
   void SetEnableReferrers(bool enable_referrers) override;
 #if BUILDFLAG(IS_CT_SUPPORTED)
@@ -623,10 +616,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   size_t GetNumOutstandingResolveHostRequestsForTesting() const;
 
-  size_t num_devtools_durable_message_collectors_for_testing() const {
-    return devtools_profile_to_durable_message_collectors_.size();
-  }
-
   size_t pending_proxy_lookup_requests_for_testing() const {
     return proxy_lookup_requests_.size();
   }
@@ -702,12 +691,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   SharedResourceChecker* GetSharedResourceChecker() {
     return shared_resource_checker_.get();
   }
-
-  // Create a Durable Message for the request and DevTools Profile ID,
-  // if durable message collection is enabled on the Devtools profile.
-  base::WeakPtr<DevtoolsDurableMessage> MaybeCreateDurableMessage(
-      const std::optional<base::UnguessableToken>& throttling_profile_id,
-      const std::optional<std::string>& devtools_request_id);
 
   // Returns the current same-origin-policy exceptions.  For more details see
   // network::mojom::NetworkContextParams::cors_origin_access_list and
@@ -851,11 +834,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const url::SchemeHostPort& scheme_host_port);
 
   void InitializePrefetchURLLoaderFactory();
-
-  // Invoked when DevTools DurableMessage Clients for a profile are
-  // disconnected.
-  void OnDevToolsDurableMessageClientsDisconnected(
-      const base::UnguessableToken& throttling_profile_id);
 
   void QueueReportInternal(
       const std::string& type,
@@ -1118,11 +1096,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // This needs to be ordered after cookie_manager_ as it maintains a reference
   // to the cookie settings object from cookie_manager_.
   std::unique_ptr<SharedResourceChecker> shared_resource_checker_;
-
-  // DevTools Durable Message Collectors. Created on first use.
-  absl::flat_hash_map<base::UnguessableToken,
-                      std::unique_ptr<DevtoolsDurableMessageCollector>>
-      devtools_profile_to_durable_message_collectors_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
