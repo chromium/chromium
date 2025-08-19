@@ -80,7 +80,7 @@ public object BuildCompat {
             "Android N is a finalized release and this method is no longer necessary. " +
                 "It will be removed in a future release of this library. Instead, use " +
                 "`Build.VERSION.SDK_INT >= 24`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 24")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 24"),
     )
     public fun isAtLeastN(): Boolean = Build.VERSION.SDK_INT >= 24
 
@@ -96,7 +96,7 @@ public object BuildCompat {
             "Android N MR1 is a finalized release and this method is no longer necessary. " +
                 "It will be removed in a future release of this library. Instead, use " +
                 "`Build.VERSION.SDK_INT >= 25`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 25")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 25"),
     )
     public fun isAtLeastNMR1(): Boolean = Build.VERSION.SDK_INT >= 25
 
@@ -112,7 +112,7 @@ public object BuildCompat {
             "Android O is a finalized release and this method is no longer necessary. " +
                 "It will be removed in a future release of this library. Instead use " +
                 "`Build.VERSION.SDK_INT >= 26`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 26")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 26"),
     )
     public fun isAtLeastO(): Boolean = Build.VERSION.SDK_INT >= 26
 
@@ -128,7 +128,7 @@ public object BuildCompat {
             "Android O MR1 is a finalized release and this method is no longer necessary. " +
                 "It will be removed in a future release of this library. Instead, use " +
                 "`Build.VERSION.SDK_INT >= 27`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 27")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 27"),
     )
     public fun isAtLeastOMR1(): Boolean = Build.VERSION.SDK_INT >= 27
 
@@ -144,7 +144,7 @@ public object BuildCompat {
             "Android P is a finalized release and this method is no longer necessary. " +
                 "It will be removed in a future release of this library. Instead, use " +
                 "`Build.VERSION.SDK_INT >= 28`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 28")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 28"),
     )
     public fun isAtLeastP(): Boolean = Build.VERSION.SDK_INT >= 28
 
@@ -160,7 +160,7 @@ public object BuildCompat {
             "Android Q is a finalized release and this method is no longer necessary. " +
                 "It will be removed in a future release of this library. Instead, use " +
                 "`Build.VERSION.SDK_INT >= 29`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 29")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 29"),
     )
     public fun isAtLeastQ(): Boolean = Build.VERSION.SDK_INT >= 29
 
@@ -176,7 +176,7 @@ public object BuildCompat {
             "Android R is a finalized release and this method is no longer necessary. " +
                 "It will be removed in a future release of this library. Instead, use " +
                 "`Build.VERSION.SDK_INT >= 30`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 30")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 30"),
     )
     public fun isAtLeastR(): Boolean = Build.VERSION.SDK_INT >= 30
 
@@ -193,7 +193,7 @@ public object BuildCompat {
             "Android S is a finalized release and this method is no longer necessary. " +
                 "It will be removed in a future release of this library. Instead, use " +
                 "`Build.VERSION.SDK_INT >= 31`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 31")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 31"),
     )
     public fun isAtLeastS(): Boolean =
         Build.VERSION.SDK_INT >= 31 ||
@@ -213,7 +213,7 @@ public object BuildCompat {
             "Android Sv2 is a finalized release and this method is no longer necessary. " +
                 "It will be removed in a future release of this library. Instead, use " +
                 "`Build.VERSION.SDK_INT >= 32`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 32")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 32"),
     )
     public fun isAtLeastSv2(): Boolean =
         Build.VERSION.SDK_INT >= 32 ||
@@ -236,7 +236,7 @@ public object BuildCompat {
             "Android Tiramisu is a finalized release and this method is no longer " +
                 "necessary. It will be removed in a future release of this library. Instead, use " +
                 "`Build.VERSION.SDK_INT >= 33`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 33")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 33"),
     )
     public fun isAtLeastT(): Boolean =
         Build.VERSION.SDK_INT >= 33 ||
@@ -259,7 +259,7 @@ public object BuildCompat {
             "Android UpsideDownCase is a finalized release and this method is no longer " +
                 "necessary. It will be removed in a future release of this library. Instead, use " +
                 "`Build.VERSION.SDK_INT >= 34`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 34")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 34"),
     )
     public fun isAtLeastU(): Boolean =
         Build.VERSION.SDK_INT >= 34 ||
@@ -282,7 +282,7 @@ public object BuildCompat {
             "Android VanillaIceCream is a finalized release and this method is no longer " +
                 "necessary. It will be removed in a future release of this library. Instead, use " +
                 "`Build.VERSION.SDK_INT >= 35`.",
-        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 35")
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 35"),
     )
     public fun isAtLeastV(): Boolean =
         Build.VERSION.SDK_INT >= 35 ||
