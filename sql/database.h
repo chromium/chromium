@@ -839,11 +839,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, CachedStatement);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, CollectDiagnosticInfo);
-  FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, ComputeMmapSizeForOpen);
-  FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, ComputeMmapSizeForOpenAltStatus);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, OnMemoryDump);
-  FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest,
-                           RazeAndPoison_ComputeMmapSizeForOpen);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, RegisterIntentToUpload);
   FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
   FRIEND_TEST_ALL_PREFIXES(SQLEmptyPathDatabaseTest, EmptyPathTest);
@@ -1077,37 +1073,6 @@ class COMPONENT_EXPORT(SQL) Database {
   std::string CollectErrorInfo(int sqlite_error_code,
                                Statement* stmt,
                                DatabaseDiagnostics* diagnostics) const;
-
-  // The size of the memory mapping that SQLite should use for this database.
-  //
-  // The return value follows the semantics of "PRAGMA mmap_size". In
-  // particular, zero (0) means memory-mapping should be disabled, and the value
-  // is capped by SQLITE_MAX_MMAP_SIZE. More details at
-  // https://www.sqlite.org/pragma.html#pragma_mmap_size
-  //
-  // "Memory-mapped access" is usually shortened to "mmap", which is the name of
-  // the POSIX system call used to implement. The same principles apply on
-  // Windows, but its more-descriptive API names don't make for good shorthands.
-  //
-  // When mmap is enabled, SQLite attempts to use the memory-mapped area (by
-  // calling xFetch() in the VFS file API) instead of requesting a database page
-  // buffer from the pager and reading (via xRead() in the VFS API) into it.
-  // When this works out, the database page cache ends up only storing pages
-  // whose contents has been modified. More details at
-  // https://sqlite.org/mmap.html
-  //
-  // I/O errors on memory-mapped files result in crashes in Chrome. POSIX
-  // systems signal SIGSEGV or SIGBUS on I/O errors in mmap-ed files. Windows
-  // raises the EXECUTE_IN_PAGE_ERROR strucuted exception in this case. Chrome
-  // does not catch signals or structured exceptions.
-  //
-  // In order to avoid crashes, this method attempts to read the file using
-  // regular I/O, and returns 0 (no mmap) if it encounters any error.
-  size_t ComputeMmapSizeForOpen();
-
-  // Helpers for ComputeMmapSizeForOpen().
-  bool GetMmapAltStatus(int64_t* status);
-  bool SetMmapAltStatus(int64_t status);
 
   // Returns a SQLite VFS interface pointer to the file storing database pages.
   //

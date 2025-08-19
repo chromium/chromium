@@ -24022,29 +24022,6 @@
             ]
         }
     ],
-    "SqlFixedMmapSize": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SqlFixedMmapSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "SqlScopedTransactionWebDatabase": [
         {
             "platforms": [

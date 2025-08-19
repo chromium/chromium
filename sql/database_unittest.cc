@@ -1450,11 +1450,6 @@ TEST_P(SQLDatabaseTest, RazeAndPoison_TransactionBegin) {
   }
 }
 
-TEST_P(SQLDatabaseTest, RazeAndPoison_ComputeMmapSizeForOpen) {
-  ASSERT_TRUE(db_->RazeAndPoison());
-  EXPECT_EQ(db_->ComputeMmapSizeForOpen(), 0u);
-}
-
 TEST_P(SQLDatabaseTest, Close_IsSQLValid) {
   ASSERT_TRUE(db_->IsSQLValid("SELECT 1")) << "Incorrect test setup";
 
@@ -1975,90 +1970,6 @@ TEST_P(SQLDatabaseTest, MmapInitiallyEnabledAltStatus) {
   EXPECT_EQ("0", ExecuteWithResult(db_.get(), "PRAGMA mmap_size"));
 }
 
-TEST_P(SQLDatabaseTest, ComputeMmapSizeForOpen) {
-  const size_t kMmapAlot = 25 * 1024 * 1024;
-  int64_t mmap_status = MetaTable::kMmapFailure;
-
-  // If there is no meta table (as for a fresh database), assume that everything
-  // should be mapped, and the status of the meta table is not affected.
-  ASSERT_TRUE(!db_->DoesTableExist("meta"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(!db_->DoesTableExist("meta"));
-
-  // When the meta table is first created, it sets up to map everything.
-  ASSERT_TRUE(MetaTable().Init(db_.get(), 1, 1));
-  ASSERT_TRUE(db_->DoesTableExist("meta"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-
-  // Preload with partial progress of one page.  Should map everything.
-  ASSERT_TRUE(db_->Execute("REPLACE INTO meta VALUES ('mmap_status', 1)"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-
-  // Failure status maps nothing.
-  ASSERT_TRUE(db_->Execute("REPLACE INTO meta VALUES ('mmap_status', -2)"));
-  ASSERT_EQ(0UL, db_->ComputeMmapSizeForOpen());
-
-  // Re-initializing the meta table does not re-create the key if the table
-  // already exists.
-  ASSERT_TRUE(db_->Execute("DELETE FROM meta WHERE key = 'mmap_status'"));
-  ASSERT_TRUE(MetaTable().Init(db_.get(), 1, 1));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(0, mmap_status);
-
-  // With no key, map everything and create the key.
-  // TODO(shess): This really should be "maps everything after validating it",
-  // but that is more complicated to structure.
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-}
-
-TEST_P(SQLDatabaseTest, ComputeMmapSizeForOpenAltStatus) {
-  const size_t kMmapAlot = 25 * 1024 * 1024;
-
-  // At this point, Database still expects a future [meta] table.
-  ASSERT_FALSE(db_->DoesTableExist("meta"));
-  ASSERT_FALSE(db_->DoesViewExist("MmapStatus"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_FALSE(db_->DoesTableExist("meta"));
-  ASSERT_FALSE(db_->DoesViewExist("MmapStatus"));
-
-  // Using alt status, everything should be mapped, with state in the view.
-  DatabaseOptions options = GetDBOptions()
-                                .set_mmap_alt_status_discouraged(true)
-                                .set_enable_views_discouraged(true);
-  db_ = std::make_unique<Database>(options, test::kTestTag);
-  ASSERT_TRUE(db_->Open(db_path_));
-
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_FALSE(db_->DoesTableExist("meta"));
-  ASSERT_TRUE(db_->DoesViewExist("MmapStatus"));
-  EXPECT_EQ(base::NumberToString(MetaTable::kMmapSuccess),
-            ExecuteWithResult(db_.get(), "SELECT * FROM MmapStatus"));
-
-  // Also maps everything when kMmapSuccess is already in the view.
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-
-  // Preload with partial progress of one page.  Should map everything.
-  ASSERT_TRUE(db_->Execute("DROP VIEW MmapStatus"));
-  ASSERT_TRUE(db_->Execute("CREATE VIEW MmapStatus (value) AS SELECT 1"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  EXPECT_EQ(base::NumberToString(MetaTable::kMmapSuccess),
-            ExecuteWithResult(db_.get(), "SELECT * FROM MmapStatus"));
-
-  // Failure status leads to nothing being mapped.
-  ASSERT_TRUE(db_->Execute("DROP VIEW MmapStatus"));
-  ASSERT_TRUE(db_->Execute("CREATE VIEW MmapStatus (value) AS SELECT -2"));
-  ASSERT_EQ(0UL, db_->ComputeMmapSizeForOpen());
-  EXPECT_EQ(base::NumberToString(MetaTable::kMmapFailure),
-            ExecuteWithResult(db_.get(), "SELECT * FROM MmapStatus"));
-}
-
 TEST_P(SQLDatabaseTest, GetMemoryUsage) {
   // Databases with mmap enabled may not follow the assumptions below.
   db_->Close();
@@ -2333,12 +2244,9 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
   if (!IsWALEnabled())
     return;
 
+  // WAL file initially not present until there are modifications to the db.
   base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
-
-  // WAL file initially empty.
-  EXPECT_TRUE(base::PathExists(wal_path));
-  std::optional<int64_t> wal_size = GetFileSize(wal_path);
-  EXPECT_THAT(wal_size, testing::Optional(0));
+  EXPECT_FALSE(base::PathExists(wal_path));
 
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE foo (id INTEGER UNIQUE, value INTEGER)"));
@@ -2346,7 +2254,7 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
   ASSERT_TRUE(db_->Execute("INSERT INTO foo VALUES (2, 2)"));
 
   // Writes reach WAL file but not db file.
-  wal_size = GetFileSize(wal_path);
+  std::optional<int64_t> wal_size = GetFileSize(wal_path);
   ASSERT_TRUE(wal_size.has_value());
   EXPECT_GT(wal_size.value(), 0);
 
