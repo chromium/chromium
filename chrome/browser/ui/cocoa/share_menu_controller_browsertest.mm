@@ -89,7 +89,8 @@ class ShareMenuControllerTest : public InProcessBrowserTest {
   ShareMenuController* __strong controller_;
 };
 
-IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, PopulatesMenu) {
+// TODO(crbug.com/439676515): Renable this test once the flakiness is addressed.
+IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, DISABLED_PopulatesMenu) {
   NSMenu* menu = [[NSMenu alloc] initWithTitle:@"Share"];
   NSArray* sharing_services_for_url = [NSSharingService
       sharingServicesForItems:@[ [NSURL URLWithString:@"http://example.com"] ]];
