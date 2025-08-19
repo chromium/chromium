@@ -3054,8 +3054,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return;
         }
 
-        // TODO: This is temporary. Replace with real theme overlay.
-        int resourceId = R.style.ThemeOverlay_BrowserUI_Switch_Incognito;
+        int resourceId = ChromeFeatureList.sAndroidThemeResourceProviderForceLight.getValue() ?
+                R.style.ThemeOverlay_BrowserUI_ForcedLightForTesting :
+                R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito;
         mThemeResourceProvider =
                 new TabStateThemeResourceProvider(
                         this, resourceId, getActivityTabProvider(), getLayoutManagerSupplier());

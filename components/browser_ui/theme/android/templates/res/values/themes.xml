@@ -339,4 +339,10 @@ Note: This is a jinja2 template, processed at build time into the final resource
         {{ color_palette_dark_attributes() }}
         <!-- TODO(crbug.com/438804527): Update Incognito theme overlay with missing attributes. -->
     </style>
+
+    <!-- Test only theme, forcing light colors. -->
+    <style name="ThemeOverlay.BrowserUI.ForcedLightForTesting" parent="">
+        {{ color_palette_light_attributes() }}
+        <!-- TODO(crbug.com/438804527): Update Incognito theme overlay with missing attributes. -->
+    </style>
 </resources>
