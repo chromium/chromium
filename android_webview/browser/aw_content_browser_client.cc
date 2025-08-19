@@ -172,8 +172,7 @@ bool g_created_network_context_params = false;
 // On apps targeting API level O or later, check cleartext is enforced.
 bool g_check_cleartext_permitted = false;
 
-BASE_FEATURE(kWebViewOptimizeXrwNavigationFlow,
-             "WebViewOptimizeXrwNavigationFlow",
+BASE_FEATURE(WebViewOptimizeXrwNavigationFlow,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A throttle which checks if the XRW origin trial is enabled for this
