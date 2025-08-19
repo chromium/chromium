@@ -241,6 +241,10 @@ BASE_DECLARE_FEATURE(kHandleIMESpanChangesOnUpdateComposition);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsHandleIMESpanChangesOnUpdateCompositionEnabled();
 
+// Controls whether the default system accent colors should be used.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kUseSystemDefaultAccentColors);
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

@@ -4718,6 +4718,10 @@
     {
       name: "SystemDefaultAccentColors",
       status: "stable",
+      base_feature: "none",
+
+      // This feature is controlled by the corresponding Chromium feature
+      // features::kUseSystemDefaultAccentColors.
     },
     {
       // This is used for emoji variation selectors support in system
