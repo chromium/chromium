@@ -140,6 +140,7 @@ if (!limit_android_deps) {
     info_path = "../androidx/committed/libs/androidx_appsearch_appsearch_builtin_types/androidx_appsearch_appsearch_builtin_types.info"
     enable_bytecode_checks = false
     deps = [
+      ":androidx_annotation_annotation_experimental_java",
       ":androidx_appsearch_appsearch_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
@@ -550,6 +551,7 @@ if (!limit_android_deps) {
     info_path = "../androidx/committed/libs/androidx_credentials_credentials_play_services_auth/androidx_credentials_credentials_play_services_auth.info"
     enable_bytecode_checks = false
     deps = [
+      ":androidx_core_core_java",
       ":androidx_credentials_credentials_java",
       "$google_play_services_package:google_play_services_auth_blockstore_java",
       "$google_play_services_package:google_play_services_auth_java",
