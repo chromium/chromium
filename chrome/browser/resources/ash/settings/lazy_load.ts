@@ -119,7 +119,7 @@ export {MediaDevicesProxy} from './common/media_devices_proxy.js';
 export {SettingsRadioGroupElement} from './controls/settings_radio_group.js';
 export {BruschettaSubpageElement} from './crostini_page/bruschetta_subpage.js';
 export {SettingsCrostiniArcAdbElement} from './crostini_page/crostini_arc_adb.js';
-export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting} from './crostini_page/crostini_browser_proxy.js';
+export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, VmType} from './crostini_page/crostini_browser_proxy.js';
 export {SettingsCrostiniDiskResizeDialogElement} from './crostini_page/crostini_disk_resize_dialog.js';
 export {SettingsCrostiniExportImportElement} from './crostini_page/crostini_export_import.js';
 export {ExtraContainersElement} from './crostini_page/crostini_extra_containers.js';

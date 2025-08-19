@@ -98,6 +98,22 @@ void CrostiniExportImport::FillOperationData(ExportImportType type) {
   FillOperationData(type, DefaultContainerId());
 }
 
+void CrostiniExportImport::ExportDiskImageFlow(
+    guest_os::GuestId container_id,
+    content::WebContents* web_contents) {
+  FillOperationData(ExportImportType::EXPORT_DISK_IMAGE,
+                    std::move(container_id));
+  OpenFileDialog(web_contents);
+}
+
+void CrostiniExportImport::ImportDiskImageFlow(
+    guest_os::GuestId container_id,
+    content::WebContents* web_contents) {
+  FillOperationData(ExportImportType::IMPORT_DISK_IMAGE,
+                    std::move(container_id));
+  OpenFileDialog(web_contents);
+}
+
 void CrostiniExportImport::ExportContainer(guest_os::GuestId container_id,
                                            content::WebContents* web_contents) {
   FillOperationData(ExportImportType::EXPORT, std::move(container_id));
@@ -106,6 +122,8 @@ void CrostiniExportImport::ExportContainer(guest_os::GuestId container_id,
 
 void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
                                            content::WebContents* web_contents) {
+  // Technically this could be ExportImportType::IMPORT_DISK_IMAGE but we won't
+  // know for sure until we see the file type chosen.
   FillOperationData(ExportImportType::IMPORT, std::move(container_id));
   OpenFileDialog(web_contents);
 }
@@ -132,6 +150,12 @@ base::FilePath CrostiniExportImport::GetDefaultBackupPath() const {
           base::Time::Now(), "'chromeos-linux-'yyyy-MM-dd'.tini'"));
 }
 
+base::FilePath CrostiniExportImport::GetDefaultImageBackupPath() const {
+  return file_manager::util::GetMyFilesFolderForProfile(profile_).Append(
+      base::UnlocalizedTimeFormatWithPattern(
+          base::Time::Now(), "'chromeos-linux-'yyyy-MM-dd'.img.zst'"));
+}
+
 void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
   if (!crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile_)) {
     return;
@@ -147,11 +171,14 @@ void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
   unsigned title = 0;
   base::FilePath default_path;
   const ui::SelectFileDialog::FileTypeInfo file_types{
-      {FILE_PATH_LITERAL("tini"), FILE_PATH_LITERAL("tar.gz"),
-       FILE_PATH_LITERAL("tgz")}};
+      {FILE_PATH_LITERAL("img.zst"), FILE_PATH_LITERAL("tar.gz"),
+       FILE_PATH_LITERAL("tini"), FILE_PATH_LITERAL("tgz")}};
 
   switch (operation_data_->type) {
     case ExportImportType::EXPORT:
+      // TODO(crbug.com/345312503): deprecate once disk image export flows are
+      // proven stable. Import will need to exist for a while to support legacy
+      // backups.
       file_selector_mode = ui::SelectFileDialog::SELECT_SAVEAS_FILE;
       title = IDS_SETTINGS_CROSTINI_EXPORT;
       default_path = GetDefaultBackupPath();
@@ -164,7 +191,7 @@ void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
     case ExportImportType::EXPORT_DISK_IMAGE:
       file_selector_mode = ui::SelectFileDialog::SELECT_SAVEAS_FILE;
       title = IDS_SETTINGS_CROSTINI_EXPORT;
-      default_path = GetDefaultBackupPath();
+      default_path = GetDefaultImageBackupPath();
       break;
     case ExportImportType::IMPORT_DISK_IMAGE:
       file_selector_mode = ui::SelectFileDialog::SELECT_OPEN_FILE,
@@ -183,6 +210,13 @@ void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
 
 void CrostiniExportImport::FileSelected(const ui::SelectedFileInfo& file,
                                         int index) {
+  // During migration phase, we cannot be sure if an import file is a container
+  // or disk image backup until we can rely on the extension.
+  // TODO(crbug.com/345312503): consider looking at magic header bytes?
+  if (operation_data_->type == ExportImportType::IMPORT &&
+      file.path().Extension().ends_with("img.zst")) {
+    operation_data_->type = ExportImportType::IMPORT_DISK_IMAGE;
+  }
   Start(file.path(), /* create_new_container= */ false, base::DoNothing());
   select_folder_dialog_.reset();
 }

@@ -87,6 +87,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/scheduler_config/scheduler_configuration_manager.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -2133,20 +2134,40 @@ void CrostiniManager::ExportDiskImage(guest_os::GuestId vm_id,
   request.set_generate_sha256_digest(false);
   request.set_force(force);
 
-  std::vector<base::ScopedFD> fds;
-  base::File file(export_path,
-                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  if (!file.IsValid()) {
-    LOG(ERROR) << "Failed to open " << export_path;
-    return;
-  }
-
-  fds.emplace_back(file.TakePlatformFile());
-
-  GetConciergeClient()->ExportDiskImage(
-      std::move(fds), std::move(request),
+  // Blocking calls may not be made from the main thread (base::File() here),
+  // but dbus calls MUST be made from the main thread so we have to get a little
+  // sneaky with our routing here.
+  auto cb = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&CrostiniManager::OnExportDiskImage,
                      weak_ptr_factory_.GetWeakPtr(), vm_id));
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](base::FilePath export_path) {
+            return base::File(export_path, base::File::FLAG_CREATE_ALWAYS |
+                                               base::File::FLAG_WRITE |
+                                               base::File::FLAG_READ);
+          },
+          export_path),
+      base::BindOnce(
+          [](base::FilePath export_path,
+             vm_tools::concierge::ExportDiskImageRequest request,
+             chromeos::DBusMethodCallback<
+                 vm_tools::concierge::ExportDiskImageResponse> cb,
+             base::File file) {
+            std::vector<base::ScopedFD> fds;
+            if (!file.IsValid()) {
+              LOG(ERROR) << "Failed to open " << export_path;
+              return;
+            }
+
+            fds.emplace_back(file.TakePlatformFile());
+
+            GetConciergeClient()->ExportDiskImage(
+                std::move(fds), std::move(request), std::move(cb));
+          },
+          export_path, std::move(request), std::move(cb)));
 }
 
 void CrostiniManager::OnExportDiskImage(
@@ -2199,24 +2220,53 @@ void CrostiniManager::ImportDiskImage(guest_os::GuestId vm_id,
   }
   disk_image_callbacks_.emplace(vm_id, std::move(callback));
 
-  base::File file(import_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file.IsValid()) {
-    LOG(ERROR) << "Failed to open " << import_path;
-    return;
-  }
-
   vm_tools::concierge::ImportDiskImageRequest request;
   request.set_vm_name(vm_id.vm_name);
   request.set_cryptohome_id(user_id_hash);
   // All vm's are stored in root except pluginvm, which is not supported in this
   // flow.
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
-  request.set_source_size(file.GetLength());
 
-  GetConciergeClient()->ImportDiskImage(
-      base::ScopedFD(file.TakePlatformFile()), std::move(request),
+  // Blocking calls may not be made from the main thread (base::File() here),
+  // but dbus calls MUST be made from the main thread so we have to get a little
+  // sneaky with our routing here.
+  auto cb = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&CrostiniManager::OnImportDiskImage,
                      weak_ptr_factory_.GetWeakPtr(), vm_id));
+
+  struct ImportFileInfo {
+    int64_t file_length;
+    base::File file;
+  };
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](base::FilePath import_path) {
+            base::File file(import_path,
+                            base::File::FLAG_OPEN | base::File::FLAG_READ);
+            return (struct ImportFileInfo){file.GetLength(), std::move(file)};
+          },
+          import_path),
+      base::BindOnce(
+          [](base::FilePath import_path,
+             vm_tools::concierge::ImportDiskImageRequest request,
+             chromeos::DBusMethodCallback<
+                 vm_tools::concierge::ImportDiskImageResponse> cb,
+             struct ImportFileInfo file_info) {
+            if (!file_info.file.IsValid()) {
+              LOG(ERROR) << "Failed to open " << import_path;
+              return;
+            }
+            if (file_info.file_length >= 0) {
+              request.set_source_size(file_info.file_length);
+            }
+
+            GetConciergeClient()->ImportDiskImage(
+                base::ScopedFD(file_info.file.TakePlatformFile()),
+                std::move(request), std::move(cb));
+          },
+          import_path, std::move(request), std::move(cb)));
 }
 
 void CrostiniManager::OnImportDiskImage(

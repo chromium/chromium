@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import type {ContainerInfo, ContainerSelectElement, CrostiniPortForwardingElement, CrostiniPortSetting} from 'chrome://os-settings/lazy_load.js';
-import {CrostiniBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniBrowserProxyImpl, VmType} from 'chrome://os-settings/lazy_load.js';
 import type {CrInputElement, CrToastElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -71,6 +71,7 @@ const allContainers: ContainerInfo[] = [
     id: {
       vm_name: 'termina',
       container_name: 'penguin',
+      vm_type: VmType.TERMINA,
     },
     ipv4: '1.2.3.4',
   },
@@ -78,7 +79,7 @@ const allContainers: ContainerInfo[] = [
     id: {
       vm_name: 'not-termina',
       container_name: 'not-penguin',
-
+      vm_type: VmType.UNKNOWN,
     },
     ipv4: '1.2.3.5',
   },
@@ -110,6 +111,7 @@ suite('<settings-crostini-port-forwarding>', () => {
           container_id: {
             vm_name: 'termina',
             container_name: 'penguin',
+            vm_type: VmType.TERMINA,
           },
           is_active: false,
         },
@@ -122,6 +124,7 @@ suite('<settings-crostini-port-forwarding>', () => {
           container_id: {
             vm_name: 'not-termina',
             container_name: 'not-penguin',
+            vm_type: VmType.UNKNOWN,
           },
           is_active: false,
         },
@@ -182,6 +185,7 @@ suite('<settings-crostini-port-forwarding>', () => {
     assertEquals(4, args.length);
     assertEquals('not-termina', args[0].vm_name);
     assertEquals('not-penguin', args[0].container_name);
+    assertEquals(VmType.UNKNOWN, args[0].vm_type);
   });
 
   test('Add port fail', async () => {
@@ -287,6 +291,7 @@ suite('<settings-crostini-port-forwarding>', () => {
     assertEquals(3, args.length);
     assertEquals('termina', args[0].vm_name);
     assertEquals('penguin', args[0].container_name);
+    assertEquals(VmType.TERMINA, args[0].vm_type);
   });
 
   test('Activate single port success', async () => {
@@ -360,6 +365,7 @@ suite('<settings-crostini-port-forwarding>', () => {
           container_id: {
             vm_name: 'termina',
             container_name: 'penguin',
+            vm_type: VmType.TERMINA,
           },
           is_active: false,
         },
@@ -398,6 +404,7 @@ suite('<settings-crostini-port-forwarding>', () => {
           container_id: {
             vm_name: 'termina',
             container_name: 'penguin',
+            vm_type: VmType.TERMINA,
           },
           is_active: false,
         },
@@ -410,6 +417,7 @@ suite('<settings-crostini-port-forwarding>', () => {
           container_id: {
             vm_name: 'termina',
             container_name: 'penguin',
+            vm_type: VmType.TERMINA,
           },
           is_active: false,
         },
@@ -427,6 +435,7 @@ suite('<settings-crostini-port-forwarding>', () => {
           container_id: {
             vm_name: 'termina',
             container_name: 'penguin',
+            vm_type: VmType.TERMINA,
           },
           is_active: false,
         },
@@ -439,6 +448,7 @@ suite('<settings-crostini-port-forwarding>', () => {
           container_id: {
             vm_name: 'termina',
             container_name: 'penguin',
+            vm_type: VmType.TERMINA,
           },
           is_active: false,
         },
@@ -451,6 +461,7 @@ suite('<settings-crostini-port-forwarding>', () => {
           container_id: {
             vm_name: 'termina',
             container_name: 'penguin',
+            vm_type: VmType.TERMINA,
           },
           is_active: false,
         },

@@ -25,6 +25,8 @@ CrostiniFileSelector::~CrostiniFileSelector() {
 void CrostiniFileSelector::SelectFile(
     base::OnceCallback<void(const base::FilePath&)> selected_callback,
     base::OnceCallback<void(void)> cancelled_callback) {
+  // TODO(crbug.com/345312503): Can this path be deprecated? Appears to only be
+  // called from multi-container settings pages.
   selected_callback_ = std::move(selected_callback);
   cancelled_callback_ = std::move(cancelled_callback);
   select_file_dialog_ = ui::SelectFileDialog::Create(

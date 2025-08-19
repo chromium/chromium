@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import type {ContainerInfo, CrostiniSharedUsbDevicesElement} from 'chrome://os-settings/lazy_load.js';
-import {CrostiniBrowserProxyImpl, GuestOsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniBrowserProxyImpl, GuestOsBrowserProxyImpl, VmType} from 'chrome://os-settings/lazy_load.js';
 import type {CrToggleElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -34,6 +34,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
       id: {
         vm_name: 'termina',
         container_name: 'penguin',
+        vm_type: VmType.TERMINA,
       },
       ipv4: '1.2.3.4',
     },
@@ -41,7 +42,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
       id: {
         vm_name: 'not-termina',
         container_name: 'not-penguin',
-
+        vm_type: VmType.UNKNOWN,
       },
       ipv4: '1.2.3.5',
     },
@@ -357,6 +358,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
           guestId: {
             vm_name: 'termina',
             container_name: '',
+            vm_type: VmType.TERMINA,
           },
           vendorId: '0000',
           productId: '0000',
@@ -369,6 +371,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
           guestId: {
             vm_name: '',
             container_name: '',
+            vm_type: VmType.UNKNOWN,
           },
           vendorId: '0000',
           productId: '0000',
@@ -404,6 +407,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
           guestId: {
             vm_name: '',
             container_name: '',
+            vm_type: VmType.UNKNOWN,
           },
           vendorId: '0000',
           productId: '0000',
@@ -416,6 +420,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
           guestId: {
             vm_name: 'termina',
             container_name: 'penguin',
+            vm_type: VmType.TERMINA,
           },
           vendorId: '0000',
           productId: '0000',
@@ -428,6 +433,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
           guestId: {
             vm_name: 'not-termina',
             container_name: 'not-penguin',
+            vm_type: VmType.UNKNOWN,
           },
           vendorId: '0000',
           productId: '0000',
