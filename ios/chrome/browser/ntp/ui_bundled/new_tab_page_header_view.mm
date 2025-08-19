@@ -73,7 +73,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
 // When the placeholder text in the fakebox doesn't fit, the font shrinks to fit
 // the string. This is the minimum allowed factor by which it shrinks.
-const CGFloat kFakeboxMinimumFontScaleFactor = 0.3;
+const CGFloat kFakeboxMinimumFontScaleFactor = 0.57;
 
 // The constants for the constraints affecting the end button; either Lens or
 // Voice Search, depending on if Lens is enabled.
