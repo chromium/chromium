@@ -2603,7 +2603,7 @@ enum class ToolbarKind {
   _contextualPanelEntrypointHelpPresenter.ignoreWebContentAreaInteractions =
       YES;
   _contextualPanelEntrypointHelpPresenter.customBubbleVisibilityDuration =
-      config_ref.GetLargeEntrypointDisplayedDuration().InSecondsF();
+      LargeContextualPanelEntrypointDisplayedInSeconds();
 
   // Early return if the bubble wouldn't fit in its parent view.
   if (![_contextualPanelEntrypointHelpPresenter

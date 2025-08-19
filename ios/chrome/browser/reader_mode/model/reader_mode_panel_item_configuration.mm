@@ -19,9 +19,6 @@
 
 namespace {
 
-// Duration for which the large entrypoint is displayed.
-const base::TimeDelta kLargeEntrypointDisplayedDuration = base::Seconds(4);
-
 // Activates Reader mode in the `web_state` if possible.
 void ActivateReaderModeInWebState(base::WeakPtr<web::WebState> web_state) {
   if (!web_state || web_state->IsBeingDestroyed()) {
@@ -53,7 +50,6 @@ ReaderModePanelItemConfiguration::ReaderModePanelItemConfiguration(
   relevance = ContextualPanelItemConfiguration::low_relevance - 1;
   entrypoint_custom_action =
       base::BindRepeating(&ActivateReaderModeInWebState, web_state->GetWeakPtr());
-  large_entrypoint_displayed_duration = kLargeEntrypointDisplayedDuration;
 
   ReaderModeTabHelper* reader_mode_tab_helper =
       ReaderModeTabHelper::FromWebState(web_state);

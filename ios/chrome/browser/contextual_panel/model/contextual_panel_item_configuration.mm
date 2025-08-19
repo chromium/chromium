@@ -30,14 +30,6 @@ bool ContextualPanelItemConfiguration::CanShowEntrypointIPH() {
          relevance >= high_relevance;
 }
 
-base::TimeDelta
-ContextualPanelItemConfiguration::GetLargeEntrypointDisplayedDuration() {
-  if (large_entrypoint_displayed_duration.has_value()) {
-    return large_entrypoint_displayed_duration.value();
-  }
-  return base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds());
-}
-
 void ContextualPanelItemConfiguration::DidTransitionToSmallEntrypoint() {
   // No-op by default.
 }

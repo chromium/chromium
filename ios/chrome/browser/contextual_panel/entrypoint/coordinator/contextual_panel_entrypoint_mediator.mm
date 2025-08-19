@@ -390,7 +390,8 @@
 
   _transitionToDefaultEntrypointTimer = std::make_unique<base::OneShotTimer>();
   _transitionToDefaultEntrypointTimer->Start(
-      FROM_HERE, config->GetLargeEntrypointDisplayedDuration(),
+      FROM_HERE,
+      base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()),
       base::BindOnce(^{
         [weakSelf cleanupAndTransitionToSmallEntrypoint];
       }));
@@ -454,7 +455,8 @@
   __weak ContextualPanelEntrypointMediator* weakSelf = self;
   _transitionToDefaultEntrypointTimer = std::make_unique<base::OneShotTimer>();
   _transitionToDefaultEntrypointTimer->Start(
-      FROM_HERE, config->GetLargeEntrypointDisplayedDuration(),
+      FROM_HERE,
+      base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()),
       base::BindOnce(^{
         [weakSelf dismissEntrypointIPHAnimated:YES];
         [weakSelf.delegate enableFullscreen];
