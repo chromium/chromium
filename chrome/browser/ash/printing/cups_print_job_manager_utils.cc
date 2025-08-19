@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -221,6 +222,11 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
   // even if the job-state doesn't change, so this is based on matching the
   // previous status message instead of looking at just the state.
   bool updated = print_job->state() != old_state || pages_updated;
+  if (!base::Contains(old_status, job.id)) {
+    PRINTER_LOG(EVENT) << base::StringPrintf(
+        "%s: job %d created with total_pages: %d, title: %s", job.printer_id,
+        job.id, print_job->total_page_number(), print_job->document_title());
+  }
   std::string status = base::StringPrintf(
       "%s: job %d changed to page %d/%d with state: %s", job.printer_id, job.id,
       print_job->printed_page_number(), print_job->total_page_number(),
@@ -236,6 +242,10 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
   if (job.state == ::printing::CupsJob::COMPLETED ||
       job.state == ::printing::CupsJob::CANCELED ||
       job.state == ::printing::CupsJob::ABORTED) {
+    PRINTER_LOG(EVENT) << base::StringPrintf(
+        "%s: job %d finished in final state: %s", job.printer_id, job.id,
+        JobStateName(job.state));
+
     // No need to save statuses for terminal states, since no more updates are
     // expected.
     old_status.erase(job.id);
