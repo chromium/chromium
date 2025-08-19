@@ -196,9 +196,13 @@ class GetStatusForPolicyResultPromise
     if (!IsValidToFulfillPromise())
       return;
 
-    // Report Media.EME.GetStatusForPolicy UKM.
     auto* execution_context = GetExecutionContext();
     if (auto* local_dom_window = DynamicTo<LocalDOMWindow>(execution_context)) {
+      // Report CrossOriginIframeUsage of GetStatusForPolicy.
+      local_dom_window->CountUseOnlyInCrossOriginIframe(
+          WebFeature::kGetStatusForPolicyCrossOriginIframe);
+
+      // Report Media.EME.GetStatusForPolicy UKM.
       Document* document = local_dom_window->document();
       if (document) {
         ukm::builders::Media_EME_GetStatusForPolicy builder(

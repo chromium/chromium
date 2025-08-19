@@ -6273,6 +6273,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5639" label="LineClampAuto"/>
   <int value="5640" label="LineClampByLinesAndHeight"/>
   <int value="5641" label="V8RegExpStaticPropertiesWithLastMatch"/>
+  <int value="5642" label="GetStatusForPolicyCrossOriginIframe"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
