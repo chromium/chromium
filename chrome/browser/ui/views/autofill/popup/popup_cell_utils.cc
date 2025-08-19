@@ -73,6 +73,7 @@ namespace {
 
 // The default icon size used in the suggestion drop down.
 constexpr int kIconSize = 16;
+constexpr int kPersonCheckIconSize = 20;
 constexpr int kRecoveryPasswordIconSize = 20;
 constexpr int kChromeRefreshIconSize = 20;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -364,7 +365,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
 #endif
     case Suggestion::Icon::kPersonCheck:
       return ImageModelFromVectorIcon(vector_icons::kPersonCheckIcon,
-                                      kIconSize);
+                                      kPersonCheckIconSize);
     case Suggestion::Icon::kPlusAddress:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return ImageModelFromVectorIcon(plus_addresses::kPlusAddressLogoSmallIcon,
