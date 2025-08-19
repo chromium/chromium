@@ -2426,9 +2426,9 @@ BASE_FEATURE(kServiceWorkerSyntheticResponse,
 // expected to be passed as a comma separated string.
 // e.g. https://example1.test,https://example2.test/foo?query
 BASE_FEATURE_PARAM(std::string,
-                   kServiceWorkerSyntheticResponseAllowedUrls,
+                   kServiceWorkerSyntheticResponseAllowedUrl,
                    &kServiceWorkerSyntheticResponse,
-                   "allowed_urls",
+                   "allowed_url",
                    "");
 
 // If true, the browser reports crashes via `DumpWithoutCrashing()` when theare

@@ -7617,7 +7617,7 @@ class ServiceWorkerSyntheticResponseBrowserTest
       : allowed_url_(GURL(base::StrCat({"https://", kHostname, kTargetPath}))) {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kServiceWorkerSyntheticResponse,
-          {{blink::features::kServiceWorkerSyntheticResponseAllowedUrls.name,
+          {{blink::features::kServiceWorkerSyntheticResponseAllowedUrl.name,
             allowed_url_.spec()}}}},
         {});
   }

@@ -28,9 +28,9 @@ bool IsPathRestrictionSatisfiedWithServiceWorkerAllowedHeader(
 }
 
 bool IsEligibleForSyntheticResponse(const GURL& client_url,
-                                    const std::string& allowed_urls) {
+                                    const std::string& allowed_url) {
   return service_worker_loader_helpers::
-      IsEligibleForSyntheticResponseForTesting(client_url, allowed_urls);
+      IsEligibleForSyntheticResponseForTesting(client_url, allowed_url);
 }
 
 }  // namespace
@@ -355,6 +355,8 @@ TEST(ServiceWorkerLoaderHelpersTest, IsEligibleForSyntheticResponse) {
   EXPECT_FALSE(
       IsEligibleForSyntheticResponse(GURL("http://example.com/foo?param=test"),
                                      "http://example.com/bar?param=test"));
+  // Empty string is not allowed.
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(GURL("http://example.com/"), ""));
 }
 
 }  // namespace service_worker_loader_helpers

@@ -104,23 +104,22 @@ bool IsPathRestrictionSatisfiedInternal(
 }
 
 bool IsEligibleForSyntheticResponseInternal(const GURL& client_url,
-                                            const std::string& allowed_urls) {
-  const std::vector<std::string> parsed_urls = base::SplitString(
-      allowed_urls, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const auto& it : parsed_urls) {
-    const GURL url(it);
-    // TODO(crbug.com/352578800): It's OK to use `start_with()` as far as the
-    // variation of given `client_url` value is limited, but consider
-    // replacing it with the standard SW scope matching if possible.
-    //
-    // We intentionally ignore port matching as the port is dynamically decided
-    // in tests, which is not predictable at the browser launch phase.
-    if (client_url.scheme_piece() == url.scheme_piece() &&
-        client_url.host_piece() == url.host_piece() &&
-        client_url.path_piece() == url.path_piece() &&
-        client_url.query_piece().starts_with(url.query_piece())) {
-      return true;
-    }
+                                            const std::string& allowed_url) {
+  if (allowed_url.empty()) {
+    return false;
+  }
+  const GURL url(allowed_url);
+  // TODO(crbug.com/352578800): It's OK to use `start_with()` as far as the
+  // variation of given `client_url` value is limited, but consider
+  // replacing it with the standard SW scope matching if possible.
+  //
+  // We intentionally ignore port matching as the port is dynamically decided
+  // in tests, which is not predictable at the browser launch phase.
+  if (client_url.scheme_piece() == url.scheme_piece() &&
+      client_url.host_piece() == url.host_piece() &&
+      client_url.path_piece() == url.path_piece() &&
+      client_url.query_piece().starts_with(url.query_piece())) {
+    return true;
   }
   return false;
 }
@@ -385,15 +384,15 @@ bool IsEligibleForSyntheticResponse(BrowserContext* browser_context,
   }
 
   // Additionally, it also accepts the allow list.
-  const std::string allowed_urls =
-      blink::features::kServiceWorkerSyntheticResponseAllowedUrls.Get();
-  return IsEligibleForSyntheticResponseInternal(client_url, allowed_urls);
+  const std::string allowed_url =
+      blink::features::kServiceWorkerSyntheticResponseAllowedUrl.Get();
+  return IsEligibleForSyntheticResponseInternal(client_url, allowed_url);
 }
 
 bool IsEligibleForSyntheticResponseForTesting(  // IN-TEST
     const GURL& client_url,
-    const std::string& allowed_urls) {
-  return IsEligibleForSyntheticResponseInternal(client_url, allowed_urls);
+    const std::string& allowed_url) {
+  return IsEligibleForSyntheticResponseInternal(client_url, allowed_url);
 }
 
 }  // namespace service_worker_loader_helpers

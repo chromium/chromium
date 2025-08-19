@@ -1675,7 +1675,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerSyntheticResponse);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
-    kServiceWorkerSyntheticResponseAllowedUrls);
+    kServiceWorkerSyntheticResponseAllowedUrl);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
