@@ -1727,4 +1727,23 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion140ToCurrent) {
   }
 }
 
+TEST_F(WebDatabaseMigrationTest, MigrateVersion141ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_141.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(141, VersionFromConnection(&connection));
+  }
+  DoMigration();
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    ASSERT_TRUE(connection.DoesTableExist("autofill_ai_entities"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("autofill_ai_entities", "record_type"));
+  }
+}
+
 }  // anonymous namespace

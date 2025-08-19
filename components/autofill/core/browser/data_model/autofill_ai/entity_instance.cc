@@ -287,6 +287,7 @@ EntityInstance::EntityInstance(
     base::Time date_modified,
     size_t use_count,
     base::Time use_date,
+    RecordType record_type,
     AreAttributesReadOnly are_attributes_read_only)
     : type_(type),
       attributes_(std::move(attributes)),
@@ -295,6 +296,7 @@ EntityInstance::EntityInstance(
       date_modified_(date_modified),
       use_count_(use_count),
       use_date_(use_date),
+      record_type_(record_type),
       are_attributes_read_only_(are_attributes_read_only) {
   DCHECK(!attributes_.empty());
   DCHECK(std::ranges::all_of(attributes_, [this](const AttributeInstance& a) {

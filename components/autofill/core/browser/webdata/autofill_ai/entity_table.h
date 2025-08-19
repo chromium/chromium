@@ -14,6 +14,7 @@
 
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -26,7 +27,6 @@ class Uuid;
 namespace autofill {
 
 class AttributeInstance;
-class EntityInstance;
 
 // This class manages the tables to store `EntityInstance` objects and their
 // `AttributeInstance`s within the SQLite database passed to the constructor. It
@@ -42,6 +42,8 @@ class EntityInstance;
 //   nickname               The instance's string nickname.
 //   date_modified          The date on which this instance was last modified,
 //                          in time_t.
+//   record_type            Information about the original storage of the
+//                          entity (local/server).
 // -----------------------------------------------------------------------------
 // attributes               Contains the attribute instances of the entity
 //                          instances from the `entities` table.
@@ -137,6 +139,8 @@ class EntityTable : public WebDatabaseTable {
       base::Time date_modified,
       int use_count,
       base::Time use_date,
+      std::underlying_type_t<EntityInstance::RecordType>
+          underlying_storage_type,
       std::map<std::string, std::vector<AttributeRecord>> attribute_records)
       const;
 

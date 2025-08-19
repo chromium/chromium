@@ -210,6 +210,18 @@ class EntityInstance final {
   using AreAttributesReadOnly =
       base::StrongAlias<class AreAttributesReadOnlyTag, bool>;
 
+  // These values are persisted to a database. Entries should not be renumbered
+  // and numeric values should never be reused.
+  enum class RecordType {
+    // The entity was created/saved locally, it exists only in the local
+    // `EntityTable`.
+    kLocal = 0,
+    // The entity is stored in Wallet and the current instance is only a local
+    // copy. Changes happening locally or on the Wallet server are synced among
+    // all local storages sharing this entity.
+    kServerWallet = 1,
+  };
+
   // `attributes` must be non-empty and their type must be identical to `type`.
   EntityInstance(EntityType type,
                  base::flat_set<AttributeInstance,
@@ -219,6 +231,7 @@ class EntityInstance final {
                  base::Time date_modified,
                  size_t use_count,
                  base::Time use_date,
+                 RecordType record_type,
                  AreAttributesReadOnly are_attributes_read_only =
                      AreAttributesReadOnly(false));
 
@@ -287,6 +300,9 @@ class EntityInstance final {
     return are_attributes_read_only_;
   }
 
+  // Returns the type of storage used for the specific entity.
+  RecordType record_type() const { return record_type_; }
+
   struct EntityMergeability {
     EntityMergeability();
     EntityMergeability(std::vector<AttributeInstance> mergeable_attributes,
@@ -333,6 +349,7 @@ class EntityInstance final {
   base::Time date_modified_;
   size_t use_count_;
   base::Time use_date_;
+  RecordType record_type_;
   AreAttributesReadOnly are_attributes_read_only_;
 };
 

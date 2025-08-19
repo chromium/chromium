@@ -171,6 +171,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
       if (attributes.empty()) {
         continue;
       }
+      // TODO(crbug.com/436174974): Support saving server entities.
       EntityInstance entity = EntityInstance(
           EntityType(entity_name),
           base::ToVector(
@@ -178,7 +179,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
               &std::pair<const AttributeType, AttributeInstance>::second),
           base::Uuid::GenerateRandomV4(),
           /*nickname=*/std::string(""), base::Time::Now(), /*use_count=*/0,
-          /*use_date=*/base::Time::Now());
+          /*use_date=*/base::Time::Now(), EntityInstance::RecordType::kLocal);
       if (!EntitySatisfiesImportConstraints(entity)) {
         continue;
       }

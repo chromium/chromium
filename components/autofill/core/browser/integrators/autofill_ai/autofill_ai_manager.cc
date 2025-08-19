@@ -129,7 +129,7 @@ std::optional<std::pair<EntityInstance, EntityInstance>> MaybeUpdateEntity(
         EntityInstance(existing_entity.type(), std::move(new_attributes),
                        existing_entity.guid(), existing_entity.nickname(),
                        base::Time::Now(), existing_entity.use_count(),
-                       base::Time::Now()),
+                       base::Time::Now(), existing_entity.record_type()),
         existing_entity);
   }
   return std::nullopt;
