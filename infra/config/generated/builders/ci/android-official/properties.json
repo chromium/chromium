@@ -76,10 +76,10 @@
   },
   "builder_group": "chromium",
   "gardener_rotations": [
-    "chromium"
+    "android"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "android"
   ]
 }

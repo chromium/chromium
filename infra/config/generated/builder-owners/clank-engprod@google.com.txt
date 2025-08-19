@@ -38,9 +38,11 @@ ci/android-desktop-15-x64-fyi-rel
 ci/android-desktop-arm64-archive-rel
 ci/android-desktop-arm64-compile-dbg
 ci/android-desktop-arm64-compile-rel
+ci/android-desktop-arm64-official
 ci/android-desktop-x64-archive-rel
 ci/android-desktop-x64-compile-dbg
 ci/android-desktop-x64-compile-rel
+ci/android-desktop-x64-official
 ci/android-desktop-x64-rel-15-tests
 ci/android-official
 ci/android-x86-code-coverage
@@ -73,8 +75,10 @@ try/android-desktop-15-x64-fyi-rel
 try/android-desktop-arm64-clobber-rel
 try/android-desktop-arm64-compile-dbg
 try/android-desktop-arm64-compile-rel
+try/android-desktop-arm64-official
 try/android-desktop-x64-clobber-rel
 try/android-desktop-x64-compile-dbg
+try/android-desktop-x64-official
 try/android-desktop-x64-rel
 try/android-desktop-x64-rel-compilator
 try/android-official

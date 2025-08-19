@@ -66,9 +66,6 @@ ci/Win x64 Builder (dbg)
 ci/Win10 Tests x64
 ci/Win11 Tests x64
 ci/Windows deterministic
-ci/android-archive-rel
-ci/android-arm64-archive-rel
-ci/android-official
 ci/chromeos-amd64-generic-asan-rel
 ci/chromeos-amd64-generic-cfi-thin-lto-rel
 ci/chromeos-amd64-generic-dbg

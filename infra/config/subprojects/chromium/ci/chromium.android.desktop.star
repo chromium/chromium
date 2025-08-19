@@ -17,6 +17,7 @@ load("//lib/siso.star", "siso")
 
 ci.defaults.set(
     executable = ci_constants.DEFAULT_EXECUTABLE,
+    # TODO(crbug.com/439887309): Enable on ANDROID_BRANCHES
     builder_group = "chromium.android.desktop",
     builder_config_settings = builder_config.ci_settings(
         retry_failed_shards = True,

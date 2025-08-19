@@ -7514,6 +7514,27 @@
           }
         ]
       },
+      "android-desktop-arm64-official": {
+        "contact_team_email": "clank-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "android-desktop-x64-archive-rel": {
         "contact_team_email": "clank-engprod@google.com",
         "problem_specs": [
@@ -7557,6 +7578,27 @@
         ]
       },
       "android-desktop-x64-compile-rel": {
+        "contact_team_email": "clank-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "android-desktop-x64-official": {
         "contact_team_email": "clank-engprod@google.com",
         "problem_specs": [
           {

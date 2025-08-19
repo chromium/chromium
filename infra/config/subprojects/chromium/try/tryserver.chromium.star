@@ -51,6 +51,38 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-desktop-arm64-official",
+    # TODO(crbug.com/439887309): Enable on ANDROID_BRANCHES
+    mirrors = [
+        "ci/android-desktop-arm64-official",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-arm64-official",
+            "dcheck_always_on",
+        ],
+    ),
+    builderless = False,
+    contact_team_email = "clank-engprod@google.com",
+)
+
+try_.builder(
+    name = "android-desktop-x64-official",
+    # TODO(crbug.com/439887309): Enable on ANDROID_BRANCHES
+    mirrors = [
+        "ci/android-desktop-x64-official",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-x64-official",
+            "dcheck_always_on",
+        ],
+    ),
+    builderless = False,
+    contact_team_email = "clank-engprod@google.com",
+)
+
+try_.builder(
     name = "linux-official",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [

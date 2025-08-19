@@ -3,7 +3,9 @@
     "android-archive-rel": "ci/android-archive-rel/gn-args.json",
     "android-arm64-archive-rel": "ci/android-arm64-archive-rel/gn-args.json",
     "android-desktop-arm64-archive-rel": "ci/android-desktop-arm64-archive-rel/gn-args.json",
+    "android-desktop-arm64-official": "ci/android-desktop-arm64-official/gn-args.json",
     "android-desktop-x64-archive-rel": "ci/android-desktop-x64-archive-rel/gn-args.json",
+    "android-desktop-x64-official": "ci/android-desktop-x64-official/gn-args.json",
     "android-official": "ci/android-official/gn-args.json",
     "linux-archive-rel": "ci/linux-archive-rel/gn-args.json",
     "linux-chromeos-archive-rel": "ci/linux-chromeos-archive-rel/gn-args.json",
@@ -528,6 +530,8 @@
     "win11-blink-rel": "try/win11-blink-rel/gn-args.json"
   },
   "tryserver.chromium": {
+    "android-desktop-arm64-official": "try/android-desktop-arm64-official/gn-args.json",
+    "android-desktop-x64-official": "try/android-desktop-x64-official/gn-args.json",
     "android-official": "try/android-official/gn-args.json",
     "linux-official": "try/linux-official/gn-args.json",
     "mac-official": "try/mac-official/gn-args.json",

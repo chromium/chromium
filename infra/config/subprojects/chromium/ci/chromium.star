@@ -95,6 +95,7 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
+    gardener_rotations = args.ignore_default(gardener_rotations.ANDROID),
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "rel",
@@ -154,6 +155,7 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
+    gardener_rotations = args.ignore_default(gardener_rotations.ANDROID),
     console_view_entry = consoles.console_view_entry(
         category = "android|arm",
         short_name = "arm64",
@@ -214,9 +216,7 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
-    # TODO(b/350585060): Enable gardening and tree closing when stable.
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
+    gardener_rotations = args.ignore_default(gardener_rotations.ANDROID),
     console_view_entry = consoles.console_view_entry(
         category = "android|desktop",
         short_name = "x64",
@@ -278,9 +278,7 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
-    # TODO(b/350585060): Enable gardening and tree closing when stable.
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
+    gardener_rotations = args.ignore_default(gardener_rotations.ANDROID),
     console_view_entry = consoles.console_view_entry(
         category = "android|desktop",
         short_name = "arm64",
@@ -339,9 +337,120 @@ ci.builder(
     ),
     builderless = False,
     cores = 32,
+    gardener_rotations = args.ignore_default(gardener_rotations.ANDROID),
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "off",
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    # See https://crbug.com/1153349#c22, as we update symbol_level=2, build
+    # needs longer time to complete.
+    execution_timeout = 7 * time.hour,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.builder(
+    name = "android-desktop-arm64-official",
+    # TODO(crbug.com/439887309): Enable on ANDROID_BRANCHES
+    description_html = "Official builder for Android desktop arm64.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "checkout_pgo_profiles",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "main_builder",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "base_config",
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "official_optimize",
+            "remoteexec",
+            "android_builder_without_codecs",
+            "android_desktop",
+            "full_symbols",
+            "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
+    builderless = False,
+    cores = 32,
+    # TODO(crbug.com/420639761): Enable gardening and tree closing when stable.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "android|desktop",
+        short_name = "arm64-off",
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    # See https://crbug.com/1153349#c22, as we update symbol_level=2, build
+    # needs longer time to complete.
+    execution_timeout = 7 * time.hour,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.builder(
+    name = "android-desktop-x64-official",
+    # TODO(crbug.com/439887309): Enable on ANDROID_BRANCHES
+    description_html = "Official builder for Android desktop x64.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "checkout_pgo_profiles",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "main_builder",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "base_config",
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "official_optimize",
+            "remoteexec",
+            "android_builder_without_codecs",
+            "android_desktop",
+            "full_symbols",
+            "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
+    builderless = False,
+    cores = 32,
+    # TODO(crbug.com/420639761): Enable gardening and tree closing when stable.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "android|desktop",
+        short_name = "x64-off",
     ),
     contact_team_email = "clank-engprod@google.com",
     # See https://crbug.com/1153349#c22, as we update symbol_level=2, build
