@@ -10,6 +10,20 @@ source_set("immersive_mode_controller") {
   deps = [ "//base" ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_immersive_mode_controller.cc",
+    "mock_immersive_mode_controller.h",
+  ]
+  deps = [
+    ":immersive_mode_controller",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
 source_set("toolbar_button_provider") {
   sources = [ "toolbar_button_provider.h" ]
 

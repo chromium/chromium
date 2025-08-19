@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/mock_immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
@@ -124,32 +124,6 @@ std::unique_ptr<views::View> CreateFixedSizeView(const gfx::Size& size) {
   view->SizeToPreferredSize();
   return view;
 }
-
-///////////////////////////////////////////////////////////////////////////////
-
-class MockImmersiveModeController : public ImmersiveModeController {
- public:
-  // ImmersiveModeController overrides:
-  void Init(BrowserView* browser_view) override {}
-  void SetEnabled(bool enabled) override {}
-  bool IsEnabled() const override { return false; }
-  bool ShouldHideTopViews() const override { return false; }
-  bool IsRevealed() const override { return false; }
-  int GetTopContainerVerticalOffset(
-      const gfx::Size& top_container_size) const override {
-    return 0;
-  }
-  std::unique_ptr<ImmersiveRevealedLock> GetRevealedLock(
-      AnimateReveal animate_reveal) override {
-    return nullptr;
-  }
-  void OnFindBarVisibleBoundsChanged(
-      const gfx::Rect& new_visible_bounds) override {}
-  bool ShouldStayImmersiveAfterExitingFullscreen() override { return true; }
-  int GetMinimumContentOffset() const override { return 0; }
-  int GetExtraInfobarOffset() const override { return 0; }
-  void OnContentFullscreenChanged(bool is_content_fullscreen) override {}
-};
 
 }  // anonymous namespace
 
