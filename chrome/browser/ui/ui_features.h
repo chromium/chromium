@@ -390,6 +390,8 @@ bool HasTabSearchToolbarButton();
 // Controls whether to add new tabs to active tab group or to the end of the
 // tab strip.
 BASE_DECLARE_FEATURE(kNewTabAddsToActiveGroup);
+
+bool IsNewTabAddsToActiveGroupEnabled();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Controls whether to show a toast for Chrome non milestone update.

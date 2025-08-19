@@ -678,7 +678,7 @@ BASE_FEATURE(kNewTabAddsToActiveGroup,
              "kNewTabAddsToActiveGroup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsNewTabButtonAddsToActiveGroupEnabled() {
+bool IsNewTabAddsToActiveGroupEnabled() {
   return base::FeatureList::IsEnabled(kNewTabAddsToActiveGroup);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

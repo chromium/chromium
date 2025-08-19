@@ -2327,6 +2327,10 @@ void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
       // Prevent the browser from closing when the last grouped tab is closed
       // from the browser by adding a new tab.
       controller_->CreateNewTab();
+      // In some situations the new tab is assigned a group. So if it is in a
+      // group, we remove it from the group so that after closing the tab at
+      // `model_index`, the browser shows a tab without a group.
+      controller_->RemoveTabFromGroup(1);
     }
   }
   controller_->CloseTab(model_index);

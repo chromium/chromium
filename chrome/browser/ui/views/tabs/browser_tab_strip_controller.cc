@@ -30,6 +30,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -624,7 +625,7 @@ void BrowserTabStripController::OnDropIndexUpdate(
 }
 
 void BrowserTabStripController::CreateNewTab() {
-  model_->delegate()->AddTabAt(GURL(), -1, true);
+  chrome::NewTab(GetBrowser());
 }
 
 void BrowserTabStripController::CreateNewTabWithLocation(
