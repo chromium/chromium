@@ -256,6 +256,7 @@ PrefetchContainer::PrefetchContainer(
               prefetch_type,
               PrefetchKey(referring_document_token, url),
               std::move(no_vary_search_hint),
+              std::move(priority),
               std::move(preload_pipeline_info),
               std::move(attempt),
               WebContentsImpl::FromRenderFrameHostImpl(
@@ -273,8 +274,7 @@ PrefetchContainer::PrefetchContainer(
           referrer,
           PrefetchContainerDefaultTtlInPrefetchService(),
           /*should_append_variations_header=*/true,
-          /*should_disable_block_until_head_timeout=*/false,
-          priority) {}
+          /*should_disable_block_until_head_timeout=*/false) {}
 
 PrefetchContainer::PrefetchContainer(
     WebContents& referring_web_contents,
@@ -295,6 +295,7 @@ PrefetchContainer::PrefetchContainer(
               PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt),
                           url),
               std::move(no_vary_search_hint),
+              std::move(priority),
               std::move(preload_pipeline_info),
               std::move(attempt),
               referring_web_contents.GetOrCreateWebPreferences()
@@ -311,8 +312,7 @@ PrefetchContainer::PrefetchContainer(
           ttl.has_value() ? ttl.value()
                           : PrefetchContainerDefaultTtlInPrefetchService(),
           /*should_append_variations_header=*/true,
-          /*should_disable_block_until_head_timeout=*/false,
-          priority) {}
+          /*should_disable_block_until_head_timeout=*/false) {}
 
 PrefetchContainer::PrefetchContainer(
     BrowserContext* browser_context,
@@ -336,6 +336,7 @@ PrefetchContainer::PrefetchContainer(
               PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt),
                           url),
               std::move(no_vary_search_hint),
+              std::move(priority),
               PreloadPipelineInfo::Create(
                   /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
               std::move(attempt),
@@ -350,24 +351,21 @@ PrefetchContainer::PrefetchContainer(
           referrer,
           ttl,
           should_append_variations_header,
-          should_disable_block_until_head_timeout,
-          priority) {}
+          should_disable_block_until_head_timeout) {}
 
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
     const blink::mojom::Referrer& referrer,
     base::TimeDelta ttl,
     bool should_append_variations_header,
-    bool should_disable_block_until_head_timeout,
-    std::optional<PrefetchPriority> priority)
+    bool should_disable_block_until_head_timeout)
     : request_(std::move(request)),
       referrer_(referrer),
       request_id_(base::UnguessableToken::Create().ToString()),
       ttl_(ttl),
       should_append_variations_header_(should_append_variations_header),
       should_disable_block_until_head_timeout_(
-          should_disable_block_until_head_timeout),
-      priority_(priority) {
+          should_disable_block_until_head_timeout) {
   CHECK(request_);
 
   is_likely_ahead_of_prerender_ =
@@ -1347,8 +1345,8 @@ void PrefetchContainer::MakeResourceRequest(
       net::SiteForCookies::FromOrigin(origin));
 
   auto priority = [&] {
-    if (GetPrefetchPriority().has_value()) {
-      switch (GetPrefetchPriority().value()) {
+    if (request().priority().has_value()) {
+      switch (request().priority().value()) {
         case PrefetchPriority::kLow:
           return net::RequestPriority::IDLE;
         case PrefetchPriority::kMedium:

@@ -28,6 +28,7 @@ class PreloadPipelineInfo;
 class PreloadPipelineInfoImpl;
 class PreloadingAttempt;
 class RenderFrameHostImpl;
+enum class PrefetchPriority;
 enum class PreloadingHoldbackStatus;
 
 // `PrefetchRendererInitiatorInfo` or `PrefetchBrowserInitiatorInfo` is created
@@ -127,6 +128,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       const PrefetchType& prefetch_type,
       const PrefetchKey& key,
       const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      std::optional<PrefetchPriority> priority,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
       bool is_javascript_enabled,
@@ -144,6 +146,7 @@ class CONTENT_EXPORT PrefetchRequest final {
   const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint() const {
     return no_vary_search_hint_;
   }
+  const std::optional<PrefetchPriority>& priority() const { return priority_; }
   PreloadPipelineInfoImpl& preload_pipeline_info() const {
     return *preload_pipeline_info_;
   }
@@ -187,6 +190,10 @@ class CONTENT_EXPORT PrefetchRequest final {
   // speculation rules and can be different from actual
   // `PrefetchContainer::no_vary_search_data_`.
   const std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
+
+  // An optimization hint indicating how quickly this prefetch should be
+  // available.
+  const std::optional<PrefetchPriority> priority_;
 
   // The primary `PreloadPipelineInfo`, i.e. that of the first initiator.
   // Subsequent requests' `PreloadPipelineInfo`s are tracked by

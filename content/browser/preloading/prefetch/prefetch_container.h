@@ -586,10 +586,6 @@ class CONTENT_EXPORT PrefetchContainer {
     return should_disable_block_until_head_timeout_;
   }
 
-  std::optional<PrefetchPriority> GetPrefetchPriority() const {
-    return priority_;
-  }
-
   // Methods only exposed for `PrefetchServingHandle`.
   const std::vector<std::unique_ptr<PrefetchSingleRedirectHop>>& redirect_chain(
       base::PassKey<PrefetchServingHandle>) const;
@@ -610,8 +606,7 @@ class CONTENT_EXPORT PrefetchContainer {
                     const blink::mojom::Referrer& referrer,
                     base::TimeDelta ttl,
                     bool should_append_variations_header,
-                    bool should_disable_block_until_head_timeout,
-                    std::optional<PrefetchPriority> priority);
+                    bool should_disable_block_until_head_timeout);
 
   // Update |prefetch_status_| and report prefetch status to
   // DevTools without updating TriggeringOutcome.
@@ -831,10 +826,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // `BlockUntilHeadTimeout`, which is currently calculated by
   // `PrefetchBlockUntilHeadTimeout()` as a `prefetch_params`.
   const bool should_disable_block_until_head_timeout_ = false;
-
-  // An optimization hint indicating how quickly this prefetch should be
-  // available.
-  const std::optional<PrefetchPriority> priority_ = std::nullopt;
 
   // Timing information for metrics
   //

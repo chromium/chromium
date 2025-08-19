@@ -63,8 +63,8 @@ size_t GetActiveSetSizeLimitForBurst() {
 
 PrefetchSchedulerPriority CalculatePriorityImpl(
     const PrefetchContainer& prefetch_container) {
-  if (prefetch_container.GetPrefetchPriority().has_value()) {
-    switch (prefetch_container.GetPrefetchPriority().value()) {
+  if (prefetch_container.request().priority().has_value()) {
+    switch (prefetch_container.request().priority().value()) {
       case PrefetchPriority::kLow:
       case PrefetchPriority::kMedium:
       case PrefetchPriority::kHigh:

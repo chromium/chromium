@@ -60,6 +60,7 @@ PrefetchRequest::PrefetchRequest(
     const PrefetchType& prefetch_type,
     const PrefetchKey& key,
     const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    std::optional<PrefetchPriority> priority,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
     bool is_javascript_enabled,
@@ -73,6 +74,7 @@ PrefetchRequest::PrefetchRequest(
     : prefetch_type_(prefetch_type),
       key_(key),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
+      priority_(std::move(priority)),
       preload_pipeline_info_(base::WrapRefCounted(
           static_cast<PreloadPipelineInfoImpl*>(preload_pipeline_info.get()))),
       attempt_(std::move(attempt)),
