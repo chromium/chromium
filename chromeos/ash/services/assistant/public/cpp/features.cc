@@ -11,21 +11,13 @@
 
 namespace ash::assistant::features {
 
-BASE_FEATURE(kAssistantAudioEraser,
-             "AssistantAudioEraser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(AssistantAudioEraser, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAssistantAppSupport,
-             "AssistantAppSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(AssistantAppSupport, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAssistantDebugging,
-             "AssistantDebugging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(AssistantDebugging, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableDspHotword,
-             "EnableDspHotword",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableDspHotword, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableStereoAudioInput,
              "AssistantEnableStereoAudioInput",
@@ -40,9 +32,7 @@ BASE_FEATURE(kEnableLibAssistantBetaBackend,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Disable voice match for test purpose.
-BASE_FEATURE(kDisableVoiceMatch,
-             "DisableVoiceMatch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(DisableVoiceMatch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableLibAssistantDLC,
              "LibAssistantDLC",
