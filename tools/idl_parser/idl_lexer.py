@@ -55,6 +55,7 @@ class IDLLexer(object):
   keywords = {
       'any': 'ANY',
       'async': 'ASYNC',
+      'async_iterable': 'ASYNC_ITERABLE',
       'attribute': 'ATTRIBUTE',
       'bigint': 'BIGINT',
       'boolean': 'BOOLEAN',

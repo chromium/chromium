@@ -682,9 +682,14 @@ class IDLParser(object):
     p[0] = self.BuildProduction('Iterable', p, 2, childlist)
 
   def p_AsyncIterable(self, p):
-    """AsyncIterable : ASYNC ITERABLE '<' TypeWithExtendedAttributes OptionalType '>' OptionalArgumentList ';'"""
-    childlist = ListFromConcat(p[4], p[5], p[7])
+    """AsyncIterable : AsyncIterableKeyword '<' TypeWithExtendedAttributes OptionalType '>' OptionalArgumentList ';'"""
+    childlist = ListFromConcat(p[3], p[4], p[6])
     p[0] = self.BuildProduction('AsyncIterable', p, 2, childlist)
+
+  def p_AsyncIterableKeyword(self, p):
+    # TODO(433299826): remove old syntax.
+    """AsyncIterableKeyword : ASYNC_ITERABLE
+                            | ASYNC ITERABLE"""
 
   def p_OptionalType(self, p):
     """OptionalType : ',' TypeWithExtendedAttributes
