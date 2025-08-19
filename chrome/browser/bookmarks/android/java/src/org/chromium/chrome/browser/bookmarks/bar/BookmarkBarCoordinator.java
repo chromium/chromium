@@ -60,6 +60,11 @@ public class BookmarkBarCoordinator
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ViewResourceFrameLayout mViewResourceFrameLayout;
 
+    // Tracks whether or not the bookmark bar should be shown at all. We keep this state in addition
+    // to setting visibility directly on |mView| because we need to differentiate the Android
+    // widgets from the bookmark bar in general.
+    private boolean mShouldBookmarkBarBeShown;
+
     /**
      * Constructs the bookmark bar coordinator.
      *
@@ -88,6 +93,7 @@ public class BookmarkBarCoordinator
 
         mHeightChangeCallback = heightChangeCallback;
         mView.addOnLayoutChangeListener(this);
+        mShouldBookmarkBarBeShown = true;
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
@@ -179,6 +185,7 @@ public class BookmarkBarCoordinator
     }
 
     public void setVisibility(boolean isVisible) {
+        mShouldBookmarkBarBeShown = isVisible;
         mMediator.setVisibility(isVisible);
     }
 
@@ -209,7 +216,7 @@ public class BookmarkBarCoordinator
 
     @Override
     public int getTopControlHeight() {
-        return mView.getHeight();
+        return mShouldBookmarkBarBeShown ? mView.getHeight() : 0;
     }
 
     @Override
@@ -278,7 +285,9 @@ public class BookmarkBarCoordinator
         // controls are scrolling offscreen (or still coming back onscreen). When in this state,
         // we want to hide the Android widgets (which are controlled by the Mediator). We do not
         // also set the sceneLayer visibility here because we want that to be what is shown.
-        mMediator.setVisibility(mBrowserControlsStateProvider.getTopControlOffset() == 0);
+        mMediator.setVisibility(
+                mShouldBookmarkBarBeShown
+                        && mBrowserControlsStateProvider.getTopControlOffset() == 0);
         mMediator.onBrowserControlsChanged(
                 mBrowserControlsStateProvider.getTopControlsHeight(),
                 mBrowserControlsStateProvider.getBottomControlsHeight());

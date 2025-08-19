@@ -394,6 +394,17 @@ public class TopToolbarCoordinator implements Toolbar {
         mTabStripTransitionCoordinator.removeObserver(observer);
     }
 
+    /**
+     * Set the Bookmark Bar height supplier for the current TopToolbarOverlayCoordinator.
+     *
+     * @param bookmarkBarHeightSupplier Supplier of the current Bookmark Bar height.
+     */
+    public void setBookmarkBarHeightSupplier(
+            @Nullable Supplier<Integer> bookmarkBarHeightSupplier) {
+        if (mOverlayCoordinator == null) return;
+        mOverlayCoordinator.setBookmarkBarHeightSupplier(bookmarkBarHeightSupplier);
+    }
+
     /** Cleans up any code as necessary. */
     @SuppressWarnings("NullAway")
     public void destroy() {

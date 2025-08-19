@@ -120,6 +120,14 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
         mMediator.setAnonymize(anonymize);
     }
 
+    /**
+     * @param bookmarkBarHeightSupplier Supplier of the current Bookmark Bar height.
+     */
+    public void setBookmarkBarHeightSupplier(
+            @Nullable Supplier<Integer> bookmarkBarHeightSupplier) {
+        mMediator.setBookmarkBarHeightSupplier(bookmarkBarHeightSupplier);
+    }
+
     /** Clean up this component. */
     public void destroy() {
         mChangeProcessor.destroy();

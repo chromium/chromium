@@ -3249,6 +3249,7 @@ public class ToolbarManager
     public void setBookmarkBarHeightSupplier(
             @Nullable Supplier<Integer> bookmarkBarHeightSupplier) {
         mBookmarkBarHeightSupplier = bookmarkBarHeightSupplier;
+        mToolbar.setBookmarkBarHeightSupplier(mBookmarkBarHeightSupplier);
     }
 
     public static boolean isRightEdgeGoesForwardGestureNavEnabled() {

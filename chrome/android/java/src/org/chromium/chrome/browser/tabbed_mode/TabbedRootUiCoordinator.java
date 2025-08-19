@@ -1315,8 +1315,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
                         : 0;
         final int tabStripHeight = mToolbarManager.getTabStripHeightSupplier().get();
-        final int bookmarkBarHeight =
-                mBookmarkBarCoordinator != null ? mBookmarkBarCoordinator.getTopControlHeight() : 0;
+        final int bookmarkBarHeight = getBookmarkBarHeight();
 
         // When the refactor feature is enabled, fetch height from the TopControlsStacker.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOP_CONTROLS_REFACTOR)) {
@@ -1859,6 +1858,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 updateTopControlsHeight();
             }
         }
+    }
+
+    public int getBookmarkBarHeight() {
+        return mBookmarkBarCoordinator != null && mBookmarkBarCoordinator.isVisible()
+                ? mBookmarkBarCoordinator.getTopControlHeight()
+                : 0;
     }
 
     public static void setDisableTopControlsAnimationsForTesting(boolean disable) {
