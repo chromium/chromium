@@ -11,7 +11,7 @@ found in the LICENSE file.
     android:background="@null"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="@dimen/url_bar_default_height_inactive"
+    android:minHeight="@dimen/location_bar_height"
     android:gravity="center_vertical"
     android:singleLine="true"
     android:imeOptions="actionGo|flagNoExtractUi|flagNoFullscreen"
@@ -20,5 +20,4 @@ found in the LICENSE file.
     app:layout_constraintStart_toEndOf="@id/location_bar_status"
     app:layout_constraintEnd_toStartOf="@id/url_action_container"
     app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
     android:importantForAutofill="no"/>

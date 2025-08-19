@@ -15,4 +15,5 @@ small devices.
         layout="@layout/url_bar"/>
 
     <include layout="@layout/url_action_container"/>
+    <include layout="@layout/navigation_attachments_bar"/>
 </merge>

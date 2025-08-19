@@ -1962,12 +1962,14 @@ Chromium is unable to recover your settings.
           desc="Label for the Lens overlay command, through which the video will be searched using the Image Search service.">
           Search this video with Image Search
         </message>
+      </if>
 
-        <message name="IDS_AI_MODE_ENTRYPOINT_LABEL"
-          desc="The label of the AI mode entrypoint in the omnibox">
-          AI Mode
-        </message>
+      <message name="IDS_AI_MODE_ENTRYPOINT_LABEL"
+        desc="The label of the AI mode entrypoint in the omnibox" formatter_data="android_java">
+        AI Mode
+      </message>
 
+      <if expr="not is_android">
         <!-- Lens Side Panel Error Page -->
         <message name="IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_FIRST_LINE"
             desc="Text shown on the side panel for the Lens feature when there is a network or other server error. The texts informs the user that an error has occured.">
