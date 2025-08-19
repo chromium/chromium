@@ -112,14 +112,19 @@ ModelClient::CreateSession(
 
   opts.logger = args.logger_;
 
+  ExecuteRemoteFn execute_fn = args.remote_fn_;
   if (config_params) {
     opts.capabilities = config_params->capabilities;
     if (config_params->sampling_params) {
       opts.sampling_params = *config_params->sampling_params;
     }
+    if (config_params->execution_mode ==
+        SessionConfigParams::ExecutionMode::kOnDeviceOnly) {
+      execute_fn = CreateNoOpExecuteRemoteFn();
+    }
   }
 
-  return std::make_unique<SessionImpl>(key_, std::move(opts), args.remote_fn_,
+  return std::make_unique<SessionImpl>(key_, std::move(opts), execute_fn,
                                        std::nullopt);
 }
 
