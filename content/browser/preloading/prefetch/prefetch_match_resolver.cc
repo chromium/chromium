@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
@@ -223,7 +224,7 @@ void PrefetchMatchResolver::StartWaitFor(
   // https://chromium-review.googlesource.com/c/chromium/src/+/5668924 and
   // write tests.
   base::TimeDelta timeout = PrefetchBlockUntilHeadTimeout(
-      prefetch_container.GetPrefetchType(),
+      prefetch_container.request().prefetch_type(),
       prefetch_container.ShouldDisableBlockUntilHeadTimeout(),
       is_nav_prerender_);
   if (timeout.is_positive()) {

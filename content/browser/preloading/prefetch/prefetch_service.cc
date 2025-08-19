@@ -33,6 +33,7 @@
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_scheduler.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
@@ -49,7 +50,6 @@
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/preloading.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
@@ -211,11 +211,13 @@ bool CheckAndSetPrefetchHoldbackStatus(
   bool devtools_client_exist = [&] {
     // Currently DevTools only supports when the prefetch is initiated by
     // renderer.
-    if (!prefetch_container->IsRendererInitiated()) {
+    auto* renderer_initiator_info =
+        prefetch_container->request().GetRendererInitiatorInfo();
+    if (!renderer_initiator_info) {
       return false;
     }
-    RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromID(
-        prefetch_container->GetReferringRenderFrameHostId());
+    RenderFrameHostImpl* initiator_rfh =
+        renderer_initiator_info->GetRenderFrameHost();
     return initiator_rfh &&
            RenderFrameDevToolsAgentHost::GetFor(initiator_rfh) != nullptr;
   }();
@@ -704,7 +706,7 @@ void PrefetchService::PrefetchUrl(
       return;
     }
 
-    const auto& prefetch_type = prefetch_container->GetPrefetchType();
+    const auto& prefetch_type = prefetch_container->request().prefetch_type();
     if (prefetch_type.IsProxyRequiredWhenCrossOrigin()) {
       bool allow_all_domains =
           PrefetchAllowAllDomains() ||
@@ -722,9 +724,9 @@ void PrefetchService::PrefetchUrl(
 
     // TODO(crbug.com/40946257): Current code doesn't support PageLoadMetrics
     // when the prefetch is initiated by browser.
-    if (prefetch_container->IsRendererInitiated()) {
-      if (auto* rfh = RenderFrameHost::FromID(
-              prefetch_container->GetReferringRenderFrameHostId())) {
+    if (auto* renderer_initiator_info =
+            prefetch_container->request().GetRendererInitiatorInfo()) {
+      if (auto* rfh = renderer_initiator_info->GetRenderFrameHost()) {
         if (auto* web_contents = WebContents::FromRenderFrameHost(rfh)) {
           delegate_->OnPrefetchLikely(web_contents);
         }
@@ -1024,10 +1026,14 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
     // The cookie eligibility check just happened, and we might proceed anyway.
     // We might therefore need to delay further processing to the extent
     // required to obscure the outcome of this check from the current site.
-    auto* initiator_rfh = RenderFrameHost::FromID(
-        prefetch_container->GetReferringRenderFrameHostId());
     const bool is_contamination_exempt = [&] {
-      if (!prefetch_container->IsRendererInitiated()) {
+      if (auto* renderer_initiator_info =
+              prefetch_container->request().GetRendererInitiatorInfo()) {
+        auto* initiator_rfh = renderer_initiator_info->GetRenderFrameHost();
+        return delegate_ && initiator_rfh &&
+               delegate_->IsContaminationExempt(
+                   initiator_rfh->GetLastCommittedURL());
+      } else {
         // When browser-initiated prefetches, we can calculates prefetch's
         // contamination exemption from the referring origin. Currently CCT
         // prefetch is only the case hitting this, so the callee will check
@@ -1037,10 +1043,6 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
                prefetch_container->GetReferringOrigin().has_value() &&
                delegate_->IsContaminationExemptPerOrigin(
                    prefetch_container->GetReferringOrigin().value());
-      } else {
-        return delegate_ && initiator_rfh &&
-               delegate_->IsContaminationExempt(
-                   initiator_rfh->GetLastCommittedURL());
       }
     }();
 
@@ -1372,14 +1374,16 @@ PrefetchService::PopNextPrefetchContainer() {
         // `IsReadyToStartLoading` in
         // //content/browser/preloading/prefetch/prefetch_scheduler.cc.
 
-        if (!prefetch_container->IsRendererInitiated()) {
+        auto* renderer_initiator_info =
+            prefetch_container->request().GetRendererInitiatorInfo();
+        if (!renderer_initiator_info) {
           // TODO(crbug.com/40946257): Revisit the resource limits and
           // conditions for starting browser-initiated prefetch.
           return true;
         }
 
         auto* prefetch_document_manager =
-            prefetch_container->GetPrefetchDocumentManager();
+            renderer_initiator_info->prefetch_document_manager();
         // If there is no manager in renderer-initiated prefetch (can happen
         // only in tests), just bypass the check.
         if (!prefetch_document_manager) {
@@ -1602,9 +1606,16 @@ bool PrefetchService::StartSinglePrefetch(
 
   SendPrefetchRequest(prefetch_container);
 
-  PrefetchDocumentManager* prefetch_document_manager =
-      prefetch_container->GetPrefetchDocumentManager();
-  if (prefetch_container->GetPrefetchType().IsProxyRequiredWhenCrossOrigin() &&
+  PrefetchDocumentManager* prefetch_document_manager = nullptr;
+  if (auto* renderer_initiator_info =
+          prefetch_container->request().GetRendererInitiatorInfo()) {
+    prefetch_document_manager =
+        renderer_initiator_info->prefetch_document_manager();
+  }
+
+  if (prefetch_container->request()
+          .prefetch_type()
+          .IsProxyRequiredWhenCrossOrigin() &&
       !prefetch_container->IsDecoy() &&
       (!prefetch_document_manager ||
        !prefetch_document_manager->HaveCanaryChecksStarted())) {
@@ -2072,8 +2083,8 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
         num_matching_prefetch_same_referrer++;
       }
 
-      if (prefetch_iter.second->GetReferringRenderFrameHostId() ==
-          prefetch_container.GetReferringRenderFrameHostId()) {
+      if (prefetch_iter.second->HasSameReferringRenderFrameHostIdForMetrics(
+              prefetch_container)) {
         num_matching_prefetch_same_rfh++;
       }
     }

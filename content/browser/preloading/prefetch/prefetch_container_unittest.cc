@@ -14,6 +14,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
@@ -328,10 +329,13 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
       PreloadPipelineInfo::Create(
           /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
 
-  EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
+  ASSERT_TRUE(prefetch_container.request().GetRendererInitiatorInfo());
+  EXPECT_EQ(prefetch_container.request()
+                .GetRendererInitiatorInfo()
+                ->GetRenderFrameHostId(),
             main_rfh()->GetGlobalId());
   EXPECT_EQ(prefetch_container.GetURL(), GURL("https://test.com"));
-  EXPECT_EQ(prefetch_container.GetPrefetchType(),
+  EXPECT_EQ(prefetch_container.request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kImmediate));
@@ -357,10 +361,9 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
           /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
       /*attempt=*/nullptr);
 
-  EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
-            GlobalRenderFrameHostId());
+  ASSERT_FALSE(prefetch_container.request().GetRendererInitiatorInfo());
   EXPECT_EQ(prefetch_container.GetURL(), GURL("https://test.com"));
-  EXPECT_EQ(prefetch_container.GetPrefetchType(),
+  EXPECT_EQ(prefetch_container.request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kEmbedder,
                          /*use_prefetch_proxy=*/false));
   EXPECT_FALSE(

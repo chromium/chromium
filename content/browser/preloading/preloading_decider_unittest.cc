@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetcher.h"
 #include "content/browser/preloading/preloading.h"
@@ -778,7 +779,8 @@ TEST_P(PreloadingDeciderWithParameterizedSpeculationActionTest,
       case blink::mojom::SpeculationAction::kPrefetch:
         return GetPrefetchService()
             ->prefetches_[0]
-            ->GetPrefetchType()
+            ->request()
+            .prefetch_type()
             .GetEagerness();
       case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
       case blink::mojom::SpeculationAction::kPrerenderUntilScript:

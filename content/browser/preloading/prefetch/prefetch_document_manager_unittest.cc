@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -363,28 +364,28 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   const auto& prefetch_urls = GetPrefetches();
   ASSERT_EQ(prefetch_urls.size(), 6U);
   EXPECT_EQ(prefetch_urls[0]->GetURL(), GetCrossOriginUrl("/candidate1.html"));
-  EXPECT_EQ(prefetch_urls[0]->GetPrefetchType(),
+  EXPECT_EQ(prefetch_urls[0]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kImmediate));
   EXPECT_TRUE(
       prefetch_urls[0]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[1]->GetURL(), GetCrossOriginUrl("/candidate2.html"));
-  EXPECT_EQ(prefetch_urls[1]->GetPrefetchType(),
+  EXPECT_EQ(prefetch_urls[1]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kImmediate));
   EXPECT_TRUE(
       prefetch_urls[1]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[2]->GetURL(), GetSameOriginUrl("/candidate3.html"));
-  EXPECT_EQ(prefetch_urls[2]->GetPrefetchType(),
+  EXPECT_EQ(prefetch_urls[2]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kImmediate));
   EXPECT_FALSE(
       prefetch_urls[2]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[3]->GetURL(), GetCrossOriginUrl("/candidate6.html"));
-  EXPECT_EQ(prefetch_urls[3]->GetPrefetchType(),
+  EXPECT_EQ(prefetch_urls[3]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kConservative));
@@ -392,14 +393,14 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
       prefetch_urls[3]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[4]->GetURL(),
             GetSameSiteCrossOriginUrl("/candidate7.html"));
-  EXPECT_EQ(prefetch_urls[4]->GetPrefetchType(),
+  EXPECT_EQ(prefetch_urls[4]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kImmediate));
   EXPECT_FALSE(
       prefetch_urls[4]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[5]->GetURL(), GetSameOriginUrl("/candidate8.html"));
-  EXPECT_EQ(prefetch_urls[5]->GetPrefetchType(),
+  EXPECT_EQ(prefetch_urls[5]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kImmediate));
@@ -470,7 +471,7 @@ TEST_F(PrefetchDocumentManagerTest, FencedFrameDoesNotStartPrefetch) {
   const auto& prefetch_urls = GetPrefetches();
   ASSERT_EQ(prefetch_urls.size(), 1U);
   EXPECT_EQ(prefetch_urls[0]->GetURL(), cross_origin_url);
-  EXPECT_EQ(prefetch_urls[0]->GetPrefetchType(),
+  EXPECT_EQ(prefetch_urls[0]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kImmediate));

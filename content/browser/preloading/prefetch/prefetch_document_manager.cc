@@ -15,6 +15,7 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/preloading/preloading.h"
@@ -336,7 +337,7 @@ void PrefetchDocumentManager::OnPrefetchSuccessful(
     PrefetchContainer* prefetch) {
   referring_page_metrics_.prefetch_successful_count++;
   if (IsImmediateSpeculationEagerness(
-          prefetch->GetPrefetchType().GetEagerness())) {
+          prefetch->request().prefetch_type().GetEagerness())) {
     completed_immediate_prefetches_.push_back(prefetch->GetWeakPtr());
   } else {
     completed_non_immediate_prefetches_.push_back(prefetch->GetWeakPtr());
@@ -354,7 +355,7 @@ PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
     return std::make_tuple(false, nullptr);
   }
   if (IsImmediateSpeculationEagerness(
-          prefetch->GetPrefetchType().GetEagerness())) {
+          prefetch->request().prefetch_type().GetEagerness())) {
     return std::make_tuple(completed_immediate_prefetches_.size() <
                                kMaxNumberOfImmediatePrefetchesPerPage,
                            nullptr);
@@ -386,7 +387,7 @@ void PrefetchDocumentManager::PrefetchWillBeDestroyed(
 
   std::vector<base::WeakPtr<PrefetchContainer>>& completed_prefetches =
       IsImmediateSpeculationEagerness(
-          prefetch->GetPrefetchType().GetEagerness())
+          prefetch->request().prefetch_type().GetEagerness())
           ? completed_immediate_prefetches_
           : completed_non_immediate_prefetches_;
   auto it = std::ranges::find(completed_prefetches, prefetch->key(),
