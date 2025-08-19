@@ -557,10 +557,7 @@ void ProxyImpl::RenewTreePriority() {
   // - When the active scroll gesture requires main-thread repainting for the
   //   scroll offset change to be visible.
   if (host_impl_->active_tree()->GetDeviceViewport().size().IsEmpty() ||
-      host_impl_->EvictedUIResourcesExist() ||
-      (is_current_scroll_main_painted &&
-       base::FeatureList::IsEnabled(
-           features::kMainRepaintScrollPrefersNewContent))) {
+      host_impl_->EvictedUIResourcesExist() || is_current_scroll_main_painted) {
     // Once we enter NEW_CONTENTS_TAKES_PRIORITY mode, visible tiles on active
     // tree might be freed. We need to set RequiresHighResToDraw to ensure that
     // high res tiles will be required to activate pending tree.
