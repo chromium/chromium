@@ -1928,6 +1928,10 @@ BASE_FEATURE_PARAM(int,
                    "memory_cache_strong_ref_resource_size_threshold",
                    3 * 1024 * 1024);
 
+BASE_FEATURE(kMemoryPurgeOnFreeze,
+             "MemoryPurgeOnFreeze",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMemoryPurgeOnFreezeLimit,
              "MemoryPurgeOnFreezeLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);

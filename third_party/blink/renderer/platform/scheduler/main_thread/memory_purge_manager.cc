@@ -163,8 +163,20 @@ void MemoryPurgeManager::PerformMemoryPurge() {
   TRACE_EVENT0("blink", "MemoryPurgeManager::PerformMemoryPurge()");
   DCHECK(CanPurge());
 
-  if (!did_purge_with_page_frozen_since_backgrounded_ ||
-      !base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreezeLimit)) {
+  // Don't purge if "purge on freeze" is disabled and this is not a
+  // "backgrounded purge".
+  const bool purge_inhibited_because_purge_on_freeze_disabled =
+      !backgrounded_purge_pending_ &&
+      !base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze);
+
+  // Don't purge if not the first purge with a frozen page in the current
+  // background session, and we have a limit of purges with a frozen page.
+  const bool purge_inhibited_because_already_purged_with_frozen_page =
+      did_purge_with_page_frozen_since_backgrounded_ &&
+      base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreezeLimit);
+
+  if (!purge_inhibited_because_purge_on_freeze_disabled &&
+      !purge_inhibited_because_already_purged_with_frozen_page) {
     base::MemoryPressureListener::NotifyMemoryPressure(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }

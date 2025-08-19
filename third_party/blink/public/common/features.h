@@ -1278,10 +1278,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kMemoryCacheStrongReferenceResourceSizeThresholdParam);
 
-// Limits the number of memory purge performed on page freezing to 1 per
-// interval in which the renderer is backgrounded. Without this, memory purge is
-// performed every time all pages in a renderer become frozen, which can happen
-// periodically with periodic unfreezing.
+// Purge memory when a frame is frozen in a renderer. See
+// `kMemoryPurgeOnFreezeLimit` to do this only once per backgrounded session.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryPurgeOnFreeze);
+
+// Limits the number of memory purges on page freezing to 1 per background
+// session. Without this, memory purge is performed every time a page becomes
+// frozen, which can be too much with periodic freezing/unfreezing.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryPurgeOnFreezeLimit);
 
 // Enables v8 memory saver mode on low memory thresholds.
