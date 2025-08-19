@@ -36,6 +36,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/task/current_thread.h"
 #include "device/udev_linux/scoped_udev.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/event_rewriter_ash.h"
@@ -828,6 +829,17 @@ const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
   auto iter = keyboard_info_map_.find(keyboard.id);
   if (iter != keyboard_info_map_.end()) {
     return &iter->second;
+  }
+
+  // Usually calls to this function are done on the UI thread, but there are
+  // rare edge case scenarios in which this is not true and can cause a race
+  // condition. A nullptr indicates a default keyboard and results are not
+  // cached. The good thread/path will correctly process the keyboard and cache
+  // the information.
+  // TODO(crbug.com/319951891): Refactor this to be thread safe after
+  // confirmation that this race condition no longer happens.
+  if (!base::CurrentUIThread::IsSet()) {
+    return nullptr;
   }
 
   // Insert new keyboard info into the map.
