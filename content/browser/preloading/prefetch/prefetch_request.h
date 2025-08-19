@@ -15,6 +15,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "net/http/http_no_vary_search_data.h"
+#include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
@@ -131,6 +132,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       const std::optional<url::Origin>& referring_origin,
       base::WeakPtr<BrowserContext> browser_context,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
+      const net::HttpRequestHeaders& additional_headers,
       std::optional<PreloadingHoldbackStatus> holdback_status_override,
       std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
           info);
@@ -154,6 +156,9 @@ class CONTENT_EXPORT PrefetchRequest final {
     return speculation_rules_tags_;
   }
 
+  const net::HttpRequestHeaders& additional_headers() const {
+    return additional_headers_;
+  }
   const std::optional<PreloadingHoldbackStatus>& holdback_status_override()
       const {
     return holdback_status_override_;
@@ -218,6 +223,11 @@ class CONTENT_EXPORT PrefetchRequest final {
 
   // -------- Parameters that can have non-default values only for
   // -------- browser-initiated prefetches:
+
+  // Additional headers for WebView initiated prefetch.
+  // This must be empty for non-WebView initiated prefetches.
+  // TODO(crbug.com/369859822): Revisit the semantics if needed.
+  const net::HttpRequestHeaders additional_headers_;
 
   // If set, this value is used to override holdback status derived by the
   // normal process. It is set to `attempt_` on

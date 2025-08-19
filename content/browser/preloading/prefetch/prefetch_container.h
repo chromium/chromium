@@ -606,15 +606,13 @@ class CONTENT_EXPORT PrefetchContainer {
       const network::mojom::URLResponseHead* head);
 
  private:
-  PrefetchContainer(
-      std::unique_ptr<PrefetchRequest> request,
-      const blink::mojom::Referrer& referrer,
-      const net::HttpRequestHeaders& additional_headers,
-      bool is_javascript_enabled,
-      base::TimeDelta ttl,
-      bool should_append_variations_header,
-      bool should_disable_block_until_head_timeout,
-      std::optional<PrefetchPriority> priority);
+  PrefetchContainer(std::unique_ptr<PrefetchRequest> request,
+                    const blink::mojom::Referrer& referrer,
+                    bool is_javascript_enabled,
+                    base::TimeDelta ttl,
+                    bool should_append_variations_header,
+                    bool should_disable_block_until_head_timeout,
+                    std::optional<PrefetchPriority> priority);
 
   // Update |prefetch_status_| and report prefetch status to
   // DevTools without updating TriggeringOutcome.
@@ -809,11 +807,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // A timer used to limit the maximum amount of time that a navigation can be
   // blocked waiting for the head of this prefetch to be received.
   std::unique_ptr<base::OneShotTimer> block_until_head_timer_;
-
-  // Additional headers for WebView initiated prefetch.
-  // This must be empty for non-WebView initiated prefetches.
-  // TODO(crbug.com/369859822): Revisit the semantics if needed.
-  const net::HttpRequestHeaders additional_headers_;
 
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 

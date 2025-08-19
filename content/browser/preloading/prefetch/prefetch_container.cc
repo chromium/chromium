@@ -261,12 +261,12 @@ PrefetchContainer::PrefetchContainer(
               referring_render_frame_host.GetLastCommittedOrigin(),
               referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
               std::move(speculation_rules_tags),
+              /*Must be empty: additional_headers=*/net::HttpRequestHeaders(),
               /*holdback_status_override=*/std::nullopt,
               PrefetchRendererInitiatorInfo(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
           referrer,
-          /*Must be empty: additional_headers=*/{},
           WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
               ->GetOrCreateWebPreferences()
               .javascript_enabled,
@@ -299,12 +299,12 @@ PrefetchContainer::PrefetchContainer(
               referring_origin,
               referring_web_contents.GetBrowserContext()->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
+              /*Must be empty: additional_headers=*/net::HttpRequestHeaders(),
               std::move(holdback_status_override),
               PrefetchBrowserInitiatorInfo(
                   embedder_histogram_suffix,
                   /*request_status_listener=*/nullptr)),
           referrer,
-          /*Must be empty: additional_headers=*/{},
           referring_web_contents.GetOrCreateWebPreferences().javascript_enabled,
           ttl.has_value() ? ttl.value()
                           : PrefetchContainerDefaultTtlInPrefetchService(),
@@ -340,11 +340,11 @@ PrefetchContainer::PrefetchContainer(
               referring_origin,
               browser_context->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
+              additional_headers,
               /*holdback_status_override=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
                                            std::move(request_status_listener))),
           referrer,
-          additional_headers,
           javascript_enabled,
           ttl,
           should_append_variations_header,
@@ -354,7 +354,6 @@ PrefetchContainer::PrefetchContainer(
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
     const blink::mojom::Referrer& referrer,
-    const net::HttpRequestHeaders& additional_headers,
     bool is_javascript_enabled,
     base::TimeDelta ttl,
     bool should_append_variations_header,
@@ -363,7 +362,6 @@ PrefetchContainer::PrefetchContainer(
     : request_(std::move(request)),
       referrer_(referrer),
       request_id_(base::UnguessableToken::Create().ToString()),
-      additional_headers_(additional_headers),
       is_javascript_enabled_(is_javascript_enabled),
       ttl_(ttl),
       should_append_variations_header_(should_append_variations_header),
@@ -1418,7 +1416,7 @@ void PrefetchContainer::MakeResourceRequest(
   // not be visible outside of the network context.
   resource_request->load_flags = net::LOAD_PREFETCH;
 
-  resource_request->headers.MergeFrom(additional_headers_);
+  resource_request->headers.MergeFrom(request().additional_headers());
   resource_request->headers.MergeFrom(additional_headers);
   if (!base::FeatureList::IsEnabled(
           blink::features::kRemovePurposeHeaderForPrefetch)) {
