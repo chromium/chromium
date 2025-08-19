@@ -65,8 +65,8 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
       execution_context->GetTaskRunner(TaskType::kInternalDefault)
           ->PostDelayedTask(
               FROM_HERE,
-              WTF::BindOnce(&ScriptPromiseResolverWithTracker::RecordResult,
-                            WrapPersistent(this), ResultEnumType::kTimedOut),
+              BindOnce(&ScriptPromiseResolverWithTracker::RecordResult,
+                       WrapPersistent(this), ResultEnumType::kTimedOut),
               timeout_interval);
     }
   }

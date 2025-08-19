@@ -657,18 +657,17 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
         // TODO(crbug.com/40202028): Consider scheduling idle tasks via
         // ThreadScheduler::PostDelayedIdleTask().
         execution_context->GetTaskRunner(TaskType::kInternalDefault)
-            ->PostDelayedTask(
-                FROM_HERE,
-                WTF::BindOnce(&DelayedProduceCodeCacheTask,
-                              // TODO(leszeks): Consider passing the
-                              // script state as a weak persistent.
-                              WrapPersistent(script_state),
-                              v8::Global<v8::Script>(isolate, script),
-                              WrapPersistent(cache_handler),
-                              classic_script->SourceText().length(),
-                              classic_script->SourceUrl(),
-                              classic_script->StartPosition()),
-                kCacheCodeOnIdleDelay);
+            ->PostDelayedTask(FROM_HERE,
+                              BindOnce(&DelayedProduceCodeCacheTask,
+                                       // TODO(leszeks): Consider passing the
+                                       // script state as a weak persistent.
+                                       WrapPersistent(script_state),
+                                       v8::Global<v8::Script>(isolate, script),
+                                       WrapPersistent(cache_handler),
+                                       classic_script->SourceText().length(),
+                                       classic_script->SourceUrl(),
+                                       classic_script->StartPosition()),
+                              kCacheCodeOnIdleDelay);
       } else {
         V8CodeCache::ProduceCache(
             isolate,
@@ -976,11 +975,10 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
             ? module_script->V8Module()->ScriptId()
             : v8::UnboundScript::kNoScriptId);
     execution_context->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(
-            FROM_HERE,
-            WTF::BindOnce(&Modulator::ProduceCacheModuleTreeTopLevel,
-                          WrapWeakPersistent(Modulator::From(script_state)),
-                          WrapWeakPersistent(module_script)));
+        ->PostTask(FROM_HERE,
+                   BindOnce(&Modulator::ProduceCacheModuleTreeTopLevel,
+                            WrapWeakPersistent(Modulator::From(script_state)),
+                            WrapWeakPersistent(module_script)));
   }
 
   if (!rethrow_errors.ShouldRethrow()) {

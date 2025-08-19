@@ -152,7 +152,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   // necessary only for OnBeforeUnloadEventHandler.
   String result_for_beforeunload;
   if (IsOnBeforeUnloadEventHandler()) {
-    event_handler_->EvaluateAsPartOfCallback(WTF::BindOnce(
+    event_handler_->EvaluateAsPartOfCallback(BindOnce(
         [](v8::Local<v8::Value>& v8_return_value,
            String& result_for_beforeunload, ScriptState* script_state) {
           v8::Isolate* isolate = script_state->GetIsolate();

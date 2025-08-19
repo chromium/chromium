@@ -124,7 +124,7 @@ class IsolatedWorldCSPDelegate final
   }
 
   void DidAddContentSecurityPolicies(
-      WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>) override {}
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>) override {}
 
  private:
   const Member<LocalDOMWindow> window_;

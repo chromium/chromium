@@ -194,7 +194,7 @@ template <typename IDLKey,
           typename ReturnValue>
 inline constexpr bool
     IsReturnTypeCompatible<blink::IDLRecord<IDLKey, IDLValue>,
-                           WTF::Vector<std::pair<ReturnKey, ReturnValue>>> =
+                           Vector<std::pair<ReturnKey, ReturnValue>>> =
         IsReturnTypeCompatible<IDLKey, ReturnKey> &&
         IsReturnTypeCompatible<IDLValue, ReturnValue>;
 
@@ -221,7 +221,7 @@ inline constexpr bool IsReturnTypeCompatible<IDLObject, v8::Local<v8::Value>> =
 // Any IDL strings are compatible to any blink strings.
 template <typename IDLStringType>
   requires std::derived_from<IDLStringType, IDLStringTypeBase>
-inline constexpr bool IsReturnTypeCompatible<IDLStringType, WTF::String> = true;
+inline constexpr bool IsReturnTypeCompatible<IDLStringType, String> = true;
 
 template <typename IDLStringType>
   requires std::derived_from<IDLStringType, IDLStringTypeBase>

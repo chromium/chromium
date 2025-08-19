@@ -743,10 +743,9 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   // TODO(leszeks): Decrease the priority of these tasks where possible.
   worker_pool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      CrossThreadBindOnce(RunScriptStreamingTask,
-                          std::move(script_streaming_task),
-                          WrapCrossThreadPersistent(this),
-                          WTF::CrossThreadUnretained(stream_)));
+      CrossThreadBindOnce(
+          RunScriptStreamingTask, std::move(script_streaming_task),
+          WrapCrossThreadPersistent(this), CrossThreadUnretained(stream_)));
 
   return true;
 }
@@ -778,11 +777,10 @@ ResourceScriptStreamer::ResourceScriptStreamer(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
       loading_task_runner);
 
-  watcher_->Watch(
-      data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&ResourceScriptStreamer::OnDataPipeReadable,
-                         WrapWeakPersistent(this)));
+  watcher_->Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+                  MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                  BindRepeating(&ResourceScriptStreamer::OnDataPipeReadable,
+                                WrapWeakPersistent(this)));
 
   MojoResult ready_result;
   mojo::HandleSignalsState ready_state;
@@ -1496,8 +1494,8 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
   watcher_->Watch(body_.get(), MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE,
                   MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                  WTF::BindRepeating(&BackgroundProcessor::OnDataPipeReadable,
-                                     weak_factory_.GetWeakPtr()));
+                  blink::BindRepeating(&BackgroundProcessor::OnDataPipeReadable,
+                                       weak_factory_.GetWeakPtr()));
   MojoResult ready_result;
   mojo::HandleSignalsState ready_state;
   MojoResult rv = watcher_->Arm(&ready_result, &ready_state);

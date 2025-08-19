@@ -196,10 +196,9 @@ void ScriptPromiseResolverBase::ResolveOrRejectImmediately() {
 void ScriptPromiseResolverBase::ScheduleResolveOrReject() {
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMicrotask)
-      ->PostTask(
-          FROM_HERE,
-          WTF::BindOnce(&ScriptPromiseResolverBase::ResolveOrRejectDeferred,
-                        WrapPersistent(this)));
+      ->PostTask(FROM_HERE,
+                 BindOnce(&ScriptPromiseResolverBase::ResolveOrRejectDeferred,
+                          WrapPersistent(this)));
 }
 
 void ScriptPromiseResolverBase::ResolveOrRejectDeferred() {

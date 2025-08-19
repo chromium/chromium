@@ -738,7 +738,7 @@ def make_fill_template_properties_function(cg_context):
 
     func_def = CxxFuncDefNode(name="FillTemplateProperties",
                               arg_decls=[
-                                  "WTF::Vector<std::string_view>& properties",
+                                  "Vector<std::string_view>& properties",
                               ],
                               return_type="void",
                               class_name=cg_context.class_name,

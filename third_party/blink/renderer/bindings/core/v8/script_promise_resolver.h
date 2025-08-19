@@ -340,7 +340,7 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
   base::OnceCallback<void(Args...)> WrapCallbackInScriptScope(
       base::OnceCallback<void(ScriptPromiseResolver<IDLResolvedType>*, Args...)>
           callback) {
-    return WTF::BindOnce(
+    return blink::BindOnce(
         [](ScriptPromiseResolver<IDLResolvedType>* resolver,
            base::OnceCallback<void(ScriptPromiseResolver<IDLResolvedType>*,
                                    Args...)> callback,

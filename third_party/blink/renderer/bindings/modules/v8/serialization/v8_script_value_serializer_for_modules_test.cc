@@ -239,7 +239,7 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeRTCCertificate) {
 
   // This is encoded data generated from Chromium (around M55).
   ScriptState* script_state = scope.GetScriptState();
-  Vector<uint8_t> encoded_data = WTF::ToVector(kEcdsaCertificateEncoded);
+  Vector<uint8_t> encoded_data = ToVector(kEcdsaCertificateEncoded);
   scoped_refptr<SerializedScriptValue> input = SerializedValue(encoded_data);
 
   // Decode test.
@@ -355,7 +355,7 @@ WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
       MakeGarbageCollected<WebCryptoResultAdapter<IDLType, T>>(
           std::move(function)),
       MakeGarbageCollected<WebCryptoResultAdapter<IDLAny, DOMException*>>(
-          WTF::BindRepeating([](DOMException* exception) {
+          BindRepeating([](DOMException* exception) {
             NOTREACHED() << "crypto operation failed";
           })));
   return result->Result();
@@ -369,12 +369,12 @@ T SubtleCryptoSync(V8TestingScope& scope, PMF func, Args&&... args) {
       std::forward<Args>(args)...,
       ToWebCryptoResult<IDLType>(
           scope.GetScriptState(),
-          WTF::BindRepeating(
+          blink::BindRepeating(
               [](T* out, base::OnceClosure quit_closure, T result) {
                 *out = result;
                 std::move(quit_closure).Run();
               },
-              WTF::Unretained(&result), run_loop.QuitClosure())),
+              Unretained(&result), run_loop.QuitClosure())),
       scheduler::GetSingleThreadTaskRunnerForTesting());
   // The promise may resolve synchronously.
   scope.PerformMicrotaskCheckpoint();

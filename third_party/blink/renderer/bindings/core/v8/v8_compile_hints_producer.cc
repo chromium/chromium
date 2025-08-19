@@ -145,9 +145,8 @@ void V8CrowdsourcedCompileHintsProducer::ScheduleDataDeletionTask(
   auto delay = base::Seconds(kDeletionDelaySeconds);
 
   execution_context->GetTaskRunner(TaskType::kInternalDefault)
-      ->PostDelayedTask(FROM_HERE,
-                        WTF::BindOnce(&ClearDataTask, WrapWeakPersistent(this)),
-                        delay);
+      ->PostDelayedTask(
+          FROM_HERE, BindOnce(&ClearDataTask, WrapWeakPersistent(this)), delay);
 }
 
 bool V8CrowdsourcedCompileHintsProducer::MightGenerateData() {
