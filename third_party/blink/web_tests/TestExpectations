@@ -8401,6 +8401,8 @@ crbug.com/386799957 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/tentat
 crbug.com/386799957 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-worker.https.html [ Timeout ]
 crbug.com/386799957 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedAudioFrame-constructor.html [ Timeout ]
 crbug.com/386799957 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedAudioFrame-constructor.html [ Timeout ]
+crbug.com/386799957 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-constructor.html [ Timeout ]
+crbug.com/386799957 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-constructor.html [ Timeout ]
 crbug.com/386799957 [ Mac15 ] external/wpt/webrtc/simulcast/basic.https.html [ Skip Timeout ]
 crbug.com/386799957 [ Mac15-arm64 ] external/wpt/webrtc/simulcast/basic.https.html [ Skip Timeout ]
 crbug.com/386799957 [ Mac15 ] external/wpt/webrtc/simulcast/h264.https.html [ Skip Timeout ]

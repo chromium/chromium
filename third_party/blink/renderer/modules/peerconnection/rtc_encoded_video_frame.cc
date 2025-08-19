@@ -67,8 +67,8 @@ base::expected<void, String> ValidateMetadata(
     return base::unexpected("new metadata has member(s) missing.");
   }
 
-  // This might happen if the dependency descriptor is not set.
-  if (!metadata->hasFrameId() && metadata->hasDependencies()) {
+  if (!metadata->hasFrameId() && metadata->hasDependencies() &&
+      !metadata->dependencies().empty()) {
     return base::unexpected(
         "new metadata has frameID missing, but has dependencies");
   }
