@@ -93,7 +93,7 @@ int NonClientFrameViewBase::NonClientTopBorderHeight() const {
   const aura::Window* frame_window = frame_->GetNativeWindow();
   const WindowStateType window_state_type =
       frame_window->GetProperty(kWindowStateTypeKey);
-  const bool is_in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool is_in_tablet_mode = display::Screen::Get()->InTabletMode();
   const bool should_have_frame_in_tablet =
       window_state_type == chromeos::WindowStateType::kFloated ||
       window_state_type == chromeos::WindowStateType::kNormal;

@@ -96,7 +96,7 @@ bool TouchSelectionMenuRunnerChromeOS::RequestTextSelection(
       std::make_unique<aura::WindowTracker>();
   tracker->Add(context);
 
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   DCHECK(screen);
 
   base::RecordAction(base::UserMetricsAction("Arc.SmartTextSelection.Request"));

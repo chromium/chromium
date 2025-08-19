@@ -98,7 +98,7 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteEvent(
     return SendEvent(continuation, &event);
   }
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   aura::Window* target =
       screen->GetWindowAtScreenPoint(screen->GetCursorScreenPoint());
   // Only handle clicks to the content area of an Exo window i.e. exclude the

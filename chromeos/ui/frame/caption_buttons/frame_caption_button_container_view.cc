@@ -139,13 +139,13 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
     switch (type) {
       case views::CAPTION_BUTTON_ICON_MINIMIZE:
         return frame_->widget_delegate()->CanMinimize() &&
-               !display::Screen::GetScreen()->InTabletMode();
+               !display::Screen::Get()->InTabletMode();
       case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE: {
         if (!frame_->widget_delegate()->CanMaximize()) {
           return false;
         }
 
-        if (!display::Screen::GetScreen()->InTabletMode()) {
+        if (!display::Screen::Get()->InTabletMode()) {
           return true;
         }
 
@@ -165,7 +165,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
         if (!frame_->IsNativeWidgetInitialized()) {
           return false;
         }
-        if (display::Screen::GetScreen()->InTabletMode()) {
+        if (display::Screen::Get()->InTabletMode()) {
           return false;
         }
         // Only need to show the float button for apps that normally can't be
@@ -593,7 +593,7 @@ void FrameCaptionButtonContainerView::OnWidgetActivationChanged(
 
   // Tablet nudge is controlled by ash by another class
   // (`::ash::TabletModeMultitaskCueController`).
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return;
   }
 
@@ -661,7 +661,7 @@ void FrameCaptionButtonContainerView::UpdateSizeButton() {
 
 void FrameCaptionButtonContainerView::UpdateSnapButtons() {
   const bool is_landscape =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(frame_->GetNativeWindow())
           .is_landscape();
   SetButtonImage(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
@@ -729,7 +729,7 @@ void FrameCaptionButtonContainerView::CloseButtonPressed() {
   SetButtonsToNormal(Animate::kNo);
 
   frame_->Close();
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     base::RecordAction(
         base::UserMetricsAction("Tablet_WindowCloseFromCaptionButton"));
   } else {

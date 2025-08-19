@@ -497,7 +497,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   }
 
   auto orientation = display::PanelOrientation::kNormal;
-  if (auto* screen = display::Screen::GetScreen()) {
+  if (auto* screen = display::Screen::Get()) {
     const auto display_id = screen->GetPrimaryDisplay().id();
     if (auto* shell = ash::Shell::Get()) {
       const auto& info = shell->display_manager()->GetDisplayInfo(display_id);

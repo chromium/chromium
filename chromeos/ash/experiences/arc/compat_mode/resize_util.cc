@@ -54,7 +54,7 @@ gfx::Size GetPossibleSizeInWorkArea(aura::Window* window,
   const float preferred_aspect_ratio = size.width() / size.height();
 
   auto workarea =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+      display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
 
   // Shrink workarea with the edge offset.
   workarea.Inset(gfx::Insets(kDisplayEdgeOffsetDp));

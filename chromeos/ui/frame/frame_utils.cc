@@ -40,7 +40,7 @@ int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
   // Check the frame first, as we allow a small area overlapping the contents
   // to be used for resize handles.
   views::Widget* widget = view->GetWidget();
-  bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  bool in_tablet_mode = display::Screen::Get()->InTabletMode();
   // Ignore the resize border when maximized or full screen or in (split view)
   // tablet mode.
   const bool has_resize_border =
@@ -102,7 +102,7 @@ bool ShouldUseRestoreFrame(const views::Widget* widget) {
 
 SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
   const bool is_primary_display_layout = chromeos::IsDisplayLayoutPrimary(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+      display::Screen::Get()->GetDisplayNearestWindow(window));
   if (left_top) {
     return is_primary_display_layout ? SnapDirection::kPrimary
                                      : SnapDirection::kSecondary;

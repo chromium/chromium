@@ -208,7 +208,7 @@ void HighlightBorderOverlay::UpdateLayerVisibilityAndBounds() {
   layer_bounds.Inset(-gfx::Insets(views::kHighlightBorderThickness));
 
   // TabletState might be nullptr in some tests.
-  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
   const auto window_state_type =
       window_->GetProperty(chromeos::kWindowStateTypeKey);
 

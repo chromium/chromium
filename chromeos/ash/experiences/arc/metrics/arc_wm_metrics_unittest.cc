@@ -41,8 +41,7 @@ class ArcWmMetricsTest : public ash::AshTestBase {
 
   void OnDisplayRotated() {
     arc_wm_metrics_->OnScreenCopiedBeforeRotation();
-    display::Display display =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+    display::Display display = display::Screen::Get()->GetPrimaryDisplay();
     ash::Shell::Get()->display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_90,
         display::Display::RotationSource::USER);

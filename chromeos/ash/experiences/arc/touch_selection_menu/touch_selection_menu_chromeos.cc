@@ -35,8 +35,7 @@ TouchSelectionMenuChromeOS::TouchSelectionMenuChromeOS(
     : views::TouchSelectionMenuViews(owner, client, context),
       action_(std::move(action)),
       display_id_(
-          display::Screen::GetScreen()->GetDisplayNearestWindow(context).id()) {
-}
+          display::Screen::Get()->GetDisplayNearestWindow(context).id()) {}
 
 void TouchSelectionMenuChromeOS::SetActionsForTesting(
     std::vector<arc::mojom::TextSelectionActionPtr> actions) {

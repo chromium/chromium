@@ -861,7 +861,7 @@ gfx::Point ArcImeService::GetDisplayOriginForFocusedWindow() const {
   if (g_override_display_origin.has_value()) {
     return g_override_display_origin.value();
   }
-  return display::Screen::GetScreen()
+  return display::Screen::Get()
       ->GetDisplayNearestWindow(focused_arc_window_)
       .bounds()
       .origin();

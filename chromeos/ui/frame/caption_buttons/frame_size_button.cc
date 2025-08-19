@@ -257,7 +257,7 @@ bool FrameSizeButton::IsMultitaskMenuShown() const {
 }
 
 void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
-  CHECK(!display::Screen::GetScreen()->InTabletMode());
+  CHECK(!display::Screen::Get()->InTabletMode());
   RecordMultitaskMenuEntryType(entry_type);
   // Owned by the bubble which contains this view. If there is an existing
   // bubble, it will be deactivated and then close and destroy itself.
@@ -278,7 +278,7 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
 }
 
 void FrameSizeButton::ToggleMultitaskMenu() {
-  CHECK(!display::Screen::GetScreen()->InTabletMode());
+  CHECK(!display::Screen::Get()->InTabletMode());
   if (!multitask_menu_widget_) {
     ShowMultitaskMenu(MultitaskMenuEntryType::kAccel);
   } else {
@@ -342,7 +342,7 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
   if (event->type() == ui::EventType::kGestureTapDown && delegate_->CanSnap() &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     StartLongTapDelayTimer(*event);
 
     // Go through FrameCaptionButton's handling so that the button gets pressed.
@@ -440,7 +440,7 @@ void FrameSizeButton::StartLongTapDelayTimer(const ui::LocatedEvent& event) {
 
 void FrameSizeButton::StartPieAnimation(base::TimeDelta duration,
                                         MultitaskMenuEntryType entry_type) {
-  if (display::Screen::GetScreen()->InTabletMode() || IsMultitaskMenuShown()) {
+  if (display::Screen::Get()->InTabletMode() || IsMultitaskMenuShown()) {
     return;
   }
 
@@ -457,7 +457,7 @@ void FrameSizeButton::AnimateButtonsToSnapMode() {
 
 void FrameSizeButton::SetButtonsToSnapMode(
     FrameSizeButtonDelegate::Animate animate) {
-  DCHECK(!display::Screen::GetScreen()->InTabletMode());
+  DCHECK(!display::Screen::Get()->InTabletMode());
   in_snap_mode_ = true;
 
   // When using a right-to-left layout the close button is left of the size

@@ -499,7 +499,7 @@ void ImmersiveFullscreenController::UpdateLocatedEventRevealedLock() {
     return;
   }
   UpdateLocatedEventRevealedLock(
-      nullptr, display::Screen::GetScreen()->GetCursorScreenPoint());
+      nullptr, display::Screen::Get()->GetCursorScreenPoint());
 }
 
 void ImmersiveFullscreenController::AcquireLocatedEventRevealedLock() {
@@ -706,7 +706,7 @@ bool ImmersiveFullscreenController::ShouldHandleGestureEvent(
   // closest screen ensures that the event is from a valid bezel (as opposed to
   // another screen in an extended desktop).
   gfx::Rect screen_bounds =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(location).bounds();
+      display::Screen::Get()->GetDisplayNearestPoint(location).bounds();
   return (!screen_bounds.Contains(location) &&
           location.y() < hit_bounds_in_screen.y() &&
           location.x() >= hit_bounds_in_screen.x() &&
