@@ -1545,6 +1545,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/bookmarks/bookmarks_apitest.cc",
       "../browser/extensions/api/browsing_data/browsing_data_test.cc",
       "../browser/extensions/api/cookies/cookies_apitest.cc",
+      "../browser/extensions/api/debugger/debugger_apitest.cc",
       "../browser/extensions/api/debugger/debugger_extension_apitest.cc",
       "../browser/extensions/api/declarative_content/declarative_content_apitest.cc",
       "../browser/extensions/api/declarative_content/request_content_script_apitest.cc",
@@ -1679,7 +1680,10 @@ source_set("platform_browser_tests") {
   }  # enable_extensions_core
 
   if (enable_pdf) {
-    deps += [ "//pdf:features" ]
+    deps += [
+      "//chrome/browser/pdf:pdf_extension_test_utils",
+      "//pdf:features",
+    ]
   }
 
   if (safe_browsing_mode != 0) {
@@ -4540,7 +4544,6 @@ if (!is_android) {
         "../browser/extensions/api/content_settings/content_settings_apitest.cc",
         "../browser/extensions/api/context_menus/context_menu_apitest.cc",
         "../browser/extensions/api/context_menus/extension_context_menu_browsertest.cc",
-        "../browser/extensions/api/debugger/debugger_apitest.cc",
         "../browser/extensions/api/declarative/declarative_apitest.cc",
         "../browser/extensions/api/desktop_capture/desktop_capture_apitest.cc",
         "../browser/extensions/api/downloads/downloads_api_browsertest.cc",

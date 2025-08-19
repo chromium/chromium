@@ -22,7 +22,6 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
-#include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/profile_util.h"
@@ -30,13 +29,10 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -55,6 +51,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
@@ -63,6 +60,13 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/test/scoped_feature_list.h"
@@ -80,6 +84,7 @@ namespace extensions {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Gets all URLs from the list of targets, with the ports removed.
 std::vector<std::string> GetTargetUrlsWithoutPorts(
     const base::Value::List& targets) {
@@ -91,6 +96,8 @@ std::vector<std::string> GetTargetUrlsWithoutPorts(
                : "<missing field>";
   });
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 }  // namespace
 
 using testing::ElementsAre;
@@ -105,9 +112,12 @@ class DebuggerApiTest : public ExtensionApiTest {
 
   // Run the attach function. If |expected_error| is not empty, then the
   // function should fail with the error. Otherwise, the function is expected
-  // to succeed.
-  testing::AssertionResult RunAttachFunction(const GURL& url,
-                                             const std::string& expected_error);
+  // to succeed. If `ignore_navigation_errors` then navigation errors will be
+  // ignored.
+  testing::AssertionResult RunAttachFunction(
+      const GURL& url,
+      const std::string& expected_error,
+      bool ignore_navigation_errors = false);
   testing::AssertionResult RunAttachFunction(
       const content::WebContents* web_contents,
       const std::string& expected_error);
@@ -160,9 +170,16 @@ void DebuggerApiTest::SetUpOnMainThread() {
 }
 
 testing::AssertionResult DebuggerApiTest::RunAttachFunction(
-    const GURL& url, const std::string& expected_error) {
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  return RunAttachFunction(GetActiveWebContents(), expected_error);
+    const GURL& url,
+    const std::string& expected_error,
+    bool ignore_navigation_errors) {
+  auto* web_contents = GetActiveWebContents();
+  bool navigation_result = NavigateToURL(web_contents, url);
+  // Most navigations should succeed, but some are allowed to fail.
+  if (!ignore_navigation_errors) {
+    EXPECT_TRUE(navigation_result);
+  }
+  return RunAttachFunction(web_contents, expected_error);
 }
 
 testing::AssertionResult DebuggerApiTest::RunAttachFunction(
@@ -264,6 +281,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   EXPECT_TRUE(RunAttachFunction(other_ext_url, std::string()));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/417785325): Enable this test on desktop Android when it
+// supports chrome.test.openFileUrl. See ChromeExtensionsAPIClient.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerAllowedOnFileUrlsWithFileAccess) {
   EXPECT_TRUE(RunExtensionTest("debugger_file_access",
@@ -272,10 +292,13 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
       << message_;
 }
 
+// TODO(crbug.com/417785325): Enable this test on desktop Android when it
+// supports chrome.test.openFileUrl. See ChromeExtensionsAPIClient.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnFileUrlsWithoutAccess) {
   EXPECT_TRUE(RunExtensionTest("debugger_file_access")) << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class TestInterstitialPage
     : public security_interstitials::SecurityInterstitialPage {
@@ -313,7 +336,8 @@ class TestInterstitialPage
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnRestrictedBlobUrls) {
   content::WebContents* web_contents = GetActiveWebContents();
-  EXPECT_TRUE(content::NavigateToURL(web_contents, GURL("chrome://settings")));
+  // Use chrome://version because it is webui on Win/Mac/Linux and Android.
+  EXPECT_TRUE(content::NavigateToURL(web_contents, GURL("chrome://version")));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   ASSERT_TRUE(content::ExecJs(web_contents, R"(
     var blob = new Blob([JSON.stringify({foo: 'bar'})], {
@@ -379,6 +403,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   EXPECT_TRUE(RunAttachFunction(web_contents, "Cannot attach to this target."));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/405218860): Port infobars to desktop Android.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   int tab_id =
       sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
@@ -503,6 +529,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   EXPECT_EQ(1u, manager1->infobars().size());
 }
 
+// TODO(crbug.com/405218860): Port infobars to desktop Android.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   int tab_id =
       sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
@@ -540,6 +567,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   EXPECT_EQ(0u, manager->infobars().size());
 }
 
+// TODO(crbug.com/405218860): Port infobars to desktop Android.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        InfoBarIsNotRemovedWhenAnotherDebuggerAttached) {
   const int tab_id1 =
@@ -657,6 +685,8 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
   raw_ptr<Profile, DanglingUntriaged> otr_profile_ = nullptr;
 };
 
+// TODO(crbug.com/405218860): Enable on desktop Android when multiple profiles
+// are supported.
 IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
   auto wc1 = CreateTabWithProfileAndNavigate(
       other_profile(),
@@ -695,6 +725,8 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
   }
 }
 
+// TODO(crbug.com/405218860): Enable on desktop Android when multiple profiles
+// are supported.
 IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
   auto wc1 = CreateTabWithProfileAndNavigate(
       other_profile(),
@@ -744,6 +776,7 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
   }
 }
 
+// TODO(crbug.com/405218860): Port infobars to desktop Android.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        InfoBarIsNotRemovedIfAttachAgainBeforeFiveSeconds) {
   int tab_id =
@@ -786,13 +819,16 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 
   EXPECT_EQ(1u, manager->infobars().size());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that policy blocked hosts supersede the `debugger`
 // permission. Regression test for crbug.com/1139156.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, TestDefaultPolicyBlockedHosts) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url("https://example.com/test");
-  EXPECT_TRUE(RunAttachFunction(url, std::string()));
+  // The file does not exist so ignore navigation errors.
+  EXPECT_TRUE(
+      RunAttachFunction(url, std::string(), /*ignore_navigation_errors=*/true));
   URLPatternSet default_blocked_hosts;
   default_blocked_hosts.AddPattern(
       URLPattern(URLPattern::SCHEME_HTTPS, "https://example.com/*"));
@@ -800,7 +836,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, TestDefaultPolicyBlockedHosts) {
       util::GetBrowserContextId(profile()), default_blocked_hosts,
       URLPatternSet());
 
-  EXPECT_TRUE(RunAttachFunction(url, "Cannot attach to this target."));
+  EXPECT_TRUE(RunAttachFunction(url, "Cannot attach to this target.",
+                                /*ignore_navigation_errors=*/true));
 }
 
 class DebuggerExtensionApiTest : public ExtensionApiTest {
@@ -813,18 +850,26 @@ class DebuggerExtensionApiTest : public ExtensionApiTest {
   }
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Desktop Android only supports manifest V3. This test is for MV2. See MV3 test
+// below.
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, Debugger) {
   ASSERT_TRUE(RunExtensionTest("debugger")) << message_;
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, DebuggerMv3) {
   ASSERT_TRUE(RunExtensionTest("debugger_mv3")) << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/417785325): Enable this test on desktop Android when it
+// supports chrome.test.openFileUrl. See ChromeExtensionsAPIClient.
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, ParentTargetPermissions) {
   // Run test with file access disabled.
   ASSERT_TRUE(RunExtensionTest("parent_target_permissions")) << message_;
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, ReloadAndResetHistory) {
   // Run test with file access disabled.
@@ -911,6 +956,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiOopifPdfTest, GetTargets) {
   EXPECT_EQ(urls[0], "http://127.0.0.1/pdf/test.pdf");
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+// TODO(crbug.com/405218860): Enable the rest of the tests on desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToBlob) {
   ASSERT_TRUE(RunExtensionTest("debugger_attach_to_blob_urls")) << message_;
@@ -1043,5 +1091,6 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
                        DebuggerCheckInnerUrl) {
   ASSERT_TRUE(RunExtensionTest("debugger_check_inner_url")) << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions
