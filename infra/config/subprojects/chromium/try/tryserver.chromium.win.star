@@ -325,6 +325,8 @@ try_.builder(
     # The size of the testing pool is limited.
     max_concurrent_builds = 3,
     tryjob = try_.job(
+        # TODO(https://crbug.com/433551587): win11-23h2->24h2 migration
+        experiment_percentage = 100,
         location_filters = [
             "sandbox/win/.+",
             "sandbox/policy/win/.+",

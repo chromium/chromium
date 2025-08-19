@@ -2,6 +2,7 @@
   "Win11 Tests x64": {
     "gtest_tests": [
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -18,6 +19,7 @@
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -34,6 +36,7 @@
         "test_id_prefix": "ninja://ui/accessibility:accessibility_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -51,6 +54,7 @@
         "use_isolated_scripts_api": true
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -67,6 +71,7 @@
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -83,6 +88,7 @@
         "test_id_prefix": "ninja://ui/aura:aura_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -99,6 +105,7 @@
         "test_id_prefix": "ninja://base:base_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -115,6 +122,7 @@
         "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -131,6 +139,7 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_fuzzer_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -150,6 +159,7 @@
         "args": [
           "--git-revision=${got_revision}"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -171,6 +181,7 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -187,6 +198,7 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -203,6 +215,7 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -219,6 +232,7 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -239,6 +253,7 @@
         "args": [
           "--gtest_filter=-*UsingRealWebcam*"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -255,6 +270,7 @@
         "test_id_prefix": "ninja://media/capture:capture_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -271,6 +287,7 @@
         "test_id_prefix": "ninja://media/cast:cast_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -287,6 +304,7 @@
         "test_id_prefix": "ninja://cc:cc_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -303,6 +321,7 @@
         "test_id_prefix": "ninja://chrome/test:chrome_app_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -319,6 +338,7 @@
         "test_id_prefix": "ninja://chrome/chrome_elf:chrome_elf_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -335,6 +355,7 @@
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -351,6 +372,7 @@
         "test_id_prefix": "ninja://components:components_browsertests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -368,6 +390,7 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -384,6 +407,7 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -401,6 +425,7 @@
         "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -417,6 +442,7 @@
         "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -433,6 +459,7 @@
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -449,6 +476,7 @@
         "test_id_prefix": "ninja://components/cronet:cronet_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -465,6 +493,7 @@
         "test_id_prefix": "ninja://components/cronet:cronet_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -481,6 +510,7 @@
         "test_id_prefix": "ninja://crypto:crypto_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -497,6 +527,7 @@
         "test_id_prefix": "ninja://chrome/test:delayloads_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -513,6 +544,7 @@
         "test_id_prefix": "ninja://device:device_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -529,6 +561,7 @@
         "test_id_prefix": "ninja://ui/display:display_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -545,6 +578,7 @@
         "test_id_prefix": "ninja://chrome/windows_services/elevated_tracing_service:elevated_tracing_service_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -562,6 +596,7 @@
       },
       {
         "ci_only": true,
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -578,6 +613,7 @@
         "test_id_prefix": "ninja://third_party/leveldatabase:env_chromium_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -594,6 +630,7 @@
         "test_id_prefix": "ninja://ui/events:events_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -610,6 +647,7 @@
         "test_id_prefix": "ninja://extensions:extensions_browsertests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -626,6 +664,7 @@
         "test_id_prefix": "ninja://extensions:extensions_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -642,6 +681,7 @@
         "test_id_prefix": "ninja://components/services/filesystem:filesystem_service_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -658,6 +698,7 @@
         "test_id_prefix": "ninja://testing/libfuzzer/tests:fuzzing_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -674,6 +715,7 @@
         "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -690,6 +732,7 @@
         "test_id_prefix": "ninja://chrome/credential_provider/test:gcp_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -706,6 +749,7 @@
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -722,6 +766,7 @@
         "test_id_prefix": "ninja://gin:gin_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -738,6 +783,7 @@
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -754,6 +800,7 @@
         "test_id_prefix": "ninja://gpu:gpu_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -770,6 +817,7 @@
         "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -786,6 +834,7 @@
         "test_id_prefix": "ninja://headless:headless_browsertests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -802,6 +851,7 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -818,6 +868,7 @@
         "test_id_prefix": "ninja://chrome/install_static:install_static_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -835,6 +886,7 @@
         "test_id_prefix": "ninja://chrome/installer/util:installer_util_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -852,6 +904,7 @@
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -868,6 +921,7 @@
         "test_id_prefix": "ninja://ipc:ipc_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -885,6 +939,7 @@
       },
       {
         "ci_only": true,
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -901,6 +956,7 @@
         "test_id_prefix": "ninja://third_party/leveldatabase:leveldb_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -917,6 +973,7 @@
         "test_id_prefix": "ninja://third_party/libjingle_xmpp:libjingle_xmpp_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -933,6 +990,7 @@
         "test_id_prefix": "ninja://third_party/liburlpattern:liburlpattern_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -949,6 +1007,7 @@
         "test_id_prefix": "ninja://media:media_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -965,6 +1024,7 @@
         "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -981,6 +1041,7 @@
         "test_id_prefix": "ninja://media/midi:midi_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -997,6 +1058,7 @@
         "test_id_prefix": "ninja://mojo:mojo_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1013,6 +1075,7 @@
         "test_id_prefix": "ninja://ui/native_theme:native_theme_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1029,6 +1092,7 @@
         "test_id_prefix": "ninja://net:net_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1045,6 +1109,7 @@
         "test_id_prefix": "ninja://chrome/notification_helper:notification_helper_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1061,6 +1126,7 @@
         "test_id_prefix": "ninja://pdf:pdf_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1077,6 +1143,7 @@
         "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1094,6 +1161,7 @@
       },
       {
         "ci_only": true,
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1110,6 +1178,7 @@
         "test_id_prefix": "ninja://third_party/pthreadpool:pthreadpool_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1126,6 +1195,7 @@
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1143,6 +1213,7 @@
         "test_id_prefix": "ninja://sandbox/win:sbox_integration_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1159,6 +1230,7 @@
         "test_id_prefix": "ninja://sandbox/win:sbox_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1175,6 +1247,7 @@
         "test_id_prefix": "ninja://sandbox/win:sbox_validation_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1191,6 +1264,7 @@
         "test_id_prefix": "ninja://services:services_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1208,6 +1282,7 @@
         "test_id_prefix": "ninja://chrome/installer/setup:setup_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1224,6 +1299,7 @@
         "test_id_prefix": "ninja://ui/shell_dialogs:shell_dialogs_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1240,6 +1316,7 @@
         "test_id_prefix": "ninja://skia:skia_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1256,6 +1333,7 @@
         "test_id_prefix": "ninja://ui/snapshot:snapshot_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1272,6 +1350,7 @@
         "test_id_prefix": "ninja://sql:sql_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1288,6 +1367,7 @@
         "test_id_prefix": "ninja://storage:storage_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1305,6 +1385,7 @@
         "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1321,6 +1402,7 @@
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1337,6 +1419,7 @@
         "test_id_prefix": "ninja://ui/touch_selection:ui_touch_selection_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1353,6 +1436,7 @@
         "test_id_prefix": "ninja://ui/tests:ui_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1369,6 +1453,7 @@
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1385,6 +1470,7 @@
         "test_id_prefix": "ninja://chrome/updater:updater_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1403,6 +1489,7 @@
         "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1422,6 +1509,7 @@
         "args": [
           "--git-revision=${got_revision}"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1443,6 +1531,7 @@
         "test_id_prefix": "ninja://ui/views/examples:views_examples_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1459,6 +1548,7 @@
         "test_id_prefix": "ninja://ui/views:views_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1475,6 +1565,7 @@
         "test_id_prefix": "ninja://components/viz:viz_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1491,6 +1582,7 @@
         "test_id_prefix": "ninja://chrome/browser/vr:vr_common_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1507,6 +1599,7 @@
         "test_id_prefix": "ninja://ui/wm:wm_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1523,6 +1616,7 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1539,6 +1633,7 @@
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1557,6 +1652,7 @@
     ],
     "isolated_scripts": [
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1580,6 +1676,7 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1609,6 +1706,7 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1637,6 +1735,7 @@
         "args": [
           "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1664,6 +1763,7 @@
         "args": [
           "--test-type=integration"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1686,6 +1786,7 @@
         "args": [
           "--test-type=integration"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1705,6 +1806,7 @@
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests_headless_shell/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1724,6 +1826,7 @@
         "args": [
           "--gtest-benchmark-name=components_perftests"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1743,6 +1846,7 @@
         "test_id_prefix": "ninja://components:components_perftests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1763,6 +1867,7 @@
         "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1783,6 +1888,7 @@
         "test_id_prefix": "ninja://third_party/flatbuffers:flatbuffers_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1811,6 +1917,7 @@
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1836,6 +1943,7 @@
         "test_id_prefix": "ninja://:headless_shell_wpt/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1853,6 +1961,7 @@
         "test_id_prefix": "ninja://chrome/test/mini_installer:mini_installer_tests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1872,7 +1981,7 @@
         "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
       },
       {
-        "experiment_percentage": 0,
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1895,6 +2004,7 @@
           "--passthrough",
           "--retry-limit=2"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1914,6 +2024,7 @@
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1937,6 +2048,7 @@
         "args": [
           "--gtest-benchmark-name=views_perftests"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [

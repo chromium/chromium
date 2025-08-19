@@ -538,6 +538,8 @@ ci.thin_tester(
             "chromium_win_rel_isolated_scripts",
         ],
         mixins = [
+            # TODO(https://crbug.com/433551587): win11-23h2->24h2 migration
+            "experiments",
             "x86-64",
             "win11-any",
             "isolate_profile_data",
