@@ -5,7 +5,7 @@
   RuntimeEnabled=SharedStorageAPI,
   Exposed=(Window, SharedStorageWorklet)
 ] interface SharedStorage {
-  [Exposed=SharedStorageWorklet] async iterable<DOMString, DOMString>;
+  [Exposed=SharedStorageWorklet] async_iterable<DOMString, DOMString>;
 
   [
     CallWith=ScriptState,
