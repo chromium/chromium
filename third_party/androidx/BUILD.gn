@@ -3279,8 +3279,8 @@ if (!limit_android_deps) {
       "//third_party/android_deps:*",
     ]
     deps = [
-      ":androidx_compose_foundation_foundation_java",
       ":androidx_compose_runtime_runtime_java",
+      ":androidx_compose_ui_ui_java",
       ":androidx_paging_paging_common_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
