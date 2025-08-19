@@ -109,8 +109,9 @@ void ParseY4MTags(const std::string& file_header,
         break;
       case 'F': {
         // If the token is "FRAME", it means we have finished with the header.
-        if (token[0] == 'R')
+        if (token[0] == 'R') {
           break;
+        }
         int fps_numerator, fps_denominator;
         ParseY4MRational(token, &fps_numerator, &fps_denominator);
         format.frame_rate = fps_numerator / fps_denominator;
@@ -132,8 +133,9 @@ void ParseY4MTags(const std::string& file_header,
         break;
     }
     // We're done if we have found a newline character right after the token.
-    if (file_header[blank_position] == '\n')
+    if (file_header[blank_position] == '\n') {
       break;
+    }
     index = blank_position + 1;
   }
   // Last video format semantic correctness check before sending it back.
@@ -280,8 +282,9 @@ bool MjpegFileParser::Initialize(VideoCaptureFormat* capture_format) {
   format.frame_size.set_width(result.frame_header.visible_width);
   format.frame_size.set_height(result.frame_header.visible_height);
   format.frame_rate = kMJpegFrameRate;
-  if (!format.IsValid())
+  if (!format.IsValid()) {
     return false;
+  }
   *capture_format = format;
   return true;
 }
@@ -297,8 +300,9 @@ base::span<const uint8_t> MjpegFileParser::GetNextFrame() {
   int frame_size = frame_size_ = result.image_size;
   current_byte_index_ += frame_size_;
   // Reset the pointer to play repeatedly.
-  if (current_byte_index_ >= mapped_file_->length())
+  if (current_byte_index_ >= mapped_file_->length()) {
     current_byte_index_ = first_frame_byte_index_;
+  }
   return buf_span.first(base::checked_cast<size_t>(frame_size));
 }
 
@@ -344,7 +348,7 @@ std::vector<uint8_t> FileVideoCaptureDevice::CropPTZRegion(
 
   const gfx::Size& frame_size = capture_format_.frame_size;
   uint32_t fourcc;
-  std::unique_ptr<uint8_t[]> jpeg_to_i420_buffer_;
+  base::HeapArray<uint8_t> jpeg_to_i420_buffer_;
   switch (capture_format_.pixel_format) {
     case PIXEL_FORMAT_MJPEG:
       // |libyuv::ConvertToI420| don't support cropping MJPG into different
@@ -353,9 +357,9 @@ std::vector<uint8_t> FileVideoCaptureDevice::CropPTZRegion(
             const size_t i420_buffer_size =
                 VideoFrame::AllocationSize(PIXEL_FORMAT_I420, frame_size);
             jpeg_to_i420_buffer_ =
-                std::make_unique<uint8_t[]>(i420_buffer_size);
+                base::HeapArray<uint8_t>::Uninit(i420_buffer_size);
 
-            uint8_t* dst_yp = jpeg_to_i420_buffer_.get();
+            uint8_t* dst_yp = jpeg_to_i420_buffer_.data();
             uint8_t* dst_up = UNSAFE_TODO(
                 dst_yp + VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, frame_size)
                              .GetArea());
@@ -378,7 +382,7 @@ std::vector<uint8_t> FileVideoCaptureDevice::CropPTZRegion(
           }()) {
         LOG(ERROR) << "Failed to convert MJPEG to i420 for ptz transform";
       }
-      frame = jpeg_to_i420_buffer_.get();
+      frame = jpeg_to_i420_buffer_.data();
       frame_buffer_size =
           VideoFrame::AllocationSize(PIXEL_FORMAT_I420, frame_size);
       *final_pixel_format = PIXEL_FORMAT_I420;
@@ -428,8 +432,9 @@ std::vector<uint8_t> FileVideoCaptureDevice::CropPTZRegion(
     return {};
   }
 
-  if (crop_size == frame_size)
+  if (crop_size == frame_size) {
     return crop_frame;
+  }
 
   // Scale cropped region to original size.
   const auto& scale_size = frame_size;
@@ -564,11 +569,13 @@ void FileVideoCaptureDevice::OnSetPhotoOptions(
     return;
   }
 
-  if (settings->has_torch && settings->torch)
+  if (settings->has_torch && settings->torch) {
     return;
+  }
 
-  if (settings->has_red_eye_reduction && settings->red_eye_reduction)
+  if (settings->has_red_eye_reduction && settings->red_eye_reduction) {
     return;
+  }
 
   if (settings->has_exposure_compensation || settings->has_exposure_time ||
       settings->has_color_temperature || settings->has_iso ||
@@ -610,8 +617,9 @@ void FileVideoCaptureDevice::OnAllocateAndStart(
   // either created a gmb or MappableSI.
   // VideoCaptureBufferType::kGpuMemoryBuffer will be renamed once all clients
   // are converted to use MappableSI.
-  if (params.buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer)
+  if (params.buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer) {
     video_capture_use_mappable_buffer_ = true;
+  }
 
   DCHECK(!file_parser_);
   file_parser_ = GetVideoFileParser(file_path_, &capture_format_);
@@ -650,8 +658,9 @@ void FileVideoCaptureDevice::OnStopAndDeAllocate() {
 
 void FileVideoCaptureDevice::OnCaptureTask() {
   DCHECK(capture_thread_.task_runner()->BelongsToCurrentThread());
-  if (!client_)
+  if (!client_) {
     return;
+  }
   base::AutoLock lock(lock_);
 
   // Give the captured frame to the client.
@@ -668,8 +677,9 @@ void FileVideoCaptureDevice::OnCaptureTask() {
   CHECK(!ptz_frame.empty());
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
-  if (first_ref_time_.is_null())
+  if (first_ref_time_.is_null()) {
     first_ref_time_ = current_time;
+  }
 
   if (video_capture_use_mappable_buffer_) {
     const gfx::Size& buffer_size = capture_format_.frame_size;
@@ -728,8 +738,9 @@ void FileVideoCaptureDevice::OnCaptureTask() {
 
     mojom::BlobPtr blob =
         RotateAndBlobify(ptz_frame.data(), ptz_frame.size(), ptz_format, 0);
-    if (!blob)
+    if (!blob) {
       continue;
+    }
 
     std::move(cb).Run(std::move(blob));
   }
@@ -743,8 +754,9 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     next_frame_time_ += frame_interval;
     // Don't accumulate any debt if we are lagging behind - just post next frame
     // immediately and continue as normal.
-    if (next_frame_time_ < current_time)
+    if (next_frame_time_ < current_time) {
       next_frame_time_ = current_time;
+    }
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
