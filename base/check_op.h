@@ -128,7 +128,7 @@ template <typename T>
   requires(!base::internal::SupportsOstreamOperator<const T&> &&
            base::internal::SupportsToString<const T&>)
 inline char* CheckOpValueStr(const T& v) {
-  // .ToString() may not return a std::string, e.g. blink::WTF::String.
+  // .ToString() may not return a std::string, e.g. blink::String.
   return CheckOpValueStr(v.ToString());
 }
 

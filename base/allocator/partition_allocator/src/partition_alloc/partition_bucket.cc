@@ -239,7 +239,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     // Note that this only affects allocations that are not served out of the
     // thread cache, but as a simple example the buffer partition in blink is
     // frequently used for large allocations (e.g. ArrayBuffer), and frequent,
-    // small ones (e.g. WTF::String), and does not have a thread cache.
+    // small ones (e.g. blink::String), and does not have a thread cache.
     ScopedUnlockGuard scoped_unlock{PartitionRootLock(root)};
 
     const size_t slot_size = PartitionRoot::GetDirectMapSlotSize(raw_size);

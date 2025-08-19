@@ -31,7 +31,7 @@
 // identified by a name (a C string literal) and a value, which can be an
 // integer, enum, floating point, boolean, string pointer or reference, or
 // std::unique_ptr<ConvertableToTraceFormat> compatible values. Additionally,
-// custom data types need to be supported, like time values or WTF::CString.
+// custom data types need to be supported, like time values.
 //
 // TraceArguments is a helper class used to store 0 to 2 named arguments
 // corresponding to an individual trace macro call. As efficiently as possible,
@@ -130,7 +130,7 @@
 // Finally, it is possible to support initialization from custom values by
 // specializing the TraceValue::Helper<> template struct as described below.
 //
-// This is how values of custom types like WTF::CString can be passed directly
+// This is how values of custom types like base::Time can be passed directly
 // to trace macros.
 
 namespace base {
