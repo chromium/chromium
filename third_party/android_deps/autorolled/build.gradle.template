@@ -39,6 +39,10 @@ dependencies {
     compileLatest 'io.grpc:grpc-stub:+'
     compileLatest 'io.grpc:grpc-protobuf-lite:+'
 
+    // A dependency of androidx.xr.runtime:runtime, but must be listed here in
+    // order to be auto-rolled and not manually rolled.
+    compileLatest "com.google.ar:impress:+"
+
     // Play Services & Firebase
     compileLatest "com.google.android.gms:play-services-auth-api-phone:+"
     compileLatest "com.google.android.gms:play-services-auth-base:+"
