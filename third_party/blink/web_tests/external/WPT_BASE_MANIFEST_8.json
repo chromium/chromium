@@ -3087,6 +3087,17 @@
       }
      }
     },
+    "css-highlight-api": {
+     "crashtests": {
+      "highlight-first-letter-float-crash.html": [
+       "ea3742954966931f3d42c075678ad6fdc35bb78a",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
+    },
     "css-images": {
      "cross-fade-legacy-2-crash.html": [
       "37321f88c1671de236e48341f14366e744c63f34",
@@ -311865,7 +311876,7 @@
        ]
       ],
       "semantics-005.html": [
-       "e4fe611c475d0caa28677019868cb54a1c9bb7b6",
+       "55c99f268aa5a188f7aed2d468aae31764466841",
        [
         null,
         [
@@ -421466,7 +421477,7 @@
        []
       ],
       "semantics-005-ref.html": [
-       "cf722603e1debb82566e1c2f7a0cfb27e609f194",
+       "c71d48b898fb7b282a9af7a2bccf175f32505ff5",
        []
       ]
      },
@@ -681329,7 +681340,7 @@
      },
      "scripts": {
       "cramped-001.html": [
-       "e03b4d968d2c21c87d52b60152aaff18a3fff728",
+       "678897e8daf24d7f0c8425debe99fcb2ec54a003",
        [
         null,
         {}
@@ -681748,6 +681759,71 @@
        ],
        "padding-002.html": [
         "c0fb95dc52600bfecdf8b227a17abee84c9f4913",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
+      "parsing": {
+       "math-depth-computed.html": [
+        "075bc6f36fd372ec1b5c8e7bb47089c17435a7b4",
+        [
+         null,
+         {}
+        ]
+       ],
+       "math-depth-invalid.html": [
+        "2220ef8f7610600447450ba1e8cf3791b8600482",
+        [
+         null,
+         {}
+        ]
+       ],
+       "math-depth-valid.html": [
+        "b44018736904078d1ab9e8d59632b03e8be13624",
+        [
+         null,
+         {}
+        ]
+       ],
+       "math-shift-computed.html": [
+        "f95214f37088d1dc2f4642a4f723af67addf2797",
+        [
+         null,
+         {}
+        ]
+       ],
+       "math-shift-invalid.html": [
+        "4fbd4b62e9d71eb09d611ae75f7b65050fe0cefb",
+        [
+         null,
+         {}
+        ]
+       ],
+       "math-shift-valid.html": [
+        "a9949930fc134a1a4f6bc39b30fccbc727696899",
+        [
+         null,
+         {}
+        ]
+       ],
+       "math-style-computed.html": [
+        "3bf9ee5823c07cbc1fd4438470d14cdb6dd06b4c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "math-style-invalid.html": [
+        "e5ce54953ae19ce3ab27fc8ef30d59f9e6ad17b3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "math-style-valid.html": [
+        "dd6a409e935c7005a6b7ea64dd8d8be6fad3cd83",
         [
          null,
          {}
