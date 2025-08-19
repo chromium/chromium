@@ -250,11 +250,6 @@ void FormStructureBrowserTest::SetUpCommandLine(
   command_line->AppendSwitchASCII(switches::kLoggingLevel, "2");
   command_line->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "us");
-  // SelectParserRelaxation affects the results from the test data because the
-  // test data has unclosed <select> tags. Since SelectParserRelaxation is not
-  // enabled by default, we are disabling it for this test.
-  command_line->AppendSwitchASCII("disable-blink-features",
-                                  "SelectParserRelaxation");
 }
 
 void FormStructureBrowserTest::SetUpOnMainThread() {

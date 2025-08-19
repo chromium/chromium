@@ -4,6 +4,5 @@
 
 [
     Exposed=Window,
-    HTMLConstructor,
-    RuntimeEnabled=CustomizableSelect
+    HTMLConstructor
 ] interface HTMLSelectedContentElement : HTMLElement {};

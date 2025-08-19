@@ -245,14 +245,6 @@ class CORE_EXPORT HTMLSelectElement final
   void CloneNonAttributePropertiesFrom(const Element&,
                                        NodeCloningData&) override;
 
-  // These are all utilities that check the relevant runtime flag, *plus* check
-  // that the SelectParserRelaxationOptOut origin trial is not enabled.
-  static bool SelectParserRelaxationEnabled(const Document* document);
-  static bool SelectParserRelaxationEnabled(const Node* node);
-  static bool CustomizableSelectEnabled(const Document* document);
-  static bool CustomizableSelectEnabled(const Node* node);
-  static bool CustomizableSelectEnabledNoDocument();
-
   // InnerElement and PopupRootAXObject should be called only if UsesMenuList().
   // InnerElement is the in-page <div> element in the UA shadowroot for MenuList
   // rendering. It is excluded from the layout tree if the author sets
@@ -379,7 +371,6 @@ class CORE_EXPORT HTMLSelectElement final
   FormControlState SaveFormControlState() const override;
   void RestoreFormControlState(const FormControlState&) override;
 
-  void ChildrenChanged(const ChildrenChange& change) override;
   bool ChildrenChangedAllChildrenRemovedNeedsList() const override;
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;

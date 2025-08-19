@@ -273,8 +273,6 @@ inline CSSIdentifierValue::CSSIdentifierValue(AppearanceValue e)
       value_id_ = CSSValueID::kTextarea;
       break;
     case AppearanceValue::kBaseSelect:
-      // This can't check for origin trials, unfortunately.
-      DCHECK(HTMLSelectElement::CustomizableSelectEnabledNoDocument());
       value_id_ = CSSValueID::kBaseSelect;
       break;
   }

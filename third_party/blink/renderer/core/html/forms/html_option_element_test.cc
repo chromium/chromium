@@ -81,10 +81,6 @@ TEST_F(HTMLOptionElementTest, DescendantOptionsInNestedSelects) {
 
   const VectorOf<HTMLOptionElement> empty;
 
-  EXPECT_TRUE(child_option->WasOptionInsertedCalled());
-  EXPECT_TRUE(datalist_child_option->WasOptionInsertedCalled());
-  EXPECT_TRUE(datalist_child_option_2->WasOptionInsertedCalled());
-  EXPECT_TRUE(child_div_option->WasOptionInsertedCalled());
   EXPECT_EQ(OptionListToVector(parent_select), empty);
   EXPECT_EQ(OptionCollectionToVector(parent_select), empty);
   VectorOf<HTMLOptionElement> expected1({child_option, datalist_child_option,
@@ -95,17 +91,12 @@ TEST_F(HTMLOptionElementTest, DescendantOptionsInNestedSelects) {
 
   child_select->remove();
   parents_datalist->AppendChild(child_select);
-  EXPECT_TRUE(child_option->WasOptionInsertedCalled());
-  EXPECT_TRUE(datalist_child_option->WasOptionInsertedCalled());
-  EXPECT_TRUE(datalist_child_option_2->WasOptionInsertedCalled());
-  EXPECT_TRUE(child_div_option->WasOptionInsertedCalled());
   EXPECT_EQ(OptionListToVector(parent_select), empty);
   EXPECT_EQ(OptionCollectionToVector(parent_select), empty);
   EXPECT_EQ(OptionListToVector(child_select), expected1);
   EXPECT_EQ(OptionCollectionToVector(child_select), expected1);
 
   child_option->remove();
-  EXPECT_FALSE(child_option->WasOptionInsertedCalled());
   EXPECT_EQ(OptionListToVector(parent_select), empty);
   EXPECT_EQ(OptionCollectionToVector(parent_select), empty);
   VectorOf<HTMLOptionElement> expected3(
@@ -114,7 +105,6 @@ TEST_F(HTMLOptionElementTest, DescendantOptionsInNestedSelects) {
   EXPECT_EQ(OptionCollectionToVector(child_select), expected3);
 
   datalist_child_option_2->remove();
-  EXPECT_FALSE(datalist_child_option_2->WasOptionInsertedCalled());
   EXPECT_EQ(OptionListToVector(parent_select), empty);
   EXPECT_EQ(OptionCollectionToVector(parent_select), empty);
   VectorOf<HTMLOptionElement> expected4(
@@ -123,7 +113,6 @@ TEST_F(HTMLOptionElementTest, DescendantOptionsInNestedSelects) {
   EXPECT_EQ(OptionCollectionToVector(child_select), expected4);
 
   datalist->remove();
-  EXPECT_FALSE(datalist_child_option->WasOptionInsertedCalled());
   EXPECT_EQ(OptionListToVector(parent_select), empty);
   EXPECT_EQ(OptionCollectionToVector(parent_select), empty);
   VectorOf<HTMLOptionElement> expected5({child_div_option});
@@ -131,7 +120,6 @@ TEST_F(HTMLOptionElementTest, DescendantOptionsInNestedSelects) {
   EXPECT_EQ(OptionCollectionToVector(child_select), expected5);
 
   child_select->AppendChild(datalist);
-  EXPECT_TRUE(datalist_child_option->WasOptionInsertedCalled());
   EXPECT_EQ(OptionListToVector(parent_select), empty);
   EXPECT_EQ(OptionCollectionToVector(parent_select), empty);
   VectorOf<HTMLOptionElement> expected6(

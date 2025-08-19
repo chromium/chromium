@@ -534,9 +534,6 @@ void HTMLButtonElement::DispatchBlurEvent(
 }
 
 HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
-  if (!HTMLSelectElement::CustomizableSelectEnabled(this)) {
-    return nullptr;
-  }
   if (auto* select = DynamicTo<HTMLSelectElement>(parentNode())) {
     if (select->SlottedButton() == this) {
       return select;

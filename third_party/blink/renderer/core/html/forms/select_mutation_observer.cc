@@ -27,7 +27,6 @@ namespace blink {
 
 SelectMutationObserver::SelectMutationObserver(HTMLSelectElement& select)
     : select_(select), observer_(MutationObserver::Create(this)) {
-  CHECK(HTMLSelectElement::CustomizableSelectEnabled(&select));
   DCHECK(select_->IsAppearanceBase());
 
   MutationObserverInit* init = MutationObserverInit::Create();

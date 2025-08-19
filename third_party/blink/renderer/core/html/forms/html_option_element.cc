@@ -421,24 +421,10 @@ HTMLDataListElement* HTMLOptionElement::OwnerDataListElement() const {
 }
 
 HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
-  if (HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
-    return nearest_ancestor_select_;
-  } else {
-    if (!parentNode()) {
-      return nullptr;
-    }
-    if (auto* select = DynamicTo<HTMLSelectElement>(*parentNode())) {
-      return select;
-    }
-    if (IsA<HTMLOptGroupElement>(*parentNode())) {
-      return DynamicTo<HTMLSelectElement>(parentNode()->parentNode());
-    }
-  }
-  return nullptr;
+  return nearest_ancestor_select_;
 }
 
 void HTMLOptionElement::SetOwnerSelectElement(HTMLSelectElement* select) {
-  CHECK(HTMLSelectElement::SelectParserRelaxationEnabled(this));
   DCHECK_EQ(select, HTMLSelectElement::NearestAncestorSelectNoNesting(*this));
   nearest_ancestor_select_ = select;
 }
@@ -504,39 +490,28 @@ HTMLElement* HTMLOptionElement::formForBinding() const {
 }
 
 void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
-  if (HTMLSelectElement::CustomizableSelectEnabled(this)) {
-    label_container_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-    label_container_->SetShadowPseudoId(
-        shadow_element_names::kOptionLabelContainer);
-    label_container_->setAttribute(html_names::kAriaHiddenAttr,
-                                   keywords::kTrue);
-    root.appendChild(label_container_);
+  label_container_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
+  label_container_->SetShadowPseudoId(
+      shadow_element_names::kOptionLabelContainer);
+  label_container_->setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
+  root.appendChild(label_container_);
 
-    auto* slot = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
-    slot->SetShadowPseudoId(shadow_element_names::kOptionSlot);
-    root.appendChild(slot);
-  }
+  auto* slot = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
+  slot->SetShadowPseudoId(shadow_element_names::kOptionSlot);
+  root.appendChild(slot);
 
   UpdateLabel();
 }
 
 void HTMLOptionElement::UpdateLabel() {
-  if (HTMLSelectElement::CustomizableSelectEnabled(this)) {
-    if (label_container_) {
-      label_container_->setTextContent(DisplayLabel());
-    }
-  } else if (ShadowRoot* root = UserAgentShadowRoot()) {
-    root->setTextContent(DisplayLabel());
+  if (label_container_) {
+    label_container_->setTextContent(DisplayLabel());
   }
 }
 
 Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     ContainerNode& insertion_point) {
   auto return_value = HTMLElement::InsertedInto(insertion_point);
-  if (!HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
-    CHECK(!HTMLSelectElement::CustomizableSelectEnabled(this));
-    return return_value;
-  }
 
   HTMLSelectElement* old_ancestor_select = nearest_ancestor_select_;
   HTMLSelectElement* new_ancestor_select =
@@ -553,10 +528,6 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
 
 void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
-  if (!HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
-    CHECK(!HTMLSelectElement::CustomizableSelectEnabled(this));
-    return;
-  }
 
   HTMLSelectElement* new_ancestor_select =
       HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
@@ -579,8 +550,7 @@ bool HTMLOptionElement::SpatialNavigationFocused() const {
 
 bool HTMLOptionElement::IsDisplayNone(bool ensure_style) {
   const ComputedStyle* style = GetComputedStyle();
-  if (!style && ensure_style &&
-      HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
+  if (!style && ensure_style) {
     style = EnsureComputedStyle();
   }
   return !style || style->Display() == EDisplay::kNone;
@@ -781,7 +751,6 @@ void HTMLOptionElement::ChooseOption(Event& event) {
   if (IsDisabledFormControl() || select->IsDisabledFormControl()) {
     return;
   }
-  CHECK(HTMLSelectElement::CustomizableSelectEnabled(this));
   CHECK(select->IsAppearanceBase() || select->PickerIsPopover());
   select->SelectOptionFromPopoverPickerOrBaseListbox(this);
   event.SetDefaultHandled();
@@ -789,7 +758,7 @@ void HTMLOptionElement::ChooseOption(Event& event) {
 
 void HTMLOptionElement::FinishParsingChildren() {
   HTMLElement::FinishParsingChildren();
-  if (HTMLSelectElement::CustomizableSelectEnabled(this) && Selected()) {
+  if (Selected()) {
     auto* select = OwnerSelectElement();
     if (select && !select->IsMultiple()) {
       select->UpdateAllSelectedcontents(this);
@@ -799,18 +768,9 @@ void HTMLOptionElement::FinishParsingChildren() {
 
 // static
 bool HTMLOptionElement::IsLabelContainerElement(const Element& element) {
-  if (!HTMLSelectElement::CustomizableSelectEnabled(&element)) {
-    return false;
-  }
   return IsA<HTMLOptionElement>(element.OwnerShadowHost()) &&
          element.ShadowPseudoId() ==
              shadow_element_names::kOptionLabelContainer;
-}
-
-bool HTMLOptionElement::WasOptionInsertedCalled() const {
-  return HTMLSelectElement::SelectParserRelaxationEnabled(this)
-             ? nearest_ancestor_select_
-             : was_option_inserted_called_;
 }
 
 }  // namespace blink

@@ -1455,9 +1455,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id == CSSValueID::kProgressBar ||
               value_id == CSSValueID::kSearchfield ||
               value_id == CSSValueID::kTextfield ||
-              value_id == CSSValueID::kTextarea) ||
-             /* This can't check for origin trials, unfortunately. */
-             (HTMLSelectElement::CustomizableSelectEnabledNoDocument() &&
+              value_id == CSSValueID::kTextarea ||
               value_id == CSSValueID::kBaseSelect) ||
              (RuntimeEnabledFeatures::
                   NonStandardAppearanceValueSliderVerticalEnabled() &&

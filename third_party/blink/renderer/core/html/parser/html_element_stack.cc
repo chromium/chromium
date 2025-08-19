@@ -44,17 +44,12 @@ using HTMLTag = html_names::HTMLTag;
 
 namespace {
 
-inline bool IsScopeMarkerTag(const HTMLTag& tag, ContainerNode* node) {
+inline bool IsScopeMarkerTag(const HTMLTag& tag) {
   if (tag == HTMLTag::kCaption || tag == HTMLTag::kApplet ||
       tag == HTMLTag::kHTML || tag == HTMLTag::kMarquee ||
       tag == HTMLTag::kObject || tag == HTMLTag::kTable ||
-      tag == HTMLTag::kTd || tag == HTMLTag::kTemplate || tag == HTMLTag::kTh) {
-    return true;
-  }
-  // TODO(crbug.com/40146374): the `node` parameter can be removed once the
-  // SelectParserRelaxationOptOut flag is removed.
-  if (tag == HTMLTag::kSelect &&
-      HTMLSelectElement::SelectParserRelaxationEnabled(node)) {
+      tag == HTMLTag::kTd || tag == HTMLTag::kTemplate || tag == HTMLTag::kTh ||
+      tag == HTMLTag::kSelect) {
     return true;
   }
   return false;
@@ -80,7 +75,7 @@ inline bool IsScopeMarkerNonHTML(HTMLStackItem* item) {
 
 inline bool IsScopeMarker(HTMLStackItem* item) {
   if (item->IsHTMLNamespace()) {
-    return IsScopeMarkerTag(item->GetHTMLTag(), item->GetNode()) ||
+    return IsScopeMarkerTag(item->GetHTMLTag()) ||
            item->IsDocumentFragmentNode();
   }
   return IsScopeMarkerNonHTML(item);
@@ -88,7 +83,7 @@ inline bool IsScopeMarker(HTMLStackItem* item) {
 
 inline bool IsListItemScopeMarker(HTMLStackItem* item) {
   if (item->IsHTMLNamespace()) {
-    return IsScopeMarkerTag(item->GetHTMLTag(), item->GetNode()) ||
+    return IsScopeMarkerTag(item->GetHTMLTag()) ||
            item->IsDocumentFragmentNode() ||
            item->GetHTMLTag() == HTMLTag::kOl ||
            item->GetHTMLTag() == HTMLTag::kUl;
@@ -148,16 +143,11 @@ inline bool IsForeignContentScopeMarker(HTMLStackItem* item) {
 
 inline bool IsButtonScopeMarker(HTMLStackItem* item) {
   if (item->IsHTMLNamespace()) {
-    return IsScopeMarkerTag(item->GetHTMLTag(), item->GetNode()) ||
+    return IsScopeMarkerTag(item->GetHTMLTag()) ||
            item->IsDocumentFragmentNode() ||
            item->GetHTMLTag() == HTMLTag::kButton;
   }
   return IsScopeMarkerNonHTML(item);
-}
-
-inline bool IsSelectScopeMarker(HTMLStackItem* item) {
-  return !item->HasTagName(html_names::kOptgroupTag) &&
-         !item->HasTagName(html_names::kOptionTag);
 }
 
 }  // namespace
@@ -474,18 +464,6 @@ bool HTMLElementStack::InTableScope(html_names::HTMLTag tag) const {
 
 bool HTMLElementStack::InButtonScope(html_names::HTMLTag tag) const {
   return InScopeCommon<IsButtonScopeMarker>(top_.Get(), tag);
-}
-
-bool HTMLElementStack::InSelectScope(html_names::HTMLTag tag) const {
-  // IsSelectScopeMarker has rigid checks about having <option>s or
-  // <optgroup>s between the top and the <select> which don't hold
-  // true anymore when permitting other tags when SelectParserRelaxation is
-  // enabled.
-  if (HTMLSelectElement::SelectParserRelaxationEnabled(root_node_)) {
-    return InScopeCommon<IsScopeMarker>(top_.Get(), tag);
-  } else {
-    return InScopeCommon<IsSelectScopeMarker>(top_.Get(), tag);
-  }
 }
 
 bool HTMLElementStack::HasTemplateInHTMLScope() const {

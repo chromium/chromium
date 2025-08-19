@@ -4723,11 +4723,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
                           child_recalc_context);
     }
 
-    if (HTMLSelectElement::CustomizableSelectEnabled(this)) {
-      if (DynamicTo<HTMLOptionElement>(this)) {
-        UpdatePseudoElement(kPseudoIdCheckMark, child_change,
-                            child_recalc_context);
-      }
+    if (DynamicTo<HTMLOptionElement>(this)) {
+      UpdatePseudoElement(kPseudoIdCheckMark, child_change,
+                          child_recalc_context);
     }
 
     UpdatePseudoElement(kPseudoIdBefore, child_change, child_recalc_context);
@@ -4755,11 +4753,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   if (child_change.TraversePseudoElements(*this)) {
     UpdatePseudoElement(kPseudoIdAfter, child_change, child_recalc_context);
 
-    if (HTMLSelectElement::CustomizableSelectEnabled(this)) {
-      if (IsA<HTMLSelectElement>(this)) {
-        UpdatePseudoElement(kPseudoIdPickerIcon, child_change,
-                            child_recalc_context);
-      }
+    if (IsA<HTMLSelectElement>(this)) {
+      UpdatePseudoElement(kPseudoIdPickerIcon, child_change,
+                          child_recalc_context);
     }
 
     if (RuntimeEnabledFeatures::HTMLInterestForInterestHintPseudoEnabled(

@@ -110,11 +110,6 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void SetMultiSelectFocusedState(bool);
   bool IsMultiSelectFocused() const;
 
-  void SetWasOptionInsertedCalled(bool flag) {
-    was_option_inserted_called_ = flag;
-  }
-  bool WasOptionInsertedCalled() const;
-
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 

@@ -1674,11 +1674,6 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       return true;
     }
     case CSSSelector::kPseudoPicker:
-      /* This can't check for origin trials, unfortunately. */
-      if (!HTMLSelectElement::CustomizableSelectEnabledNoDocument()) {
-        return false;
-      }
-      [[fallthrough]];
     case CSSSelector::kPseudoDir:
     case CSSSelector::kPseudoState: {
       const CSSParserToken& ident = stream.Peek();

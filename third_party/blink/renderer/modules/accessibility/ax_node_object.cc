@@ -1023,14 +1023,12 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
 
   // Don't ignored legends, because JAWS uses them to determine redundant text.
   if (IsA<HTMLLegendElement>(node)) {
-    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-      // When a <legend> is used inside an <optgroup>, it is used to set the
-      // name of the <optgroup> and shouldn't be redundantly repeated.
-      for (auto* ancestor = node->parentNode(); ancestor;
-           ancestor = ancestor->parentNode()) {
-        if (IsA<HTMLOptGroupElement>(ancestor)) {
-          return kIgnoreObject;
-        }
+    // When a <legend> is used inside an <optgroup>, it is used to set the
+    // name of the <optgroup> and shouldn't be redundantly repeated.
+    for (auto* ancestor = node->parentNode(); ancestor;
+         ancestor = ancestor->parentNode()) {
+      if (IsA<HTMLOptGroupElement>(ancestor)) {
+        return kIgnoreObject;
       }
     }
     return kIncludeObject;
@@ -1256,7 +1254,6 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
       // them aren't ignored, then they will make it into the mappings. The
       // button can't be pruned from the tree because it is used to compute the
       // value of the MenuList.
-      if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
         for (const AXObject* ancestor = this;
              ancestor && ancestor != ax_menu_list;
              ancestor = ancestor->ParentObject()) {
@@ -1264,7 +1261,6 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
             return true;
           }
         }
-      }
 
       return ax_menu_list->IsIgnored();
     }
@@ -2430,8 +2426,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (ParentObjectIfPresent() && ParentObjectIfPresent()->RoleValue() ==
                                      ax::mojom::blink::Role::kComboBoxSelect) {
-    if (!RuntimeEnabledFeatures::CustomizableSelectEnabled() ||
-        HTMLSelectElement::IsPopoverPickerElement(GetNode())) {
+    if (HTMLSelectElement::IsPopoverPickerElement(GetNode())) {
       return ax::mojom::blink::Role::kMenuListPopup;
     }
   }
@@ -4616,8 +4611,7 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     // If the author replaced the button by providing their own <button> on a
     // customizable select, then use the text inside that button:
     // https://github.com/openui/open-ui/issues/1117
-    if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
-        select_element->IsAppearanceBase()) {
+    if (select_element->IsAppearanceBase()) {
       if (auto* button = select_element->SlottedButton()) {
         if (AXObject* button_object = AXObjectCache().Get(button)) {
           return button_object->TextFromDescendants(visited, nullptr, false);
@@ -6349,12 +6343,9 @@ bool AXNodeObject::CanHaveChildren() const {
   bool result = !GetElement() || AXObject::CanHaveChildren(*GetElement());
   switch (native_role_) {
     case ax::mojom::blink::Role::kListBoxOption:
-      if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-        // When CustomizableSelect is enabled, then options are allowed to have
-        // children as per the new content model.
-        break;
-      }
-      [[fallthrough]];
+      // Option elements are allowed to have children according to the content
+      // model in the HTML spec.
+      break;
     case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kMenuItem:
     case ax::mojom::blink::Role::kMenuItemCheckBox:

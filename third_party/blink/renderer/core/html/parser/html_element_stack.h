@@ -122,7 +122,6 @@ class HTMLElementStack {
   bool InListItemScope(html_names::HTMLTag tag) const;
   bool InTableScope(html_names::HTMLTag tag) const;
   bool InButtonScope(html_names::HTMLTag tag) const;
-  bool InSelectScope(html_names::HTMLTag tag) const;
   bool InParsePartsScope() const {
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled() || !parse_parts_count_);
     return parse_parts_count_;

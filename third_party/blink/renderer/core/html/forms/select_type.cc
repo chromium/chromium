@@ -123,7 +123,6 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
  public:
   explicit PopoverElementForAppearanceBase(Document& document)
       : HTMLDivElement(document) {
-    CHECK(HTMLSelectElement::CustomizableSelectEnabled(&document));
     SetHasCustomStyleCallbacks();
   }
 
@@ -609,39 +608,32 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
   inner_element_->appendChild(Text::Create(doc, g_empty_string));
   root.AppendChild(inner_element_);
 
-  if (HTMLSelectElement::CustomizableSelectEnabled(select_)) {
-    button_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
-    button_slot_->SetIdAttribute(shadow_element_names::kSelectButton);
-    root.appendChild(button_slot_);
+  button_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
+  button_slot_->SetIdAttribute(shadow_element_names::kSelectButton);
+  root.appendChild(button_slot_);
 
-    popover_ = MakeGarbageCollected<PopoverElementForAppearanceBase>(doc);
-    popover_->SetShadowPseudoId(shadow_element_names::kPickerSelect);
-    root.appendChild(popover_);
-    popover_->setAttribute(html_names::kPopoverAttr, AtomicString("auto"));
+  popover_ = MakeGarbageCollected<PopoverElementForAppearanceBase>(doc);
+  popover_->SetShadowPseudoId(shadow_element_names::kPickerSelect);
+  root.appendChild(popover_);
+  popover_->setAttribute(html_names::kPopoverAttr, AtomicString("auto"));
 
-    popover_options_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
-    popover_options_slot_->SetIdAttribute(
-        shadow_element_names::kSelectPopoverOptions);
-    popover_->AppendChild(popover_options_slot_);
+  popover_options_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
+  popover_options_slot_->SetIdAttribute(
+      shadow_element_names::kSelectPopoverOptions);
+  popover_->AppendChild(popover_options_slot_);
 
-    autofill_popover_ =
-        MakeGarbageCollected<HTMLSelectElement::SelectAutofillPreviewElement>(
-            doc, select_);
-    autofill_popover_->SetShadowPseudoId(
-        shadow_element_names::kSelectAutofillPreview);
-    root.appendChild(autofill_popover_);
-    autofill_popover_->setAttribute(html_names::kPopoverAttr,
-                                    keywords::kManual);
+  autofill_popover_ =
+      MakeGarbageCollected<HTMLSelectElement::SelectAutofillPreviewElement>(
+          doc, select_);
+  autofill_popover_->SetShadowPseudoId(
+      shadow_element_names::kSelectAutofillPreview);
+  root.appendChild(autofill_popover_);
+  autofill_popover_->setAttribute(html_names::kPopoverAttr, keywords::kManual);
 
-    autofill_popover_text_ = MakeGarbageCollected<HTMLDivElement>(doc);
-    autofill_popover_text_->SetShadowPseudoId(
-        shadow_element_names::kSelectAutofillPreviewText);
-    autofill_popover_->appendChild(autofill_popover_text_);
-  } else {
-    option_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
-    option_slot_->SetIdAttribute(shadow_element_names::kSelectOptions);
-    root.appendChild(option_slot_);
-  }
+  autofill_popover_text_ = MakeGarbageCollected<HTMLDivElement>(doc);
+  autofill_popover_text_->SetShadowPseudoId(
+      shadow_element_names::kSelectAutofillPreviewText);
+  autofill_popover_->appendChild(autofill_popover_text_);
 }
 
 void MenuListSelectType::ManuallyAssignSlots() {
@@ -668,20 +660,12 @@ void MenuListSelectType::ManuallyAssignSlots() {
     }
   }
 
-  if (HTMLSelectElement::CustomizableSelectEnabled(select_)) {
-    CHECK(button_slot_);
-    button_slot_->Assign(first_button);
-    popover_options_slot_->Assign(all_children_except_first_button);
-  } else {
-    CHECK(option_slot_);
-    option_slot_->Assign(option_nodes);
-  }
+  CHECK(button_slot_);
+  button_slot_->Assign(first_button);
+  popover_options_slot_->Assign(all_children_except_first_button);
 }
 
 HTMLButtonElement* MenuListSelectType::SlottedButton() const {
-  if (!HTMLSelectElement::CustomizableSelectEnabled(select_)) {
-    return nullptr;
-  }
   // This code may be called while slot recalc is forbidden, so instead of
   // looking at button_slot_'s FirstAssignedNode, just return the
   // firstElementChild which will be the same thing.
@@ -689,14 +673,10 @@ HTMLButtonElement* MenuListSelectType::SlottedButton() const {
 }
 
 HTMLElement* MenuListSelectType::PopoverPickerElement() const {
-  CHECK(HTMLSelectElement::CustomizableSelectEnabled(select_) || !popover_);
   return popover_;
 }
 
 bool MenuListSelectType::IsAppearanceBase() const {
-  if (!HTMLSelectElement::CustomizableSelectEnabled(select_)) {
-    return false;
-  }
   DCHECK(select_);
   if (auto* style = select_->GetComputedStyle()) {
     return style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
@@ -710,7 +690,6 @@ bool MenuListSelectType::IsAppearanceBasePicker() const {
     // before the ::picker is allowed to have appearance:base-select.
     return false;
   }
-  CHECK(HTMLSelectElement::CustomizableSelectEnabled(select_));
   DCHECK(popover_);
   if (auto* style = popover_->GetComputedStyle()) {
     bool is_base_appearance =
@@ -724,9 +703,6 @@ bool MenuListSelectType::IsAppearanceBasePicker() const {
 }
 
 bool MenuListSelectType::PickerIsPopover() const {
-  if (!HTMLSelectElement::CustomizableSelectEnabled(select_)) {
-    return false;
-  }
   if (select_->IsMultiple()) {
     if (!RuntimeEnabledFeatures::CustomizableSelectMultiplePopupEnabled()) {
       return false;
@@ -844,8 +820,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
 }
 
 void MenuListSelectType::HidePopup(SelectPopupHideBehavior behavior) {
-  if (HTMLSelectElement::CustomizableSelectEnabled(select_) && popover_ &&
-      popover_->popoverOpen()) {
+  if (popover_ && popover_->popoverOpen()) {
     bool normal_behavior = behavior == SelectPopupHideBehavior::kNormal;
     popover_->HidePopoverInternal(
         /*invoker=*/nullptr,
@@ -870,7 +845,6 @@ void MenuListSelectType::PopupDidHide() {
 }
 
 bool MenuListSelectType::PopupIsVisible() const {
-  if (HTMLSelectElement::CustomizableSelectEnabled(select_)) {
     // This is called during style recalc, so we can't check
     // IsAppearanceBasePicker to determine which picker to look at.
     bool popover_open = popover_->popoverOpen();
@@ -878,8 +852,6 @@ bool MenuListSelectType::PopupIsVisible() const {
         << " The base appearance and native pickers should never both be open "
            "at the same time.";
     return popover_open || native_popup_is_visible_;
-  }
-  return native_popup_is_visible_;
 }
 
 void MenuListSelectType::SetNativePopupIsVisible(bool popup_is_visible) {
@@ -1913,10 +1885,8 @@ void ListBoxSelectType::CreateShadowSubtree(ShadowRoot& root) {
 void ListBoxSelectType::ManuallyAssignSlots() {
   VectorOf<Node> option_nodes;
   for (Node& child : NodeTraversal::ChildrenOf(*select_)) {
-    if (child.IsSlotable() &&
-        (CanAssignToSelectSlot(child) ||
-         (HTMLSelectElement::SelectParserRelaxationEnabled(select_) &&
-          CanAssignToCustomizableSelectSlot(child)))) {
+    if (child.IsSlotable() && (CanAssignToSelectSlot(child) ||
+                               CanAssignToCustomizableSelectSlot(child))) {
       option_nodes.push_back(child);
     }
   }

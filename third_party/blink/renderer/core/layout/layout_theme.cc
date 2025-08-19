@@ -205,9 +205,6 @@ AppearanceValue LayoutTheme::AdjustAppearanceWithElementType(
     case AppearanceValue::kMediaControl:
       return appearance;
     case AppearanceValue::kBaseSelect: {
-      if (!HTMLSelectElement::CustomizableSelectEnabled(element)) {
-        return auto_appearance;
-      }
       bool base_appearance_allowed = false;
       if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
         base_appearance_allowed =

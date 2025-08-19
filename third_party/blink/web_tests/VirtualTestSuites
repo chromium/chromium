@@ -516,40 +516,6 @@
     ]
   },
   {
-    "prefix": "customizable-select-disabled",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "accessibility/native-select-activedescendant.html",
-      "accessibility/role-attribute.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-computed-style.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-horizontal.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-vertical.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-horizontal.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-vertical-lr.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-vertical-rl.optional.html",
-      "external/wpt/html/infrastructure/common-dom-interfaces/collections/htmloptionscollection.html",
-      "external/wpt/html/semantics/forms/the-select-element",
-      "external/wpt/html/syntax/parsing",
-      "fast/forms/color-scheme/select",
-      "fast/forms/select",
-      "fast/forms/select-popup",
-      "fast/parser/inselect-tokenization.html",
-      "html5lib/generated"
-    ],
-    "args": [
-      "--disable-features=CustomizableSelect,SelectParserRelaxation"
-    ],
-    "expires": "Oct 1, 2025",
-    "owners": [
-      "jarhar@chromium.org",
-      "dom-dev@google.com"
-    ]
-  },
-  {
     "prefix": "customizable-select-in-page-disabled",
     "platforms": [
       "Linux"
@@ -3043,64 +3009,6 @@
       "guidou@chromium.org"
     ],
     "expires": "Nov 11, 2025"
-  },
-  "select-parser-relaxation is needed in addition to",
-  "customizable-select-disabled because we might launch parser changes first.",
-  {
-    "prefix": "select-parser-relaxation",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "accessibility/native-select-activedescendant.html",
-      "accessibility/role-attribute.html",
-      "fast/events/select-element.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-computed-style.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-horizontal.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-vertical.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-horizontal.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-vertical-lr.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-vertical-rl.optional.html",
-      "external/wpt/html/infrastructure/common-dom-interfaces/collections/htmloptionscollection.html",
-      "external/wpt/html/semantics/forms/the-select-element",
-      "external/wpt/html/syntax/parsing",
-      "fast/forms/color-scheme/select",
-      "fast/forms/select",
-      "fast/forms/select-popup",
-      "fast/parser/inselect-tokenization.html",
-      "html5lib/generated"
-    ],
-    "args": [
-      "--enable-features=SelectParserRelaxation",
-      "--disable-features=CustomizableSelect"
-    ],
-    "expires": "Oct 1, 2025",
-    "owners": [
-      "jarhar@chromium.org",
-      "dom-dev@google.com"
-    ]
-  },
-  "This verifies that the origin trial opt-out for select-parser-relaxation",
-  "works, even when other flags are explicitly enabled. Note that there are a",
-  "number of other flags that have `depends_on` SelectParserRelaxation. All",
-  "should be manually enabled in this virtual suite.",
-  {
-    "prefix": "select-parser-relaxation-opt-out",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/html/semantics/forms/the-select-element",
-      "external/wpt/html/syntax/parsing"
-    ],
-    "args": [
-      "--enable-features=SelectParserRelaxationOptOut,SelectParserRelaxation,CustomizableSelect,SelectListBoxSlotAnything,InputClosesSelect"
-    ],
-    "expires": "Oct 1, 2025",
-    "owners": [
-      "masonf@chromium.org",
-      "dom-dev@google.com"
-    ]
   },
   {
     "prefix": "shadow-realm-enabled",

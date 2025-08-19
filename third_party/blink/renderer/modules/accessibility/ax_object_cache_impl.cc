@@ -1332,15 +1332,9 @@ bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
   DCHECK(slot.SupportsAssignment());
 
   if (slot.IsInUserAgentShadowRoot() &&
-      IsA<HTMLSelectElement>(slot.OwnerShadowHost())) {
-    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-      if (slot.GetIdAttribute() ==
-          shadow_element_names::kSelectPopoverOptions) {
-        return true;
-      }
-    } else if (slot.GetIdAttribute() == shadow_element_names::kSelectOptions) {
-      return true;
-    }
+      IsA<HTMLSelectElement>(slot.OwnerShadowHost()) &&
+      slot.GetIdAttribute() == shadow_element_names::kSelectPopoverOptions) {
+    return true;
   }
 
   // HasAssignedNodesNoRecalc() will return false when  the slot is not in the
@@ -4306,15 +4300,13 @@ void AXObjectCacheImpl::SetMenuListOptionsBounds(
 
 const Vector<gfx::Rect>* AXObjectCacheImpl::GetOptionsBounds(
     const AXObject& ax_menu_list) const {
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    // Customizable select does not render in a special popup document and does
-    // not need to supply bounding boxes via options_bounds_.
-    HTMLSelectElement* select = To<HTMLSelectElement>(ax_menu_list.GetNode());
-    if (select->IsAppearanceBasePicker()) {
-      CHECK(!current_menu_list_axid_);
-      CHECK(options_bounds_.empty());
-      return nullptr;
-    }
+  // Customizable select does not render in a special popup document and does
+  // not need to supply bounding boxes via options_bounds_.
+  HTMLSelectElement* select = To<HTMLSelectElement>(ax_menu_list.GetNode());
+  if (select->IsAppearanceBasePicker()) {
+    CHECK(!current_menu_list_axid_);
+    CHECK(options_bounds_.empty());
+    return nullptr;
   }
 
   if (!current_menu_list_axid_ ||
