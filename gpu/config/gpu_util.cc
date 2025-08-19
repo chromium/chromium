@@ -121,27 +121,6 @@ inline D3D11FeatureLevel ConvertToHistogramD3D11FeatureLevel(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-GpuFeatureStatus GetAndroidSurfaceControlFeatureStatus(
-    const std::set<int>& blocklisted_features,
-    const GpuPreferences& gpu_preferences) {
-#if !BUILDFLAG(IS_ANDROID)
-  return kGpuFeatureStatusDisabled;
-#else
-  if (!gpu_preferences.enable_android_surface_control)
-    return kGpuFeatureStatusDisabled;
-
-  // SurfaceControl as used by Chrome requires using GpuFence for
-  // synchronization, this is based on Android native fence sync
-  // support. If that is unavailable, i.e. on emulator or SwiftShader,
-  // don't claim SurfaceControl support.
-  if (!gl::GetDefaultDisplayEGL()->IsAndroidNativeFenceSyncSupported())
-    return kGpuFeatureStatusDisabled;
-
-  DCHECK(gfx::SurfaceControl::IsSupported());
-  return kGpuFeatureStatusEnabled;
-#endif
-}
-
 GpuFeatureStatus GetVulkanFeatureStatus(
     const std::set<int>& blocklisted_features,
     const GpuPreferences& gpu_preferences) {
@@ -458,8 +437,6 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
-      kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN] =
@@ -495,8 +472,6 @@ GpuFeatureInfo ComputeGpuFeatureInfoForSoftwareGL() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       kGpuFeatureStatusSoftware;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
-      kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN] =
@@ -601,9 +576,6 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE] =
       GetAcceleratedVideoEncodeFeatureStatus(blocklisted_features,
                                              use_software_gl);
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
-      GetAndroidSurfaceControlFeatureStatus(blocklisted_features,
-                                            gpu_preferences);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] =
       GetGLFeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN] =

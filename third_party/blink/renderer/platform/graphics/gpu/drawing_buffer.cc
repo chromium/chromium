@@ -2203,14 +2203,6 @@ bool DrawingBuffer::ShouldUseChromiumImage() {
   if (chromium_image_usage_ != kAllowChromiumImage) {
     return false;
   }
-#if BUILDFLAG(IS_ANDROID)
-  if (ContextProvider()
-          ->GetGpuFeatureInfo()
-          .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] !=
-      gpu::kGpuFeatureStatusEnabled) {
-    return false;
-  }
-#endif
   if (RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
     return true;
   }

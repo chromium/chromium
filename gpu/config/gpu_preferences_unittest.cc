@@ -59,8 +59,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.enable_threaded_texture_mailboxes,
             right.enable_threaded_texture_mailboxes);
   EXPECT_EQ(left.gl_shader_interm_output, right.gl_shader_interm_output);
-  EXPECT_EQ(left.enable_android_surface_control,
-            right.enable_android_surface_control);
   EXPECT_EQ(left.perform_graphite_precompilation,
             right.perform_graphite_precompilation);
   EXPECT_EQ(left.enable_gpu_service_logging, right.enable_gpu_service_logging);
@@ -154,7 +152,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(disable_gpu_shader_disk_cache, true)
     GPU_PREFERENCES_FIELD(enable_threaded_texture_mailboxes, true)
     GPU_PREFERENCES_FIELD(gl_shader_interm_output, true)
-    GPU_PREFERENCES_FIELD(enable_android_surface_control, true)
     GPU_PREFERENCES_FIELD(perform_graphite_precompilation, true)
     GPU_PREFERENCES_FIELD(enable_gpu_service_logging, true)
     GPU_PREFERENCES_FIELD(enable_gpu_service_tracing, true)
@@ -237,7 +234,6 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_BOOL(disable_gpu_shader_disk_cache);
   PRINT_BOOL(enable_threaded_texture_mailboxes);
   PRINT_BOOL(gl_shader_interm_output);
-  PRINT_BOOL(enable_android_surface_control);
   PRINT_BOOL(perform_graphite_precompilation);
   PRINT_BOOL(enable_gpu_service_logging);
   PRINT_BOOL(enable_gpu_service_tracing);
