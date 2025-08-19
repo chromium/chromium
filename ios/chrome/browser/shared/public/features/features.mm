@@ -1182,7 +1182,7 @@ BASE_FEATURE(kIOSProvidesAppNotificationSettings,
 
 BASE_FEATURE(kSignInButtonNoAvatar,
              "SignInButtonNoAvatar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSignInButtonNoAvatarEnabled() {
   return base::FeatureList::IsEnabled(kSignInButtonNoAvatar);

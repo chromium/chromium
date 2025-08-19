@@ -13547,21 +13547,6 @@
             ]
         }
     ],
-    "IOSSignInButtonWithoutAvatar": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SignInButtonNoAvatar"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSkipCookieCaching": [
         {
             "platforms": [

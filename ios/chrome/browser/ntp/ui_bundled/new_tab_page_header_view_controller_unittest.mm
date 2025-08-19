@@ -39,7 +39,7 @@ class NewTabPageHeaderViewControllerUnitTest : public PlatformTest {
 };
 
 // Tests the header view when the user is signed out.
-TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOutWithoutAvatar) {
+TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOut) {
   base::test::ScopedFeatureList feature_list(kSignInButtonNoAvatar);
 
   [view_controller_ loadViewIfNeeded];
@@ -56,23 +56,6 @@ TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOutWithoutAvatar) {
   EXPECT_NSEQ(
       [view_controller_.identityDiscButton imageForState:UIControlStateNormal],
       nil);
-}
-
-// Tests the header view when the user is signed out.
-TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOut) {
-  [view_controller_ loadViewIfNeeded];
-
-  EXPECT_NE(nil, view_controller_.identityDiscButton);
-  EXPECT_NE(nil, view_controller_.headerView.customizationMenuButton);
-
-  // Checks that the identity disc's label is correctly set when
-  // `setSignedOutAccountImage` is called, which is triggered by the mediator
-  // after checking sign-in status.
-  [view_controller_ setSignedOutAccountImage];
-  EXPECT_NSEQ(view_controller_.identityDiscButton.accessibilityLabel,
-              l10n_util::GetNSString(
-                  IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL));
-  EXPECT_NE(nil, view_controller_.identityDiscImage);
 }
 
 // Tests the header view when the user is signed in.
