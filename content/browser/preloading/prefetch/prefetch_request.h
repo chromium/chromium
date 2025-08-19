@@ -26,6 +26,7 @@ class PreloadingAttempt;
 class PreloadPipelineInfo;
 class PreloadPipelineInfoImpl;
 class RenderFrameHostImpl;
+enum class PreloadingHoldbackStatus;
 
 // `PrefetchRendererInitiatorInfo` or `PrefetchBrowserInitiatorInfo` is created
 // and attached to `PrefetchRequest` for a renderer-initiated or
@@ -121,6 +122,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       const std::optional<url::Origin>& referring_origin,
       base::WeakPtr<BrowserContext> browser_context,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
+      std::optional<PreloadingHoldbackStatus> holdback_status_override,
       std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
           info);
   ~PrefetchRequest();
@@ -141,6 +143,11 @@ class CONTENT_EXPORT PrefetchRequest final {
 
   const std::optional<SpeculationRulesTags>& speculation_rules_tags() const {
     return speculation_rules_tags_;
+  }
+
+  const std::optional<PreloadingHoldbackStatus>& holdback_status_override()
+      const {
+    return holdback_status_override_;
   }
 
   // Returns non-null if renderer-initiated/browser-initiated, respectively.
@@ -199,6 +206,14 @@ class CONTENT_EXPORT PrefetchRequest final {
   // prefech. These are assumed to have been validated by the time this is
   // constructed.
   std::optional<SpeculationRulesTags> speculation_rules_tags_;
+
+  // -------- Parameters that can have non-default values only for
+  // -------- browser-initiated prefetches:
+
+  // If set, this value is used to override holdback status derived by the
+  // normal process. It is set to `attempt_` on
+  // PrefetchService::CheckAndSetPrefetchHoldbackStatus().
+  const std::optional<PreloadingHoldbackStatus> holdback_status_override_;
 
   const std::variant<PrefetchRendererInitiatorInfo,
                      PrefetchBrowserInitiatorInfo>

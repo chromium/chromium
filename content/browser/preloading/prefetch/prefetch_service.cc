@@ -246,10 +246,10 @@ bool CheckAndSetPrefetchHoldbackStatus(
     // to update migration if we'd like to do it.
     prefetch_container->request().attempt()->SetHoldbackStatus(
         PreloadingHoldbackStatus::kAllowed);
-  } else if (prefetch_container->HasOverriddenHoldbackStatus()) {
+  } else if (prefetch_container->request().holdback_status_override()) {
     // 3. If PrefetchContainer has custom overridden status, set that value.
     prefetch_container->request().attempt()->SetHoldbackStatus(
-        prefetch_container->GetOverriddenHoldbackStatus());
+        *prefetch_container->request().holdback_status_override());
   }
 
   if (prefetch_container->request().attempt()->ShouldHoldback()) {

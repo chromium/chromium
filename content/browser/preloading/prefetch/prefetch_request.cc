@@ -62,6 +62,7 @@ PrefetchRequest::PrefetchRequest(
     const std::optional<url::Origin>& referring_origin,
     base::WeakPtr<BrowserContext> browser_context,
     std::optional<SpeculationRulesTags> speculation_rules_tags,
+    std::optional<PreloadingHoldbackStatus> holdback_status_override,
     std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
         initiator_info)
     : prefetch_type_(prefetch_type),
@@ -73,11 +74,13 @@ PrefetchRequest::PrefetchRequest(
       referring_origin_(referring_origin),
       browser_context_(std::move(browser_context)),
       speculation_rules_tags_(std::move(speculation_rules_tags)),
+      holdback_status_override_(std::move(holdback_status_override)),
       initiator_info_(std::move(initiator_info)) {
   CHECK(preload_pipeline_info_);
   if (prefetch_type_.IsRendererInitiated()) {
     CHECK(GetRendererInitiatorInfo());
     CHECK(!GetBrowserInitiatorInfo());
+    CHECK(!holdback_status_override_);
   } else {
     CHECK(!GetRendererInitiatorInfo());
     CHECK(GetBrowserInitiatorInfo());

@@ -249,17 +249,6 @@ class CONTENT_EXPORT PrefetchContainer {
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
   PrefetchStatus GetPrefetchStatus() const;
 
-  // These are intended to be called on
-  // PrefetchService::CheckAndSetPrefetchHoldbackStatus() to set this overridden
-  // prefetch status to `request().attempt()`.
-  bool HasOverriddenHoldbackStatus() const {
-    return holdback_status_override_.has_value();
-  }
-  PreloadingHoldbackStatus GetOverriddenHoldbackStatus() const {
-    CHECK(holdback_status_override_);
-    return holdback_status_override_.value();
-  }
-
   // The state enum of the current prefetch, to replace `PrefetchStatus`.
   // https://crbug.com/1494771
   // Design doc for PrefetchContainer state transitions:
@@ -620,7 +609,6 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer(
       std::unique_ptr<PrefetchRequest> request,
       const blink::mojom::Referrer& referrer,
-      std::optional<PreloadingHoldbackStatus> holdback_status_override,
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
       bool is_javascript_enabled,
@@ -814,12 +802,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // the primary one.
   std::vector<scoped_refptr<PreloadPipelineInfoImpl>>
       inherited_preload_pipeline_infos_;
-
-  // If set, this value is used to override holdback status derived by the
-  // normal process. It is set to `request().attempt()` on
-  // PrefetchService::CheckAndSetPrefetchHoldbackStatus().
-  std::optional<PreloadingHoldbackStatus> holdback_status_override_ =
-      std::nullopt;
 
   // The time at which |PrefetchService| started blocking until the head of
   // |this| was received.
