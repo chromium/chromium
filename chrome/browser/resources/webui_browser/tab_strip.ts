@@ -8,12 +8,12 @@ import '//resources/cr_elements/icons.html.js';
 
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {Tab as TabData, TabGroupVisualData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 
 import {TabElement} from './tab_element.js';
 import {getCss} from './tab_strip.css.js';
 import {getHtml} from './tab_strip.html.js';
-import type {Tab as TabData, TabGroupVisualData} from './tab_strip_api_data_model.mojom-webui.js';
-import type {NodeId} from './tab_strip_api_types.mojom-webui.js';
 import {TabStripController} from './tab_strip_controller.js';
 
 export interface TabStrip {

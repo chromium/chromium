@@ -23,8 +23,8 @@ class TestableRecorder : public TabStripEventRecorder {
 
 TEST(TabStripServiceEventRecorderTest, Notification) {
   bool notified = false;
-  TestableRecorder recorder(
-      base::BindLambdaForTesting([&](const Event& event) { notified = true; }));
+  TestableRecorder recorder(base::BindLambdaForTesting(
+      [&](const std::vector<Event>& event) { notified = true; }));
 
   recorder.Handle(mojom::OnTabsCreatedEvent::New());
 
@@ -33,8 +33,8 @@ TEST(TabStripServiceEventRecorderTest, Notification) {
 
 TEST(TabStripServiceEventRecorderTest, StoppingAndStartingNotification) {
   bool notified = false;
-  TestableRecorder recorder(
-      base::BindLambdaForTesting([&](const Event& event) { notified = true; }));
+  TestableRecorder recorder(base::BindLambdaForTesting(
+      [&](const std::vector<Event>& event) { notified = true; }));
 
   recorder.StopNotificationAndStartRecording();
 

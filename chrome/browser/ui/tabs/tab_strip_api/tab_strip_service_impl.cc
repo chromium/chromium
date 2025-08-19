@@ -53,15 +53,15 @@ TabStripServiceImpl::TabStripServiceImpl(
       tab_strip_model_adapter_(std::move(tab_strip_model_adapter)) {
   recorder_ = std::make_unique<tabs_api::events::TabStripEventRecorder>(
       tab_strip_model_adapter_.get(),
-      base::BindRepeating(&TabStripServiceImpl::BroadcastEvent,
+      base::BindRepeating(&TabStripServiceImpl::BroadcastEvents,
                           base::Unretained(this)));
   tab_strip_model_adapter_->AddObserver(recorder_.get());
 }
 
-void TabStripServiceImpl::BroadcastEvent(
-    const tabs_api::events::Event& event) const {
+void TabStripServiceImpl::BroadcastEvents(
+    const std::vector<tabs_api::events::Event>& events) const {
   tabs_api::EventBroadcaster broadcaster;
-  broadcaster.Broadcast(observers_, event);
+  broadcaster.Broadcast(observers_, events);
 }
 
 TabStripServiceImpl::~TabStripServiceImpl() {

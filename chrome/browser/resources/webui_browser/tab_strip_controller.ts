@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
+import type {TabStripServiceRemote} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
+import type {Container, Tab, TabCreatedContainer} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+import type {OnTabDataChangedEvent, OnTabGroupVisualsChangedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
+import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
+import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
+
 import type {ContentRegion} from './content_region.js';
 import type {TabStrip} from './tab_strip.js';
-import type {TabStripApiProxy} from './tab_strip_api.js';
-import {TabStripApiProxyImpl} from './tab_strip_api.js';
-import type {TabsSnapshot} from './tab_strip_api.mojom-webui.js';
-import type {Container, Tab, TabCreatedContainer} from './tab_strip_api_data_model.mojom-webui.js';
-import type {OnTabDataChangedEvent, OnTabGroupVisualsChangedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from './tab_strip_api_events.mojom-webui.js';
-import type {NodeId} from './tab_strip_api_types.mojom-webui.js';
 
 export interface LayoutManager {
   // Notifies the layout manager to recompute its layout, because the tab strip
@@ -19,7 +20,8 @@ export interface LayoutManager {
 
 export class TabStripController {
   private readonly layoutManager_: LayoutManager;
-  private tabsApi_: TabStripApiProxy;
+  private readonly tabStripService_: TabStripServiceRemote;
+  private readonly tabStripObservation_: TabStripObservation;
   private tabStrip_: TabStrip;
   private contentRegion_: ContentRegion;
 
@@ -27,33 +29,36 @@ export class TabStripController {
       layoutManager: LayoutManager, tabStrip: TabStrip,
       contentRegion: ContentRegion) {
     this.layoutManager_ = layoutManager;
-    this.tabsApi_ = TabStripApiProxyImpl.getInstance();
+    this.tabStripService_ = TabStripService.getRemote();
+    this.tabStripObservation_ = new TabStripObservation();
     this.tabStrip_ = tabStrip;
     this.contentRegion_ = contentRegion;
 
+    this.registerTabChangeCallbacks_();
     this.loadTabStripModel_();
   }
 
   addNewTab() {
     // Asynchronously the browser will call onTabCreated_() and
     // onTabActivated_().
-    this.tabsApi_.createTabAt(null, null);
+    this.tabStripService_.createTabAt(null, null);
   }
 
   removeTab(tabId: NodeId) {
     // Asynchronously the browser will call onTabRemoved_().
-    this.tabsApi_.closeTabs([tabId]);
+    this.tabStripService_.closeTabs([tabId]);
   }
 
   /* TODO(webium): Do we need this? if so, rewrite to use getTabs().
   public async getGroupVisualData_(groupId: NodeId):
   Promise<TabGroupVisualData|undefined> { const allVisualData = await
-  this.tabsApi_.getGroupVisualData(); return allVisualData.data[groupId];
+  this.tabStripService_.getGroupVisualData(); return
+  allVisualData.data[groupId];
   }
   */
 
   onTabClick(e: CustomEvent) {
-    this.tabsApi_.activateTab(e.detail.tabId);
+    this.tabStripService_.activateTab(e.detail.tabId);
   }
 
   onTabDragOutOfBounds(_: CustomEvent) {
@@ -61,43 +66,42 @@ export class TabStripController {
     const tabId = e.detail.tabId;
     const dragOffsetX = e.detail.drag_offset_x;
     const dragOffsetY = e.detail.drag_offset_y;
-    this.tabsApi_.detachTab(tabId, dragOffsetX, dragOffsetY);
+    this.tabStripService_.detachTab(tabId, dragOffsetX, dragOffsetY);
     */
   }
 
   // Private methods:
-  private registerTabChangeCallbacks_(tabsSnapshot: TabsSnapshot) {
-    // Bind the observer stream from the snapshot to the callback router
-    if (tabsSnapshot.stream && (tabsSnapshot.stream as any).handle) {
-      this.tabsApi_.getCallbackRouter().$.bindHandle(
-          (tabsSnapshot.stream as any).handle);
-    }
-
-    const callbackRouter = this.tabsApi_.getCallbackRouter();
+  private registerTabChangeCallbacks_() {
     // TODO(webium): implement these callbacks.
-    // callbackRouter.showContextMenu.addListener(
+    // this.tabStripObservation_.showContextMenu.addListener(
     //     () => this.onShowContextMenu_());
-    callbackRouter.onTabsCreated.addListener(this.onTabsCreated_.bind(this));
-    // callbackRouter.tabMoved.addListener(this.onTabMoved_.bind(this));
-    callbackRouter.onTabsClosed.addListener(this.onTabsClosed_.bind(this));
-    callbackRouter.onTabDataChanged.addListener(
+    this.tabStripObservation_.onTabsCreated.addListener(
+        this.onTabsCreated_.bind(this));
+    // this.tabStripObservation_.tabMoved.addListener(
+    //    this.onTabMoved_.bind(this));
+    this.tabStripObservation_.onTabsClosed.addListener(
+        this.onTabsClosed_.bind(this));
+    this.tabStripObservation_.onTabDataChanged.addListener(
         this.onTabDataChanged_.bind(this));
-    // callbackRouter.tabReplaced.addListener(this.onTabReplaced_.bind(this));
-    // callbackRouter.tabCloseCancelled.addListener(
+    // this.tabStripObservation_.tabReplaced.addListener(
+    //    this.onTabReplaced_.bind(this));
+    // this.tabStripObservation_.tabCloseCancelled.addListener(
     //     this.onTabCloseCancelled_.bind(this));
-    // callbackRouter.tabGroupStateChanged.addListener(
+    // this.tabStripObservation_.tabGroupStateChanged.addListener(
     //    this.onTabGroupStateChanged_.bind(this));
-    // callbackRouter.tabGroupClosed.addListener(
+    // this.tabStripObservation_.tabGroupClosed.addListener(
     //     this.onTabGroupClosed_.bind(this));
-    // callbackRouter.tabGroupMoved.addListener(
+    // this.tabStripObservation_.tabGroupMoved.addListener(
     //     this.onTabGroupMoved_.bind(this));
-    callbackRouter.onTabGroupVisualsChanged.addListener(
+    this.tabStripObservation_.onTabGroupVisualsChanged.addListener(
         this.onTabGroupVisualsChanged_.bind(this));
   }
 
   private async loadTabStripModel_() {
-    const tabSnapshot = await this.tabsApi_.getTabs();
-    this.registerTabChangeCallbacks_(tabSnapshot);
+    const tabSnapshot = await this.tabStripService_.getTabs();
+    // TODO(crbug.com/439844342): add type signature.
+    this.tabStripObservation_.bind((tabSnapshot.stream as any).handle);
+
     const tabStrip = tabSnapshot.tabStrip;
     const processContainer = (container: Container) => {
       if (!container || !container.children) {

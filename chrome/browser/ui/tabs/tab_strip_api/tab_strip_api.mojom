@@ -75,24 +75,33 @@ interface TabStripService {
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 
+union TabsEvent {
+  // When new tabs have been created on the tab strip.
+  OnTabsCreatedEvent tabs_created_event;
+
+  // When tabs have been closed on the tab strip.
+  OnTabsClosedEvent tabs_closed_event;
+
+  // When a tab has been moved.
+  OnTabMovedEvent tab_moved_event;
+
+  // When tab data has been updated.
+  OnTabDataChangedEvent tab_data_changed_event;
+
+  // When a new tab group has been created.
+  OnTabGroupCreatedEvent tab_group_created_event;
+
+  // When a tab group's visuals have been changed.
+  OnTabGroupVisualsChangedEvent tab_group_visuals_changed_event;
+};
+
 // TabsObserver is an interface a client can implement to receive events
 // about changes to the tab strip.
 interface TabsObserver {
-  // When new tabs have been created on the tab strip.
-  OnTabsCreated(OnTabsCreatedEvent event);
-
-  // When tabs have been closed on the tab strip.
-  OnTabsClosed(OnTabsClosedEvent event);
-
-  // When a tab has been moved.
-  OnTabMoved(OnTabMovedEvent event);
-
-  // When tab data has been updated.
-  OnTabDataChanged(OnTabDataChangedEvent tab);
-
-  // When a new tab group has been created.
-  OnTabGroupCreated(OnTabGroupCreatedEvent event);
-
-  // When a tab group's visuals have been changed.
-  OnTabGroupVisualsChanged(OnTabGroupVisualsChangedEvent event);
+  // When the tab strip has been updated. This contains all the relevant
+  // updates that should be applied in a single run loop. For dispatch
+  // clients, use the following libraries:
+  //   ts: chrome/browser/resources/tab_strip_api/tab_strip_observation.ts
+  //   cpp: TODO(crbug.com/439639253): add cpp client.
+  OnTabEvents(array<TabsEvent> events);
 };

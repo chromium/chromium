@@ -32,7 +32,7 @@
 // accumulator here instead of a test impl.
 class TestTabStripClient : public tabs_api::mojom::TabsObserver {
  public:
-  void OnTabsCreated(tabs_api::mojom::OnTabsCreatedEventPtr event) override {
+  void OnTabsCreated(tabs_api::mojom::OnTabsCreatedEventPtr& event) {
     for (auto& tab_created_container : event->tabs) {
       auto& tab = tab_created_container->tab;
       auto tab_id = tab->id;
@@ -40,18 +40,17 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     }
   }
 
-  void OnTabsClosed(tabs_api::mojom::OnTabsClosedEventPtr event) override {
+  void OnTabsClosed(tabs_api::mojom::OnTabsClosedEventPtr& event) {
     for (auto& id : event->tabs) {
       tabs.erase(std::string(id.Id()));
     }
   }
 
-  void OnTabMoved(tabs_api::mojom::OnTabMovedEventPtr event) override {
+  void OnTabMoved(tabs_api::mojom::OnTabMovedEventPtr& event) {
     move_events.push_back(std::move(event));
   }
 
-  void OnTabDataChanged(
-      tabs_api::mojom::OnTabDataChangedEventPtr event) override {
+  void OnTabDataChanged(tabs_api::mojom::OnTabDataChangedEventPtr& event) {
     auto& id = event->tab->id;
     // TODO(crbug.com/412738255): this is a hack, because we are not correctly
     // adding the initial tab that is created by the tab strip. We should have
@@ -62,15 +61,40 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     tabs.at(std::string(id.Id())) = std::move(event->tab);
   }
 
-  void OnTabGroupCreated(
-      tabs_api::mojom::OnTabGroupCreatedEventPtr event) override {
+  void OnTabGroupCreated(tabs_api::mojom::OnTabGroupCreatedEventPtr& event) {
     // TODO(crbug.com/412955607): implement this.
     group_events.push_back(std::move(event));
   }
 
   void OnTabGroupVisualsChanged(
-      tabs_api::mojom::OnTabGroupVisualsChangedEventPtr event) override {
+      tabs_api::mojom::OnTabGroupVisualsChangedEventPtr& event) {
     // TODO(crbug.com/412955607): implement this.
+  }
+
+  void OnTabEvents(std::vector<tabs_api::mojom::TabsEventPtr> events) override {
+    for (auto& event : events) {
+      switch (event->which()) {
+        case tabs_api::mojom::TabsEvent::Tag::kTabsCreatedEvent:
+          OnTabsCreated(event->get_tabs_created_event());
+          break;
+        case tabs_api::mojom::TabsEvent::Tag::kTabsClosedEvent:
+          OnTabsClosed(event->get_tabs_closed_event());
+          break;
+        case tabs_api::mojom::TabsEvent::Tag::kTabMovedEvent:
+          OnTabMoved(event->get_tab_moved_event());
+          break;
+        case tabs_api::mojom::TabsEvent::Tag::kTabDataChangedEvent:
+          OnTabDataChanged(event->get_tab_data_changed_event());
+          break;
+        case tabs_api::mojom::TabsEvent::Tag::kTabGroupCreatedEvent:
+          OnTabGroupCreated(event->get_tab_group_created_event());
+          break;
+        case tabs_api::mojom::TabsEvent::Tag::kTabGroupVisualsChangedEvent:
+          OnTabGroupVisualsChanged(
+              event->get_tab_group_visuals_changed_event());
+          break;
+      }
+    }
   }
 
   std::vector<tabs_api::mojom::OnTabMovedEventPtr> move_events;

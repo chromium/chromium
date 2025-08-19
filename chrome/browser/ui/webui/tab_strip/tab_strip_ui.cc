@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/tab_strip_api_resources_map.h"
 #include "chrome/grit/tab_strip_resources.h"
 #include "chrome/grit/tab_strip_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
@@ -54,6 +55,7 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
     webui::SetupWebUIDataSource(
         html_source, kTabStripResources,
         IDR_TAB_STRIP_PLAYGROUND_TAB_STRIP_PLAYGROUND_HTML);
+    html_source->AddResourcePaths(kTabStripApiResources);
   } else {
     webui::SetupWebUIDataSource(html_source, kTabStripResources,
                                 IDR_TAB_STRIP_TAB_STRIP_HTML);

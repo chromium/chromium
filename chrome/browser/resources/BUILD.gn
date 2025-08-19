@@ -78,6 +78,7 @@ group("resources") {
       "support_tool:resources",
       "tab_group_home:resources",
       "tab_search:resources",
+      "tab_strip_api:resources",
       "web_app_internals:resources",
       "webui_browser:resources",
       "webui_gallery:resources",

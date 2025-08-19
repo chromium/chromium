@@ -4,12 +4,12 @@
 
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {Tab as TabData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 
 import {getCss} from './tab_element.css.js';
 import {getHtml} from './tab_element.html.js';
 import type {TabStrip} from './tab_strip.js';
-import type {Tab as TabData} from './tab_strip_api_data_model.mojom-webui.js';
-import type {NodeId} from './tab_strip_api_types.mojom-webui.js';
 
 export class TabElement extends CrLitElement {
   static get is() {

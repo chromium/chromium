@@ -21,7 +21,7 @@ class EventBroadcaster {
 
   void Broadcast(
       const mojo::AssociatedRemoteSet<tabs_api::mojom::TabsObserver>& targets,
-      const events::Event& event);
+      const std::vector<events::Event>& event);
 };
 
 }  // namespace tabs_api

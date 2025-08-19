@@ -21,11 +21,12 @@ void TabStripEventRecorder::StopNotificationAndStartRecording() {
 }
 
 void TabStripEventRecorder::PlayRecordingsAndStartNotification() {
+  std::vector<Event> events;
   while (HasRecordedEvents()) {
-    auto event = std::move(recorded_.front());
+    events.push_back(std::move(recorded_.front()));
     recorded_.pop();
-    Notify(event);
   }
+  Notify(events);
   mode_ = Mode::kPassthrough;
 }
 
@@ -33,13 +34,15 @@ bool TabStripEventRecorder::HasRecordedEvents() const {
   return !recorded_.empty();
 }
 
-void TabStripEventRecorder::Notify(Event& event) {
+void TabStripEventRecorder::Notify(const std::vector<Event>& event) {
   event_notification_callback_.Run(event);
 }
 
 void TabStripEventRecorder::Handle(Event event) {
   if (mode_ == Mode::kPassthrough) {
-    Notify(event);
+    std::vector<Event> bundled;
+    bundled.push_back(std::move(event));
+    Notify(bundled);
   } else {
     recorded_.push(std::move(event));
   }

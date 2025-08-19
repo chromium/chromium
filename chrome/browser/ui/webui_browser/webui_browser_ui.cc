@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/tab_strip_api_resources_map.h"
 #include "chrome/grit/webui_browser_resources.h"
 #include "chrome/grit/webui_browser_resources_map.h"
 #include "components/guest_contents/browser/guest_contents_host_impl.h"
@@ -51,6 +52,7 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
   // Add required resources.
   webui::SetupWebUIDataSource(source, kWebuiBrowserResources,
                               IDR_WEBUI_BROWSER_WEBUI_BROWSER_HTML);
+  source->AddResourcePaths(kTabStripApiResources);
 
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
 }

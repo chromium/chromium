@@ -6,26 +6,27 @@ import '/strings.m.js';
 import '../tab.js';
 import '../tab_group.js';
 
+import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
+import type {TabsSnapshot, TabStripServiceRemote} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
+import type {Container, Data, Tab, TabCreatedContainer, TabGroup} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+import type {OnTabDataChangedEvent, OnTabGroupCreatedEvent, OnTabGroupVisualsChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
+import type {NodeId, Position} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
+import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {TabGroupElement} from '../tab_group.js';
 import {Color as TabGroupColor} from '../tab_group_types.mojom-webui.js';
 import {getTemplate} from '../tab_list.html.js';
 import type {TabGroupVisualData} from '../tab_strip.mojom-webui.js';
-import type {TabsSnapshot} from '../tab_strip_api.mojom-webui.js';
-import type {Container, Data, Tab, TabCreatedContainer, TabGroup} from '../tab_strip_api_data_model.mojom-webui.js';
-import type {OnTabDataChangedEvent, OnTabGroupCreatedEvent, OnTabGroupVisualsChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '../tab_strip_api_events.mojom-webui.js';
-import type {NodeId, Position} from '../tab_strip_api_types.mojom-webui.js';
 
 import {TabElement} from './tab_playground.js';
-import type {TabStripApiProxy} from './tab_strip_api.js';
-import {TabStripApiProxyImpl} from './tab_strip_api.js';
 
 export class TabListPlaygroundElement extends CustomElement {
   animationPromises: Promise<void>;
-  private tabStripApi_: TabStripApiProxy;
   private pinnedTabsElement_: HTMLElement;
   private unpinnedTabsElement_: HTMLElement;
+  private tabStripService_: TabStripServiceRemote;
+  private tabStripObservation_: TabStripObservation;
 
   static override get template() {
     return getTemplate();
@@ -34,9 +35,10 @@ export class TabListPlaygroundElement extends CustomElement {
   constructor() {
     super();
     this.animationPromises = Promise.resolve();
-    this.tabStripApi_ = TabStripApiProxyImpl.getInstance();
     this.pinnedTabsElement_ = this.getRequiredElement('#pinnedTabs');
     this.unpinnedTabsElement_ = this.getRequiredElement('#unpinnedTabs');
+    this.tabStripService_ = TabStripService.getRemote();
+    this.tabStripObservation_ = new TabStripObservation();
   }
 
   getIndexOfTab(tabElement: TabElement): number {
@@ -90,15 +92,18 @@ export class TabListPlaygroundElement extends CustomElement {
 
   connectedCallback() {
     this.fetchAndUpdateTabs_();
-    const callbackRouter = this.tabStripApi_.getCallbackRouter();
-    callbackRouter.onTabsCreated.addListener(this.onTabsCreated_.bind(this));
-    callbackRouter.onTabsClosed.addListener(this.onTabsClosed_.bind(this));
-    callbackRouter.onTabDataChanged.addListener(
+
+    this.tabStripObservation_.onTabsCreated.addListener(
+        this.onTabsCreated_.bind(this));
+    this.tabStripObservation_.onTabsClosed.addListener(
+        this.onTabsClosed_.bind(this));
+    this.tabStripObservation_.onTabDataChanged.addListener(
         this.onTabDataChanged_.bind(this));
-    callbackRouter.onTabMoved.addListener(this.onTabMoved_.bind(this));
-    callbackRouter.onTabGroupCreated.addListener(
+    this.tabStripObservation_.onTabMoved.addListener(
+        this.onTabMoved_.bind(this));
+    this.tabStripObservation_.onTabGroupCreated.addListener(
         this.onTabGroupCreated_.bind(this));
-    callbackRouter.onTabGroupVisualsChanged.addListener(
+    this.tabStripObservation_.onTabGroupVisualsChanged.addListener(
         this.onTabGroupVisualsChanged_.bind(this));
   }
 
@@ -176,7 +181,7 @@ export class TabListPlaygroundElement extends CustomElement {
       targetIdx =
           Math.min(targetIdx, this.unpinnedTabsElement_.childElementCount - 1);
       // TODO(crbug.com/412709271): Set the correct parent id.
-      this.tabStripApi_.moveTab(tab.id, {parentId: null, index: targetIdx});
+      this.tabStripService_.moveTab(tab.id, {parentId: null, index: targetIdx});
     };
     return tabElement;
   }
@@ -193,11 +198,10 @@ export class TabListPlaygroundElement extends CustomElement {
   }
 
   private fetchAndUpdateTabs_() {
-    this.tabStripApi_.getTabs().then((tabsSnapshot: TabsSnapshot) => {
+    this.tabStripService_.getTabs().then((tabsSnapshot: TabsSnapshot) => {
       // Bind the observer stream from the snapshot to the callback router
       if (tabsSnapshot.stream && (tabsSnapshot.stream as any).handle) {
-        this.tabStripApi_.getCallbackRouter().$.bindHandle(
-            (tabsSnapshot.stream as any).handle);
+        this.tabStripObservation_.bind((tabsSnapshot.stream as any).handle);
         console.info('Bound TabsObserver stream to callback router.');
       } else {
         console.error('Can not bind');

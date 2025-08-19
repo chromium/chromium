@@ -5,6 +5,9 @@
 import '/strings.m.js';
 import '../alert_indicators.js';
 
+import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
+import type {Tab} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {getFavicon} from 'chrome://resources/js/icon.js';
@@ -13,12 +16,7 @@ import {isRTL} from 'chrome://resources/js/util.js';
 
 import type {AlertIndicatorsElement} from '../alert_indicators.js';
 import {getTemplate} from '../tab.html.js';
-import type {Tab} from '../tab_strip_api_data_model.mojom-webui.js';
-import type {NodeId} from '../tab_strip_api_types.mojom-webui.js';
 import {TabNetworkState} from '../tabs.mojom-webui.js';
-
-import type {TabStripApiProxy} from './tab_strip_api.js';
-import {TabStripApiProxyImpl} from './tab_strip_api.js';
 
 function getPaddingInlineEndProperty(): string {
   return isRTL() ? 'paddingLeft' : 'paddingRight';
@@ -38,7 +36,6 @@ export class TabElement extends CustomElement {
   private tab_: Tab|null = null;
   private titleTextEl_: HTMLElement;
   private onTabActivating_: (tabId: NodeId) => void;
-  private tabStripApi_: TabStripApiProxy;
   private isValidDragOverTarget_: boolean;
   private dragHandler_: any;
 
@@ -70,7 +67,6 @@ export class TabElement extends CustomElement {
         this.getRequiredElement<HTMLImageElement>('#thumbnailImg');
 
     this.titleTextEl_ = this.getRequiredElement('#titleText');
-    this.tabStripApi_ = TabStripApiProxyImpl.getInstance();
     this.dragHandler_ = () => 0;
 
     /**
@@ -88,7 +84,7 @@ export class TabElement extends CustomElement {
 
     this.closeButtonEl_.addEventListener('click', e => this.onClose_(e));
     this.onTabActivating_ = (tabId: NodeId) =>
-        this.tabStripApi_.activateTab(tabId);
+        TabStripService.getRemote().activateTab(tabId);
   }
 
   hasTabModel(): boolean {
@@ -185,7 +181,7 @@ export class TabElement extends CustomElement {
     assert(this.tab_);
     event.stopPropagation();
     console.info('Close tab', this.tab_.id);
-    this.tabStripApi_.closeTabs([this.tab_.id]);
+    TabStripService.getRemote().closeTabs([this.tab_.id]);
   }
 
   slideOut(): Promise<void> {

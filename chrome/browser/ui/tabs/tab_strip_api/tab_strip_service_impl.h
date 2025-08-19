@@ -73,7 +73,8 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
                             UpdateTabGroupVisualCallback) override;
 
  private:
-  void BroadcastEvent(const tabs_api::events::Event& event) const;
+  void BroadcastEvents(
+      const std::vector<tabs_api::events::Event>& events) const;
 
   std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter_;
   std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter_;
