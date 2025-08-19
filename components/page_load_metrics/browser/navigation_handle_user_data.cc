@@ -8,6 +8,11 @@ namespace page_load_metrics {
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationHandleUserData);
 
+NavigationHandleUserData::NavigationHandleUserData(
+    content::NavigationHandle& navigation,
+    InitiatorLocation navigation_type)
+    : navigation_type_(navigation_type) {}
+
 // static
 void NavigationHandleUserData::AttachNewTabPageNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {

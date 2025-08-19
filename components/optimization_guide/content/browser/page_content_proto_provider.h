@@ -31,11 +31,8 @@ blink::mojom::AIPageContentOptionsPtr ActionableAIPageContentOptions();
 class DocumentIdentifierUserData
     : public content::DocumentUserData<DocumentIdentifierUserData> {
  public:
-  explicit DocumentIdentifierUserData(content::RenderFrameHost* rfh)
-      : DocumentUserData<DocumentIdentifierUserData>(rfh),
-        token_(base::UnguessableToken::Create()),
-        serialized_token_(token_.ToString()) {}
-  ~DocumentIdentifierUserData() override = default;
+  explicit DocumentIdentifierUserData(content::RenderFrameHost* rfh);
+  ~DocumentIdentifierUserData() override;
 
   const base::UnguessableToken& token() const { return token_; }
   std::string serialized_token() const { return serialized_token_; }

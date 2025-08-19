@@ -275,6 +275,11 @@ struct MiaZPS : Config<MiaZPS> {
   DECLARE_FEATURE(kOmniboxMiaZPS);
 
   MiaZPS();
+  MiaZPS(const MiaZPS&);
+  MiaZPS(MiaZPS&&);
+  MiaZPS& operator=(const MiaZPS&);
+  MiaZPS& operator=(MiaZPS&&);
+  ~MiaZPS();
   bool enabled;
   // Whether to use non-normalized text for local history zp suggestions.
   bool local_history_non_normalized_contents;
@@ -359,6 +364,11 @@ struct AdjustOmniboxIndent : Config<AdjustOmniboxIndent> {
 // met.
 struct DocumentProvider : Config<DocumentProvider> {
   DocumentProvider();
+  DocumentProvider(const DocumentProvider&);
+  DocumentProvider(DocumentProvider&&);
+  DocumentProvider& operator=(const DocumentProvider&);
+  DocumentProvider& operator=(DocumentProvider&&);
+  ~DocumentProvider();
   bool enabled;
   // The minimum input length required before requesting document suggestions.
   size_t min_query_length;
@@ -384,6 +394,11 @@ struct DocumentProvider : Config<DocumentProvider> {
 struct ForceAllowedToBeDefault : Config<ForceAllowedToBeDefault> {
   DECLARE_FEATURE(kForceAllowedToBeDefault);
   ForceAllowedToBeDefault();
+  ForceAllowedToBeDefault(const ForceAllowedToBeDefault&);
+  ForceAllowedToBeDefault(ForceAllowedToBeDefault&&);
+  ForceAllowedToBeDefault& operator=(const ForceAllowedToBeDefault&);
+  ForceAllowedToBeDefault& operator=(ForceAllowedToBeDefault&&);
+  ~ForceAllowedToBeDefault();
   bool enabled;
 };
 
@@ -393,6 +408,15 @@ struct RealboxContextualAndTrendingSuggestions
     : Config<RealboxContextualAndTrendingSuggestions> {
   DECLARE_FEATURE(kRealboxContextualAndTrendingSuggestions);
   RealboxContextualAndTrendingSuggestions();
+  RealboxContextualAndTrendingSuggestions(
+      const RealboxContextualAndTrendingSuggestions&);
+  RealboxContextualAndTrendingSuggestions(
+      RealboxContextualAndTrendingSuggestions&&);
+  RealboxContextualAndTrendingSuggestions& operator=(
+      const RealboxContextualAndTrendingSuggestions&);
+  RealboxContextualAndTrendingSuggestions& operator=(
+      RealboxContextualAndTrendingSuggestions&&);
+  ~RealboxContextualAndTrendingSuggestions();
   bool enabled;
 
   // The total number of matches a Section can contain across all Groups.
@@ -492,12 +516,22 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
 struct SuggestionAnswerMigration : Config<SuggestionAnswerMigration> {
   DECLARE_FEATURE(kOmniboxSuggestionAnswerMigration);
   SuggestionAnswerMigration();
+  SuggestionAnswerMigration(const SuggestionAnswerMigration&);
+  SuggestionAnswerMigration(SuggestionAnswerMigration&&);
+  SuggestionAnswerMigration& operator=(const SuggestionAnswerMigration&);
+  SuggestionAnswerMigration& operator=(SuggestionAnswerMigration&&);
+  ~SuggestionAnswerMigration();
   bool enabled;
 };
 
 struct OmniboxZpsSuggestionLimit : Config<OmniboxZpsSuggestionLimit> {
   DECLARE_FEATURE(kOmniboxZpsSuggestionLimit);
   OmniboxZpsSuggestionLimit();
+  OmniboxZpsSuggestionLimit(const OmniboxZpsSuggestionLimit&);
+  OmniboxZpsSuggestionLimit(OmniboxZpsSuggestionLimit&&);
+  OmniboxZpsSuggestionLimit& operator=(const OmniboxZpsSuggestionLimit&);
+  OmniboxZpsSuggestionLimit& operator=(OmniboxZpsSuggestionLimit&&);
+  ~OmniboxZpsSuggestionLimit();
   bool enabled;
   // Max number of zps suggestions to show.
   size_t max_suggestions;
@@ -541,6 +575,15 @@ struct HappinessTrackingSurveyForOmniboxOnFocusZps
     : Config<HappinessTrackingSurveyForOmniboxOnFocusZps> {
   DECLARE_FEATURE(kHappinessTrackingSurveyForOmniboxOnFocusZps);
   HappinessTrackingSurveyForOmniboxOnFocusZps();
+  HappinessTrackingSurveyForOmniboxOnFocusZps(
+      const HappinessTrackingSurveyForOmniboxOnFocusZps&);
+  HappinessTrackingSurveyForOmniboxOnFocusZps(
+      HappinessTrackingSurveyForOmniboxOnFocusZps&&);
+  HappinessTrackingSurveyForOmniboxOnFocusZps& operator=(
+      const HappinessTrackingSurveyForOmniboxOnFocusZps&);
+  HappinessTrackingSurveyForOmniboxOnFocusZps& operator=(
+      HappinessTrackingSurveyForOmniboxOnFocusZps&&);
+  ~HappinessTrackingSurveyForOmniboxOnFocusZps();
   bool enabled;
   // Number of times the omnibox must be focused on SRP/Web before the survey
   // may be shown

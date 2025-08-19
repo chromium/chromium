@@ -15,6 +15,9 @@
 
 namespace viz {
 
+AsyncReadResultLock::AsyncReadResultLock() = default;
+AsyncReadResultLock::~AsyncReadResultLock() = default;
+
 AsyncReadResultHelper::AsyncReadResultHelper(
     SkiaOutputSurfaceImplOnGpu* impl_on_gpu,
     std::unique_ptr<const SkSurface::AsyncReadResult> result)

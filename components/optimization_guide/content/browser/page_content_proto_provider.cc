@@ -439,4 +439,12 @@ std::optional<std::string> DocumentIdentifierUserData::GetDocumentIdentifier(
 
 DOCUMENT_USER_DATA_KEY_IMPL(DocumentIdentifierUserData);
 
+DocumentIdentifierUserData::DocumentIdentifierUserData(
+    content::RenderFrameHost* rfh)
+    : DocumentUserData<DocumentIdentifierUserData>(rfh),
+      token_(base::UnguessableToken::Create()),
+      serialized_token_(token_.ToString()) {}
+
+DocumentIdentifierUserData::~DocumentIdentifierUserData() = default;
+
 }  // namespace optimization_guide

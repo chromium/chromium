@@ -67,6 +67,9 @@ ReceiverPresentationServiceDelegateImpl::
   DCHECK(local_presentation_manager_);
 }
 
+ReceiverPresentationServiceDelegateImpl::
+    ~ReceiverPresentationServiceDelegateImpl() = default;
+
 void ReceiverPresentationServiceDelegateImpl::
     RegisterReceiverConnectionAvailableCallback(
         const content::ReceiverConnectionAvailableCallback&

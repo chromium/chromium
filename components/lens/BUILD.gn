@@ -41,6 +41,7 @@ static_library("lens") {
     "lens_testing_utils.h",
     "lens_url_utils.cc",
     "lens_url_utils.h",
+    "ref_counted_lens_overlay_client_logs.cc",
     "ref_counted_lens_overlay_client_logs.h",
   ]
   deps = [

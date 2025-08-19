@@ -21,6 +21,8 @@ AudioChunk::AudioChunk(const uint8_t* data, size_t length, int bytes_per_sample)
   DCHECK_EQ(length % bytes_per_sample, 0U);
 }
 
+AudioChunk::~AudioChunk() = default;
+
 bool AudioChunk::IsEmpty() const {
   return data_string_.empty();
 }
