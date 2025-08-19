@@ -118,6 +118,8 @@ source_set("test_support") {
     "mocks/mock_actor_ui_state_manager.h",
     "mocks/mock_actor_ui_tab_controller.cc",
     "mocks/mock_actor_ui_tab_controller.h",
+    "mocks/mock_actor_ui_tab_controller_factory.cc",
+    "mocks/mock_actor_ui_tab_controller_factory.h",
     "mocks/mock_event_dispatcher.cc",
     "mocks/mock_event_dispatcher.h",
     "mocks/mock_handoff_button_controller.cc",

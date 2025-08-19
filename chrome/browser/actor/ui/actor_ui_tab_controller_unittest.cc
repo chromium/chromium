@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_overlay_view_controller.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_state_manager.h"
+#include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller_factory.h"
 #include "chrome/browser/actor/ui/mocks/mock_handoff_button_controller.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
@@ -55,40 +56,6 @@ MockWebContents::MockWebContents(content::BrowserContext* browser_context)
     : TestWebContents(browser_context) {}
 
 MockWebContents::~MockWebContents() = default;
-
-class MockActorUiTabControllerFactory
-    : public ActorUiTabControllerFactoryInterface {
- public:
-  ~MockActorUiTabControllerFactory() override {
-    mock_overlay_view_controller_ = nullptr;
-    mock_handoff_button_controller_ = nullptr;
-  }
-
-  std::unique_ptr<HandoffButtonController> CreateHandoffButtonController(
-      tabs::TabInterface& tab) override {
-    auto controller = std::make_unique<MockHandoffButtonController>(tab);
-    mock_handoff_button_controller_ = controller.get();
-    return controller;
-  }
-  std::unique_ptr<ActorOverlayViewController> CreateActorOverlayViewController(
-      tabs::TabInterface& tab) override {
-    auto controller = std::make_unique<MockActorOverlayViewController>(tab);
-    mock_overlay_view_controller_ = controller.get();
-    return controller;
-  }
-
-  MockActorOverlayViewController* overlay_controller() {
-    return mock_overlay_view_controller_;
-  }
-
-  MockHandoffButtonController* handoff_button_controller() {
-    return mock_handoff_button_controller_;
-  }
-
- private:
-  raw_ptr<MockActorOverlayViewController> mock_overlay_view_controller_;
-  raw_ptr<MockHandoffButtonController> mock_handoff_button_controller_;
-};
 
 class ActorUiTabControllerTest : public testing::Test {
  public:
