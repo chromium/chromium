@@ -2037,9 +2037,34 @@ class GapAccumulator {
     content_block_end_ = row_tracks[row_track_count - 1];
   }
 
+  void BuildCrossGaps(const GridLayoutData& layout_data) {
+    const Vector<LayoutUnit> col_tracks =
+        LayoutGrid::ComputeExpandedPositions(&layout_data, kForColumns);
+    col_gutter_size_ = layout_data.Columns().GutterSize();
+    wtf_size_t col_track_count = col_tracks.size();
+
+    // CSS Gaps defines an intersection point to exist in the center
+    // of gaps. Hence, we get the midpoint for each column gap for the
+    // derivation of intersection points. The first gap ends at the second
+    // track, and the last gap ends at the second-to-last track. So gaps are
+    // defined in the track range [1, `col_track_count` - 1).
+    // See: https://www.w3.org/TR/css-gaps-1/#gap-intersection-point
+    for (wtf_size_t i = 1; i < col_track_count - 1; ++i) {
+      LayoutUnit col_midpoint =
+          LayoutUnit(col_tracks[i] - (col_gutter_size_ / 2.0f));
+      LogicalOffset cross_gap_offset =
+          LogicalOffset(col_midpoint, LayoutUnit());
+      CrossGap cross_gap = CrossGap(cross_gap_offset);
+      cross_gaps_.push_back(cross_gap);
+    }
+
+    content_inline_start_ = col_tracks[0];
+    content_inline_end_ = col_tracks[col_track_count - 1];
+  }
+
   void BuildGapGeometry(const GridLayoutData& layout_data) {
     BuildMainGaps(layout_data);
-    // TODO(samomekarajr): Add building logic for cross axis.
+    BuildCrossGaps(layout_data);
   }
 
   void BuildGapIntersectionPoints(const GridLayoutData& layout_data) {
@@ -2187,6 +2212,9 @@ class GapAccumulator {
     if (col_gutter_size_ > LayoutUnit()) {
       gap_geometry->SetGapIntersections(kForColumns,
                                         std::move(column_intersections_));
+      if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+        gap_geometry->SetCrossGaps(std::move(cross_gaps_));
+      }
     }
 
     if (row_gutter_size_ > LayoutUnit()) {
@@ -2195,6 +2223,13 @@ class GapAccumulator {
       if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
         gap_geometry->SetMainGaps(std::move(main_gaps_));
       }
+    }
+
+    if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+      gap_geometry->SetContentStartOffset(
+          LogicalOffset(content_inline_start_, content_block_start_));
+      gap_geometry->SetContentEndOffset(
+          LogicalOffset(content_inline_end_, content_block_end_));
     }
     return gap_geometry;
   }
@@ -2206,8 +2241,11 @@ class GapAccumulator {
   LayoutUnit row_gutter_size_;
 
   MainGaps main_gaps_;
+  CrossGaps cross_gaps_;
   LayoutUnit content_block_start_;
   LayoutUnit content_block_end_;
+  LayoutUnit content_inline_start_;
+  LayoutUnit content_inline_end_;
 };
 
 }  // namespace

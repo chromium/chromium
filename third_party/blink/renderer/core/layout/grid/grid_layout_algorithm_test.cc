@@ -473,6 +473,21 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometryMC) {
   EXPECT_EQ(main_gaps[0].GetGapStartOffset(), LayoutUnit(96));
   EXPECT_EQ(main_gaps[1].GetGapStartOffset(), LayoutUnit(238));
   EXPECT_EQ(main_gaps[2].GetGapStartOffset(), LayoutUnit(360));
+
+  // CrossGaps are column gap midpoints stored as LogicalOffsets.
+  const auto& cross_gaps = gap_geometry->GetCrossGaps();
+  ASSERT_EQ(cross_gaps.size(), 2u);  // 3 columns -> 2 column gaps
+  // Column midpoints based on grid-template-columns [80,120,90] and column-gap 14:
+  // column track lines: [0, 94, 228, 318]; midpoints: [87, 221].
+  EXPECT_EQ(cross_gaps[0].GetGapStartOffset().inline_offset, LayoutUnit(87));
+  EXPECT_EQ(cross_gaps[1].GetGapStartOffset().inline_offset, LayoutUnit(221));
+
+  // Content edges should span the content box of the grid:
+  // Inline: 0 -> 318 (80+14+120+14+90), Block: 0 -> 506 (90+12+130+12+110+12+140).
+  EXPECT_EQ(gap_geometry->GetContentStartOffset(),
+            LogicalOffset(LayoutUnit(), LayoutUnit()));
+  EXPECT_EQ(gap_geometry->GetContentEndOffset(),
+            LogicalOffset(LayoutUnit(318), LayoutUnit(506)));
 }
 
 TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRanges) {

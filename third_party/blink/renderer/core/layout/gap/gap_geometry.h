@@ -59,6 +59,7 @@ class GapIntersection {
 
 using GapIntersectionList = Vector<GapIntersection>;
 using MainGaps = Vector<MainGap>;
+using CrossGaps = Vector<CrossGap>;
 
 // Gap locations are used for painting gap decorations.
 class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
@@ -157,7 +158,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   LogicalOffset content_end_offset_ = LogicalOffset();
 
   MainGaps main_gaps_;
-  Vector<CrossGap> cross_gaps_;
+  CrossGaps cross_gaps_;
 };
 
 }  // namespace blink
