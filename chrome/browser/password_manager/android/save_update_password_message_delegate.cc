@@ -44,9 +44,6 @@ using password_manager::PasswordForm;
 // Duration of message before timeout; 20 seconds.
 const int kMessageDismissDurationMs = 20000;
 
-constexpr base::TimeDelta kUpdateGMSCoreMessageDisplayDelay =
-    base::Milliseconds(500);
-
 }  // namespace
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
@@ -296,12 +293,6 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
 void SaveUpdatePasswordMessageDelegate::SavePassword() {
   if (!device_lock_bridge_->ShouldShowDeviceLockUi()) {
     passwords_state_.form_manager()->Save();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &SaveUpdatePasswordMessageDelegate::MaybeNudgeToUpdateGmsCore,
-            weak_ptr_factory_.GetWeakPtr()),
-        kUpdateGMSCoreMessageDisplayDelay);
     return;
   }
   device_lock_bridge_->LaunchDeviceLockUiIfNeededBeforeRunningCallback(
@@ -316,12 +307,6 @@ void SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi(
   CHECK(device_lock_bridge_->RequiresDeviceLock());
   if (is_device_lock_requirement_met) {
     passwords_state_.form_manager()->Save();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &SaveUpdatePasswordMessageDelegate::MaybeNudgeToUpdateGmsCore,
-            weak_ptr_factory_.GetWeakPtr()),
-        kUpdateGMSCoreMessageDisplayDelay);
   }
   ClearState();
 }
@@ -499,15 +484,4 @@ SaveUpdatePasswordMessageDelegate::
       break;
   }
   return ui_dismissal_reason;
-}
-
-void SaveUpdatePasswordMessageDelegate::MaybeNudgeToUpdateGmsCore() {
-  if (passwords_state_.client()
-          ->GetPasswordFeatureManager()
-          ->ShouldUpdateGmsCore()) {
-    passwords_state_.client()->ShowPasswordManagerErrorMessage(
-        password_manager::ErrorMessageFlowType::kSaveFlow,
-        password_manager::PasswordStoreBackendErrorType::
-            kGMSCoreOutdatedSavingPossible);
-  }
 }

@@ -250,10 +250,6 @@ void SaveUpdatePasswordMessageDelegateTest::SetUp() {
 
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
-
-  ON_CALL(*(password_manager_client_.GetPasswordFeatureManager()),
-          ShouldUpdateGmsCore)
-      .WillByDefault(Return(false));
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TearDown() {
@@ -575,112 +571,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, SaveOnActionClick) {
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
-}
-
-// Tests that the message to update GMSCore will show when the user
-// clicks the "Save" button if the GMSCore version is too low to save account
-// passwords.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       NudgeToUpdateGmsCore_OnSaveClicked) {
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
-  EXPECT_CALL(*form_manager, Save());
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/false);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*GetClient(),
-              ShowPasswordManagerErrorMessage(
-                  password_manager::ErrorMessageFlowType::kSaveFlow,
-                  password_manager::PasswordStoreBackendErrorType::
-                      kGMSCoreOutdatedSavingPossible));
-  EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
-      .WillOnce(Return(true));
-  TriggerActionClick();
-
-  // Fast forward, since Update message is shown with a delay.
-  FastForward();
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-}
-
-// Tests that the message to update GMSCore will not show when the user
-// clicks the "Save" button.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       DontNudgeToUpdateGmsCore_OnSaveClicked) {
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
-  EXPECT_CALL(*form_manager, Save());
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/false);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*GetClient(),
-              ShowPasswordManagerErrorMessage(
-                  password_manager::ErrorMessageFlowType::kSaveFlow,
-                  password_manager::PasswordStoreBackendErrorType::
-                      kGMSCoreOutdatedSavingPossible))
-      .Times(0);
-  EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
-      .WillOnce(Return(false));
-  TriggerActionClick();
-
-  // Fast forward, since Update message is shown with a delay.
-  FastForward();
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-}
-
-// Tests that the message to update GMSCore will show when the user accepts the
-// update password message in case when there is no confirmation
-// dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       NudgeToUpdateGmsCore_OnUpdatePasswordWithSingleForm) {
-  SetPendingCredentials(kUsername, kPassword);
-  std::vector<PasswordForm> single_form_best_matches = {
-      CreatePasswordForm(kUsername, kPassword)};
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
-  EXPECT_CALL(*form_manager, Save());
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/true);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*GetClient(),
-              ShowPasswordManagerErrorMessage(
-                  password_manager::ErrorMessageFlowType::kSaveFlow,
-                  password_manager::PasswordStoreBackendErrorType::
-                      kGMSCoreOutdatedSavingPossible));
-  EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
-      .WillOnce(Return(true));
-  TriggerActionClick();
-
-  // Fast forward, since Update message is shown with a delay.
-  FastForward();
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-}
-
-// Tests that the message to update GMSCore will not show when the user accepts
-// the update password message in case when there is no confirmation dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       DontNudgeToUpdateGmsCore_OnUpdatePasswordWithSingleForm) {
-  SetPendingCredentials(kUsername, kPassword);
-  std::vector<PasswordForm> single_form_best_matches = {
-      CreatePasswordForm(kUsername, kPassword)};
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
-  EXPECT_CALL(*form_manager, Save());
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/true);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*GetClient(),
-              ShowPasswordManagerErrorMessage(
-                  password_manager::ErrorMessageFlowType::kSaveFlow,
-                  password_manager::PasswordStoreBackendErrorType::
-                      kGMSCoreOutdatedSavingPossible))
-      .Times(0);
-  EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
-      .WillOnce(Return(false));
-  TriggerActionClick();
-
-  // Fast forward, since Update message is shown with a delay.
-  FastForward();
-  EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
 // Tests that password form is not saved and metrics recorded correctly when the
