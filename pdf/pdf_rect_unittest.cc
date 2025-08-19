@@ -106,6 +106,52 @@ TEST(PdfRectTest, Intersect) {
   EXPECT_EQ(2.0f, rect.top());
 }
 
+TEST(PdfRectTest, IntersectEmpty) {
+  {
+    // Both rects empty.
+    PdfRect rect;
+    rect.Intersect(PdfRect());
+    EXPECT_TRUE(rect.IsEmpty());
+  }
+  {
+    // First rect empty.
+    PdfRect rect;
+    static constexpr PdfRect kRect(3.0f, 3.0f, 4.0f, 4.0f);
+    rect.Intersect(kRect);
+    EXPECT_TRUE(rect.IsEmpty());
+  }
+  {
+    // Second rect empty.
+    PdfRect rect(0.0f, 0.0f, 2.0f, 2.0f);
+    rect.Intersect(PdfRect());
+    EXPECT_TRUE(rect.IsEmpty());
+  }
+}
+
+TEST(PdfRectTest, IntersectNonOverlapping) {
+  {
+    // Second rect above first.
+    PdfRect rect(0.0f, 0.0f, 2.0f, 2.0f);
+    static constexpr PdfRect kRect(0.0f, 3.0f, 2.0f, 4.0f);
+    rect.Intersect(kRect);
+    EXPECT_TRUE(rect.IsEmpty());
+  }
+  {
+    // Second rect right of first.
+    PdfRect rect(0.0f, 0.0f, 2.0f, 2.0f);
+    static constexpr PdfRect kRect(3.0f, 0.0f, 4.0f, 2.0f);
+    rect.Intersect(kRect);
+    EXPECT_TRUE(rect.IsEmpty());
+  }
+  {
+    // Second rect above and right of first.
+    PdfRect rect(0.0f, 0.0f, 2.0f, 2.0f);
+    static constexpr PdfRect kRect(3.0f, 3.0f, 4.0f, 4.0f);
+    rect.Intersect(kRect);
+    EXPECT_TRUE(rect.IsEmpty());
+  }
+}
+
 TEST(PdfRectTest, Union) {
   PdfRect rect(0.0f, 0.0f, 2.0f, 2.0f);
   static constexpr PdfRect kRect(1.0f, 1.0f, 3.0f, 3.0f);

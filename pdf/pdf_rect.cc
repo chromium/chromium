@@ -33,10 +33,24 @@ void PdfRect::Scale(float scale_factor) {
 }
 
 void PdfRect::Intersect(const PdfRect& rect) {
-  left_ = std::max(left_, rect.left_);
-  top_ = std::min(top_, rect.top_);
-  right_ = std::min(right_, rect.right_);
-  bottom_ = std::max(bottom_, rect.bottom_);
+  if (IsEmpty() || rect.IsEmpty()) {
+    *this = PdfRect();
+    return;
+  }
+
+  float max_left = std::max(left_, rect.left());
+  float min_top = std::min(top_, rect.top());
+  float min_right = std::min(right_, rect.right());
+  float max_bottom = std::max(bottom_, rect.bottom());
+  if (max_left >= min_right || max_bottom >= min_top) {
+    *this = PdfRect();
+    return;
+  }
+
+  left_ = max_left;
+  top_ = min_top;
+  right_ = min_right;
+  bottom_ = max_bottom;
 }
 
 void PdfRect::Union(const PdfRect& rect) {
