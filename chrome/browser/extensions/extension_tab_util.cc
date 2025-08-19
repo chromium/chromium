@@ -769,18 +769,18 @@ void ExtensionTabUtil::ScrubTabForExtension(
 bool ExtensionTabUtil::GetTabListInterface(content::WebContents& web_contents,
                                            TabListInterface** tab_list_out,
                                            int* index_out) {
-  // In practice, none of the current mechanisms for looking up a browser window
-  // (and thus tab list) from a tab work fully on Android today.
-#if BUILDFLAG(IS_ANDROID)
-  return false;
-#else
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(&web_contents);
   if (!tab_interface) {
     return false;
   }
 
-  BrowserWindowInterface* browser = tab_interface->GetBrowserWindowInterface();
+  BrowserWindowInterface* browser =
+#if BUILDFLAG(IS_ANDROID)
+      GetBrowserForWebContents(&web_contents);
+#else
+      tab_interface->GetBrowserWindowInterface();
+#endif
 
   if (!browser) {
     return false;
@@ -813,7 +813,6 @@ bool ExtensionTabUtil::GetTabListInterface(content::WebContents& web_contents,
   *index_out = index;
   *tab_list_out = tab_list;
   return true;
-#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
