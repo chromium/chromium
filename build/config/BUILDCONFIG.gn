@@ -570,16 +570,18 @@ foreach(_target_type,
         public_deps = []
       }
 
-      # When Clang modules are used, libc++ headers must be copied (to the gen
-      # directory) regardless of whether the libc++ module is used in this
-      # target.
-      public_deps += [
-        "//buildtools/third_party/libc++:copy_custom_headers($default_toolchain)",
-        "//buildtools/third_party/libc++:copy_libcxx_headers($default_toolchain)",
-      ]
+      if (is_clang) {
+        # When clang is used, some target may use clang module and we need to use
+        # libc++ headers copied in gen directory, regardless of whether the libc++
+        # module is used in this target or not.
+        public_deps += [
+          "//buildtools/third_party/libc++:copy_custom_headers($default_toolchain)",
+          "//buildtools/third_party/libc++:copy_libcxx_headers($default_toolchain)",
+        ]
+      }
 
       if (!defined(use_libcxx_modules)) {
-        use_libcxx_modules = true
+        use_libcxx_modules = is_clang
       }
 
       if (filter_include(
@@ -689,16 +691,18 @@ foreach(_target_type,
         public_deps = []
       }
 
-      # When Clang modules are used, libc++ headers must be copied (to the gen
-      # directory) regardless of whether the libc++ module is used in this
-      # target.
-      public_deps += [
-        "//buildtools/third_party/libc++:copy_custom_headers($default_toolchain)",
-        "//buildtools/third_party/libc++:copy_libcxx_headers($default_toolchain)",
-      ]
+      if (is_clang) {
+        # When clang is used, some target may use clang module and we need to use
+        # libc++ headers copied in gen directory, regardless of whether the libc++
+        # module is used in this target or not.
+        public_deps += [
+          "//buildtools/third_party/libc++:copy_custom_headers($default_toolchain)",
+          "//buildtools/third_party/libc++:copy_libcxx_headers($default_toolchain)",
+        ]
+      }
 
       if (!defined(use_libcxx_modules)) {
-        use_libcxx_modules = true
+        use_libcxx_modules = is_clang
       }
 
       if (filter_include(
