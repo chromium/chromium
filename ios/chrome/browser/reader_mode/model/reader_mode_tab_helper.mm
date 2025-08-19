@@ -18,6 +18,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
@@ -286,6 +287,12 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
                                 ->IsPageTranslated()) {
       reader_mode_content_tab_helper->ActivateTranslateOnPage();
     }
+  }
+
+  infobars::InfoBarManager* manager =
+      InfoBarManagerImpl::FromWebState(web_state_.get());
+  if (manager) {
+    manager->RemoveAllInfoBars(/*animate=*/false);
   }
 
   WebViewProxyTabHelper* tab_helper =

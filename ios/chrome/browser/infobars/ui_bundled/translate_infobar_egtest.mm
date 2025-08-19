@@ -1328,7 +1328,8 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
 }
 
-// Tests that translation can be applied while in reader mode.
+// Tests that translation can be applied while in reader mode and that translate
+// infobars are suppressed when reader mode is activated.
 - (void)testTranslateInReaderMode {
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -1348,10 +1349,6 @@ void TestResponseProvider::GetLanguageResponse(
   // Check Translate banner is presented.
   GREYAssertTrue([self isBeforeTranslateBannerVisible],
                  @"Before Translate banner was not found");
-  // Swipe up the Banner.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kInfobarBannerViewIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Open Reader Mode.
   GREYAssertTrue(
@@ -1362,6 +1359,10 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+
+  // Verify the Translate banner is automatically dismissed.
+  GREYAssertFalse([self isBeforeTranslateBannerVisible],
+                  @"Before Translate banner was found");
 
   // Manually trigger translation from the tools menu.
   [ChromeEarlGreyUI openToolsMenu];
