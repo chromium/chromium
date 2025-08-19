@@ -56,15 +56,14 @@ bool BookmarkBarPreloadPipeline::StartPrerender(
     return false;
   }
 
+  if (prerender_handle_ && prerender_handle_->IsValid()) {
+    return true;
+  }
   // Helpers to create content::PreloadingAttempt.
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(&web_contents);
   content::PreloadingURLMatchCallback same_url_matcher =
       content::PreloadingData::GetSameURLMatcher(url_);
-
-  if (prerender_handle_ && prerender_handle_->IsValid()) {
-    return true;
-  }
 
   bool is_search_url = IsSearchUrl(web_contents, url_);
   base::UmaHistogramBoolean(kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl,
