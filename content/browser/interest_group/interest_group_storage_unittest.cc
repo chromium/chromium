@@ -54,6 +54,10 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -4105,6 +4109,14 @@ class InterestGroupStorageWithNoIdleFastForwardTest
 };
 
 TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
   AdAuctionEventRecord record_view;
@@ -4212,6 +4224,14 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire2) {
 // enforced by maintenance, and when re-joining without maintenance.
 TEST_F(InterestGroupStorageWithNoIdleFastForwardTest,
        ExpirationDeletesMetadata_LargeLifetimes) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   base::HistogramTester histograms;
 
   // NOTE: These must be large enough for the fast forwards and maintenance
