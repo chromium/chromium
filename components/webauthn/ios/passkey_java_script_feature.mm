@@ -48,13 +48,23 @@ PasskeyJavaScriptFeature::GetScriptMessageHandlerName() const {
 void PasskeyJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
+  PasskeyTabHelper* passkey_tab_helper =
+      PasskeyTabHelper::FromWebState(web_state);
+  if (!passkey_tab_helper) {
+    // Passkey tab helper is not created in some WebState cases for which
+    // passkey flows should not be applicable either (e.g. Lens overlay).
+    // Return early in this case. If there is somehow a valid passkey flow that
+    // should happen, it will still be handled by invoking Credential Provider
+    // Extension logic in the controller.
+    return;
+  }
+
   // This message is sent whenever a navigator.credentials get() or create() is
   // called for a WebAuthn credential.
   // Expected argument:
   // event: (string) Describes a type of event.
   //
   // For some events there are more expected arguments described below.
-
   base::Value* body = message.body();
   if (!body || !body->is_dict()) {
     return;
@@ -65,10 +75,6 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
   if (!event || event->empty()) {
     return;
   }
-
-  PasskeyTabHelper* passkey_tab_helper =
-      PasskeyTabHelper::FromWebState(web_state);
-  CHECK(passkey_tab_helper);
 
   // For those events there are no more expected arguments.
   if (*event == "getRequested" || *event == "createRequested" ||
