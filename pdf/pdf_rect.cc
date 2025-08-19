@@ -54,6 +54,15 @@ void PdfRect::Intersect(const PdfRect& rect) {
 }
 
 void PdfRect::Union(const PdfRect& rect) {
+  if (rect.IsEmpty()) {
+    return;
+  }
+
+  if (IsEmpty()) {
+    *this = rect;
+    return;
+  }
+
   left_ = std::min(left_, rect.left());
   top_ = std::max(top_, rect.top());
   right_ = std::max(right_, rect.right());

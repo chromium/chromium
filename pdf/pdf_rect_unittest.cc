@@ -162,4 +162,32 @@ TEST(PdfRectTest, Union) {
   EXPECT_EQ(3.0f, rect.top());
 }
 
+TEST(PdfRectTest, UnionEmpty) {
+  static constexpr PdfRect kRect(3.0f, 3.0f, 4.0f, 4.0f);
+  {
+    // Both rects empty.
+    PdfRect rect;
+    rect.Union(PdfRect());
+    EXPECT_TRUE(rect.IsEmpty());
+  }
+  {
+    // First rect empty.
+    PdfRect rect;
+    rect.Union(kRect);
+    EXPECT_EQ(kRect.left(), rect.left());
+    EXPECT_EQ(kRect.bottom(), rect.bottom());
+    EXPECT_EQ(kRect.right(), rect.right());
+    EXPECT_EQ(kRect.top(), rect.top());
+  }
+  {
+    // Second rect empty.
+    PdfRect rect = kRect;
+    rect.Union(PdfRect());
+    EXPECT_EQ(kRect.left(), rect.left());
+    EXPECT_EQ(kRect.bottom(), rect.bottom());
+    EXPECT_EQ(kRect.right(), rect.right());
+    EXPECT_EQ(kRect.top(), rect.top());
+  }
+}
+
 }  // namespace chrome_pdf
