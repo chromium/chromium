@@ -15762,6 +15762,7 @@ from previous Chrome versions.
   <int value="609112512" label="touch-selection-strategy"/>
   <int value="609568740" label="ImprovedSemanticsActivityIndicators:disabled"/>
   <int value="609580715" label="ArcCupsApi:disabled"/>
+  <int value="610513921" label="RobustWindowManagement:disabled"/>
   <int value="610545308" label="enable-potentially-annoying-security-features"/>
   <int value="612509325" label="AndroidWindowManagementWebApi:enabled"/>
   <int value="613578742" label="CdmStorageDatabaseMigration:enabled"/>
@@ -17586,6 +17587,7 @@ from previous Chrome versions.
   <int value="1273447411" label="TranslationAPI:enabled"/>
   <int value="1273509994"
       label="ClientSideDetectionBrandAndIntentForScamDetection:enabled"/>
+  <int value="1273930925" label="RobustWindowManagement:enabled"/>
   <int value="1274277775" label="SimLockPolicy:disabled"/>
   <int value="1274717741" label="top-chrome-touch-ui"/>
   <int value="1275454401" label="ArcVmMemorySize:enabled"/>

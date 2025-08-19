@@ -3654,6 +3654,13 @@ const char kRetainOmniboxOnFocusDescription[] =
     "exhibit a change in behavior.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const char kRobustWindowManagementName[] = "Robust window management";
+const char kRobustWindowManagementDescription[] =
+    "Enables robust window management which includes being able to easily find "
+    "switch between, and resume specific Chrome windows. Essentially, "
+    "experiencing predictable and reliable window behavior similar to desktop "
+    "browsers.";
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 const char kRootScrollbarFollowsTheme[] = "Make scrollbar follow theme";
 const char kRootScrollbarFollowsThemeDescription[] =

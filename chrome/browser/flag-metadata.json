@@ -8691,6 +8691,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "robust-window-management",
+    "owners": [ "aishwaryarj@google.com", "rathomas@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "root-scrollbar-follows-browser-theme",
     "owners": [
       "gastonr@microsoft.com",

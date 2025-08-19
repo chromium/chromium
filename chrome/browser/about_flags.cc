@@ -12673,6 +12673,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"instance-switcher-v2", flag_descriptions::kInstanceSwitcherV2Name,
      flag_descriptions::kInstanceSwitcherV2Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kInstanceSwitcherV2)},
+
+    {"robust-window-management", flag_descriptions::kRobustWindowManagementName,
+     flag_descriptions::kRobustWindowManagementDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kRobustWindowManagement)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -386,6 +386,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReloadTabUiResourcesIfChanged,
     &kRemoveTabFocusOnShowingAndSelect,
     &kRightEdgeGoesForwardGestureNav,
+    &kRobustWindowManagement,
     &kSearchInCCT,
     &kSearchInCCTAlternateTapHandling,
     &kSearchInCCTIfEnabledByEmbedder,
@@ -1274,6 +1275,10 @@ BASE_FEATURE(kRemoveTabFocusOnShowingAndSelect,
 
 BASE_FEATURE(kRightEdgeGoesForwardGestureNav,
              "RightEdgeGoesForwardGestureNav",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRobustWindowManagement,
+             "RobustWindowManagement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSettingsSingleActivity,
