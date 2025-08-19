@@ -144,6 +144,7 @@ import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
+import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoordinator;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
@@ -270,6 +271,7 @@ public class ToolbarManager
     private TemplateUrlService mTemplateUrlService;
     private TemplateUrlServiceObserver mTemplateUrlObserver;
     private LocationBar mLocationBar;
+    private final Supplier<LocationBar> mLocationBarSupplier = () -> mLocationBar;
     private FindToolbarManager mFindToolbarManager;
 
     private LayoutManagerImpl mLayoutManager;
@@ -323,6 +325,7 @@ public class ToolbarManager
     private HomePageButtonsCoordinator mHomePageButtonsCoordinator;
     private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     private @Nullable BackButtonCoordinator mBackButtonCoordinator;
+    private @Nullable ForwardButtonCoordinator mForwardButtonCoordinator;
     private @Nullable ExtensionToolbarCoordinator mExtensionToolbarCoordinator;
 
     private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
@@ -1061,6 +1064,21 @@ public class ToolbarManager
                             /* onNavigationPopupShown= */ () -> {},
                             historyDelegate,
                             /* isWebApp= */ false);
+        }
+
+        ChromeImageButton forwardButton = mControlContainer.findViewById(R.id.forward_button);
+        if (forwardButton != null) {
+            mForwardButtonCoordinator =
+                    new ForwardButtonCoordinator(
+                            mActivity,
+                            mLocationBarModel,
+                            mToolbarTabController,
+                            mLocationBarSupplier,
+                            mActivityLifecycleDispatcher,
+                            forwardButton,
+                            historyDelegate,
+                            browsingModeThemeColorProvider,
+                            mIncognitoStateProvider);
         }
 
         ViewStub extensionToolbarStub =
@@ -1890,6 +1908,7 @@ public class ToolbarManager
                         mActivityTabProvider,
                         mToolbarNavControlsEnabledSupplier,
                         mBackButtonCoordinator,
+                        mForwardButtonCoordinator,
                         mIsNewTabPageCustomizationToolbarButtonEnabled
                                 ? mHomePageButtonsCoordinator
                                 : mHomeButtonCoordinator,
@@ -2951,7 +2970,6 @@ public class ToolbarManager
 
         mToolbar.updateButtonVisibility();
         onBackPressStateChanged();
-        mToolbar.updateForwardButtonVisibility(currentTab != null && currentTab.canGoForward());
         updateReloadState(tabCrashed);
         updateBookmarkButtonStatus();
         mMenuButtonCoordinator.setVisibility(true);

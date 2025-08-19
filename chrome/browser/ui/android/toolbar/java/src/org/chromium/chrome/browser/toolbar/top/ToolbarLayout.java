@@ -10,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -26,7 +25,6 @@ import androidx.appcompat.widget.TooltipCompat;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -37,7 +35,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
-import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -52,6 +49,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
+import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
@@ -135,6 +133,10 @@ public abstract class ToolbarLayout extends FrameLayout
      * @param historyDelegate Delegate used to display navigation history.
      * @param userEducationHelper Helper for user education flows.
      * @param trackerSupplier Provides a {@link Tracker} when available.
+     * @param progressBar The {@link ToolbarProgressBar} for the toolbar.
+     * @param reloadButtonCoordinator The coordinator for the reload button.
+     * @param backButtonCoordinator The coordinator for the back button.
+     * @param forwardButtonCoordinator The coordinator for the forward button.
      * @param homeButtonDisplay The {@link HomeButtonDisplay} to manage the display and behavior of
      *     home button(s). Should be null on custom tabs.
      * @param extensionToolbarCoordinator Provides an {@link ExtensionToolbarCoordinator} for
@@ -156,6 +158,7 @@ public abstract class ToolbarLayout extends FrameLayout
             ToolbarProgressBar progressBar,
             @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
             @Nullable BackButtonCoordinator backButtonCoordinator,
+            @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             @Nullable HomeButtonDisplay homeButtonDisplay,
             @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator,
             ThemeColorProvider themeColorProvider,
@@ -503,13 +506,6 @@ public abstract class ToolbarLayout extends FrameLayout
     void updateButtonVisibility() {}
 
     /**
-     * Gives inheriting classes the chance to update the visibility of the forward button.
-     *
-     * @param canGoForward Whether or not the current tab has any history to go forward to.
-     */
-    void updateForwardButtonVisibility(boolean canGoForward) {}
-
-    /**
      * Gives inheriting classes the chance to update the visual status of the bookmark button.
      *
      * @param isBookmarked Whether or not the current tab is already bookmarked.
@@ -739,42 +735,9 @@ public abstract class ToolbarLayout extends FrameLayout
     @VisibleForTesting
     public abstract LocationBar getLocationBar();
 
-    /**
-     * Navigates the current Tab forward.
-     *
-     * @return Whether or not the current Tab did go forward.
-     */
-    protected boolean forward(int metaState, String reportingTagPrefix) {
-        maybeUnfocusUrlBar();
-        if (mToolbarTabController == null) return false;
-        boolean hasControl = (metaState & KeyEvent.META_CTRL_ON) != 0;
-        boolean hasShift = (metaState & KeyEvent.META_SHIFT_ON) != 0;
-        if (hasControl && hasShift) {
-            // Holding ALT is allowed as well (reference desktop behavior).
-
-            // Note on recording user actions: "forward" is recorded regardless of whether it
-            // was successful. See
-            // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarTablet.java;l=196;drc=14aab80e079b7db3e85a8302da6d660bafeddfbc
-            RecordUserAction.record(reportingTagPrefix + "InNewForegroundTab");
-            return mToolbarTabController.forwardInNewTab(/* foregroundNewTab= */ true);
-        } else if (hasControl) {
-            RecordUserAction.record(reportingTagPrefix + "InNewBackgroundTab");
-            return mToolbarTabController.forwardInNewTab(/* foregroundNewTab= */ false);
-        } else if (hasShift) {
-            RecordUserAction.record(reportingTagPrefix + "InNewForegroundWindow");
-            return mToolbarTabController.forwardInNewWindow();
-        } else {
-            RecordUserAction.record(reportingTagPrefix);
-            return mToolbarTabController.forward();
-        }
-    }
-
-    private void maybeUnfocusUrlBar() {
-        if (getLocationBar() != null && getLocationBar().getOmniboxStub() != null) {
-            getLocationBar()
-                    .getOmniboxStub()
-                    .setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
-        }
+    /** Returns the {@link ToolbarTabController} for interacting with the current tab. */
+    public ToolbarTabController getToolbarTabController() {
+        return mToolbarTabController;
     }
 
     /**

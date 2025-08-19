@@ -223,6 +223,7 @@ public class CustomTabToolbarUnitTest {
                 mToolbarProgressBar,
                 null,
                 null,
+                null,
                 /* homeButtonDisplay= */ null,
                 null,
                 mThemeColorProvider,

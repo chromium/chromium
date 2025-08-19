@@ -13,6 +13,13 @@ public class ToolbarUtils {
     private static final int ICON_FADE_IN_ANIMATION_DELAY_MS = 75;
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
 
+    /** Returns the id for the appropriate toolbar icon ripple drawable. */
+    public static int getToolbarIconRippleId(boolean isIncognito) {
+        return isIncognito
+                ? org.chromium.chrome.browser.toolbar.R.drawable.default_icon_background_baseline
+                : org.chromium.chrome.browser.toolbar.R.drawable.default_icon_background;
+    }
+
     /**
      * Sets values in the animator (interpolator, duration, etc) for fading in animations. Returns
      * the input {@link ObjectAnimator}.

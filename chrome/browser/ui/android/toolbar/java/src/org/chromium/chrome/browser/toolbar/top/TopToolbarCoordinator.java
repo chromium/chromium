@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
+import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
@@ -182,6 +183,7 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> toolbarNavControlsEnabledSupplier,
             @Nullable BackButtonCoordinator backButtonCoordinator,
+            @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             @Nullable HomeButtonDisplay homeButtonDisplay,
             @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator) {
         mToolbarLayout = toolbarLayout;
@@ -249,6 +251,7 @@ public class TopToolbarCoordinator implements Toolbar {
                 progressBar,
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,
+                forwardButtonCoordinator,
                 homeButtonDisplay,
                 extensionToolbarCoordinator,
                 normalThemeColorProvider,
@@ -528,15 +531,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void setOptionalButtonDelegate(OptionalBrowsingModeButtonController.Delegate delegate) {
         mOptionalButtonController.setDelegate(delegate);
-    }
-
-    /**
-     * Gives inheriting classes the chance to update the visibility of the forward button.
-     *
-     * @param canGoForward Whether or not the current tab has any history to go forward to.
-     */
-    public void updateForwardButtonVisibility(boolean canGoForward) {
-        mToolbarLayout.updateForwardButtonVisibility(canGoForward);
     }
 
     @Override

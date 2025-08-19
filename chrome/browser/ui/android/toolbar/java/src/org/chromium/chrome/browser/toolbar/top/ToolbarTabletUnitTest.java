@@ -51,11 +51,13 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinatorTablet;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -65,8 +67,10 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBarAnimatingView;
+import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.incognito.IncognitoIndicatorCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
@@ -77,6 +81,7 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ToastManager;
 
 import java.util.ArrayList;
@@ -97,19 +102,23 @@ public final class ToolbarTabletUnitTest {
     @Mock private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
     @Mock private ToolbarColorObserver mToolbarColorObserver;
     @Mock private ToolbarDataProvider mToolbarDataProvider;
+    @Mock private ToolbarTabController mToolbarTabController;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private ReloadButtonCoordinator mReloadButtonCoordinator;
     @Mock private BackButtonCoordinator mBackButtonCoordinator;
     @Mock private IncognitoIndicatorCoordinator mIncognitoIndicatorCoordinator;
+    @Mock private ForwardButtonCoordinator mForwardButtonCoordinator;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
+    @Mock private NavigationPopup.HistoryDelegate mHistoryDelegate;
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
     private ImageButton mHomeButton;
     private ImageButton mReloadingButton;
     private ImageButton mBackButton;
-    private ImageButton mForwardButton;
+    private ChromeImageButton mForwardButton;
     private ImageButton mBookmarkButton;
     private ToolbarProgressBar mProgressBar;
     private Set<TintObserver> mTintObservers;
@@ -176,6 +185,19 @@ public final class ToolbarTabletUnitTest {
                 .thenReturn(ObjectAnimator.ofFloat(mReloadingButton, View.ALPHA, 0.f));
         when(mBackButtonCoordinator.getFadeAnimator(true))
                 .thenReturn(ObjectAnimator.ofFloat(mReloadingButton, View.ALPHA, 1.f));
+
+        mForwardButtonCoordinator =
+                new ForwardButtonCoordinator(
+                        mActivity,
+                        mToolbarDataProvider,
+                        mToolbarTabController,
+                        () -> mLocationBar,
+                        mActivityLifecycleDispatcher,
+                        mForwardButton,
+                        mHistoryDelegate,
+                        mThemeColorProvider,
+                        mIncognitoStateProvider);
+        mToolbarTablet.setForwardButtonCoordinatorForTesting(mForwardButtonCoordinator);
     }
 
     @After
@@ -223,8 +245,9 @@ public final class ToolbarTabletUnitTest {
                 mProgressBar,
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,
+                mForwardButtonCoordinator,
                 /* homeButtonDisplay= */ null,
-                null,
+                /* extensionToolbarCoordinator= */ null,
                 mThemeColorProvider,
                 mIncognitoStateProvider);
         when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
@@ -323,6 +346,7 @@ public final class ToolbarTabletUnitTest {
                 mProgressBar,
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,
+                mForwardButtonCoordinator,
                 /* homeButtonDisplay= */ null,
                 null,
                 mThemeColorProvider,
@@ -425,13 +449,41 @@ public final class ToolbarTabletUnitTest {
 
     @Test
     public void testUpdateForwardButtonVisibility() {
+        mToolbarTablet.onFinishInflate();
+        mToolbarTablet.initialize(
+                mToolbarDataProvider,
+                null,
+                mMenuButtonCoordinator,
+                mTabSwitcherButtonCoordinator,
+                null,
+                null,
+                null,
+                mProgressBar,
+                mReloadButtonCoordinator,
+                mBackButtonCoordinator,
+                mForwardButtonCoordinator,
+                /* homeButtonDisplay= */ null,
+                /* extensionToolbarCoordinator= */ null,
+                mThemeColorProvider,
+                mIncognitoStateProvider);
         ImageButton btn = mToolbarTablet.findViewById(R.id.forward_button);
-        mToolbarTablet.updateForwardButtonVisibility(true);
-        assertTrue("Button should be enabled", btn.isEnabled());
-        assertTrue("Button should be focused", btn.isFocusable());
-        mToolbarTablet.updateForwardButtonVisibility(false);
+
+        doReturn(null).when(mToolbarDataProvider).getTab();
+        mToolbarTablet.updateButtonVisibility();
         assertFalse("Button should not be enabled", btn.isEnabled());
         assertFalse("Button should not be focused", btn.isFocusable());
+
+        Tab tab = Mockito.mock(Tab.class);
+        doReturn(false).when(tab).canGoForward();
+        doReturn(tab).when(mToolbarDataProvider).getTab();
+        mToolbarTablet.updateButtonVisibility();
+        assertFalse("Button should not be enabled", btn.isEnabled());
+        assertFalse("Button should not be focused", btn.isFocusable());
+
+        doReturn(true).when(tab).canGoForward();
+        mToolbarTablet.updateButtonVisibility();
+        assertTrue("Button should be enabled", btn.isEnabled());
+        assertTrue("Button should be focused", btn.isFocusable());
     }
 
     @Test
