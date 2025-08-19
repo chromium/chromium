@@ -3611,6 +3611,7 @@ if (!is_android) {
       "../browser/ui/views/frame/system_menu_model_builder_browsertest.cc",
       "../browser/ui/views/hats/hats_browsertest.cc",
       "../browser/ui/views/incognito_clear_browsing_data_dialog_browsertest.cc",
+      "../browser/ui/views/infobars/confirm_infobar_custom_layout_browsertest.cc",
       "../browser/ui/views/infobars/infobar_view_browsertest.cc",
       "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
       "../browser/ui/views/intent_picker_dialog_browsertest.cc",
