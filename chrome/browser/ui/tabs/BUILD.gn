@@ -340,7 +340,6 @@ if (!is_android) {
 
   source_set("glic") {
     sources = [
-      "glic_actor_task_icon_controller.h",
       "glic_nudge_controller.h",
       "glic_nudge_delegate.h",
     ]
@@ -351,13 +350,14 @@ if (!is_android) {
       "//ui/base/unowned_user_data",
     ]
     if (enable_glic) {
+      sources += [ "glic_actor_task_icon_controller.h" ]
+
       public_deps += [ "//chrome/browser/glic" ]
     }
   }
 
   source_set("glic_impl") {
     sources = [
-      "glic_actor_task_icon_controller.cc",
       "glic_nudge_controller.cc",
       "glic_nudge_delegate.cc",
     ]
@@ -373,6 +373,8 @@ if (!is_android) {
       "//content/public/browser",
     ]
     if (enable_glic) {
+      sources += [ "glic_actor_task_icon_controller.cc" ]
+
       deps += [ "//chrome/browser/glic" ]
     }
   }

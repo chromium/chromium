@@ -17,6 +17,10 @@ namespace glic {
 class GlicButtonController;
 class GlicIphController;
 }  // namespace glic
+
+namespace tabs {
+class GlicActorTaskIconController;
+}  // namespace tabs
 #endif
 
 class ActorOverlayWindowController;
@@ -114,7 +118,6 @@ class ProductSpecificationsEntryPointController;
 
 namespace tabs {
 class GlicNudgeController;
-class GlicActorTaskIconController;
 }  // namespace tabs
 
 namespace enterprise_data_protection {
@@ -524,10 +527,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 
+#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<tabs::GlicActorTaskIconController>
       glic_actor_task_icon_controller_;
-
-#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicButtonController> glic_button_controller_;
   std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
 #endif

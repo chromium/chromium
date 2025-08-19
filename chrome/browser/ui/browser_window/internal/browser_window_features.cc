@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_controller.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
@@ -136,6 +135,7 @@
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/ui/tabs/glic_actor_task_icon_controller.h"
 #endif
 
 #if defined(USE_AURA)
@@ -606,10 +606,10 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   extension_window_controller_.reset();
   actor_border_view_controller_.reset();
   actor_overlay_window_controller_.reset();
-  glic_actor_task_icon_controller_.reset();
 
 #if BUILDFLAG(ENABLE_GLIC)
   glic_button_controller_.reset();
+  glic_actor_task_icon_controller_.reset();
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)

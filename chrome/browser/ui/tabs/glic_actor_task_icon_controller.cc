@@ -10,9 +10,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
-#if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#endif
 
 namespace tabs {
 
@@ -39,18 +37,15 @@ GlicActorTaskIconController* GlicActorTaskIconController::From(
 }
 
 void GlicActorTaskIconController::RegisterTaskIconStateCallback() {
-#if BUILDFLAG(ENABLE_GLIC)
   task_icon_state_change_callback_subscription_.push_back(
       actor::ActorKeyedService::Get(profile_)
           ->GetActorUiStateManager()
           ->RegisterTaskIconStateChange(
               base::BindRepeating(&GlicActorTaskIconController::OnStateUpdate,
                                   base::Unretained(this))));
-#endif
 }
 
 void GlicActorTaskIconController::UpdateCurrentTaskIconUiState() {
-#if BUILDFLAG(ENABLE_GLIC)
   actor::ui::ActorUiStateManagerInterface::TaskIconUiState task_icon_state =
       actor::ActorKeyedService::Get(profile_)
           ->GetActorUiStateManager()
@@ -60,10 +55,8 @@ void GlicActorTaskIconController::UpdateCurrentTaskIconUiState() {
   OnStateUpdate(task_icon_state,
                 glic_keyed_service->window_controller().state(),
                 glic_keyed_service->host().GetPrimaryCurrentView());
-#endif
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 void GlicActorTaskIconController::OnStateUpdate(
     actor::ui::ActorUiStateManagerInterface::TaskIconUiState task_icon_state,
     glic::GlicWindowController::State floaty_state,
@@ -110,6 +103,5 @@ void GlicActorTaskIconController::OnStateUpdate(
     }
   }
 }
-#endif
 
 }  // namespace tabs

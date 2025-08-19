@@ -8,10 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/widget/glic_window_controller.h"
-#endif
 
 class BrowserWindowInterface;
 class TabStripActionContainer;
@@ -29,12 +26,10 @@ class GlicActorTaskIconController {
       const GlicActorTaskIconController& other) = delete;
   virtual ~GlicActorTaskIconController();
 
-#if BUILDFLAG(ENABLE_GLIC)
   void OnStateUpdate(
       actor::ui::ActorUiStateManagerInterface::TaskIconUiState task_icon_state,
       glic::GlicWindowController::State floaty_state,
       glic::mojom::CurrentView floaty_view);
-#endif
 
  private:
   const raw_ptr<Profile> profile_;
