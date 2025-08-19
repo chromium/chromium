@@ -9,7 +9,6 @@ from graph import all_headers
 from graph import calculate_rdeps
 from graph import Header
 from graph import IncludeDir
-from graph import Target
 
 if typing.TYPE_CHECKING:
   # To fix circular dependency.
@@ -105,19 +104,3 @@ def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
     # Thus, limits.h exports an undef.
     # if it's textual, limits.h undefs something it defined itself.
     graph['linux/limits.h'].textual = True
-
-
-def should_compile(target: Target) -> bool:
-  """Decides whether a target should be compiled or not.
-
-  If this returns true, the target should be compiled.
-  If this returns false, the target *may* be compiled (eg. if a target that
-    should be compiled depends on this).
-  """
-  for header in target.headers:
-    # For now, we only precompile the transitive dependencies of libcxx, and
-    # nothing else in the sysroot.
-    if header.include_dir == IncludeDir.LibCxx:
-      return True
-
-  return False
