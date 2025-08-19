@@ -8,69 +8,41 @@ import("//build/config/ui.gni")
 import("//ui/webui/webui_features.gni")
 
 source_set("toolbar") {
-  sources = [
-    "app_menu.cc",
+  public = [
     "app_menu.h",
-    "back_forward_button.cc",
     "back_forward_button.h",
-    "browser_app_menu_button.cc",
     "browser_app_menu_button.h",
-    "chrome_labs/chrome_labs_bubble_view.cc",
     "chrome_labs/chrome_labs_bubble_view.h",
-    "chrome_labs/chrome_labs_coordinator.cc",
     "chrome_labs/chrome_labs_coordinator.h",
-    "chrome_labs/chrome_labs_item_view.cc",
     "chrome_labs/chrome_labs_item_view.h",
-    "chrome_labs/chrome_labs_view_controller.cc",
     "chrome_labs/chrome_labs_view_controller.h",
-    "home_button.cc",
     "home_button.h",
-    "overflow_button.cc",
     "overflow_button.h",
-    "pinned_action_toolbar_button.cc",
     "pinned_action_toolbar_button.h",
-    "pinned_action_toolbar_button_menu_model.cc",
     "pinned_action_toolbar_button_menu_model.h",
-    "pinned_toolbar_actions_container.cc",
     "pinned_toolbar_actions_container.h",
-    "pinned_toolbar_actions_container_layout.cc",
     "pinned_toolbar_actions_container_layout.h",
-    "pinned_toolbar_actions_controller.cc",
     "pinned_toolbar_actions_controller.h",
-    "pinned_toolbar_button_status_indicator.cc",
     "pinned_toolbar_button_status_indicator.h",
-    "reload_button.cc",
     "reload_button.h",
-    "split_tabs_button.cc",
     "split_tabs_button.h",
-    "toolbar_action_hover_card_bubble_view.cc",
     "toolbar_action_hover_card_bubble_view.h",
-    "toolbar_action_hover_card_controller.cc",
     "toolbar_action_hover_card_controller.h",
-    "toolbar_action_view.cc",
     "toolbar_action_view.h",
     "toolbar_action_view_delegate_views.h",
-    "toolbar_actions_bar_bubble_views.cc",
     "toolbar_actions_bar_bubble_views.h",
-    "toolbar_button.cc",
     "toolbar_button.h",
-    "toolbar_button_menu_highlighter.cc",
     "toolbar_button_menu_highlighter.h",
-    "toolbar_chip_button.cc",
     "toolbar_chip_button.h",
-    "toolbar_controller.cc",
     "toolbar_controller.h",
-    "toolbar_icon_container_view.cc",
     "toolbar_icon_container_view.h",
-    "toolbar_ink_drop_util.cc",
     "toolbar_ink_drop_util.h",
-    "toolbar_view.cc",
     "toolbar_view.h",
   ]
+
   public_deps = [
     "//base",
     "//build:buildflag_header_h",
-    "//chrome/browser/sharing_hub",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/global_error",
@@ -79,14 +51,16 @@ source_set("toolbar") {
     "//chrome/browser/ui/toolbar/chrome_labs",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/location_bar",
     "//components/bookmarks/browser",
     "//components/prefs",
     "//components/saved_tab_groups/public",
+    "//components/user_education/common",
     "//components/webui/flags",
     "//skia",
     "//ui/actions:actions_headers",
     "//ui/base",
-    "//ui/base:features",
     "//ui/base:types",
     "//ui/base/mojom:ui_base_types",
     "//ui/compositor",
@@ -96,7 +70,50 @@ source_set("toolbar") {
     "//ui/views",
     "//url",
   ]
+
+  if (enable_webui_tab_strip) {
+    public += [ "webui_tab_counter_button.h" ]
+  }
+
+  if (is_chromeos) {
+    public_deps += [ "//chromeos/ash/experiences/arc/intent_helper" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "app_menu.cc",
+    "back_forward_button.cc",
+    "browser_app_menu_button.cc",
+    "chrome_labs/chrome_labs_bubble_view.cc",
+    "chrome_labs/chrome_labs_coordinator.cc",
+    "chrome_labs/chrome_labs_item_view.cc",
+    "chrome_labs/chrome_labs_view_controller.cc",
+    "home_button.cc",
+    "overflow_button.cc",
+    "pinned_action_toolbar_button.cc",
+    "pinned_action_toolbar_button_menu_model.cc",
+    "pinned_toolbar_actions_container.cc",
+    "pinned_toolbar_actions_container_layout.cc",
+    "pinned_toolbar_actions_controller.cc",
+    "pinned_toolbar_button_status_indicator.cc",
+    "reload_button.cc",
+    "split_tabs_button.cc",
+    "toolbar_action_hover_card_bubble_view.cc",
+    "toolbar_action_hover_card_controller.cc",
+    "toolbar_action_view.cc",
+    "toolbar_actions_bar_bubble_views.cc",
+    "toolbar_button.cc",
+    "toolbar_button_menu_highlighter.cc",
+    "toolbar_chip_button.cc",
+    "toolbar_controller.cc",
+    "toolbar_icon_container_view.cc",
+    "toolbar_ink_drop_util.cc",
+    "toolbar_view.cc",
+  ]
+
   deps = [
+    ":toolbar",
     "//base:i18n",
     "//build:branding_buildflags",
     "//cc/paint",
@@ -113,6 +130,7 @@ source_set("toolbar") {
     "//chrome/browser:browser_process",
     "//chrome/browser:flags",
     "//chrome/browser:primitives",
+    "//chrome/browser/extensions",
     "//chrome/browser/feedback",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/performance_manager/public/user_tuning",
@@ -121,6 +139,7 @@ source_set("toolbar") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search",
+    "//chrome/browser/sharing_hub",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
@@ -143,6 +162,7 @@ source_set("toolbar") {
     "//chrome/browser/ui/views/download",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/page_action",
+    "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/views/side_panel:side_panel_enums",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/upgrade_detector",
@@ -171,38 +191,34 @@ source_set("toolbar") {
     "//extensions/browser/api/feedback_private",
     "//extensions/common",
     "//media",
+    "//skia",
     "//third_party/abseil-cpp:absl",
     "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base/dragdrop:types",
     "//ui/base/ime",
-    "//ui/color:color_headers",
+    "//ui/color",
     "//ui/display",
     "//ui/events",
-    "//ui/gfx:color_utils",
-    "//ui/gfx/geometry:geometry_skia",
-    "//ui/menus",
+    "//ui/gfx/range",
     "//ui/native_theme",
+    "//ui/views/controls/webview",
   ]
-  allow_circular_includes_from = [ "//chrome/browser/ui/views/download" ]
+
   if (enable_webui_tab_strip) {
-    sources += [
-      "webui_tab_counter_button.cc",
-      "webui_tab_counter_button.h",
-    ]
+    sources += [ "webui_tab_counter_button.cc" ]
   }
+
   if (use_aura) {
     deps += [ "//ui/aura" ]
   }
   if (is_chromeos) {
-    public_deps += [ "//chromeos/ash/experiences/arc/intent_helper" ]
     deps += [
-      "//ash/constants",
       "//chrome/browser/ash/ownership",
       "//chrome/browser/ash/settings",
-      "//chromeos/components/mgs",
     ]
   }
+
   if (!is_android) {
     deps += [ "//chrome/browser/ui/views/zoom" ]
   }
