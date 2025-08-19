@@ -14279,6 +14279,8 @@ from previous Chrome versions.
   <int value="40990107" label="VerticalAutomotiveBackButtonToolbar:enabled"/>
   <int value="41881657" label="MessagesForAndroidAdsBlocked:enabled"/>
   <int value="41990393" label="ContextMenuGoogleLensChip:enabled"/>
+  <int value="42023126"
+      label="AutofillReintroduceHybridPasskeyDropdownItem:disabled"/>
   <int value="42098736" label="TranslateAndroidManualTrigger:disabled"/>
   <int value="42780498" label="PwaUniversalInstallUi:disabled"/>
   <int value="42844603" label="AndroidSurfaceControl:disabled"/>
@@ -16350,6 +16352,8 @@ from previous Chrome versions.
   <int value="783270752" label="AndroidHistoryManager:enabled"/>
   <int value="784664314" label="CompanyEntityIconAdjustment:disabled"/>
   <int value="784856302" label="EnableBorderlessPrinting:disabled"/>
+  <int value="785042336"
+      label="AutofillReintroduceHybridPasskeyDropdownItem:enabled"/>
   <int value="785159660" label="NotificationsIgnoreRequireInteraction:enabled"/>
   <int value="785273919" label="CompositingBasedThrottling:disabled"/>
   <int value="785795587" label="AndroidAppIntegrationSafeSearch:enabled"/>

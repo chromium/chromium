@@ -4361,6 +4361,13 @@ const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[] =
 const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuDescription[] =
     "Hides the \"Use a passkey\" entry from the autofill popup for conditional "
     "WebAuthn requests. Moves the entry point to the context menu.";
+
+const char kAutofillReintroduceHybridPasskeyDropdownItemName[] =
+    "Reintroduce hybrid passkey entry point";
+const char kAutofillReintroduceHybridPasskeyDropdownItemDescription[] =
+    "Reintroduces the hybrid passkey entry point to the Autofill dropdown "
+    "menu.";
+
 const char kWebAuthnPasskeyUpgradeName[] =
     "Enable automatic passkey upgrades in Google Password Manager";
 const char kWebAuthnPasskeyUpgradeDescription[] =

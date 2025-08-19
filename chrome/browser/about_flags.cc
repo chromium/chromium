@@ -13177,7 +13177,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMobilePromoOnDesktopDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kMobilePromoOnDesktop,
                                     kMobilePromoOnDesktopVariations,
-                                    "MobilePromoOnDesktop")}
+                                    "MobilePromoOnDesktop")},
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"reintroduce-hybrid-passkey-entry-point",
+     flag_descriptions::kAutofillReintroduceHybridPasskeyDropdownItemName,
+     flag_descriptions::
+         kAutofillReintroduceHybridPasskeyDropdownItemDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kAutofillReintroduceHybridPasskeyDropdownItem)},
+#endif
 
     // Add new entries above this line.
 

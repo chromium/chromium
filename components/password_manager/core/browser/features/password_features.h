@@ -48,6 +48,12 @@ BASE_DECLARE_FEATURE(kAutofillPasswordUserPerceptionSurvey);
 // the autofill dropdown. This is now decoupled from
 // "PasswordManualFallbackAvailable" flag.
 BASE_DECLARE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+
+// Undoes the effect of WebAuthnUsePasskeyFromAnotherDeviceInContextMenu by
+// adding the hybrid item back into the dropdown. It also adds the entry point
+// to autofill dropdowns.
+// Needs autofill::features::AutofillAndPasswordsInSameSurface to be enabled.
+BASE_DECLARE_FEATURE(kAutofillReintroduceHybridPasskeyDropdownItem);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.

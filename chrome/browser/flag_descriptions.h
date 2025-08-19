@@ -4852,6 +4852,10 @@ extern const char kEnableStandardBoundSessionRefreshQuotaDescription[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kEnablePolicyPromotionBannerName[];
 extern const char kEnablePolicyPromotionBannerDescription[];
+
+extern const char kAutofillReintroduceHybridPasskeyDropdownItemName[];
+extern const char kAutofillReintroduceHybridPasskeyDropdownItemDescription[];
+
 extern const char kEnableManagementPromotionBannerName[];
 extern const char kEnableManagementPromotionBannerDescription[];
 #endif  // !BUILDFLAG(IS_ANDROID)
