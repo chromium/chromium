@@ -4724,16 +4724,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="Store" variants="Store"/>
 </histogram>
 
-<histogram name="PasswordManager.{Store}RemoveLoginDBError"
-    enum="SqliteLoggedResultCode" expires_after="2025-09-28">
-  <owner>sygiet@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Errors reported by SQLite when removing logins from the login database.
-  </summary>
-  <token key="Store" variants="Store"/>
-</histogram>
-
 <histogram
     name="PasswordManager.{Store}TimesPasswordUsed3.{PasswordType}{CustomPassphraseStatus}"
     units="PasswordUses" expires_after="2026-01-18">
