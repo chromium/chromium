@@ -25,6 +25,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
@@ -62,15 +63,21 @@ content::ClipboardPasteData MakeClipboardPasteData(
 // clipboard logic, see clipboard_browsertests.cc
 class DataControlsClipboardUtilsBrowserTest
     : public MixinBasedInProcessBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   DataControlsClipboardUtilsBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            safe_browsing::kLocalIpAddressInEvents,
-            enterprise_connectors::kEnterpriseActiveUserDetection,
-        },
-        {});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        safe_browsing::kLocalIpAddressInEvents,
+        enterprise_connectors::kEnterpriseActiveUserDetection,
+    };
+    std::vector<base::test::FeatureRef> disabled_features = {};
+
+    use_proto_format() ? enabled_features.push_back(
+                             policy::kUploadRealtimeReportingEventsUsingProto)
+                       : disabled_features.push_back(
+                             policy::kUploadRealtimeReportingEventsUsingProto);
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     active_user_test_mixin_ =
         std::make_unique<enterprise_connectors::test::ActiveUserTestMixin>(
             &mixin_host_, this, &embedded_https_test_server(),
@@ -82,6 +89,8 @@ class DataControlsClipboardUtilsBrowserTest
   bool machine_scope() const { return std::get<0>(GetParam()); }
 
   bool use_workspace_urls() const { return std::get<1>(GetParam()); }
+
+  bool use_proto_format() const { return std::get<2>(GetParam()); }
 
   const char* test_url_0() const {
     return use_workspace_urls() ? kWorkspaceUrlForUser0 : kNonWorkspaceUrl;
@@ -127,7 +136,9 @@ class DataControlsClipboardUtilsBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DataControlsClipboardUtilsBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 }  // namespace
 
@@ -188,26 +199,56 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser1);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser1);
+    }
+    expected_event.set_url(test_url_1());
+    expected_event.set_tab_url(test_url_1());
+    expected_event.set_source("CLIPBOARD");
+    expected_event.set_destination(test_url_1());
+    expected_event.set_content_type("text/plain");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(222);
+    triggered_rule.set_rule_name("rule_name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser1);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_1(),
+        /*expected_tab_url=*/test_url_1(),
+        /*expected_source=*/"CLIPBOARD",
+        /*expected_destination=*/test_url_1(),
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"text/plain"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/{{0, {"222", "rule_name"}}},
+        /*expected_result=*/"EVENT_RESULT_BLOCKED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_1(),
-      /*expected_tab_url=*/test_url_1(),
-      /*expected_source=*/"CLIPBOARD",
-      /*expected_destination=*/test_url_1(),
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"text/plain"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"222", "rule_name"}}},
-      /*expected_result=*/"EVENT_RESULT_BLOCKED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "rule_name",
@@ -250,26 +291,56 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop_warn;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop_warn.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser0);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser0);
+    }
+    expected_event.set_url(test_url_0());
+    expected_event.set_tab_url(test_url_0());
+    expected_event.set_source("CLIPBOARD");
+    expected_event.set_destination(test_url_0());
+    expected_event.set_content_type("image/svg+xml");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(333);
+    triggered_rule.set_rule_name("warn_rule_name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser0);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_0(),
+        /*expected_tab_url=*/test_url_0(),
+        /*expected_source=*/"CLIPBOARD",
+        /*expected_destination=*/test_url_0(),
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"image/svg+xml"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/{{0, {"333", "warn_rule_name"}}},
+        /*expected_result=*/"EVENT_RESULT_WARNED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_0(),
-      /*expected_tab_url=*/test_url_0(),
-      /*expected_source=*/"CLIPBOARD",
-      /*expected_destination=*/test_url_0(),
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"image/svg+xml"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"333", "warn_rule_name"}}},
-      /*expected_result=*/"EVENT_RESULT_WARNED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn_rule_name",
@@ -305,27 +376,57 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop_bypass;
   event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop_bypass.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser0);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser0);
+    }
+    expected_event.set_url(test_url_0());
+    expected_event.set_tab_url(test_url_0());
+    expected_event.set_source("CLIPBOARD");
+    expected_event.set_destination(test_url_0());
+    expected_event.set_content_type("image/svg+xml");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(333);
+    triggered_rule.set_rule_name("warn_rule_name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser0);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/
+        test_url_0(),
+        /*expected_tab_url=*/test_url_0(),
+        /*expected_source=*/"CLIPBOARD",
+        /*expected_destination=*/test_url_0(),
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"image/svg+xml"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/{{0, {"333", "warn_rule_name"}}},
+        /*expected_result=*/"EVENT_RESULT_BYPASSED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/
-      test_url_0(),
-      /*expected_tab_url=*/test_url_0(),
-      /*expected_source=*/"CLIPBOARD",
-      /*expected_destination=*/test_url_0(),
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"image/svg+xml"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"333", "warn_rule_name"}}},
-      /*expected_result=*/"EVENT_RESULT_BYPASSED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   // The dialog will stay up until a user action dismisses it, so `future`
   // shouldn't be ready yet.
@@ -349,26 +450,56 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser1);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser1);
+    }
+    expected_event.set_url(test_url_1());
+    expected_event.set_tab_url(test_url_1());
+    expected_event.set_source("CLIPBOARD");
+    expected_event.set_destination(test_url_1());
+    expected_event.set_content_type("image/png");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(1416);
+    triggered_rule.set_rule_name("warn rule name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser1);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_1(),
+        /*expected_tab_url=*/test_url_1(),
+        /*expected_source=*/"CLIPBOARD",
+        /*expected_destination=*/test_url_1(),
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"image/png"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/{{0, {"1416", "warn rule name"}}},
+        /*expected_result=*/"EVENT_RESULT_WARNED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_1(),
-      /*expected_tab_url=*/test_url_1(),
-      /*expected_source=*/"CLIPBOARD",
-      /*expected_destination=*/test_url_1(),
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"image/png"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"1416", "warn rule name"}}},
-      /*expected_result=*/"EVENT_RESULT_WARNED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn rule name",
@@ -599,26 +730,56 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser0);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser0);
+    }
+    expected_event.set_url(test_url_0());
+    expected_event.set_tab_url(test_url_0());
+    expected_event.set_source("CLIPBOARD");
+    expected_event.set_destination(test_url_0());
+    expected_event.set_content_type("image/svg+xml");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(8765);
+    triggered_rule.set_rule_name("report_rule_name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser0);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_0(),
+        /*expected_tab_url=*/test_url_0(),
+        /*expected_source=*/"CLIPBOARD",
+        /*expected_destination=*/test_url_0(),
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"image/svg+xml"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/{{0, {"8765", "report_rule_name"}}},
+        /*expected_result=*/"EVENT_RESULT_ALLOWED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_0(),
-      /*expected_tab_url=*/test_url_0(),
-      /*expected_source=*/"CLIPBOARD",
-      /*expected_destination=*/test_url_0(),
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"image/svg+xml"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"8765", "report_rule_name"}}},
-      /*expected_result=*/"EVENT_RESULT_ALLOWED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "report_rule_name",
@@ -746,27 +907,57 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyReported) {
   base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser1);
-    event_validator.ExpectSourceActiveUser(kContentAreaUser1);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser1);
+      expected_event.set_source_web_app_signed_in_account(kContentAreaUser1);
+    }
+    expected_event.set_url(test_url_1());
+    expected_event.set_tab_url(test_url_1());
+    expected_event.set_source(test_url_1());
+    expected_event.set_destination("");
+    expected_event.set_content_type("image/svg+xml");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::CLIPBOARD_COPY);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(1248);
+    triggered_rule.set_rule_name("report_only");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser1);
+      event_validator.ExpectSourceActiveUser(kContentAreaUser1);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_1(),
+        /*expected_tab_url=*/test_url_1(),
+        /*expected_source=*/test_url_1(),
+        /*expected_destination=*/"",
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"image/svg+xml"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"CLIPBOARD_COPY",
+        /*triggered_rules=*/{{0, {"1248", "report_only"}}},
+        /*expected_result=*/"EVENT_RESULT_ALLOWED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_1(),
-      /*expected_tab_url=*/test_url_1(),
-      /*expected_source=*/test_url_1(),
-      /*expected_destination=*/"",
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"image/svg+xml"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"1248", "report_only"}}},
-      /*expected_result=*/"EVENT_RESULT_ALLOWED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "report_only",
@@ -807,27 +998,57 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
   base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser0);
-    event_validator.ExpectSourceActiveUser(kContentAreaUser0);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser0);
+      expected_event.set_source_web_app_signed_in_account(kContentAreaUser0);
+    }
+    expected_event.set_url(test_url_0());
+    expected_event.set_tab_url(test_url_0());
+    expected_event.set_source(test_url_0());
+    expected_event.set_destination("");
+    expected_event.set_content_type("image/svg+xml");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::CLIPBOARD_COPY);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(987);
+    triggered_rule.set_rule_name("block");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser0);
+      event_validator.ExpectSourceActiveUser(kContentAreaUser0);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_0(),
+        /*expected_tab_url=*/test_url_0(),
+        /*expected_source=*/test_url_0(),
+        /*expected_destination=*/"",
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"image/svg+xml"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"CLIPBOARD_COPY",
+        /*triggered_rules=*/{{0, {"987", "block"}}},
+        /*expected_result=*/"EVENT_RESULT_BLOCKED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_0(),
-      /*expected_tab_url=*/test_url_0(),
-      /*expected_source=*/test_url_0(),
-      /*expected_destination=*/"",
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"image/svg+xml"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"987", "block"}}},
-      /*expected_result=*/"EVENT_RESULT_BLOCKED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "block",
@@ -871,27 +1092,56 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser1);
-    event_validator.ExpectSourceActiveUser(kContentAreaUser1);
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser1);
+      expected_event.set_source_web_app_signed_in_account(kContentAreaUser1);
+    }
+    expected_event.set_url(test_url_1());
+    expected_event.set_tab_url(test_url_1());
+    expected_event.set_source(test_url_1());
+    expected_event.set_destination("");
+    expected_event.set_content_type("image/png");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::CLIPBOARD_COPY);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(3927);
+    triggered_rule.set_rule_name("warn");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser1);
+      event_validator.ExpectSourceActiveUser(kContentAreaUser1);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_1(),
+        /*expected_tab_url=*/test_url_1(),
+        /*expected_source=*/test_url_1(),
+        /*expected_destination=*/"",
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"image/png"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"CLIPBOARD_COPY",
+        /*triggered_rules=*/{{0, {"3927", "warn"}}},
+        /*expected_result=*/"EVENT_RESULT_WARNED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_1(),
-      /*expected_tab_url=*/test_url_1(),
-      /*expected_source=*/test_url_1(),
-      /*expected_destination=*/"",
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"image/png"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"3927", "warn"}}},
-      /*expected_result=*/"EVENT_RESULT_WARNED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn",
@@ -944,27 +1194,57 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser0);
-    event_validator.ExpectSourceActiveUser(kContentAreaUser0);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser0);
+      expected_event.set_source_web_app_signed_in_account(kContentAreaUser0);
+    }
+    expected_event.set_url(test_url_0());
+    expected_event.set_tab_url(test_url_0());
+    expected_event.set_source(test_url_0());
+    expected_event.set_destination("");
+    expected_event.set_content_type("text/plain");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::CLIPBOARD_COPY);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(101);
+    triggered_rule.set_rule_name("warn_cancel");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser0);
+      event_validator.ExpectSourceActiveUser(kContentAreaUser0);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_0(),
+        /*expected_tab_url=*/test_url_0(),
+        /*expected_source=*/test_url_0(),
+        /*expected_destination=*/"",
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"text/plain"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"CLIPBOARD_COPY",
+        /*triggered_rules=*/{{0, {"101", "warn_cancel"}}},
+        /*expected_result=*/"EVENT_RESULT_WARNED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_0(),
-      /*expected_tab_url=*/test_url_0(),
-      /*expected_source=*/test_url_0(),
-      /*expected_destination=*/"",
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"text/plain"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"101", "warn_cancel"}}},
-      /*expected_result=*/"EVENT_RESULT_WARNED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn_cancel",
@@ -1020,27 +1300,57 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop_warn;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop_warn.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser1);
-    event_validator.ExpectSourceActiveUser(kContentAreaUser1);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser1);
+      expected_event.set_source_web_app_signed_in_account(kContentAreaUser1);
+    }
+    expected_event.set_url(test_url_1());
+    expected_event.set_tab_url(test_url_1());
+    expected_event.set_source(test_url_1());
+    expected_event.set_destination("");
+    expected_event.set_content_type("text/html");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::CLIPBOARD_COPY);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(12345);
+    triggered_rule.set_rule_name("warn_bypass");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser1);
+      event_validator.ExpectSourceActiveUser(kContentAreaUser1);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_1(),
+        /*expected_tab_url=*/test_url_1(),
+        /*expected_source=*/test_url_1(),
+        /*expected_destination=*/"",
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"text/html"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"CLIPBOARD_COPY",
+        /*triggered_rules=*/{{0, {"12345", "warn_bypass"}}},
+        /*expected_result=*/"EVENT_RESULT_WARNED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_1(),
-      /*expected_tab_url=*/test_url_1(),
-      /*expected_source=*/test_url_1(),
-      /*expected_destination=*/"",
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"text/html"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"12345", "warn_bypass"}}},
-      /*expected_result=*/"EVENT_RESULT_WARNED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn_bypass",
@@ -1083,27 +1393,56 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop_bypass;
   event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop_bypass.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser1);
-    event_validator.ExpectSourceActiveUser(kContentAreaUser1);
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser1);
+      expected_event.set_source_web_app_signed_in_account(kContentAreaUser1);
+    }
+    expected_event.set_url(test_url_1());
+    expected_event.set_tab_url(test_url_1());
+    expected_event.set_source(test_url_1());
+    expected_event.set_destination("");
+    expected_event.set_content_type("text/html");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::CLIPBOARD_COPY);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(12345);
+    triggered_rule.set_rule_name("warn_bypass");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser1);
+      event_validator.ExpectSourceActiveUser(kContentAreaUser1);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_1(),
+        /*expected_tab_url=*/test_url_1(),
+        /*expected_source=*/test_url_1(),
+        /*expected_destination=*/"",
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"text/html"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"CLIPBOARD_COPY",
+        /*triggered_rules=*/{{0, {"12345", "warn_bypass"}}},
+        /*expected_result=*/"EVENT_RESULT_BYPASSED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_1(),
-      /*expected_tab_url=*/test_url_1(),
-      /*expected_source=*/test_url_1(),
-      /*expected_destination=*/"",
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"text/html"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"12345", "warn_bypass"}}},
-      /*expected_result=*/"EVENT_RESULT_BYPASSED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   helper.BypassWarning();
   helper.WaitForDialogToClose();
@@ -1123,27 +1462,57 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop_warn;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop_warn.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser0);
-    event_validator.ExpectSourceActiveUser(kContentAreaUser0);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser0);
+      expected_event.set_source_web_app_signed_in_account(kContentAreaUser0);
+    }
+    expected_event.set_url(test_url_0());
+    expected_event.set_tab_url(test_url_0());
+    expected_event.set_source(test_url_0());
+    expected_event.set_destination("");
+    expected_event.set_content_type("text/html");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::CLIPBOARD_COPY);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(111);
+    triggered_rule.set_rule_name("warn_bypass_os");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser0);
+      event_validator.ExpectSourceActiveUser(kContentAreaUser0);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_0(),
+        /*expected_tab_url=*/test_url_0(),
+        /*expected_source=*/test_url_0(),
+        /*expected_destination=*/"",
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"text/html"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"CLIPBOARD_COPY",
+        /*triggered_rules=*/{{0, {"111", "warn_bypass_os"}}},
+        /*expected_result=*/"EVENT_RESULT_WARNED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_0(),
-      /*expected_tab_url=*/test_url_0(),
-      /*expected_source=*/test_url_0(),
-      /*expected_destination=*/"",
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"text/html"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"111", "warn_bypass_os"}}},
-      /*expected_result=*/"EVENT_RESULT_WARNED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn_bypass_os",
@@ -1188,27 +1557,57 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop_bypass;
   event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop_bypass.QuitClosure());
-  if (use_workspace_urls()) {
-    event_validator.ExpectActiveUser(kContentAreaUser0);
-    event_validator.ExpectSourceActiveUser(kContentAreaUser0);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser0);
+      expected_event.set_source_web_app_signed_in_account(kContentAreaUser0);
+    }
+    expected_event.set_url(test_url_0());
+    expected_event.set_tab_url(test_url_0());
+    expected_event.set_source(test_url_0());
+    expected_event.set_destination("");
+    expected_event.set_content_type("text/html");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::CLIPBOARD_COPY);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(111);
+    triggered_rule.set_rule_name("warn_bypass_os");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser0);
+      event_validator.ExpectSourceActiveUser(kContentAreaUser0);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_0(),
+        /*expected_tab_url=*/test_url_0(),
+        /*expected_source=*/test_url_0(),
+        /*expected_destination=*/"",
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"text/html"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"CLIPBOARD_COPY",
+        /*triggered_rules=*/{{0, {"111", "warn_bypass_os"}}},
+        /*expected_result=*/"EVENT_RESULT_BYPASSED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
   }
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/test_url_0(),
-      /*expected_tab_url=*/test_url_0(),
-      /*expected_source=*/test_url_0(),
-      /*expected_destination=*/"",
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"text/html"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"111", "warn_bypass_os"}}},
-      /*expected_result=*/"EVENT_RESULT_BYPASSED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
   helper.BypassWarning();
   helper.WaitForDialogToClose();
@@ -1280,23 +1679,50 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop_warn;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop_warn.QuitClosure());
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/"https://destination.com/",
-      /*expected_tab_url=*/"https://destination.com/",
-      /*expected_source=*/"https://source.com/",
-      /*expected_destination=*/"https://destination.com/",
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"text/plain"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"131", "warn_on_all_pastes"}}},
-      /*expected_result=*/"EVENT_RESULT_WARNED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    expected_event.set_url("https://destination.com/");
+    expected_event.set_tab_url("https://destination.com/");
+    expected_event.set_source("https://source.com/");
+    expected_event.set_destination("https://destination.com/");
+    expected_event.set_content_type("text/plain");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(131);
+    triggered_rule.set_rule_name("warn_on_all_pastes");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/"https://destination.com/",
+        /*expected_tab_url=*/"https://destination.com/",
+        /*expected_source=*/"https://source.com/",
+        /*expected_destination=*/"https://destination.com/",
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"text/plain"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/{{0, {"131", "warn_on_all_pastes"}}},
+        /*expected_result=*/"EVENT_RESULT_WARNED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
+  }
 
   data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
@@ -1315,24 +1741,51 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   base::RunLoop run_loop_bypass;
   event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop_bypass.QuitClosure());
-  event_validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/
-      "https://destination.com/",
-      /*expected_tab_url=*/"https://destination.com/",
-      /*expected_source=*/"https://source.com/",
-      /*expected_destination=*/"https://destination.com/",
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"text/plain"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"131", "warn_on_all_pastes"}}},
-      /*expected_result=*/"EVENT_RESULT_BYPASSED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      browser()->profile()->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    expected_event.set_url("https://destination.com/");
+    expected_event.set_tab_url("https://destination.com/");
+    expected_event.set_source("https://source.com/");
+    expected_event.set_destination("https://destination.com/");
+    expected_event.set_content_type("text/plain");
+    expected_event.set_content_size(1234);
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(131);
+    triggered_rule.set_rule_name("warn_on_all_pastes");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/
+        "https://destination.com/",
+        /*expected_tab_url=*/"https://destination.com/",
+        /*expected_source=*/"https://source.com/",
+        /*expected_destination=*/"https://destination.com/",
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"text/plain"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/{{0, {"131", "warn_on_all_pastes"}}},
+        /*expected_result=*/"EVENT_RESULT_BYPASSED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
+  }
 
   EXPECT_FALSE(paste_future.IsReady());
 

@@ -175,6 +175,9 @@ proto::DataTransferEventTrigger ToProtoDataTransferEventTrigger(
   if (trigger == kPagePrintDataTransferEventTrigger) {
     return proto::DataTransferEventTrigger::PAGE_PRINT;
   }
+  if (trigger == kClipboardCopyDataTransferEventTrigger) {
+    return proto::DataTransferEventTrigger::CLIPBOARD_COPY;
+  }
   if (trigger == kUrlVisitedDataTransferEventTrigger) {
     return proto::DataTransferEventTrigger::URL_VISITED;
   }
