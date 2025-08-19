@@ -1,4 +1,4 @@
-// Copyright 2024 TF.Text Authors.
+// Copyright 2025 TF.Text Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -164,7 +164,7 @@ absl::Status FastBertNormalizeOp<Rt>::InvokeRealWork(InvokeContext* context) {
   // memory-mapped wrapper on `fast_bert_normalizer_model` tensor, and thus
   // Create() is very cheap.
   auto text_normalizer = FastBertNormalizer::Create(
-      fast_bert_normalizer_model->template Data<uint8>().data());
+      fast_bert_normalizer_model->template Data<uint8_t>().data());
   SH_RETURN_IF_ERROR(text_normalizer.status());
 
   SH_ASSIGN_OR_RETURN(
@@ -214,15 +214,15 @@ absl::Status FastBertNormalizeOp<Rt>::InvokeRealWork(InvokeContext* context) {
   }
 
   if constexpr (kGetOffsets) {
-    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
+    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
         offsets, kOutputOffsets, context));
-    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
+    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
         row_splits, kOutputRowSplitsOfOffsets, context));
   } else {
-    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
+    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
         offsets, kOutputOffsets, context));
     row_splits.resize(1+values_vec.Dim(0));
-    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
+    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
         row_splits, kOutputRowSplitsOfOffsets, context));
   }
   return absl::OkStatus();

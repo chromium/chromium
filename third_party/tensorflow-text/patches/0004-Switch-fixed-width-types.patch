@@ -1,0 +1,95 @@
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_bert_normalizer.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_bert_normalizer.h
+index 58d28048956c3..bfd965848301e 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_bert_normalizer.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_bert_normalizer.h
+@@ -194,6 +194,8 @@ class FastBertNormalizer {
+     auto copy_unchanged_input_to_output =
+         [input_text, output_normalized_text, output_normalized_offset_mapping,
+          &last_pos_to_copy_over](int exclusive_copy_end) {
++          output_normalized_offset_mapping->resize(
++              output_normalized_offset_mapping->size());
+           // Copy from `last_pos_to_copy_over` to `exclusive_copy_end` and
+           // update `last_pos_to_copy_over` accordingly.
+           if (last_pos_to_copy_over < exclusive_copy_end) {
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_bert_normalizer_kernel_template.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_bert_normalizer_kernel_template.h
+index b4bb7bbdcc787..7a4a7296089bc 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_bert_normalizer_kernel_template.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_bert_normalizer_kernel_template.h
+@@ -164,7 +164,7 @@ absl::Status FastBertNormalizeOp<Rt>::InvokeRealWork(InvokeContext* context) {
+   // memory-mapped wrapper on `fast_bert_normalizer_model` tensor, and thus
+   // Create() is very cheap.
+   auto text_normalizer = FastBertNormalizer::Create(
+-      fast_bert_normalizer_model->template Data<uint8>().data());
++      fast_bert_normalizer_model->template Data<uint8_t>().data());
+   SH_RETURN_IF_ERROR(text_normalizer.status());
+ 
+   SH_ASSIGN_OR_RETURN(
+@@ -214,15 +214,15 @@ absl::Status FastBertNormalizeOp<Rt>::InvokeRealWork(InvokeContext* context) {
+   }
+ 
+   if constexpr (kGetOffsets) {
+-    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
++    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
+         offsets, kOutputOffsets, context));
+-    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
++    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
+         row_splits, kOutputRowSplitsOfOffsets, context));
+   } else {
+-    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
++    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
+         offsets, kOutputOffsets, context));
+     row_splits.resize(1+values_vec.Dim(0));
+-    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
++    SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
+         row_splits, kOutputRowSplitsOfOffsets, context));
+   }
+   return absl::OkStatus();
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_kernel_template.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_kernel_template.h
+index 80b4ef560b440..968347c588e56 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_kernel_template.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_kernel_template.h
+@@ -147,7 +147,7 @@ absl::Status FastWordpieceTokenizeWithOffsetsOp<Rt>::Invoke(
+   // Create() is very cheap.
+   auto fast_wordpiece_tokenizer =
+       ::tensorflow::text::FastWordpieceTokenizer::Create(
+-          wp_model->template Data<uint8>().data());
++          wp_model->template Data<uint8_t>().data());
+   SH_RETURN_IF_ERROR(fast_wordpiece_tokenizer.status());
+ 
+   // TODO(xysong): Optimize based on which information below is requested.
+@@ -180,13 +180,13 @@ absl::Status FastWordpieceTokenizeWithOffsetsOp<Rt>::Invoke(
+   SH_RETURN_IF_ERROR(this->template FillOutputTensor<std::string,
+                                                      tensorflow::tstring>(
+       subwords, kOutputSubwords, context));
+-  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
++  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
+       subword_ids, kOutputIds, context));
+-  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
++  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
+       row_splits, kOutputRowSplits, context));
+-  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
++  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
+       begin_offset, kStartValues, context));
+-  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
++  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
+       end_offset, kEndValues, context));
+ 
+   return absl::OkStatus();
+@@ -311,7 +311,7 @@ absl::Status FastWordpieceDetokenizeOp<Rt>::Invoke(InvokeContext* context) {
+ 
+   SH_ASSIGN_OR_RETURN(const auto input_row_splits,
+                       context->GetInput(kInputRowSplits));
+-  const auto& row_splits_vec = input_row_splits->template As<int64, 1>();
++  const auto& row_splits_vec = input_row_splits->template As<int64_t, 1>();
+ 
+   SH_ASSIGN_OR_RETURN(const auto wp_model, context->GetInput(kWpModel));
+   // OK to create on every call because FastWordpieceTokenizer is a
+@@ -319,7 +319,7 @@ absl::Status FastWordpieceDetokenizeOp<Rt>::Invoke(InvokeContext* context) {
+   // Create() is very cheap.
+   auto fast_wordpiece_tokenizer =
+       ::tensorflow::text::FastWordpieceTokenizer::Create(
+-          wp_model->template Data<uint8>().data());
++          wp_model->template Data<uint8_t>().data());
+   SH_RETURN_IF_ERROR(fast_wordpiece_tokenizer.status());
+ 
+   std::vector<std::string> sentences;

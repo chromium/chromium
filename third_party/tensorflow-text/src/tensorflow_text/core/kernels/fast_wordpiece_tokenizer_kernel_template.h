@@ -1,4 +1,4 @@
-// Copyright 2024 TF.Text Authors.
+// Copyright 2025 TF.Text Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -147,7 +147,7 @@ absl::Status FastWordpieceTokenizeWithOffsetsOp<Rt>::Invoke(
   // Create() is very cheap.
   auto fast_wordpiece_tokenizer =
       ::tensorflow::text::FastWordpieceTokenizer::Create(
-          wp_model->template Data<uint8>().data());
+          wp_model->template Data<uint8_t>().data());
   SH_RETURN_IF_ERROR(fast_wordpiece_tokenizer.status());
 
   // TODO(xysong): Optimize based on which information below is requested.
@@ -180,13 +180,13 @@ absl::Status FastWordpieceTokenizeWithOffsetsOp<Rt>::Invoke(
   SH_RETURN_IF_ERROR(this->template FillOutputTensor<std::string,
                                                      tensorflow::tstring>(
       subwords, kOutputSubwords, context));
-  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
+  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
       subword_ids, kOutputIds, context));
-  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
+  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
       row_splits, kOutputRowSplits, context));
-  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
+  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
       begin_offset, kStartValues, context));
-  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64>(
+  SH_RETURN_IF_ERROR(this->template FillOutputTensor<int, int64_t>(
       end_offset, kEndValues, context));
 
   return absl::OkStatus();
@@ -311,7 +311,7 @@ absl::Status FastWordpieceDetokenizeOp<Rt>::Invoke(InvokeContext* context) {
 
   SH_ASSIGN_OR_RETURN(const auto input_row_splits,
                       context->GetInput(kInputRowSplits));
-  const auto& row_splits_vec = input_row_splits->template As<int64, 1>();
+  const auto& row_splits_vec = input_row_splits->template As<int64_t, 1>();
 
   SH_ASSIGN_OR_RETURN(const auto wp_model, context->GetInput(kWpModel));
   // OK to create on every call because FastWordpieceTokenizer is a
@@ -319,7 +319,7 @@ absl::Status FastWordpieceDetokenizeOp<Rt>::Invoke(InvokeContext* context) {
   // Create() is very cheap.
   auto fast_wordpiece_tokenizer =
       ::tensorflow::text::FastWordpieceTokenizer::Create(
-          wp_model->template Data<uint8>().data());
+          wp_model->template Data<uint8_t>().data());
   SH_RETURN_IF_ERROR(fast_wordpiece_tokenizer.status());
 
   std::vector<std::string> sentences;

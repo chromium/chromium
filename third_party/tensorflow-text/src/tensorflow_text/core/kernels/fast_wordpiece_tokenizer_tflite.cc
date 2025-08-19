@@ -12,21 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef THIRD_PARTY_TENSORFLOW_TEXT_GOOGLE_CORE_KERNELS_FAST_BERT_NORMALIZER_TFLITE_H_
-#define THIRD_PARTY_TENSORFLOW_TEXT_GOOGLE_CORE_KERNELS_FAST_BERT_NORMALIZER_TFLITE_H_
+#include "tensorflow_text/core/kernels/fast_wordpiece_tokenizer_tflite.h"
 
-#include "tensorflow/lite/mutable_op_resolver.h"
+#include "tensorflow/lite/kernels/shim/tflite_op_shim.h"
+#include "tensorflow_text/core/kernels/fast_wordpiece_tokenizer_kernel_template.h"
 
 namespace tflite {
 namespace ops {
 namespace custom {
 namespace text {
 
-extern "C" void AddFastBertNormalize(::tflite::MutableOpResolver* resolver);
+using TokenizeOpKernel = tflite::shim::TfLiteOpKernel<
+    tensorflow::text::FastWordpieceTokenizeWithOffsetsOp>;
+
+using DetokenizeOpKernel =
+    tflite::shim::TfLiteOpKernel<tensorflow::text::FastWordpieceDetokenizeOp>;
+
+extern "C" void AddFastWordpieceTokenize(tflite::MutableOpResolver* resolver) {
+  TokenizeOpKernel::Add(resolver);
+}
+
+extern "C" void AddFastWordpieceDetokenize(
+    tflite::MutableOpResolver* resolver) {
+  DetokenizeOpKernel::Add(resolver);
+}
 
 }  // namespace text
 }  // namespace custom
 }  // namespace ops
 }  // namespace tflite
-
-#endif  // THIRD_PARTY_TENSORFLOW_TEXT_GOOGLE_CORE_KERNELS_FAST_BERT_NORMALIZER_TFLITE_H_

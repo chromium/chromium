@@ -12,21 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef THIRD_PARTY_TENSORFLOW_TEXT_GOOGLE_CORE_KERNELS_FAST_BERT_NORMALIZER_TFLITE_H_
-#define THIRD_PARTY_TENSORFLOW_TEXT_GOOGLE_CORE_KERNELS_FAST_BERT_NORMALIZER_TFLITE_H_
+#include "tensorflow_text/core/kernels/fast_bert_normalizer_tflite.h"
 
-#include "tensorflow/lite/mutable_op_resolver.h"
+#include "tensorflow/lite/kernels/shim/tflite_op_shim.h"
+#include "tensorflow_text/core/kernels/fast_bert_normalizer_kernel_template.h"
 
 namespace tflite {
 namespace ops {
 namespace custom {
 namespace text {
 
-extern "C" void AddFastBertNormalize(::tflite::MutableOpResolver* resolver);
+using FastBertNormalizeOpKernel =
+    tflite::shim::TfLiteOpKernel<tensorflow::text::FastBertNormalizeOp>;
+
+extern "C" void AddFastBertNormalize(tflite::MutableOpResolver* resolver) {
+  FastBertNormalizeOpKernel::Add(resolver);
+}
 
 }  // namespace text
 }  // namespace custom
 }  // namespace ops
 }  // namespace tflite
-
-#endif  // THIRD_PARTY_TENSORFLOW_TEXT_GOOGLE_CORE_KERNELS_FAST_BERT_NORMALIZER_TFLITE_H_
