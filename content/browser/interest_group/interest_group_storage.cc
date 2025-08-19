@@ -6433,6 +6433,7 @@ bool CompactClickiness(sql::Database& db, base::Time now) {
         raw_views->compacted_events.empty() &&
         raw_clicks->uncompacted_events.empty() &&
         raw_clicks->compacted_events.empty()) {
+      delete_row.Reset(/*clear_bound_vars=*/true);
       delete_row.BindString(0, provider_origin);
       delete_row.BindString(1, eligible_origin);
       if (!delete_row.Run()) {

@@ -4128,7 +4128,7 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire) {
             storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
                 kViewClickProviderOrigin1, kViewClickEligibleOrigin1));
 
-  // Quickly fast fordward by 91 days (not 90 to account for rounding),
+  // Quickly fast forward by 91 days (not 90 to account for rounding),
   // then a bit more to get maintenance to happen with that much time elapsed.
   FastForwardWithoutIdlingBy(task_environment(), *storage, base::Days(91));
   task_environment().FastForwardBy(kIdlePeriod);
@@ -4164,6 +4164,38 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire) {
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
   EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+// Regression check for no failures if compaction has to remove multiple rows.
+TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire2) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record_view;
+  record_view.type = AdAuctionEventRecord::Type::kView;
+  record_view.providing_origin = kViewClickProviderOrigin1;
+  record_view.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_view.IsValid());
+
+  // View from another provider.
+  AdAuctionEventRecord record_view2;
+  record_view2.type = AdAuctionEventRecord::Type::kView;
+  record_view2.providing_origin = kViewClickProviderOrigin2;
+  record_view2.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_view2.IsValid());
+
+  base::Time start_time = base::Time::Now();
+
+  storage->RecordViewClick(record_view);
+  storage->RecordViewClick(record_view2);
+
+  // Quickly fast forward by 91 days (not 90 to account for rounding),
+  // then a bit more to get maintenance to happen with that much time elapsed.
+  FastForwardWithoutIdlingBy(task_environment(), *storage, base::Days(91));
+  task_environment().FastForwardBy(kIdlePeriod);
+
+  // Check that maintenance (and therefore compaction) has occurred.
+  EXPECT_LE(start_time + base::Days(91),
+            storage->GetLastMaintenanceTimeForTesting());
 }
 
 // Like InterestGroupStorage.ExpirationDeletesMetadata, but it also checks edge
