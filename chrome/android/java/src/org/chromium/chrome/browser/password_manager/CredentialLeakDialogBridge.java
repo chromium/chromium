@@ -44,7 +44,6 @@ public class CredentialLeakDialogBridge {
 
         BrowserControlsManager browserControlsManager =
                 BrowserControlsManagerSupplier.getValueOrNullFrom(windowAndroid);
-        assert browserControlsManager != null;
         mCredentialLeakDialog =
                 new PasswordManagerDialogCoordinator(
                         modalDialogManager,

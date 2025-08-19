@@ -35,7 +35,7 @@ public class PasswordManagerDialogCoordinator {
     public PasswordManagerDialogCoordinator(
             ModalDialogManager modalDialogManager,
             View androidContentView,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            @Nullable BrowserControlsStateProvider browserControlsStateProvider) {
         mMediator =
                 new PasswordManagerDialogMediator(
                         new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS),

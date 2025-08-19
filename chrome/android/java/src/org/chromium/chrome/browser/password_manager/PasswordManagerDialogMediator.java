@@ -28,7 +28,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
     private final ModalDialogManager mDialogManager;
     private final View mAndroidContentView;
-    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private final PropertyModel.Builder mHostDialogModelBuilder;
     private @MonotonicNonNull PropertyModel mHostDialogModel;
@@ -67,7 +67,7 @@ class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
             PropertyModel.Builder hostDialogModelBuilder,
             ModalDialogManager manager,
             View androidContentView,
-            BrowserControlsStateProvider controlsStateProvider) {
+            @Nullable BrowserControlsStateProvider controlsStateProvider) {
         mDialogManager = manager;
         mHostDialogModelBuilder = hostDialogModelBuilder;
         mAndroidContentView = androidContentView;
@@ -105,6 +105,9 @@ class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
     private boolean hasSufficientSpaceForIllustration(int heightPx) {
         // If |mResources| is null, it means that the dialog was not initialized yet.
         if (mResources == null) return false;
+        // The space for the illustration can't be guaranteed if the controls state provider
+        // is not available (yet or anymore).
+        if (mBrowserControlsStateProvider == null) return false;
         heightPx -=
                 ChromeTabModalPresenter.getContainerTopMargin(
                         mResources, mBrowserControlsStateProvider);
