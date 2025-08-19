@@ -185,6 +185,35 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# Test builder for structured-test-ids experiment.
+try_.builder(
+    name = "chromeos-structured-test-ids-amd64-generic-rel-gtest-and-tast-fyi",
+    description_html = "This is an Ash chrome builder which runs gtest" +
+                       " and Tast tests with an experiment for " +
+                       " structured-test-ids enabled.",
+    mirrors = [
+        "ci/chromeos-structured-test-ids-amd64-generic-rel-fyi",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-structured-test-ids-amd64-generic-rel-fyi",
+            "dcheck_always_on",
+        ],
+    ),
+    caches = [
+        swarming.cache(
+            name = CHROMEOS_SHARED_CACHE,
+            path = "builder",
+            wait_for_warm_cache = 4 * time.minute,
+        ),
+    ],
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    experiments = {
+        "chromium_test.resultdb_module": 100,
+    },
+    main_list_view = "try",
+)
+
 try_.builder(
     name = "chromeos-arm-generic-dbg",
     mirrors = [
