@@ -11,6 +11,7 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+- ios
 items:
 - caption: Users can customize the New Tab page background
   value: true

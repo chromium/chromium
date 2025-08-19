@@ -487,6 +487,11 @@ inline constexpr char kNTPContentSuggestionsEnabled[] =
 inline constexpr char kNTPContentSuggestionsForSupervisedUserEnabled[] =
     "ios.ntp.supervised.content_suggestions_enabled";
 
+// Preference that holds a boolean indicating whether users can customize their
+// NTP backgrounds, as determined by enterprise policy.
+inline constexpr char kNTPCustomBackgroundEnabledByPolicy[] =
+    "ios.ntp.custom_background_enabled_by_policy";
+
 // Preference that represents the sorting order of the Following feed content.
 inline constexpr char kNTPFollowingFeedSortType[] =
     "ios.ntp.following_feed.sort_type";

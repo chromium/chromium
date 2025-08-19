@@ -875,6 +875,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preferences related to download restrictions enterprise policy.
   registry->RegisterIntegerPref(policy::policy_prefs::kDownloadRestrictions, 0);
 
+  // Preferences related to ntp customization enterprise policy.
+  registry->RegisterBooleanPref(prefs::kNTPCustomBackgroundEnabledByPolicy,
+                                true);
+
   // Preferences related to enterprise cloud profile reporting.
   registry->RegisterBooleanPref(
       enterprise_reporting::kCloudProfileReportingEnabled, false);

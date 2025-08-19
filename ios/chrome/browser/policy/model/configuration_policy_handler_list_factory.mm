@@ -181,6 +181,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kGeminiSettings,
     prefs::kGeminiEnabledByPolicy,
     base::Value::Type::INTEGER },
+  { policy::key::kNTPCustomBackgroundEnabled,
+    prefs::kNTPCustomBackgroundEnabledByPolicy,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 
