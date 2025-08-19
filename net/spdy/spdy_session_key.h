@@ -5,6 +5,7 @@
 #ifndef NET_SPDY_SPDY_SESSION_KEY_H_
 #define NET_SPDY_SPDY_SESSION_KEY_H_
 
+#include <iosfwd>
 #include <optional>
 
 #include "net/base/net_export.h"
@@ -15,6 +16,7 @@
 #include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
+
 namespace net {
 
 // SpdySessionKey is used as unique index for SpdySessionPool.
@@ -107,6 +109,9 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
   SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
   bool disable_cert_verification_network_fetches_ = false;
 };
+
+NET_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,
+                                            const SpdySessionKey& key);
 
 }  // namespace net
 

@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_session_key.h"
 
+#include <iostream>
 #include <tuple>
 
 #include "net/base/host_port_pair.h"
@@ -128,6 +129,20 @@ bool QuicSessionKey::CanUseForAliasing(const QuicSessionKey& other) const {
          require_dns_https_alpn_ == other.require_dns_https_alpn_ &&
          disable_cert_verification_network_fetches_ ==
              other.disable_cert_verification_network_fetches_;
+}
+
+std::ostream& operator<<(std::ostream& os, const QuicSessionKey& key) {
+  os << "{server_id: " << key.server_id().ToHostPortString()
+     << ", privacy_mode: " << static_cast<int>(key.privacy_mode())
+     << ", proxy_chain: " << key.proxy_chain()
+     << ", session_usage: " << static_cast<int>(key.session_usage())
+     << ", socket_tag: " << key.socket_tag()
+     << ", network_anonymization_key: " << key.network_anonymization_key()
+     << ", secure_dns_policy: " << static_cast<int>(key.secure_dns_policy())
+     << ", require_dns_https_alpn: " << key.require_dns_https_alpn()
+     << ", disable_cert_verification_network_fetches: "
+     << key.disable_cert_verification_network_fetches() << "}";
+  return os;
 }
 
 }  // namespace net

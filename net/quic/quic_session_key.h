@@ -5,6 +5,8 @@
 #ifndef NET_QUIC_QUIC_SESSION_KEY_H_
 #define NET_QUIC_QUIC_SESSION_KEY_H_
 
+#include <iosfwd>
+
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
@@ -105,6 +107,9 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
   bool require_dns_https_alpn_ = false;
   bool disable_cert_verification_network_fetches_ = false;
 };
+
+NET_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,
+                                            const QuicSessionKey& key);
 
 }  // namespace net
 

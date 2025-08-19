@@ -4,6 +4,7 @@
 
 #include "net/spdy/spdy_session_key.h"
 
+#include <iostream>
 #include <optional>
 #include <tuple>
 
@@ -16,6 +17,7 @@
 #include "net/base/proxy_string_util.h"
 #include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/socket/socket_tag.h"
 
 namespace net {
 
@@ -77,6 +79,19 @@ SpdySessionKey::CompareForAliasingResult SpdySessionKey::CompareForAliasing(
            other.disable_cert_verification_network_fetches_);
   result.is_socket_tag_match = (socket_tag_ == other.socket_tag_);
   return result;
+}
+
+std::ostream& operator<<(std::ostream& os, const SpdySessionKey& key) {
+  os << "{host_port_pair: " << key.host_port_pair().ToString()
+     << ", proxy_chain: " << key.proxy_chain()
+     << ", privacy_mode: " << static_cast<int>(key.privacy_mode())
+     << ", session_usage: " << static_cast<int>(key.session_usage())
+     << ", socket_tag: " << key.socket_tag()
+     << ", network_anonymization_key: " << key.network_anonymization_key()
+     << ", secure_dns_policy: " << static_cast<int>(key.secure_dns_policy())
+     << ", disable_cert_verification_network_fetches: "
+     << key.disable_cert_verification_network_fetches() << "}";
+  return os;
 }
 
 }  // namespace net
