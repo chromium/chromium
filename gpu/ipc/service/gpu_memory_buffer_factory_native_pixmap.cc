@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/client_native_pixmap.h"
@@ -35,13 +36,14 @@ GpuMemoryBufferFactoryNativePixmap::~GpuMemoryBufferFactoryNativePixmap() =
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferFactoryNativePixmap::CreateNativeGmbHandle(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
+  gfx::BufferFormat buffer_format = ToBufferFormat(format);
   scoped_refptr<gfx::NativePixmap> pixmap =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->CreateNativePixmap(gpu::kNullSurfaceHandle, GetVulkanDeviceQueue(),
-                               size, format, usage, size);
+                               size, buffer_format, usage, size);
   return CreateNativeGmbHandleFromNativePixmap(size, format, usage,
                                                std::move(pixmap));
 }
@@ -65,12 +67,12 @@ VulkanDeviceQueue* GpuMemoryBufferFactoryNativePixmap::GetVulkanDeviceQueue() {
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferFactoryNativePixmap::CreateNativeGmbHandleFromNativePixmap(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     scoped_refptr<gfx::NativePixmap> pixmap) {
   if (!pixmap.get()) {
     DLOG(ERROR) << "Failed to create pixmap " << size.ToString() << ",  "
-                << gfx::BufferFormatToString(format) << ", usage "
+                << format.ToString() << ", usage "
                 << gfx::BufferUsageToString(usage);
     return gfx::GpuMemoryBufferHandle();
   }

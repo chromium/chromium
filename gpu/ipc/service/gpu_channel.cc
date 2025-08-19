@@ -453,8 +453,8 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
   gfx::GpuMemoryBufferHandle handle;
 
   if (IsNativeBufferSupported(buffer_format, buffer_usage)) {
-    handle = gpu_memory_buffer_factory_->CreateNativeGmbHandle(
-        size, buffer_format, buffer_usage);
+    handle = gpu_memory_buffer_factory_->CreateNativeGmbHandle(size, format,
+                                                               buffer_usage);
   } else {
     if (SharedMemoryImageBackingFactory::IsBufferUsageSupported(buffer_usage) &&
         SharedMemoryImageBackingFactory::IsSizeValidForFormat(size, format)) {

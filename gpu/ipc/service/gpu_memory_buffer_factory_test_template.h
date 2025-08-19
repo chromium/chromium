@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,8 +77,8 @@ TYPED_TEST_P(GpuMemoryBufferFactoryTest, CreateGpuMemoryBuffer) {
       }
 
       gfx::GpuMemoryBufferHandle handle =
-          TestFixture::factory_.CreateNativeGmbHandle(gfx::Size(2, 2), format,
-                                                      usage);
+          TestFixture::factory_.CreateNativeGmbHandle(
+              gfx::Size(2, 2), viz::GetSharedImageFormat(format), usage);
       EXPECT_NE(handle.type, gfx::EMPTY_BUFFER);
     }
   }

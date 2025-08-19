@@ -23,13 +23,13 @@ GpuMemoryBufferFactoryIOSurface::GpuMemoryBufferFactoryIOSurface() = default;
 GpuMemoryBufferFactoryIOSurface::~GpuMemoryBufferFactoryIOSurface() = default;
 
 gfx::GpuMemoryBufferHandle
-GpuMemoryBufferFactoryIOSurface::CreateNativeGmbHandle(const gfx::Size& size,
-                                                       gfx::BufferFormat format,
-                                                       gfx::BufferUsage usage) {
+GpuMemoryBufferFactoryIOSurface::CreateNativeGmbHandle(
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    gfx::BufferUsage usage) {
   bool should_clear = true;
-  viz::SharedImageFormat si_format = viz::GetSharedImageFormat(format);
   base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface =
-      gfx::CreateIOSurface(size, si_format, should_clear);
+      gfx::CreateIOSurface(size, format, should_clear);
   if (!io_surface) {
     LOG(ERROR) << "Failed to allocate IOSurface.";
     return {};

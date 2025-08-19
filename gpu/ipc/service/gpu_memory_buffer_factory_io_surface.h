@@ -24,7 +24,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryIOSurface
   // Overridden from GpuMemoryBufferFactory:
   gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage) override;
   bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,

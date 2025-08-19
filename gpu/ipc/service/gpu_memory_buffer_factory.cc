@@ -38,7 +38,7 @@ class GpuMemoryBufferFactoryStub : public GpuMemoryBufferFactory {
   // GpuMemoryBufferFactory:
   gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage) override {
     return gfx::GpuMemoryBufferHandle();
   }

@@ -10,6 +10,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
@@ -91,9 +92,10 @@ GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
 }
 
 gfx::GpuMemoryBufferHandle
-GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandleOnIO(const gfx::Size& size,
-                                                      gfx::BufferFormat format,
-                                                      gfx::BufferUsage usage) {
+GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandleOnIO(
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    gfx::BufferUsage usage) {
   DCHECK(io_runner_);
 
   gfx::GpuMemoryBufferHandle result;
@@ -105,7 +107,7 @@ GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandleOnIO(const gfx::Size& size,
           [](gfx::GpuMemoryBufferHandle* out_gmb_handle,
              base::WaitableEvent* waitable_event,
              GpuMemoryBufferFactoryDXGI* factory, const gfx::Size& size,
-             gfx::BufferFormat format, gfx::BufferUsage usage) {
+             viz::SharedImageFormat format, gfx::BufferUsage usage) {
             *out_gmb_handle =
                 factory->CreateNativeGmbHandle(size, format, usage);
 
@@ -120,7 +122,7 @@ GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandleOnIO(const gfx::Size& size,
 
 gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandle(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
   if (io_runner_ && !io_runner_->BelongsToCurrentThread()) {
     // Thread-hop is required!
@@ -137,28 +139,24 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandle(
   }
 
   DXGI_FORMAT dxgi_format;
-  switch (format) {
-    case gfx::BufferFormat::RGBA_8888:
-    case gfx::BufferFormat::RGBX_8888:
-      dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
-      break;
-    case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:
-      dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
-      break;
-    case gfx::BufferFormat::RGBA_F16:
-      dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-      break;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      dxgi_format = DXGI_FORMAT_NV12;
-      break;
-    default:
-      NOTREACHED() << "invalid buffer format, format="
-                   << gfx::BufferFormatToString(format);
+  if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+      format == viz::SinglePlaneFormat::kRGBX_8888) {
+    dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888 ||
+             format == viz::SinglePlaneFormat::kBGRX_8888) {
+    dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
+    dxgi_format = DXGI_FORMAT_NV12;
+  } else {
+    NOTREACHED() << "Creating native GMB Handle from invalid format="
+                 << format.ToString();
   }
 
   size_t buffer_size;
-  if (!BufferSizeForBufferFormatChecked(size, format, &buffer_size)) {
+  if (!BufferSizeForBufferFormatChecked(size, ToBufferFormat(format),
+                                        &buffer_size)) {
     return handle;
   }
 

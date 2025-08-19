@@ -10,6 +10,7 @@
 
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "ui/gfx/buffer_types.h"
@@ -38,7 +39,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
   // Creates a native GpuMemoryBufferHandle for MappableSI.
   virtual gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage) = 0;
 
   // Fills |shared_memory| with the contents of the provided |buffer_handle|

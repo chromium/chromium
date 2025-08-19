@@ -89,21 +89,21 @@ class GmbVideoFramePoolContext
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       const gfx::Size& size,
       gfx::BufferUsage buffer_usage,
-      const SharedImageFormat& si_format,
+      const SharedImageFormat& format,
       const gfx::ColorSpace& color_space,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     // Create a native GMB handle first.
     gfx::GpuMemoryBufferHandle buffer_handle =
-        gpu_memory_buffer_factory_->CreateNativeGmbHandle(
-            size, gpu::ToBufferFormat(si_format), buffer_usage);
+        gpu_memory_buffer_factory_->CreateNativeGmbHandle(size, format,
+                                                          buffer_usage);
     if (buffer_handle.is_null()) {
       return nullptr;
     }
 
     // Create a MappableSI from the |buffer_handle|.
     auto client_shared_image = sii_in_process_->CreateSharedImage(
-        {si_format, size, color_space, usage, "VizGmbVideoFramePool"},
+        {format, size, color_space, usage, "VizGmbVideoFramePool"},
         gpu::kNullSurfaceHandle, buffer_usage, std::move(buffer_handle));
     if (!client_shared_image) {
       return nullptr;
