@@ -405,6 +405,10 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
         type == ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY) {
       continue;
     }
+    if (!base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode) &&
+        (type == ADDRESS_HOME_ZIP_PREFIX || type == ADDRESS_HOME_ZIP_SUFFIX)) {
+      continue;
+    }
     // Alternative names should always be converted to Hiragana for
     // storage.
     if (IsAlternativeNameType(type)) {
