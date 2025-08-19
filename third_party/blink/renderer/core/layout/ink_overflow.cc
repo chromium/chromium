@@ -732,7 +732,7 @@ LogicalRect InkOverflow::ComputeMarkerOverflow(
   if (has_pseudo_decorations || is_spelling_or_grammar || text_shadow) {
     MarkerRangeMappingContext mapping_context(*text_node, layout_object,
                                               fragment_dom_offsets);
-    for (auto marker : markers) {
+    for (const auto& marker : markers) {
       std::optional<TextOffsetRange> marker_offsets =
           mapping_context.GetTextContentOffsets(*marker);
       if (!marker_offsets) {
@@ -779,7 +779,7 @@ LogicalRect InkOverflow::ComputeCustomHighlightOverflow(
 
   MarkerRangeMappingContext mapping_context(*text_node, layout_object,
                                             fragment_dom_offsets);
-  for (auto marker : markers) {
+  for (const auto& marker : markers) {
     std::optional<TextOffsetRange> marker_offsets =
         mapping_context.GetTextContentOffsets(*marker);
     if (!marker_offsets) {

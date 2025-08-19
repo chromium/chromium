@@ -720,7 +720,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   if (line_builder.HasRelativePositionedItems()) {
     PlaceRelativePositionedItems(GetConstraintSpace(), line_box);
   }
-  for (auto annotation_line : line_container->AnnotationLineList()) {
+  for (const auto& annotation_line : line_container->AnnotationLineList()) {
     PlaceRelativePositionedItems(GetConstraintSpace(),
                                  annotation_line.line_items);
   }

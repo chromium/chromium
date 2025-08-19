@@ -2613,7 +2613,7 @@ void LineBreaker::RemoveTrailingCollapsibleSpace(LineInfo* line_info) {
     item_result->shape_result = nullptr;
     item_result->inline_size = LayoutUnit();
   }
-  for (auto [results, index] :
+  for (const auto& [results, index] :
        trailing_collapsible_space_->ancestor_ruby_columns) {
     InlineItemResult& ruby_column = (*results)[index];
     CHECK(ruby_column.IsRubyColumn());
@@ -2652,7 +2652,7 @@ LayoutUnit LineBreaker::TrailingCollapsibleSpaceWidth(LineInfo* line_info) {
   if (trailing_collapsible_space_->ancestor_ruby_columns.empty()) {
     return width_diff;
   }
-  for (auto [results, index] :
+  for (const auto& [results, index] :
        trailing_collapsible_space_->ancestor_ruby_columns) {
     InlineItemResult& ruby_column = (*results)[index];
     CHECK(ruby_column.IsRubyColumn());

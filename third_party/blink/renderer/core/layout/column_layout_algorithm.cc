@@ -1319,7 +1319,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
 
   wtf_size_t column_index_in_row = 0;
   // Commit all column fragments to the fragment builder.
-  for (auto result_with_offset : new_columns) {
+  for (const auto& result_with_offset : new_columns) {
     const PhysicalBoxFragment& column = result_with_offset.Fragment();
     container_builder_.AddChild(column, result_with_offset.offset);
     PropagateBaselineFromChild(column, result_with_offset.offset.block_offset);

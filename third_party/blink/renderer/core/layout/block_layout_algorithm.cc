@@ -2538,9 +2538,9 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
     }
 
     if (inline_child_layout_context) {
-      for (auto token :
+      for (const auto& token :
            inline_child_layout_context->ParallelFlowBreakTokens()) {
-        container_builder_.AddBreakToken(std::move(token),
+        container_builder_.AddBreakToken(token.Get(),
                                          /* is_in_parallel_flow */ true);
       }
     }

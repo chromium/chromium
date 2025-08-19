@@ -539,8 +539,9 @@ void LayoutBox::DisassociatePhysicalFragments() {
   if (measure_cache_) {
     measure_cache_->LayoutObjectWillBeDestroyed();
   }
-  for (auto result : layout_results_)
+  for (const auto& result : layout_results_) {
     result->GetPhysicalFragment().LayoutObjectWillBeDestroyed();
+  }
 }
 
 void LayoutBox::InsertedIntoTree() {
