@@ -24,7 +24,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
-import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeBaseLayout;
+import org.chromium.ui.edge_to_edge.layout.EdgeToEdgeBaseLayout;
 
 /** Unit test for {@link FullscreenAlertDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)

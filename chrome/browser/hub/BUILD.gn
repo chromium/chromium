@@ -58,13 +58,13 @@ android_library("java") {
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/theme:java",
-    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/edge_to_edge:java",
   ]
 }
 

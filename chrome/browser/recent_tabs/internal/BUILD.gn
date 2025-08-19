@@ -59,7 +59,6 @@ android_library("java") {
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/favicon:java",
     "//components/browser_ui/bottomsheet/android:java",
-    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/feature_engagement/public:public_java",
     "//components/sync_device_info:sync_device_info_java",
@@ -69,6 +68,7 @@ android_library("java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.recent_tabs"
@@ -147,7 +147,6 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/favicon:java",
     "//components/browser_ui/bottomsheet/android:java",
-    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/feature_engagement/public:public_java",
     "//components/sync_device_info:sync_device_info_java",
@@ -164,6 +163,7 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]

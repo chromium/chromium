@@ -36,8 +36,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowBuild;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.ui.insets.InsetObserver;
 
 @RunWith(BaseRobolectricTestRunner.class)

@@ -35,8 +35,8 @@ import org.chromium.chrome.browser.ntp.IncognitoNewTabPageView.IncognitoNewTabPa
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /** Unit test for {@link org.chromium.chrome.browser.ntp.IncognitoNewTabPage} */
 @RunWith(BaseRobolectricTestRunner.class)

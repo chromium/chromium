@@ -41,10 +41,10 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPhoneWindow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
+import org.chromium.ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
 import org.chromium.ui.widget.UiWidgetFactory;
 
 /** Unit test for {@link ContextMenuDialog}. */

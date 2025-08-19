@@ -28,10 +28,10 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /** Provides functionality when the user interacts with the Incognito NTP. */
 @NullMarked

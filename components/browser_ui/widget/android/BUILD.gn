@@ -143,7 +143,6 @@ android_library("java") {
     "//build/android:build_java",
     "//cc:cc_java",
     "//chrome/browser/flags:java",
-    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/util/android:java_resources",
@@ -162,6 +161,7 @@ android_library("java") {
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.components.browser_ui.widget"
@@ -514,8 +514,6 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//chrome/test/android:chrome_java_unit_test_support",
-    "//components/browser_ui/edge_to_edge/android:java",
-    "//components/browser_ui/edge_to_edge/android:java_resources",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/test/android:test_support_java",
     "//components/browser_ui/theme/android:java_resources",
@@ -530,5 +528,7 @@ robolectric_library("junit") {
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/edge_to_edge:java",
+    "//ui/edge_to_edge:java_resources",
   ]
 }

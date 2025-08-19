@@ -24,10 +24,10 @@ import androidx.appcompat.widget.Toolbar;
 import org.chromium.base.BuildInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.ui.base.ImmutableWeakReference;
+import org.chromium.ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
 import org.chromium.ui.insets.InsetObserver;
 
 /**

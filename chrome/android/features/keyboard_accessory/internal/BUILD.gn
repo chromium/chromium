@@ -42,7 +42,6 @@ android_library("internal_java") {
     "//chrome/browser/util:java",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
-    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
@@ -64,6 +63,7 @@ android_library("internal_java") {
     "//ui/android:ui_java",
     "//ui/android:ui_utils_java",
     "//ui/base/ime/mojom:mojom_java",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
   ]
   srcjar_deps = [ ":jni" ]

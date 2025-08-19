@@ -2,7 +2,6 @@ include_rules = [
   "+base/test/android",
   "+cc/input/android/java/src/org/chromium/cc/input/OffsetTag.java",
   "+chrome/android/features/tab_ui/public",
-  "+components/browser_ui/edge_to_edge/android",
   "+components/browser_ui/widget/android",
   "+components/browser_ui/styles/android",
   "+components/dom_distiller/core/android",
@@ -12,4 +11,5 @@ include_rules = [
   "+components/thin_webview",
   "+content/public/android",
   "+extensions/android",
+  "+ui/edge_to_edge",
 ]

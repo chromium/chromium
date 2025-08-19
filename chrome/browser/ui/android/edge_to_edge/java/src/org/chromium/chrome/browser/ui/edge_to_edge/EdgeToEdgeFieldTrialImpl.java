@@ -14,7 +14,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeFieldTrial;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeFieldTrial;
 
 import java.util.HashMap;
 import java.util.Locale;

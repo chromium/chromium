@@ -5,6 +5,7 @@ include_rules = [
   "+content/public/test/android",
   "+ui/accessibility",
   "+ui/android",
+  "+ui/edge_to_edge",
 ]
 
 specific_include_rules = {

@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.ItemViewType;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -55,6 +54,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 import java.util.List;
 import java.util.function.Function;

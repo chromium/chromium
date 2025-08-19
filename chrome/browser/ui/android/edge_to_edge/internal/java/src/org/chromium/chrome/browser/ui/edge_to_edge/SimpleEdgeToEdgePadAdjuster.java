@@ -15,7 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /**
  * A simple implementation of {@link EdgeToEdgePadAdjuster} which can add a padding when e2e is on

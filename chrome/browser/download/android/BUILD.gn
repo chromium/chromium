@@ -83,7 +83,6 @@ android_library("java") {
     "//chrome/browser/ui/android/pdf:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
-    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
@@ -107,6 +106,7 @@ android_library("java") {
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
   ]
 

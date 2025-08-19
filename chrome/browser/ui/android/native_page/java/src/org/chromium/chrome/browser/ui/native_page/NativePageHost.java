@@ -10,8 +10,8 @@ import android.view.View;
 
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /** This interface represents a view that is capable of hosting a NativePage. */
 @NullMarked

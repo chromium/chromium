@@ -18,7 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.insets.InsetObserver;
 
 /**

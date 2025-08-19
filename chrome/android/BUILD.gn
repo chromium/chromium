@@ -576,7 +576,6 @@ if (_is_default_toolchain) {
       "//components/browser_ui/desktop_windowing/android:java",
       "//components/browser_ui/device_lock/android:java",
       "//components/browser_ui/display_cutout/android:java",
-      "//components/browser_ui/edge_to_edge/android:java",
       "//components/browser_ui/http_auth/android:java",
       "//components/browser_ui/media/android:java",
       "//components/browser_ui/modaldialog/android:java",
@@ -789,6 +788,7 @@ if (_is_default_toolchain) {
       "//ui/android:ui_no_recycler_view_java",
       "//ui/base/ime/mojom:mojom_java",
       "//ui/base/mojom:mojom_java",
+      "//ui/edge_to_edge:java",
       "//ui/gfx/geometry/mojom:mojom_java",
       "//url:gurl_java",
       "//url/mojom:url_mojom_gurl_java",
@@ -1180,7 +1180,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/webid:junit",
       "//chrome/browser/xsurface_provider:junit",
       "//components/browser_ui/accessibility/android:junit",
-      "//components/browser_ui/edge_to_edge/android:junit",
       "//components/browser_ui/modaldialog/android:junit",
       "//components/browser_ui/site_settings/android:junit",
       "//components/cached_flags:junit",
@@ -2336,7 +2335,6 @@ if (_is_default_toolchain) {
       "//components/browser_ui/accessibility/android:unit_device_javatests",
       "//components/browser_ui/bottomsheet/android/internal:unit_device_javatests",
       "//components/browser_ui/contacts_picker/android:unit_device_javatests",
-      "//components/browser_ui/edge_to_edge/android:unit_device_javatests",
       "//components/browser_ui/modaldialog/android:unit_device_javatests",
       "//components/browser_ui/photo_picker/android:unit_device_javatests",
       "//components/browser_ui/settings/android:unit_device_javatests",
@@ -2356,6 +2354,7 @@ if (_is_default_toolchain) {
       "//components/variations/android:unit_device_javatests",
       "//components/webapps/browser/android:unit_device_javatests",
       "//ui/android:ui_unit_device_javatests",
+      "//ui/edge_to_edge:unit_device_javatests",
     ]
 
     data_deps = [
