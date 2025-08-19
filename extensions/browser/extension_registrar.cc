@@ -48,8 +48,7 @@ namespace extensions {
 
 namespace {
 
-BASE_FEATURE(kExtensionUpdatesImmediatelyUnregisterWorker,
-             "ExtensionUpdatesImmediatelyUnregisterWorker",
+BASE_FEATURE(ExtensionUpdatesImmediatelyUnregisterWorker,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

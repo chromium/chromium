@@ -127,12 +127,10 @@ namespace extensions {
 namespace {
 
 // A feature flag for the crash issue in crbug.com/389971360.
-BASE_FEATURE(kSpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext,
-             "SpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext",
+BASE_FEATURE(SpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext,
              base::FEATURE_ENABLED_BY_DEFAULT);
 // A feature flag for the crash issue in crbug.com/424476776.
-BASE_FEATURE(kSpeculativeFixForNoExtensionInDidStartServiceWorkerContext,
-             "SpeculativeFixForNoExtensionInDidStartServiceWorkerContext",
+BASE_FEATURE(SpeculativeFixForNoExtensionInDidStartServiceWorkerContext,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 static const char kOnSuspendEvent[] = "runtime.onSuspend";

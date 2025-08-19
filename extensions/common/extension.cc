@@ -58,9 +58,7 @@ namespace errors = manifest_errors;
 
 namespace {
 
-BASE_FEATURE(kValidateGetResourceURLPath,
-             "ValidateGetResourceURLPath",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(ValidateGetResourceURLPath, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr int kMinimumSupportedManifestVersion = 2;
 constexpr int kMaximumSupportedManifestVersion = 3;

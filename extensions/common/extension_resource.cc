@@ -13,8 +13,7 @@ namespace extensions {
 namespace {
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kWindowsNormalizeFilePathFallbackOnError,
-             "WindowsNormalizeFilePathFallbackOnError",
+BASE_FEATURE(WindowsNormalizeFilePathFallbackOnError,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
