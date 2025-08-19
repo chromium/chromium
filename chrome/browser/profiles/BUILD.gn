@@ -401,7 +401,10 @@ source_set("profiles_extra_parts_impl") {
   }
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/ui/tabs:glic",
+    ]
   }
 
   if (enable_on_device_translation) {

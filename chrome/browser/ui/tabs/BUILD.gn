@@ -350,7 +350,11 @@ if (!is_android) {
       "//ui/base/unowned_user_data",
     ]
     if (enable_glic) {
-      sources += [ "glic_actor_task_icon_controller.h" ]
+      sources += [
+        "glic_actor_task_icon_controller.h",
+        "glic_actor_task_icon_manager.h",
+        "glic_actor_task_icon_manager_factory.h",
+      ]
 
       public_deps += [ "//chrome/browser/glic" ]
     }
@@ -373,7 +377,11 @@ if (!is_android) {
       "//content/public/browser",
     ]
     if (enable_glic) {
-      sources += [ "glic_actor_task_icon_controller.cc" ]
+      sources += [
+        "glic_actor_task_icon_controller.cc",
+        "glic_actor_task_icon_manager.cc",
+        "glic_actor_task_icon_manager_factory.cc",
+      ]
 
       deps += [ "//chrome/browser/glic" ]
     }
