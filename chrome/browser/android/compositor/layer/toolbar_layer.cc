@@ -175,8 +175,14 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
       !(is_progress_bar_visible && progress_bar_visual_update_available));
 
   if (is_progress_bar_visible) {
-    progress_bar_background_layer_->SetPosition(
-        gfx::PointF(progress_bar_background_x, progress_bar_background_y));
+    if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+      // Use corner_radius for gap between the foreground and background layer.
+      progress_bar_background_layer_->SetPosition(
+          gfx::PointF(corner_radius * 2, progress_bar_background_y));
+    } else {
+      progress_bar_background_layer_->SetPosition(
+          gfx::PointF(progress_bar_background_x, progress_bar_background_y));
+    }
     progress_bar_background_layer_->SetBounds(
         gfx::Size(progress_bar_background_width,
                   progress_bar_background_height));
@@ -185,8 +191,14 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
         SkColor4f::FromColor(progress_bar_background_color));
     progress_bar_background_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
 
-    progress_bar_layer_->SetPosition(
-        gfx::PointF(progress_bar_x, progress_bar_y));
+    if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+      // Position the foregound layer to show 0% progress.
+      progress_bar_layer_->SetPosition(
+          gfx::PointF(-progress_bar_width, progress_bar_y));
+    } else {
+      progress_bar_layer_->SetPosition(
+          gfx::PointF(progress_bar_x, progress_bar_y));
+    }
     progress_bar_layer_->SetBounds(
         gfx::Size(progress_bar_width, progress_bar_height));
     // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.

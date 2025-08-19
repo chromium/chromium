@@ -285,25 +285,32 @@ public class ClipDrawableProgressBar extends ImageView {
         if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {
             drawingInfoOut.progressBarStaticBackgroundRect.set(
                     getLeft(), getTop(), getRight(), getBottom());
-            drawingInfoOut.progressBarRect.set(
-                    getLeft(),
-                    getTop(),
-                    getLeft() + Math.round(mProgress * getWidth()),
-                    getBottom());
-            if (useGradientDrawable()) {
+            if (ChromeFeatureList.sAndroidAnimatedCompositedProgressBar.isEnabled()) {
+                // Fix the width for the foreground and background Rects so that they are wide
+                // enough to cover the entire progress bar. They will be initially positioned to
+                // show 0 progress, and then horizontally translated in viz as the progress updates.
+                drawingInfoOut.progressBarRect.set(getLeft(), getTop(), getRight(), getBottom());
                 drawingInfoOut.progressBarBackgroundRect.set(
-                        getRight() - mScaledBackgroundWidth,
-                        getTop(),
-                        getRight(),
-                        getBottom());
+                        getLeft(), getTop(), getRight(), getBottom());
             } else {
-                drawingInfoOut.progressBarBackgroundRect.set(
-                        drawingInfoOut.progressBarRect.right,
+                drawingInfoOut.progressBarRect.set(
+                        getLeft(),
                         getTop(),
-                        getRight(),
+                        getLeft() + Math.round(mProgress * getWidth()),
                         getBottom());
+                if (useGradientDrawable()) {
+                    drawingInfoOut.progressBarBackgroundRect.set(
+                            getRight() - mScaledBackgroundWidth, getTop(), getRight(), getBottom());
+                } else {
+                    drawingInfoOut.progressBarBackgroundRect.set(
+                            drawingInfoOut.progressBarRect.right,
+                            getTop(),
+                            getRight(),
+                            getBottom());
+                }
             }
         } else {
+            // TODO(https://crbug.com/439659091): Implement animated progress bar for RTL.
             drawingInfoOut.progressBarStaticBackgroundRect.set(
                     getRight(), getTop(), getLeft(), getBottom());
             drawingInfoOut.progressBarRect.set(
