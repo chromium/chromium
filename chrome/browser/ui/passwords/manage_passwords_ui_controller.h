@@ -218,6 +218,8 @@ class ManagePasswordsUIController
   void MaybeShowIOSPasswordPromo() override;
   void RelaunchChrome() override;
   void NavigateToPasswordChangeSettings() override;
+  void OnMouseEntered() override;
+  void OnMouseExited() override;
   // Skips user os level authentication during the life time of the returned
   // object. To be used in tests of flows that require user authentication.
   [[nodiscard]] std::unique_ptr<base::AutoReset<bool>>
@@ -414,6 +416,9 @@ class ManagePasswordsUIController
   password_manager::ui::State last_page_action_state_ =
       password_manager::ui::INACTIVE_STATE;
   bool last_page_action_is_blocklisted_ = false;
+
+  // Whether the mouse is currently hovering over the bubble.
+  bool is_mouse_hovered_ = false;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   bool was_biometric_authentication_for_filling_promo_shown_ = false;

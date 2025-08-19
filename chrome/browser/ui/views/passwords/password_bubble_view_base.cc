@@ -304,5 +304,13 @@ void PasswordBubbleViewBase::Init() {
   SetShowTitle(!controller->GetTitle().empty());
 }
 
+void PasswordBubbleViewBase::OnMouseEntered(const ui::MouseEvent& event) {
+  GetController()->OnMouseEntered();
+}
+
+void PasswordBubbleViewBase::OnMouseExited(const ui::MouseEvent& event) {
+  GetController()->OnMouseExited();
+}
+
 BEGIN_METADATA(PasswordBubbleViewBase)
 END_METADATA

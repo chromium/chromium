@@ -37,6 +37,18 @@ void PasswordBubbleControllerBase::OnBubbleClosing() {
   }
 }
 
+void PasswordBubbleControllerBase::OnMouseEntered() {
+  if (delegate_) {
+    delegate_->OnMouseEntered();
+  }
+}
+
+void PasswordBubbleControllerBase::OnMouseExited() {
+  if (delegate_) {
+    delegate_->OnMouseExited();
+  }
+}
+
 Profile* PasswordBubbleControllerBase::GetProfile() const {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents) {

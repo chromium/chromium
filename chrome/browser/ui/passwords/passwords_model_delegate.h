@@ -225,6 +225,12 @@ class PasswordsModelDelegate {
   // Opens the password change settings page as a separate tab.
   virtual void NavigateToPasswordChangeSettings() = 0;
 
+  // Called when the mouse enters the bubble view.
+  virtual void OnMouseEntered() = 0;
+
+  // Called when the mouse exits the bubble view.
+  virtual void OnMouseExited() = 0;
+
  protected:
   virtual ~PasswordsModelDelegate() = default;
 };

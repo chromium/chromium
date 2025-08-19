@@ -1520,6 +1520,7 @@ void ManagePasswordsUIController::ShowBubble() {
 }
 
 void ManagePasswordsUIController::HideBubble() {
+  is_mouse_hovered_ = false;
   if (TabDialogs* tab_dialogs = TabDialogs::FromWebContents(web_contents())) {
     tab_dialogs->HideManagePasswordsBubble();
   }
@@ -1534,14 +1535,21 @@ bool ManagePasswordsUIController::IsShowingBubble() const {
          bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
 }
 
-bool ManagePasswordsUIController::IsMouseHovered() const {
-  // TODO(crbug.com/432429605): Implement.
-  return false;
-}
-
 base::WeakPtr<autofill::BubbleControllerBase>
 ManagePasswordsUIController::GetBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void ManagePasswordsUIController::OnMouseEntered() {
+  is_mouse_hovered_ = true;
+}
+
+void ManagePasswordsUIController::OnMouseExited() {
+  is_mouse_hovered_ = false;
+}
+
+bool ManagePasswordsUIController::IsMouseHovered() const {
+  return is_mouse_hovered_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController);
