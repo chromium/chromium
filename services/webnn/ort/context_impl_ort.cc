@@ -21,27 +21,29 @@ namespace webnn::ort {
 ContextImplOrt::ContextImplOrt(
     mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
+    const EpWorkarounds& ep_workarounds,
     mojom::CreateContextOptionsPtr options,
     scoped_refptr<Environment> env,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
     scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
-    : WebNNContextImpl(std::move(receiver),
-                       context_provider,
-                       GetContextProperties(),
-                       std::move(options),
-                       command_buffer_id,
-                       std::move(sequence),
-                       std::move(task_runner)),
+    : WebNNContextImpl(
+          std::move(receiver),
+          context_provider,
+          GetContextProperties(ep_workarounds.resample2d_limit_to_nchw),
+          std::move(options),
+          command_buffer_id,
+          std::move(sequence),
+          std::move(task_runner)),
       env_(std::move(env)),
       session_options_(SessionOptions::Create(this->options().device)),
-      is_external_data_supported_(
-          env_->IsExternalDataSupported(this->options().device)) {}
+      is_external_data_supported_(!ep_workarounds.disable_external_data) {}
 
 ContextImplOrt::~ContextImplOrt() = default;
 
 // static
-ContextProperties ContextImplOrt::GetContextProperties() {
+ContextProperties ContextImplOrt::GetContextProperties(
+    bool resample2d_limit_to_nchw) {
   // TODO(crbug.com/412844034): Investigate how to set the tensor byte length
   // limit and supported tensor ranks.
   static constexpr uint64_t kTensorByteLengthLimit =
@@ -81,7 +83,9 @@ ContextProperties ContextImplOrt::GetContextProperties() {
       OperandDataType::kInt32};
 
   return ContextProperties(
-      InputOperandLayout::kNchw, Resample2DAxes::kAny,
+      InputOperandLayout::kNchw,
+      resample2d_limit_to_nchw ? Resample2DAxes::kChannelsFirst
+                               : Resample2DAxes::kAny,
       BatchNormalizationAxis::kChannelsFirst,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/SupportedDataTypes::All(),

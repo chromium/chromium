@@ -26,10 +26,7 @@ struct EpInfo {
   // Represents the vendor id of the hardware device used by the execution
   // provider.
   uint32_t vendor_id;
-  // Indicates whether the execution provider supports in-memory external data.
-  // TODO(crbug.com/429253567): Specify the minimum package version that
-  // supports in-memory external data.
-  bool is_external_data_supported;
+  EpWorkarounds workarounds;
 };
 
 constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
@@ -47,7 +44,11 @@ constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
                     .Revision = 0,
                 },
             .vendor_id = 0x8086,
-            .is_external_data_supported = false,
+            .workarounds =
+                {
+                    .disable_external_data = true,
+                    .resample2d_limit_to_nchw = true,
+                },
         },
     },
 });
@@ -275,12 +276,8 @@ void Environment::Release() const {
   }
 }
 
-// Some EPs like OpenVINO EP haven't supported in-memory external weights in
-// model yet and will throw error during session creation if it's used, so we
-// have to disable this feature for these EPs.
-// TODO(crbug.com/428740146): Remove this workaround once in-memory external
-// data is well supported.
-bool Environment::IsExternalDataSupported(mojom::Device device_type) const {
+EpWorkarounds Environment::GetEpWorkarounds(mojom::Device device_type) const {
+  EpWorkarounds workarounds;
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   base::span<const OrtEpDevice* const> ep_devices =
       GetRegisteredEpDevices(ort_api, this->get());
@@ -289,24 +286,23 @@ bool Environment::IsExternalDataSupported(mojom::Device device_type) const {
     CHECK(ep_device);
     OrtHardwareDeviceType ep_device_type =
         ort_api->HardwareDevice_Type(ort_api->EpDevice_Device(ep_device));
-    // Check if the external data is supported when the EP device type
-    // matches the selected device type, or is CPU because CPU EPs might be
-    // selected by ORT as the fallback EP.
+    // Check the workarounds when the EP device type matches the selected device
+    // type, or is CPU because CPU EPs might be selected by ORT as the fallback
+    // EP.
     if (ep_device_type == ort_device_type ||
         ep_device_type == OrtHardwareDeviceType_CPU) {
       const char* ep_name = ort_api->EpDevice_EpName(ep_device);
       // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
-      const auto& iter =
+      const auto iter =
           kKnownEPs.find(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
-      // TODO(crbug.com/429859159): Decide whether the external data is
-      // supported according to the first found EP once the EP devices returned
-      // from `GetEpDevices()` are sorted in the selection order.
-      if (iter != kKnownEPs.end() && !iter->second.is_external_data_supported) {
-        return false;
+      // TODO(crbug.com/429859159): Decide the workarounds according to the EPs
+      // that will be actually selected.
+      if (iter != kKnownEPs.end()) {
+        workarounds |= iter->second.workarounds;
       }
     }
   }
-  return true;
+  return workarounds;
 }
 
 // static

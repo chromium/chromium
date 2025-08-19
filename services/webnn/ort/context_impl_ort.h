@@ -25,6 +25,7 @@ class ContextImplOrt final : public WebNNContextImpl {
  public:
   ContextImplOrt(mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
                  WebNNContextProviderImpl* context_provider,
+                 const EpWorkarounds& ep_workarounds,
                  mojom::CreateContextOptionsPtr options,
                  scoped_refptr<Environment> env,
                  gpu::CommandBufferId command_buffer_id,
@@ -38,7 +39,7 @@ class ContextImplOrt final : public WebNNContextImpl {
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
-  static ContextProperties GetContextProperties();
+  static ContextProperties GetContextProperties(bool resample2d_limit_to_nchw);
 
   scoped_refptr<Environment> env() const { return env_; }
 

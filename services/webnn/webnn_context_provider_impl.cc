@@ -193,9 +193,11 @@ void WebNNContextProviderImpl::CreateWebNNContext(
                  << env_creation_results.error();
     } else {
       context_impl = base::MakeRefCounted<ort::ContextImplOrt>(
-          std::move(receiver), this, std::move(options),
-          std::move(env_creation_results.value()), command_buffer_id,
-          std::move(sequence), std::move(scheduler_task_runner));
+          std::move(receiver), this,
+          env_creation_results.value()->GetEpWorkarounds(options->device),
+          std::move(options), std::move(env_creation_results.value()),
+          command_buffer_id, std::move(sequence),
+          std::move(scheduler_task_runner));
     }
   } else if (dml::ShouldCreateDmlContext(*options)) {
     base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
