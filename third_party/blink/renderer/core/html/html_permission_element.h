@@ -456,6 +456,7 @@ class CORE_EXPORT HTMLPermissionElement
       const HeapVector<Member<IntersectionObserverEntry>>& entries);
 
   bool IsStyleValid();
+  bool IsMaskedByAncestor() const;
 
   // A wrapper method which keeps track of logging console messages before
   // calling the HTMLPermissionElementUtils::AdjustedBoundedLength method.
