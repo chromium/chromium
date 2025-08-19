@@ -439,7 +439,7 @@ enum WebDXFeature {
   kAtomicsPause = 377,
   kLogicalAssignments = 378,
   kNullishCoalescing = 379,
-  kCrashReportStorageAPIInitialize = 380,
+  kDRAFT_CrashReportStorageAPIInitialize = 380,
   kExtTextureCompressionBptc = 381,
   kExtTextureCompressionRgtc = 382,
   kExtTextureNorm16 = 383,

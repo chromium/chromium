@@ -8406,7 +8406,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="377" label="AtomicsPause"/>
   <int value="378" label="LogicalAssignments"/>
   <int value="379" label="NullishCoalescing"/>
-  <int value="380" label="CrashReportStorageAPIInitialize"/>
+  <int value="380" label="DRAFT_CrashReportStorageAPIInitialize"/>
   <int value="381" label="ExtTextureCompressionBptc"/>
   <int value="382" label="ExtTextureCompressionRgtc"/>
   <int value="383" label="ExtTextureNorm16"/>

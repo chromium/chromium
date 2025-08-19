@@ -6,7 +6,7 @@
 
 [Exposed=Window, RuntimeEnabled=CrashReportingStorageAPI]
 interface CrashReportStorage {
-  [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kCrashReportStorageAPIInitialize"] Promise<undefined> initialize(unsigned long long length);
+  [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kDRAFT_CrashReportStorageAPIInitialize"] Promise<undefined> initialize(unsigned long long length);
   [RaisesException] void set(DOMString key, DOMString value);
   [RaisesException] void remove(DOMString key);
   // Promise<undefined> clear();
