@@ -2371,6 +2371,11 @@ const char kHeavyAdPrivacyMitigationsDescription[] =
     "Enables privacy mitigations for the heavy ad intervention. Disabling "
     "this makes the intervention deterministic. Defaults to enabled.";
 
+const char kHideAimOmniboxEntrypointOnUserInputName[] =
+    "AI Entrypoint Disabled on User Input";
+const char kHideAimOmniboxEntrypointOnUserInputDescription[] =
+    "Hide the Omnibox entrypoint for AI Mode while user is typing.";
+
 const char kHistoryEmbeddingsName[] = "History Embeddings";
 const char kHistoryEmbeddingsDescription[] =
     "When enabled, the history embeddings feature may operate.";

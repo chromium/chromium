@@ -5643,6 +5643,15 @@
     "expiry_milestone": 152
   },
   {
+    "name": "hide-aim-omnibox-entrypoint-on-user-input",
+    "owners": [
+      "hannahrogers@chromium.org",
+      "jdonnelly@chromium.org",
+      "khalidpeer@chromium.org",
+      "chrome-desktop-search@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "history-embeddings",
     "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "manukh@chromium.org", "johntlee@chromium.org" ],
     "expiry_milestone": 145
