@@ -1963,6 +1963,28 @@ TEST_F(FileUtilTest, DeleteContentUri) {
   EXPECT_FALSE(PathExists(uri_path));
 }
 
+TEST_F(FileUtilTest, WriteFileContentUri) {
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  CreateDirectory(dir);
+
+  FilePath dir_vp =
+      *test::android::GetVirtualDocumentPathFromCacheDirDirectory(dir);
+  FilePath file_vp = dir_vp.Append("file.txt");
+  ASSERT_TRUE(file_vp.IsVirtualDocumentPath());
+
+  ASSERT_FALSE(PathExists(file_vp));
+  EXPECT_TRUE(WriteFile(file_vp, "x"));
+  ASSERT_TRUE(PathExists(file_vp));
+
+  FilePath file_content_uri = *ResolveToContentUri(file_vp);
+
+  EXPECT_TRUE(WriteFile(file_content_uri, "foo"));
+
+  File::Info info;
+  ASSERT_TRUE(GetFileInfo(file_content_uri, &info));
+  ASSERT_EQ(info.size, 3u);
+}
+
 TEST_F(FileUtilTest, ResolveToContentUri) {
   FilePath dir = temp_dir_.GetPath().Append("dir");
   CreateDirectory(dir);

@@ -1149,6 +1149,10 @@ bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
     std::optional<files_internal::VirtualDocumentPath> vp =
         files_internal::VirtualDocumentPath::Parse(filename.value());
     return vp && vp->WriteFile(data);
+  } else if (filename.IsContentUri()) {
+    File file(filename,
+              File::Flags::FLAG_WRITE | File::Flags::FLAG_CREATE_ALWAYS);
+    return file.Write(0, data).has_value();
   }
 #endif
 

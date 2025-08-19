@@ -14,6 +14,7 @@
 #include <array>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -260,86 +261,105 @@ TEST(FileTest, DeleteOpenFile) {
 }
 
 TEST(FileTest, ReadWrite) {
+  std::vector<File> files;
+
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   FilePath file_path = temp_dir.GetPath().AppendASCII("read_write_file");
-  File file(file_path, File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE);
-  ASSERT_TRUE(file.IsValid());
+  File file_normal(file_path,
+                   File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE);
+  ASSERT_TRUE(file_normal.IsValid());
+  files.push_back(std::move(file_normal));
 
-  std::array<char, 5> data_to_write{"test"};
-  const int kTestDataSize = 4;
+#if BUILDFLAG(IS_ANDROID)
+  FilePath dir_vp = *test::android::GetVirtualDocumentPathFromCacheDirDirectory(
+      temp_dir.GetPath());
+  FilePath file_path_vp = dir_vp.Append("read_write_file_vp");
+  ASSERT_TRUE(file_path_vp.IsVirtualDocumentPath());
+  File file_vp(file_path_vp,
+               File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE);
+  ASSERT_TRUE(file_vp.IsValid());
+  files.push_back(std::move(file_vp));
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  // Write 0 bytes to the file.
-  int bytes_written = file.Write(0, data_to_write.data(), 0);
-  EXPECT_EQ(0, bytes_written);
+  for (File& file : files) {
+    std::array<char, 5> data_to_write{"test"};
+    const int kTestDataSize = 4;
 
-  // Write 0 bytes, with buf=nullptr.
-  bytes_written = file.Write(0, nullptr, 0);
-  EXPECT_EQ(0, bytes_written);
+    // Write 0 bytes to the file.
+    int bytes_written = file.Write(0, data_to_write.data(), 0);
+    EXPECT_EQ(0, bytes_written);
 
-  // Write "test" to the file.
-  bytes_written = file.Write(0, data_to_write.data(), kTestDataSize);
-  EXPECT_EQ(kTestDataSize, bytes_written);
+    // Write 0 bytes, with buf=nullptr.
+    bytes_written = file.Write(0, nullptr, 0);
+    EXPECT_EQ(0, bytes_written);
 
-  // Read from EOF.
-  std::array<char, 32> data_read_1;
-  int bytes_read = file.Read(kTestDataSize, data_read_1.data(), kTestDataSize);
-  EXPECT_EQ(0, bytes_read);
+    // Write "test" to the file.
+    bytes_written = file.Write(0, data_to_write.data(), kTestDataSize);
+    EXPECT_EQ(kTestDataSize, bytes_written);
 
-  // Read from somewhere in the middle of the file.
-  const int kPartialReadOffset = 1;
-  bytes_read = file.Read(kPartialReadOffset, data_read_1.data(), kTestDataSize);
-  EXPECT_EQ(kTestDataSize - kPartialReadOffset, bytes_read);
-  for (int i = 0; i < bytes_read; i++) {
-    EXPECT_EQ(data_to_write[i + kPartialReadOffset], data_read_1[i]);
-  }
+    // Read from EOF.
+    std::array<char, 32> data_read_1;
+    int bytes_read =
+        file.Read(kTestDataSize, data_read_1.data(), kTestDataSize);
+    EXPECT_EQ(0, bytes_read);
 
-  // Read 0 bytes.
-  bytes_read = file.Read(0, data_read_1.data(), 0);
-  EXPECT_EQ(0, bytes_read);
+    // Read from somewhere in the middle of the file.
+    const int kPartialReadOffset = 1;
+    bytes_read =
+        file.Read(kPartialReadOffset, data_read_1.data(), kTestDataSize);
+    EXPECT_EQ(kTestDataSize - kPartialReadOffset, bytes_read);
+    for (int i = 0; i < bytes_read; i++) {
+      EXPECT_EQ(data_to_write[i + kPartialReadOffset], data_read_1[i]);
+    }
 
-  // Read the entire file.
-  bytes_read = file.Read(0, data_read_1.data(), kTestDataSize);
-  EXPECT_EQ(kTestDataSize, bytes_read);
-  for (int i = 0; i < bytes_read; i++) {
-    EXPECT_EQ(data_to_write[i], data_read_1[i]);
-  }
+    // Read 0 bytes.
+    bytes_read = file.Read(0, data_read_1.data(), 0);
+    EXPECT_EQ(0, bytes_read);
 
-  // Read again, but using the trivial native wrapper.
-  std::optional<size_t> maybe_bytes_read =
-      file.ReadNoBestEffort(0, as_writable_byte_span(data_read_1)
-                                   .first(static_cast<size_t>(kTestDataSize)));
-  ASSERT_TRUE(maybe_bytes_read.has_value());
-  EXPECT_LE(maybe_bytes_read.value(), static_cast<size_t>(kTestDataSize));
-  for (size_t i = 0; i < maybe_bytes_read.value(); i++) {
-    EXPECT_EQ(data_to_write[i], data_read_1[i]);
-  }
+    // Read the entire file.
+    bytes_read = file.Read(0, data_read_1.data(), kTestDataSize);
+    EXPECT_EQ(kTestDataSize, bytes_read);
+    for (int i = 0; i < bytes_read; i++) {
+      EXPECT_EQ(data_to_write[i], data_read_1[i]);
+    }
 
-  // Write past the end of the file.
-  const int kOffsetBeyondEndOfFile = 10;
-  const int kPartialWriteLength = 2;
-  bytes_written = file.Write(kOffsetBeyondEndOfFile, data_to_write.data(),
-                             kPartialWriteLength);
-  EXPECT_EQ(kPartialWriteLength, bytes_written);
+    // Read again, but using the trivial native wrapper.
+    std::optional<size_t> maybe_bytes_read = file.ReadNoBestEffort(
+        0, as_writable_byte_span(data_read_1)
+               .first(static_cast<size_t>(kTestDataSize)));
+    ASSERT_TRUE(maybe_bytes_read.has_value());
+    EXPECT_LE(maybe_bytes_read.value(), static_cast<size_t>(kTestDataSize));
+    for (size_t i = 0; i < maybe_bytes_read.value(); i++) {
+      EXPECT_EQ(data_to_write[i], data_read_1[i]);
+    }
 
-  // Make sure the file was extended.
-  std::optional<int64_t> file_size = GetFileSize(file_path);
-  ASSERT_TRUE(file_size.has_value());
-  EXPECT_EQ(kOffsetBeyondEndOfFile + kPartialWriteLength, file_size.value());
+    // Write past the end of the file.
+    const int kOffsetBeyondEndOfFile = 10;
+    const int kPartialWriteLength = 2;
+    bytes_written = file.Write(kOffsetBeyondEndOfFile, data_to_write.data(),
+                               kPartialWriteLength);
+    EXPECT_EQ(kPartialWriteLength, bytes_written);
 
-  // Make sure the file was zero-padded.
-  std::array<char, 32> data_read_2;
-  bytes_read =
-      file.Read(0, data_read_2.data(), static_cast<int>(file_size.value()));
-  EXPECT_EQ(file_size, bytes_read);
-  for (int i = 0; i < kTestDataSize; i++) {
-    EXPECT_EQ(data_to_write[i], data_read_2[i]);
-  }
-  for (int i = kTestDataSize; i < kOffsetBeyondEndOfFile; i++) {
-    EXPECT_EQ(0, data_read_2[i]);
-  }
-  for (int i = kOffsetBeyondEndOfFile; i < file_size; i++) {
-    EXPECT_EQ(data_to_write[i - kOffsetBeyondEndOfFile], data_read_2[i]);
+    // Make sure the file was extended.
+    std::optional<int64_t> file_size = GetFileSize(file_path);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_EQ(kOffsetBeyondEndOfFile + kPartialWriteLength, file_size.value());
+
+    // Make sure the file was zero-padded.
+    std::array<char, 32> data_read_2;
+    bytes_read =
+        file.Read(0, data_read_2.data(), static_cast<int>(file_size.value()));
+    EXPECT_EQ(file_size, bytes_read);
+    for (int i = 0; i < kTestDataSize; i++) {
+      EXPECT_EQ(data_to_write[i], data_read_2[i]);
+    }
+    for (int i = kTestDataSize; i < kOffsetBeyondEndOfFile; i++) {
+      EXPECT_EQ(0, data_read_2[i]);
+    }
+    for (int i = kOffsetBeyondEndOfFile; i < file_size; i++) {
+      EXPECT_EQ(data_to_write[i - kOffsetBeyondEndOfFile], data_read_2[i]);
+    }
   }
 }
 
