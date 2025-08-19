@@ -638,8 +638,6 @@ TEST_P(ThemeLocalDataBatchUploaderTest, LocalNtpBackground) {
   EXPECT_TRUE(theme_service()->UsingDefaultTheme());
 }
 
-// TODO(crbug.com/392074002): Re-think if it makes sense to offer batch upload
-// if local theme is only the browser color scheme.
 TEST_P(ThemeLocalDataBatchUploaderTest, LocalBrowserColorScheme) {
   // Local browser color scheme.
   theme_service()->SetBrowserColorScheme(
@@ -651,34 +649,25 @@ TEST_P(ThemeLocalDataBatchUploaderTest, LocalBrowserColorScheme) {
 
   StartSyncing(remote_theme_specifics);
 
-  EXPECT_THAT(GetLocalDataDescription(),
-              MatchesLocalDataDescription(
-                  syncer::DataType::THEMES,
-                  ElementsAre(MatchesLocalDataItemModel(
-                      ThemeLocalDataBatchUploader::kThemesLocalDataItemModelId,
-                      syncer::LocalDataItemModel::NoIcon(),
-                      /*title=*/"Custom color", /*subtitle=*/IsEmpty())),
-                  /*item_count=*/0u, /*domains=*/IsEmpty(),
-                  /*domain_count=*/0u));
-
-  TriggerLocalDataMigration();
-  EXPECT_EQ(theme_service()->GetBrowserColorScheme(),
-            ThemeService::BrowserColorScheme::kLight);
-  EXPECT_TRUE(theme_service()->UsingDefaultTheme());
-  EXPECT_THAT(
-      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting(),
-      EqualsProto(local_theme_specifics));
-  // The local theme is committed.
-  EXPECT_THAT(fake_change_processor()->changes(),
-              HasThemeSpecifics(local_theme_specifics));
-
-  // GetLocalDataDescription should now return empty.
+  // Just a browser color scheme by itself is considered equivalent to a default
+  // theme and should not be offered for batch upload.
   EXPECT_THAT(GetLocalDataDescription(), IsEmptyLocalDataDescription());
 
+  EXPECT_THAT(
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting(),
+      EqualsProto(remote_theme_specifics));
+
+  TriggerLocalDataMigration();
+  EXPECT_THAT(
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting(),
+      EqualsProto(remote_theme_specifics));
+  // The local theme is not committed.
+  EXPECT_THAT(fake_change_processor()->changes(),
+              Not(HasThemeSpecifics(local_theme_specifics)));
+
   theme_sync_service()->StopSyncing(syncer::THEMES);
-  ASSERT_EQ(theme_service()->GetBrowserColorScheme(),
+  EXPECT_EQ(theme_service()->GetBrowserColorScheme(),
             ThemeService::BrowserColorScheme::kLight);
-  EXPECT_TRUE(theme_service()->UsingDefaultTheme());
 }
 
 TEST_P(ThemeLocalDataBatchUploaderTest, LocalSystemTheme) {

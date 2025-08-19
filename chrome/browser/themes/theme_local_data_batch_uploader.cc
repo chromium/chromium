@@ -107,7 +107,14 @@ std::optional<sync_pb::ThemeSpecifics>
 ThemeLocalDataBatchUploader::GetNonDefaultSavedLocalTheme() const {
   std::optional<sync_pb::ThemeSpecifics> specifics =
       delegate_->GetSavedLocalTheme();
-  return (specifics && ThemeSyncableService::HasNonDefaultTheme(*specifics))
+  if (!specifics) {
+    return std::nullopt;
+  }
+  sync_pb::ThemeSpecifics specifics_without_browser_color_scheme = *specifics;
+  // Do not offer batch upload for themes with only browser color scheme.
+  specifics_without_browser_color_scheme.clear_browser_color_scheme();
+  return ThemeSyncableService::HasNonDefaultTheme(
+             specifics_without_browser_color_scheme)
              ? specifics
              : std::nullopt;
 }
