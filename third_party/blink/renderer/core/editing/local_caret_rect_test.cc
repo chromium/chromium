@@ -319,13 +319,15 @@ TEST_F(LocalCaretRectTest, ClampingAndRounding) {
 
 TEST_F(LocalCaretRectTest, OverflowTextLtr) {
   // This test only records the current behavior. Future changes are allowed.
-
+  // When text is not editable, overflow behaviour for block and underscore
+  // falls back to the same behaviour as bar.
   LoadAhem();
   SetBodyContent(
       "<div id=root style='font: 10px/10px Ahem; width: 30px'>"
       "XXXX"
       "</div>");
   const Node* text = GetElementById("root")->firstChild();
+  // bar
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(text, 0), TextAffinity::kDownstream)));
@@ -333,6 +335,169 @@ TEST_F(LocalCaretRectTest, OverflowTextLtr) {
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, OverflowEditableTextLtr) {
+  // This test only records the current behavior. Future changes are allowed.
+
+  LoadAhem();
+  SetBodyContent(
+      "<div contenteditable id=root style='font: 10px/10px Ahem; width: 40px'>"
+      "XXXX"
+      "</div>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, HiddenOverflowEditableTextLtr) {
+  // This test only records the current behavior. Future changes are allowed.
+
+  LoadAhem();
+  SetBodyContent(
+      "<div contenteditable id=root style='font: 10px/10px Ahem; width: 40px; "
+      "overflow: hidden'>"
+      "XXXX"
+      "</div>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, ClipOverflowEditableTextLtr) {
+  // This test only records the current behavior. Future changes are allowed.
+
+  LoadAhem();
+  SetBodyContent(
+      "<div contenteditable id=root style='font: 10px/10px Ahem; width: 40px; "
+      "overflow: clip'>"
+      "XXXX"
+      "</div>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, UnderflowTextLtr) {
@@ -355,6 +520,8 @@ TEST_F(LocalCaretRectTest, UnderflowTextLtr) {
 
 TEST_F(LocalCaretRectTest, OverflowTextRtl) {
   // This test only records the current behavior. Future changes are allowed.
+  // When text is not editable, overflow behaviour for block and underscore
+  // falls back to the same behaviour as bar.
 
   LoadAhem();
   SetBodyContent(
@@ -363,6 +530,7 @@ TEST_F(LocalCaretRectTest, OverflowTextRtl) {
       "XXXX"
       "</bdo>");
   const Node* text = GetElementById("root")->firstChild();
+  // bar
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(text, 0), TextAffinity::kDownstream)));
@@ -371,6 +539,173 @@ TEST_F(LocalCaretRectTest, OverflowTextRtl) {
       LocalCaretRect(text->GetLayoutObject(), PhysicalRect(-10, 0, 1, 10)),
       LocalCaretRectOfPosition(
           PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(-10, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(-10, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, OverflowEditableTextRtl) {
+  // This test only records the current behavior. Future changes are allowed.
+
+  LoadAhem();
+  SetBodyContent(
+      "<bdo contenteditable id=root style='display:block; font: 10px/10px "
+      "Ahem; width: 40px' "
+      "dir=rtl>"
+      "XXXX"
+      "</bdo>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, HiddenOverflowEditableTextRtl) {
+  // This test only records the current behavior. Future changes are allowed.
+
+  LoadAhem();
+  SetBodyContent(
+      "<bdo contenteditable id=root style='display:block; font: 10px/10px "
+      "Ahem; width: 40px; overflow: hidden' "
+      "dir=rtl>"
+      "XXXX"
+      "</bdo>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, ClipOverflowEditableTextRtl) {
+  // This test only records the current behavior. Future changes are allowed.
+
+  LoadAhem();
+  SetBodyContent(
+      "<bdo contenteditable id=root style='display:block; font: 10px/10px "
+      "Ahem; width: 40px; overflow: clip' "
+      "dir=rtl>"
+      "XXXX"
+      "</bdo>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(39, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, UnderflowTextRtl) {
@@ -747,6 +1082,8 @@ TEST_F(LocalCaretRectTest, VerticalLRText) {
 
 TEST_F(LocalCaretRectTest, OverflowTextVerticalLtr) {
   // This test only records the current behavior. Future changes are allowed.
+  // When text is not editable, overflow behaviour for block and underscore fall
+  // back to the same behaviour as bar.
 
   LoadAhem();
   SetBodyContent(
@@ -755,6 +1092,7 @@ TEST_F(LocalCaretRectTest, OverflowTextVerticalLtr) {
       "XXXX"
       "</div>");
   const Node* text = GetElementById("root")->firstChild();
+  // bar
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(text, 0), TextAffinity::kDownstream)));
@@ -762,6 +1100,179 @@ TEST_F(LocalCaretRectTest, OverflowTextVerticalLtr) {
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 1)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, OverflowEditableTextVerticalLtr) {
+  // This test only records the current behavior. Future changes are allowed.
+  // When text is not editable, overflow behaviour for block and underscore fall
+  // back to the same behaviour as bar.
+
+  LoadAhem();
+  SetBodyContent(
+      "<div contenteditable id=root style='font: 10px/10px Ahem; height: 40px; "
+      "writing-mode: "
+      "vertical-lr'>"
+      "XXXX"
+      "</div>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, HiddenOverflowEditableTextVerticalLtr) {
+  // This test only records the current behavior. Future changes are allowed.
+  // When text is not editable, overflow behaviour for block and underscore fall
+  // back to the same behaviour as bar.
+
+  LoadAhem();
+  SetBodyContent(
+      "<div contenteditable id=root style='font: 10px/10px Ahem; height: 40px; "
+      "writing-mode: "
+      "vertical-lr; overflow: hidden'>"
+      "XXXX"
+      "</div>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, ClipOverflowEditableTextVerticalLtr) {
+  // This test only records the current behavior. Future changes are allowed.
+  // When text is not editable, overflow behaviour for block and underscore fall
+  // back to the same behaviour as bar.
+
+  LoadAhem();
+  SetBodyContent(
+      "<div contenteditable id=root style='font: 10px/10px Ahem; height: 40px; "
+      "writing-mode: "
+      "vertical-lr; overflow: clip'>"
+      "XXXX"
+      "</div>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, UnderflowTextVerticalLtr) {
@@ -785,6 +1296,8 @@ TEST_F(LocalCaretRectTest, UnderflowTextVerticalLtr) {
 
 TEST_F(LocalCaretRectTest, OverflowTextVerticalRtl) {
   // This test only records the current behavior. Future changes are allowed.
+  // When text is not editable, overflow behaviour for block and underscore fall
+  // back to the same behaviour as bar.
 
   LoadAhem();
   SetBodyContent(
@@ -793,6 +1306,7 @@ TEST_F(LocalCaretRectTest, OverflowTextVerticalRtl) {
       "XXXX"
       "</bdo>");
   const Node* text = GetElementById("root")->firstChild();
+  // bar
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 29, 10, 1)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(text, 0), TextAffinity::kDownstream)));
@@ -801,6 +1315,173 @@ TEST_F(LocalCaretRectTest, OverflowTextVerticalRtl) {
       LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, -10, 10, 1)),
       LocalCaretRectOfPosition(
           PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 29, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, -10, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 29, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, -10, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, OverflowEditableTextVerticalRtl) {
+  // This test only records the current behavior. Future changes are allowed.
+
+  LoadAhem();
+  SetBodyContent(
+      "<bdo contenteditable id=root style='display:block; font: 10px/10px "
+      "Ahem; height: 40px; "
+      "writing-mode: vertical-lr' dir=rtl>"
+      "XXXX"
+      "</bdo>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 30, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 30, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, HiddenOverflowEditableTextVerticalRtl) {
+  // This test only records the current behavior. Future changes are allowed.
+
+  LoadAhem();
+  SetBodyContent(
+      "<bdo contenteditable id=root style='display:block; font: 10px/10px "
+      "Ahem; height: 40px; "
+      "writing-mode: vertical-lr; overflow: hidden' dir=rtl>"
+      "XXXX"
+      "</bdo>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 30, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 30, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, ClipOverflowEditableTextVerticalRtl) {
+  // This test only records the current behavior. Future changes are allowed.
+
+  LoadAhem();
+  SetBodyContent(
+      "<bdo contenteditable id=root style='display:block; font: 10px/10px "
+      "Ahem; height: 40px; "
+      "writing-mode: vertical-lr; overflow: clip' dir=rtl>"
+      "XXXX"
+      "</bdo>");
+  const Node* text = GetElementById("root")->firstChild();
+  // bar
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 39, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 0), TextAffinity::kDownstream)));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text, 4), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 30, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 30, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  // LocalCaretRect may be outside the containing block.
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, UnderflowTextVerticalRtl) {

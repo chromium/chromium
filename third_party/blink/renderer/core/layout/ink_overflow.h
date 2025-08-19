@@ -184,6 +184,11 @@ class CORE_EXPORT InkOverflow {
       const InlinePaintContext* inline_context,
       const WritingMode writing_mode);
 
+  // Returns ink-overflow with caret overflow in logical direction.
+  static LogicalRect ComputeCaretOverflow(const InlineCursor& cursor,
+                                          const ComputedStyle& style,
+                                          const LogicalRect& ink_overflow_in);
+
 #if DCHECK_IS_ON()
   struct ReadUnsetAsNoneScope {
     STACK_ALLOCATED();
