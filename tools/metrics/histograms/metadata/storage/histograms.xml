@@ -963,10 +963,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.AttemptToObserveSymlinkOrJunction"
-    enum="Boolean" expires_after="2026-01-04">
-  <owner>memmott@chromium.org</owner>
-  <owner>dslee@chromium.org</owner>
-  <owner>christinesm@chromium.org</owner>
+    enum="Boolean" expires_after="2026-02-12">
+  <owner>mych@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     Records whether a site attempted to observe a symlink or a junction using
@@ -977,7 +975,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.ConfirmSensitiveEntryAccessDuration"
-    units="ms" expires_after="2025-12-14">
+    units="ms" expires_after="2026-02-12">
   <owner>leimy@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
@@ -989,10 +987,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.FilePathWatcherCallbackError"
-    enum="FileSystemAccessWatchWithChangeInfoResult" expires_after="2025-12-01">
-  <owner>memmott@chromium.org</owner>
-  <owner>dslee@chromium.org</owner>
-  <owner>christinesm@chromium.org</owner>
+    enum="FileSystemAccessWatchWithChangeInfoResult" expires_after="2026-02-12">
+  <owner>mych@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     Records if content::FilePathWatcher sends an error to its callback and how
     it failed. Recorded on every error sent to the callback.
@@ -1000,10 +997,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.InotifyWatchCount" units="count"
-    expires_after="2025-10-12">
-  <owner>memmott@chromium.org</owner>
-  <owner>dslee@chromium.org</owner>
-  <owner>christinesm@chromium.org</owner>
+    expires_after="2026-02-12">
+  <owner>mych@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     Records the high water mark of inotify watches used in a FilePathWatcher on
     Linux. Recorded when the FilePathWatcher is destroyed.
@@ -1011,10 +1007,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.ObservationCallbackRate"
-    units="count" expires_after="2026-01-04">
-  <owner>memmott@chromium.org</owner>
-  <owner>dslee@chromium.org</owner>
-  <owner>christinesm@chromium.org</owner>
+    units="count" expires_after="2026-02-12">
+  <owner>mych@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     Records the number of times an observer's callback is triggered per
     observation in a one second window. Recorded one second after a callback has
@@ -1023,10 +1018,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.ObserverUsage" units="count"
-    expires_after="2026-02-01">
-  <owner>memmott@chromium.org</owner>
-  <owner>dslee@chromium.org</owner>
-  <owner>christinesm@chromium.org</owner>
+    expires_after="2026-02-12">
+  <owner>mych@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     Records the high water mark of OS-specific observer resource usage for a
     given StorageKey. Recorded when FileSystemAccessObserverQuotaManager is
@@ -1035,10 +1029,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.ObserverUsageQuotaExceeded"
-    enum="Boolean" expires_after="2026-01-18">
-  <owner>memmott@chromium.org</owner>
-  <owner>dslee@chromium.org</owner>
-  <owner>christinesm@chromium.org</owner>
+    enum="Boolean" expires_after="2026-02-12">
+  <owner>mych@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     Records whether FileSystemObserver usage change caused quota to be exceeded.
     Recorded when FileSystemAccessObserverQuotaManager is destroyed.
@@ -1046,10 +1039,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.ObserverUsageRate" units="%"
-    expires_after="2025-12-01">
-  <owner>memmott@chromium.org</owner>
-  <owner>dslee@chromium.org</owner>
-  <owner>christinesm@chromium.org</owner>
+    expires_after="2026-02-12">
+  <owner>mych@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     Records the percentage ratio of high water mark of OS-specific observer
     resource usage over the total available quota for a given StorageKey.
@@ -1059,8 +1051,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Storage.FileSystemAccess.RestorePermissionPromptOutcome"
     enum="FileSystemAccessRestorePermissionPromptOutcome"
-    expires_after="2025-09-01">
-  <owner>christinesm@chromium.org</owner>
+    expires_after="2026-02-12">
+  <owner>mych@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     The result of a user interaction with the File System Access Persistent
@@ -1069,8 +1061,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.ToggleExtendedPermissionOutcome"
-    enum="Boolean" expires_after="2025-09-01">
-  <owner>christinesm@chromium.org</owner>
+    enum="Boolean" expires_after="2026-02-12">
+  <owner>mych@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     The result of a user interaction with the File System Access Persistent
@@ -1080,10 +1072,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.WatchWithChangeInfoResult"
-    enum="FileSystemAccessWatchWithChangeInfoResult" expires_after="2026-01-04">
-  <owner>memmott@chromium.org</owner>
-  <owner>dslee@chromium.org</owner>
-  <owner>christinesm@chromium.org</owner>
+    enum="FileSystemAccessWatchWithChangeInfoResult" expires_after="2026-02-12">
+  <owner>mych@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     Records if content::FilePathWatcher::WatchWitchChangeInfo succeeds and if it
     doesn't, how it fails. Recorded for every call.
@@ -1092,8 +1083,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.FileSystemAccess.{OpType}PermissionRequestOutcome.{EntryType}"
-    enum="FileSystemAccessPermissionRequestOutcome" expires_after="2025-09-01">
-  <owner>asully@chromium.org</owner>
+    enum="FileSystemAccessPermissionRequestOutcome" expires_after="2026-02-12">
+  <owner>mych@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     The result of an attempt to request permission to a file or directory via
