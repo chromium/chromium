@@ -37,7 +37,9 @@ enum class ScreenshotOnShutdownStatus {
   kFailedOnDifferentOrientations,
   kFailedOnDLP,
   kFailedInGuestOrPublicUserSession,
-  kMaxValue = kFailedInGuestOrPublicUserSession,
+  kFailedOtherUserIsActive,
+  kFailedWithVisibleWindowFromOtherUser,
+  kMaxValue = kFailedWithVisibleWindowFromOtherUser,
 };
 
 // Enumeration of the ways the informed restore dialog could be closed. Used for

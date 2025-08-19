@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shutdown_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -46,6 +47,7 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/account_id/account_id.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
@@ -96,6 +98,13 @@ class TestShutdownController : public ShutdownController {
 
   int num_shutdown_requests_ = 0;
 };
+
+AccountId GetPrimaryUserAccountId() {
+  return Shell::Get()
+      ->session_controller()
+      ->GetPrimaryUserSession()
+      ->user_info.account_id;
+}
 
 }  // namespace
 
@@ -1051,6 +1060,9 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
 
   // LockStateControllerTest:
   void SetUp() override {
+    // `Initialize` below will perform login for a user.
+    AshTestBase::set_start_session(false);
+
     LockStateControllerTest::SetUp();
 
     CHECK(temp_dir_.CreateUniqueTempDir());
@@ -1063,9 +1075,14 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
     Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetInteger(
         prefs::kRestoreAppsAndPagesPrefName,
         static_cast<int>(full_restore::RestoreOption::kAskEveryTime));
+
+    multi_user_window_manager_ = MultiUserWindowManager::Create();
+    multi_user_window_manager_->SetPrimaryUser(GetPrimaryUserAccountId());
   }
 
   void TearDown() override {
+    multi_user_window_manager_.reset();
+
     SetInformedRestoreImagePathForTest(base::FilePath());
     LockStateControllerTest::TearDown();
   }
@@ -1090,6 +1107,9 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
   }
 
   const base::FilePath& file_path() const { return file_path_; }
+
+ protected:
+  std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
 
  private:
   base::ScopedAllowBlockingForTesting allow_blocking_;
@@ -1407,6 +1427,98 @@ TEST_F(LockStateControllerInformedRestoreTest,
   lock_state_controller_->RequestSignOut();
   run_loop.Run();
   EXPECT_FALSE(base::PathExists(file_path()));
+}
+
+TEST_F(LockStateControllerInformedRestoreTest,
+       ScreenshotIsNotTakenWhenSecondaryUserIsActive) {
+  EXPECT_FALSE(base::PathExists(file_path()));
+
+  base::HistogramTester histogram_tester;
+
+  // Simulate MUSI setting.
+  auto account_id = SimulateUserLogin({"user2@example.com"});
+  SwitchActiveUser(account_id);
+
+  // At least one window is needed to trigger screenshot.
+  auto test_window = CreateTestWindow();
+
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_informed_restore_image_callback(
+      run_loop.QuitClosure());
+  // Disable the timeout to avoid test flakiness.
+  lock_state_test_api_->disable_screenshot_timeout_for_test(true);
+
+  lock_state_controller_->RequestSignOut();
+  run_loop.Run();
+  EXPECT_FALSE(base::PathExists(file_path()));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+              testing::ElementsAre(base::Bucket(
+                  ScreenshotOnShutdownStatus::kFailedOtherUserIsActive, 1)));
+}
+
+TEST_F(LockStateControllerInformedRestoreTest,
+       ScreenshotIsTakenWhenPrimaryUserIsActive) {
+  EXPECT_FALSE(base::PathExists(file_path()));
+
+  // Simulate MUSI setting.
+  auto primary_account_id = GetPrimaryUserAccountId();
+  SimulateUserLogin({"user2@example.com"});
+  // Activate primary user.
+  SwitchActiveUser(primary_account_id);
+
+  // At least one window is needed to trigger screenshot.
+  auto test_window = CreateTestWindow();
+
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_informed_restore_image_callback(
+      run_loop.QuitClosure());
+  // Disable the timeout to avoid test flakiness.
+  lock_state_test_api_->disable_screenshot_timeout_for_test(true);
+
+  lock_state_controller_->RequestSignOut();
+  run_loop.Run();
+  EXPECT_TRUE(base::PathExists(file_path()));
+}
+
+TEST_F(LockStateControllerInformedRestoreTest,
+       ScreenshotIsNotTakenWhenWindowFromOtherUserIsVisible) {
+  EXPECT_FALSE(base::PathExists(file_path()));
+
+  base::HistogramTester histogram_tester;
+
+  // Simulate MUSI setting.
+  auto primary_account_id = GetPrimaryUserAccountId();
+  auto secondary_account_id = SimulateUserLogin({"user2@example.com"});
+  // Activate primary user.
+  SwitchActiveUser(primary_account_id);
+
+  // Setup two windows: one is owned by the primary user, and the other
+  // is owned by the secondary user. Both are shown for the primary user.
+  auto test_window = CreateTestWindow();
+  multi_user_window_manager_->SetWindowOwner(test_window.get(),
+                                             primary_account_id);
+  auto test_window2 = CreateTestWindow();
+  multi_user_window_manager_->SetWindowOwner(test_window2.get(),
+                                             secondary_account_id);
+  multi_user_window_manager_->ShowWindowForUser(test_window2.get(),
+                                                primary_account_id);
+
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_informed_restore_image_callback(
+      run_loop.QuitClosure());
+  // Disable the timeout to avoid test flakiness.
+  lock_state_test_api_->disable_screenshot_timeout_for_test(true);
+
+  lock_state_controller_->RequestSignOut();
+  run_loop.Run();
+  EXPECT_FALSE(base::PathExists(file_path()));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+      testing::ElementsAre(base::Bucket(
+          ScreenshotOnShutdownStatus::kFailedWithVisibleWindowFromOtherUser,
+          1)));
 }
 
 }  // namespace ash
