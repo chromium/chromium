@@ -136,7 +136,7 @@ void LanguageModelCreateClient::Create(
         message != options_->initialPrompts().front()) {
       // Only the first prompt supports the `system` role.
       GetResolver()->RejectWithTypeError(
-          kExceptionMessageSystemPromptIsNotTheFirst);
+          kExceptionMessagePromptWithSystemRoleIsNotTheFirst);
       return;
     }
     if (message->prefix()) {

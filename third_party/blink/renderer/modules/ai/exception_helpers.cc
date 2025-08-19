@@ -61,10 +61,7 @@ const char kExceptionMessageUnableToCloneSession[] =
     "The session cannot be cloned.";
 const char kExceptionMessageUnableToCalculateUsage[] =
     "The usage cannot be calculated.";
-const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[] =
-    "The system prompt should not be defined in both systemPrompt and "
-    "initialPrompts.";
-const char kExceptionMessageSystemPromptIsNotTheFirst[] =
+const char kExceptionMessagePromptWithSystemRoleIsNotTheFirst[] =
     "The prompt with 'system' role must be placed at the first entry of "
     "initialPrompts.";
 const char kExceptionMessageUnsupportedLanguages[] =
