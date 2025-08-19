@@ -295,16 +295,13 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
       const net::test_server::HttpRequest& request) {
     const bool is_prefetch =
-        request.headers.find(blink::kSecPurposeHeaderName) !=
-            request.headers.end() &&
-        (request.headers.find(blink::kSecPurposeHeaderName)->second ==
-             blink::kSecPurposePrefetchHeaderValue ||
-         request.headers.find(blink::kSecPurposeHeaderName)->second ==
-             blink::kSecPurposePrefetchAnonymousClientIpHeaderValue ||
-         request.headers.find(blink::kSecPurposeHeaderName)->second ==
-             blink::kSecPurposePrefetchPrerenderHeaderValue ||
-         request.headers.find(blink::kSecPurposeHeaderName)->second ==
-             blink::kSecPurposePrefetchPrerenderPreviewHeaderValue);
+        request.GetURL().query().find("pf=cs") != std::string::npos ||
+        request.GetURL().query().find("pf=op") != std::string::npos;
+    CHECK_EQ(is_prefetch,
+             request.headers.find(blink::kSecPurposeHeaderName) !=
+                     request.headers.end() &&
+                 request.headers.find(blink::kSecPurposeHeaderName)->second ==
+                     blink::kSecPurposePrefetchPrerenderHeaderValue);
 
     if (request.GetURL().spec().find(kSearchTerms_502OnPrefetch) !=
             std::string::npos &&
