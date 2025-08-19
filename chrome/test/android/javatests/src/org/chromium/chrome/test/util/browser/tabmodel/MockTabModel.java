@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /** Almost empty implementation to mock a TabModel. It only handles tab creation and queries. */
@@ -184,6 +185,11 @@ public class MockTabModel extends EmptyTabModel {
         if (position < 0 || position > mTabs.size()) return null;
 
         return mTabs.get(position);
+    }
+
+    @Override
+    public Iterator<Tab> iterator() {
+        return mTabs.iterator();
     }
 
     @Override

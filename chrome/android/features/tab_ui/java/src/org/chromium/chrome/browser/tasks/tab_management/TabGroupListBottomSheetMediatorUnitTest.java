@@ -106,6 +106,9 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mBottomSheetController,
                         mDelegate,
                         /* supportsShowNewGroup= */ true);
+
+        List<Tab> tabList = List.of(mTab1, mTab2, mTab3);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTabList.getCount()).thenReturn(3);
 
         when(mTabList.getTabAtChecked(0)).thenReturn(mTab1);

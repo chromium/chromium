@@ -131,8 +131,7 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
         // Sort tabs by index prevent visual bugs when undoing.
         List<Tab> sortedTabs = new ArrayList<>(selectedTabs.size());
         TabModel model = tabGroupModelFilter.getTabModel();
-        for (int i = 0; i < model.getCount(); i++) {
-            Tab tab = model.getTabAt(i);
+        for (Tab tab : model) {
             if (!selectedTabs.contains(tab)) continue;
 
             sortedTabs.add(tab);

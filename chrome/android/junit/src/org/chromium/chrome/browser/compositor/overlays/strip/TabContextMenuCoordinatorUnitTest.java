@@ -189,6 +189,8 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
         when(mWindowAndroid.getActivity()).thenReturn(mWeakReferenceActivity);
         when(mWeakReferenceActivity.get()).thenReturn(activity);
+        List<Tab> tabList = List.of(mTab1, mTabOutsideOfGroup);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTabList.getCount()).thenReturn(2);
         when(mTabList.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTabList.getTabAtChecked(1)).thenReturn(mTabOutsideOfGroup);
