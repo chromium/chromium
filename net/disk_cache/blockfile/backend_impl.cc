@@ -64,8 +64,7 @@ const int kBaseTableLen = 64 * 1024;
 // Avoid trimming the cache for the first 5 minutes (10 timer ticks).
 const int kTrimDelay = 10;
 
-BASE_FEATURE(kBlockfileCacheBackendDumpWithoutCrashing,
-             "BlockfileCacheBackendDumpWithoutCrashing",
+BASE_FEATURE(BlockfileCacheBackendDumpWithoutCrashing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(double,

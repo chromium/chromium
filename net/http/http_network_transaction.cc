@@ -314,9 +314,7 @@ void LogIfDuplicateRequest(const GURL& url, bool is_main_frame_navigation) {
 // When this feature is enabled, GET requests with identical URLs within 10
 // seconds will result in the Net.NetworkTransaction.DuplicateRequestInterval
 // histogram being recorded.
-BASE_FEATURE(kLogDuplicateRequests,
-             "LogDuplicateRequests",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(LogDuplicateRequests, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

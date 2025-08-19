@@ -19,18 +19,14 @@
 
 namespace net::features {
 
-BASE_FEATURE(kAlpsForHttp2, "AlpsForHttp2", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(AlpsForHttp2, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAvoidH2Reprioritization,
-             "AvoidH2Reprioritization",
+BASE_FEATURE(AvoidH2Reprioritization, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(CapReferrerToOriginOnCrossOrigin,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCapReferrerToOriginOnCrossOrigin,
-             "CapReferrerToOriginOnCrossOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAsyncDns,
-             "AsyncDns",
+BASE_FEATURE(AsyncDns,
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -39,9 +35,7 @@ BASE_FEATURE(kAsyncDns,
 #endif
 );
 
-BASE_FEATURE(kDnsTransactionDynamicTimeouts,
-             "DnsTransactionDynamicTimeouts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(DnsTransactionDynamicTimeouts, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<double> kDnsTransactionTimeoutMultiplier{
     &kDnsTransactionDynamicTimeouts, "DnsTransactionTimeoutMultiplier", 7.5};
@@ -50,9 +44,7 @@ const base::FeatureParam<base::TimeDelta> kDnsMinTransactionTimeout{
     &kDnsTransactionDynamicTimeouts, "DnsMinTransactionTimeout",
     base::Seconds(12)};
 
-BASE_FEATURE(kUseDnsHttpsSvcb,
-             "UseDnsHttpsSvcb",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(UseDnsHttpsSvcb, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kUseDnsHttpsSvcbEnforceSecureResponse{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbEnforceSecureResponse", false};
@@ -79,33 +71,22 @@ const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbSecureExtraTimeMin{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMin",
     base::Milliseconds(5)};
 
-BASE_FEATURE(kUseHostResolverCache,
-             "UseHostResolverCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(UseHostResolverCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHappyEyeballsV3,
-             "HappyEyeballsV3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(HappyEyeballsV3, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kAlternativePortForGloballyReachableCheck{
     &kUseAlternativePortForGloballyReachableCheck,
     "AlternativePortForGloballyReachableCheck", 443};
 
-BASE_FEATURE(kUseAlternativePortForGloballyReachableCheck,
-             "UseAlternativePortForGloballyReachableCheck",
+BASE_FEATURE(UseAlternativePortForGloballyReachableCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableIPv6ReachabilityOverride,
-             "EnableIPv6ReachabilityOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableIPv6ReachabilityOverride, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableTLS13EarlyData,
-             "EnableTLS13EarlyData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableTLS13EarlyData, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNetworkQualityEstimator,
-             "NetworkQualityEstimator",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(NetworkQualityEstimator, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kRecentHTTPThresholdInSeconds{
     &kNetworkQualityEstimator, "RecentHTTPThresholdInSeconds", -1};
@@ -122,44 +103,30 @@ const base::FeatureParam<base::TimeDelta>
         &kNetworkQualityEstimator,
         "EffectiveConnectionTypeRecomputationInterval", base::Seconds(10)};
 
-BASE_FEATURE(kSplitCacheByIncludeCredentials,
-             "SplitCacheByIncludeCredentials",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(SplitCacheByIncludeCredentials, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSplitCacheByNetworkIsolationKey,
-             "SplitCacheByNetworkIsolationKey",
+BASE_FEATURE(SplitCacheByNetworkIsolationKey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Note: Use of this feature is gated on the HTTP cache itself being
 // partitioned, which is controlled by the kSplitCacheByNetworkIsolationKey
 // feature.
-BASE_FEATURE(kSplitCacheByCrossSiteMainFrameNavigationBoolean,
-             "SplitCacheByCrossSiteMainFrameNavigationBoolean",
+BASE_FEATURE(SplitCacheByCrossSiteMainFrameNavigationBoolean,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSplitCodeCacheByNetworkIsolationKey,
-             "SplitCodeCacheByNetworkIsolationKey",
+BASE_FEATURE(SplitCodeCacheByNetworkIsolationKey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
-             "PartitionConnectionsByNetworkIsolationKey",
+BASE_FEATURE(PartitionConnectionsByNetworkIsolationKey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefixCookieHttp,
-             "PrefixCookieHttp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(PrefixCookieHttp, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefixCookieHostHttp,
-             "PrefixCookieHostHttp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(PrefixCookieHostHttp, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSearchEnginePreconnectInterval,
-             "SearchEnginePreconnectInterval",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(SearchEnginePreconnectInterval, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSearchEnginePreconnect2,
-             "SearchEnginePreconnect2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(SearchEnginePreconnect2, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kIdleTimeoutInSeconds,
@@ -196,17 +163,12 @@ BASE_FEATURE_PARAM(bool,
                    "FallbackInLowPowerMode",
                    false);
 
-BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
-             "ShortLaxAllowUnsafeThreshold",
+BASE_FEATURE(ShortLaxAllowUnsafeThreshold, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(SameSiteDefaultChecksMethodRigorously,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
-             "SameSiteDefaultChecksMethodRigorously",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTimeoutTcpConnectAttempt,
-             "TimeoutTcpConnectAttempt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(TimeoutTcpConnectAttempt, base::FEATURE_DISABLED_BY_DEFAULT);
 
 extern const base::FeatureParam<double> kTimeoutTcpConnectAttemptRTTMultiplier(
     &kTimeoutTcpConnectAttempt,
@@ -223,17 +185,13 @@ extern const base::FeatureParam<base::TimeDelta> kTimeoutTcpConnectAttemptMax(
     "TimeoutTcpConnectAttemptMax",
     base::Seconds(30));
 
-BASE_FEATURE(kCookieSameSiteConsidersRedirectChain,
-             "CookieSameSiteConsidersRedirectChain",
+BASE_FEATURE(CookieSameSiteConsidersRedirectChain,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAllowSameSiteNoneCookiesInSandbox,
-             "AllowSameSiteNoneCookiesInSandbox",
+BASE_FEATURE(AllowSameSiteNoneCookiesInSandbox,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWaitForFirstPartySetsInit,
-             "WaitForFirstPartySetsInit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(WaitForFirstPartySetsInit, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the maximum time duration an outermost frame navigation should be
 // deferred by RWS initialization.
@@ -243,31 +201,21 @@ extern const base::FeatureParam<base::TimeDelta>
         "kWaitForFirstPartySetsInitNavigationThrottleTimeout",
         base::Seconds(0)};
 
-BASE_FEATURE(kRequestStorageAccessNoCorsRequired,
-             "RequestStorageAccessNoCorsRequired",
+BASE_FEATURE(RequestStorageAccessNoCorsRequired,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStorageAccessApiFollowsSameOriginPolicy,
-             "StorageAccessApiFollowsSameOriginPolicy",
+BASE_FEATURE(StorageAccessApiFollowsSameOriginPolicy,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStaticKeyPinningEnforcement,
-             "StaticKeyPinningEnforcement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(StaticKeyPinningEnforcement, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCookieDomainRejectNonASCII,
-             "CookieDomainRejectNonASCII",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(CookieDomainRejectNonASCII, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables partitioning of third party storage (IndexedDB, CacheStorage, etc.)
 // by the top level site to reduce fingerprinting.
-BASE_FEATURE(kThirdPartyStoragePartitioning,
-             "ThirdPartyStoragePartitioning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(ThirdPartyStoragePartitioning, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTopLevelTpcdOriginTrial,
-             "TopLevelTpcdOriginTrial",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(TopLevelTpcdOriginTrial, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTpcdTrialSettings,
              "TpcdSupportSettings",
@@ -277,37 +225,25 @@ BASE_FEATURE(kTopLevelTpcdTrialSettings,
              "TopLevelTpcdSupportSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTpcdMetadataGrants,
-             "TpcdMetadataGrants",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(TpcdMetadataGrants, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTpcdMetadataStageControl,
-             "TpcdMetadataStageControl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(TpcdMetadataStageControl, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAlpsParsing, "AlpsParsing", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(AlpsParsing, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAlpsClientHintParsing,
-             "AlpsClientHintParsing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(AlpsClientHintParsing, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kShouldKillSessionOnAcceptChMalformed,
-             "ShouldKillSessionOnAcceptChMalformed",
+BASE_FEATURE(ShouldKillSessionOnAcceptChMalformed,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableWebsocketsOverHttp3,
-             "EnableWebsocketsOverHttp3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableWebsocketsOverHttp3, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // Disabled because of https://crbug.com/1489696.
-BASE_FEATURE(kEnableGetNetworkConnectivityHintAPI,
-             "EnableGetNetworkConnectivityHintAPI",
+BASE_FEATURE(EnableGetNetworkConnectivityHintAPI,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTcpPortRandomizationWin,
-             "TcpPortRandomizationWin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(TcpPortRandomizationWin, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kTcpPortRandomizationWinVersionMinimum,
@@ -315,18 +251,12 @@ BASE_FEATURE_PARAM(int,
                    "TcpPortRandomizationWinVersionMinimum",
                    static_cast<int>(base::win::Version::WIN11_22H2));
 
-BASE_FEATURE(kTcpPortReuseMetricsWin,
-             "TcpPortReuseMetricsWin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(TcpPortReuseMetricsWin, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTcpSocketIoCompletionPortWin,
-             "TcpSocketIoCompletionPortWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(TcpSocketIoCompletionPortWin, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kAvoidEntryCreationForNoStore,
-             "AvoidEntryCreationForNoStore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(AvoidEntryCreationForNoStore, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kAvoidEntryCreationForNoStoreCacheSize{
     &kAvoidEntryCreationForNoStore, "AvoidEntryCreationForNoStoreCacheSize",
     1000};
@@ -335,14 +265,11 @@ const base::FeatureParam<int> kAvoidEntryCreationForNoStoreCacheSize{
 // when Kerberos authentication in browser fails on ChromeOS.
 // b/260522530
 #if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kKerberosInBrowserRedirect,
-             "KerberosInBrowserRedirect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(KerberosInBrowserRedirect, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // A flag to use asynchronous session creation for new QUIC sessions.
-BASE_FEATURE(kAsyncQuicSession,
-             "AsyncQuicSession",
+BASE_FEATURE(AsyncQuicSession,
 #if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -350,8 +277,7 @@ BASE_FEATURE(kAsyncQuicSession,
 #endif
 
 // A flag to make multiport context creation asynchronous.
-BASE_FEATURE(kAsyncMultiPortPath,
-             "AsyncMultiPortPath",
+BASE_FEATURE(AsyncMultiPortPath,
 #if !BUILDFLAG(CRONET_BUILD) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -359,8 +285,7 @@ BASE_FEATURE(kAsyncMultiPortPath,
 #endif
 
 // Probabilistic reveal tokens configuration settings
-BASE_FEATURE(kEnableProbabilisticRevealTokens,
-             "EnableProbabilisticRevealTokens",
+BASE_FEATURE(EnableProbabilisticRevealTokens,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kProbabilisticRevealTokenServer{
@@ -559,9 +484,7 @@ BASE_FEATURE_PARAM(size_t,
                    "max_report_body_size_kb",
                    1024);
 
-BASE_FEATURE(kRelatedWebsitePartitionAPI,
-             "RelatedWebsitePartitionAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(RelatedWebsitePartitionAPI, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
@@ -573,8 +496,7 @@ inline constexpr auto kMigrateSessionsOnNetworkChangeV2Default =
 inline constexpr auto kMigrateSessionsOnNetworkChangeV2Default =
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif  // BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kMigrateSessionsOnNetworkChangeV2,
-             "MigrateSessionsOnNetworkChangeV2",
+BASE_FEATURE(MigrateSessionsOnNetworkChangeV2,
              kMigrateSessionsOnNetworkChangeV2Default);
 
 BASE_FEATURE(kDisableBlackholeOnNoNewNetwork,
@@ -582,84 +504,56 @@ BASE_FEATURE(kDisableBlackholeOnNoNewNetwork,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kAddressTrackerLinuxIsProxied,
-             "AddressTrackerLinuxIsProxied",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(AddressTrackerLinuxIsProxied, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Enables binding of cookies to the port that originally set them by default.
-BASE_FEATURE(kEnablePortBoundCookies,
-             "EnablePortBoundCookies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnablePortBoundCookies, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables binding of cookies to the scheme that originally set them.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableSchemeBoundCookies);
-BASE_FEATURE(kEnableSchemeBoundCookies,
-             "EnableSchemeBoundCookies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableSchemeBoundCookies, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Disallows cookies to have non ascii values in their name or value.
 NET_EXPORT BASE_DECLARE_FEATURE(kDisallowNonAsciiCookies);
-BASE_FEATURE(kDisallowNonAsciiCookies,
-             "DisallowNonAsciiCookies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(DisallowNonAsciiCookies, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTimeLimitedInsecureCookies,
-             "TimeLimitedInsecureCookies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(TimeLimitedInsecureCookies, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable third-party cookie blocking from the command line.
 BASE_FEATURE(kForceThirdPartyCookieBlocking,
              "ForceThirdPartyCookieBlockingEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableEarlyHintsOnHttp11,
-             "EnableEarlyHintsOnHttp11",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableEarlyHintsOnHttp11, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableWebTransportDraft07,
-             "EnableWebTransportDraft07",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableWebTransportDraft07, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebTransportFineGrainedThrottling,
-             "WebTransportFineGrainedThrottling",
+BASE_FEATURE(WebTransportFineGrainedThrottling,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, partitioned storage will be allowed even if third-party cookies
 // are disabled by default. Partitioned storage will not be allowed if
 // third-party cookies are disabled due to a specific rule.
-BASE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault,
-             "ThirdPartyPartitionedStorageAllowedByDefault",
+BASE_FEATURE(ThirdPartyPartitionedStorageAllowedByDefault,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder,
-             "SpdyHeadersToHttpResponseUseBuilder",
+BASE_FEATURE(SpdyHeadersToHttpResponseUseBuilder,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseNewAlpsCodepointHttp2,
-             "UseNewAlpsCodepointHttp2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(UseNewAlpsCodepointHttp2, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseNewAlpsCodepointQUIC,
-             "UseNewAlpsCodepointQUIC",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(UseNewAlpsCodepointQUIC, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTruncateBodyToContentLength,
-             "TruncateBodyToContentLength",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(TruncateBodyToContentLength, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kReduceIPAddressChangeNotification,
-             "ReduceIPAddressChangeNotification",
+BASE_FEATURE(ReduceIPAddressChangeNotification,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
-BASE_FEATURE(kDeviceBoundSessions,
-             "DeviceBoundSessions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kPersistDeviceBoundSessions,
-             "PersistDeviceBoundSessions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(DeviceBoundSessions, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(PersistDeviceBoundSessions, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kDeviceBoundSessionsRequireOriginTrialTokens,
                    &kDeviceBoundSessions,
@@ -675,36 +569,27 @@ BASE_FEATURE_PARAM(bool,
                    &kDeviceBoundSessions,
                    "CheckSubdomainRegistration",
                    true);
-BASE_FEATURE(kDeviceBoundSessionsOriginTrialFeedback,
-             "DeviceBoundSessionsOriginTrialFeedback",
+BASE_FEATURE(DeviceBoundSessionsOriginTrialFeedback,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPartitionProxyChains,
-             "PartitionProxyChains",
+BASE_FEATURE(PartitionProxyChains, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(SpdySessionForProxyAdditionalChecks,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(CompressionDictionaryTransportOverHttp1,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(CompressionDictionaryTransportOverHttp2,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(CompressionDictionaryTransportRequireKnownRootCert,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(ReportingApiEnableEnterpriseCookieIssues,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
-             "SpdySessionForProxyAdditionalChecks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCompressionDictionaryTransportOverHttp1,
-             "CompressionDictionaryTransportOverHttp1",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCompressionDictionaryTransportOverHttp2,
-             "CompressionDictionaryTransportOverHttp2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCompressionDictionaryTransportRequireKnownRootCert,
-             "CompressionDictionaryTransportRequireKnownRootCert",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kReportingApiEnableEnterpriseCookieIssues,
-             "ReportingApiEnableEnterpriseCookieIssues",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSimdutfBase64Support,
-             "SimdutfBase64Support",
+BASE_FEATURE(SimdutfBase64Support,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -712,21 +597,14 @@ BASE_FEATURE(kSimdutfBase64Support,
 #endif
 );
 
-BASE_FEATURE(kFurtherOptimizeParsingDataUrls,
-             "FurtherOptimizeParsingDataUrls",
+BASE_FEATURE(FurtherOptimizeParsingDataUrls, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(NoVarySearchIgnoreUnrecognizedKeys,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys,
-             "NoVarySearchIgnoreUnrecognizedKeys",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(EnableStaticCTAPIEnforcement, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableStaticCTAPIEnforcement,
-             "EnableStaticCTAPIEnforcement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDiskCacheBackendExperiment,
-             "DiskCacheBackendExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(DiskCacheBackendExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<DiskCacheBackend>::Option
     kDiskCacheBackendOptions[] = {
         {DiskCacheBackend::kDefault, "default"},
@@ -740,13 +618,9 @@ const base::FeatureParam<DiskCacheBackend> kDiskCacheBackendParam{
     &kDiskCacheBackendExperiment, "backend", DiskCacheBackend::kDefault,
     &kDiskCacheBackendOptions};
 
-BASE_FEATURE(kIgnoreHSTSForLocalhost,
-             "IgnoreHSTSForLocalhost",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(IgnoreHSTSForLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSimpleCachePrioritizedCaching,
-             "SimpleCachePrioritizedCaching",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(SimpleCachePrioritizedCaching, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int>
     kSimpleCachePrioritizedCachingPrioritizationFactor{
@@ -762,24 +636,16 @@ const base::FeatureParam<base::TimeDelta>
 
 #if BUILDFLAG(USE_NSS_CERTS)
 // TODO(crbug.com/390333881): Remove this flag after a few milestones.
-BASE_FEATURE(kNewClientCertPathBuilding,
-             "NewClientCertPathBuilding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(NewClientCertPathBuilding, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(USE_NSS_CERTS)
 
-BASE_FEATURE(kHstsTopLevelNavigationsOnly,
-             "HstsTopLevelNavigationsOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(HstsTopLevelNavigationsOnly, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kHttpCacheMappedFileFlushWin,
-             "HttpCacheMappedFileFlushWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(HttpCacheMappedFileFlushWin, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kHttpCacheNoVarySearch,
-             "HttpCacheNoVarySearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(HttpCacheNoVarySearch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(size_t,
                    kHttpCacheNoVarySearchCacheMaxEntries,
@@ -807,39 +673,27 @@ BASE_FEATURE_PARAM(bool,
                    "fake_persistence",
                    false);
 
-BASE_FEATURE(kReportingApiCorsOriginHeader,
-             "ReportingApiCorsOriginHeader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(ReportingApiCorsOriginHeader, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kUseCertTransparencyAwareApiForOsCertVerify,
-             "UseCertTransparencyAwareApiForOsCertVerify",
+BASE_FEATURE(UseCertTransparencyAwareApiForOsCertVerify,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kSelfSignedLocalNetworkInterstitial,
-             "SelfSignedLocalNetworkInterstitial",
+BASE_FEATURE(SelfSignedLocalNetworkInterstitial,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-BASE_FEATURE(kVerifyQWACs, "VerifyQWACs", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(VerifyQWACs, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
-BASE_FEATURE(kRestrictAbusePorts,
-             "RestrictAbusePorts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(RestrictAbusePorts, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRestrictAbusePortsOnLocalhost,
-             "RestrictAbusePortsOnLocalhost",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(RestrictAbusePortsOnLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTLSTrustAnchorIDs,
-             "TLSTrustAnchorIDs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(TLSTrustAnchorIDs, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTcpConnectionPoolSizeTrial,
-             "TcpConnectionPoolSizeTrial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(TcpConnectionPoolSizeTrial, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kTcpConnectionPoolSizeTrialNormal,
@@ -853,9 +707,7 @@ BASE_FEATURE_PARAM(int,
                    "TcpConnectionPoolSizeTrialWebSocket",
                    256);
 
-BASE_FEATURE(kNetTaskScheduler,
-             "NetTaskScheduler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(NetTaskScheduler, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpProxyConnectJob,
                    &kNetTaskScheduler,

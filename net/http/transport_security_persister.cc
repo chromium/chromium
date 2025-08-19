@@ -32,8 +32,7 @@
 
 namespace net {
 
-BASE_FEATURE(kTransportSecurityFileWriterSchedule,
-             "TransportSecurityFileWriterSchedule",
+BASE_FEATURE(TransportSecurityFileWriterSchedule,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
