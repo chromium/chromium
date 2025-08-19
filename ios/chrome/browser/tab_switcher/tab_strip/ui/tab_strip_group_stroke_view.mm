@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_group_stroke_view.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/tab_strip_group_stroke_view.h"
 
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift_constants_for_objective_c.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 
 @implementation TabStripGroupStrokeView {
   CAShapeLayer* _groupStrokeLeadingLayer;

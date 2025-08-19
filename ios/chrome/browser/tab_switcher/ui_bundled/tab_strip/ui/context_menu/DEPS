@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/collaboration/public",
-  "+components/data_sharing/public",
-]

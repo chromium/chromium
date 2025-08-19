@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/swift.h"
 
 // Fake consumer to get the passed value in tests.
 @interface FakeTabStripConsumer : NSObject <TabStripConsumer>

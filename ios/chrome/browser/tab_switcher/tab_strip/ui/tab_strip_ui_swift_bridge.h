@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_UI_TAB_STRIP_UI_SWIFT_BRIDGE_H_
-#define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_UI_TAB_STRIP_UI_SWIFT_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_UI_SWIFT_BRIDGE_H_
+#define IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_UI_SWIFT_BRIDGE_H_
 
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h"
@@ -12,17 +12,17 @@
 #import "ios/chrome/browser/shared/public/metrics/user_metrics_bridge.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/context_menu/tab_strip_context_menu_provider.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/tab_strip_group_cell.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/tab_strip_group_cell_data_source.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/tab_strip_mutator.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/tab_strip_tab_cell.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/tab_strip_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/item_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/context_menu/tab_strip_context_menu_provider.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_group_cell.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_group_cell_data_source.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_mutator.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_tab_cell.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item_snapshot_and_favicon_data_source.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -30,4 +30,4 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac_bridge.h"
 
-#endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_UI_TAB_STRIP_UI_SWIFT_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_UI_SWIFT_BRIDGE_H_

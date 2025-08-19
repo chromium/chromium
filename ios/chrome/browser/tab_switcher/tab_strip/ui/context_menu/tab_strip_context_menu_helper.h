@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_UI_CONTEXT_MENU_TAB_STRIP_CONTEXT_MENU_HELPER_H_
-#define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_UI_CONTEXT_MENU_TAB_STRIP_CONTEXT_MENU_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_STRIP_UI_CONTEXT_MENU_TAB_STRIP_CONTEXT_MENU_HELPER_H_
+#define IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_STRIP_UI_CONTEXT_MENU_TAB_STRIP_CONTEXT_MENU_HELPER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/context_menu/tab_strip_context_menu_provider.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/context_menu/tab_strip_context_menu_provider.h"
 
 class BrowserList;
 class ProfileIOS;
@@ -38,4 +38,4 @@ class WebStateList;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_UI_CONTEXT_MENU_TAB_STRIP_CONTEXT_MENU_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_STRIP_UI_CONTEXT_MENU_TAB_STRIP_CONTEXT_MENU_HELPER_H_

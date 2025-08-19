@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import Foundation
-import ios_chrome_browser_tab_switcher_ui_bundled_tab_strip_ui_swift_constants
+import ios_chrome_browser_tab_switcher_tab_strip_ui_swift_constants
 
 /// Bridge to access `TabStripConstants.CollectionView` from Objective-C code.
 @objcMembers public class TabStripCollectionViewConstants: NSObject {

@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/collaboration/public",
+  "+components/data_sharing/public",
+  "+ios/chrome/browser/collaboration/model/collaboration_service_factory.h",
+  "+ios/chrome/browser/collaboration/model/features.h",
+  "+ios/chrome/browser/menu/ui_bundled/action_factory.h",
+  "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
+  "+ios/chrome/browser/saved_tab_groups/model",
+  "+ios/chrome/browser/share_kit/model",
+  "+ios/chrome/browser/menu/ui_bundled",
+]

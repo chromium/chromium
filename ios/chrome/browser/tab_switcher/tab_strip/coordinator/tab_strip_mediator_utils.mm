@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_tab_item.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/swift.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/ui/tab_strip_tab_item.h"
 
 TabStripItemIdentifier* CreateTabItemIdentifier(web::WebState* web_state) {
   TabSwitcherItem* tab_item =

@@ -4,7 +4,7 @@
 
 import UIKit
 import ios_chrome_browser_shared_ui_util_util_swift
-import ios_chrome_browser_tab_switcher_ui_bundled_tab_strip_ui_swift_constants
+import ios_chrome_browser_tab_switcher_tab_strip_ui_swift_constants
 
 /// View Controller displaying the TabStrip.
 // TODO(crbug.com/427169284): Replace @preconcurrency with @MainActor when all test bots
