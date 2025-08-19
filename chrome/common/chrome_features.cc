@@ -665,6 +665,16 @@ BASE_FEATURE(kGlicDisableWarming,
              "GlicDisableWarming",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Killswitch that controls whether the guest WebContents visibility state is
+// set to hidden when the Glic panel is warming.
+BASE_FEATURE(kGlicGuestContentsVisibilityState,
+             "GlicGuestContentsVisibilityState",
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_LINUX)
+
 // Controls the amount of time from the GlicButtonController scheduling
 // preload to the start of preloading (if preloading is possible).
 const base::FeatureParam<int> kGlicWarmingDelayMs{

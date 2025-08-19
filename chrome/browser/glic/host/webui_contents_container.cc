@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -25,7 +27,10 @@ namespace {
 content::WebContents::CreateParams MakeCreateParams(Profile* profile,
                                                     bool initially_hidden) {
   auto params = content::WebContents::CreateParams(profile);
-  params.initially_hidden = initially_hidden;
+  if (base::FeatureList::IsEnabled(
+          features::kGlicGuestContentsVisibilityState)) {
+    params.initially_hidden = initially_hidden;
+  }
   return params;
 }
 

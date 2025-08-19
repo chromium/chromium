@@ -20,6 +20,9 @@ class GlicWindowController;
 class WebUIContentsContainer : public content::WebContentsDelegate,
                                public content::WebContentsObserver {
  public:
+  // `initially_hidden` value is only relevant when
+  // `kGlicGuestContentsVisibilityState` flag is enabled, otherwise the default
+  // value is used (i.e. false).
   WebUIContentsContainer(Profile* profile,
                          GlicWindowController* glic_window_controller,
                          bool initially_hidden);
