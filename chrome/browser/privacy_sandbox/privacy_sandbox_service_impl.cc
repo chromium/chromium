@@ -348,6 +348,29 @@ bool HasAckedAnyMeasurementNotice(PrefService* pref_service) {
              prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
 }
 
+std::optional<PromptType> GetRequiredPromptTypeOverride() {
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting
+          .Get()) {
+    return PromptType::kM1Consent;
+  }
+
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeRowForTesting
+          .Get()) {
+    return PromptType::kM1NoticeROW;
+  }
+
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeEeaForTesting
+          .Get()) {
+    return PromptType::kM1NoticeEEA;
+  }
+
+  if (privacy_sandbox::
+          kPrivacySandboxSettings4ForceShowNoticeRestrictedForTesting.Get()) {
+    return PromptType::kM1NoticeRestricted;
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
@@ -556,53 +579,43 @@ bool PrivacySandboxServiceImpl::UpdateAndGetSuppressionReason() {
   return false;
 }
 
-PromptType PrivacySandboxServiceImpl::GetRequiredPromptType(
-    SurfaceType surface_type) {
-
+bool PrivacySandboxServiceImpl::ShouldDisablePrompt() {
   // If the profile isn't a regular profile, no prompt should ever be shown.
   if (!IsRegularProfile(profile_type_)) {
-    return PromptType::kNone;
+    return true;
   }
 
   // Forced testing feature parameters override everything.
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kDisablePrivacySandboxPrompts)) {
-    return PromptType::kNone;
-  }
-
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting
-          .Get()) {
-    return PromptType::kM1Consent;
-  }
-
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeRowForTesting
-          .Get()) {
-    return PromptType::kM1NoticeROW;
-  }
-
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeEeaForTesting
-          .Get()) {
-    return PromptType::kM1NoticeEEA;
-  }
-
-  if (privacy_sandbox::
-          kPrivacySandboxSettings4ForceShowNoticeRestrictedForTesting.Get()) {
-    return PromptType::kM1NoticeRestricted;
+    return true;
   }
 
   // Suppress the prompt if we force --no-first-run for testing
   // and benchmarking.
   if (IsFirstRunSuppressed(*base::CommandLine::ForCurrentProcess())) {
-    return PromptType::kNone;
+    return true;
   }
 
   // If this a non-Chrome build, do not show a prompt.
   if (!(force_chrome_build_for_tests_ || IsChromeBuild())) {
-    return PromptType::kNone;
+    return true;
   }
 
   // If neither a notice nor a consent is required, do not show a prompt.
   if (!IsNoticeRequired() && !IsConsentRequired()) {
+    return true;
+  }
+  return false;
+}
+
+PromptType PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
+    SurfaceType surface_type) {
+  if (auto prompt_override = GetRequiredPromptTypeOverride()) {
+    return *prompt_override;
+  }
+
+  if (ShouldDisablePrompt()) {
     return PromptType::kNone;
   }
 
@@ -649,6 +662,14 @@ PromptType PrivacySandboxServiceImpl::GetRequiredPromptType(
   } else {
     return PromptType::kM1NoticeROW;
   }
+}
+
+PromptType PrivacySandboxServiceImpl::GetRequiredPromptType(
+    SurfaceType surface_type) {
+  // TODO(crbug.com/420707919) Call the NoticeService's GetRequiredNotices here
+  // and compare against the current implementation's output, and emit
+  // histograms on diffs.
+  return GetRequiredPromptTypeInternal(surface_type);
 }
 
 void MaybeUpdateNoticeService(

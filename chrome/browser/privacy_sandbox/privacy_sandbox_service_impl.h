@@ -324,8 +324,14 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // or newly set reason), false otherwise.
   bool UpdateAndGetSuppressionReason();
 
+  // Returns whether the prompt should be disabled.
+  bool ShouldDisablePrompt();
+
   // Helper function to set the prompt suppression reason.
   void SetPromptSuppressedReason(PromptSuppressedReason reason);
+
+  // Internal implementation for `GetRequiredPromptType`.
+  PromptType GetRequiredPromptTypeInternal(SurfaceType surface_type);
 
   raw_ptr<Profile> profile_;
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
