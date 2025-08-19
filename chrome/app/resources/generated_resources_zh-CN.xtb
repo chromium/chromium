@@ -5280,7 +5280,7 @@
 <translation id="4676543021048806071">请输入 Google 密码管理工具的 6 位数 PIN 码</translation>
 <translation id="4676595058027112862">Phone Hub，了解详情</translation>
 <translation id="4676616966096505747">部分数据尚未保存到您的账号</translation>
-<translation id="4677772697204437347">GPU内存</translation>
+<translation id="4677772697204437347">GPU 内存</translation>
 <translation id="467809019005607715">Google 幻灯片</translation>
 <translation id="4678729681411398877">如果您的某个密码遭遇了数据泄露，Google 密码管理工具会询问您是否要将其更改为安全系数高的密码</translation>
 <translation id="4678848110205818817">信用卡/借记卡</translation>
@@ -7833,7 +7833,7 @@
 <translation id="6538036594527795020">更改 <ph name="APP" /> 的语言。当前语言为<ph name="LANGUAGE" />。</translation>
 <translation id="6538098297809675636">检测代码时出错</translation>
 <translation id="653920215766444089">正在搜索指控设备</translation>
-<translation id="653983593749614101">正在恢复…</translation>
+<translation id="653983593749614101">继续下载中…</translation>
 <translation id="6540174167103635041">安装应用</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您有意这么做或被要求这样做，否则请不要随意启用这项功能，因为收集数据可能会降低性能。</translation>
 <translation id="6540488083026747005">您已允许此网站使用第三方 Cookie</translation>
