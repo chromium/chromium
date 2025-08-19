@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.suggestions.tile;
 
 import android.annotation.SuppressLint;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuIte
 import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
+import org.chromium.chrome.browser.suggestions.tile.TileDragDelegate.ReorderFlow;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -33,6 +35,7 @@ import java.util.Objects;
 class TileInteractionDelegateImpl
         implements TileGroup.TileInteractionDelegate,
                 ContextMenuManager.Delegate,
+                View.OnKeyListener,
                 TileDragSession.EventListener {
 
     private final ContextMenuManager mContextMenuManager;
@@ -63,7 +66,12 @@ class TileInteractionDelegateImpl
         mCustomTileModificationDelegate = customTileModificationDelegate;
         mPrerenderDelay = prerenderDelay;
         mTile = tile;
-        view.setOnTouchListener(TileInteractionDelegateImpl.this);
+
+        view.setOnClickListener(this);
+        view.setOnKeyListener(this);
+        view.setOnLongClickListener(this);
+        view.setOnTouchListener(this);
+
         mAndroidPrerenderManager = AndroidPrerenderManager.getAndroidPrerenderManager();
 
         mTileGroupDelegate.initAndroidPrerenderManager(mAndroidPrerenderManager);
@@ -116,6 +124,33 @@ class TileInteractionDelegateImpl
         mScheduldedPrerenderingUrl = null;
     }
 
+    // TileGroup.TileInteractionDelegate => View.OnKeyListener implementation.
+    @Override
+    public boolean onKey(View view, int keyCode, KeyEvent event) {
+        if (isCustomizationEnabledForTileSection()
+                && TileUtils.isCustomTileSwapKeyCombo(keyCode, event)) {
+            if (isCustomLink()) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    // Complete pending reordering, skipping animation if necessary.
+                    mTileDragDelegate.reset();
+                } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                    // Start swap. Doing it here instead of ACTION_DOWN because if animation is off,
+                    // then MVT refresh would cause tile re-render and listener re-add, but then
+                    // the original ACTION_DOWN would re-fire! Handling ACTION_UP prevents this.
+                    int direction = (keyCode == KeyEvent.KEYCODE_PAGE_UP) ? -1 : 1;
+                    mTileDragDelegate.swapTiles(view, direction, this);
+                }
+            }
+            // Suppress Ctrl+Shift+{Page Up, Page Down} propagation, which would lead to undesired
+            // page scroll. This includes the following cases:
+            // * On ACTION_UP for Custom Tiles: Triggers tile swap (above).
+            // * On ACTION_DOWN for Custom Tiles: No-op.
+            // * On ACTION_UP / ACTION_DOWN for Top Sites Tiles: No-op, for consistency.
+            return true;
+        }
+        return false;
+    }
+
     // TileGroup.TileInteractionDelegate => View.OnLongClickListener implementation.
     @Override
     public boolean onLongClick(View view) {
@@ -135,7 +170,7 @@ class TileInteractionDelegateImpl
         // Handle tile drag-and-drop separately.
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             mTileDragDelegate.onTileTouchDown(view, event, this);
-        } else if (mTileDragDelegate.hasSession()) {
+        } else if (mTileDragDelegate.hasTileDragSession()) {
             mTileDragDelegate.onSessionTileTouch(view, event);
         }
 
@@ -250,8 +285,18 @@ class TileInteractionDelegateImpl
     }
 
     @Override
-    public boolean onDragAccept(SiteSuggestion fromSuggestion, SiteSuggestion toSuggestion) {
-        RecordUserAction.record("Suggestions.Drag.ReorderItem");
+    public boolean onReorderAccept(
+            @ReorderFlow int reorderFlow,
+            SiteSuggestion fromSuggestion,
+            SiteSuggestion toSuggestion) {
+        switch (reorderFlow) {
+            case ReorderFlow.DRAG_FLOW:
+                RecordUserAction.record("Suggestions.Drag.ReorderItem");
+                break;
+            case ReorderFlow.SWAP_FLOW:
+                RecordUserAction.record("Suggestions.Keyboard.ReorderItem");
+                break;
+        }
         return mCustomTileModificationDelegate.reorder(
                 fromSuggestion,
                 toSuggestion,
@@ -264,16 +309,23 @@ class TileInteractionDelegateImpl
     }
 
     @Override
-    public void onDragCancel() {
+    public void onReorderCancel() {
         mTileDragDelegate.hideDivider(/* isAnimated= */ true);
     }
 
+    boolean isCustomizationEnabledForTileSection() {
+        return ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled()
+                && mTile.getSectionType() == TileSectionType.PERSONALIZED;
+    }
+
+    boolean isCustomLink() {
+        return mTile.getSource() == TileSource.CUSTOM_LINKS;
+    }
+
     boolean isCustomizationItemSupported(boolean matchIsCustomLink) {
-        if (!ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled()
-                || mTile.getSectionType() != TileSectionType.PERSONALIZED) {
+        if (!isCustomizationEnabledForTileSection()) {
             return false;
         }
-        boolean isCustomLink = (mTile.getSource() == TileSource.CUSTOM_LINKS);
-        return isCustomLink == matchIsCustomLink;
+        return isCustomLink() == matchIsCustomLink;
     }
 }

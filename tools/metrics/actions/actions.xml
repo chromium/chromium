@@ -44385,6 +44385,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Suggestions.Keyboard.ReorderItem">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>huangs@chromium.org</owner>
+  <description>
+    Android: Recorded user using keyboard to rearrange Custom Tiles in the Most
+    Visited Tiles area on the NTP.
+  </description>
+</action>
+
 <action name="Suggestions.ScrolledAfterOpen">
   <owner>dgn@chromium.org</owner>
   <owner>finkm@chromium.org</owner>

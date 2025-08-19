@@ -169,7 +169,10 @@ public class TileGroup implements MostVisitedSites.Observer {
 
     /** Delegate for handling interactions with tiles. */
     public interface TileInteractionDelegate
-            extends View.OnClickListener, View.OnLongClickListener, View.OnTouchListener {
+            extends View.OnClickListener,
+                    View.OnKeyListener,
+                    View.OnLongClickListener,
+                    View.OnTouchListener {
         /**
          * Set a runnable for click events on the tile. This is primarily used to track interaction
          * with the tile used by feature engagement purposes.

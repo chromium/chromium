@@ -56,7 +56,7 @@ public class SuggestionsTileView extends TileView {
         setIconViewLayoutParams(tile);
     }
 
-    /** Retrieves data associated with this view.  */
+    /** Retrieves data associated with this view. */
     public SiteSuggestion getData() {
         return mData;
     }
@@ -66,7 +66,7 @@ public class SuggestionsTileView extends TileView {
         return mData.url;
     }
 
-    /** Renders icon based on tile data.  */
+    /** Renders icon based on tile data. */
     public void renderIcon(Tile tile) {
         setIconDrawable(tile.getIcon());
         setIconViewLayoutParams(tile);
