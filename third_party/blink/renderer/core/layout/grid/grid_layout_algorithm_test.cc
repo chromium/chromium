@@ -405,6 +405,76 @@ TEST_F(GridLayoutAlgorithmTest, GapIntersectionsForGridWithSpanners) {
                            expected_row_intersections);
 }
 
+// TODO(samomekarajr): Rename this to GridLayoutAlgorithmGapGeometry, when the
+// old GapIntersection pipeline is removed.
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometryMC) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid1 {
+      display: grid;
+      column-gap: 14px;
+      row-gap: 12px;
+      grid-template-columns: 80px 120px 90px;
+      grid-template-rows: 90px 130px 110px 140px;
+      column-rule-color: red;
+      column-rule-style: solid;
+    }
+    .item {
+      /* Intentionally not matching track sizes to ensure geometry comes from tracks. */
+      width: 70px;
+      height: 60px;
+      background: red;
+    }
+    </style>
+    <div id="grid1">
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+    </div>
+  )HTML");
+
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  BlockNode node(GetLayoutBoxByElementId("grid1"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  BuildGridGeometry(algorithm);
+  algorithm.Layout();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+  ASSERT_NE(gap_geometry, nullptr);
+  EXPECT_EQ(gap_geometry->GetContainerType(),
+            GapGeometry::ContainerType::kGrid);
+  EXPECT_EQ(gap_geometry->GetInlineGapSize(), LayoutUnit(14));
+  EXPECT_EQ(gap_geometry->GetBlockGapSize(), LayoutUnit(12));
+
+  // With 12 items (3 columns), we have 4 rows and 3 row (main) gaps.
+  const auto& main_gaps = gap_geometry->GetMainGaps();
+  ASSERT_EQ(main_gaps.size(), 3u);
+  // Row midpoints based on grid-template-rows [90,130,110,140] and row-gap 12:
+  // row track lines: [0, 102, 244, 366, 506]; midpoints: [96, 238, 360].
+  EXPECT_EQ(main_gaps[0].GetGapStartOffset(), LayoutUnit(96));
+  EXPECT_EQ(main_gaps[1].GetGapStartOffset(), LayoutUnit(238));
+  EXPECT_EQ(main_gaps[2].GetGapStartOffset(), LayoutUnit(360));
+}
+
 TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRanges) {
   SetBodyInnerHTML(R"HTML(
     <style>

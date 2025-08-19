@@ -2006,6 +2006,42 @@ class GapAccumulator {
  public:
   GapAccumulator() = default;
 
+  // Builds the list of "main" gaps for Grid. In the MC (Main-Cross)
+  // gap geometry model, we pick rows as the main axis (an arbitrary but
+  // consistent choice) and columns as cross axis. This approach avoids
+  // duplication and keeps storage minimal since intersections are computed
+  // on-demand during paint.
+  //
+  // See third_party/blink/renderer/core/layout/gap/README.md for more.
+  void BuildMainGaps(const GridLayoutData& layout_data) {
+    const Vector<LayoutUnit> row_tracks =
+        LayoutGrid::ComputeExpandedPositions(&layout_data, kForRows);
+    row_gutter_size_ = layout_data.Rows().GutterSize();
+    wtf_size_t row_track_count = row_tracks.size();
+
+    // CSS Gaps[1] defines an intersection point to exist in the center of gaps.
+    // Hence, we get the midpoint for each row gap for the derivation of
+    // intersection points. The first gap ends at the second track, and the last
+    // gap ends at the second-to-last track. So gaps are defined in the track
+    // range [1, `row_track_count` - 1).
+    //
+    // [1] https://www.w3.org/TR/css-gaps-1/#gap-intersection-point
+    for (wtf_size_t i = 1; i < row_track_count - 1; ++i) {
+      LayoutUnit row_midpoint =
+          LayoutUnit(row_tracks[i] - (row_gutter_size_ / 2.0f));
+      MainGap main_gap = MainGap(row_midpoint);
+      main_gaps_.push_back(main_gap);
+    }
+
+    content_block_start_ = row_tracks[0];
+    content_block_end_ = row_tracks[row_track_count - 1];
+  }
+
+  void BuildGapGeometry(const GridLayoutData& layout_data) {
+    BuildMainGaps(layout_data);
+    // TODO(samomekarajr): Add building logic for cross axis.
+  }
+
   void BuildGapIntersectionPoints(const GridLayoutData& layout_data) {
     const Vector<LayoutUnit> col_tracks =
         LayoutGrid::ComputeExpandedPositions(&layout_data, kForColumns);
@@ -2156,6 +2192,9 @@ class GapAccumulator {
     if (row_gutter_size_ > LayoutUnit()) {
       gap_geometry->SetGapIntersections(kForRows,
                                         std::move(row_intersections_));
+      if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+        gap_geometry->SetMainGaps(std::move(main_gaps_));
+      }
     }
     return gap_geometry;
   }
@@ -2165,6 +2204,10 @@ class GapAccumulator {
   Vector<GapIntersectionList> row_intersections_;
   LayoutUnit col_gutter_size_;
   LayoutUnit row_gutter_size_;
+
+  MainGaps main_gaps_;
+  LayoutUnit content_block_start_;
+  LayoutUnit content_block_end_;
 };
 
 }  // namespace
@@ -2197,6 +2240,9 @@ void GridLayoutAlgorithm::PlaceGridItems(
       Style().HasGapRule()) {
     gap_accumulator = GapAccumulator();
     gap_accumulator->BuildGapIntersectionPoints(layout_data);
+    if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+      gap_accumulator->BuildGapGeometry(layout_data);
+    }
   }
 
   for (const auto& grid_item : grid_items) {
