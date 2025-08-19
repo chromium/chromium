@@ -164,9 +164,6 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
     mock_affiliation_service_ =
         std::make_unique<testing::NiceMock<MockAffiliationService>>();
 
-    prefs_.registry()->RegisterBooleanPref(
-        prefs::kEmptyProfileStoreLoginDatabase, false);
-
     backend_ = std::make_unique<PasswordStoreAndroidAccountBackend>(
         base::PassKey<class PasswordStoreAndroidAccountBackendTest>(),
         CreateMockBridgeHelper(), CreateFakeLifecycleHelper(),

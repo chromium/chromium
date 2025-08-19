@@ -44,7 +44,6 @@ TEST_F(SplitStoresAndLocalUpmTest, UpmPrefOn) {
 struct IsGmsCoreUpdateRequiredTestCase {
   std::string test_case_desc;
   std::string gms_version;
-  bool is_login_db_empty;
   bool expected_is_update_required_automotive;
   bool expected_is_update_required;
 };
@@ -53,19 +52,12 @@ class SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired
     : public SplitStoresAndLocalUpmTest,
       public ::testing::WithParamInterface<IsGmsCoreUpdateRequiredTestCase> {
  public:
-  SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired() {
-    pref_service()->registry()->RegisterBooleanPref(
-        password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
-  }
+  SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired() = default;
 };
 
 TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
        IsGmsCoreUpdateRequired) {
   IsGmsCoreUpdateRequiredTestCase p = GetParam();
-  base::test::ScopedFeatureList features;
-  pref_service()->SetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase,
-      p.is_login_db_empty);
 
   bool expected_is_update_required =
 #if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
@@ -87,19 +79,16 @@ INSTANTIATE_TEST_SUITE_P(
         IsGmsCoreUpdateRequiredTestCase{
             .test_case_desc = "TrueForGmsDoesNotSupportSeparatedStores",
             .gms_version = "1",
-            .is_login_db_empty = false,
             .expected_is_update_required_automotive = true,
             .expected_is_update_required = true},
         IsGmsCoreUpdateRequiredTestCase{
             .test_case_desc = "FalseForGmsSupportSeparatedStoresForNonAuto",
             .gms_version = kSplitStoresUpmMinVersionForNonAuto,
-            .is_login_db_empty = false,
             .expected_is_update_required_automotive = true,
             .expected_is_update_required = false},
         IsGmsCoreUpdateRequiredTestCase{
             .test_case_desc = "FalseForGmsSupportSeparatedStoresForAuto",
             .gms_version = kSplitStoresUpmMinVersionForAuto,
-            .is_login_db_empty = false,
             .expected_is_update_required_automotive = false,
             .expected_is_update_required = false}),
     [](const ::testing::TestParamInfo<IsGmsCoreUpdateRequiredTestCase>& info) {

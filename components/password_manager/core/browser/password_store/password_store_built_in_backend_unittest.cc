@@ -136,10 +136,6 @@ class PasswordStoreBuiltInBackendBaseTest : public testing::Test {
   void SetUp() override {
     OSCryptMocker::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-    pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
-#endif
 #if !BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kClearingUndecryptablePasswords, false);
@@ -862,20 +858,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
 }
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-TEST_P(PasswordStoreBuiltInBackendTest, NotAbleToSavePasswordsEmptyDB) {
-  pref_service()->SetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
-  PasswordStoreBackend* backend = CreateBackend();
-  InitializeBackend(backend);
-  EXPECT_FALSE(backend->IsAbleToSavePasswords());
-}
-
 TEST_P(PasswordStoreBuiltInBackendTest,
        NotAbleToSavePasswordsAfterDeprecation) {
-  // Pretend the login DB is not empty, because saving passwords to an
-  // empty login DB has already been disallowed before.
-  pref_service()->SetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
   PasswordStoreBackend* backend = CreateBackend();
   InitializeBackend(backend);
   EXPECT_FALSE(backend->IsAbleToSavePasswords());
