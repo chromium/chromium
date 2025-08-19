@@ -33,10 +33,6 @@ class CleanupTask : public base::RefCountedThreadSafe<CleanupTask> {
   scoped_refptr<Configurator> config_;
 };
 
-#if BUILDFLAG(IS_MAC)
-void CleanOldCrxCache();
-#endif  // IS_MAC
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_CLEANUP_TASK_H_

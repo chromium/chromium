@@ -93,10 +93,6 @@ void CleanupTask::Run(base::OnceClosure callback) {
           [](UpdaterScope scope) {
             CleanupGoogleUpdate(scope);
             CleanupOldUpdaterVersions(scope);
-#if BUILDFLAG(IS_MAC)
-            // TODO(crbug.com/394302692): Delete after M140.
-            CleanOldCrxCache();
-#endif  // IS_MAC
           },
           scope_),
       base::BindOnce(
