@@ -79,6 +79,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidDesktopWebPrefsLargeDisplays);
 // If enabled, renders styling similar to Android native UI for spelling and
 // grammar errors in textboxes.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidSpellcheckNativeUi);
+
+// If enabled, provides API support for custom spell check menus that are
+// rendered by Android applications.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidSpellcheckFullApiBlink);
 #endif
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

@@ -28,6 +28,8 @@
 
 #include <tuple>
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -46,6 +48,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/markers/spell_check_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker_properties.h"
 #include "third_party/blink/renderer/core/editing/reveal_selection_scope.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -1996,6 +1999,47 @@ std::vector<ui::ImeTextSpan> InputMethodController::GetImeTextSpans() const {
     }
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAndroidSpellcheckFullApiBlink)) {
+    const HeapVector<std::pair<Member<const Text>, Member<DocumentMarker>>>&
+        spelling_node_marker_pairs =
+            GetDocument().Markers().MarkersIntersectingRange(
+                ToEphemeralRangeInFlatTree(range),
+                DocumentMarker::MarkerTypes::Misspelling());
+
+    for (const std::pair<Member<const Text>, Member<DocumentMarker>>&
+             node_marker_pair : spelling_node_marker_pairs) {
+      SpellCheckMarker* marker =
+          To<SpellCheckMarker>(node_marker_pair.second.Get());
+      const Text* node = node_marker_pair.first;
+
+      // Spelling markers can only be grammar or spelling type. Hence if not
+      // grammar then default to spelling.
+      const ImeTextSpan::Type type =
+          (marker->GetType() == DocumentMarker::kGrammar)
+              ? ImeTextSpan::Type::kGrammarSuggestion
+              : ImeTextSpan::Type::kMisspellingSuggestion;
+      Vector<String> suggestions;
+      marker->Description().Split('\n', suggestions);
+
+      const EphemeralRange& marker_ephemeral_range =
+          EphemeralRange(Position(node, marker->StartOffset()),
+                         Position(node, marker->EndOffset()));
+      const PlainTextRange& marker_plain_text_range =
+          cached_text_input_info_.GetPlainTextRange(marker_ephemeral_range);
+
+      ime_text_spans.emplace_back(
+          ImeTextSpan(type, marker_plain_text_range.Start(),
+                      marker_plain_text_range.End(), Color::kTransparent,
+                      ImeTextSpanThickness::kNone,
+                      ImeTextSpanUnderlineStyle::kNone, Color::kTransparent,
+                      Color::kTransparent, Color::kTransparent, false, false,
+                      suggestions)
+              .ToUiImeTextSpan());
+    }
+  }
+#endif
   return ime_text_spans;
 }
 

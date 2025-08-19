@@ -4704,6 +4704,12 @@ const char kAndroidSpellcheckNativeUiName[] =
 const char kAndroidSpellcheckNativeUiDescription[] =
     "Makes the spellcheck underline style the same as native applications";
 
+const char kAndroidSpellcheckFullApiBlinkName[] =
+    "Enable full Android Spellchecker API support for Blink";
+const char kAndroidSpellcheckFullApiBlinkDescription[] =
+    "If enabled, provides API support for custom spell check menus that are "
+    "rendered by Android applications.";
+
 const char kAndroidSurfaceControlName[] = "Android SurfaceControl";
 const char kAndroidSurfaceControlDescription[] =
     " Enables SurfaceControl to manage the buffer queue for the "

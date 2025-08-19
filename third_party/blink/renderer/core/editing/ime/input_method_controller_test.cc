@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_list.h"
@@ -3806,4 +3808,65 @@ TEST_F(InputMethodControllerTest, EditContextCanvasHasEditableType) {
   editable_canvas->Focus();
   EXPECT_EQ(kWebTextInputTypeContentEditable, Controller().TextInputType());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(InputMethodControllerTest, SetImeTextSpanForSpellcheckSpellingMarkers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kAndroidSpellcheckFullApiBlink);
+  Element* div = InsertHTMLElement(
+      "<div id='sample' contenteditable>hello world</div>", "sample");
+  Node* text = div->firstChild();
+
+  GetDocument().Markers().AddSpellingMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)), "hi!\nhello!");
+
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position(text, 0), Position(text, 1))
+          .Build(),
+      SetSelectionOptions());
+
+  const std::vector<ui::ImeTextSpan>& ime_text_spans =
+      Controller().TextInputInfo().ime_text_spans;
+
+  EXPECT_EQ(1u, ime_text_spans.size());
+  EXPECT_EQ(0u, ime_text_spans[0].start_offset);
+  EXPECT_EQ(5u, ime_text_spans[0].end_offset);
+  EXPECT_EQ(2u, ime_text_spans[0].suggestions.size());
+  EXPECT_EQ("hi!", ime_text_spans[0].suggestions[0]);
+  EXPECT_EQ("hello!", ime_text_spans[0].suggestions[1]);
+  EXPECT_EQ(ui::ImeTextSpan::Type::kMisspellingSuggestion,
+            ime_text_spans[0].type);
+}
+
+TEST_F(InputMethodControllerTest, SetImeTextSpanForSpellcheckGrammarMarkers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kAndroidSpellcheckFullApiBlink);
+  Element* div = InsertHTMLElement(
+      "<div id='sample' contenteditable>hello world</div>", "sample");
+  Node* text = div->firstChild();
+
+  GetDocument().Markers().AddGrammarMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)), "hi!\nhello!");
+
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position(text, 0), Position(text, 1))
+          .Build(),
+      SetSelectionOptions());
+
+  const std::vector<ui::ImeTextSpan>& ime_text_spans =
+      Controller().TextInputInfo().ime_text_spans;
+
+  EXPECT_EQ(1u, ime_text_spans.size());
+  EXPECT_EQ(0u, ime_text_spans[0].start_offset);
+  EXPECT_EQ(5u, ime_text_spans[0].end_offset);
+  EXPECT_EQ(2u, ime_text_spans[0].suggestions.size());
+  EXPECT_EQ("hi!", ime_text_spans[0].suggestions[0]);
+  EXPECT_EQ("hello!", ime_text_spans[0].suggestions[1]);
+  EXPECT_EQ(ui::ImeTextSpan::Type::kGrammarSuggestion, ime_text_spans[0].type);
+}
+#endif
 }  // namespace blink

@@ -51,6 +51,9 @@ BASE_FEATURE(kAndroidDesktopWebPrefsLargeDisplays,
 BASE_FEATURE(kAndroidSpellcheckNativeUi,
              "AndroidSpellcheckNativeUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidSpellcheckFullApiBlink,
+             "AndroidSpellcheckFullApiBlink",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Avoids copying ResourceRequest::TrustedParams when possible.

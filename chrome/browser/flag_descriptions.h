@@ -140,6 +140,8 @@ extern const char kAndroidGrammarCheckName[];
 extern const char kAndroidGrammarCheckDescription[];
 extern const char kAndroidSpellcheckNativeUiName[];
 extern const char kAndroidSpellcheckNativeUiDescription[];
+extern const char kAndroidSpellcheckFullApiBlinkName[];
+extern const char kAndroidSpellcheckFullApiBlinkDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

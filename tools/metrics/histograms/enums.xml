@@ -10175,6 +10175,7 @@ from previous Chrome versions.
   <int value="-1459907288" label="DesksTemplates:enabled"/>
   <int value="-1459246132" label="kWebSQLAccess:disabled"/>
   <int value="-1459131369" label="SafetyHubAndroidSurveyV2:enabled"/>
+  <int value="-1458900809" label="AndroidSpellcheckFullApiBlink:enabled"/>
   <int value="-1458229207" label="BorealisEnableUnsupportedHardware:disabled"/>
   <int value="-1457775295" label="PasswordSearchMobile:disabled"/>
   <int value="-1456789591" label="MediaFoundationVideoCapture:enabled"/>
@@ -11704,6 +11705,7 @@ from previous Chrome versions.
   <int value="-902227224" label="MlRelevanceScoring:disabled"/>
   <int value="-902125579" label="ImmersiveUiMode:disabled"/>
   <int value="-901418755" label="TrafficCountersForWiFiTesting:enabled"/>
+  <int value="-900976825" label="AndroidSpellcheckFullApiBlink:disabled"/>
   <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
   <int value="-899969457" label="ReadAloudBackgroundPlayback:disabled"/>
   <int value="-899915066" label="ImprovedKeyboardShortcuts:disabled"/>
