@@ -38,6 +38,10 @@
 #include "media/mojo/services/gpu_mojo_media_client_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+#include "media/filters/symphonia_audio_decoder.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_codec_util.h"
 #include "media/filters/android/media_codec_audio_decoder.h"
@@ -138,6 +142,14 @@ class AudioDecoderTest
         decoder_ = std::make_unique<FFmpegAudioDecoder>(
             task_environment_.GetMainThreadTaskRunner(), &media_log_);
         break;
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+      case AudioDecoderType::kSymphonia:
+        decoder_ = std::make_unique<SymphoniaAudioDecoder>(
+            task_environment_.GetMainThreadTaskRunner(), &media_log_);
+        break;
+
+#endif
 #if BUILDFLAG(IS_ANDROID)
       case AudioDecoderType::kMediaCodec:
         decoder_ = std::make_unique<MediaCodecAudioDecoder>(
@@ -600,6 +612,22 @@ constexpr TestParams kFFmpegTestParams[] = {
      CHANNEL_LAYOUT_STEREO},
 };
 
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+constexpr DataExpectations kBearFlac192kHzExpectations = {
+    {{0, 85333, "-0.30,-0.76,0.01,0.52,2.09,0.90,"},
+     {85333, 85333, "-3.54,-1.84,-3.22,-0.56,-1.13,-0.17,"},
+     {170666, 85333, "0.79,-0.39,1.11,0.89,3.22,1.28,"}}};
+
+// Currently, Symphonia is only enabled for FLAC audio.
+constexpr TestParams kSymphoniaTestParams[] = {
+    {AudioCodec::kFLAC, "sfx-flac.mp4", kSfxFlacExpectations, 0, 44100,
+     CHANNEL_LAYOUT_MONO},
+    {AudioCodec::kFLAC, "sfx.flac", kSfxFlacExpectations, 0, 44100,
+     CHANNEL_LAYOUT_MONO},
+    {AudioCodec::kFLAC, "bear-flac-192kHz.mp4", kBearFlac192kHzExpectations, 0,
+     192000, CHANNEL_LAYOUT_STEREO}};
+#endif
+
 void AudioDecoderTest::SetReinitializeParams() {
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) && \
     BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -610,6 +638,17 @@ void AudioDecoderTest::SetReinitializeParams() {
     set_params(params_.channel_layout == kXheAacTestParams[0].channel_layout
                    ? kXheAacTestParams[1]
                    : kXheAacTestParams[0]);
+    return;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+  // Currently, Symphonia only supports FLAC audio, so we can't use the Opus
+  // params for reinitialization. Modify the channel layout instead.
+  if (decoder_type_ == AudioDecoderType::kSymphonia) {
+    set_params(params_.channel_layout == kSymphoniaTestParams[0].channel_layout
+                   ? kSymphoniaTestParams[2]
+                   : kSymphoniaTestParams[0]);
     return;
   }
 #endif
@@ -706,6 +745,12 @@ TEST_P(AudioDecoderTest, EncryptedBuffer) {
   EXPECT_TRUE(!last_decode_status().is_ok());
 }
 
+TEST_P(AudioDecoderTest, DecodeEOSFirst) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  SendEndOfStream();
+  EXPECT_TRUE(last_decode_status().is_ok());
+}
+
 TEST_P(AudioDecoderTest, Reset) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Reset();
@@ -729,6 +774,13 @@ INSTANTIATE_TEST_SUITE_P(FFmpeg,
                          AudioDecoderTest,
                          Combine(Values(AudioDecoderType::kFFmpeg),
                                  ValuesIn(kFFmpegTestParams)));
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+INSTANTIATE_TEST_SUITE_P(Symphonia,
+                         AudioDecoderTest,
+                         Combine(Values(AudioDecoderType::kSymphonia),
+                                 ValuesIn(kSymphoniaTestParams)));
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 std::vector<TestParams> GetAndroidParams() {

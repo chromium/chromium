@@ -77,6 +77,11 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   //     Any time Reset() is called.
   enum class DecoderState { kUninitialized, kNormal, kDecodeFinished, kError };
 
+  // Internal method for decoding the buffer, if it is in a state where that is
+  // appropriate.
+  void DecodeBuffer(scoped_refptr<DecoderBuffer> buffer,
+                    DecodeCB decode_cb_bound);
+
   // Passes the encoded buffer to the Symphonia decoder instance. Returns true
   // on success, false otherwise. May result in zero or more calls to
   // output_cb_.
