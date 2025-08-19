@@ -18,6 +18,7 @@
 #include "third_party/blink/public/mojom/content_extraction/frame_metadata_observer_registry.mojom.h"
 
 namespace content {
+class Page;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -48,6 +49,7 @@ class PageContentMetadataObserver : public content::WebContentsObserver {
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   void OnMetaTagsChangedForFrame(
       content::RenderFrameHost* render_frame_host,

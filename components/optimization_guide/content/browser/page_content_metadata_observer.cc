@@ -31,6 +31,10 @@ PageContentMetadataObserver::~PageContentMetadataObserver() = default;
 
 void PageContentMetadataObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
+  if (&render_frame_host->GetPage() != &web_contents()->GetPrimaryPage()) {
+    return;
+  }
+
   if (frame_data_.contains(render_frame_host)) {
     return;
   }
@@ -77,14 +81,26 @@ void PageContentMetadataObserver::RenderFrameDeleted(
   }
 }
 
+void PageContentMetadataObserver::PrimaryPageChanged(content::Page& page) {
+  // The primary page has changed, so we need to reset all frame observers
+  // and re-initialize them for the new page's frame tree.
+  frame_data_.clear();
+  UpdateFrameObservers();
+}
+
 void PageContentMetadataObserver::UpdateFrameObservers() {
-  web_contents()->ForEachRenderFrameHost([this](content::RenderFrameHost* rfh) {
-    if (rfh->IsRenderFrameLive()) {
-      // RenderFrameCreated has the logic to create the observer and add it
-      // to the map if it doesn't exist.
-      RenderFrameCreated(rfh);
-    }
-  });
+  auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
+  if (!primary_main_frame) {
+    return;
+  }
+  primary_main_frame->ForEachRenderFrameHost(
+      [this](content::RenderFrameHost* rfh) {
+        if (rfh->IsRenderFrameLive()) {
+          // RenderFrameCreated has the logic to create the observer and add it
+          // to the map if it doesn't exist.
+          RenderFrameCreated(rfh);
+        }
+      });
 }
 
 void PageContentMetadataObserver::OnMetaTagsChangedForFrame(
