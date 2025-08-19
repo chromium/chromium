@@ -164,6 +164,7 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
   tab_dialog_params->close_on_detach = false;
   tab_dialog_params->disable_input = false;
   tab_dialog_params->animated = false;
+  tab_dialog_params->should_show_inactive = true;
   tab_dialog_params->should_show_callback = base::BindRepeating(
       &HandoffButtonController::ShouldShowButton, base::Unretained(this));
   tab_dialog_params->get_dialog_bounds =
