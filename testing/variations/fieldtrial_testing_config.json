@@ -5632,21 +5632,6 @@
             ]
         }
     ],
-    "ChromeRefreshTokenBinding": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableChromeRefreshTokenBinding"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeWallpaperSearchGlobal": [
         {
             "platforms": [
