@@ -5,10 +5,11 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_URL_LOADER_HELPER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_URL_LOADER_HELPER_H_
 
-#include "base/memory/weak_ptr.h"
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
-#include "services/network/public/cpp/resource_request.h"
+
+class GURL;
 
 namespace content {
 

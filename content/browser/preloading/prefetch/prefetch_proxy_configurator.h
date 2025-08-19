@@ -6,21 +6,17 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PROXY_CONFIGURATOR_H_
 
 #include <optional>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/proxy_chain.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 

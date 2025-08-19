@@ -6,46 +6,45 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_CONTAINER_H_
 
 #include <optional>
-#include <utility>
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "content/browser/devtools/network_service_devtools_observer.h"
-#include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
-#include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
-#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
-#include "content/public/browser/preloading_data.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "url/gurl.h"
 
-namespace network {
-namespace mojom {
+namespace base {
+class OneShotTimer;
+}  // namespace base
+
+namespace network::mojom {
 class CookieManager;
-}  // namespace mojom
-}  // namespace network
+}  // namespace network::mojom
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
 class BrowserContext;
-class PrefetchCookieListener;
 class PrefetchDocumentManager;
+class PrefetchKey;
 class PrefetchNetworkContext;
 class PrefetchRequest;
 class PrefetchResponseReader;
-class PrefetchService;
 class PrefetchServingHandle;
 class PrefetchServingPageMetricsContainer;
 class PrefetchSingleRedirectHop;
@@ -54,7 +53,10 @@ class PreloadingAttempt;
 class ProxyLookupClientImpl;
 class RenderFrameHostImpl;
 class SpeculationRulesTags;
+class WebContents;
 enum class PrefetchPotentialCandidateServingResult;
+enum class PrefetchPriority;
+enum class PrefetchProbeResult;
 enum class PrefetchServableState;
 
 // Holds the relevant size information of the prefetched response. The struct is

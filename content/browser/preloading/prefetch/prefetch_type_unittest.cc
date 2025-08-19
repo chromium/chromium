@@ -5,9 +5,10 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
 namespace content {
 namespace {

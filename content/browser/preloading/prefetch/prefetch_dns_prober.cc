@@ -4,11 +4,8 @@
 
 #include "content/browser/preloading/prefetch/prefetch_dns_prober.h"
 
-#include <optional>
-
 #include "base/functional/callback.h"
 #include "net/base/address_list.h"
-#include "net/dns/public/resolve_error_info.h"
 
 namespace content {
 

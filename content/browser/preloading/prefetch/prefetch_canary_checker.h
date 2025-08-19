@@ -12,14 +12,16 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/address_list.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "url/gurl.h"
+
+namespace net {
+class AddressList;
+}  // namespace net
 
 namespace network {
 class NetworkConnectionTracker;

@@ -7,26 +7,16 @@
 
 #include <map>
 #include <optional>
-#include <string_view>
 
 #include "base/dcheck_is_on.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
-#include "content/browser/preloading/prefetch/prefetch_params.h"
-#include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
-#include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/prefetch_handle.h"
-#include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "net/cookies/canonical_cookie.h"
-#include "net/http/http_no_vary_search_data.h"
-#include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
@@ -47,6 +37,7 @@ class PrefetchProxyConfigurator;
 class PrefetchScheduler;
 class PrefetchServiceDelegate;
 class ServiceWorkerContext;
+enum class ServiceWorkerCapability;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

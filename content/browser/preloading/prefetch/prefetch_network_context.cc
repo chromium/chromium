@@ -4,7 +4,6 @@
 
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
 
-#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
@@ -21,14 +20,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 
 namespace content {

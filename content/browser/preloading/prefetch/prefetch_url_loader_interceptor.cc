@@ -4,25 +4,19 @@
 
 #include "content/browser/preloading/prefetch/prefetch_url_loader_interceptor.h"
 
-#include <memory>
-
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "content/browser/browser_context_impl.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
-#include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
-#include "content/browser/preloading/prerender/prerender_host.h"
-#include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
-#include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/resource_request.h"

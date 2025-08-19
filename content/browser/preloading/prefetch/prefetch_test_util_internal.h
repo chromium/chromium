@@ -5,25 +5,19 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TEST_UTIL_INTERNAL_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TEST_UTIL_INTERNAL_H_
 
-#include <memory>
-#include <ostream>
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
-#include "content/browser/preloading/prefetch/prefetch_status.h"
-#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_interceptor.h"
 
 namespace content::test {

@@ -4,11 +4,9 @@
 
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 
-#include <algorithm>
-#include <vector>
-
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -17,11 +15,6 @@
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
-#include "content/browser/preloading/prerender/prerender_host.h"
-#include "content/browser/preloading/prerender/prerender_host_registry.h"
-#include "content/browser/renderer_host/render_frame_host_delegate.h"
-#include "content/public/browser/navigation_handle_user_data.h"
-#include "services/network/public/cpp/url_loader_completion_status.h"
 
 namespace content {
 

@@ -8,7 +8,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
-#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"

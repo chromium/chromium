@@ -4,10 +4,8 @@
 
 #include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
 
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
@@ -15,15 +13,12 @@
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
-#include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_partition_key_collection.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 

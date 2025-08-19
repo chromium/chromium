@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "url/gurl.h"

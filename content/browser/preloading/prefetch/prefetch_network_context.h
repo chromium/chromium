@@ -9,13 +9,11 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/isolation_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 

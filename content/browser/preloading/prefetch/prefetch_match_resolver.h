@@ -15,11 +15,14 @@
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/navigation_handle_user_data.h"
+
+namespace base {
+class OneShotTimer;
+}  // namespace base
 
 namespace content {
 
-class PrefetchContainer;
+class PrefetchService;
 
 // Represents the serving result with the detailed reason per potentially
 // matching candidate. Only used for metrics purpose.

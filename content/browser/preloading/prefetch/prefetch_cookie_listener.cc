@@ -4,8 +4,6 @@
 
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
 
-#include <memory>
-
 #include "base/check.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"

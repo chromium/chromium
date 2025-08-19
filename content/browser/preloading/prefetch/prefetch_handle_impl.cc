@@ -5,14 +5,8 @@
 #include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
 
 #include "base/functional/callback.h"
-#include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
-#include "content/browser/preloading/prefetch/prefetch_type.h"
-#include "content/public/browser/preloading_data.h"
-#include "content/public/browser/web_contents.h"
-#include "services/network/public/cpp/url_loader_completion_status.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace content {
 

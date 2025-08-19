@@ -5,14 +5,9 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_DNS_PROBER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_DNS_PROBER_H_
 
-#include <optional>
-#include <vector>
-
 #include "base/functional/callback.h"
 #include "net/base/address_list.h"
-#include "net/base/host_port_pair.h"
 #include "net/dns/public/host_resolver_results.h"
-#include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 
 namespace content {

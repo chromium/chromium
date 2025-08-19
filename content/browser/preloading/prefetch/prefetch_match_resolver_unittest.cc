@@ -4,8 +4,6 @@
 
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 
-#include <vector>
-
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

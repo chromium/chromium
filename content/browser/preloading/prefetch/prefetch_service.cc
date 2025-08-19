@@ -4,23 +4,17 @@
 
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 
-#include <algorithm>
-#include <memory>
 #include <optional>
 #include <string_view>
-#include <utility>
-#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/check_is_test.h"
-#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/timer/timer.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
@@ -34,7 +28,6 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
-#include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_scheduler.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
@@ -54,27 +47,18 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/url_loader_request_interceptor.h"
-#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_constants.h"
-#include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_partition_key_collection.h"
-#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
-#include "services/network/public/mojom/devtools_observer.mojom.h"
-#include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "url/gurl.h"

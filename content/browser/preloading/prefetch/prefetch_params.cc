@@ -12,12 +12,10 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
-#include "content/common/features.h"
-#include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/common/content_features.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 namespace content {
 

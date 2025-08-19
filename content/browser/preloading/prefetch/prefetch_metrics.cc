@@ -6,8 +6,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/mojom/tokens/tokens.mojom.h"
 
 namespace content {
 

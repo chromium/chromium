@@ -4,9 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_util.h"
 #include "content/browser/preloading/prefetch/prefetch_canary_checker.h"
 #include "content/browser/preloading/prefetch/prefetch_dns_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
@@ -23,7 +21,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/origin.h"
 
 namespace content {

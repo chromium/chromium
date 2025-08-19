@@ -4,20 +4,15 @@
 
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 
-#include <memory>
 #include <string>
-#include <vector>
 
-#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
-#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"

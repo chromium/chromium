@@ -4,10 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 
-#include <algorithm>
-#include <memory>
 #include <tuple>
-#include <vector>
 
 #include "base/containers/contains.h"
 #include "content/browser/browser_context_impl.h"
@@ -25,18 +22,13 @@
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 

@@ -6,12 +6,9 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESPONSE_READER_H_
 
 #include "base/time/time.h"
-#include "content/browser/preloading/prefetch/prefetch_data_pipe_tee.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/http/http_cookie_indices.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -23,13 +20,8 @@ class PrefetchProxy_PrefetchedResource;
 
 namespace content {
 
-// This is necessary because `PrefetchContainerObserver` emulates a callback
-// that we will provide in the future.
-//
-// TODO(crbug.com/400761083): Remove it.
-class PrefetchContainerObserver;
-
 class PrefetchContainer;
+class PrefetchDataPipeTee;
 class PrefetchStreamingURLLoader;
 class ServiceWorkerClient;
 class ServiceWorkerMainResourceHandle;

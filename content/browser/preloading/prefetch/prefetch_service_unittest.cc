@@ -4,20 +4,15 @@
 
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 
-#include <algorithm>
-#include <memory>
 #include <optional>
 #include <string_view>
-#include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -41,17 +36,13 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
-#include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
-#include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/storage_partition.h"
@@ -71,6 +62,7 @@
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -82,7 +74,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
 
 namespace content {

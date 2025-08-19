@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_STREAMING_URL_LOADER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_STREAMING_URL_LOADER_H_
 
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
@@ -13,7 +12,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace network {

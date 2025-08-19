@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_COOKIE_LISTENER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_COOKIE_LISTENER_H_
 
-#include <memory>
-
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"

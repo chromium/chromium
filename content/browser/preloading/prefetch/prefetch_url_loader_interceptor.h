@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_URL_LOADER_INTERCEPTOR_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_URL_LOADER_INTERCEPTOR_H_
 
-#include <memory>
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
@@ -14,12 +13,10 @@
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
-#include "content/public/browser/global_routing_id.h"
-#include "services/network/public/cpp/resource_request.h"
+#include "third_party/blink/public/mojom/tokens/tokens.mojom.h"
 
 namespace content {
 
-class BrowserContext;
 class PrefetchContainer;
 class PrefetchServingPageMetricsContainer;
 class ServiceWorkerMainResourceHandle;
