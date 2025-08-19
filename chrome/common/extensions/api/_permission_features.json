@@ -898,9 +898,7 @@
   },
   "search": {
     "channel": "stable",
-    "extension_types": ["extension"],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"]
+    "extension_types": ["extension"]
   },
   "sessions": {
     "channel": "stable",

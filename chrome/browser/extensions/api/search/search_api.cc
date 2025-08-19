@@ -9,16 +9,24 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/common/extensions/api/search.h"
 #include "components/search_engines/util.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#endif
 
 namespace extensions {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/434262354): Port to desktop Android by equivalent navigation
+// without browser.
 void NavigateToURL(WindowOpenDisposition disposition,
                    Browser* browser,
                    const GURL& url) {
@@ -27,6 +35,7 @@ void NavigateToURL(WindowOpenDisposition disposition,
   navigate_params.disposition = disposition;
   Navigate(&navigate_params);
 }
+#endif
 
 }  // namespace
 
@@ -74,6 +83,9 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
     // If the extension called the API from a tab, we can use that tab -
     // find the associated browser.
     web_contents = GetSenderWebContents();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    // TODO(crbug.com/434262354): Port to desktop Android by equivalent
+    // GetActiveWebContents` without browser and tabs.
     if (web_contents) {
       browser = chrome::FindBrowserWithTab(web_contents);
     }
@@ -88,6 +100,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
       }
       web_contents = browser->tab_strip_model()->GetActiveWebContents();
     }
+#endif
   }
 
   DCHECK(browser || (web_contents && disposition == Disposition::kNone));
@@ -112,10 +125,18 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
           /*extra_headers=*/std::string());
       break;
     case Disposition::kNewTab:
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      // TODO(crbug.com/434262354): Port to desktop Android by equivalent
+      // navigation without browser.
       NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB, browser, url);
+#endif
       break;
     case Disposition::kNewWindow:
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      // TODO(crbug.com/434262354): Port to desktop Android by equivalent
+      // navigation without browser.
       NavigateToURL(WindowOpenDisposition::NEW_WINDOW, browser, url);
+#endif
       break;
   }
 
