@@ -321,6 +321,13 @@ PersonalCollaborationDataSyncBridge::GetSpecificsForStorageKey(
              : std::nullopt;
 }
 
+const std::unordered_map<std::string,
+                         sync_pb::SharedTabGroupAccountDataSpecifics>&
+PersonalCollaborationDataSyncBridge::GetAllSpecifics() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return specifics_;
+}
+
 void PersonalCollaborationDataSyncBridge::CreateOrUpdateSpecifics(
     const std::string& storage_key,
     const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {

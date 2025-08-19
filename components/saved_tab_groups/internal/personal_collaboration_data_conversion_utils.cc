@@ -21,6 +21,10 @@ int64_t SerializeTime(const base::Time& t) {
 
 namespace tab_groups {
 
+base::Time DeserializeTime(int64_t proto_time) {
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_time));
+}
+
 sync_pb::SharedTabGroupAccountDataSpecifics
 CreatePersonalCollaborationSpecificsFromSavedTabGroupTab(
     const tab_groups::SavedTabGroup& group,
@@ -73,6 +77,17 @@ CreatePersonalCollaborationSpecificsFromSharedTabGroup(
   }
 
   return specifics;
+}
+
+std::string CreateClientTagForSharedTab(const SavedTabGroup& group,
+                                        const SavedTabGroupTab& tab) {
+  return tab.saved_tab_guid().AsLowercaseString() + "|" +
+         group.collaboration_id().value().value();
+}
+
+std::string CreateClientTagForSharedGroup(const SavedTabGroup& group) {
+  return group.saved_guid().AsLowercaseString() + "|" +
+         group.collaboration_id().value().value();
 }
 
 }  // namespace tab_groups

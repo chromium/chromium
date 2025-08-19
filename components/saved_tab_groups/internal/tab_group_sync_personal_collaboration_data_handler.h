@@ -49,6 +49,7 @@ class TabGroupSyncPersonalCollaborationDataHandler
       const TabGroupSyncPersonalCollaborationDataHandler&) = delete;
 
   // PersonalCollaborationDataService::Observer implementation.
+  void OnInitialized() override;
   void OnSpecificsUpdated(
       data_sharing::personal_collaboration_data::
           PersonalCollaborationDataService::SpecificsType specifics_type,
@@ -80,6 +81,12 @@ class TabGroupSyncPersonalCollaborationDataHandler
       const base::Uuid& saved_group_id) override;
 
  private:
+  void ApplyPersonalCollaborationData();
+  void UpdateTabSpecifics(
+      const sync_pb::SharedTabGroupAccountDataSpecifics* specifics);
+  void UpdateTabGroupSpecifics(
+      const sync_pb::SharedTabGroupAccountDataSpecifics* specifics);
+
   const raw_ptr<SavedTabGroupModel> saved_tab_group_model_;
   const raw_ptr<data_sharing::personal_collaboration_data::
                     PersonalCollaborationDataService>

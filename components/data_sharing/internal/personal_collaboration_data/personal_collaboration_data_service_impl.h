@@ -39,6 +39,8 @@ class PersonalCollaborationDataServiceImpl
   std::optional<sync_pb::SharedTabGroupAccountDataSpecifics> GetSpecifics(
       SpecificsType specifics_type,
       const std::string& storage_key) override;
+  std::vector<const sync_pb::SharedTabGroupAccountDataSpecifics*>
+  GetAllSpecifics() const override;
   void CreateOrUpdateSpecifics(
       SpecificsType specifics_type,
       const std::string& storage_key,

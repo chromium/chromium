@@ -8,6 +8,7 @@
 
 #include "base/uuid.h"
 #include "components/data_sharing/public/personal_collaboration_data/personal_collaboration_data_service.h"
+#include "components/saved_tab_groups/internal/personal_collaboration_data_conversion_utils.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/sync/protocol/shared_tab_group_account_data_specifics.pb.h"
@@ -28,6 +29,10 @@ TabGroupSyncPersonalCollaborationDataHandler::
 
 TabGroupSyncPersonalCollaborationDataHandler::
     ~TabGroupSyncPersonalCollaborationDataHandler() = default;
+
+void TabGroupSyncPersonalCollaborationDataHandler::OnInitialized() {
+  ApplyPersonalCollaborationData();
+}
 
 void TabGroupSyncPersonalCollaborationDataHandler::OnSpecificsUpdated(
     data_sharing::personal_collaboration_data::
@@ -96,7 +101,6 @@ void TabGroupSyncPersonalCollaborationDataHandler::
 }
 
 void TabGroupSyncPersonalCollaborationDataHandler::SavedTabGroupModelLoaded() {
-  // TODO(haileywang): Implement.
   personal_collaboration_data_service_observation_.Observe(
       personal_collaboration_data_service_);
 }
@@ -111,6 +115,68 @@ void TabGroupSyncPersonalCollaborationDataHandler::
     TabGroupTransitioningToSavedRemovedFromSync(
         const base::Uuid& saved_group_id) {
   // TODO(haileywang): Implement.
+}
+
+void TabGroupSyncPersonalCollaborationDataHandler::
+    ApplyPersonalCollaborationData() {
+  if (!personal_collaboration_data_service_) {
+    return;
+  }
+
+  const auto all_specifics =
+      personal_collaboration_data_service_->GetAllSpecifics();
+  for (const sync_pb::SharedTabGroupAccountDataSpecifics* specifics :
+       all_specifics) {
+    if (specifics->has_shared_tab_details()) {
+      UpdateTabSpecifics(specifics);
+    } else if (specifics->has_shared_tab_group_details()) {
+      UpdateTabGroupSpecifics(specifics);
+    }
+  }
+}
+
+void TabGroupSyncPersonalCollaborationDataHandler::UpdateTabSpecifics(
+    const sync_pb::SharedTabGroupAccountDataSpecifics* specifics) {
+  // Can only be called with specifics containing TabDetails.
+  CHECK(specifics->has_shared_tab_details());
+
+  const base::Uuid group_id = base::Uuid::ParseCaseInsensitive(
+      specifics->shared_tab_details().shared_tab_group_guid());
+  const SavedTabGroup* group = saved_tab_group_model_->Get(group_id);
+  if (!group) {
+    return;
+  }
+
+  const base::Uuid tab_id = base::Uuid::ParseCaseInsensitive(specifics->guid());
+  const SavedTabGroupTab* tab = group->GetTab(tab_id);
+  if (!tab) {
+    return;
+  }
+
+  saved_tab_group_model_->UpdateTabLastSeenTimeFromSync(
+      group_id, tab_id,
+      DeserializeTime(
+          specifics->shared_tab_details().last_seen_timestamp_windows_epoch()));
+}
+
+void TabGroupSyncPersonalCollaborationDataHandler::UpdateTabGroupSpecifics(
+    const sync_pb::SharedTabGroupAccountDataSpecifics* specifics) {
+  CHECK(specifics->has_shared_tab_group_details());
+
+  const base::Uuid group_id =
+      base::Uuid::ParseCaseInsensitive(specifics->guid());
+  const SavedTabGroup* group = saved_tab_group_model_->Get(group_id);
+  if (!group) {
+    return;
+  }
+
+  // Update its position based on the specifics.
+  std::optional<size_t> position;
+  if (specifics->shared_tab_group_details().has_pinned_position()) {
+    position = specifics->shared_tab_group_details().pinned_position();
+  }
+  saved_tab_group_model_->UpdatePositionForSharedGroupFromSync(group_id,
+                                                               position);
 }
 
 }  // namespace tab_groups

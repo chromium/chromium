@@ -57,6 +57,17 @@ PersonalCollaborationDataServiceImpl::GetSpecifics(
       CreateStorageKeyWithType(specifics_type, storage_key));
 }
 
+std::vector<const sync_pb::SharedTabGroupAccountDataSpecifics*>
+PersonalCollaborationDataServiceImpl::GetAllSpecifics() const {
+  std::vector<const sync_pb::SharedTabGroupAccountDataSpecifics*> result;
+  const auto& specifics_map = bridge_->GetAllSpecifics();
+  result.reserve(specifics_map.size());
+  for (const auto& pair : specifics_map) {
+    result.push_back(&pair.second);
+  }
+  return result;
+}
+
 void PersonalCollaborationDataServiceImpl::CreateOrUpdateSpecifics(
     SpecificsType specifics_type,
     const std::string& storage_key,

@@ -85,6 +85,10 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
   std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>
   GetSpecificsForStorageKey(const std::string& storage_key) const;
 
+  const std::unordered_map<std::string,
+                           sync_pb::SharedTabGroupAccountDataSpecifics>&
+  GetAllSpecifics() const;
+
   // Update the local copy and sync with the new data.
   void CreateOrUpdateSpecifics(
       const std::string& storage_key,

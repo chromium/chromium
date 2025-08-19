@@ -24,27 +24,10 @@
 namespace tab_groups {
 namespace {
 
-// Convert proto int64 microseconds since Windows-epoch to base::Time.
-base::Time DeserializeTime(int64_t proto_time) {
-  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_time));
-}
-
-// Client tag consists of the tab guid concatenated with collaboration id.
-std::string CreateClientTagForSharedTab(const SavedTabGroup& group,
-                                        const SavedTabGroupTab& tab) {
-  return tab.saved_tab_guid().AsLowercaseString() + "|" +
-         group.collaboration_id().value().value();
-}
-
 // Client tag consists of the tab guid concatenated with collaboration id.
 std::string CreateClientTagForSharedTab(const CollaborationId& collaboration_id,
                                         const base::Uuid& tab_guid) {
   return tab_guid.AsLowercaseString() + "|" + collaboration_id.value();
-}
-
-std::string CreateClientTagForSharedGroup(const SavedTabGroup& group) {
-  return group.saved_guid().AsLowercaseString() + "|" +
-         group.collaboration_id().value().value();
 }
 
 // Returns the client tag for this specifics object. Note that

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/time/time.h"
 #include "components/sync/protocol/shared_tab_group_account_data_specifics.pb.h"
 
 namespace tab_groups {
@@ -15,6 +16,9 @@ class SavedTabGroupTab;
 }  // namespace tab_groups
 
 namespace tab_groups {
+
+// Convert proto int64 microseconds since Windows-epoch to base::Time.
+base::Time DeserializeTime(int64_t proto_time);
 
 // Conversion method to create a SharedTabGroupAccountDataSpecifics object of
 // SpecificType::TAB for a given tab_groups::SavedTabGroupTab. Tab group must
@@ -33,6 +37,15 @@ CreatePersonalCollaborationSpecificsFromSharedTabGroup(
     const tab_groups::SavedTabGroup& tab_group,
     const std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>&
         old_specifics);
+
+// Create client tag that consists of the tab guid concatenated with
+// collaboration id.
+std::string CreateClientTagForSharedTab(const SavedTabGroup& group,
+                                        const SavedTabGroupTab& tab);
+
+// Create client tag that consists of the tab group guid concatenated with
+// collaboration id.
+std::string CreateClientTagForSharedGroup(const SavedTabGroup& group);
 
 }  // namespace tab_groups
 

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DATA_SHARING_PUBLIC_PERSONAL_COLLABORATION_DATA_PERSONAL_COLLABORATION_DATA_SERVICE_H_
 #define COMPONENTS_DATA_SHARING_PUBLIC_PERSONAL_COLLABORATION_DATA_PERSONAL_COLLABORATION_DATA_SERVICE_H_
 
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
@@ -66,6 +68,12 @@ class PersonalCollaborationDataService : public KeyedService,
   virtual std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>
   GetSpecifics(SpecificsType specifics_type,
                const std::string& storage_key) = 0;
+
+  // Retrieves all local specifics. The returned pointers are owned by the
+  // service and should not be stored. They are valid until the next
+  // modification of the data.
+  virtual std::vector<const sync_pb::SharedTabGroupAccountDataSpecifics*>
+  GetAllSpecifics() const = 0;
 
   // Called to create or update the specifics associated with the given storage
   // key.
