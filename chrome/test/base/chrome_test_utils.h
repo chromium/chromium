@@ -36,6 +36,15 @@ content::WebContents* GetWebContentsAt(const PlatformBrowserTest* browser_test,
 // window created by tests, more specific behaviour requires other means.
 Profile* GetProfile(const PlatformBrowserTest* browser_test);
 
+// Navigates `web_contents` to a `url` in and waits until the load stops.
+// If the URL redirects it waits until the last destination is reached.
+// It returns true if the last navigation was successful and false otherwise.
+//
+// Unlike content::NavigateToURL, the caller of this function doesn't have
+// to specify the expected commit URL for URLs causing redirects.
+[[nodiscard]] bool NavigateToURL(content::WebContents* web_contents,
+                                 const GURL& url);
+
 // Returns the test data path used by the embedded test server.
 base::FilePath GetChromeTestDataDir();
 

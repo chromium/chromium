@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/crx_file/crx_verifier.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -784,13 +785,7 @@ base::FilePath ExtensionBrowserTest::PackExtensionWithOptions(
 
 bool ExtensionBrowserTest::NavigateToURL(content::WebContents* web_contents,
                                          const GURL& url) {
-  content::TestNavigationObserver observer(web_contents);
-  // The return value is ignored because some tests load URLs that cause
-  // redirects, or are blocked URLs, which make NavigateToURL return false.
-  (void)content::NavigateToURL(web_contents, url);
-  // Wait for load to stop.
-  observer.Wait();
-  return observer.last_navigation_succeeded();
+  return chrome_test_utils::NavigateToURL(web_contents, url);
 }
 
 bool ExtensionBrowserTest::NavigateToURL(BrowserWindowInterface* browser_window,

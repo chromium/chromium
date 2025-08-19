@@ -14,21 +14,14 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
-#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/extensions/extension_settings_test_base.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
-#include "components/guest_view/browser/guest_view_base.h"
-#include "components/guest_view/browser/guest_view_manager_delegate.h"
-#include "components/guest_view/browser/test_guest_view_manager.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -38,7 +31,25 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/test/extension_test_message_listener.h"
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"  // nogncheck
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"  // nogncheck
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"  // nogncheck
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+
 class ExtensionSettingsUIBrowserTest : public ExtensionSettingsTestBase {
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
  public:
   guest_view::TestGuestViewManager* GetGuestViewManager() {
     return factory_.GetOrCreateTestGuestViewManager(
@@ -48,8 +59,11 @@ class ExtensionSettingsUIBrowserTest : public ExtensionSettingsTestBase {
 
  private:
   guest_view::TestGuestViewManagerFactory factory_;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 };
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that viewing a source of the options page works fine.
 // This is a regression test for https://crbug.com/796080.
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
@@ -150,16 +164,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ListenerRegistration) {
     expect_has_listeners(false);
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
                        ActivityLogInactiveWithoutSwitch) {
+  content::WebContents* page_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(page_contents);
+
   // Navigate to chrome://extensions which is a allowlisted URL for the
   // chrome.activityLogPrivate API.
   GURL extensions_url("chrome://extensions");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extensions_url));
-  content::WebContents* page_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(page_contents);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(page_contents, extensions_url));
 
   // Attempt to add an event listener for the
   // activityLogPrivate.onExtensionActivity event.
@@ -172,10 +188,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
   // Activity log will be inactive as the command line switch is not present and
   // no allowlisted extensions for activityLogPrivate are enabled.
   extensions::ActivityLog* activity_log =
-      extensions::ActivityLog::GetInstance(browser()->profile());
+      extensions::ActivityLog::GetInstance(GetProfile());
   ASSERT_FALSE(activity_log->is_active());
 }
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionsActivityLogTest : public ExtensionSettingsUIBrowserTest {
  protected:
   // Enable command line flags for test.
@@ -279,3 +297,4 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
   notification = notification_service->GetNotificationToShow();
   ASSERT_FALSE(notification.has_value());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
