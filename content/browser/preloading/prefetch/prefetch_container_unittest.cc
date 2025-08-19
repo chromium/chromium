@@ -343,7 +343,7 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   EXPECT_EQ(prefetch_container.key(),
-            PrefetchContainer::Key(document_token, GURL("https://test.com")));
+            PrefetchKey(document_token, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container.GetNonRedirectHead());
 }
 
@@ -370,7 +370,7 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   EXPECT_EQ(prefetch_container.key(),
-            PrefetchContainer::Key(std::nullopt, GURL("https://test.com")));
+            PrefetchKey(std::nullopt, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container.GetNonRedirectHead());
   // Embedder-initiated prefetch shouldn't include any tag.
   EXPECT_FALSE(prefetch_container.request().speculation_rules_tags());

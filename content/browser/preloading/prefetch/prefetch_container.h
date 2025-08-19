@@ -7,7 +7,6 @@
 
 #include <optional>
 #include <utility>
-#include <variant>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -15,6 +14,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
+#include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
@@ -164,75 +164,6 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer(const PrefetchContainer&) = delete;
   PrefetchContainer& operator=(const PrefetchContainer&) = delete;
 
-  // Key for managing and matching prefetches.
-  //
-  // This key can either represent
-  //
-  // - the key of a prefetch (typically named `prefetch_key`, and its URL is the
-  //   URL of the prefetched main resource); or
-  // - the key of a navigation (typically named `navigated_key`, and its URL is
-  //   the navigation request URL).
-  //
-  // TODO(crbug.com/364751887): This distinction is not perfect. Enforce it as
-  // much as possible.
-  //
-  // For prefetch, non URL part is given as the following:
-  //
-  // - If the prefetch is renderer-initiated, `DocumentToken` of the initiating
-  //   document is used.
-  // - If the prefetch is browser-initiated, `std::nullopt` (for
-  //   `referring_document_token`) is used.
-  // - If the prefetch is embedder-initiated, `net::NetworkIsolationKey` of the
-  //   embedder is used. See crbug.com/40942681.
-  //
-  // For navigation, `std::optional<DocumentToken>` of the initiating document
-  // of the navigation is used.
-  //
-  // See also the doc on crbug.com/40946257 for more context.
-  class CONTENT_EXPORT Key {
-   public:
-    Key() = delete;
-    Key(net::NetworkIsolationKey nik, GURL url);
-    Key(std::optional<blink::DocumentToken> referring_document_token, GURL url);
-    ~Key();
-
-    // Movable and copyable.
-    Key(Key&& other);
-    Key& operator=(Key&& other);
-    Key(const Key& other);
-    Key& operator=(const Key& other);
-
-    bool operator==(const Key& rhs) const = default;
-    bool operator<(const Key& rhs) const {
-      if (referring_document_token_or_nik_ !=
-          rhs.referring_document_token_or_nik_) {
-        return referring_document_token_or_nik_ <
-               rhs.referring_document_token_or_nik_;
-      }
-      return url_ < rhs.url_;
-    }
-
-    const GURL& url() const { return url_; }
-
-    Key WithNewUrl(const GURL& new_url) const {
-      return std::visit([&](const auto& e) { return Key(e, new_url); },
-                        referring_document_token_or_nik_);
-    }
-
-    bool NonUrlPartIsSame(const Key& other) const {
-      return referring_document_token_or_nik_ ==
-             other.referring_document_token_or_nik_;
-    }
-
-   private:
-    friend CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
-                                                   const Key& prefetch_key);
-
-    std::variant<std::optional<blink::DocumentToken>, net::NetworkIsolationKey>
-        referring_document_token_or_nik_;
-    GURL url_;
-  };
-
   // Observer interface to listen to lifecycle events of `PrefetchContainer`.
   //
   // Each callback is called at most once in the lifecycle of a container.
@@ -262,7 +193,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   void OnWillBeDestroyed();
 
-  const Key& key() const { return key_; }
+  const PrefetchKey& key() const { return key_; }
 
   bool HasSameReferringURLForMetrics(const PrefetchContainer& other) const;
   bool HasSameReferringRenderFrameHostIdForMetrics(
@@ -635,7 +566,7 @@ class CONTENT_EXPORT PrefetchContainer {
   //   on `PrefetchContainer::ctor`.
   // - This flag is updated with prefetch migration `MigrateNewlyAdded()`: If we
   //   replace existing `PrefetchContainer` with such prerender-initiated
-  //   `PrefetchContainer` with the same `PrefetchContainer::Key`, then we also
+  //   `PrefetchContainer` with the same `PrefetchKey`, then we also
   //   transitively set the flag for the existing `PrefetchContainer` as well,
   //   because we'll still anticipate the prerendering request to hit the
   //   existing `PrefetchContainer` as it has the same key.
@@ -693,7 +624,7 @@ class CONTENT_EXPORT PrefetchContainer {
  private:
   PrefetchContainer(
       std::unique_ptr<PrefetchRequest> request,
-      const PrefetchContainer::Key& key,
+      const PrefetchKey& key,
       const blink::mojom::Referrer& referrer,
       base::WeakPtr<BrowserContext> browser_context,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
@@ -792,7 +723,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The key used to match this PrefetchContainer, including the URL that was
   // requested to prefetch.
-  const PrefetchContainer::Key key_;
+  const PrefetchKey key_;
 
   // The referrer to use for the request.
   blink::mojom::Referrer referrer_;
@@ -982,10 +913,6 @@ class CONTENT_EXPORT PrefetchContainer {
 CONTENT_EXPORT std::ostream& operator<<(
     std::ostream& ostream,
     const PrefetchContainer& prefetch_container);
-
-CONTENT_EXPORT std::ostream& operator<<(
-    std::ostream& ostream,
-    const PrefetchContainer::Key& prefetch_key);
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
                                         PrefetchContainer::LoadState state);

@@ -34,15 +34,14 @@ class TestPrefetchWatcherImpl {
   void OnPrefetchInterceptionCompleted(PrefetchContainer* prefetch_container);
 
   PrefetchContainerIdForTesting WaitUntilPrefetchResponseCompleted(
-      const PrefetchContainer::Key& key);
+      const PrefetchKey& key);
 
   PrefetchContainerIdForTesting GetContainerIdForTesting(
       PrefetchContainer* prefetch_container);
 
-  std::map<PrefetchContainer::Key, base::WeakPtr<PrefetchContainer>>
+  std::map<PrefetchKey, base::WeakPtr<PrefetchContainer>>
       response_completed_prefetches_;
-  std::map<PrefetchContainer::Key, base::OnceClosure>
-      response_completed_quit_closures_;
+  std::map<PrefetchKey, base::OnceClosure> response_completed_quit_closures_;
 
   std::optional<raw_ptr<PrefetchContainer>>
       prefetch_container_used_in_last_navigation_ = std::nullopt;
@@ -67,7 +66,7 @@ TestPrefetchWatcherImpl::~TestPrefetchWatcherImpl() {
 
 void TestPrefetchWatcherImpl::OnPrefetchResponseCompleted(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  const PrefetchContainer::Key& key = prefetch_container->key();
+  const PrefetchKey& key = prefetch_container->key();
   response_completed_prefetches_.emplace(key, prefetch_container);
   if (response_completed_quit_closures_.contains(key)) {
     auto quit_closure = std::move(response_completed_quit_closures_[key]);
@@ -85,13 +84,12 @@ PrefetchContainerIdForTesting
 TestPrefetchWatcherImpl::WaitUntilPrefetchResponseCompleted(
     const std::optional<blink::DocumentToken>& document_token,
     const GURL& url) {
-  return WaitUntilPrefetchResponseCompleted(
-      PrefetchContainer::Key(document_token, url));
+  return WaitUntilPrefetchResponseCompleted(PrefetchKey(document_token, url));
 }
 
 PrefetchContainerIdForTesting
 TestPrefetchWatcherImpl::WaitUntilPrefetchResponseCompleted(
-    const PrefetchContainer::Key& key) {
+    const PrefetchKey& key) {
   if (response_completed_prefetches_.contains(key)) {
     return GetContainerIdForTesting(response_completed_prefetches_[key].get());
   }

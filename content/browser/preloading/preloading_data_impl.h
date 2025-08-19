@@ -10,7 +10,6 @@
 #include <tuple>
 #include <vector>
 
-#include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/preloading_prediction.h"
 #include "content/public/browser/preloading_data.h"
@@ -20,6 +19,8 @@
 
 namespace content {
 
+class PrefetchKey;
+class PrefetchService;
 class PreloadingAttemptImpl;
 
 // Defines predictors confusion matrix enums used by UMA records. Entries should
@@ -61,7 +62,7 @@ class CONTENT_EXPORT PreloadingDataImpl
   // enabled.
   static PreloadingURLMatchCallback GetPrefetchServiceMatcher(
       PrefetchService& prefetch_service,
-      const PrefetchContainer::Key& predicted);
+      const PrefetchKey& predicted);
 
   // Disallow copy and assign.
   PreloadingDataImpl(const PreloadingDataImpl& other) = delete;

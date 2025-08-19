@@ -5,7 +5,6 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 
 #include <memory>
-#include <variant>
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -52,7 +51,6 @@
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -262,7 +260,7 @@ PrefetchContainer::PrefetchContainer(
               PrefetchRendererInitiatorInfo(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
-          PrefetchContainer::Key(referring_document_token, url),
+          PrefetchKey(referring_document_token, url),
           referrer,
           referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
           std::move(preload_pipeline_info),
@@ -298,9 +296,7 @@ PrefetchContainer::PrefetchContainer(
               referring_origin,
               /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
-          PrefetchContainer::Key(
-              std::optional<blink::DocumentToken>(std::nullopt),
-              url),
+          PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
           referrer,
           referring_web_contents.GetBrowserContext()->GetWeakPtr(),
           std::move(preload_pipeline_info),
@@ -338,9 +334,7 @@ PrefetchContainer::PrefetchContainer(
               referring_origin,
               /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
-          PrefetchContainer::Key(
-              std::optional<blink::DocumentToken>(std::nullopt),
-              url),
+          PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
           referrer,
           browser_context->GetWeakPtr(),
           PreloadPipelineInfo::Create(
@@ -357,7 +351,7 @@ PrefetchContainer::PrefetchContainer(
 
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
-    const PrefetchContainer::Key& key,
+    const PrefetchKey& key,
     const blink::mojom::Referrer& referrer,
     base::WeakPtr<BrowserContext> browser_context,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
@@ -457,35 +451,6 @@ void PrefetchContainer::OnWillBeDestroyed() {
     observer.OnWillBeDestroyed(*this);
   }
 }
-
-PrefetchContainer::Key::Key(
-    std::optional<blink::DocumentToken> referring_document_token,
-    GURL url)
-    : referring_document_token_or_nik_(std::move(referring_document_token)),
-      url_(std::move(url)) {
-  CHECK(!PrefetchNIKScopeEnabled());
-}
-
-PrefetchContainer::Key::Key(
-    net::NetworkIsolationKey referring_network_isolation_key,
-    GURL url)
-    : referring_document_token_or_nik_(
-          std::move(referring_network_isolation_key)),
-      url_(std::move(url)) {
-  CHECK(PrefetchNIKScopeEnabled());
-}
-
-PrefetchContainer::Key::~Key() = default;
-
-PrefetchContainer::Key::Key(PrefetchContainer::Key&& other) = default;
-
-PrefetchContainer::Key& PrefetchContainer::Key::operator=(
-    PrefetchContainer::Key&& other) = default;
-
-PrefetchContainer::Key::Key(const PrefetchContainer::Key& other) = default;
-
-PrefetchContainer::Key& PrefetchContainer::Key::operator=(
-    const PrefetchContainer::Key& other) = default;
 
 PrefetchServingHandle PrefetchContainer::CreateServingHandle() {
   return PrefetchServingHandle(GetWeakPtr(), 0);
@@ -1572,22 +1537,6 @@ std::ostream& operator<<(std::ostream& ostream,
                          const PrefetchContainer& prefetch_container) {
   return ostream << "PrefetchContainer[" << &prefetch_container
                  << ", Key=" << prefetch_container.key() << "]";
-}
-
-std::ostream& operator<<(std::ostream& ostream,
-                         const PrefetchContainer::Key& prefetch_key) {
-  ostream << "(";
-  if (const auto* token = std::get_if<std::optional<blink::DocumentToken>>(
-          &prefetch_key.referring_document_token_or_nik_)) {
-    token->has_value() ? ostream << token->value()
-                       : ostream << "(empty document token)";
-  } else {
-    ostream << std::get<net::NetworkIsolationKey>(
-                   prefetch_key.referring_document_token_or_nik_)
-                   .ToDebugString();
-  }
-  ostream << ", " << prefetch_key.url() << ")";
-  return ostream;
 }
 
 std::ostream& operator<<(std::ostream& ostream,

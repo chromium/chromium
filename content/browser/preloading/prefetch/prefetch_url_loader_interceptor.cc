@@ -180,23 +180,22 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
   auto callback = base::BindOnce(&OnGotPrefetchToServe, frame_tree_node_id_,
                                  tentative_resource_request_url,
                                  std::move(get_prefetch_callback));
-  auto key = PrefetchContainer::Key(initiator_document_token_,
-                                    tentative_resource_request_url);
+  auto key =
+      PrefetchKey(initiator_document_token_, tentative_resource_request_url);
 
-    const bool is_nav_prerender = [&]() -> bool {
-      auto* frame_tree_node =
-          FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
-      if (!frame_tree_node) {
-        return false;
-      }
+  const bool is_nav_prerender = [&]() -> bool {
+    auto* frame_tree_node =
+        FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+    if (!frame_tree_node) {
+      return false;
+    }
 
-      return frame_tree_node->frame_tree().is_prerendering();
-    }();
+    return frame_tree_node->frame_tree().is_prerendering();
+  }();
 
-    PrefetchMatchResolver::FindPrefetch(
-        std::move(key), expected_service_worker_state_, is_nav_prerender,
-        *prefetch_service, serving_page_metrics_container_,
-        std::move(callback));
+  PrefetchMatchResolver::FindPrefetch(
+      std::move(key), expected_service_worker_state_, is_nav_prerender,
+      *prefetch_service, serving_page_metrics_container_, std::move(callback));
 }
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(

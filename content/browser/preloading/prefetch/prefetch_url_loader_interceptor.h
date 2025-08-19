@@ -90,7 +90,7 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
 
   // Corresponds to the ID of "navigable's active document" used for "finding a
   // matching prefetch record" in the spec. This is used as a part of
-  // `PrefetchContainer::Key` to make prefetches per-Document.
+  // `PrefetchKey` to make prefetches per-Document.
   // https://wicg.github.io/nav-speculation/prefetch.html
   const std::optional<blink::DocumentToken> initiator_document_token_;
 

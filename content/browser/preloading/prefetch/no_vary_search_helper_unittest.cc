@@ -74,9 +74,8 @@ class NoVarySearchHelperTester final {
 
   PrefetchContainer* MatchUrl(const GURL& url) {
     if (use_prefetches_by_key_) {
-      return no_vary_search::MatchUrl(
-                 PrefetchContainer::Key(document_token_, url),
-                 prefetches_by_key_)
+      return no_vary_search::MatchUrl(PrefetchKey(document_token_, url),
+                                      prefetches_by_key_)
           .get();
     } else {
       return no_vary_search::MatchUrl(url, prefetches_).get();
@@ -87,7 +86,7 @@ class NoVarySearchHelperTester final {
   GetAllForUrlWithoutRefAndQueryForTesting(const GURL& url) {
     if (use_prefetches_by_key_) {
       return no_vary_search::GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(document_token_, url), prefetches_by_key_);
+          PrefetchKey(document_token_, url), prefetches_by_key_);
     } else {
       return no_vary_search::GetAllForUrlWithoutRefAndQueryForTesting(
           url, prefetches_);
@@ -133,8 +132,7 @@ class NoVarySearchHelperTester final {
   // `document_token_` < `next_document_token_`.
   const blink::DocumentToken prev_document_token_;
   const blink::DocumentToken next_document_token_;
-  std::map<PrefetchContainer::Key, base::WeakPtr<PrefetchContainer>>
-      prefetches_by_key_;
+  std::map<PrefetchKey, base::WeakPtr<PrefetchContainer>> prefetches_by_key_;
 };
 
 // bool `GetParam()` indicates whether `MatchUrl` should operate on

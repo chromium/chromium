@@ -1521,8 +1521,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
       fenced_frame_rfh->GetFrameTreeNodeId());
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(fenced_frame_rfh->GetDocumentToken(),
-                                 prefetch_url));
+          PrefetchKey(fenced_frame_rfh->GetDocumentToken(), prefetch_url));
   EXPECT_EQ(prefetches.size(), 1u);
 
   // Script speculationrules prefetch is not started in fenced frame. This is

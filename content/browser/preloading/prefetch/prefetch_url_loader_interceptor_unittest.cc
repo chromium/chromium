@@ -386,7 +386,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
     PreloadingURLMatchCallback matcher =
         PreloadingDataImpl::GetPrefetchServiceMatcher(
             *GetPrefetchService(),
-            PrefetchContainer::Key(referring_document_token, prefetch_url));
+            PrefetchKey(referring_document_token, prefetch_url));
 
     auto* attempt = static_cast<PreloadingAttemptImpl*>(
         preloading_data->AddPreloadingAttempt(
@@ -751,7 +751,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 // Tests that the navigation shouldn't be intercepted if there is no matching
 // prefetch. Currently, a referring DocumentToken (note that thiswill be nullopt
 // when browser-initiated prefetch) and a prefetch url (which compose
-// PrefetchContainer::Key) will be taken into account when matching.
+// PrefetchKey) will be taken into account when matching.
 TEST_F(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(DoNotInterceptNavigationNoMatching)) {
   const GURL kTestUrl("https://example.com");

@@ -23,7 +23,7 @@ void JNI_PrefetchTestUtil_WaitUntilPrefetchResponseCompleted(
           [](const GURL& url,
              const base::android::ScopedJavaGlobalRef<jobject>& callback,
              base::WeakPtr<PrefetchContainer> container) {
-            PrefetchContainer::Key key{std::nullopt, url};
+            PrefetchKey key{std::nullopt, url};
             if (key == container->key()) {
               base::android::RunRunnableAndroid(callback);
             }

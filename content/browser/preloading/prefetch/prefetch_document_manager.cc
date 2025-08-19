@@ -255,7 +255,7 @@ void PrefetchDocumentManager::PrefetchUrl(
       GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type());
   PreloadingURLMatchCallback matcher =
       PreloadingDataImpl::GetPrefetchServiceMatcher(
-          *prefetch_service, PrefetchContainer::Key(document_token_, url));
+          *prefetch_service, PrefetchKey(document_token_, url));
 
   auto* attempt =
       static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
@@ -292,7 +292,7 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
 
   return prefetch_service->IsPrefetchAttemptFailedOrDiscardedInternal(
       base::PassKey<PrefetchDocumentManager>(),
-      PrefetchContainer::Key(document_token_, url));
+      PrefetchKey(document_token_, url));
 }
 
 // static

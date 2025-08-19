@@ -1603,6 +1603,8 @@ source_set("browser") {
     "preloading/prefetch/prefetch_features.h",
     "preloading/prefetch/prefetch_handle_impl.cc",
     "preloading/prefetch/prefetch_handle_impl.h",
+    "preloading/prefetch/prefetch_key.cc",
+    "preloading/prefetch/prefetch_key.h",
     "preloading/prefetch/prefetch_match_resolver.cc",
     "preloading/prefetch/prefetch_match_resolver.h",
     "preloading/prefetch/prefetch_metrics.cc",

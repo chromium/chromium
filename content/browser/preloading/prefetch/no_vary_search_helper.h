@@ -47,18 +47,15 @@ class PrefetchKeyTraits<GURL> {
 };
 
 template <>
-class PrefetchKeyTraits<PrefetchContainer::Key> {
+class PrefetchKeyTraits<PrefetchKey> {
  public:
-  static const GURL& GetURL(const PrefetchContainer::Key& key) {
-    return key.url();
-  }
-  static PrefetchContainer::Key KeyWithNewURL(
-      const PrefetchContainer::Key& old_key,
-      const GURL& new_url) {
+  static const GURL& GetURL(const PrefetchKey& key) { return key.url(); }
+  static PrefetchKey KeyWithNewURL(const PrefetchKey& old_key,
+                                   const GURL& new_url) {
     return old_key.WithNewUrl(new_url);
   }
-  static bool NonUrlPartIsSame(const PrefetchContainer::Key& key1,
-                               const PrefetchContainer::Key& key2) {
+  static bool NonUrlPartIsSame(const PrefetchKey& key1,
+                               const PrefetchKey& key2) {
     return key1.NonUrlPartIsSame(key2);
   }
 };

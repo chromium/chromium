@@ -143,7 +143,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // only for the existing `PrefetchDocumentManager` use case for now.
   bool IsPrefetchAttemptFailedOrDiscardedInternal(
       base::PassKey<PrefetchDocumentManager>,
-      PrefetchContainer::Key key) const;
+      PrefetchKey key) const;
 
   // An interface to notify `PrefetchService` that the given `PrefetchContainer`
   // is no longer needed from outside of the service.
@@ -185,11 +185,9 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // Set an ineligibility to make eligibility check always fail in tests.
   static void SetForceIneligibilityForTesting(PreloadingEligibility);
 
-  base::WeakPtr<PrefetchContainer> MatchUrl(
-      const PrefetchContainer::Key& key) const;
+  base::WeakPtr<PrefetchContainer> MatchUrl(const PrefetchKey& key) const;
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
-  GetAllForUrlWithoutRefAndQueryForTesting(
-      const PrefetchContainer::Key& key) const;
+  GetAllForUrlWithoutRefAndQueryForTesting(const PrefetchKey& key) const;
 
   // Evicts completed and in-progress prefetches as part of
   // Clear-Site-Data header and Clearing Browser Data if the prefetch's
@@ -210,8 +208,8 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // `PrefetchServableState` in the `flat_map` at the beginning of
   // matching process and refer to it.
   std::pair<std::vector<PrefetchContainer*>,
-            base::flat_map<PrefetchContainer::Key, PrefetchServableState>>
-  CollectMatchCandidates(const PrefetchContainer::Key& key,
+            base::flat_map<PrefetchKey, PrefetchServableState>>
+  CollectMatchCandidates(const PrefetchKey& key,
                          bool is_nav_prerender,
                          base::WeakPtr<PrefetchServingPageMetricsContainer>
                              serving_page_metrics_container);
@@ -381,7 +379,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // the cookie copy process for the given prefetch if needed, and updates its
   // state.
   HandlePrefetchContainerResult ReturnPrefetchToServe(
-      const PrefetchContainer::Key& key,
+      const PrefetchKey& key,
       const GURL& prefetch_url,
       PrefetchServingHandle serving_handle,
       PrefetchMatchResolver& prefetch_match_resolver,
@@ -398,14 +396,14 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // |GetPrefetchToServe| again in order to enforce that prefetches that are
   // served are served from |prefetches_ready_to_serve_|.
   void OnMaybeDeterminedHead(
-      const PrefetchContainer::Key& key,
+      const PrefetchKey& key,
       base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver,
       PrefetchContainer& prefetch_container);
 
   // Helper function for |GetPrefetchToServe| which handles a
   // |prefetch_container| that could potentially be served to the navigation.
   HandlePrefetchContainerResult HandlePrefetchContainerToServe(
-      const PrefetchContainer::Key& key,
+      const PrefetchKey& key,
       PrefetchContainer& prefetch_container,
       PrefetchMatchResolver& prefetch_match_resolver);
 
@@ -452,7 +450,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // Wrappers for `owned_prefetches_`. Use these wrappers and do not directly
   // access `owned_prefetches_`, to avoid accidentally destructing existing
   // `PrefetchContainer` e.g. by writing to `owned_prefetches_[key]`.
-  const std::map<PrefetchContainer::Key, std::unique_ptr<PrefetchContainer>>&
+  const std::map<PrefetchKey, std::unique_ptr<PrefetchContainer>>&
   owned_prefetches() const {
     return owned_prefetches_;
   }
@@ -483,7 +481,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // It is used only if `!UsePrefetchScheduler()`.
   //
   // TODO(crbug.com/406754449): Remove it.
-  std::optional<PrefetchContainer::Key> active_prefetch_;
+  std::optional<PrefetchKey> active_prefetch_;
 
   // Prefetches owned by `this`. All `PrefetchContainer`s added by
   // `AddPrefetchContainer*` will be stored here.
@@ -500,8 +498,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // Note that `PrefetchContainer` not added to `owned_prefetches_` can be
   // destroyed elsewhere even if it has a relevant `PrefetchService` (e.g. in
   // `PrefetchContainer::MigrateNewlyAdded()`).
-  std::map<PrefetchContainer::Key, std::unique_ptr<PrefetchContainer>>
-      owned_prefetches_;
+  std::map<PrefetchKey, std::unique_ptr<PrefetchContainer>> owned_prefetches_;
 
 // Protects against Prefetch() being called recursively.
 #if DCHECK_IS_ON()

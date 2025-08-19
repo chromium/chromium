@@ -553,7 +553,7 @@ bool PrefetchService::IsPrefetchDuplicate(
 
 bool PrefetchService::IsPrefetchAttemptFailedOrDiscardedInternal(
     base::PassKey<PrefetchDocumentManager>,
-    PrefetchContainer::Key key) const {
+    PrefetchKey key) const {
   auto it = owned_prefetches().find(key);
   if (it == owned_prefetches().end() || !it->second) {
     return true;
@@ -1975,9 +1975,9 @@ void PrefetchService::DumpPrefetchesForDebug() const {
 }
 
 std::pair<std::vector<PrefetchContainer*>,
-          base::flat_map<PrefetchContainer::Key, PrefetchServableState>>
+          base::flat_map<PrefetchKey, PrefetchServableState>>
 PrefetchService::CollectMatchCandidates(
-    const PrefetchContainer::Key& key,
+    const PrefetchKey& key,
     bool is_nav_prerender,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container) {
@@ -1987,13 +1987,13 @@ PrefetchService::CollectMatchCandidates(
 }
 
 base::WeakPtr<PrefetchContainer> PrefetchService::MatchUrl(
-    const PrefetchContainer::Key& key) const {
+    const PrefetchKey& key) const {
   return no_vary_search::MatchUrl(key, owned_prefetches());
 }
 
 std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
 PrefetchService::GetAllForUrlWithoutRefAndQueryForTesting(
-    const PrefetchContainer::Key& key) const {
+    const PrefetchKey& key) const {
   return no_vary_search::GetAllForUrlWithoutRefAndQueryForTesting(
       key, owned_prefetches());
 }

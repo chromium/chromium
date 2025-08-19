@@ -637,7 +637,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   // Verify a prefetch attempt is pending (eligible but not started yet, to
   // ensure prefetches are sequential);
   void VerifyPrefetchAttemptIsPending(const GURL& url) {
-    PrefetchContainer::Key prefetch_key(MainDocumentToken(), url);
+    PrefetchKey prefetch_key(MainDocumentToken(), url);
     base::WeakPtr<PrefetchContainer> prefetch_container =
         BrowserContextImpl::From(browser_context())
             ->GetPrefetchService()
@@ -930,12 +930,12 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         base::Unretained(&request_handler_keep_alive_));
     PrefetchService* prefetch_service =
         BrowserContextImpl::From(browser_context())->GetPrefetchService();
-      auto key = PrefetchContainer::Key(initiator_document_token, url);
-      PrefetchMatchResolver::FindPrefetch(
-          std::move(key), PrefetchServiceWorkerState::kDisallowed,
-          /*is_nav_prerender=*/false, *prefetch_service,
-          GetServingPageMetricsContainerForMostRecentNavigation(),
-          std::move(callback));
+    auto key = PrefetchKey(initiator_document_token, url);
+    PrefetchMatchResolver::FindPrefetch(
+        std::move(key), PrefetchServiceWorkerState::kDisallowed,
+        /*is_nav_prerender=*/false, *prefetch_service,
+        GetServingPageMetricsContainerForMostRecentNavigation(),
+        std::move(callback));
   }
 
   PrefetchServingHandle GetPrefetchToServe(
@@ -1017,7 +1017,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     }();
     PrefetchService* prefetch_service =
         BrowserContextImpl::From(browser_context())->GetPrefetchService();
-    auto key = PrefetchContainer::Key(initiator_document_token, url);
+    auto key = PrefetchKey(initiator_document_token, url);
     PrefetchMatchResolver::FindPrefetch(
         std::move(key), PrefetchServiceWorkerState::kDisallowed,
         is_nav_prerender, *prefetch_service,
@@ -5773,10 +5773,10 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionForEligibleButNotStartedPrefetch) {
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2;
   std::tie(std::ignore, prefetch_container1) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(MainDocumentToken(), url_1))[0];
+          PrefetchKey(MainDocumentToken(), url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(MainDocumentToken(), url_2))[0];
+          PrefetchKey(MainDocumentToken(), url_2))[0];
 
   // `candidate_1` should be started, while `candidate_2` stays in a queue.
   ASSERT_EQ(prefetch_container1->GetLoadState(),
@@ -5871,7 +5871,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringEligiblityCheck) {
   base::WeakPtr<PrefetchContainer> prefetch_container1;
   std::tie(std::ignore, prefetch_container1) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(MainDocumentToken(), url_1))[0];
+          PrefetchKey(MainDocumentToken(), url_1))[0];
 
   // `candidate_1` should be on a way of eligibility check.
   ASSERT_EQ(prefetch_container1->GetLoadState(),
@@ -5946,7 +5946,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionWhenHoldback) {
   base::WeakPtr<PrefetchContainer> prefetch_container1;
   std::tie(std::ignore, prefetch_container1) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(MainDocumentToken(), url_1))[0];
+          PrefetchKey(MainDocumentToken(), url_1))[0];
   task_environment()->RunUntilIdle();
 
   // `candidate_1` should be failed as heldback
@@ -6538,10 +6538,10 @@ TEST_P(PrefetchServiceTest, PrefetchQueueNotStuckWhenResettingRunningPrefetch) {
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2;
   std::tie(std::ignore, prefetch_container1) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_1))[0];
+          PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_2))[0];
+          PrefetchKey(std::nullopt, url_2))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
             PrefetchContainer::LoadState::kStarted);
@@ -7157,8 +7157,7 @@ TEST_P(
   base::test::TestFuture<void> disconnect_future;
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(MainDocumentToken(),
-                                 GURL("https://example.com")));
+          PrefetchKey(MainDocumentToken(), GURL("https://example.com")));
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
   prefetch_container->GetStreamingURLLoader()->SetOnDeletionScheduledForTests(
@@ -7255,8 +7254,7 @@ TEST_P(
   base::test::TestFuture<void> disconnect_future;
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(MainDocumentToken(),
-                                 GURL("https://example.com")));
+          PrefetchKey(MainDocumentToken(), GURL("https://example.com")));
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
   prefetch_container->GetStreamingURLLoader()->SetOnDeletionScheduledForTests(
@@ -7792,8 +7790,7 @@ class PrefetchServiceAddPrefetchContainerTest
         PreloadingData::GetOrCreateForWebContents(web_contents());
     PreloadingURLMatchCallback matcher =
         PreloadingDataImpl::GetPrefetchServiceMatcher(
-            GetPrefetchService(),
-            PrefetchContainer::Key(document_token, prefetch_url));
+            GetPrefetchService(), PrefetchKey(document_token, prefetch_url));
 
     auto* attempt = static_cast<PreloadingAttemptImpl*>(
         preloading_data->AddPreloadingAttempt(
@@ -7855,7 +7852,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest, ReplacesOldWithNewByDefault) {
 
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
       GetPrefetchService().GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(document_token, GURL("https://example.com")));
+          PrefetchKey(document_token, GURL("https://example.com")));
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
 
@@ -7886,7 +7883,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
 
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
       GetPrefetchService().GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(document_token, GURL("https://example.com")));
+          PrefetchKey(document_token, GURL("https://example.com")));
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
 
@@ -7919,7 +7916,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
 
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
       GetPrefetchService().GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(document_token, GURL("https://example.com")));
+          PrefetchKey(document_token, GURL("https://example.com")));
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
 
@@ -7951,8 +7948,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
   {
     std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
         GetPrefetchService().GetAllForUrlWithoutRefAndQueryForTesting(
-            PrefetchContainer::Key(document_token,
-                                   GURL("https://example.com")));
+            PrefetchKey(document_token, GURL("https://example.com")));
     ASSERT_EQ(1u, prefetches.size());
     base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
 
@@ -7973,8 +7969,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
   {
     std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
         GetPrefetchService().GetAllForUrlWithoutRefAndQueryForTesting(
-            PrefetchContainer::Key(document_token,
-                                   GURL("https://example.com")));
+            PrefetchKey(document_token, GURL("https://example.com")));
     ASSERT_EQ(1u, prefetches.size());
     base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
 
@@ -8024,13 +8019,13 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_RunsTwoConcurrentPrefetches) {
       prefetch_container3;
   std::tie(std::ignore, prefetch_container1) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_1))[0];
+          PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_2))[0];
+          PrefetchKey(std::nullopt, url_2))[0];
   std::tie(std::ignore, prefetch_container3) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_3))[0];
+          PrefetchKey(std::nullopt, url_3))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
             PrefetchContainer::LoadState::kStarted);
@@ -8104,13 +8099,13 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Prioritize) {
       prefetch_container3;
   std::tie(std::ignore, prefetch_container1) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_1))[0];
+          PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_2))[0];
+          PrefetchKey(std::nullopt, url_2))[0];
   std::tie(std::ignore, prefetch_container3) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_3))[0];
+          PrefetchKey(std::nullopt, url_3))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
             PrefetchContainer::LoadState::kStarted);
@@ -8180,10 +8175,10 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Prioritize_Async) {
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2;
   std::tie(std::ignore, prefetch_container1) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_1))[0];
+          PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_2))[0];
+          PrefetchKey(std::nullopt, url_2))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
             PrefetchContainer::LoadState::kEligible);
@@ -8247,10 +8242,10 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Burst) {
       prefetch_container3, prefetch_container4;
   std::tie(std::ignore, prefetch_container1) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_1))[0];
+          PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_2))[0];
+          PrefetchKey(std::nullopt, url_2))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
             PrefetchContainer::LoadState::kStarted);
@@ -8265,10 +8260,10 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Burst) {
 
   std::tie(std::ignore, prefetch_container3) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_3))[0];
+          PrefetchKey(std::nullopt, url_3))[0];
   std::tie(std::ignore, prefetch_container4) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_4))[0];
+          PrefetchKey(std::nullopt, url_4))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
             PrefetchContainer::LoadState::kStarted);
@@ -8356,16 +8351,16 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_BurstTakesPriority) {
       prefetch_container3, prefetch_container4;
   std::tie(std::ignore, prefetch_container1) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_1))[0];
+          PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_2))[0];
+          PrefetchKey(std::nullopt, url_2))[0];
   std::tie(std::ignore, prefetch_container3) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_3))[0];
+          PrefetchKey(std::nullopt, url_3))[0];
   std::tie(std::ignore, prefetch_container4) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_4))[0];
+          PrefetchKey(std::nullopt, url_4))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
             PrefetchContainer::LoadState::kStarted);
@@ -8461,16 +8456,16 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_BurstTakesPriority_Async) {
       prefetch_container3, prefetch_container4;
   std::tie(std::ignore, prefetch_container1) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_1))[0];
+          PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_2))[0];
+          PrefetchKey(std::nullopt, url_2))[0];
   std::tie(std::ignore, prefetch_container3) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_3))[0];
+          PrefetchKey(std::nullopt, url_3))[0];
   std::tie(std::ignore, prefetch_container4) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_4))[0];
+          PrefetchKey(std::nullopt, url_4))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
             PrefetchContainer::LoadState::kEligible);
