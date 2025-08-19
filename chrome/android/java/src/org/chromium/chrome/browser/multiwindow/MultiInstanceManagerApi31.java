@@ -1074,6 +1074,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         MultiWindowUtils.writeLastAccessedTime(index);
     }
 
+    @VisibleForTesting
+    static String profileTypeKey(int index) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(String.valueOf(index));
+    }
+
     /**
      * @return The window IDs of the currently running ChromeTabbedActivity's. It is possible to
      *     have more number of saved instances than the number of currently running activities (for
@@ -1297,6 +1302,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         prefs.removeKey(incognitoTabCountKey(index));
         prefs.removeKey(incognitoSelectedKey(index));
         prefs.removeKey(lastAccessedTimeKey(index));
+        prefs.removeKey(profileTypeKey(index));
     }
 
     @Override

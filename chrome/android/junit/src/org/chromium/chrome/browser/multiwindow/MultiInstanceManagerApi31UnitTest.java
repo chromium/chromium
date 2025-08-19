@@ -1034,6 +1034,8 @@ public class MultiInstanceManagerApi31UnitTest {
         ChromeSharedPreferences.getInstance().writeBoolean(incognitoSelectedKey, false);
         String lastAccessedTimeKey = MultiInstanceManagerApi31.lastAccessedTimeKey(index);
         ChromeSharedPreferences.getInstance().writeLong(lastAccessedTimeKey, 1);
+        String profileTypeKey = MultiInstanceManagerApi31.profileTypeKey(index);
+        ChromeSharedPreferences.getInstance().writeInt(profileTypeKey, 1);
 
         MultiInstanceManagerApi31.removeInstanceInfo(index);
         assertFalse(
@@ -1057,6 +1059,9 @@ public class MultiInstanceManagerApi31UnitTest {
         assertFalse(
                 "Shared preference key should be removed.",
                 ChromeSharedPreferences.getInstance().contains(lastAccessedTimeKey));
+        assertFalse(
+                "Shared preference key should be removed.",
+                ChromeSharedPreferences.getInstance().contains(profileTypeKey));
     }
 
     private void triggerSelectTab(TabModelObserver tabModelObserver, Tab tab) {

@@ -441,6 +441,8 @@ public final class ChromePreferenceKeys {
             "Chrome.MultiWindow.MaxInstanceLimit";
     public static final String MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED =
             "Chrome.MultiWindow.InstanceLimitDowngradeTriggered";
+    public static final KeyPrefix MULTI_INSTANCE_PROFILE_TYPE =
+            new KeyPrefix("Chrome.MultiInstance.ProfileType.*");
     public static final String MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN =
             "Chrome.MultiWindow.RestorationMessageShown";
 
@@ -1104,6 +1106,7 @@ public final class ChromePreferenceKeys {
                 MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM,
                 MULTI_INSTANCE_MAX_INSTANCE_LIMIT,
                 MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED,
+                MULTI_INSTANCE_PROFILE_TYPE.pattern(),
                 MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
                 MULTI_INSTANCE_IS_INCOGNITO_SELECTED.pattern(),
                 MULTI_INSTANCE_INCOGNITO_TAB_COUNT.pattern(),

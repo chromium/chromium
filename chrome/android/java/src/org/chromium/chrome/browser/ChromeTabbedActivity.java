@@ -444,12 +444,14 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     /** The type of tab/profile the activity supports. */
     @IntDef({
+        SupportedProfileType.UNSET,
         SupportedProfileType.REGULAR,
         SupportedProfileType.OFF_THE_RECORD,
         SupportedProfileType.MIXED
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SupportedProfileType {
+        int UNSET = 0;
         int REGULAR = 1;
         int OFF_THE_RECORD = 2;
         int MIXED = 3;
@@ -628,7 +630,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     LazyOneshotSupplier.fromSupplier(this::createXrSceneCoreSessionManager);
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
     private XrSceneCoreSessionInitializer mXrSceneCoreSessionInitializer;
-    private @SupportedProfileType int mSupportedProfileType;
+    private @SupportedProfileType int mSupportedProfileType = SupportedProfileType.UNSET;
 
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
@@ -670,22 +672,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 () -> {
                     minimizeAppAndCloseTabOnBackPress(getActivityTab());
                 });
-
-        Intent intent = getIntent();
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            boolean hasIncognitoExtra =
-                    intent != null
-                            && (intent.getBooleanExtra(
-                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
-                                    || intent.getBooleanExtra(
-                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
-            mSupportedProfileType =
-                    hasIncognitoExtra
-                            ? SupportedProfileType.OFF_THE_RECORD
-                            : SupportedProfileType.REGULAR;
-        } else {
-            mSupportedProfileType = SupportedProfileType.MIXED;
-        }
     }
 
     @Override
@@ -3207,6 +3193,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     protected void createTabModels() {
         assert mTabModelSelector == null;
         assert mWindowId != INVALID_WINDOW_ID;
+        assert mSupportedProfileType != SupportedProfileType.UNSET;
 
         Bundle savedInstanceState = getSavedInstanceState();
 
@@ -3295,6 +3282,17 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     }
                 };
         if (startIncognito) mTabModelSelector.selectModel(true);
+        // TODO(crbug.com/439670064): Only preserve regular and incognito type until we finalize the
+        // upgrade path.
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()
+                && (mSupportedProfileType == SupportedProfileType.REGULAR
+                        || mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD)) {
+            ChromeSharedPreferences.getInstance()
+                    .writeInt(
+                            ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
+                                    String.valueOf(mWindowId)),
+                            mSupportedProfileType);
+        }
     }
 
     TabModelSelectorObserver getTabModelSelectorObserverForTesting() {
@@ -3530,6 +3528,35 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     TAG_MULTI_INSTANCE,
                     "Window ID allocated: " + mWindowId + ", instance-task map: " + taskMap);
         }
+
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            boolean hasIncognitoExtra =
+                    intent != null
+                            && (intent.getBooleanExtra(
+                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                                    || intent.getBooleanExtra(
+                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
+            mSupportedProfileType =
+                    hasIncognitoExtra
+                            ? SupportedProfileType.OFF_THE_RECORD
+                            : SupportedProfileType.REGULAR;
+
+            int profileTypeFromPreferences =
+                    ChromeSharedPreferences.getInstance()
+                            .readInt(
+                                    ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
+                                            String.valueOf(mWindowId)),
+                                    SupportedProfileType.UNSET);
+            if (profileTypeFromPreferences != SupportedProfileType.UNSET) {
+                // Intent and ChromeSharedPreferences should not conflict. Intent should only
+                // specify SupportedProfileType for the new window, which will not have value in
+                // ChromeSharedPreferences.
+                mSupportedProfileType = profileTypeFromPreferences;
+            }
+        } else {
+            mSupportedProfileType = SupportedProfileType.MIXED;
+        }
+        assert mSupportedProfileType != SupportedProfileType.UNSET;
 
         if (mMultiInstanceManager != null
                 && !mMultiInstanceManager.isStartedUpCorrectly(ApplicationStatus.getTaskId(this))) {
