@@ -99,7 +99,10 @@ def prep_errorprone_run(enable_annotator, parser):
         '-XepOpt:NullAway:OnlyNullMarked',
         '-XepOpt:NullAway:CustomContractAnnotations=' +
         ','.join(contract_annotations),
-        '-XepOpt:NullAway:CastToNonNullMethod=org.chromium.build.NullUtil.assumeNonNull',
+
+        # TODO(agrieve): Re-enable once we sort out nullability of
+        #     ObservableSuppliers. https://crbug.com/430320400
+        #'-XepOpt:NullAway:CastToNonNullMethod=org.chromium.build.NullUtil.assumeNonNull',
         '-XepOpt:NullAway:AssertsEnabled=true',
         '-XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true',
         '-XepOpt:Nullaway:AcknowledgeAndroidRecent=true',
