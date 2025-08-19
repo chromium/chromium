@@ -53,8 +53,7 @@ namespace blink {
 const char* const Partitions::kAllocatedObjectPoolName =
     "partition_alloc/allocated_objects";
 
-BASE_FEATURE(kBlinkUseLargeEmptySlotSpanRingForBufferRoot,
-             "BlinkUseLargeEmptySlotSpanRingForBufferRoot",
+BASE_FEATURE(BlinkUseLargeEmptySlotSpanRingForBufferRoot,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else

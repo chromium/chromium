@@ -39,9 +39,7 @@ namespace blink {
 namespace {
 
 // Kill-switch for HW AV1 decoding.
-BASE_FEATURE(kWebRtcHwAv1Decoding,
-             "WebRtcHwAv1Decoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(WebRtcHwAv1Decoding, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The default fps and default size are used when querying gpu_factories_ to see
 // if a codec profile is supported. 1280x720 at 30 fps corresponds to level 3.1

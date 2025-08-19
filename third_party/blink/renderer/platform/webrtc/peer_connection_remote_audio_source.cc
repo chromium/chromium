@@ -20,8 +20,7 @@
 
 namespace blink {
 
-BASE_FEATURE(kPropagateEnabledEventForWebRtcAudioTrack,
-             "PropagateEnabledEventForWebRtcAudioTrack",
+BASE_FEATURE(PropagateEnabledEventForWebRtcAudioTrack,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {

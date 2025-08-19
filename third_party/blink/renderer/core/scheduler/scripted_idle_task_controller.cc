@@ -84,8 +84,7 @@ void UpdateMaxIdleTasksCrashKey(size_t num_pending_idle_tasks) {
 
 }  // namespace
 
-BASE_FEATURE(kRemoveCancelledScriptedIdleTasks,
-             "RemoveCancelledScriptedIdleTasks",
+BASE_FEATURE(RemoveCancelledScriptedIdleTasks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 IdleTask::~IdleTask() {

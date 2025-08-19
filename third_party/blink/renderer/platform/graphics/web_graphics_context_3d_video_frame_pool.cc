@@ -35,8 +35,7 @@ namespace blink {
 
 namespace {
 
-BASE_FEATURE(kUseCopyToGpuMemoryBufferAsync,
-             "UseCopyToGpuMemoryBufferAsync",
+BASE_FEATURE(UseCopyToGpuMemoryBufferAsync,
 #if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -338,8 +337,7 @@ void ApplyMetadataAndRunCallback(
   std::move(orig_callback).Run(std::move(wrapped));
 }
 
-BASE_FEATURE(kGpuMemoryBufferReadbackFromTexture,
-             "GpuMemoryBufferReadbackFromTexture",
+BASE_FEATURE(GpuMemoryBufferReadbackFromTexture,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT

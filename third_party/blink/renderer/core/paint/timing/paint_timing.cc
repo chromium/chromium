@@ -68,8 +68,7 @@ struct PendingPaintTimingRecord {
 
 // When enabled, `PaintTiming::MarkPaintTimingInternal()` is only called from
 // `PaintTiming::NotifyPaintFinished()`.
-BASE_FEATURE(kMarkPaintTimingInternalOnlyOnFinish,
-             "MarkPaintTimingInternalOnlyOnFinish",
+BASE_FEATURE(MarkPaintTimingInternalOnlyOnFinish,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

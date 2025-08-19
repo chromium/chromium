@@ -33,9 +33,7 @@ namespace {
 // When enabled, the host timezone id is evaluated only when needed.
 // TODO(crbug.com/40287434): Cleanup the feature after running the experiment,
 // no later than January 2025.
-BASE_FEATURE(kLazyBlinkTimezoneInit,
-             "LazyBlinkTimezoneInit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(LazyBlinkTimezoneInit, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Notify V8 that the date/time configuration of the system might have changed.
 void NotifyTimezoneChangeToV8(v8::Isolate* isolate) {

@@ -20,8 +20,7 @@
 
 namespace blink {
 
-BASE_FEATURE(kRTCAlignReceivedEncodedVideoTransforms,
-             "RTCAlignReceivedEncodedVideoTransforms",
+BASE_FEATURE(RTCAlignReceivedEncodedVideoTransforms,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 RtpReceiverState::RtpReceiverState(

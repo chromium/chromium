@@ -85,8 +85,7 @@ namespace {
 // only on Windows but it's *compiled* on all platforms, so the feature must
 // also be defined on al platforms even though it also will be used only on
 // Windows.
-BASE_FEATURE(kUseSingleSIForLowLatencyWebGLOnWindows,
-             "UseSingleSIForLowLatencyWebGLOnWindows",
+BASE_FEATURE(UseSingleSIForLowLatencyWebGLOnWindows,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const float kResourceAdjustedRatio = 0.5;

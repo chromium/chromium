@@ -47,14 +47,11 @@ namespace {
 // other VideoFrameSubmitter living on the same thread with the same parent
 // FrameSinkId. This is used to aggregate Viz communication and substantially
 // reduce IPC traffic when many VideoFrameSubmitters are active within a frame.
-BASE_FEATURE(kUseVideoFrameSinkBundle,
-             "UseVideoFrameSinkBundle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(UseVideoFrameSinkBundle, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When VideoFrameSubmitter::ReclaimResources() is called in background,
 // trigger a clean of recycled video frames.
-BASE_FEATURE(kClearVideoFrameResourcesInBackground,
-             "ClearVideoFrameResourcesInBackground",
+BASE_FEATURE(ClearVideoFrameResourcesInBackground,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Builds a cc::FrameInfo representing a video frame, which is considered

@@ -121,8 +121,7 @@ static constexpr base::TimeDelta kDefaultStrongReferencePruneDelay =
 
 // Feature to control the duration for which a strong reference may remain
 // in the MemoryCache after its last access.
-BASE_FEATURE(kMemoryCacheChangeStrongReferencePruneDelay,
-             "MemoryCacheChangeStrongReferencePruneDelay",
+BASE_FEATURE(MemoryCacheChangeStrongReferencePruneDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Parameter defining the delay after which a strong reference is removed

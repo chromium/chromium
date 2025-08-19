@@ -33,8 +33,7 @@ namespace blink {
 
 namespace {
 
-BASE_FEATURE(kConfigurableV8CodeCacheHotHours,
-             "ConfigurableV8CodeCacheHotHours",
+BASE_FEATURE(ConfigurableV8CodeCacheHotHours,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 MIRACLE_PARAMETER_FOR_INT(GetV8CodeCacheHotHours,

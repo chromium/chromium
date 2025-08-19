@@ -24,12 +24,10 @@
 
 namespace blink {
 
-BASE_FEATURE(kBreakoutBoxPreferCaptureTimestampInVideoFrames,
-             "BreakoutBoxPreferCaptureTimestampInVideoFrames",
+BASE_FEATURE(BreakoutBoxPreferCaptureTimestampInVideoFrames,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBreakoutBoxInsertVideoCaptureTimestamp,
-             "BreakoutBoxInsertVideoCaptureTimestamp",
+BASE_FEATURE(BreakoutBoxInsertVideoCaptureTimestamp,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

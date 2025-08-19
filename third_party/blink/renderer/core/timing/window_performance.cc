@@ -342,8 +342,7 @@ MemoryInfo* WindowPerformance::memory(ScriptState* script_state) const {
 
 namespace {
 
-BASE_FEATURE(kAdjustNavigationalPrefetchTiming,
-             "AdjustNavigationalPrefetchTiming",
+BASE_FEATURE(AdjustNavigationalPrefetchTiming,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 enum class AdjustNavigationalPrefetchTimingBehavior {

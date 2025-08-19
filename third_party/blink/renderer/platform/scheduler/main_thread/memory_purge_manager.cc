@@ -24,9 +24,7 @@ namespace blink {
 
 namespace {
 
-BASE_FEATURE(kMemoryPurgeInBackground,
-             "MemoryPurgeInBackground",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(MemoryPurgeInBackground, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The delay for the first purge after a renderer is backgrounded. The value was
 // initially set to 30 minutes, but it was reduced to 1 minute because this

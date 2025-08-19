@@ -30,8 +30,7 @@
 
 namespace blink {
 
-BASE_FEATURE(kPreloadingNoSamePageFragmentAnchorTracking,
-             "PreloadingNoSamePageFragmentAnchorTracking",
+BASE_FEATURE(PreloadingNoSamePageFragmentAnchorTracking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

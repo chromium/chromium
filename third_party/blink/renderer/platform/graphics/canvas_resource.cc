@@ -63,8 +63,7 @@ namespace {
 // image backed CanvasResources so that they can be imported into WebGPU without
 // an intermediate copy. This could cause a different shared image backing type
 // to be used in the GPU process based on the OS platform.
-BASE_FEATURE(kCanvasResourceIsWebGPUCompatible,
-             "CanvasResourceIsWebGPUCompatible",
+BASE_FEATURE(CanvasResourceIsWebGPUCompatible,
 #if BUILDFLAG(IS_APPLE)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

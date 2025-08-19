@@ -27,9 +27,7 @@ namespace {
 // Enables premapping of GMBs if the consumer wants mapped frames.
 // This helps with webrtc encode time measurements reducing unnecessary
 // adaptations.
-BASE_FEATURE(kWebrtcVideoTrackSourcePremap,
-             "WebrtcVideoTrackSourcePremap",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(WebrtcVideoTrackSourcePremap, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr int kMaxPendingFrames = 5;
 

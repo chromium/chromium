@@ -75,8 +75,7 @@
 
 namespace blink {
 
-BASE_FEATURE(kEnumerateDevicesRequestAudioCapabilities,
-             "EnumerateDevicesRequestAudioCapabilities",
+BASE_FEATURE(EnumerateDevicesRequestAudioCapabilities,
 #if BUILDFLAG(IS_MAC)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else

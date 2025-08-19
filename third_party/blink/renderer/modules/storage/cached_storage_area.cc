@@ -604,9 +604,7 @@ void CachedStorageArea::MaybeApplyNonLocalMutationForKey(
 // There are 2 parameters that influence how long the delay is, `factor` and
 // `offset`. If the actual time taken is `time_to_prime` then the delay will be
 // `time_to_prime * factor + offset`.
-BASE_FEATURE(kDomStorageAblation,
-             "DomStorageAblation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(DomStorageAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(double,
                    kDomStorageAblationDelayFactor,
                    &kDomStorageAblation,

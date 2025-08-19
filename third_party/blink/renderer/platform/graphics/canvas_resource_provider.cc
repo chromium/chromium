@@ -1551,20 +1551,14 @@ bool CanvasResourceProvider::CanvasImageProvider::IsHardwareDecodeCache()
 }
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kUseCRPSIForLowLatencyOnWindows,
-             "UseCRPSIForLowLatencyOnWindows",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(UseCRPSIForLowLatencyOnWindows, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kCanvas2DAutoFlushParams,
-             "Canvas2DAutoFlushParams",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(Canvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, unused resources (ready to be recycled) are reclaimed after a
 // delay.
-BASE_FEATURE(kCanvas2DReclaimUnusedResources,
-             "Canvas2DReclaimUnusedResources",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(Canvas2DReclaimUnusedResources, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The following parameters attempt to reach a compromise between not flushing
 // too often, and not accumulating an unreasonable backlog. Flushing too

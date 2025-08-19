@@ -385,8 +385,7 @@ WebGPUSwapBufferProvider::SwapBuffer::~SwapBuffer() = default;
 
 #if BUILDFLAG(IS_CHROMEOS)
 // This feature is only used as a possible killswitch.
-BASE_FEATURE(kWebGPUSwapBufferProviderAllowScanout,
-             "WebGPUSwapBufferProviderAllowScanout",
+BASE_FEATURE(WebGPUSwapBufferProviderAllowScanout,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 

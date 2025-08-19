@@ -71,9 +71,7 @@ namespace blink {
 // data for all APIs. There are 2 parameters for each API that influence how
 // long the delay is, `factor` and `offset`. If the actual time taken is
 // `elapse` then the delay will be `elapse * factor + offset`.
-BASE_FEATURE(kCacheStorageAblation,
-             "CacheStorageAblation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(CacheStorageAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the ablation delay time per each API call.
 BASE_FEATURE_PARAM(double,

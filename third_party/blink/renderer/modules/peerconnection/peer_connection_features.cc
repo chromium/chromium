@@ -12,15 +12,13 @@ namespace blink {
 // encoded_audio_transformer_'s transform callback to directly call the new
 // underlying source rather than bouncing via the RTCRtpSender or
 // RTCRtpReceiver.
-BASE_FEATURE(kWebRtcEncodedTransformDirectCallback,
-             "WebRtcEncodedTransformDirectCallback",
+BASE_FEATURE(WebRtcEncodedTransformDirectCallback,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature enables encrypting RTP header extensions using RFC 6904, if
 // requested. Requesting should be done using the RTP header extension API;
 // doing it via SDP munging is possible, but not recommended.
-BASE_FEATURE(kWebRtcEncryptedRtpHeaderExtensions,
-             "WebRtcEncryptedRtpHeaderExtensions",
+BASE_FEATURE(WebRtcEncryptedRtpHeaderExtensions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This features enables the restriction that frames sent to an
@@ -28,14 +26,12 @@ BASE_FEATURE(kWebRtcEncryptedRtpHeaderExtensions,
 // and must be written in the same order in which they are read. This feature
 // does not affect streams created with the createEncodedStreams() method, which
 // never applies this restriction.
-BASE_FEATURE(kWebRtcRtpScriptTransformerFrameRestrictions,
-             "WebRtcRtpScriptTransformerFrameRestrictions",
+BASE_FEATURE(WebRtcRtpScriptTransformerFrameRestrictions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Rollout killswitch for unumuting a track when a packet arrives instead of
 // after setRemoteDescription.
-BASE_FEATURE(kWebRtcUnmuteTracksWhenPacketArrives,
-             "WebRtcUnmuteTracksWhenPacketArrives",
+BASE_FEATURE(WebRtcUnmuteTracksWhenPacketArrives,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace blink

@@ -323,8 +323,7 @@ bool IsImmersiveArAllowedBySettings(LocalDOMWindow* window) {
 // When enabled, accessing the navigator.xr attribute does not prevent the
 // frame from entering the back forward cache.
 // Kill switch for https://crbug.com/392087591
-BASE_FEATURE(kWebXrAttributeAllowsBackForwardCache,
-             "WebXrAttributeAllowsBackForwardCache",
+BASE_FEATURE(WebXrAttributeAllowsBackForwardCache,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

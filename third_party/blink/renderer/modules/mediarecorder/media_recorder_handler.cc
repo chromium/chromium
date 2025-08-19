@@ -69,9 +69,7 @@ using base::TimeTicks;
 
 namespace blink {
 
-BASE_FEATURE(kMediaRecorderSeekableWebm,
-             "MediaRecorderSeekableWebm",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(MediaRecorderSeekableWebm, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 

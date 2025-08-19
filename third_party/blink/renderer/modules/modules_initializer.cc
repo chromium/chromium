@@ -123,14 +123,10 @@ namespace blink {
 namespace {
 
 // Serves as a kill switch.
-BASE_FEATURE(kBlinkEnableInnerTextAgent,
-             "BlinkEnableInnerTextAgent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(BlinkEnableInnerTextAgent, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Serves as a kill switch.
-BASE_FEATURE(kBlinkEnableInnerHtmlAgent,
-             "BlinkEnableInnerHtmlAgent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(BlinkEnableInnerHtmlAgent, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
 

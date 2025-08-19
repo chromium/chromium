@@ -32,8 +32,7 @@ inline int64_t ApplyBucket(int64_t value) {
   return ukm::GetExponentialBucketMinForCounts1000(value);
 }
 
-BASE_FEATURE(kAvoidUnnecessaryForcedLayoutMeasurements,
-             "AvoidUnnecessaryForcedLayoutMeasurements",
+BASE_FEATURE(AvoidUnnecessaryForcedLayoutMeasurements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace

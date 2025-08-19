@@ -26,9 +26,7 @@
 
 namespace blink {
 
-BASE_FEATURE(kIdbDecompressValuesInPlace,
-             "IdbDecompressValuesInPlace",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(IdbDecompressValuesInPlace, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
