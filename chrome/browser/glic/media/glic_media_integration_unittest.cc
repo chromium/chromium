@@ -15,6 +15,8 @@
 #include "components/optimization_guide/content/browser/media_transcript_provider.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -98,6 +100,13 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
     return web_contents()->GetPrimaryMainFrame();
   }
 
+  void SetCommittedOriginOnAllFrames(const url::Origin& excluded_origin) {
+    web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+        [&excluded_origin](content::RenderFrameHost* rfh) {
+          content::OverrideLastCommittedOrigin(rfh, excluded_origin);
+        });
+  }
+
  private:
   TestingPrefServiceSimple pref_service_;
   std::optional<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -178,12 +187,12 @@ TEST_F(GlicMediaIntegrationTest, ContextContainsNoTranscript) {
 
   // Send no strings.
 
-  // Expect a leaf node with any text.
+  // Expect a leaf node with no text.
   optimization_guide::proto::ContentNode root_node;
   integration->AppendContextForFrame(rfh(), &root_node);
   EXPECT_EQ(root_node.children_nodes_size(), 0);
   EXPECT_TRUE(root_node.has_content_attributes());
-  EXPECT_GT(root_node.content_attributes().text_data().text_content().length(),
+  EXPECT_EQ(root_node.content_attributes().text_data().text_content().length(),
             0u);
 }
 
@@ -221,6 +230,117 @@ TEST_F(GlicMediaIntegrationTest, PeerConnectionPreventsTranscription) {
 
   auto* context = GetContext();
   EXPECT_TRUE(context->is_excluded_from_transcript_for_testing());
+}
+
+TEST_F(GlicMediaIntegrationTest, ExcludedOriginsStopTranscription) {
+  // Sending a transcript to an excluded origin should request that
+  // transcription stops.
+  auto* integration = GetIntegration();
+  const url::Origin excluded_origin =
+      url::Origin::Create(GURL("https://excluded.com"));
+  SetCommittedOriginOnAllFrames(excluded_origin);
+
+  // Verify that transcriptions are allowed initially.
+  EXPECT_TRUE(live_caption_controller()->DispatchTranscription(
+      web_contents()->GetPrimaryMainFrame(), nullptr,
+      media::SpeechRecognitionResult("some transcript", /*is_final=*/true)));
+
+  // Setting the excluded origin list to include our origin should cause them to
+  // start being ignored.
+  integration->SetExcludedOrigins({excluded_origin});
+  EXPECT_FALSE(live_caption_controller()->DispatchTranscription(
+      web_contents()->GetPrimaryMainFrame(), nullptr,
+      media::SpeechRecognitionResult("some other transcript",
+                                     /*is_final=*/true)));
+}
+
+TEST_F(GlicMediaIntegrationTest, ExcludedOriginsDontReturnTranscriptions) {
+  // Asking for context from an excluded origin should return nothing.
+  auto* integration = GetIntegration();
+  const url::Origin excluded_origin =
+      url::Origin::Create(GURL("https://excluded.com"));
+  SetCommittedOriginOnAllFrames(excluded_origin);
+  ASSERT_TRUE(live_caption_controller()->DispatchTranscription(
+      web_contents()->GetPrimaryMainFrame(), nullptr,
+      media::SpeechRecognitionResult("some transcript", /*is_final=*/true)));
+
+  // Exclude the origin after adding the transcript.
+  integration->SetExcludedOrigins({excluded_origin});
+
+  // Expect an empty transcript.
+  optimization_guide::proto::ContentNode root_node;
+  integration->AppendContext(web_contents(), &root_node);
+  EXPECT_EQ(root_node.children_nodes_size(), 0);
+  EXPECT_TRUE(root_node.has_content_attributes());
+  EXPECT_EQ(root_node.content_attributes().text_data().text_content(), "");
+}
+
+TEST_F(GlicMediaIntegrationTest, DefaultExcludedOriginsStopTranscription) {
+  // Get the integration, which will set the default excluded origins.
+  auto* integration = GetIntegration();
+  ASSERT_NE(integration, nullptr);
+
+  // Set the origin to youtube.
+  const url::Origin youtube_origin =
+      url::Origin::Create(GURL("https://www.youtube.com"));
+  SetCommittedOriginOnAllFrames(youtube_origin);
+
+  // Dispatching a transcription should be stopped.
+  EXPECT_FALSE(live_caption_controller()->DispatchTranscription(
+      web_contents()->GetPrimaryMainFrame(), nullptr,
+      media::SpeechRecognitionResult("some transcript", /*is_final=*/true)));
+}
+
+TEST_F(GlicMediaIntegrationTest, DefaultExcludedHttpOriginsStopTranscription) {
+  // Get the integration, which will set the default excluded origins.
+  auto* integration = GetIntegration();
+  ASSERT_NE(integration, nullptr);
+
+  // Set the origin to youtube.
+  const url::Origin youtube_origin =
+      url::Origin::Create(GURL("http://www.youtube.com"));
+  SetCommittedOriginOnAllFrames(youtube_origin);
+
+  // Dispatching a transcription should be stopped.
+  EXPECT_FALSE(live_caption_controller()->DispatchTranscription(
+      web_contents()->GetPrimaryMainFrame(), nullptr,
+      media::SpeechRecognitionResult("some transcript", /*is_final=*/true)));
+}
+
+TEST_F(GlicMediaIntegrationTest, NonExcludedOriginAllowsTranscription) {
+  auto* integration = GetIntegration();
+  ASSERT_NE(integration, nullptr);
+
+  const url::Origin other_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  SetCommittedOriginOnAllFrames(other_origin);
+
+  EXPECT_TRUE(live_caption_controller()->DispatchTranscription(
+      web_contents()->GetPrimaryMainFrame(), nullptr,
+      media::SpeechRecognitionResult("some transcript", /*is_final=*/true)));
+}
+
+TEST_F(GlicMediaIntegrationTest,
+       DefaultExcludedOriginsDontReturnTranscriptions) {
+  // Asking for context from a default excluded origin should return nothing.
+  auto* integration = GetIntegration();
+  ASSERT_NE(integration, nullptr);
+
+  // Set the origin to youtube.
+  const url::Origin youtube_origin =
+      url::Origin::Create(GURL("https://www.youtube.com"));
+  SetCommittedOriginOnAllFrames(youtube_origin);
+
+  // This transcription should be ignored.
+  live_caption_controller()->DispatchTranscription(
+      web_contents()->GetPrimaryMainFrame(), nullptr,
+      media::SpeechRecognitionResult("some transcript", /*is_final=*/true));
+
+  // Expect an empty transcript.
+  optimization_guide::proto::ContentNode root_node;
+  integration->AppendContext(web_contents(), &root_node);
+  EXPECT_EQ(root_node.children_nodes_size(), 0);
+  EXPECT_FALSE(root_node.has_content_attributes());
 }
 
 }  // namespace glic

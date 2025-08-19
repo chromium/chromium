@@ -70,9 +70,15 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
       content::RenderFrameHost* rfh,
       optimization_guide::proto::ContentNode* context_root) override;
   void OnPeerConnectionAddedForTesting(content::RenderFrameHost*) override;
+  void SetExcludedOrigins(
+      const std::vector<url::Origin>& excluded_origins) override;
 
   // GlicMediaIntegrationImpl:
   void OnContextUpdated(glic::GlicMediaContext* context);
+
+  // Returns whether `web_contents` should be excluded by origin checks.  This
+  // includes subframes.
+  bool IsExcludedByOrigin(content::WebContents* web_contents);
 
  protected:
   raw_ptr<Profile> profile_;
@@ -81,6 +87,7 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
   glic::GlicMediaPageCache page_cache_;
 
   std::unique_ptr<GlicMediaPeerConnectionObserver> rtc_observer_;
+  std::vector<url::Origin> excluded_origins_;
 };
 
 class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
@@ -94,14 +101,21 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
     if (!rfh) {
       return false;
     }
+
+    auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+    auto* integration = static_cast<GlicMediaIntegrationImpl*>(
+        glic::GlicMediaIntegration::GetFor(web_contents));
+    CHECK(integration);
+
+    if (integration->IsExcludedByOrigin(web_contents)) {
+      return false;
+    }
+
     bool continue_transcribing = false;
     if (auto* context =
             glic::GlicMediaContext::GetOrCreateForCurrentDocument(rfh)) {
       continue_transcribing = context->OnResult(result);
-      auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-      static_cast<GlicMediaIntegrationImpl*>(
-          glic::GlicMediaIntegration::GetFor(web_contents))
-          ->OnContextUpdated(context);
+      integration->OnContextUpdated(context);
     }
 
     return continue_transcribing;
@@ -127,6 +141,32 @@ GlicMediaIntegrationImpl::GlicMediaIntegrationImpl(Profile* profile)
   // For now, enable the pref if we get this far.  Do this after getting the
   // Live Caption controller, since it resets the pref to false.
   profile->GetPrefs()->SetBoolean(prefs::kHeadlessCaptionEnabled, true);
+
+  // Default to turning off for YT.
+  std::vector<url::Origin> excluded_origins = {
+      url::Origin::Create(GURL("https://www.youtube.com")),
+      url::Origin::Create(GURL("http://www.youtube.com"))};
+  SetExcludedOrigins(std::move(excluded_origins));
+}
+
+bool GlicMediaIntegrationImpl::IsExcludedByOrigin(
+    content::WebContents* web_contents) {
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  // Walk the frame tree.
+  bool exclude_this = false;
+  const auto& excluded_origins = excluded_origins_;
+  rfh->ForEachRenderFrameHostWithAction(
+      [&exclude_this, &excluded_origins](content::RenderFrameHost* rfh) {
+        auto& origin = rfh->GetLastCommittedOrigin();
+        for (auto& excluded_origin : excluded_origins) {
+          exclude_this |= origin == excluded_origin;
+        }
+        return exclude_this
+                   ? content::RenderFrameHost::FrameIterationAction::kStop
+                   : content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  return exclude_this;
 }
 
 void GlicMediaIntegrationImpl::AppendContext(
@@ -162,13 +202,13 @@ void GlicMediaIntegrationImpl::AppendContextForFrame(
 
   auto* context = glic::GlicMediaContext::GetForCurrentDocument(rfh);
   std::string result;
-  if (context != nullptr) {
+  if (context != nullptr &&
+      !IsExcludedByOrigin(content::WebContents::FromRenderFrameHost(rfh))) {
     result = context->GetContext();
   }
 
-  // Provide a default.
   if (result.length() == 0) {
-    result = "There is no transcript available.";
+    return;
   }
 
   // Trim to `max_size_bytes_`.  Note that we should utf8-trim.
@@ -196,6 +236,11 @@ void GlicMediaIntegrationImpl::OnPeerConnectionAddedForTesting(
   auto id = rfh->GetGlobalId();
   rtc_observer_->OnPeerConnectionAdded(id, /*lid=*/0, /*pid=*/{}, /*url=*/"",
                                        /*rtc_configuration=*/"");
+}
+
+void GlicMediaIntegrationImpl::SetExcludedOrigins(
+    const std::vector<url::Origin>& excluded_origins) {
+  excluded_origins_ = excluded_origins;
 }
 
 }  // namespace

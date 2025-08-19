@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_GLIC_MEDIA_GLIC_MEDIA_INTEGRATION_H_
 
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
+#include "url/origin.h"
 
 namespace optimization_guide {
 namespace proto {
@@ -47,6 +49,10 @@ class GlicMediaIntegration {
 
   // Pretend that a peer connection has been added.
   virtual void OnPeerConnectionAddedForTesting(content::RenderFrameHost*) = 0;
+
+  // Set the possibly empty list of origins to exclude from transcription.
+  virtual void SetExcludedOrigins(
+      const std::vector<url::Origin>& excluded_origins) = 0;
 };
 
 }  // namespace glic
