@@ -271,7 +271,7 @@ public class LocationBarMediatorTest {
         templateUrlServiceSupplier.set(mTemplateUrlService);
         mUiOverrides = new LocationBarEmbedderUiOverrides();
         ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
-        when(mMockComposeplateUtilsJni.isEnabledByPolicy(eq(mProfile))).thenReturn(true);
+        when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(true);
 
         AppBannerManagerJni.setInstanceForTesting(mAppBannerManagerJni);
         doReturn(mAppBannerManager)
@@ -1583,7 +1583,7 @@ public class LocationBarMediatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE)
     public void testButtonVisibility_dontShowComposeplateUnfocused_disabledByPolicy() {
-        when(mMockComposeplateUtilsJni.isEnabledByPolicy(eq(mProfile))).thenReturn(false);
+        when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(false);
         mProfileSupplier.set(mProfile);
 
         enableBothVoiceAndLensButtons();
