@@ -329,15 +329,6 @@ public class UrlBar extends AutocompleteEditText {
         if (!mFocused) mFocusEventEmitted = false;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
-        // TODO(crbug.com432311666): Confirm with UX if any of these settings could be persisted as
-        // the default height of the UrlBar.
-        setMinHeight(
-                getResources()
-                        .getDimensionPixelSize(
-                                focused
-                                        ? R.dimen.url_bar_default_height_active
-                                        : R.dimen.url_bar_default_height_inactive));
-
         setSingleLine(true);
         setMaxLines(1);
         setHorizontalFadingEdgeEnabled(!focused);

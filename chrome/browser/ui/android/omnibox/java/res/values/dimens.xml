@@ -19,7 +19,9 @@ found in the LICENSE file.
     <dimen name="toolbar_button_margin_horizontal_desktop">4dp</dimen>
     <dimen name="toolbar_button_margin_vertical_desktop">8dp</dimen>
 
-    <!-- Desktop toolbar button dimensions should align with the hover background size -->
+    <!--
+    Desktop toolbar button dimensions should align with the hover background size
+    -->
     <dimen name="toolbar_button_width_desktop">
         @dimen/large_icon_background_size
     </dimen>
@@ -38,8 +40,6 @@ found in the LICENSE file.
         @dimen/location_bar_vertical_margin
     </dimen>
     <dimen name="url_bar_vertical_margin">3dp</dimen>
-    <dimen name="url_bar_default_height_inactive">50dp</dimen>
-    <dimen name="url_bar_default_height_active">52dp</dimen>
 
     <!-- Bottom Toolbar -->
     <dimen name="split_toolbar_button_height">56dp</dimen>
