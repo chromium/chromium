@@ -21,7 +21,7 @@ static constexpr size_t kMaxProvidersInWellKnownFile = 1ul;
 
 void SetError(ConfigFetcher::FetchResult& fetch_result,
               blink::mojom::FederatedAuthRequestResult result,
-              content::FedCmRequestIdTokenStatus token_status,
+              webid::RequestIdTokenStatus token_status,
               std::optional<std::string> additional_console_error_message) {
   fetch_result.error = ConfigFetcher::FetchError(
       result, token_status, additional_console_error_message);
@@ -30,13 +30,13 @@ void SetError(ConfigFetcher::FetchResult& fetch_result,
 }  // namespace
 
 using blink::mojom::FederatedAuthRequestResult;
-using TokenStatus = FedCmRequestIdTokenStatus;
+using TokenStatus = RequestIdTokenStatus;
 
 ConfigFetcher::FetchError::FetchError(const FetchError&) = default;
 
 ConfigFetcher::FetchError::FetchError(
     blink::mojom::FederatedAuthRequestResult result,
-    FedCmRequestIdTokenStatus token_status,
+    webid::RequestIdTokenStatus token_status,
     std::optional<std::string> additional_console_error_message)
     : result(result),
       token_status(token_status),
@@ -227,7 +227,7 @@ void ConfigFetcher::OnConfigFetched(
 void ConfigFetcher::OnError(
     FetchResult& fetch_result,
     blink::mojom::FederatedAuthRequestResult result,
-    content::FedCmRequestIdTokenStatus token_status,
+    webid::RequestIdTokenStatus token_status,
     std::optional<std::string> additional_console_error_message) {
   SetError(fetch_result, result, token_status,
            additional_console_error_message);

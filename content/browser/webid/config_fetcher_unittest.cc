@@ -839,7 +839,7 @@ TEST_F(ConfigFetcherTest, InvalidNetworkError) {
   ConfigFetcher::FetchResult result;
   result.error = ConfigFetcher::FetchError(
       blink::mojom::FederatedAuthRequestResult::kConfigHttpNotFound,
-      FedCmRequestIdTokenStatus::kConfigHttpNotFound,
+      RequestIdTokenStatus::kConfigHttpNotFound,
       /*additional_console_error_message=*/std::nullopt);
 
   auto network_manager =

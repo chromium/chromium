@@ -21,8 +21,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/federated_auth_disconnect_request.h"
+#include "content/browser/webid/metrics.h"
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
@@ -41,7 +41,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
-#include "fedcm_metrics.h"
+#include "metrics.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -66,10 +66,10 @@ using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using Field = content::IdentityRequestDialogDisclosureField;
 using TokenError = content::IdentityCredentialTokenError;
 using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
-using TokenStatus = content::FedCmRequestIdTokenStatus;
+using TokenStatus = content::webid::RequestIdTokenStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
-using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
+using SignInStateMatchStatus = content::webid::SignInStateMatchStatus;
 using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
 using TokenResponseType =
     content::IdpNetworkRequestManager::FedCmTokenResponseType;
@@ -1392,8 +1392,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   void CompleteDisconnectRequest() {
     std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
         std::make_unique<TestIdpNetworkRequestManager>();
-    std::unique_ptr<FedCmMetrics> fedcm_metrics =
-        std::make_unique<FedCmMetrics>(main_test_rfh()->GetPageUkmSourceId());
+    std::unique_ptr<webid::Metrics> fedcm_metrics =
+        std::make_unique<webid::Metrics>(main_test_rfh()->GetPageUkmSourceId());
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options =
         blink::mojom::IdentityCredentialDisconnectOptions::New();
     options->config = blink::mojom::IdentityProviderConfig::New();
@@ -1406,7 +1406,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         base::DoNothing();
     federated_auth_request_impl_->disconnect_request_->Complete(
         blink::mojom::DisconnectStatus::kSuccess,
-        FedCmDisconnectStatus::kSuccess);
+        webid::DisconnectStatus::kSuccess);
   }
 
   base::span<const IdentityRequestAccountPtr> all_accounts_for_display() const {
@@ -1479,9 +1479,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                                          status, 1);
     histogram_tester_.ExpectUniqueSample(
         "Blink.FedCm.Status.MediationRequirement", requirement, 1);
-    if (status == FedCmRequestIdTokenStatus::kSuccessUsingTokenInHttpResponse ||
+    if (status ==
+            webid::RequestIdTokenStatus::kSuccessUsingTokenInHttpResponse ||
         status ==
-            FedCmRequestIdTokenStatus::kSuccessUsingIdentityProviderResolve) {
+            webid::RequestIdTokenStatus::kSuccessUsingIdentityProviderResolve) {
       histogram_tester_.ExpectUniqueSample(
           kBrowserAssistedLoginTypeHistogram,
           BrowserAssistedLoginType::kFedCmPassive, 1);
@@ -1634,7 +1635,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   }
 
   void ExpectAutoReauthnMetrics(
-      std::optional<FedCmMetrics::NumAccounts> expected_returning_accounts,
+      std::optional<webid::Metrics::NumAccounts> expected_returning_accounts,
       bool expected_succeeded,
       bool expected_auto_reauthn_setting_blocked,
       bool expected_auto_reauthn_embargoed,
@@ -1667,7 +1668,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
           "Blink.FedCm.Timing.AccountsDialogShownDuration2", 0);
       histogram_tester_.ExpectUniqueSample(
           "Blink.FedCm.VerifyingDialogResult",
-          FedCmVerifyingDialogResult::kSuccessAutoReauthn, 1);
+          webid::VerifyingDialogResult::kSuccessAutoReauthn, 1);
     }
 
     // UKM checks
@@ -2420,7 +2421,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnEmbargo) {
   EXPECT_TRUE(test_auto_reauthn_permission_delegate_->embargoed_origins_.count(
       OriginFromString(kRpUrl)));
 
-  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
+  ExpectAutoReauthnMetrics(webid::Metrics::NumAccounts::kOne,
                            /*expected_succeeded=*/true,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
@@ -2459,7 +2460,7 @@ TEST_F(FederatedAuthRequestImplTest,
             LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
 
-  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
+  ExpectAutoReauthnMetrics(webid::Metrics::NumAccounts::kOne,
                            /*expected_succeeded=*/true,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
@@ -2511,7 +2512,7 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
 
-  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
+  ExpectAutoReauthnMetrics(webid::Metrics::NumAccounts::kOne,
                            /*expected_succeeded=*/true,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
@@ -2563,7 +2564,7 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_EQ(CountNumLoginStateIsSignin(), 2);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
-  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kMultiple,
+  ExpectAutoReauthnMetrics(webid::Metrics::NumAccounts::kMultiple,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
@@ -2599,7 +2600,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForZeroReturningUsers) {
             LoginState::kSignUp);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
-  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kZero,
+  ExpectAutoReauthnMetrics(webid::Metrics::NumAccounts::kZero,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
@@ -2663,7 +2664,7 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
-  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
+  ExpectAutoReauthnMetrics(webid::Metrics::NumAccounts::kOne,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
@@ -2829,7 +2830,7 @@ TEST_F(FederatedAuthRequestImplTest,
             LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
-  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
+  ExpectAutoReauthnMetrics(webid::Metrics::NumAccounts::kOne,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/true,
                            /*expected_auto_reauthn_embargoed=*/false,
@@ -2867,7 +2868,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnWithCooldown) {
             LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
-  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
+  ExpectAutoReauthnMetrics(webid::Metrics::NumAccounts::kOne,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/true,
@@ -3128,7 +3129,7 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
                       MediationRequirement::kSilent);
 
-  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kMultiple,
+  ExpectAutoReauthnMetrics(webid::Metrics::NumAccounts::kMultiple,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/false,
@@ -3254,10 +3255,10 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
                                        static_cast<int>(RpMode::kPassive), 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.VerifyingDialogResult",
-      static_cast<int>(FedCmVerifyingDialogResult::kSuccessExplicit), 1);
+      static_cast<int>(webid::VerifyingDialogResult::kSuccessExplicit), 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.FrameType",
-      static_cast<int>(FedCmRequesterFrameType::kMainFrame), 1);
+      static_cast<int>(webid::RequesterFrameType::kMainFrame), 1);
 
   ExpectUKMPresence("Timing.ShowAccountsDialog");
   ExpectUKMPresenceInternal(
@@ -3277,9 +3278,9 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ExpectUkmValue("RpMode", static_cast<int>(RpMode::kPassive));
   ExpectUkmValue(
       "VerifyingDialogResult",
-      static_cast<int>(FedCmVerifyingDialogResult::kSuccessExplicit));
+      static_cast<int>(webid::VerifyingDialogResult::kSuccessExplicit));
   ExpectUkmValue("FrameType",
-                 static_cast<int>(FedCmRequesterFrameType::kMainFrame));
+                 static_cast<int>(webid::RequesterFrameType::kMainFrame));
 
   ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
 }
@@ -5175,7 +5176,7 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithError) {
                                        error_dialog_type, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.Error.ErrorDialogResult",
-      FedCmErrorDialogResult::kCloseWithoutMoreDetails, 1);
+      webid::ErrorDialogResult::kCloseWithoutMoreDetails, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.TokenResponseType",
                                        token_response_type, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorUrlType", 0);
@@ -5225,7 +5226,7 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
                                        1);
   ExpectUkmValue(
       "MultipleRequestsRpMode",
-      static_cast<int>(FedCmMultipleRequestsRpMode::kPassiveThenPassive));
+      static_cast<int>(webid::MultipleRequestsRpMode::kPassiveThenPassive));
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.MultipleRequestsFromDifferentIdPs", 0, 1);
@@ -5328,7 +5329,7 @@ TEST_F(FederatedAuthRequestImplTest,
                                        1);
   ExpectUkmValue(
       "MultipleRequestsRpMode",
-      static_cast<int>(FedCmMultipleRequestsRpMode::kActiveThenPassive));
+      static_cast<int>(webid::MultipleRequestsRpMode::kActiveThenPassive));
 
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
@@ -5385,7 +5386,7 @@ TEST_F(FederatedAuthRequestImplTest,
                                        1);
   ExpectUkmValue(
       "MultipleRequestsRpMode",
-      static_cast<int>(FedCmMultipleRequestsRpMode::kActiveThenActive));
+      static_cast<int>(webid::MultipleRequestsRpMode::kActiveThenActive));
 
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
@@ -5440,8 +5441,8 @@ TEST_F(FederatedAuthRequestImplTest, PassiveReplacedByActiveFlow) {
                                        1);
   ExpectUkmValue(
       "MultipleRequestsRpMode",
-      static_cast<std::underlying_type_t<FedCmMultipleRequestsRpMode>>(
-          FedCmMultipleRequestsRpMode::kPassiveThenActive));
+      static_cast<std::underlying_type_t<webid::MultipleRequestsRpMode>>(
+          webid::MultipleRequestsRpMode::kPassiveThenActive));
 
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
@@ -5628,7 +5629,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountLabelMultipleAccountsNoMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AccountLabel.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kZero, 1);
+      webid::Metrics::NumAccounts::kZero, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
   ExpectUkmValueInEntry("AccountLabel.NumMatchingAccounts",
@@ -5651,7 +5652,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountLabelMultipleAccountsOneMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AccountLabel.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kOne, 1);
+      webid::Metrics::NumAccounts::kOne, 1);
   ExpectUkmValueInEntry("AccountLabel.NumMatchingAccounts",
                         FedCmEntry::kEntryName, 1);
   ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
@@ -5671,7 +5672,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountIdMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kOne, 1);
+      webid::Metrics::NumAccounts::kOne, 1);
   ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
                         1);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5691,7 +5692,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountEmailMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kOne, 1);
+      webid::Metrics::NumAccounts::kOne, 1);
   ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
                         1);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5717,7 +5718,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountNoMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kZero, 1);
+      webid::Metrics::NumAccounts::kZero, 1);
   ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
                         0);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5739,7 +5740,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintFirstAccountMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kOne, 1);
+      webid::Metrics::NumAccounts::kOne, 1);
   ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
                         1);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5760,7 +5761,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintLastAccountMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kOne, 1);
+      webid::Metrics::NumAccounts::kOne, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.ReadyToShow",
                                        1, 1);
@@ -5789,7 +5790,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kZero, 1);
+      webid::Metrics::NumAccounts::kZero, 1);
   ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
                         0);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5812,7 +5813,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kOne, 1);
+      webid::Metrics::NumAccounts::kOne, 1);
   ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
                         FedCmEntry::kEntryName, 1);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5834,7 +5835,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kOne, 1);
+      webid::Metrics::NumAccounts::kOne, 1);
   ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
                         FedCmEntry::kEntryName, 1);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5860,7 +5861,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarNoMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kZero, 1);
+      webid::Metrics::NumAccounts::kZero, 1);
   ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
                         FedCmEntry::kEntryName, 0);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5886,7 +5887,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountNoMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kZero, 1);
+      webid::Metrics::NumAccounts::kZero, 1);
   ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
                         FedCmEntry::kEntryName, 0);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5910,7 +5911,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintNoMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kZero, 1);
+      webid::Metrics::NumAccounts::kZero, 1);
   ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
                         FedCmEntry::kEntryName, 0);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5931,7 +5932,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsSingleMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kOne, 1);
+      webid::Metrics::NumAccounts::kOne, 1);
   ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
                         FedCmEntry::kEntryName, 1);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5957,7 +5958,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kMultiple, 1);
+      webid::Metrics::NumAccounts::kMultiple, 1);
   ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
                         FedCmEntry::kEntryName, 2);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -5983,7 +5984,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsStar) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kMultiple, 1);
+      webid::Metrics::NumAccounts::kMultiple, 1);
   ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
                         FedCmEntry::kEntryName, 2);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -6009,7 +6010,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsNoMatch) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
-      FedCmMetrics::NumAccounts::kZero, 1);
+      webid::Metrics::NumAccounts::kZero, 1);
   ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
                         FedCmEntry::kEntryName, 0);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -6201,7 +6202,7 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestNoPopUpWindow) {
   EXPECT_FALSE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
   // Ensure that metrics were recorded.
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.RpParametersAndScopeState",
-                                       FedCmRpParameters::kHasNonDefaultScope,
+                                       webid::RpParameters::kHasNonDefaultScope,
                                        1);
 }
 
@@ -6253,10 +6254,10 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
   ExpectStatusMetrics(TokenStatus::kSuccessUsingIdentityProviderResolve);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.ContinueOn.PopupWindowStatus",
-      FedCmContinueOnPopupStatus::kPopupOpened, 1);
+      webid::ContinueOnPopupStatus::kPopupOpened, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.ContinueOn.PopupWindowResult",
-      FedCmContinueOnPopupResult::kTokenReceived, 1);
+      webid::ContinueOnPopupResult::kTokenReceived, 1);
 
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOn.Response",
                                      1);
@@ -6320,10 +6321,10 @@ TEST_F(FederatedAuthRequestImplTest, ContinuationPopupCallingClose) {
       TokenStatus::kContinuationPopupClosedByIdentityProviderClose);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.ContinueOn.PopupWindowStatus",
-      FedCmContinueOnPopupStatus::kPopupOpened, 1);
+      webid::ContinueOnPopupStatus::kPopupOpened, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.ContinueOn.PopupWindowResult",
-      FedCmContinueOnPopupResult::kClosedByIdentityProviderClose, 1);
+      webid::ContinueOnPopupResult::kClosedByIdentityProviderClose, 1);
 
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOn.Response",
                                      0);
@@ -6358,10 +6359,10 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(parameters, error, config);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.ContinueOn.PopupWindowStatus",
-      FedCmContinueOnPopupStatus::kUrlNotSameOrigin, 1);
+      webid::ContinueOnPopupStatus::kUrlNotSameOrigin, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.ContinueOn.PopupWindowResult",
-      FedCmContinueOnPopupResult::kTokenReceived, 0);
+      webid::ContinueOnPopupResult::kTokenReceived, 0);
 
   // We only record timing on success.
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOn.Response",
@@ -6379,7 +6380,7 @@ TEST_F(FederatedAuthRequestImplTest, RequestWithParameters) {
 
   // Ensure that metrics were recorded.
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.RpParametersAndScopeState",
-                                       FedCmRpParameters::kHasParameters, 1);
+                                       webid::RpParameters::kHasParameters, 1);
 }
 
 // Test metrics for a request with parameters and scopes.
@@ -6397,7 +6398,7 @@ TEST_F(FederatedAuthRequestImplTest, RequestWithParametersAndScopes) {
   // Ensure that metrics were recorded.
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.RpParametersAndScopeState",
-      FedCmRpParameters::kHasParametersAndNonDefaultScope, 1);
+      webid::RpParameters::kHasParametersAndNonDefaultScope, 1);
 }
 
 // Test successfully signing-in users when they are signed-out on
@@ -6677,7 +6678,7 @@ TEST_F(FederatedAuthRequestImplTest, MismatchDialogShownMetric) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogShown", 1, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.MismatchDialogType",
-      FedCmMetrics::MismatchDialogType::kFirstWithoutHints, 1);
+      webid::Metrics::MismatchDialogType::kFirstWithoutHints, 1);
   ExpectUKMPresence("MismatchDialogShown2");
   ExpectNoUKMPresence("AccountsDialogShown2");
   ExpectNoUKMPresence("HasSigninAccount");
@@ -6717,10 +6718,10 @@ TEST_F(FederatedAuthRequestImplTest, DoubleMismatchDialog) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.MismatchDialogType", 2);
   histogram_tester_.ExpectBucketCount(
       "Blink.FedCm.MismatchDialogType",
-      FedCmMetrics::MismatchDialogType::kFirstWithHints, 1);
+      webid::Metrics::MismatchDialogType::kFirstWithHints, 1);
   histogram_tester_.ExpectBucketCount(
       "Blink.FedCm.MismatchDialogType",
-      FedCmMetrics::MismatchDialogType::kRepeatedWithHints, 1);
+      webid::Metrics::MismatchDialogType::kRepeatedWithHints, 1);
 }
 
 // Tests that when an accounts request is sent, the appropriate metrics are
@@ -6893,7 +6894,7 @@ TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogShown) {
                                        error_dialog_type, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.Error.ErrorDialogResult",
-      FedCmErrorDialogResult::kCloseWithoutMoreDetails, 1);
+      webid::ErrorDialogResult::kCloseWithoutMoreDetails, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.TokenResponseType",
                                        token_response_type, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorUrlType", 0);
@@ -6928,7 +6929,7 @@ TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
                                        error_dialog_type, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.Error.ErrorDialogResult",
-      FedCmErrorDialogResult::kCloseWithoutMoreDetails, 1);
+      webid::ErrorDialogResult::kCloseWithoutMoreDetails, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.TokenResponseType",
                                        token_response_type, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorUrlType", 0);
@@ -6968,7 +6969,7 @@ TEST_F(FederatedAuthRequestImplTest, ErrorUrlDisplayedWithProperUrl) {
                                        error_dialog_type, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.Error.ErrorDialogResult",
-      FedCmErrorDialogResult::kCloseWithMoreDetails, 1);
+      webid::ErrorDialogResult::kCloseWithMoreDetails, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.TokenResponseType",
                                        token_response_type, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.ErrorUrlType",
@@ -7204,7 +7205,7 @@ TEST_F(FederatedAuthRequestImplTest, ErrorDialogResultMetrics) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.Error.ErrorDialogResult",
-      FedCmErrorDialogResult::kGotItWithMoreDetails, 1);
+      webid::ErrorDialogResult::kGotItWithMoreDetails, 1);
 
   ExpectUKMPresence("Error.ErrorDialogResult");
 }
@@ -7884,11 +7885,12 @@ TEST_F(FederatedAuthRequestImplTest, UseOtherAccountAccountOrder) {
   // The first account is selected, and this is a new account.
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.UseOtherAccountResult",
-      static_cast<int>(FedCmUseOtherAccountResult::kUserSignsInWithNewAccount),
+      static_cast<int>(
+          webid::UseOtherAccountResult::kUserSignsInWithNewAccount),
       1);
-  ExpectUkmValue(
-      "UseOtherAccountResult",
-      static_cast<int>(FedCmUseOtherAccountResult::kUserSignsInWithNewAccount));
+  ExpectUkmValue("UseOtherAccountResult",
+                 static_cast<int>(
+                     webid::UseOtherAccountResult::kUserSignsInWithNewAccount));
 }
 
 // Tests that when use a different account is used and multiple accounts are
@@ -7937,11 +7939,12 @@ TEST_F(FederatedAuthRequestImplTest, UseOtherAccountMultipleNewAccounts) {
   // The first account is selected, and this is a new account.
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.UseOtherAccountResult",
-      static_cast<int>(FedCmUseOtherAccountResult::kUserSignsInWithNewAccount),
+      static_cast<int>(
+          webid::UseOtherAccountResult::kUserSignsInWithNewAccount),
       1);
-  ExpectUkmValue(
-      "UseOtherAccountResult",
-      static_cast<int>(FedCmUseOtherAccountResult::kUserSignsInWithNewAccount));
+  ExpectUkmValue("UseOtherAccountResult",
+                 static_cast<int>(
+                     webid::UseOtherAccountResult::kUserSignsInWithNewAccount));
 }
 
 TEST_F(FederatedAuthRequestImplTest, UseOtherAccountNoNewAccount) {
@@ -7974,12 +7977,12 @@ TEST_F(FederatedAuthRequestImplTest, UseOtherAccountNoNewAccount) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.UseOtherAccountResult",
       static_cast<int>(
-          FedCmUseOtherAccountResult::kUserSignsInWithExistingAccount),
+          webid::UseOtherAccountResult::kUserSignsInWithExistingAccount),
       1);
   ExpectUkmValue(
       "UseOtherAccountResult",
       static_cast<int>(
-          FedCmUseOtherAccountResult::kUserSignsInWithExistingAccount));
+          webid::UseOtherAccountResult::kUserSignsInWithExistingAccount));
 }
 
 TEST_F(FederatedAuthRequestImplTest, UseOtherAccountThenClose) {
@@ -8020,10 +8023,10 @@ TEST_F(FederatedAuthRequestImplTest, UseOtherAccountThenClose) {
   // is no new account.
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.UseOtherAccountResult",
-      static_cast<int>(FedCmUseOtherAccountResult::kUserDoesNotSignIn), 1);
+      static_cast<int>(webid::UseOtherAccountResult::kUserDoesNotSignIn), 1);
   ExpectUkmValue(
       "UseOtherAccountResult",
-      static_cast<int>(FedCmUseOtherAccountResult::kUserDoesNotSignIn));
+      static_cast<int>(webid::UseOtherAccountResult::kUserDoesNotSignIn));
 }
 
 TEST_F(FederatedAuthRequestImplTest, MultipleIdpSigninDueToHint) {
@@ -8066,9 +8069,10 @@ TEST_F(FederatedAuthRequestImplTest, VerifyingDialogCancelExplicitMetrics) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.VerifyingDialogResult",
-      FedCmVerifyingDialogResult::kCancelExplicit, 1);
-  ExpectUkmValue("VerifyingDialogResult",
-                 static_cast<int>(FedCmVerifyingDialogResult::kCancelExplicit));
+      webid::VerifyingDialogResult::kCancelExplicit, 1);
+  ExpectUkmValue(
+      "VerifyingDialogResult",
+      static_cast<int>(webid::VerifyingDialogResult::kCancelExplicit));
 }
 
 TEST_F(FederatedAuthRequestImplTest, VerifyingDialogCancelAutoReauthnMetrics) {
@@ -8095,10 +8099,10 @@ TEST_F(FederatedAuthRequestImplTest, VerifyingDialogCancelAutoReauthnMetrics) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.VerifyingDialogResult",
-      FedCmVerifyingDialogResult::kCancelAutoReauthn, 1);
+      webid::VerifyingDialogResult::kCancelAutoReauthn, 1);
   ExpectUkmValue(
       "VerifyingDialogResult",
-      static_cast<int>(FedCmVerifyingDialogResult::kCancelAutoReauthn));
+      static_cast<int>(webid::VerifyingDialogResult::kCancelAutoReauthn));
 }
 
 TEST_F(FederatedAuthRequestImplTest, VerifyingDialogDestroyExplicitMetrics) {
@@ -8110,10 +8114,10 @@ TEST_F(FederatedAuthRequestImplTest, VerifyingDialogDestroyExplicitMetrics) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.VerifyingDialogResult",
-      FedCmVerifyingDialogResult::kDestroyExplicit, 1);
+      webid::VerifyingDialogResult::kDestroyExplicit, 1);
   ExpectUkmValue(
       "VerifyingDialogResult",
-      static_cast<int>(FedCmVerifyingDialogResult::kDestroyExplicit));
+      static_cast<int>(webid::VerifyingDialogResult::kDestroyExplicit));
 }
 
 TEST_F(FederatedAuthRequestImplTest, VerifyingDialogDestroyAutoReauthnMetrics) {
@@ -8140,10 +8144,10 @@ TEST_F(FederatedAuthRequestImplTest, VerifyingDialogDestroyAutoReauthnMetrics) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.VerifyingDialogResult",
-      FedCmVerifyingDialogResult::kDestroyAutoReauthn, 1);
+      webid::VerifyingDialogResult::kDestroyAutoReauthn, 1);
   ExpectUkmValue(
       "VerifyingDialogResult",
-      static_cast<int>(FedCmVerifyingDialogResult::kDestroyAutoReauthn));
+      static_cast<int>(webid::VerifyingDialogResult::kDestroyAutoReauthn));
 }
 
 TEST_F(FederatedAuthRequestImplTest,
@@ -8164,7 +8168,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   ExpectUkmValue(
       "ThirdPartyCookiesStatus",
-      static_cast<int>(FedCmThirdPartyCookiesStatus::kEnabledInSettings));
+      static_cast<int>(webid::ThirdPartyCookiesStatus::kEnabledInSettings));
 
   ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
 }
@@ -8187,7 +8191,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   ExpectUkmValue(
       "ThirdPartyCookiesStatus",
-      static_cast<int>(FedCmThirdPartyCookiesStatus::kDisabledInSettings));
+      static_cast<int>(webid::ThirdPartyCookiesStatus::kDisabledInSettings));
 
   ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
 }
@@ -8365,7 +8369,7 @@ TEST_F(FederatedAuthRequestImplTest, NonPrimaryPageMetrics) {
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LifecycleStateFailureReason",
-      FedCmLifecycleStateFailureReason::kInBackForwardCache, 1);
+      webid::LifecycleStateFailureReason::kInBackForwardCache, 1);
 }
 
 }  // namespace content

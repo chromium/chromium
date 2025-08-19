@@ -10,8 +10,8 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/metrics.h"
 #include "content/browser/webid/request_page_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
@@ -27,7 +27,7 @@
 #include "url/origin.h"
 
 using blink::mojom::FederatedAuthRequestResult;
-using content::FedCmDisconnectStatus;
+using DisconnectStatus = content::webid::DisconnectStatus;
 
 namespace content::webid {
 
@@ -62,7 +62,7 @@ void SetIdpSigninStatus(content::BrowserContext* context,
     // cannot do same-origin checks.
     if (!frame_tree_node) {
       RecordSetLoginStatusIgnoredReason(
-          FedCmSetLoginStatusIgnoredReason::kFrameTreeLookupFailed);
+          SetLoginStatusIgnoredReason::kFrameTreeLookupFailed);
       return;
     }
   }
@@ -70,13 +70,13 @@ void SetIdpSigninStatus(content::BrowserContext* context,
   if (frame_tree_node) {
     if (frame_tree_node->IsInFencedFrameTree()) {
       RecordSetLoginStatusIgnoredReason(
-          FedCmSetLoginStatusIgnoredReason::kInFencedFrame);
+          SetLoginStatusIgnoredReason::kInFencedFrame);
       return;
     }
 
     if (!IsSameSiteWithAncestors(origin, frame_tree_node->parent())) {
       RecordSetLoginStatusIgnoredReason(
-          FedCmSetLoginStatusIgnoredReason::kCrossOrigin);
+          SetLoginStatusIgnoredReason::kCrossOrigin);
       return;
     }
   }
@@ -139,8 +139,8 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
   // Record metrics on effect of IDP sign-in status API.
   const std::optional<bool> idp_signin_status =
       permission_delegate->GetIdpSigninStatus(idp_origin);
-  FedCmMetrics::RecordIdpSigninMatchStatus(idp_signin_status,
-                                           fetch_status.parse_status);
+  Metrics::RecordIdpSigninMatchStatus(idp_signin_status,
+                                      fetch_status.parse_status);
 
   if (fetch_status.parse_status ==
       IdpNetworkRequestManager::ParseStatus::kSuccess) {
@@ -335,68 +335,68 @@ std::string GetConsoleErrorMessageFromResult(
 }
 
 std::string GetDisconnectConsoleErrorMessage(
-    FedCmDisconnectStatus disconnect_status_for_metrics) {
+    DisconnectStatus disconnect_status_for_metrics) {
   switch (disconnect_status_for_metrics) {
-    case FedCmDisconnectStatus::kSuccess: {
+    case DisconnectStatus::kSuccess: {
       NOTREACHED();
     }
-    case FedCmDisconnectStatus::kTooManyRequests: {
+    case DisconnectStatus::kTooManyRequests: {
       return "There is a pending disconnect() call.";
     }
-    case FedCmDisconnectStatus::kUnhandledRequest: {
+    case DisconnectStatus::kUnhandledRequest: {
       return "The disconnect request did not finish by the time the page was "
              "closed.";
     }
-    case FedCmDisconnectStatus::kNoAccountToDisconnect: {
+    case DisconnectStatus::kNoAccountToDisconnect: {
       return "There is no account to disconnect.";
     }
-    case FedCmDisconnectStatus::kDisconnectUrlIsCrossOrigin: {
+    case DisconnectStatus::kDisconnectUrlIsCrossOrigin: {
       return "The disconnect URL is cross origin";
     }
-    case FedCmDisconnectStatus::kDisconnectFailedOnServer: {
+    case DisconnectStatus::kDisconnectFailedOnServer: {
       return "The disconnect request failed on the server";
     }
-    case FedCmDisconnectStatus::kConfigHttpNotFound: {
+    case DisconnectStatus::kConfigHttpNotFound: {
       return "The config file cannot be found.";
     }
-    case FedCmDisconnectStatus::kConfigNoResponse: {
+    case DisconnectStatus::kConfigNoResponse: {
       return "The config file returned an error response code.";
     }
-    case FedCmDisconnectStatus::kConfigInvalidResponse: {
+    case DisconnectStatus::kConfigInvalidResponse: {
       return "The config file returned some invalid response.";
     }
-    case FedCmDisconnectStatus::kDisabledInSettings: {
+    case DisconnectStatus::kDisabledInSettings: {
       return "FedCM is disabled by user settings.";
     }
-    case FedCmDisconnectStatus::kDisabledInFlags: {
+    case DisconnectStatus::kDisabledInFlags: {
       return "The disconnect API is disabled by a flag.";
     }
-    case FedCmDisconnectStatus::kWellKnownHttpNotFound: {
+    case DisconnectStatus::kWellKnownHttpNotFound: {
       return "The well known file cannot be found.";
     }
-    case FedCmDisconnectStatus::kWellKnownNoResponse: {
+    case DisconnectStatus::kWellKnownNoResponse: {
       return "The well-known file returned an error response code.";
     }
-    case FedCmDisconnectStatus::kWellKnownInvalidResponse: {
+    case DisconnectStatus::kWellKnownInvalidResponse: {
       return "The well-known filed returned some invalid response.";
     }
-    case FedCmDisconnectStatus::kWellKnownListEmpty: {
+    case DisconnectStatus::kWellKnownListEmpty: {
       return "The well-known file returned an empty list.";
     }
-    case FedCmDisconnectStatus::kConfigNotInWellKnown: {
+    case DisconnectStatus::kConfigNotInWellKnown: {
       return "The config file is not in the well-known file.";
     }
-    case FedCmDisconnectStatus::kWellKnownTooBig: {
+    case DisconnectStatus::kWellKnownTooBig: {
       return "Provider's FedCM well-known file contains too many config URLs.";
     }
-    case FedCmDisconnectStatus::kWellKnownInvalidContentType: {
+    case DisconnectStatus::kWellKnownInvalidContentType: {
       return "Provider's well-known content type must be a JSON content type.";
     }
-    case FedCmDisconnectStatus::kConfigInvalidContentType: {
+    case DisconnectStatus::kConfigInvalidContentType: {
       return "Provider's FedCM config file content type must be a JSON content "
              "type.";
     }
-    case FedCmDisconnectStatus::kIdpNotPotentiallyTrustworthy: {
+    case DisconnectStatus::kIdpNotPotentiallyTrustworthy: {
       return "The provider's config file URL is not potentially trustworthy.";
     }
   }
@@ -444,17 +444,18 @@ RequestPageData* GetPageData(Page& page) {
   return RequestPageData::GetOrCreateForPage(page);
 }
 
-FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
-                                                  const url::Origin& requester,
-                                                  const url::Origin& embedder) {
+webid::RequesterFrameType ComputeRequesterFrameType(
+    const RenderFrameHost& rfh,
+    const url::Origin& requester,
+    const url::Origin& embedder) {
   // Since FedCM methods are not supported in FencedFrames, we can know whether
   // this is a main frame by calling GetParent().
   if (!rfh.GetParent()) {
-    return FedCmRequesterFrameType::kMainFrame;
+    return RequesterFrameType::kMainFrame;
   }
   return net::SchemefulSite::IsSameSite(requester, embedder)
-             ? FedCmRequesterFrameType::kSameSiteIframe
-             : FedCmRequesterFrameType::kCrossSiteIframe;
+             ? RequesterFrameType::kSameSiteIframe
+             : RequesterFrameType::kCrossSiteIframe;
 }
 
 void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,

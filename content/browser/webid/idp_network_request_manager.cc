@@ -18,10 +18,10 @@
 #include "base/values.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/mappers.h"
+#include "content/browser/webid/metrics.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -312,7 +312,7 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
     display_name = *name;
   }
 
-  RecordApprovedClientsExistence(approved_clients != nullptr);
+  webid::RecordApprovedClientsExistence(approved_clients != nullptr);
 
   std::optional<LoginState> approved_value;
   if (approved_clients) {
@@ -328,7 +328,7 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
       // kSignUp instead of leaving as nullopt.
       approved_value = LoginState::kSignUp;
     }
-    RecordApprovedClientsSize(approved_clients->size());
+    webid::RecordApprovedClientsSize(approved_clients->size());
   }
 
   return base::MakeRefCounted<IdentityRequestAccount>(
@@ -740,7 +740,7 @@ void OnAccountsRequestParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   std::vector<IdentityRequestAccountPtr> account_list;
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
-    RecordAccountsResponseInvalidReason(
+    webid::RecordAccountsResponseInvalidReason(
         AccountsResponseInvalidReason::kResponseIsNotJsonOrDict);
     std::move(callback).Run(fetch_status, account_list);
     return;
@@ -750,7 +750,7 @@ void OnAccountsRequestParsed(
   const base::Value::List* accounts = response.FindList(kAccountsKey);
 
   if (!accounts) {
-    RecordAccountsResponseInvalidReason(
+    webid::RecordAccountsResponseInvalidReason(
         AccountsResponseInvalidReason::kNoAccountsKey);
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
@@ -759,7 +759,7 @@ void OnAccountsRequestParsed(
   }
 
   if (accounts->empty()) {
-    RecordAccountsResponseInvalidReason(
+    webid::RecordAccountsResponseInvalidReason(
         AccountsResponseInvalidReason::kAccountListIsEmpty);
     std::move(callback).Run(
         {ParseStatus::kEmptyListError, fetch_status.response_code},
@@ -776,7 +776,7 @@ void OnAccountsRequestParsed(
   if (!accounts_valid) {
     CHECK_NE(parsing_error,
              AccountsResponseInvalidReason::kResponseIsNotJsonOrDict);
-    RecordAccountsResponseInvalidReason(parsing_error);
+    webid::RecordAccountsResponseInvalidReason(parsing_error);
 
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},

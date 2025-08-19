@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/browser/webid/metrics.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
@@ -74,30 +74,30 @@ MetricsEndpointErrorCode FederatedAuthRequestResultToMetricsEndpointErrorCode(
 // for the result. The second member of the pair is a FedCmRequestIdTokenStatus,
 // which is a type used in metrics recording. Should not be invoked with
 // ParseStatus::kSuccess.
-std::pair<blink::mojom::FederatedAuthRequestResult, FedCmRequestIdTokenStatus>
+std::pair<blink::mojom::FederatedAuthRequestResult, webid::RequestIdTokenStatus>
 AccountParseStatusToRequestResultAndTokenStatus(
     IdpNetworkRequestManager::ParseStatus status);
 
-FedCmLifecycleStateFailureReason
+webid::LifecycleStateFailureReason
 LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
     RenderFrameHostImpl::LifecycleStateImpl lifecycle_state);
 
 // Converts a FederatedApiPermissionStatus to a (FederatedAuthRequestResult,
 // FedCmRequestIdTokenStatus) pair. Should not be invoked with
 // FederatedApiPermissionStatus::GRANTED.
-std::pair<blink::mojom::FederatedAuthRequestResult, FedCmRequestIdTokenStatus>
+std::pair<blink::mojom::FederatedAuthRequestResult, webid::RequestIdTokenStatus>
 PermissionStatusToRequestResultAndTokenStatus(
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
         permission_status);
 
-FedCmErrorDialogResult DismissReasonToErrorDialogResult(
+webid::ErrorDialogResult DismissReasonToErrorDialogResult(
     IdentityRequestDialogController::DismissReason dismiss_reason,
     bool has_url);
 
 // Converts a FetchStatus from the ID assertion endpoint to a
 // (FederatedAuthRequestResult, FedCmRequestIdTokenStatus) pair. Should not be
 // invoked when the parse_status is ParseStatus::kSuccess.
-std::pair<blink::mojom::FederatedAuthRequestResult, FedCmRequestIdTokenStatus>
+std::pair<blink::mojom::FederatedAuthRequestResult, webid::RequestIdTokenStatus>
 IdAssertionFetchStatusToRequestResultAndTokenStatus(
     IdpNetworkRequestManager::FetchStatus status);
 

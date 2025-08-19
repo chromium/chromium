@@ -39,7 +39,9 @@ class UkmRecorderInterface;
 namespace content {
 class BtmNavigationHandle;
 class BtmServiceImpl;
-class FedCmMetrics;
+namespace webid {
+class Metrics;
+}  // namespace webid
 class PaymentAppProviderUtil;
 class RenderFrameHostImpl;
 }  // namespace content
@@ -123,7 +125,7 @@ class METRICS_EXPORT UkmRecorder {
   // from the identity provider. This method should only be called in the
   // FedCmMetrics class.
   static SourceId GetSourceIdForWebIdentityFromScope(
-      base::PassKey<content::FedCmMetrics>,
+      base::PassKey<content::webid::Metrics>,
       const GURL& provider_url);
 
   static SourceId GetSourceIdForWebIdentityFromScope(

@@ -50,7 +50,7 @@ using AuthRequestCallbackHelper =
     content::FederatedAuthRequestRequestTokenCallbackHelper;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
-using FedCmRequesterFrameType = content::FedCmRequesterFrameType;
+using RequesterFrameType = content::webid::RequesterFrameType;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using RequestTokenCallback =
     content::FederatedAuthRequestImpl::RequestTokenCallback;
@@ -478,13 +478,11 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameOriginIframe) {
   // Same-origin iframe is treated the same as same-site frame.
   histogram_tester.ExpectUniqueSample(
       "Blink.FedCm.FrameType",
-      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe), 1);
-  ExpectUkmValueInEntry(
-      "FrameType", FedCmEntry::kEntryName,
-      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
-  ExpectUkmValueInEntry(
-      "FrameType", FedCmIdpEntry::kEntryName,
-      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
+      static_cast<int>(RequesterFrameType::kSameSiteIframe), 1);
+  ExpectUkmValueInEntry("FrameType", FedCmEntry::kEntryName,
+                        static_cast<int>(RequesterFrameType::kSameSiteIframe));
+  ExpectUkmValueInEntry("FrameType", FedCmIdpEntry::kEntryName,
+                        static_cast<int>(RequesterFrameType::kSameSiteIframe));
 }
 
 // Test that only top frame URL is available for display when FedCM is called
@@ -522,13 +520,11 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameSiteIframe) {
 
   histogram_tester.ExpectUniqueSample(
       "Blink.FedCm.FrameType",
-      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe), 1);
-  ExpectUkmValueInEntry(
-      "FrameType", FedCmEntry::kEntryName,
-      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
-  ExpectUkmValueInEntry(
-      "FrameType", FedCmIdpEntry::kEntryName,
-      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
+      static_cast<int>(RequesterFrameType::kSameSiteIframe), 1);
+  ExpectUkmValueInEntry("FrameType", FedCmEntry::kEntryName,
+                        static_cast<int>(RequesterFrameType::kSameSiteIframe));
+  ExpectUkmValueInEntry("FrameType", FedCmIdpEntry::kEntryName,
+                        static_cast<int>(RequesterFrameType::kSameSiteIframe));
 }
 
 // Test that both top frame and iframe URLs are available for display when FedCM
@@ -565,13 +561,11 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, CrossSiteIframe) {
 
   histogram_tester.ExpectUniqueSample(
       "Blink.FedCm.FrameType",
-      static_cast<int>(FedCmRequesterFrameType::kCrossSiteIframe), 1);
-  ExpectUkmValueInEntry(
-      "FrameType", FedCmEntry::kEntryName,
-      static_cast<int>(FedCmRequesterFrameType::kCrossSiteIframe));
-  ExpectUkmValueInEntry(
-      "FrameType", FedCmIdpEntry::kEntryName,
-      static_cast<int>(FedCmRequesterFrameType::kCrossSiteIframe));
+      static_cast<int>(RequesterFrameType::kCrossSiteIframe), 1);
+  ExpectUkmValueInEntry("FrameType", FedCmEntry::kEntryName,
+                        static_cast<int>(RequesterFrameType::kCrossSiteIframe));
+  ExpectUkmValueInEntry("FrameType", FedCmIdpEntry::kEntryName,
+                        static_cast<int>(RequesterFrameType::kCrossSiteIframe));
 }
 
 // Tests that preventSilentAccess UKM is not recorded if the embedder does not
@@ -659,7 +653,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
       metric_found = true;
-      EXPECT_EQ(*metric, static_cast<int>(FedCmRequesterFrameType::kMainFrame));
+      EXPECT_EQ(*metric, static_cast<int>(RequesterFrameType::kMainFrame));
     }
   }
   EXPECT_TRUE(metric_found);
@@ -704,8 +698,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
       metric_found = true;
-      EXPECT_EQ(*metric,
-                static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
+      EXPECT_EQ(*metric, static_cast<int>(RequesterFrameType::kSameSiteIframe));
     }
   }
   EXPECT_TRUE(metric_found);
@@ -750,7 +743,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
     if (metric) {
       metric_found = true;
       EXPECT_EQ(*metric,
-                static_cast<int>(FedCmRequesterFrameType::kCrossSiteIframe));
+                static_cast<int>(RequesterFrameType::kCrossSiteIframe));
     }
   }
   EXPECT_TRUE(metric_found);

@@ -130,7 +130,7 @@ class AccountsFetcher {
       std::unique_ptr<IdentityProviderInfo> idp_info,
       std::optional<bool> old_idp_signin_status,
       blink::mojom::FederatedAuthRequestResult result,
-      std::optional<content::FedCmRequestIdTokenStatus> token_status,
+      std::optional<webid::RequestIdTokenStatus> token_status,
       const IdpNetworkRequestManager::FetchStatus& status);
 
   void OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info);

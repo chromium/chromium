@@ -14,8 +14,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/browser/webid/metrics.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
 namespace content {
@@ -30,12 +30,12 @@ class CONTENT_EXPORT ConfigFetcher {
   struct CONTENT_EXPORT FetchError {
     FetchError(const FetchError& info);
     FetchError(blink::mojom::FederatedAuthRequestResult result,
-               FedCmRequestIdTokenStatus token_status,
+               webid::RequestIdTokenStatus token_status,
                std::optional<std::string> additional_console_error_message);
     ~FetchError();
 
     blink::mojom::FederatedAuthRequestResult result;
-    FedCmRequestIdTokenStatus token_status;
+    RequestIdTokenStatus token_status;
     std::optional<std::string> additional_console_error_message;
   };
 
@@ -98,7 +98,7 @@ class CONTENT_EXPORT ConfigFetcher {
   // endpoint fails.
   void OnError(FetchResult& fetch_result,
                blink::mojom::FederatedAuthRequestResult result,
-               content::FedCmRequestIdTokenStatus token_status,
+               webid::RequestIdTokenStatus token_status,
                std::optional<std::string> additional_console_error_message);
 
   void RunCallbackIfDone();

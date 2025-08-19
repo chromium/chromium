@@ -17,8 +17,8 @@
 
 using ::blink::mojom::FederatedAuthRequestResult;
 using LoginState = content::IdentityRequestAccount::LoginState;
-using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
-using TokenStatus = content::FedCmRequestIdTokenStatus;
+using SignInStateMatchStatus = content::webid::SignInStateMatchStatus;
+using TokenStatus = content::webid::RequestIdTokenStatus;
 
 namespace content::webid {
 

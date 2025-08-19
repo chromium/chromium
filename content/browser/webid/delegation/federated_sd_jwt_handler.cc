@@ -171,7 +171,7 @@ void FederatedSdJwtHandler::OnSdJwtParsed(const sdjwt::Jwt& jwt) {
   // TokenStatus type for SD-JWTs.
   federated_auth_request_impl_->CompleteRequest(
       FederatedAuthRequestResult::kSuccess,
-      FedCmRequestIdTokenStatus::kSuccessUsingTokenInHttpResponse,
+      webid::RequestIdTokenStatus::kSuccessUsingTokenInHttpResponse,
       /*token_error=*/std::nullopt, config_url_, token,
       /*should_delay_callback=*/false);
 }

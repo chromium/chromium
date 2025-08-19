@@ -23,9 +23,11 @@ class NamedTrack;
 
 namespace content {
 class BrowserContext;
-enum class FedCmDisconnectStatus;
+namespace webid {
+enum class DisconnectStatus;
+enum class RequesterFrameType;
+}  // namespace webid
 enum class FedCmIdpSigninStatusMode;
-enum class FedCmRequesterFrameType;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 enum class IdpSigninStatus;
@@ -87,7 +89,7 @@ CONTENT_EXPORT std::string GetConsoleErrorMessageFromResult(
 // Returns a string to be used as the console error message for a disconnect()
 // call.
 CONTENT_EXPORT std::string GetDisconnectConsoleErrorMessage(
-    FedCmDisconnectStatus disconnect_status_for_metrics);
+    webid::DisconnectStatus disconnect_status_for_metrics);
 
 // Returns the eTLD+1 for a given url. For localhost, returns the host.
 std::string FormatUrlForDisplay(const GURL& url);
@@ -108,9 +110,10 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
 RequestPageData* GetPageData(Page& page);
 
 // Returns the frame type of the requester.
-FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
-                                                  const url::Origin& requester,
-                                                  const url::Origin& embedder);
+webid::RequesterFrameType ComputeRequesterFrameType(
+    const RenderFrameHost& rfh,
+    const url::Origin& requester,
+    const url::Origin& embedder);
 
 void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,
                                    const char* fetch_description,

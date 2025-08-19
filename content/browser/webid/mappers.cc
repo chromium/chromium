@@ -8,15 +8,15 @@
 #include <vector>
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/metrics.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::RequestTokenStatus;
-using ErrorDialogResult = content::FedCmErrorDialogResult;
+using ErrorDialogResult = content::webid::ErrorDialogResult;
 using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using LifecycleStateImpl = content::RenderFrameHostImpl::LifecycleStateImpl;
 using FederatedApiPermissionStatus =
@@ -182,70 +182,70 @@ MetricsEndpointErrorCode FederatedAuthRequestResultToMetricsEndpointErrorCode(
   }
 }
 
-std::pair<FederatedAuthRequestResult, FedCmRequestIdTokenStatus>
+std::pair<FederatedAuthRequestResult, webid::RequestIdTokenStatus>
 AccountParseStatusToRequestResultAndTokenStatus(ParseStatus parse_status) {
   switch (parse_status) {
     case ParseStatus::kHttpNotFoundError:
       return {FederatedAuthRequestResult::kAccountsHttpNotFound,
-              FedCmRequestIdTokenStatus::kAccountsHttpNotFound};
+              webid::RequestIdTokenStatus::kAccountsHttpNotFound};
     case ParseStatus::kNoResponseError:
       return {FederatedAuthRequestResult::kAccountsNoResponse,
-              FedCmRequestIdTokenStatus::kAccountsNoResponse};
+              webid::RequestIdTokenStatus::kAccountsNoResponse};
     case ParseStatus::kInvalidResponseError:
       return {FederatedAuthRequestResult::kAccountsInvalidResponse,
-              FedCmRequestIdTokenStatus::kAccountsInvalidResponse};
+              webid::RequestIdTokenStatus::kAccountsInvalidResponse};
     case ParseStatus::kEmptyListError:
       return {FederatedAuthRequestResult::kAccountsListEmpty,
-              FedCmRequestIdTokenStatus::kAccountsListEmpty};
+              webid::RequestIdTokenStatus::kAccountsListEmpty};
     case ParseStatus::kInvalidContentTypeError:
       return {FederatedAuthRequestResult::kAccountsInvalidContentType,
-              FedCmRequestIdTokenStatus::kAccountsInvalidContentType};
+              webid::RequestIdTokenStatus::kAccountsInvalidContentType};
     case ParseStatus::kSuccess:
       NOTREACHED() << "Should not be invoked on success";
   }
 }
 
-FedCmLifecycleStateFailureReason
+webid::LifecycleStateFailureReason
 LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
     LifecycleStateImpl lifecycle_state) {
   switch (lifecycle_state) {
     case LifecycleStateImpl::kSpeculative:
-      return FedCmLifecycleStateFailureReason::kSpeculative;
+      return webid::LifecycleStateFailureReason::kSpeculative;
     case LifecycleStateImpl::kPendingCommit:
-      return FedCmLifecycleStateFailureReason::kPendingCommit;
+      return webid::LifecycleStateFailureReason::kPendingCommit;
     case LifecycleStateImpl::kPrerendering:
-      return FedCmLifecycleStateFailureReason::kPrerendering;
+      return webid::LifecycleStateFailureReason::kPrerendering;
     case LifecycleStateImpl::kInBackForwardCache:
-      return FedCmLifecycleStateFailureReason::kInBackForwardCache;
+      return webid::LifecycleStateFailureReason::kInBackForwardCache;
     case LifecycleStateImpl::kRunningUnloadHandlers:
-      return FedCmLifecycleStateFailureReason::kRunningUnloadHandlers;
+      return webid::LifecycleStateFailureReason::kRunningUnloadHandlers;
     case LifecycleStateImpl::kReadyToBeDeleted:
-      return FedCmLifecycleStateFailureReason::kReadyToBeDeleted;
+      return webid::LifecycleStateFailureReason::kReadyToBeDeleted;
     default:
-      return FedCmLifecycleStateFailureReason::kOther;
+      return webid::LifecycleStateFailureReason::kOther;
   }
 }
 
-std::pair<FederatedAuthRequestResult, FedCmRequestIdTokenStatus>
+std::pair<FederatedAuthRequestResult, webid::RequestIdTokenStatus>
 PermissionStatusToRequestResultAndTokenStatus(
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
         permission_status) {
   switch (permission_status) {
     case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
       return {FederatedAuthRequestResult::kDisabledInFlags,
-              FedCmRequestIdTokenStatus::kDisabledInFlags};
+              webid::RequestIdTokenStatus::kDisabledInFlags};
     case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
       return {FederatedAuthRequestResult::kDisabledInSettings,
-              FedCmRequestIdTokenStatus::kDisabledInSettings};
+              webid::RequestIdTokenStatus::kDisabledInSettings};
     case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
       return {FederatedAuthRequestResult::kDisabledInSettings,
-              FedCmRequestIdTokenStatus::kDisabledEmbargo};
+              webid::RequestIdTokenStatus::kDisabledEmbargo};
     case FederatedApiPermissionStatus::GRANTED:
       NOTREACHED() << "Should not be invoked with GRANTED";
   }
 }
 
-FedCmErrorDialogResult DismissReasonToErrorDialogResult(
+webid::ErrorDialogResult DismissReasonToErrorDialogResult(
     IdentityRequestDialogController::DismissReason dismiss_reason,
     bool has_url) {
   switch (dismiss_reason) {
@@ -266,27 +266,27 @@ FedCmErrorDialogResult DismissReasonToErrorDialogResult(
   }
 }
 
-std::pair<FederatedAuthRequestResult, FedCmRequestIdTokenStatus>
+std::pair<FederatedAuthRequestResult, webid::RequestIdTokenStatus>
 IdAssertionFetchStatusToRequestResultAndTokenStatus(
     IdpNetworkRequestManager::FetchStatus status) {
   switch (status.parse_status) {
     case ParseStatus::kHttpNotFoundError:
       return {FederatedAuthRequestResult::kIdTokenHttpNotFound,
-              FedCmRequestIdTokenStatus::kIdTokenHttpNotFound};
+              webid::RequestIdTokenStatus::kIdTokenHttpNotFound};
     case ParseStatus::kNoResponseError: {
       if (status.cors_error) {
         return {FederatedAuthRequestResult::kCorsError,
-                FedCmRequestIdTokenStatus::kIdTokenNoResponse};
+                webid::RequestIdTokenStatus::kIdTokenNoResponse};
       }
       return {FederatedAuthRequestResult::kIdTokenNoResponse,
-              FedCmRequestIdTokenStatus::kIdTokenNoResponse};
+              webid::RequestIdTokenStatus::kIdTokenNoResponse};
     }
     case ParseStatus::kInvalidResponseError:
       return {FederatedAuthRequestResult::kIdTokenInvalidResponse,
-              FedCmRequestIdTokenStatus::kIdTokenInvalidResponse};
+              webid::RequestIdTokenStatus::kIdTokenInvalidResponse};
     case ParseStatus::kInvalidContentTypeError:
       return {FederatedAuthRequestResult::kIdTokenInvalidContentType,
-              FedCmRequestIdTokenStatus::kIdTokenInvalidContentType};
+              webid::RequestIdTokenStatus::kIdTokenInvalidContentType};
     case ParseStatus::kEmptyListError:
       NOTREACHED() << "EmptyListError is not an option for this fetch";
     case IdpNetworkRequestManager::ParseStatus::kSuccess:

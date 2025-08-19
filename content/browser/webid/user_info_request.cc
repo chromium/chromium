@@ -254,10 +254,11 @@ void UserInfoRequest::MaybeReturnAccounts(
     }
   }
 
-  FedCmMetrics::NumAccounts num_accounts = FedCmMetrics::NumAccounts::kZero;
+  webid::Metrics::NumAccounts num_accounts = webid::Metrics::NumAccounts::kZero;
   if (has_returning_accounts) {
-    num_accounts = accounts.size() == 1u ? FedCmMetrics::NumAccounts::kOne
-                                         : FedCmMetrics::NumAccounts::kMultiple;
+    num_accounts = accounts.size() == 1u
+                       ? webid::Metrics::NumAccounts::kOne
+                       : webid::Metrics::NumAccounts::kMultiple;
   }
   base::UmaHistogramEnumeration("Blink.FedCm.UserInfo.NumAccounts",
                                 num_accounts);

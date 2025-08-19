@@ -15,7 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/browser/webid/fedcm_metrics.h"
+#include "content/browser/webid/metrics.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
@@ -39,7 +39,7 @@ using ::testing::Return;
 
 using DisconnectResponse =
     content::IdpNetworkRequestManager::DisconnectResponse;
-using DisconnectStatusForMetrics = content::FedCmDisconnectStatus;
+using DisconnectStatusForMetrics = content::webid::DisconnectStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using blink::mojom::DisconnectStatus;
 
@@ -229,7 +229,7 @@ class FederatedAuthDisconnectRequestTest
     }
 
     auto fedcm_metrics =
-        std::make_unique<FedCmMetrics>(rfh->GetPageUkmSourceId());
+        std::make_unique<webid::Metrics>(rfh->GetPageUkmSourceId());
 
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options =
         blink::mojom::IdentityCredentialDisconnectOptions::New();
@@ -251,7 +251,7 @@ class FederatedAuthDisconnectRequestTest
 
   void ExpectDisconnectMetricsAndConsoleError(
       DisconnectStatusForMetrics status,
-      FedCmRequesterFrameType requester_frame_type,
+      webid::RequesterFrameType requester_frame_type,
       bool should_record_duration) {
     histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
                                          status, 1);
@@ -276,7 +276,7 @@ class FederatedAuthDisconnectRequestTest
 
   void ExpectDisconnectUKM(const char* entry_name,
                            DisconnectStatusForMetrics status,
-                           FedCmRequesterFrameType requester_frame_type,
+                           webid::RequesterFrameType requester_frame_type,
                            bool should_record_duration) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
@@ -368,7 +368,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, Success) {
   EXPECT_TRUE(DidFetchAllEndpoints());
 
   ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
-                                         FedCmRequesterFrameType::kMainFrame,
+                                         webid::RequesterFrameType::kMainFrame,
                                          /*should_record_duration=*/true);
 }
 
@@ -380,7 +380,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
 
   ExpectDisconnectMetricsAndConsoleError(
       DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy,
-      FedCmRequesterFrameType::kMainFrame,
+      webid::RequesterFrameType::kMainFrame,
       /*should_record_duration=*/false);
 }
 
@@ -410,7 +410,7 @@ TEST_F(FederatedAuthDisconnectRequestTest,
   EXPECT_TRUE(DidFetchAllEndpoints());
 
   ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
-                                         FedCmRequesterFrameType::kMainFrame,
+                                         webid::RequesterFrameType::kMainFrame,
                                          /*should_record_duration=*/true);
 }
 
@@ -440,7 +440,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, SameSiteIframe) {
 
   ExpectDisconnectMetricsAndConsoleError(
       DisconnectStatusForMetrics::kSuccess,
-      FedCmRequesterFrameType::kSameSiteIframe,
+      webid::RequesterFrameType::kSameSiteIframe,
       /*should_record_duration=*/true);
 }
 
@@ -472,7 +472,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, CrossSiteIframe) {
 
   ExpectDisconnectMetricsAndConsoleError(
       DisconnectStatusForMetrics::kSuccess,
-      FedCmRequesterFrameType::kCrossSiteIframe,
+      webid::RequesterFrameType::kCrossSiteIframe,
       /*should_record_duration=*/true);
 }
 
@@ -492,7 +492,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, NoAccountToDisconnect) {
 
   ExpectDisconnectMetricsAndConsoleError(
       DisconnectStatusForMetrics::kNoAccountToDisconnect,
-      FedCmRequesterFrameType::kMainFrame,
+      webid::RequesterFrameType::kMainFrame,
       /*should_record_duration=*/false);
 }
 
@@ -507,7 +507,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, DisabledInSettings) {
 
   ExpectDisconnectMetricsAndConsoleError(
       DisconnectStatusForMetrics::kDisabledInSettings,
-      FedCmRequesterFrameType::kMainFrame,
+      webid::RequesterFrameType::kMainFrame,
       /*should_record_duration=*/false);
 }
 
@@ -522,7 +522,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, DisabledInFlags) {
 
   ExpectDisconnectMetricsAndConsoleError(
       DisconnectStatusForMetrics::kDisabledInFlags,
-      FedCmRequesterFrameType::kMainFrame,
+      webid::RequesterFrameType::kMainFrame,
       /*should_record_duration=*/false);
 }
 
@@ -547,7 +547,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, SuccessDespiteEmbargo) {
   EXPECT_TRUE(DidFetchAllEndpoints());
 
   ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
-                                         FedCmRequesterFrameType::kMainFrame,
+                                         webid::RequesterFrameType::kMainFrame,
                                          /*should_record_duration=*/true);
 }
 

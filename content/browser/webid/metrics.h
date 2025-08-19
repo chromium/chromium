@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_
-#define CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_
+#ifndef CONTENT_BROWSER_WEBID_METRICS_H_
+#define CONTENT_BROWSER_WEBID_METRICS_H_
 
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
@@ -19,6 +19,8 @@ class TimeDelta;
 
 namespace content {
 
+namespace webid {
+
 using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 using RpMode = blink::mojom::RpMode;
@@ -26,7 +28,7 @@ using RpMode = blink::mojom::RpMode;
 // This enum describes the status of a request id token call to the FedCM API.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class FedCmRequestIdTokenStatus {
+enum class RequestIdTokenStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
   kSuccessUsingTokenInHttpResponse = 0,
@@ -90,7 +92,7 @@ enum class FedCmRequestIdTokenStatus {
 // match.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class FedCmSignInStateMatchStatus {
+enum class SignInStateMatchStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
   kMatch = 0,
@@ -105,7 +107,7 @@ enum class FedCmSignInStateMatchStatus {
 // the information returned by the accounts endpoint.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class FedCmIdpSigninMatchStatus {
+enum class IdpSigninMatchStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
   kMatchWithAccounts = 0,
@@ -123,7 +125,7 @@ enum class FedCmIdpSigninMatchStatus {
 // This enum describes the type of frame that invokes a FedCM API.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class FedCmRequesterFrameType {
+enum class RequesterFrameType {
   // Do not change the meaning or order of these values since they are being
   // recorded in metrics and in sync with the counterpart in enums.xml.
   kMainFrame = 0,
@@ -136,7 +138,7 @@ enum class FedCmRequesterFrameType {
 // This enum describes the status of a disconnect call to the FedCM API.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class FedCmDisconnectStatus {
+enum class DisconnectStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
   kSuccess = 0,
@@ -165,7 +167,7 @@ enum class FedCmDisconnectStatus {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class FedCmSetLoginStatusIgnoredReason {
+enum class SetLoginStatusIgnoredReason {
   kFrameTreeLookupFailed = 0,
   kInFencedFrame = 1,
   kCrossOrigin = 2,
@@ -176,7 +178,7 @@ enum class FedCmSetLoginStatusIgnoredReason {
 // This enum describes the result of the error dialog.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class FedCmErrorDialogResult {
+enum class ErrorDialogResult {
   kMoreDetails = 0,
   kGotItWithoutMoreDetails = 1,
   kGotItWithMoreDetails = 2,
@@ -193,7 +195,7 @@ enum class FedCmErrorDialogResult {
 // Whether we were able to open the continue_on popup and the reason if not.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class FedCmContinueOnPopupStatus {
+enum class ContinueOnPopupStatus {
   kPopupOpened = 0,
   kUrlNotSameOrigin = 1,
   kPopupNotAllowed = 2,
@@ -205,7 +207,7 @@ enum class FedCmContinueOnPopupStatus {
 // The result of the continue_on popup.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class FedCmContinueOnPopupResult {
+enum class ContinueOnPopupResult {
   kTokenReceived = 0,
   kWindowClosed = 1,
   kClosedByIdentityProviderClose = 2,
@@ -217,7 +219,7 @@ enum class FedCmContinueOnPopupResult {
 // lifecycle state.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class FedCmLifecycleStateFailureReason {
+enum class LifecycleStateFailureReason {
   kOther = 0,
   kSpeculative = 1,
   kPendingCommit = 2,
@@ -232,7 +234,7 @@ enum class FedCmLifecycleStateFailureReason {
 // This enum is used when a token request is invoked while there's a pending
 // one. These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class FedCmMultipleRequestsRpMode {
+enum class MultipleRequestsRpMode {
   kPassiveThenPassive = 0,
   kPassiveThenActive = 1,
   kActiveThenPassive = 2,
@@ -244,7 +246,7 @@ enum class FedCmMultipleRequestsRpMode {
 // This enum tracks whether the RP requested additional scopes and/or
 // parameters. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused.
-enum class FedCmRpParameters {
+enum class RpParameters {
   kHasParameters = 0,
   kHasNonDefaultScope = 1,
   kHasParametersAndNonDefaultScope = 2,
@@ -255,7 +257,7 @@ enum class FedCmRpParameters {
 // This enum tracks the user's result after using a different account. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused.
-enum class FedCmUseOtherAccountResult {
+enum class UseOtherAccountResult {
   kUserSignsInWithNewAccount = 0,
   kUserSignsInWithExistingAccount = 1,
   kUserDoesNotSignIn = 2,
@@ -266,7 +268,7 @@ enum class FedCmUseOtherAccountResult {
 // This enum describes the outcome of the verifying dialog. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
-enum class FedCmVerifyingDialogResult {
+enum class VerifyingDialogResult {
   kSuccessExplicit = 0,
   kSuccessAutoReauthn = 1,
   kCancelExplicit = 2,
@@ -280,18 +282,18 @@ enum class FedCmVerifyingDialogResult {
 // This enum describes the third party cookies status. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
-enum class FedCmThirdPartyCookiesStatus {
+enum class ThirdPartyCookiesStatus {
   kEnabledInSettings = 0,
   kDisabledInSettings = 1,
 
   kMaxValue = kDisabledInSettings
 };
 
-class CONTENT_EXPORT FedCmMetrics {
+class CONTENT_EXPORT Metrics {
  public:
-  explicit FedCmMetrics(const ukm::SourceId page_source_id);
+  explicit Metrics(const ukm::SourceId page_source_id);
 
-  ~FedCmMetrics();
+  ~Metrics();
 
   // Records the number of times navigator.credentials.get() is called in a
   // document. Requests made when FedCM is disabled or when there is a pending
@@ -377,22 +379,22 @@ class CONTENT_EXPORT FedCmMetrics {
   // |requested_providers| contains all IDPs that were requested in the get()
   // call.
   void RecordRequestTokenStatus(
-      FedCmRequestIdTokenStatus status,
+      RequestIdTokenStatus status,
       MediationRequirement requirement,
       const std::vector<GURL>& requested_providers,
       int num_idps_mismatch,
       const std::optional<GURL>& selected_idp_config_url,
       const RpMode& rp_mode,
-      std::optional<FedCmUseOtherAccountResult> use_other_account_result,
-      std::optional<FedCmVerifyingDialogResult> verifying_dialog_result,
-      FedCmThirdPartyCookiesStatus tpc_status,
-      const FedCmRequesterFrameType& requester_frame_type,
+      std::optional<UseOtherAccountResult> use_other_account_result,
+      std::optional<VerifyingDialogResult> verifying_dialog_result,
+      ThirdPartyCookiesStatus tpc_status,
+      const RequesterFrameType& requester_frame_type,
       std::optional<bool> has_signin_account,
       bool did_show_ui);
 
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(const GURL& provider,
-                                    FedCmSignInStateMatchStatus status);
+                                    SignInStateMatchStatus status);
 
   // Records whether the user selected account is for sign-in or not.
   void RecordIsSignInUser(bool is_sign_in);
@@ -453,23 +455,22 @@ class CONTENT_EXPORT FedCmMetrics {
   // disconnect fetch request was not sent, in which case we do not log the
   // metric. Because this is a separate API from a token request, a different
   // session ID is passed to this metric.
-  void RecordDisconnectMetrics(
-      FedCmDisconnectStatus status,
-      std::optional<base::TimeDelta> duration,
-      const FedCmRequesterFrameType& requester_frame_type,
-      const GURL& provider_url);
+  void RecordDisconnectMetrics(DisconnectStatus status,
+                               std::optional<base::TimeDelta> duration,
+                               const RequesterFrameType& requester_frame_type,
+                               const GURL& provider_url);
 
   // Records the status of opening the continue_on dialog.
-  void RecordContinueOnPopupStatus(FedCmContinueOnPopupStatus status);
+  void RecordContinueOnPopupStatus(ContinueOnPopupStatus status);
 
   // Records the outcome of the continue_on dialog.
-  void RecordContinueOnPopupResult(FedCmContinueOnPopupResult result);
+  void RecordContinueOnPopupResult(ContinueOnPopupResult result);
 
   // Records whether parameters or scopes were specified.
-  void RecordRpParameters(FedCmRpParameters parameters);
+  void RecordRpParameters(RpParameters parameters);
 
   // Records the outcome of the error dialog.
-  void RecordErrorDialogResult(FedCmErrorDialogResult result,
+  void RecordErrorDialogResult(ErrorDialogResult result,
                                const GURL& provider_url);
 
   // Records metrics before the error dialog has been shown.
@@ -549,9 +550,8 @@ class CONTENT_EXPORT FedCmMetrics {
 // The following metric is recorded for UMA and UKM, but does not require an
 // existing FedCM call. Records metrics associated with a preventSilentAccess()
 // call from the given RenderFrameHost.
-void RecordPreventSilentAccess(
-    const FedCmRequesterFrameType& requester_frame_type,
-    int source_id);
+void RecordPreventSilentAccess(const RequesterFrameType& requester_frame_type,
+                               int source_id);
 
 // Records the page scroll Y-axis position upon account selection.
 void RecordAccountSelectionScrollPosition(int source_id,
@@ -559,7 +559,7 @@ void RecordAccountSelectionScrollPosition(int source_id,
                                           const gfx::Point& scroll_position);
 
 // The following are UMA-only recordings, hence do not need to be in the
-// FedCmMetrics class.
+// Metrics class.
 
 // Records whether an IDP returns an approved clients list in the response.
 void RecordApprovedClientsExistence(bool has_approved_clients);
@@ -576,11 +576,11 @@ void RecordAccountsResponseInvalidReason(
     IdpNetworkRequestManager::AccountsResponseInvalidReason reason);
 
 // Records the reason why we ignored an attempt to set a login status.
-void RecordSetLoginStatusIgnoredReason(FedCmSetLoginStatusIgnoredReason reason);
+void RecordSetLoginStatusIgnoredReason(SetLoginStatusIgnoredReason reason);
 
 // Records the lifecycle state if we fail a FedCM request due to a page not
 // being primary.
-void RecordLifecycleStateFailureReason(FedCmLifecycleStateFailureReason reason);
+void RecordLifecycleStateFailureReason(LifecycleStateFailureReason reason);
 
 // Records the number of accounts received before applying login/domain hints
 // filter.
@@ -590,6 +590,7 @@ void RecordRawAccountsSize(int size);
 // filter. If no account left, nothing will be recorded.
 void RecordReadyToShowAccountsSize(int size);
 
+}  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_
+#endif  // CONTENT_BROWSER_WEBID_METRICS_H_

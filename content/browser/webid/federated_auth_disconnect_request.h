@@ -17,14 +17,14 @@
 
 namespace content {
 
-class FedCmMetrics;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
 
 namespace webid {
 class ConfigFetcher;
-}
+class Metrics;
+}  // namespace webid
 
 // Fetches data for a FedCM disconnect request.
 class CONTENT_EXPORT FederatedAuthDisconnectRequest {
@@ -34,7 +34,7 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
-      std::unique_ptr<FedCmMetrics> fedcm_metrics,
+      std::unique_ptr<webid::Metrics> fedcm_metrics,
       blink::mojom::IdentityCredentialDisconnectOptionsPtr options);
 
   FederatedAuthDisconnectRequest(const FederatedAuthDisconnectRequest&) =
@@ -58,7 +58,7 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
-      std::unique_ptr<FedCmMetrics> fedcm_metrics,
+      std::unique_ptr<webid::Metrics> fedcm_metrics,
       blink::mojom::IdentityCredentialDisconnectOptionsPtr options);
 
   void OnAllConfigAndWellKnownFetched(
@@ -69,10 +69,10 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
 
   // Records disconnect metrics and completes the request.
   void Complete(blink::mojom::DisconnectStatus status,
-                content::FedCmDisconnectStatus disconnect_status_for_metrics);
+                webid::DisconnectStatus disconnect_status_for_metrics);
 
   void AddConsoleErrorMessage(
-      FedCmDisconnectStatus disconnect_status_for_metrics);
+      webid::DisconnectStatus disconnect_status_for_metrics);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   // Owned by |BrowserContext|
@@ -81,7 +81,7 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
   // Owned by |FederatedAuthRequestImpl|
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
-  std::unique_ptr<FedCmMetrics> fedcm_metrics_;
+  std::unique_ptr<webid::Metrics> fedcm_metrics_;
   std::unique_ptr<webid::ConfigFetcher> config_fetcher_;
   blink::mojom::IdentityCredentialDisconnectOptionsPtr options_;
 
