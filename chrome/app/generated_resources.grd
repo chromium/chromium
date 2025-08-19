@@ -656,7 +656,7 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD" desc="The name of the open a link in Incognito window command">
             Open link in inco&amp;gnito window
           </message>
-          <message name="IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW" translateable="false" desc="The name of the open a link in split view command">
+          <message name="IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW" desc="The name of the open a link in split view command">
             Open link in split view
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENLINKINPROFILES" desc="The name of the open a link as a different user context menu">
@@ -968,7 +968,7 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD" desc="In Title Case: The name of the open a link in Incognito window command">
             Open Link in Inco&amp;gnito Window
           </message>
-          <message name="IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW" translateable="false" desc="The name of the open a link in split view command">
+          <message name="IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW" desc="The name of the open a link in split view command">
             Open Link in Split View
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENLINKINPROFILES" desc="In Title Case: The name of the open a link as a different user context menu">
@@ -11709,96 +11709,84 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Side By Side Resize Handle
       </message>
       <if expr="not use_titlecase">
-        <message name="IDS_PIN_SPLIT_TAB_TOGGLE" translateable="false" desc="Pins the split tabs button to the toolbar when toggled on.">
+        <message name="IDS_PIN_SPLIT_TAB_TOGGLE" desc="Pins the split tabs button to the toolbar when toggled on.">
           Open in split view
         </message>
-        <message name="IDS_SPLIT_TAB_REVERSE_VIEWS" translateable="false" desc="The label for a menu item that swaps the inactive split tab to the other side when clicked.">
+        <message name="IDS_SPLIT_TAB_REVERSE_VIEWS" desc="The label for a menu item that swaps the inactive split tab to the other side when clicked.">
           Reverse views
         </message>
-        <message name="IDS_SPLIT_TAB_HORIZONTAL_LAYOUT" translateable="false" desc="The label for a menu item that switches the split tab layout from vertical to horizontal when clicked.">
-          Switch to horizontal layout
-        </message>
-        <message name="IDS_SPLIT_TAB_VERTICAL_LAYOUT" translateable="false" desc="The label for a menu item that switches the split tab layout from horizontal to vertical when clicked.">
-          Switch to vertical layout
-        </message>
-        <message name="IDS_SPLIT_TAB_CLOSE" translateable="false" desc="The label for a menu item that closes the inactive split tab when clicked.">
+        <message name="IDS_SPLIT_TAB_CLOSE" desc="The label for a menu item that closes the inactive split tab when clicked.">
           Close this view
         </message>
-        <message name="IDS_SPLIT_TAB_CLOSE_LEFT_VIEW" translateable="false" desc="The label for a menu item that closes the left view in the active split.">
+        <message name="IDS_SPLIT_TAB_CLOSE_LEFT_VIEW" desc="The label for a menu item that closes the left view in the active split.">
           Close left view
         </message>
-        <message name="IDS_SPLIT_TAB_CLOSE_RIGHT_VIEW" translateable="false" desc="The label for a menu item that closes the right view in the active split.">
+        <message name="IDS_SPLIT_TAB_CLOSE_RIGHT_VIEW" desc="The label for a menu item that closes the right view in the active split.">
           Close right view
         </message>
-        <message name="IDS_SPLIT_TAB_CLOSE_TOP_VIEW" translateable="false" desc="The label for a menu item that closes the top view in the active split.">
+        <message name="IDS_SPLIT_TAB_CLOSE_TOP_VIEW" desc="The label for a menu item that closes the top view in the active split.">
           Close top view
         </message>
-        <message name="IDS_SPLIT_TAB_CLOSE_BOTTOM_VIEW" translateable="false" desc="The label for a menu item that closes the bottom view in the active split.">
+        <message name="IDS_SPLIT_TAB_CLOSE_BOTTOM_VIEW" desc="The label for a menu item that closes the bottom view in the active split.">
           Close bottom view
         </message>
-        <message name="IDS_SPLIT_TAB_SEPARATE_VIEWS" translateable="false" desc="The label for a menu item that unsplits the split tab when clicked.">
+        <message name="IDS_SPLIT_TAB_SEPARATE_VIEWS" desc="The label for a menu item that unsplits the split tab when clicked.">
           Separate views
         </message>
-        <message name="IDS_SPLIT_TAB_SWAP_LEFT_VIEW" translateable="false" desc="The label for a menu item that swaps the left view in the active split with the selected tab.">
+        <message name="IDS_SPLIT_TAB_SWAP_LEFT_VIEW" desc="The label for a menu item that swaps the left view in the active split with the selected tab.">
           Swap with left view
         </message>
-        <message name="IDS_SPLIT_TAB_SWAP_RIGHT_VIEW" translateable="false" desc="The label for a menu item that swaps the right view in the active split with the selected tab.">
+        <message name="IDS_SPLIT_TAB_SWAP_RIGHT_VIEW" desc="The label for a menu item that swaps the right view in the active split with the selected tab.">
           Swap with right view
         </message>
-        <message name="IDS_SPLIT_TAB_SWAP_TOP_VIEW" translateable="false" desc="The label for a menu item that swaps the top view in the active split with the selected tab.">
+        <message name="IDS_SPLIT_TAB_SWAP_TOP_VIEW" desc="The label for a menu item that swaps the top view in the active split with the selected tab.">
           Swap with top view
         </message>
-        <message name="IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW" translateable="false" desc="The label for a menu item that swaps the bottom view in the active split with the selected tab.">
+        <message name="IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW" desc="The label for a menu item that swaps the bottom view in the active split with the selected tab.">
           Swap with bottom view
         </message>
-        <message name="IDS_SPLIT_TAB_SEND_FEEDBACK" translateable="false" desc="The label for a menu item that opens a dialog to send feedback.">
+        <message name="IDS_SPLIT_TAB_SEND_FEEDBACK" desc="The label for a menu item that opens a dialog to send feedback.">
           Send feedback
         </message>
       </if>
       <if expr="use_titlecase">
-        <message name="IDS_PIN_SPLIT_TAB_TOGGLE" translateable="false" desc="In title case: pins the split tabs button to the toolbar when toggled on.">
+        <message name="IDS_PIN_SPLIT_TAB_TOGGLE" desc="In title case: pins the split tabs button to the toolbar when toggled on.">
           Open In Split View
         </message>
-        <message name="IDS_SPLIT_TAB_REVERSE_VIEWS" translateable="false" desc="In title case: the label for a menu item that swaps the inactive split tab to the other side when clicked.">
+        <message name="IDS_SPLIT_TAB_REVERSE_VIEWS" desc="In title case: the label for a menu item that swaps the inactive split tab to the other side when clicked.">
           Reverse Views
         </message>
-        <message name="IDS_SPLIT_TAB_HORIZONTAL_LAYOUT" translateable="false" desc="In title case: the label for a menu item that switches the split tab layout from vertical to horizontal when clicked.">
-          Switch to Horizontal Layout
-        </message>
-        <message name="IDS_SPLIT_TAB_VERTICAL_LAYOUT" translateable="false" desc="In title case: the label for a menu item that switches the split tab layout from horizontal to vertical when clicked.">
-          Switch to Vertical Layout
-        </message>
-        <message name="IDS_SPLIT_TAB_CLOSE" translateable="false" desc="In title case: the label for a menu item that closes the inactive split tab when clicked.">
+        <message name="IDS_SPLIT_TAB_CLOSE" desc="In title case: the label for a menu item that closes the inactive split tab when clicked.">
           Close This View
         </message>
-        <message name="IDS_SPLIT_TAB_CLOSE_LEFT_VIEW" translateable="false" desc="In title case: the label for a menu item that closes the left view in the active split.">
+        <message name="IDS_SPLIT_TAB_CLOSE_LEFT_VIEW" desc="In title case: the label for a menu item that closes the left view in the active split.">
           Close Left View
         </message>
-        <message name="IDS_SPLIT_TAB_CLOSE_RIGHT_VIEW" translateable="false" desc="In title case: the label for a menu item that closes the right view in the active split.">
+        <message name="IDS_SPLIT_TAB_CLOSE_RIGHT_VIEW" desc="In title case: the label for a menu item that closes the right view in the active split.">
           Close Right View
         </message>
-        <message name="IDS_SPLIT_TAB_CLOSE_TOP_VIEW" translateable="false" desc="In title case: the label for a menu item that closes the top view in the active split.">
+        <message name="IDS_SPLIT_TAB_CLOSE_TOP_VIEW" desc="In title case: the label for a menu item that closes the top view in the active split.">
           Close Top View
         </message>
-        <message name="IDS_SPLIT_TAB_CLOSE_BOTTOM_VIEW" translateable="false" desc="In title case: the label for a menu item that closes the bottom view in the active split.">
+        <message name="IDS_SPLIT_TAB_CLOSE_BOTTOM_VIEW" desc="In title case: the label for a menu item that closes the bottom view in the active split.">
           Close Bottom View
         </message>
-        <message name="IDS_SPLIT_TAB_SEPARATE_VIEWS" translateable="false" desc="In title case: the label for a menu item that unsplits the split tab when clicked.">
+        <message name="IDS_SPLIT_TAB_SEPARATE_VIEWS" desc="In title case: the label for a menu item that unsplits the split tab when clicked.">
           Separate Views
         </message>
-        <message name="IDS_SPLIT_TAB_SWAP_LEFT_VIEW" translateable="false" desc="In title case: The label for a menu item that swaps the left view in the active split with the selected tab.">
+        <message name="IDS_SPLIT_TAB_SWAP_LEFT_VIEW" desc="In title case: The label for a menu item that swaps the left view in the active split with the selected tab.">
           Swap with Left View
         </message>
-        <message name="IDS_SPLIT_TAB_SWAP_RIGHT_VIEW" translateable="false" desc="In title case: The label for a menu item that swaps the right view in the active split with the selected tab.">
+        <message name="IDS_SPLIT_TAB_SWAP_RIGHT_VIEW" desc="In title case: The label for a menu item that swaps the right view in the active split with the selected tab.">
           Swap with Right View
         </message>
-        <message name="IDS_SPLIT_TAB_SWAP_TOP_VIEW" translateable="false" desc="In title case: The label for a menu item that swaps the top view in the active split with the selected tab.">
+        <message name="IDS_SPLIT_TAB_SWAP_TOP_VIEW" desc="In title case: The label for a menu item that swaps the top view in the active split with the selected tab.">
           Swap with Top View
         </message>
-        <message name="IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW" translateable="false" desc="In title case: The label for a menu item that swaps the bottom view in the active split with the selected tab.">
+        <message name="IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW" desc="In title case: The label for a menu item that swaps the bottom view in the active split with the selected tab.">
           Swap with Bottom View
         </message>
-        <message name="IDS_SPLIT_TAB_SEND_FEEDBACK" translateable="false" desc="The label for a menu item that opens a dialog to send feedback.">
+        <message name="IDS_SPLIT_TAB_SEND_FEEDBACK" desc="The label for a menu item that opens a dialog to send feedback.">
           Send Feedback
         </message>
       </if>
