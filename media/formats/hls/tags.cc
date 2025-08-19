@@ -1223,7 +1223,7 @@ ParseStatus::Or<XByteRangeTag> XByteRangeTag::Parse(TagItem tag) {
         .AddCause(std::move(range).error());
   }
 
-  return XByteRangeTag{.range = std::move(range).value()};
+  return XByteRangeTag(std::move(range).value());
 }
 
 // static

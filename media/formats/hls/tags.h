@@ -223,6 +223,12 @@ struct MEDIA_EXPORT XBitrateTag {
 struct MEDIA_EXPORT XByteRangeTag {
   static constexpr auto kName = MediaPlaylistTagName::kXByteRange;
   static ParseStatus::Or<XByteRangeTag> Parse(TagItem);
+  explicit XByteRangeTag(types::parsing::ByteRangeExpression range)
+      : range(std::move(range)) {}
+  XByteRangeTag(const XByteRangeTag& other) = default;
+  XByteRangeTag(XByteRangeTag&& other) = default;
+  XByteRangeTag& operator=(const XByteRangeTag& other) = default;
+  XByteRangeTag& operator=(XByteRangeTag&& other) = default;
 
   types::parsing::ByteRangeExpression range;
 };

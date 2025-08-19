@@ -82,6 +82,15 @@ ResolvedSourceString SourceString::SkipVariableSubstitution() const {
                                       Column(), Str());
 }
 
+ResolvedSourceString::ResolvedSourceString(const ResolvedSourceString& other) =
+    default;
+ResolvedSourceString::ResolvedSourceString(ResolvedSourceString&& other) =
+    default;
+ResolvedSourceString& ResolvedSourceString::operator=(
+    const ResolvedSourceString& other) = default;
+ResolvedSourceString& ResolvedSourceString::operator=(
+    ResolvedSourceString&& other) = default;
+
 SourceLineIterator::SourceLineIterator(std::string_view source)
     : current_line_(1), source_(source) {}
 

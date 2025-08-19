@@ -135,6 +135,11 @@ class MEDIA_EXPORT ResolvedSourceString final
     return substitution_state_ == SubstitutionState::kContainsSubstitutions;
   }
 
+  ResolvedSourceString(const ResolvedSourceString& other);
+  ResolvedSourceString(ResolvedSourceString&& other);
+  ResolvedSourceString& operator=(const ResolvedSourceString& other);
+  ResolvedSourceString& operator=(ResolvedSourceString&& other);
+
  private:
   friend SourceStringBase;
   ResolvedSourceString(size_t line,
