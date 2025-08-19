@@ -340,6 +340,8 @@ struct PassportEntityOptionsT {
   std::string_view nickname = "Passie";
   base::Time date_modified = kJune2017;
   std::string_view app_locale = "en-US";
+  EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+      EntityInstance::AreAttributesReadOnly(false);
 };
 using PassportEntityOptions = PassportEntityOptionsT<>;
 

@@ -293,5 +293,21 @@ TEST(AutofillEntityInstanceTest, FrecencyOrder_SortEntitiesByFrecency) {
   EXPECT_EQ(entities[0].guid(), top_entity.guid());
 }
 
+TEST(AutofillEntityInstanceTest, AreAttributesReadOnly_ForReadOnlyEntity) {
+  EntityInstance entity = test::GetPassportEntityInstance(
+      {.are_attributes_read_only =
+           EntityInstance::AreAttributesReadOnly{true}});
+
+  EXPECT_TRUE(entity.are_attributes_read_only());
+}
+
+TEST(AutofillEntityInstanceTest, AreAttributesReadOnly_ForMutableEntity) {
+  EntityInstance entity = test::GetPassportEntityInstance(
+      {.are_attributes_read_only =
+           EntityInstance::AreAttributesReadOnly{false}});
+
+  EXPECT_FALSE(entity.are_attributes_read_only());
+}
+
 }  // namespace
 }  // namespace autofill

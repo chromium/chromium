@@ -205,6 +205,11 @@ struct AttributeInstance::CompareByType {
 // metadata. The type is an EntityType.
 class EntityInstance final {
  public:
+  // Controls whether the attributes of the entity instance can be edited by the
+  // user.
+  using AreAttributesReadOnly =
+      base::StrongAlias<class AreAttributesReadOnlyTag, bool>;
+
   // `attributes` must be non-empty and their type must be identical to `type`.
   EntityInstance(EntityType type,
                  base::flat_set<AttributeInstance,
@@ -213,7 +218,9 @@ class EntityInstance final {
                  std::string nickname,
                  base::Time date_modified,
                  size_t use_count,
-                 base::Time use_date);
+                 base::Time use_date,
+                 AreAttributesReadOnly are_attributes_read_only =
+                     AreAttributesReadOnly(false));
 
   EntityInstance(const EntityInstance&);
   EntityInstance& operator=(const EntityInstance&);
@@ -274,6 +281,12 @@ class EntityInstance final {
   // Returns how many times an entity was used to fill a form.
   size_t use_count() const { return use_count_; }
 
+  // Returns true if the attributes of this entity instance cannot be edited by
+  // the user.
+  AreAttributesReadOnly are_attributes_read_only() const {
+    return are_attributes_read_only_;
+  }
+
   struct EntityMergeability {
     EntityMergeability();
     EntityMergeability(std::vector<AttributeInstance> mergeable_attributes,
@@ -320,6 +333,7 @@ class EntityInstance final {
   base::Time date_modified_;
   size_t use_count_;
   base::Time use_date_;
+  AreAttributesReadOnly are_attributes_read_only_;
 };
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a);

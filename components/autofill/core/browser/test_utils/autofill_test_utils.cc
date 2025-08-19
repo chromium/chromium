@@ -925,7 +925,7 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
       EntityType(EntityTypeName::kPassport), std::move(attributes),
       base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
       base::Time::FromTimeT(options.date_modified.ToTimeT()), /*use_count=*/0,
-      /*use_date=*/base::Time::FromTimeT(0));
+      /*use_date=*/base::Time::FromTimeT(0), options.are_attributes_read_only);
 }
 
 EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {

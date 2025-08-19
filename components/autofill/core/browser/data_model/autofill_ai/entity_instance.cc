@@ -286,14 +286,16 @@ EntityInstance::EntityInstance(
     std::string nickname,
     base::Time date_modified,
     size_t use_count,
-    base::Time use_date)
+    base::Time use_date,
+    AreAttributesReadOnly are_attributes_read_only)
     : type_(type),
       attributes_(std::move(attributes)),
       guid_(std::move(guid)),
       nickname_(std::move(nickname)),
       date_modified_(date_modified),
       use_count_(use_count),
-      use_date_(use_date) {
+      use_date_(use_date),
+      are_attributes_read_only_(are_attributes_read_only) {
   DCHECK(!attributes_.empty());
   DCHECK(std::ranges::all_of(attributes_, [this](const AttributeInstance& a) {
     return type_ == a.type().entity_type();
