@@ -230,19 +230,25 @@ DocumentMarkerController::DocumentMarkerController(Document& document)
   markers_.Grow(DocumentMarker::kMarkerTypeIndexesCount);
 }
 
-void DocumentMarkerController::AddSpellingMarker(const EphemeralRange& range,
-                                                 const String& description) {
-  AddMarkerInternal(range, [&description](int start_offset, int end_offset) {
-    return MakeGarbageCollected<SpellingMarker>(start_offset, end_offset,
-                                                description);
+void DocumentMarkerController::AddSpellingMarker(
+    const EphemeralRange& range,
+    const String& description,
+    bool should_hide_suggestion_menu) {
+  AddMarkerInternal(range, [&description, &should_hide_suggestion_menu](
+                               int start_offset, int end_offset) {
+    return MakeGarbageCollected<SpellingMarker>(
+        start_offset, end_offset, description, should_hide_suggestion_menu);
   });
 }
 
-void DocumentMarkerController::AddGrammarMarker(const EphemeralRange& range,
-                                                const String& description) {
-  AddMarkerInternal(range, [&description](int start_offset, int end_offset) {
-    return MakeGarbageCollected<GrammarMarker>(start_offset, end_offset,
-                                               description);
+void DocumentMarkerController::AddGrammarMarker(
+    const EphemeralRange& range,
+    const String& description,
+    bool should_hide_suggestion_menu) {
+  AddMarkerInternal(range, [&description, &should_hide_suggestion_menu](
+                               int start_offset, int end_offset) {
+    return MakeGarbageCollected<GrammarMarker>(
+        start_offset, end_offset, description, should_hide_suggestion_menu);
   });
 }
 
