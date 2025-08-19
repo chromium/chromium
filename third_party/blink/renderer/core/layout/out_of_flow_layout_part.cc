@@ -679,6 +679,10 @@ LogicalRect OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
   rect.ContractEdges(insets.block_start, insets.inline_end, insets.block_end,
                      insets.inline_start);
 
+  if (RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+    return rect;
+  }
+
   const LogicalOffset logical_shift =
       WritingModeConverter(container_info.writing_direction, PhysicalSize())
           .ToLogical(default_anchor_scroll_shift, PhysicalSize());

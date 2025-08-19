@@ -750,6 +750,13 @@ crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/styling/use-element-att
 crbug.com/40550039 external/wpt/svg/styling/use-element-id-selector-transition.html [ Failure ]
 crbug.com/40550039 external/wpt/svg/styling/use-element-transitions-dom-mutation.html [ Failure ]
 
+# CSS Anchor Positioning Update failures.
+crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-001.tentative.html [ Failure ]
+crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-002.tentative.html [ Failure ]
+crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-003.tentative.html [ Failure ]
+crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-005.html [ Failure ]
+crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-006.html [ Failure ]
+crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-007.html [ Failure ]
 
 # ====== Paint team owned tests to here ======
 
