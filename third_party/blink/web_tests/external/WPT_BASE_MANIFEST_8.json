@@ -419654,7 +419654,7 @@
      []
     ],
     "html.idl": [
-     "acb1b57ffe866059960c51f0cd9346a377cfb2f2",
+     "f8aee09f58c3549618e51702a561055f8b9cdbc4",
      []
     ],
     "idle-detection.idl": [
@@ -434767,10 +434767,6 @@
      "dd91c362b94fb47cf6aee4317d57d18117b3b4c1",
      []
     ],
-    "idlharness.window-expected.txt": [
-     "78cca13cca45689ee1e9aa941a711856f4b44a4b",
-     []
-    ],
     "webspeech.js": [
      "f2f51b694c6f3e2e0edcb7c7bebb02ae6dd90249",
      []
@@ -441516,7 +441512,7 @@
      []
     ],
     "README.md": [
-     "376308b5d1d3ac4f0f4740505b42000cecaa1039",
+     "1f4fccd41565e2b6f64c026d1ed5fd141bf93205",
      []
     ],
     "WEB_FEATURES.yml": [
@@ -441679,6 +441675,30 @@
      "512a2b855e8c92d9c3e51f7cfa6c2e74b2014928",
      []
     ],
+    "four-colors-full-range-hlg-420-10bpc.avif": [
+     "8209e763f52a0db628dd384dccdd5448a2d60bcb",
+     []
+    ],
+    "four-colors-full-range-hlg-420-12bpc.avif": [
+     "79103149b71bc94ad50c47156322b79b0a847bb5",
+     []
+    ],
+    "four-colors-full-range-hlg-422-10bpc.avif": [
+     "0699fc09ac69e07da298dfee4d6540b2ed44f127",
+     []
+    ],
+    "four-colors-full-range-hlg-422-12bpc.avif": [
+     "93ef46ad29c87af27c3412a1285e074e5224590b",
+     []
+    ],
+    "four-colors-full-range-hlg-444-10bpc.avif": [
+     "3da7037c110cd90a4e0c501b88b2e59e77232201",
+     []
+    ],
+    "four-colors-full-range-hlg-444-12bpc.avif": [
+     "85db04ec2029effb072ffd6433fc9d7dc345ef82",
+     []
+    ],
     "four-colors-limited-range-420-8bpc.avif": [
      "925477b04ca4a847f47bc78293c9f842cdc25cbe",
      []
@@ -441740,7 +441760,7 @@
      []
     ],
     "image-decoder-utils.js": [
-     "eccab9b09a4ac32f5d792c82d99c2cc36f1e35ab",
+     "cf389620e14d48f4489835f218a780cbd5824d38",
      []
     ],
     "image-decoder.crossOriginIsolated.https.any.js.headers": [
@@ -728875,10 +728895,10 @@
       {}
      ]
     ],
-    "idlharness.window.js": [
+    "idlharness.https.window.js": [
      "77eb6a1be9083214d78d8d4c659952b18be4db8e",
      [
-      "speech-api/idlharness.window.html",
+      "speech-api/idlharness.https.window.html",
       {
        "script_metadata": [
         [
@@ -772530,7 +772550,7 @@
      ]
     ],
     "image-decoder.https.any.js": [
-     "9ca28e49c4a2b5254c2f3c18664809bad9384b05",
+     "9469f51914f01307f32b7ab20065f2fd2ffdc8a3",
      [
       "webcodecs/image-decoder.https.any.html",
       {
