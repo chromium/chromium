@@ -7,6 +7,8 @@
 #include "base/byte_count.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_collector.h"
 
+TabResourceUsage::TabResourceUsage() = default;
+
 void TabResourceUsage::SetMemoryUsage(base::ByteCount memory_usage) {
   memory_usage_ = memory_usage;
   is_high_memory_usage_ = memory_usage_ > kHighMemoryUsageThreshold;

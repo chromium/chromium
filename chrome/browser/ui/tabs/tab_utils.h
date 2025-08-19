@@ -21,6 +21,8 @@ class WebContents;
 
 struct LastMuteMetadata
     : public content::WebContentsUserData<LastMuteMetadata> {
+  ~LastMuteMetadata() override;
+
   TabMutedReason reason = TabMutedReason::NONE;
   std::string extension_id;  // Only valid when |reason| is EXTENSION.
 

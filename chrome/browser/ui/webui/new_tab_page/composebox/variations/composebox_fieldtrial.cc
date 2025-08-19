@@ -122,4 +122,10 @@ FeatureConfig::FeatureConfig()
     : enabled(base::FeatureList::IsEnabled(kNtpComposebox)),
       config(GetNTPComposeboxConfig()) {}
 
+FeatureConfig::FeatureConfig(const FeatureConfig&) = default;
+FeatureConfig::FeatureConfig(FeatureConfig&&) = default;
+FeatureConfig& FeatureConfig::operator=(const FeatureConfig&) = default;
+FeatureConfig& FeatureConfig::operator=(FeatureConfig&&) = default;
+FeatureConfig::~FeatureConfig() = default;
+
 }  // namespace ntp_composebox

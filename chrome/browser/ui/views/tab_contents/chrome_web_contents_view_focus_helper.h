@@ -27,6 +27,7 @@ class ChromeWebContentsViewFocusHelper
       delete;
   ChromeWebContentsViewFocusHelper& operator=(
       const ChromeWebContentsViewFocusHelper&) = delete;
+  ~ChromeWebContentsViewFocusHelper() override;
 
   void StoreFocus();
   bool RestoreFocus();

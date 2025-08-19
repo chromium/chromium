@@ -83,5 +83,6 @@ bool AreAllSitesMuted(const TabStripModel& tab_strip,
 
 LastMuteMetadata::LastMuteMetadata(content::WebContents* contents)
     : content::WebContentsUserData<LastMuteMetadata>(*contents) {}
+LastMuteMetadata::~LastMuteMetadata() = default;
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LastMuteMetadata);

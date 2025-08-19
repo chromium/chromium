@@ -31,6 +31,12 @@ struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
   // The configuration proto for the feature.
   omnibox::NTPComposeboxConfig config;
 
+  FeatureConfig(const FeatureConfig&);
+  FeatureConfig(FeatureConfig&&);
+  FeatureConfig& operator=(const FeatureConfig&);
+  FeatureConfig& operator=(FeatureConfig&&);
+  ~FeatureConfig();
+
  private:
   friend class omnibox_feature_configs::Config<FeatureConfig>;
   friend class omnibox_feature_configs::ScopedConfigForTesting<FeatureConfig>;

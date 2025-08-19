@@ -19,7 +19,7 @@ class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
   // Threshold was selected based on the 99th percentile of tab memory usage.
   static constexpr base::ByteCount kHighMemoryUsageThreshold = base::MiB(800);
 
-  TabResourceUsage() = default;
+  TabResourceUsage();
 
   base::ByteCount memory_usage() const { return memory_usage_; }
 
