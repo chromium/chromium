@@ -99,6 +99,7 @@ if (current_toolchain == default_toolchain) {
       "file_download.icon",
       "file_download_chrome_refresh.icon",
       "file_download_off_chrome_refresh.icon",
+      "filter.icon",
       "fingerprint.icon",
       "fingerprint_off.icon",
       "folder.icon",

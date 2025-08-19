@@ -143,7 +143,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "facegaze.icon",
     "feedback.icon",
     "files_app.icon",
-    "filter.icon",
     "five_files.icon",
     "focus_mode_lamp.icon",
     "focus_sounds.icon",
