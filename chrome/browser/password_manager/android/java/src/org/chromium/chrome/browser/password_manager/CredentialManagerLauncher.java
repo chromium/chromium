@@ -24,7 +24,6 @@ public interface CredentialManagerLauncher {
      * out of this class.
      */
     @IntDef({
-        CredentialManagerError.NO_CONTEXT,
         CredentialManagerError.NO_ACCOUNT_NAME,
         CredentialManagerError.UNCATEGORIZED,
         CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED,
@@ -37,7 +36,8 @@ public interface CredentialManagerLauncher {
     @Retention(RetentionPolicy.SOURCE)
     public @interface CredentialManagerError {
         // There is no application context.
-        int NO_CONTEXT = 0;
+        // Obsolete.
+        // int NO_CONTEXT = 0;
 
         // The provided account name is empty
         int NO_ACCOUNT_NAME = 1;

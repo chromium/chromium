@@ -351,7 +351,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="CredentialManagerError">
-  <int value="0" label="No context"/>
+  <int value="0" label="(Obsolete) No context"/>
   <int value="1" label="Provided account is empty"/>
   <int value="2" label="(Obsolete) API error"/>
   <int value="3" label="Uncategorized error"/>

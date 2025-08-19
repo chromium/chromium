@@ -151,8 +151,10 @@ public class PasswordCheckupClientMetricsRecorderTest {
                 new PasswordCheckupClientMetricsRecorder(operation);
         metricsRecorder.recordMetrics(
                 Optional.of(
-                        new PasswordCheckBackendException("", CredentialManagerError.NO_CONTEXT)));
-        checkHistogramsOnFailure(operation, CredentialManagerError.NO_CONTEXT, OptionalInt.empty());
+                        new PasswordCheckBackendException(
+                                "", CredentialManagerError.BACKEND_NOT_AVAILABLE)));
+        checkHistogramsOnFailure(
+                operation, CredentialManagerError.BACKEND_NOT_AVAILABLE, OptionalInt.empty());
     }
 
     @Test
@@ -163,8 +165,10 @@ public class PasswordCheckupClientMetricsRecorderTest {
                 new PasswordCheckupClientMetricsRecorder(operation);
         metricsRecorder.recordMetrics(
                 Optional.of(
-                        new PasswordCheckBackendException("", CredentialManagerError.NO_CONTEXT)));
-        checkHistogramsOnFailure(operation, CredentialManagerError.NO_CONTEXT, OptionalInt.empty());
+                        new PasswordCheckBackendException(
+                                "", CredentialManagerError.BACKEND_NOT_AVAILABLE)));
+        checkHistogramsOnFailure(
+                operation, CredentialManagerError.BACKEND_NOT_AVAILABLE, OptionalInt.empty());
     }
 
     @Test
@@ -174,8 +178,10 @@ public class PasswordCheckupClientMetricsRecorderTest {
                 new PasswordCheckupClientMetricsRecorder(operation);
         metricsRecorder.recordMetrics(
                 Optional.of(
-                        new PasswordCheckBackendException("", CredentialManagerError.NO_CONTEXT)));
-        checkHistogramsOnFailure(operation, CredentialManagerError.NO_CONTEXT, OptionalInt.empty());
+                        new PasswordCheckBackendException(
+                                "", CredentialManagerError.BACKEND_NOT_AVAILABLE)));
+        checkHistogramsOnFailure(
+                operation, CredentialManagerError.BACKEND_NOT_AVAILABLE, OptionalInt.empty());
     }
 
     @Test
@@ -185,8 +191,10 @@ public class PasswordCheckupClientMetricsRecorderTest {
                 new PasswordCheckupClientMetricsRecorder(operation);
         metricsRecorder.recordMetrics(
                 Optional.of(
-                        new PasswordCheckBackendException("", CredentialManagerError.NO_CONTEXT)));
-        checkHistogramsOnFailure(operation, CredentialManagerError.NO_CONTEXT, OptionalInt.empty());
+                        new PasswordCheckBackendException(
+                                "", CredentialManagerError.BACKEND_NOT_AVAILABLE)));
+        checkHistogramsOnFailure(
+                operation, CredentialManagerError.BACKEND_NOT_AVAILABLE, OptionalInt.empty());
     }
 
     @Test
@@ -196,8 +204,10 @@ public class PasswordCheckupClientMetricsRecorderTest {
                 new PasswordCheckupClientMetricsRecorder(operation);
         metricsRecorder.recordMetrics(
                 Optional.of(
-                        new PasswordCheckBackendException("", CredentialManagerError.NO_CONTEXT)));
-        checkHistogramsOnFailure(operation, CredentialManagerError.NO_CONTEXT, OptionalInt.empty());
+                        new PasswordCheckBackendException(
+                                "", CredentialManagerError.BACKEND_NOT_AVAILABLE)));
+        checkHistogramsOnFailure(
+                operation, CredentialManagerError.BACKEND_NOT_AVAILABLE, OptionalInt.empty());
     }
 
     @Test
