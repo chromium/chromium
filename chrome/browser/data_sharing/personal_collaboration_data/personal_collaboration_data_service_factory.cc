@@ -52,11 +52,10 @@ PersonalCollaborationDataServiceFactory::
 std::unique_ptr<KeyedService>
 PersonalCollaborationDataServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // This service should only be accessed when data sharing feature is enabled.
-  CHECK(data_sharing::features::IsDataSharingFunctionalityEnabled());
   CHECK(!context->IsOffTheRecord());
   if (!base::FeatureList::IsEnabled(
-          features::kDataSharingAccountDataMigration)) {
+          features::kDataSharingAccountDataMigration) ||
+      !data_sharing::features::IsDataSharingFunctionalityEnabled()) {
     return nullptr;
   }
 

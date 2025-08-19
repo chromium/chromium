@@ -179,6 +179,8 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     signin::IdentityManager* identity_manager,
+    data_sharing::personal_collaboration_data::PersonalCollaborationDataService*
+        personal_collaboration_data_service,
     std::unique_ptr<CollaborationFinder> collaboration_finder,
     data_sharing::Logger* logger)
     : model_(std::move(model)),
@@ -196,11 +198,16 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
       versioning_message_controller_(
           std::make_unique<VersioningMessageControllerImpl>(pref_service_,
                                                             this)) {
-  if (shared_tab_group_account_configuration) {
+  if (personal_collaboration_data_service) {
+    personal_collaboration_data_handler_ =
+        std::make_unique<TabGroupSyncPersonalCollaborationDataHandler>(
+            model_.get(), personal_collaboration_data_service);
+  } else if (shared_tab_group_account_configuration) {
     shared_tab_group_account_data_bridge_ =
         std::make_unique<SharedTabGroupAccountDataSyncBridge>(
             std::move(shared_tab_group_account_configuration), *model_);
   }
+
   collaboration_finder_->SetClient(this);
   model_->AddObserver(this);
   if (opt_guide_) {

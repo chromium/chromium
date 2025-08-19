@@ -95,7 +95,7 @@ static_library("personal_collaboration_data_internal") {
 
   deps = [
     "//base",
-    "//components/data_sharing/public",
+    "//components/data_sharing/public:personal_collaboration_data",
     "//components/keyed_service/core",
   ]
 }

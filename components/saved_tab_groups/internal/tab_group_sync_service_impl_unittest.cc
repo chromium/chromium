@@ -238,6 +238,7 @@ class TabGroupSyncServiceImplTest : public testing::Test {
                 shared_store_.get())),
         nullptr, &pref_service_, std::move(metrics_logger), decider_.get(),
         identity_test_environment_.identity_manager(),
+        /*personal_collaboration_data_service=*/nullptr,
         std::move(collaboration_finder), /*logger=*/nullptr);
     ON_CALL(saved_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));

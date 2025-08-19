@@ -59,12 +59,14 @@ std::unique_ptr<KeyedService> BuildService(
       std::make_unique<collaboration::CollaborationFinderImpl>(
           data_sharing_service);
 
+  // TODO(crbug.com/439072431): Add support for iOS
+  // PersonalCollaborationDataService.
   std::unique_ptr<TabGroupSyncService> tab_group_sync_service =
       CreateTabGroupSyncService(
           ::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(profile),
           profile->GetPrefs(), device_info_tracker, opt_guide, identity_manager,
-          std::move(collaboration_finder), synthetic_field_trial_helper,
-          data_sharing_service->GetLogger());
+          nullptr, std::move(collaboration_finder),
+          synthetic_field_trial_helper, data_sharing_service->GetLogger());
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer =

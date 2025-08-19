@@ -2205,6 +2205,7 @@ static_library("browser") {
     "//components/data_sharing/internal",
     "//components/data_sharing/internal:personal_collaboration_data_internal",
     "//components/data_sharing/public",
+    "//components/data_sharing/public:personal_collaboration_data",
     "//components/device_event_log",
     "//components/device_reauth",
     "//components/device_signals/core/browser",

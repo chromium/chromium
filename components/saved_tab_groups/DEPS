@@ -4,6 +4,7 @@ include_rules = [
   "+components/data_sharing/public/logger.h",
   "+components/data_sharing/public/logger_utils.h",
   "+components/data_sharing/public/logger_common.mojom.h",
+  "+components/data_sharing/public/personal_collaboration_data",
   "+components/data_sharing/test_support",
   "+components/keyed_service",
   "+components/optimization_guide",

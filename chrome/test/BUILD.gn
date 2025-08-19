@@ -7027,6 +7027,7 @@ test("unit_tests") {
     "//components/data_sharing:test_support",
     "//components/data_sharing/internal",
     "//components/data_sharing/public",
+    "//components/data_sharing/public:personal_collaboration_data",
     "//components/device_reauth",
     "//components/device_signals/core/browser",
     "//components/download/public/background_service/test:test_support",

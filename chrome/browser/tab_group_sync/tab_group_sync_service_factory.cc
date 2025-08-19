@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
+#include "chrome/browser/data_sharing/personal_collaboration_data/personal_collaboration_data_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -78,6 +79,8 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
   // signin" metrics.
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
+  DependsOn(data_sharing::personal_collaboration_data::
+                PersonalCollaborationDataServiceFactory::GetInstance());
 }
 
 TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
@@ -105,6 +108,8 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
           ->GetDeviceInfoTracker(),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
+      data_sharing::personal_collaboration_data::
+          PersonalCollaborationDataServiceFactory::GetForProfile(profile),
       std::move(collaboration_finder), synthetic_field_trial_helper_.get(),
       data_sharing_service->GetLogger());
 
