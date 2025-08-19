@@ -6698,6 +6698,27 @@
           }
         ]
       },
+      "android-arm64-libfuzzer-hwasan": {
+        "contact_team_email": "chrome-fuzzing-core@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "android-arm64-proguard-rel": {
         "contact_team_email": "clank-engprod@google.com",
         "problem_specs": [
@@ -7885,6 +7906,27 @@
       },
       "android-webview-code-coverage-native": {
         "contact_team_email": "woa-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "android-x64-libfuzzer-asan": {
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

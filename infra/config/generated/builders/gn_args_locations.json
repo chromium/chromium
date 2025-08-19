@@ -302,6 +302,8 @@
     "UBSan vptr Release": "ci/UBSan vptr Release/gn-args.json",
     "Win ASan Release": "ci/Win ASan Release/gn-args.json",
     "Win ASan Release Media": "ci/Win ASan Release Media/gn-args.json",
+    "android-arm64-libfuzzer-hwasan": "ci/android-arm64-libfuzzer-hwasan/gn-args.json",
+    "android-x64-libfuzzer-asan": "ci/android-x64-libfuzzer-asan/gn-args.json",
     "chromeos-x64-libfuzzer-asan-rel-tests": "ci/chromeos-x64-libfuzzer-asan-rel-tests/gn-args.json",
     "linux-x64-libfuzzer-asan-dbg-tests": "ci/linux-x64-libfuzzer-asan-dbg-tests/gn-args.json",
     "linux-x64-libfuzzer-asan-rel-tests": "ci/linux-x64-libfuzzer-asan-rel-tests/gn-args.json",
@@ -740,6 +742,8 @@
     "fuchsia-x64-perf-cast-receiver-rel": "try/fuchsia-x64-perf-cast-receiver-rel/gn-args.json"
   },
   "tryserver.chromium.fuzz": {
+    "android-arm64-libfuzzer-hwasan": "try/android-arm64-libfuzzer-hwasan/gn-args.json",
+    "android-x64-libfuzzer-asan": "try/android-x64-libfuzzer-asan/gn-args.json",
     "chromeos-x64-libfuzzer-asan-rel-tests": "try/chromeos-x64-libfuzzer-asan-rel-tests/gn-args.json",
     "linux-asan-dbg": "try/linux-asan-dbg/gn-args.json",
     "linux-asan-media-rel": "try/linux-asan-media-rel/gn-args.json",

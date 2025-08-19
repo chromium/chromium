@@ -114,6 +114,10 @@ _builder(
     mirror_of = "ci/UBSan vptr Release",
 )
 
+_mirror_builder(name = "android-x64-libfuzzer-asan")
+
+_mirror_builder(name = "android-arm64-libfuzzer-hwasan")
+
 _builder(
     name = "mac-asan-rel",
     cores = None,

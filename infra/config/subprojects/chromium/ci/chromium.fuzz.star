@@ -56,6 +56,8 @@ _LIBFUZZER_CONSOLE_ORDERING = consoles.ordering(short_names = [
     "arm64",
     "arm64-dbg",
     "ios",
+    "android-asan",
+    "android-arm64",
 ])
 
 consoles.console_view(
@@ -90,6 +92,7 @@ _PLATFORM_SHORT_NAMES = {
     builder_config.target_platform.LINUX: "linux",
     builder_config.target_platform.MAC: "mac",
     builder_config.target_platform.WIN: "win",
+    builder_config.target_platform.ANDROID: "android",
 }
 
 _BUILD_CONFIG_SHORT_NAMES = {
@@ -335,7 +338,7 @@ def libfuzzer_builder(
     )
 
 def libfuzzer_linux_builder(
-        # Allow overriding despite the name for ChromeOS builder.
+        # Allow overriding despite the name for ChromeOS and Android builder.
         target_platform = builder_config.target_platform.LINUX,
         gn_extra_configs = [],
         **kwargs):
@@ -1067,6 +1070,48 @@ libfuzzer_linux32_v8_arm_builder(
     name = "Libfuzzer Upload Linux32 V8-ARM ASan Debug",
     build_config = builder_config.build_config.DEBUG,
     console_short_name = "arm-dbg",
+)
+
+libfuzzer_linux_asan_builder(
+    name = "android-x64-libfuzzer-asan",
+    description_html = "This builder uploads android libfuzzer fuzzers, for x64 using ASan.",
+    # TODO(crbug.com/328559555): add this to the gardener_rotations
+    gardener_rotations = args.ignore_default(None),
+    build_config = builder_config.build_config.RELEASE,
+    target_bits = 64,
+    target_platform = builder_config.target_platform.ANDROID,
+    clusterfuzz_archive_subdir = "android-x64-asan",
+    console_short_name = "android-x64",
+    execution_timeout = 6 * time.hour,
+    gclient_apply_configs = ["android"],
+    gn_extra_configs = [
+        "android",
+        "android_asan",
+    ],
+    max_concurrent_invocations = 2,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+)
+
+libfuzzer_linux_builder(
+    name = "android-arm64-libfuzzer-hwasan",
+    description_html = "This builder uploads android libfuzzer fuzzers, for arm64 using HWASan.",
+    # TODO(crbug.com/328559555): add this to the gardener_rotations
+    gardener_rotations = args.ignore_default(None),
+    build_config = builder_config.build_config.RELEASE,
+    target_arch = builder_config.target_arch.ARM,
+    target_bits = 64,
+    target_platform = builder_config.target_platform.ANDROID,
+    clusterfuzz_archive_subdir = "android-arm64-hwasan",
+    console_short_name = "android-arm64",
+    contact_team_email = "chrome-fuzzing-core@google.com",
+    gclient_apply_configs = ["android"],
+    gn_extra_configs = [
+        "android",
+        "hwasan",
+    ],
+    max_concurrent_invocations = 2,
+    sanitizer = "hwasan",
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 def libfuzzer_mac_asan_builder(**kwargs):

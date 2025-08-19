@@ -785,6 +785,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "hwasan",
+    args = {
+        "is_hwasan": True,
+    },
+)
+
+gn_args.config(
     name = "reclient",
     args = {
         "use_reclient": True,
