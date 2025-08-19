@@ -8,4 +8,5 @@ include_rules = [
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 ]

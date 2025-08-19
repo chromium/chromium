@@ -138,6 +138,7 @@ source_set("keyed_service_factories") {
   deps = [
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/bookmarks/model",
