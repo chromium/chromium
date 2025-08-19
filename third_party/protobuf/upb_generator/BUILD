@@ -5,6 +5,7 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("//upb/bazel:build_defs.bzl", "UPB_DEFAULT_CPPOPTS")
 load(
     "//upb_generator:bootstrap_compiler.bzl",
@@ -44,8 +45,8 @@ bootstrap_cc_library(
     visibility = ["//upb:friend_generators"],
     deps = [
         "//src/google/protobuf:port",
-        "//upb:mini_table",
-        "//upb:port",
+        "//upb/mini_table",
+        "//upb/port",
         "@abseil-cpp//absl/strings",
     ],
 )
@@ -66,10 +67,10 @@ bootstrap_cc_library(
     copts = UPB_DEFAULT_CPPOPTS,
     visibility = ["//visibility:public"],
     deps = [
-        "//upb:base",
-        "//upb:mini_descriptor",
-        "//upb:mini_table",
-        "//upb:port",
+        "//upb/base",
+        "//upb/mini_descriptor",
+        "//upb/mini_table",
+        "//upb/port",
         "@abseil-cpp//absl/container:flat_hash_map",
         "@abseil-cpp//absl/strings",
     ],
@@ -90,13 +91,15 @@ bootstrap_cc_library(
         "//upb_generator:file_layout",
     ],
     copts = UPB_DEFAULT_CPPOPTS,
-    visibility = ["//upb:friend_generators"],
+    visibility = [
+        "//upb:friend_generators",
+    ],
     deps = [
         "//src/google/protobuf",
         "//src/google/protobuf/compiler:code_generator_lite",
-        "//upb:base",
-        "//upb:mem",
-        "//upb:port",
+        "//upb/base",
+        "//upb/mem",
+        "//upb/port",
         "@abseil-cpp//absl/container:flat_hash_map",
         "@abseil-cpp//absl/container:flat_hash_set",
         "@abseil-cpp//absl/log:absl_check",

@@ -42,8 +42,8 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/call_once.h"
+#include "absl/base/macros.h"
 #include "absl/base/optimization.h"
-#include "absl/base/thread_annotations.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/functional/any_invocable.h"
 #include "absl/functional/function_ref.h"
@@ -135,6 +135,9 @@ class CppGenerator;
 // Defined in helpers.h
 class Formatter;
 }  // namespace cpp
+namespace java {
+class MemoizeProjection;
+}  // namespace java
 }  // namespace compiler
 
 namespace descriptor_unittest {
@@ -147,6 +150,10 @@ class ValidationErrorTest;
 namespace io {
 class Printer;
 }  // namespace io
+
+namespace internal {
+class InternalFeatureHelper;
+}  // namespace internal
 
 // NB, all indices are zero-based.
 struct SourceLocation {
@@ -319,41 +326,6 @@ class PROTOBUF_EXPORT SymbolBase {
 // See BuildEnumValue for details.
 template <int N>
 class PROTOBUF_EXPORT SymbolBaseN : public SymbolBase {};
-
-// This class is for internal use only and provides access to the resolved
-// runtime FeatureSets of any descriptor.  These features are not designed
-// to be stable, and depending directly on them (vs the public descriptor APIs)
-// is not safe.
-class PROTOBUF_EXPORT InternalFeatureHelper {
- public:
-  template <typename DescriptorT>
-  static const FeatureSet& GetFeatures(const DescriptorT& desc) {
-    return desc.features();
-  }
-
- private:
-  friend class ::google::protobuf::compiler::CodeGenerator;
-  friend class ::google::protobuf::compiler::CommandLineInterface;
-
-  // Provides a restricted view exclusively to code generators to query their
-  // own unresolved features.  Unresolved features are virtually meaningless to
-  // everyone else. Code generators will need them to validate their own
-  // features, and runtimes may need them internally to be able to properly
-  // represent the original proto files from generated code.
-  template <typename DescriptorT, typename TypeTraitsT, uint8_t field_type,
-            bool is_packed>
-  static typename TypeTraitsT::ConstType GetUnresolvedFeatures(
-      const DescriptorT& descriptor,
-      const google::protobuf::internal::ExtensionIdentifier<
-          FeatureSet, TypeTraitsT, field_type, is_packed>& extension) {
-    return descriptor.proto_features_->GetExtension(extension);
-  }
-
-  // Provides a restricted view exclusively to code generators to query the
-  // edition of files being processed.  While most people should never write
-  // edition-dependent code, generators frequently will need to.
-  static Edition GetEdition(const FileDescriptor& desc);
-};
 
 PROTOBUF_EXPORT absl::string_view ShortEditionName(Edition edition);
 
@@ -960,7 +932,7 @@ class PROTOBUF_EXPORT FieldDescriptor : private internal::SymbolBase,
   bool is_required() const;
   bool is_repeated() const;  // Whether or not the field is repeated/map field.
 
-  ABSL_DEPRECATED("Use !is_required() && !is_repeated() instead.")
+  ABSL_DEPRECATE_AND_INLINE()
   bool is_optional() const;  // Use !is_required() && !is_repeated() instead.
 
   bool is_packable() const;  // shorthand for is_repeated() &&
@@ -1157,6 +1129,7 @@ class PROTOBUF_EXPORT FieldDescriptor : private internal::SymbolBase,
 
   // Returns true if this field was syntactically written with "optional" in the
   // .proto file. Excludes singular proto3 fields that do not have a label.
+  ABSL_DEPRECATED("Use has_presence() instead.")
   bool has_optional_keyword() const;
 
   // Get the merged features that apply to this field.  These are specified in
@@ -1188,6 +1161,8 @@ class PROTOBUF_EXPORT FieldDescriptor : private internal::SymbolBase,
   // Returns true if this is a map message type.
   bool is_map_message_type() const;
 
+  CppStringType CalculateCppStringType() const;
+
   bool has_default_value_ : 1;
   bool proto3_optional_ : 1;
   // Whether the user has specified the json_name field option in the .proto
@@ -1203,9 +1178,17 @@ class PROTOBUF_EXPORT FieldDescriptor : private internal::SymbolBase,
   // Actually a `Type`, but stored as uint8_t to save space.
   uint8_t type_;
 
+  // Actually a `CppStringType`, but stored as uint8_t to save space.
+  // We cache it because it's expensive to calculate.
+  uint8_t cpp_string_type_ : 3;
+
   // Can be calculated from containing_oneof(), but we cache it for performance.
   // Located here for bitpacking.
   bool in_real_oneof_ : 1;
+
+  // We could calculate as `message_type()->options().map_entry()`, but that is
+  // way more expensive and can potentially force load extra lazy files.
+  bool is_map_ : 1;
 
   // Actually an optional `CType`, but stored as uint8_t to save space.  This
   // contains the original ctype option specified in the .proto file.
@@ -2322,11 +2305,11 @@ class PROTOBUF_EXPORT DescriptorPool {
     // descriptor - Descriptor of the erroneous element.
     // location - One of the location constants, above.
     // message - Human-readable error message.
-    virtual void RecordWarning(absl::string_view filename,
-                               absl::string_view element_name,
-                               const Message* descriptor,
-                               ErrorLocation location,
-                               absl::string_view message) {
+    virtual void RecordWarning([[maybe_unused]] absl::string_view filename,
+                               [[maybe_unused]] absl::string_view element_name,
+                               [[maybe_unused]] const Message* descriptor,
+                               [[maybe_unused]] ErrorLocation location,
+                               [[maybe_unused]] absl::string_view message) {
     }
 
   };
@@ -2403,17 +2386,12 @@ class PROTOBUF_EXPORT DescriptorPool {
     enforce_extension_declarations_ = enforce;
   }
 
-  bool EnforceDescriptorExtensionDeclarations() const {
+  bool ShouldEnforceDescriptorExtensionDeclarations() const {
     return enforce_extension_declarations_ ==
            ExtDeclEnforcementLevel::kAllExtensions;
   }
 
-  bool EnforceCustomExtensionDeclarations() const {
-    return enforce_extension_declarations_ ==
-               ExtDeclEnforcementLevel::kAllExtensions ||
-           enforce_extension_declarations_ ==
-               ExtDeclEnforcementLevel::kCustomExtensions;
-  }
+  bool ShouldEnforceExtensionDeclaration(const FieldDescriptor& field) const;
 
 #ifndef SWIG
   // Dispatch recursive builds to a callback that may stick them onto a separate
@@ -2549,6 +2527,7 @@ class PROTOBUF_EXPORT DescriptorPool {
   friend class ::google::protobuf::compiler::CommandLineInterface;
   friend class TextFormat;
   friend Reflection;
+  friend class ::google::protobuf::compiler::java::MemoizeProjection;
 
   struct MemoBase {
     virtual ~MemoBase() = default;
@@ -2558,14 +2537,24 @@ class PROTOBUF_EXPORT DescriptorPool {
     T value;
   };
 
+  template <typename Desc>
+  static const DescriptorPool* GetPool(const Desc* descriptor) {
+    return descriptor->file()->pool();
+  }
+
+  static const DescriptorPool* GetPool(const FileDescriptor* descriptor) {
+    return descriptor->pool();
+  }
+
   // Memoize a projection of a descriptor. This is used to cache the results of
   // calling a function on a descriptor, used for expensive descriptor
   // calculations.
   template <typename Desc, typename Func>
   static const auto& MemoizeProjection(const Desc* descriptor, Func func) {
     using ResultT = std::decay_t<decltype(func(descriptor))>;
-    auto* pool = descriptor->file()->pool();
-    static_assert(std::is_empty_v<Func>);
+    auto* pool = GetPool(descriptor);
+    static_assert(std::is_empty_v<Func> ||
+                  std::is_function_v<std::remove_pointer_t<Func>>);
     // This static bool is unique per-Func, so its address can be used as a key.
     static bool type_key;
     auto key = std::pair<const void*, const void*>(descriptor, &type_key);
@@ -2942,8 +2931,14 @@ inline FieldDescriptor::Type FieldDescriptor::type() const {
   return static_cast<Type>(type_);
 }
 
+inline FieldDescriptor::CppStringType FieldDescriptor::cpp_string_type() const {
+  ABSL_DCHECK_EQ(cpp_string_type_,
+                 static_cast<uint8_t>(CalculateCppStringType()));
+  return static_cast<FieldDescriptor::CppStringType>(cpp_string_type_);
+}
+
 inline bool FieldDescriptor::is_optional() const {
-  return static_cast<Label>(label_) == LABEL_OPTIONAL;
+  return !is_repeated() && !is_required();
 }
 
 inline bool FieldDescriptor::is_repeated() const {
@@ -2956,7 +2951,8 @@ inline bool FieldDescriptor::is_packable() const {
 }
 
 inline bool FieldDescriptor::is_map() const {
-  return type() == TYPE_MESSAGE && is_map_message_type();
+  ABSL_DCHECK_EQ(is_map_, type() == TYPE_MESSAGE && is_map_message_type());
+  return is_map_;
 }
 
 inline const OneofDescriptor* FieldDescriptor::real_containing_oneof() const {
@@ -3183,12 +3179,19 @@ enum class HasbitMode : uint8_t {
 //     indicates an unset field (kTrueHasbit);
 //   - have hasbits where hasbit == 1 indicates "field is possibly modified" and
 //     hasbit == 0 indicates "field is definitely missing" (kHintHasbit).
-PROTOBUF_EXPORT HasbitMode GetFieldHasbitMode(const FieldDescriptor* field);
+//
+// Note that this may not match the hasbit mode chosen by the compiler, which
+// may be influenced by other factors like PDProto profiles.
+PROTOBUF_EXPORT HasbitMode
+GetFieldHasbitModeWithoutProfile(const FieldDescriptor* field);
 
 // Returns true if there are hasbits for the field.
 // Note that this does not correlate with "hazzer"s, i.e., whether has_foo APIs
 // are emitted.
-PROTOBUF_EXPORT bool HasHasbit(const FieldDescriptor* field);
+//
+// Note that this may not match the hasbit mode chosen by the compiler, which
+// may be influenced by other factors like PDProto profiles.
+PROTOBUF_EXPORT bool HasHasbitWithoutProfile(const FieldDescriptor* field);
 
 enum class Utf8CheckMode : uint8_t {
   kStrict = 0,  // Parsing will fail if non UTF-8 data is in string fields.

@@ -43,7 +43,7 @@ verify_pep425_tag: [
 #   //tools/perf/crossbench
 wheel: <
   name: "infra/python/wheels/protobuf-py3"
-  version: "version:6.31.0"
+  version: "version:6.32.0"
 >
 
 # TODO(https://crbug.com/898348): Add in necessary wheels as Python3 versions

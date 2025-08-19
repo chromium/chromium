@@ -10,6 +10,7 @@
 #ifndef GOOGLE_PROTOBUF_ARENA_H__
 #define GOOGLE_PROTOBUF_ARENA_H__
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -28,9 +29,7 @@ using type_info = ::type_info;
 #endif
 
 #include "absl/base/attributes.h"
-#include "absl/base/macros.h"
 #include "absl/base/optimization.h"
-#include "absl/base/prefetch.h"
 #include "absl/log/absl_check.h"
 #include "google/protobuf/arena_align.h"
 #include "google/protobuf/arena_allocation_policy.h"
@@ -64,6 +63,7 @@ class ReflectionTester;  // defined in test_util.h
 }  // namespace TestUtil
 
 namespace internal {
+
 
 struct ArenaTestPeer;        // defined in arena_test_util.h
 class InternalMetadata;      // defined in metadata_lite.h
@@ -107,7 +107,7 @@ inline bool CanMoveWithInternalSwap(Arena* PROTOBUF_NULLABLE lhs,
 
 // ArenaOptions provides optional additional parameters to arena construction
 // that control its block-allocation behavior.
-struct ArenaOptions {
+struct ABSL_ATTRIBUTE_WARN_UNUSED ArenaOptions final {
   // This defines the size of the first block requested from the system malloc.
   // Subsequent block sizes will increase in a geometric series up to a maximum.
   size_t start_block_size = internal::AllocationPolicy::kDefaultStartBlockSize;
@@ -262,7 +262,9 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
                   "CreateArray requires a trivially constructible type");
     static_assert(std::is_trivially_destructible<T>::value,
                   "CreateArray requires a trivially destructible type");
-    ABSL_CHECK_LE(num_elements, std::numeric_limits<size_t>::max() / sizeof(T))
+    ABSL_CHECK_LE(num_elements,
+                  // Max rounded down to the 8 byte alignment.
+                  (std::numeric_limits<size_t>::max() & ~7) / sizeof(T))
         << "Requested size is too large to fit into size_t.";
     if (ABSL_PREDICT_FALSE(arena == nullptr)) {
       return new T[num_elements];
@@ -653,16 +655,25 @@ Arena::DefaultConstruct(Arena* PROTOBUF_NULLABLE arena) {
 template <typename T>
 PROTOBUF_NOINLINE void* PROTOBUF_NONNULL Arena::CopyConstruct(
     Arena* PROTOBUF_NULLABLE arena, const void* PROTOBUF_NONNULL from) {
-  // If the object is larger than half a cache line, prefetch it.
-  // This way of prefetching is a little more aggressive than if we
-  // condition off a whole cache line, but benchmarks show better results.
-  if (sizeof(T) > ABSL_CACHELINE_SIZE / 2) {
-    PROTOBUF_PREFETCH_WITH_OFFSET(from, 64);
+  const auto* typed_from = static_cast<const T*>(from);
+  // If the object is larger than half of a cache line, prefetch either the rest
+  // of it or half of it, whichiver is smaller, starting at 1-cache-line offset.
+  // This has shown the best benchmark results on average between several tested
+  // configurations.
+  if constexpr (sizeof(T) > ABSL_CACHELINE_SIZE / 2) {
+    using internal::PrefetchOpts;
+    static constexpr PrefetchOpts kPrefetchOpts = {
+        /*num=*/{std::min(sizeof(T) / 2, sizeof(T) - ABSL_CACHELINE_SIZE / 2),
+                 PrefetchOpts::kBytes},
+        /*from=*/{1, PrefetchOpts::kLines},
+        /*locality=*/PrefetchOpts::kHigh,
+    };
+    internal::Prefetch<kPrefetchOpts, T, T>(typed_from);
   }
   static_assert(is_destructor_skippable<T>::value, "");
   void* mem = arena != nullptr ? arena->AllocateAligned(sizeof(T))
                                : ::operator new(sizeof(T));
-  return new (mem) T(arena, *static_cast<const T*>(from));
+  return new (mem) T(arena, *typed_from);
 }
 
 template <>

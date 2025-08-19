@@ -65,7 +65,7 @@ rules_jvm_external_setup()
 load("@rules_jvm_external//:defs.bzl", "maven_install")
 
 maven_install(
-    name = "protobuf_maven",
+    name = "maven",
     artifacts = PROTOBUF_MAVEN_ARTIFACTS,
     # For updating instructions, see:
     # https://github.com/bazelbuild/rules_jvm_external#updating-maven_installjson
@@ -76,7 +76,7 @@ maven_install(
     ],
 )
 
-load("@protobuf_maven//:defs.bzl", "pinned_maven_install")
+load("@maven//:defs.bzl", "pinned_maven_install")
 
 pinned_maven_install()
 
@@ -271,7 +271,7 @@ crates_repository(
     packages = {
         "googletest": crate.spec(
             git = "https://github.com/google/googletest-rust",
-            rev = "b407f3b5774defb8917d714bfb7af485e117d621",
+            rev = "0db12bb338b9e75884a24493273c6bf4ce0fa5f5",
         ),
         "paste": crate.spec(
             version = ">=1",

@@ -31,17 +31,20 @@ namespace protobuf {
 namespace compiler {
 namespace cpp {
 namespace {
-using ::google::protobuf::internal::cpp::HasHasbit;
 using ::google::protobuf::io::AnnotationCollector;
 using Sub = ::google::protobuf::io::Printer::Sub;
 
 std::vector<Sub> Vars(const FieldDescriptor* field, const Options& opts) {
   auto trivial_default =
-      absl::StrCat("::", ProtobufNamespace(opts),
-                   "::internal::GetEmptyStringAlreadyInited()");
+      opts.experimental_use_micro_string
+          ? "::absl::string_view()"
+          : absl::StrCat("::", ProtobufNamespace(opts),
+                         "::internal::GetEmptyStringAlreadyInited()");
   auto lazy_var =
-      absl::StrCat(QualifiedClassName(field->containing_type(), opts),
-                   "::", MakeDefaultFieldName(field));
+      opts.experimental_use_micro_string
+          ? absl::StrCat("Impl_::", MakeDefaultFieldName(field))
+          : absl::StrCat(QualifiedClassName(field->containing_type(), opts),
+                         "::", MakeDefaultFieldName(field));
 
   bool empty_default = field->default_value_string().empty();
   bool bytes = field->type() == FieldDescriptor::TYPE_BYTES;
@@ -62,7 +65,6 @@ std::vector<Sub> Vars(const FieldDescriptor* field, const Options& opts) {
           .WithSuffix(","),
 
       {"byte", bytes ? "void" : "char"},
-      {"Set", bytes ? "SetBytes" : "Set"},
   };
 }
 
@@ -84,7 +86,9 @@ class SingularStringView : public FieldGeneratorBase {
   void GeneratePrivateMembers(io::Printer* p) const override {
     // Skips the automatic destruction if inlined; rather calls it explicitly if
     // allocating arena is null.
-    p->Emit({{"Str", is_inlined() ? "InlinedStringField" : "ArenaStringPtr"}},
+    p->Emit({{"Str", is_inlined()         ? "InlinedStringField"
+                     : use_micro_string() ? "MicroString"
+                                          : "ArenaStringPtr"}},
             R"cc(
               $pbi$::$Str$ $name$_;
             )cc");
@@ -124,7 +128,7 @@ class SingularStringView : public FieldGeneratorBase {
   }
 
   void GenerateNonInlineAccessorDefinitions(io::Printer* p) const override {
-    if (EmptyDefault()) return;
+    if (EmptyDefault() || use_micro_string()) return;
     p->Emit(R"cc(
       /*static*/ const ::_pbi::LazyString $Msg$::$default_variable_field${
           {{$kDefault$, $kDefaultLen$}},
@@ -150,6 +154,12 @@ class SingularStringView : public FieldGeneratorBase {
   void GenerateMemberConstexprConstructor(io::Printer* p) const override {
     if (is_inlined()) {
       p->Emit("$name$_(nullptr, false)");
+    } else if (use_micro_string()) {
+      if (EmptyDefault()) {
+        p->Emit("$name$_{}");
+      } else {
+        p->Emit("$name$_($default_variable_field$)");
+      }
     } else {
       p->Emit(
           "$name$_(\n"
@@ -163,13 +173,15 @@ class SingularStringView : public FieldGeneratorBase {
       p->Emit("$name$_{}");
     } else if (EmptyDefault()) {
       p->Emit("$name$_(arena)");
+    } else if (use_micro_string()) {
+      p->Emit("$name$_($default_variable_field$)");
     } else {
       p->Emit("$name$_(arena, $default_variable_field$)");
     }
   }
 
   void GenerateMemberCopyConstructor(io::Printer* p) const override {
-    if (is_inlined() || EmptyDefault()) {
+    if (is_inlined() || EmptyDefault() || use_micro_string()) {
       p->Emit("$name$_(arena, from.$name$_)");
     } else {
       p->Emit("$name$_(arena, from.$name$_, $default_variable_name$)");
@@ -177,7 +189,7 @@ class SingularStringView : public FieldGeneratorBase {
   }
 
   void GenerateOneofCopyConstruct(io::Printer* p) const override {
-    if (is_inlined() || EmptyDefault()) {
+    if (is_inlined() || EmptyDefault() || use_micro_string()) {
       p->Emit("new (&$field$) decltype($field$){arena, from.$field$};\n");
     } else {
       p->Emit(
@@ -202,14 +214,24 @@ class SingularStringView : public FieldGeneratorBase {
  private:
   bool EmptyDefault() const { return field_->default_value_string().empty(); }
 
+  bool use_micro_string() const { return opts_->experimental_use_micro_string; }
+
   const Options* opts_;
 };
 
 void SingularStringView::GenerateStaticMembers(io::Printer* p) const {
   if (!EmptyDefault()) {
-    p->Emit(R"cc(
-      static const $pbi$::LazyString $default_variable_name$;
-    )cc");
+    if (use_micro_string()) {
+      p->Emit(R"cc(
+        static constexpr auto $default_variable_name$ =
+            $pbi$::MicroString::MakeUnownedPayload(
+                ::absl::string_view($kDefault$, $kDefaultLen$));
+      )cc");
+    } else {
+      p->Emit(R"cc(
+        static const $pbi$::LazyString $default_variable_name$;
+      )cc");
+    }
   }
   if (is_inlined()) {
     // `_init_inline_xxx` is used for initializing default instances.
@@ -237,7 +259,7 @@ void SingularStringView::GenerateAccessorDeclarations(io::Printer* p) const {
             $DEPRECATED$ void $set_name$(Arg_&& arg);
 
             private:
-            const ::std::string& _internal_$name$() const;
+            ::absl::string_view _internal_$name$() const;
             PROTOBUF_ALWAYS_INLINE void _internal_set_$name$(::absl::string_view value);
             $donated$;
 
@@ -279,7 +301,7 @@ void SingularStringView::GenerateInlineAccessorDefinitions(
       {
           {"if_IsDefault",
            [&] {
-             if (EmptyDefault() || is_oneof()) return;
+             if (EmptyDefault() || is_oneof() || use_micro_string()) return;
              p->Emit(R"cc(
                if ($field_$.IsDefault()) {
                  return $default_variable_field$.get();
@@ -313,11 +335,11 @@ void SingularStringView::GenerateInlineAccessorDefinitions(
           $TsanDetectConcurrentMutation$;
           $PrepareSplitMessageForWrite$;
           $update_hasbit$;
-          $field_$.$Set$(static_cast<Arg_&&>(arg), $set_args$);
+          $field_$.Set(static_cast<Arg_&&>(arg), $set_args$);
           $annotate_set$;
           // @@protoc_insertion_point(field_set:$pkg.Msg.field$)
         }
-        inline const ::std::string& $Msg$::_internal_$name_internal$() const {
+        inline ::absl::string_view $Msg$::_internal_$name_internal$() const {
           $TsanDetectConcurrentRead$;
           $check_hasbit$;
           return $field_$.Get();
@@ -325,8 +347,6 @@ void SingularStringView::GenerateInlineAccessorDefinitions(
         inline void $Msg$::_internal_set_$name_internal$(::absl::string_view value) {
           $TsanDetectConcurrentMutation$;
           $update_hasbit$;
-          //~ Don't use $Set$ here; we always want the std::string variant
-          //~ regardless of whether this is a `bytes` field.
           $field_$.Set(value, $set_args$);
         }
       )cc");
@@ -342,6 +362,12 @@ void SingularStringView::GenerateInlineAccessorDefinitions(
 
 void SingularStringView::GenerateClearingCode(io::Printer* p) const {
   if (is_oneof()) {
+    if (use_micro_string()) {
+      p->Emit(R"cc(
+        if (GetArena() == nullptr) $field_$.Destroy();
+      )cc");
+      return;
+    }
     p->Emit(R"cc(
       $field_$.Destroy();
     )cc");
@@ -349,6 +375,12 @@ void SingularStringView::GenerateClearingCode(io::Printer* p) const {
   }
 
   if (EmptyDefault()) {
+    if (use_micro_string()) {
+      p->Emit(R"cc(
+        $field_$.Clear();
+      )cc");
+      return;
+    }
     p->Emit(R"cc(
       $field_$.ClearToEmpty();
     )cc");
@@ -378,7 +410,7 @@ void SingularStringView::GenerateMessageClearingCode(io::Printer* p) const {
   // will have checked that this field is set.  If so, we can avoid redundant
   // checks against the default variable.
 
-  if (is_inlined() && HasHasbit(field_)) {
+  if (is_inlined() && HasHasbit(field_, options_)) {
     p->Emit(R"cc(
       $DCHK$(!$field_$.IsDefault());
     )cc");
@@ -393,8 +425,15 @@ void SingularStringView::GenerateMessageClearingCode(io::Printer* p) const {
     return;
   }
 
-  p->Emit({{"Clear",
-            HasHasbit(field_) ? "ClearNonDefaultToEmpty" : "ClearToEmpty"}},
+  if (use_micro_string()) {
+    p->Emit(R"cc(
+      $field_$.Clear();
+    )cc");
+    return;
+  }
+
+  p->Emit({{"Clear", HasHasbit(field_, options_) ? "ClearNonDefaultToEmpty"
+                                                 : "ClearToEmpty"}},
           R"cc(
             $field_$.$Clear$();
           )cc");
@@ -406,9 +445,16 @@ void SingularStringView::GenerateSwappingCode(io::Printer* p) const {
     return;
   }
 
+  if (use_micro_string()) {
+    p->Emit(R"cc(
+      $field_$.InternalSwap(&other->$field_$);
+    )cc");
+    return;
+  }
+
   if (!is_inlined()) {
     p->Emit(R"cc(
-      ::_pbi::ArenaStringPtr::InternalSwap(&$field_$, &other->$field_$, arena);
+      $field_$.InternalSwap(&$field_$, &other->$field_$, arena);
     )cc");
     return;
   }
@@ -454,7 +500,7 @@ void SingularStringView::GenerateCopyConstructorCode(io::Printer* p) const {
   p->Emit(
       {{"hazzer",
         [&] {
-          if (HasHasbit(field_)) {
+          if (HasHasbit(field_, options_)) {
             p->Emit(R"cc((from.$has_hasbit$) != 0)cc");
           } else {
             p->Emit(R"cc(!from._internal_$name$().empty())cc");
@@ -505,7 +551,7 @@ void SingularStringView::GenerateSerializeWithCachedSizesToArray(
                                              "static_cast<int>(_s.length()),");
             }}},
           R"cc(
-            const ::std::string& _s = this_._internal_$name$();
+            const ::absl::string_view _s = this_._internal_$name$();
             $utf8_check$;
             target = stream->Write$DeclaredType$MaybeAliased($number$, _s, target);
           )cc");
@@ -517,6 +563,16 @@ void SingularStringView::GenerateConstexprAggregateInitializer(
     p->Emit(R"cc(
       /*decltype($field_$)*/ {nullptr, false},
     )cc");
+  } else if (use_micro_string()) {
+    if (EmptyDefault()) {
+      p->Emit(R"cc(
+        /*decltype($field_$)*/ {},
+      )cc");
+    } else {
+      p->Emit(R"cc(
+        /*decltype($field_$)*/ {$classname$::$default_variable_field$},
+      )cc");
+    }
   } else {
     p->Emit(R"cc(
       /*decltype($field_$)*/ {
@@ -543,6 +599,7 @@ void SingularStringView::GenerateAggregateInitializer(io::Printer* p) const {
     )cc");
   }
 }
+
 
 class RepeatedStringView : public FieldGeneratorBase {
  public:
@@ -769,6 +826,8 @@ void RepeatedStringView::GenerateSerializeWithCachedSizesToArray(
             }
           )cc");
 }
+
+
 }  // namespace
 
 std::unique_ptr<FieldGeneratorBase> MakeSingularStringViewGenerator(

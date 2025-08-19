@@ -1,0 +1,13 @@
+diff --git a/src/google/protobuf/descriptor.pb.h b/src/google/protobuf/descriptor.pb.h
+index 9d64567139919..bfa74f80876f7 100644
+--- a/src/google/protobuf/descriptor.pb.h
++++ b/src/google/protobuf/descriptor.pb.h
+@@ -7634,7 +7634,7 @@ class PROTOBUF_EXPORT FieldOptions final : public ::google::protobuf::Message
+   // optional bool weak = 10 [default = false, deprecated = true];
+   [[deprecated]]  bool has_weak() const;
+   [[deprecated]]  void clear_weak() ;
+-  [[deprecated]] bool weak() const;
++  bool weak() const;
+   [[deprecated]] void set_weak(bool value);
+
+  private:

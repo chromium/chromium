@@ -35,7 +35,6 @@ namespace compiler {
 namespace cpp {
 namespace {
 
-using ::google::protobuf::internal::cpp::HasHasbit;
 using ::google::protobuf::io::AnnotationCollector;
 using Sub = ::google::protobuf::io::Printer::Sub;
 
@@ -83,7 +82,7 @@ class SingularMessage : public FieldGeneratorBase {
       : FieldGeneratorBase(field, opts, scc),
         opts_(&opts),
         has_required_(scc->HasRequiredFields(field->message_type())),
-        has_hasbit_(HasHasbit(field)) {}
+        has_hasbit_(HasHasbit(field, opts)) {}
 
   ~SingularMessage() override = default;
 
@@ -410,10 +409,11 @@ void SingularMessage::GenerateByteSize(io::Printer* p) const {
   )cc");
 }
 
+
 void SingularMessage::GenerateIsInitialized(io::Printer* p) const {
   if (!NeedsIsInitialized()) return;
 
-  if (HasHasbit(field_)) {
+  if (HasHasbit(field_, *opts_)) {
     p->Emit(R"cc(
       if ((this_.$has_hasbit$) != 0) {
         if (!this_.$field_$->IsInitialized()) return false;
@@ -1019,6 +1019,7 @@ void RepeatedMessage::GenerateByteSize(io::Printer* p) const {
         }
       )cc");
 }
+
 
 void RepeatedMessage::GenerateIsInitialized(io::Printer* p) const {
   if (!NeedsIsInitialized()) return;

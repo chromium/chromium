@@ -22,6 +22,7 @@
 
 #include "absl/log/absl_check.h"
 #include "absl/strings/match.h"
+#include "absl/strings/str_cat.h"
 
 #ifndef PyVarObject_HEAD_INIT
 #define PyVarObject_HEAD_INIT(type, size) PyObject_HEAD_INIT(type) size,
@@ -576,14 +577,38 @@ bool CheckAndGetFloat(PyObject* arg, float* value) {
 
 bool CheckAndGetBool(PyObject* arg, bool* value) {
   long long_value = PyLong_AsLong(arg);  // NOLINT
-  if (!strcmp(Py_TYPE(arg)->tp_name, "numpy.ndarray") ||
-      (long_value == -1 && PyErr_Occurred())) {
+  if (long_value == -1 && PyErr_Occurred()) {
+    // In NumPy 2.3, numpy.bool does not have an __index__ method and cannot
+    // be converted to a long using PyLong_AsLong.
+    if (!strcmp(Py_TYPE(arg)->tp_name, "numpy.bool")) {
+      PyErr_Clear();
+      int is_true = PyObject_IsTrue(arg);
+      if (is_true >= 0) {
+        *value = static_cast<bool>(is_true);
+        return true;
+      }
+    }
+    FormatTypeError(arg, "int, bool");
+    return false;
+  } else if (!strcmp(Py_TYPE(arg)->tp_name, "numpy.ndarray")) {
     FormatTypeError(arg, "int, bool");
     return false;
   }
   *value = static_cast<bool>(long_value);
 
   return true;
+}
+
+void CheckIntegerWithBool(PyObject* arg, const FieldDescriptor* field_des) {
+  static int bool_warning_count = 100;
+  if (bool_warning_count > 0 && (!strcmp(Py_TYPE(arg)->tp_name, "bool"))) {
+    --bool_warning_count;
+    std::string error_msg =
+        absl::StrCat(field_des->full_name(),
+                     ": Expected an int, got a boolean. This "
+                     "will be rejected in 7.34.0, please fix it before that");
+    PyErr_WarnEx(PyExc_DeprecationWarning, error_msg.c_str(), 3);
+  }
 }
 
 // Checks whether the given object (which must be "bytes" or "unicode") contains
@@ -1124,14 +1149,16 @@ int InitAttributes(CMessage* self, PyObject* args, PyObject* kwargs) {
             Descriptor::WELLKNOWNTYPE_STRUCT) {
           ScopedPyObjectPtr ok(PyObject_CallMethod(
               reinterpret_cast<PyObject*>(cmessage), "update", "O", value));
-          if (ok.get() == nullptr && PyDict_Size(value) == 1 &&
-              PyDict_Contains(value, PyUnicode_FromString("fields"))) {
-            // Fallback to init as normal message field.
-            PyErr_Clear();
-            PyObject* tmp = Clear(cmessage);
-            Py_DECREF(tmp);
-            if (InitAttributes(cmessage, nullptr, value) < 0) {
-              return -1;
+          if (ok.get() == nullptr && PyDict_Size(value) == 1) {
+            ScopedPyObjectPtr fields_str(PyUnicode_FromString("fields"));
+            if (PyDict_Contains(value, fields_str.get())) {
+              // Fallback to init as normal message field.
+              PyErr_Clear();
+              PyObject* tmp = Clear(cmessage);
+              Py_DECREF(tmp);
+              if (InitAttributes(cmessage, nullptr, value) < 0) {
+                return -1;
+              }
             }
           }
         } else {
@@ -2240,21 +2267,25 @@ int InternalSetNonOneofScalar(Message* message,
   switch (field_descriptor->cpp_type()) {
     case FieldDescriptor::CPPTYPE_INT32: {
       PROTOBUF_CHECK_GET_INT32(arg, value, -1);
+      CheckIntegerWithBool(arg, field_descriptor);
       reflection->SetInt32(message, field_descriptor, value);
       break;
     }
     case FieldDescriptor::CPPTYPE_INT64: {
       PROTOBUF_CHECK_GET_INT64(arg, value, -1);
+      CheckIntegerWithBool(arg, field_descriptor);
       reflection->SetInt64(message, field_descriptor, value);
       break;
     }
     case FieldDescriptor::CPPTYPE_UINT32: {
       PROTOBUF_CHECK_GET_UINT32(arg, value, -1);
+      CheckIntegerWithBool(arg, field_descriptor);
       reflection->SetUInt32(message, field_descriptor, value);
       break;
     }
     case FieldDescriptor::CPPTYPE_UINT64: {
       PROTOBUF_CHECK_GET_UINT64(arg, value, -1);
+      CheckIntegerWithBool(arg, field_descriptor);
       reflection->SetUInt64(message, field_descriptor, value);
       break;
     }
@@ -2282,6 +2313,7 @@ int InternalSetNonOneofScalar(Message* message,
     }
     case FieldDescriptor::CPPTYPE_ENUM: {
       PROTOBUF_CHECK_GET_INT32(arg, value, -1);
+      CheckIntegerWithBool(arg, field_descriptor);
       if (!field_descriptor->legacy_enum_field_treated_as_closed()) {
         reflection->SetEnumValue(message, field_descriptor, value);
       } else {
@@ -2391,21 +2423,19 @@ PyObject* Contains(CMessage* self, PyObject* arg) {
       const Reflection* reflection = message->GetReflection();
       const FieldDescriptor* map_field = descriptor->FindFieldByName("fields");
       const FieldDescriptor* key_field = map_field->message_type()->map_key();
-      PyObject* py_string = CheckString(arg, key_field);
-      if (!py_string) {
+      ScopedPyObjectPtr py_string(CheckString(arg, key_field));
+      if (py_string.get() == nullptr) {
         PyErr_SetString(PyExc_TypeError,
                         "The key passed to Struct message must be a str.");
         return nullptr;
       }
       char* value;
       Py_ssize_t value_len;
-      if (PyBytes_AsStringAndSize(py_string, &value, &value_len) < 0) {
-        Py_DECREF(py_string);
+      if (PyBytes_AsStringAndSize(py_string.get(), &value, &value_len) < 0) {
         Py_RETURN_FALSE;
       }
       std::string key_str;
       key_str.assign(value, value_len);
-      Py_DECREF(py_string);
 
       MapKey map_key;
       map_key.SetStringValue(key_str);
@@ -2414,9 +2444,9 @@ PyObject* Contains(CMessage* self, PyObject* arg) {
     }
     case Descriptor::WELLKNOWNTYPE_LISTVALUE: {
       // For WKT ListValue, check if the key is in the items.
-      PyObject* items = PyObject_CallMethod(reinterpret_cast<PyObject*>(self),
-                                            "items", nullptr);
-      return PyBool_FromLong(PySequence_Contains(items, arg));
+      ScopedPyObjectPtr items(PyObject_CallMethod(
+          reinterpret_cast<PyObject*>(self), "items", nullptr));
+      return PyBool_FromLong(PySequence_Contains(items.get(), arg));
     }
     default:
       // For other messages, check with HasField.
@@ -2641,11 +2671,11 @@ int SetFieldValue(CMessage* self, const FieldDescriptor* field_descriptor,
   } else if (field_descriptor->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE) {
     if (field_descriptor->message_type()->well_known_type() !=
         Descriptor::WELLKNOWNTYPE_UNSPECIFIED) {
-      PyObject* sub_message = GetFieldValue(self, field_descriptor);
-      if (PyObject_HasAttrString(sub_message, "_internal_assign")) {
+      ScopedPyObjectPtr sub_message(GetFieldValue(self, field_descriptor));
+      if (PyObject_HasAttrString(sub_message.get(), "_internal_assign")) {
         AssureWritable(self);
-        ScopedPyObjectPtr ok(
-            PyObject_CallMethod(sub_message, "_internal_assign", "O", value));
+        ScopedPyObjectPtr ok(PyObject_CallMethod(
+            sub_message.get(), "_internal_assign", "O", value));
         if (ok.get() == nullptr) {
           return -1;
         }

@@ -5,6 +5,7 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("//bazel/toolchains:proto_lang_toolchain.bzl", "proto_lang_toolchain")
 load("//upb/bazel:build_defs.bzl", "UPB_DEFAULT_CPPOPTS")
 load(
@@ -19,37 +20,27 @@ licenses(["notice"])
 
 bootstrap_cc_library(
     name = "generator",
-    srcs = [
-        "fasttable.cc",
-        "fasttable.h",
-        "generator.cc",
-    ],
+    srcs = ["generator.cc"],
     hdrs = ["generator.h"],
     bootstrap_deps = [
         "//upb_generator:common",
         "//upb_generator:file_layout",
         "//upb/reflection:descriptor_upb_proto",
         "//upb/reflection:reflection",
-        "//upb_generator:plugin",
     ],
     copts = UPB_DEFAULT_CPPOPTS,
-    visibility = [
-        "//pkg:__pkg__",
-        "//src/google/protobuf/compiler:__pkg__",
-    ],
     deps = [
         ":names",
         ":names_internal",
-        "//src/google/protobuf:port",
         "//src/google/protobuf/compiler:code_generator",
         "//src/google/protobuf/compiler:code_generator_lite",
-        "//src/google/protobuf/compiler:plugin",
-        "//upb:base",
-        "//upb:mem",
-        "//upb:mini_table",
-        "//upb:port",
-        "//upb:wire_reader",
+        "//upb/base",
+        "//upb/mem",
+        "//upb/mini_table",
         "//upb/mini_table:internal",
+        "//upb/port",
+        "//upb/wire:reader",
+        "//upb/wire/decode_fast:select",
         "//upb_generator/common:names",
         "@abseil-cpp//absl/container:flat_hash_map",
         "@abseil-cpp//absl/container:flat_hash_set",
@@ -73,7 +64,7 @@ cc_library(
     ],
     deps = [
         ":names_internal",
-        "//upb:port",
+        "//upb/port",
         "@abseil-cpp//absl/strings",
     ],
 )
@@ -106,6 +97,7 @@ bootstrap_cc_binary(
     visibility = [
         "//editions/codegen_tests:__pkg__",
         "//net/proto2/contrib/protoc_explorer:__pkg__",
+        "//pkg:__pkg__",
         "//rust:__subpackages__",
         "//third_party/prototiller/transformer:__pkg__",
     ],
@@ -115,9 +107,9 @@ bootstrap_cc_binary(
         "//src/google/protobuf/compiler:code_generator",
         "//src/google/protobuf/compiler:code_generator_lite",
         "//src/google/protobuf/compiler:plugin",
-        "//upb:base",
-        "//upb:mem",
-        "//upb:port",
+        "//upb/base",
+        "//upb/mem",
+        "//upb/port",
         "//upb_generator/common:names",
         "@abseil-cpp//absl/container:flat_hash_set",
         "@abseil-cpp//absl/log:absl_check",

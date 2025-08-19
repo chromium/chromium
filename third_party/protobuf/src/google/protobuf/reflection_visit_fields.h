@@ -50,8 +50,6 @@ inline FieldMask operator|(FieldMask lhs, FieldMask rhs) {
                                 static_cast<uint32_t>(rhs));
 }
 
-#ifdef __cpp_if_constexpr
-
 template <typename MessageT, typename CallbackFn>
 void VisitFields(MessageT& message, CallbackFn&& func,
                  FieldMask mask = FieldMask::kAll);
@@ -113,15 +111,15 @@ void ReflectionVisit::VisitFields(MessageT& message, CallbackFn&& func,
 
     if (field->is_repeated()) {
       switch (field->type()) {
-#define PROTOBUF_HANDLE_REPEATED_CASE(TYPE, CPPTYPE, NAME)                  \
-  case FieldDescriptor::TYPE_##TYPE: {                                      \
-    ABSL_DCHECK(!field->is_map());                                          \
-    const auto& rep =                                                       \
-        reflection->GetRawNonOneof<RepeatedField<CPPTYPE>>(message, field); \
-    if (rep.size() == 0) continue;                                          \
-    func(internal::Repeated##NAME##DynamicFieldInfo<MessageT>{              \
-        reflection, message, field, rep});                                  \
-    break;                                                                  \
+#define PROTOBUF_HANDLE_REPEATED_CASE(TYPE, CPPTYPE, NAME)          \
+  case FieldDescriptor::TYPE_##TYPE: {                              \
+    ABSL_DCHECK(!field->is_map());                                  \
+    const auto& rep =                                               \
+        reflection->GetRaw<RepeatedField<CPPTYPE>>(message, field); \
+    if (rep.size() == 0) continue;                                  \
+    func(internal::Repeated##NAME##DynamicFieldInfo<MessageT>{      \
+        reflection, message, field, rep});                          \
+    break;                                                          \
   }
 
         PROTOBUF_HANDLE_REPEATED_CASE(DOUBLE, double, Double);
@@ -143,15 +141,14 @@ void ReflectionVisit::VisitFields(MessageT& message, CallbackFn&& func,
   case FieldDescriptor::TYPE_##TYPE: {                                         \
     if (ABSL_PREDICT_TRUE(!field->is_map())) {                                 \
       /* Handle repeated fields. */                                            \
-      const auto& rep = reflection->GetRawNonOneof<RepeatedPtrField<CPPTYPE>>( \
-          message, field);                                                     \
+      const auto& rep =                                                        \
+          reflection->GetRaw<RepeatedPtrField<CPPTYPE>>(message, field);       \
       if (rep.size() == 0) continue;                                           \
       func(internal::Repeated##NAME##DynamicFieldInfo<MessageT>{               \
           reflection, message, field, rep});                                   \
     } else {                                                                   \
       /* Handle map fields. */                                                 \
-      const auto& map =                                                        \
-          reflection->GetRawNonOneof<MapFieldBase>(message, field);            \
+      const auto& map = reflection->GetRaw<MapFieldBase>(message, field);      \
       if (map.size() == 0) continue; /* NOLINT */                              \
       const Descriptor* desc = field->message_type();                          \
       func(internal::MapDynamicFieldInfo<MessageT>{reflection, message, field, \
@@ -166,13 +163,13 @@ void ReflectionVisit::VisitFields(MessageT& message, CallbackFn&& func,
 
         case FieldDescriptor::TYPE_BYTES:
         case FieldDescriptor::TYPE_STRING:
-#define PROTOBUF_IMPL_STRING_CASE(CPPTYPE, NAME)                               \
-  {                                                                            \
-    const auto& rep =                                                          \
-        reflection->GetRawNonOneof<RepeatedPtrField<CPPTYPE>>(message, field); \
-    if (rep.size() == 0) continue;                                             \
-    func(internal::Repeated##NAME##DynamicFieldInfo<MessageT>{                 \
-        reflection, message, field, rep});                                     \
+#define PROTOBUF_IMPL_STRING_CASE(CPPTYPE, NAME)                       \
+  {                                                                    \
+    const auto& rep =                                                  \
+        reflection->GetRaw<RepeatedPtrField<CPPTYPE>>(message, field); \
+    if (rep.size() == 0) continue;                                     \
+    func(internal::Repeated##NAME##DynamicFieldInfo<MessageT>{         \
+        reflection, message, field, rep});                             \
   }
 
           switch (field->cpp_string_type()) {
@@ -502,8 +499,6 @@ template <typename CallbackFn>
 void VisitMutableMessageFields(Message& message, CallbackFn&& func) {
   ReflectionVisit::VisitMessageFields(message, std::forward<CallbackFn>(func));
 }
-
-#endif  // __cpp_if_constexpr
 
 }  // namespace internal
 }  // namespace protobuf

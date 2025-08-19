@@ -9,6 +9,10 @@ load("//bazel:proto_library.bzl", "proto_library")
 load("//bazel:upb_c_proto_library.bzl", "upb_c_proto_library")
 load("//bazel:upb_minitable_proto_library.bzl", "upb_minitable_proto_library")
 load("//bazel:upb_proto_reflection_library.bzl", "upb_proto_reflection_library")
+load(
+    "//bazel/tests:protobuf_test_proto_library.bzl",
+    "protobuf_test_proto_library",
+)
 load("//build_defs:cpp_opts.bzl", "COPTS", "LINK_OPTS")
 load("//upb/cmake:build_defs.bzl", "staleness_test")
 
@@ -372,7 +376,6 @@ cc_library(
         "@abseil-cpp//absl/meta:type_traits",
         "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/strings:str_format",
-        "@abseil-cpp//absl/types:optional",
     ],
 )
 
@@ -691,6 +694,7 @@ cc_library(
         "@abseil-cpp//absl/base:prefetch",
         "@abseil-cpp//absl/container:btree",
         "@abseil-cpp//absl/container:flat_hash_set",
+        "@abseil-cpp//absl/functional:function_ref",
         "@abseil-cpp//absl/functional:overload",
         "@abseil-cpp//absl/hash",
         "@abseil-cpp//absl/log:absl_check",
@@ -704,7 +708,6 @@ cc_library(
         "@abseil-cpp//absl/strings:str_format",
         "@abseil-cpp//absl/synchronization",
         "@abseil-cpp//absl/time",
-        "@abseil-cpp//absl/types:optional",
         "@abseil-cpp//absl/types:span",
     ],
 )
@@ -718,6 +721,7 @@ PROTOBUF_HEADERS = [
     "descriptor_visitor.h",
     "dynamic_message.h",
     "feature_resolver.h",
+    "internal_feature_helper.h",
     "field_access_listener.h",
     "generated_enum_reflection.h",
     "generated_message_bases.h",
@@ -754,6 +758,7 @@ cc_library(
         "generated_message_reflection.cc",
         "generated_message_tctable_full.cc",
         "generated_message_tctable_gen.cc",
+        "internal_feature_helper.cc",
         "map_field.cc",
         "message.cc",
         "reflection_mode.cc",
@@ -808,7 +813,6 @@ cc_library(
         "@abseil-cpp//absl/strings:str_format",
         "@abseil-cpp//absl/synchronization",
         "@abseil-cpp//absl/time",
-        "@abseil-cpp//absl/types:optional",
         "@abseil-cpp//absl/types:span",
         "@abseil-cpp//absl/utility",
     ],
@@ -985,6 +989,7 @@ filegroup(
         "unittest_enormous_descriptor.proto",
         "unittest_features.proto",
         "unittest_import.proto",
+        "unittest_import_option.proto",
         "unittest_import_public.proto",
         "unittest_invalid_features.proto",
         "unittest_lite_imports_nonlite.proto",
@@ -1004,6 +1009,12 @@ filegroup(
         "unittest_string_type.proto",
         "unittest_well_known_types.proto",
     ],
+    visibility = ["//:__subpackages__"],
+)
+
+filegroup(
+    name = "unittest_custom_options_unlinked_proto_srcs",
+    srcs = ["unittest_custom_options_unlinked.proto"],
     visibility = ["//:__subpackages__"],
 )
 
@@ -1047,7 +1058,7 @@ filegroup(
     visibility = ["//:__subpackages__"],
 )
 
-proto_library(
+protobuf_test_proto_library(
     name = "test_protos",
     srcs = [
         "any_test.proto",
@@ -1089,12 +1100,15 @@ proto_library(
         "unittest_string_view.proto",
         "unittest_well_known_types.proto",
     ],
+    option_deps = [
+        ":cpp_features_proto",
+        "//:java_features_proto",
+    ],
     strip_import_prefix = "/src",
     visibility = ["//:__subpackages__"],
     deps = [
         ":any_proto",
         ":api_proto",
-        ":cpp_features_proto",
         ":descriptor_proto",
         ":duration_proto",
         ":empty_proto",
@@ -1184,9 +1198,14 @@ cc_proto_library(
     deps = [":unittest_features_proto"],
 )
 
-proto_library(
+protobuf_test_proto_library(
     name = "generic_test_protos",
     srcs = [":test_proto_srcs"],
+    option_deps = [
+        "//:java_features_proto",
+        ":cpp_features_proto",
+        ":unittest_custom_options_unlinked_proto",
+    ],
     strip_import_prefix = "/src",
     visibility = ["//:__subpackages__"],
     deps = [
@@ -1205,9 +1224,13 @@ proto_library(
     ],
 )
 
-proto_library(
+protobuf_test_proto_library(
     name = "generic_test_editions_protos",
     srcs = [":test_proto_editions_srcs"],
+    option_deps = [
+        ":cpp_features_proto",
+        "//:java_features_proto",
+    ],
     strip_import_prefix = "/src",
     visibility = ["//:__subpackages__"],
     deps = [
@@ -1300,6 +1323,31 @@ cc_proto_library(
     deps = [":unittest_string_view_proto"],
 )
 
+proto_library(
+    name = "unittest_custom_options_unlinked_proto",
+    srcs = ["unittest_custom_options_unlinked.proto"],
+    strip_import_prefix = "/src",
+    deps = [
+        "//:any_proto",
+        "//:descriptor_proto",
+    ],
+)
+
+protobuf_test_proto_library(
+    name = "unittest_import_option_proto",
+    srcs = ["unittest_import_option.proto"],
+    option_deps = [
+        ":test_protos",
+        ":unittest_custom_options_unlinked_proto",
+    ],
+    strip_import_prefix = "/src",
+)
+
+cc_proto_library(
+    name = "unittest_import_option_cc_proto",
+    deps = [":unittest_import_option_proto"],
+)
+
 cc_test(
     name = "string_view_test",
     srcs = ["string_view_test.cc"],
@@ -1375,7 +1423,7 @@ cc_library(
         "repeated_field_reflection_unittest.inc",
         "test_util.h",
         "test_util_lite.h",
-        "wire_format_unittest.inc",
+        "wire_format_unittest.h",
     ],
     copts = COPTS + select({
         "//build_defs:config_msvc": [],
@@ -1395,7 +1443,9 @@ cc_library(
         "//src/google/protobuf/testing",
         "//src/google/protobuf/testing:file",
         "@abseil-cpp//absl/base:config",
+        "@abseil-cpp//absl/base:log_severity",
         "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/flags:flag",
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/time",
@@ -1503,8 +1553,12 @@ cc_test(
         ":port",
         ":protobuf",
         "//src/google/protobuf/stubs",
+        "@abseil-cpp//absl/base:core_headers",
         "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/log:log_streamer",
         "@abseil-cpp//absl/numeric:bits",
+        "@abseil-cpp//absl/random",
+        "@abseil-cpp//absl/random:seed_sequences",
         "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/synchronization",
         "@abseil-cpp//absl/time",
@@ -1598,9 +1652,7 @@ cc_library(
     hdrs = ["test_textproto.h"],
     strip_include_prefix = "/src",
     visibility = [
-        "//editions:__pkg__",
-        "//pkg:__pkg__",
-        "//src/google/protobuf:__subpackages__",
+        "//:__subpackages__",
     ],
     deps = [
         ":protobuf",
@@ -1705,6 +1757,37 @@ cc_test(
 )
 
 cc_test(
+    name = "internal_feature_helper_test",
+    srcs = [
+        "internal_feature_helper_test.cc",
+    ],
+    copts = COPTS,
+    deps = [
+        ":cc_test_protos",
+        ":port",
+        ":protobuf",
+        ":protobuf_lite",
+        ":test_textproto",
+        ":test_util",
+        "//src/google/protobuf/compiler:importer",
+        "//src/google/protobuf/io",
+        "//src/google/protobuf/io:tokenizer",
+        "//src/google/protobuf/testing",
+        "//src/google/protobuf/testing:file",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/log:absl_log",
+        "@abseil-cpp//absl/log:die_if_null",
+        "@abseil-cpp//absl/memory",
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:str_format",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
     name = "generated_message_reflection_unittest",
     srcs = ["generated_message_reflection_unittest.cc"],
     copts = COPTS + select({
@@ -1720,6 +1803,7 @@ cc_test(
         ":port",
         ":protobuf",
         ":test_util",
+        ":unittest_import_option_cc_proto",
         ":unittest_proto3_cc_proto",
         "//src/google/protobuf/stubs",
         "//src/google/protobuf/testing",
@@ -1753,7 +1837,6 @@ cc_test(
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/log:absl_log",
         "@abseil-cpp//absl/strings",
-        "@abseil-cpp//absl/types:optional",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -1829,7 +1912,6 @@ cc_test(
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/strings:str_format",
         "@abseil-cpp//absl/synchronization",
-        "@abseil-cpp//absl/types:optional",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -1850,6 +1932,7 @@ cc_test(
     }),
     data = [":testdata"],
     deps = [
+        ":arena",
         ":cc_test_protos",
         ":internal_visibility_for_testing",
         ":lite_test_util",
@@ -1866,13 +1949,18 @@ cc_test(
         "//src/google/protobuf/util:differencer",
         "//src/google/protobuf/util:time_util",
         "@abseil-cpp//absl/base",
+        "@abseil-cpp//absl/base:log_severity",
         "@abseil-cpp//absl/cleanup",
         "@abseil-cpp//absl/container:btree",
         "@abseil-cpp//absl/container:flat_hash_map",
         "@abseil-cpp//absl/container:flat_hash_set",
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/log:absl_log",
+        "@abseil-cpp//absl/log:globals",
+        "@abseil-cpp//absl/random",
+        "@abseil-cpp//absl/random:distributions",
         "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:str_format",
         "@abseil-cpp//absl/time",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
@@ -2067,6 +2155,7 @@ cc_test(
     deps = [
         ":cc_test_protos",
         ":protobuf",
+        ":protobuf_lite",
         ":test_util",
         "//src/google/protobuf/stubs",
         "//src/google/protobuf/testing",
@@ -2223,7 +2312,6 @@ cc_test(
     name = "wire_format_unittest",
     srcs = [
         "wire_format_unittest.cc",
-        "wire_format_unittest.inc",
     ],
     deps = [
         ":cc_test_protos",
