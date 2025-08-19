@@ -13,6 +13,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -105,11 +106,15 @@ class CONTENT_EXPORT PrefetchBrowserInitiatorInfo final {
 class CONTENT_EXPORT PrefetchRequest final {
  public:
   PrefetchRequest(const PrefetchType& prefetch_type,
+                  const std::optional<url::Origin>& referring_origin,
                   std::variant<PrefetchRendererInitiatorInfo,
                                PrefetchBrowserInitiatorInfo> info);
   ~PrefetchRequest();
 
   const PrefetchType& prefetch_type() const { return prefetch_type_; }
+  const std::optional<url::Origin>& referring_origin() const {
+    return referring_origin_;
+  }
 
   // Returns non-null if renderer-initiated/browser-initiated, respectively.
   // Exactly one of them returns non-null.
@@ -123,6 +128,12 @@ class CONTENT_EXPORT PrefetchRequest final {
   // not the preftch proxy is used, and whether or not subresources are
   // prefetched.
   const PrefetchType prefetch_type_;
+
+  // The origin and URL that initiates the prefetch request.
+  // For renderer-initiated prefetch, this is calculated by referring
+  // RenderFrameHost's LastCommittedOrigin. For browser-initiated prefetch, this
+  // is sometimes explicitly passed via ctor.
+  const std::optional<url::Origin> referring_origin_;
 
   const std::variant<PrefetchRendererInitiatorInfo,
                      PrefetchBrowserInitiatorInfo>

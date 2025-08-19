@@ -256,10 +256,10 @@ PrefetchContainer::PrefetchContainer(
     : PrefetchContainer(
           std::make_unique<PrefetchRequest>(
               prefetch_type,
+              referring_render_frame_host.GetLastCommittedOrigin(),
               PrefetchRendererInitiatorInfo(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
-          referring_render_frame_host.GetLastCommittedOrigin(),
           PrefetchContainer::Key(referring_document_token, url),
           referrer,
           std::move(speculation_rules_tags),
@@ -294,8 +294,8 @@ PrefetchContainer::PrefetchContainer(
     : PrefetchContainer(
           std::make_unique<PrefetchRequest>(
               prefetch_type,
+              referring_origin,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
-          referring_origin,
           PrefetchContainer::Key(
               std::optional<blink::DocumentToken>(std::nullopt),
               url),
@@ -334,8 +334,8 @@ PrefetchContainer::PrefetchContainer(
     : PrefetchContainer(
           std::make_unique<PrefetchRequest>(
               prefetch_type,
+              referring_origin,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
-          referring_origin,
           PrefetchContainer::Key(
               std::optional<blink::DocumentToken>(std::nullopt),
               url),
@@ -357,7 +357,6 @@ PrefetchContainer::PrefetchContainer(
 
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
-    const std::optional<url::Origin>& referring_origin,
     const PrefetchContainer::Key& key,
     const blink::mojom::Referrer& referrer,
     std::optional<SpeculationRulesTags> speculation_rules_tags,
@@ -374,7 +373,6 @@ PrefetchContainer::PrefetchContainer(
     bool should_disable_block_until_head_timeout,
     std::optional<PrefetchPriority> priority)
     : request_(std::move(request)),
-      referring_origin_(referring_origin),
       key_(key),
       referrer_(referrer),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
@@ -723,7 +721,7 @@ PrefetchContainer::GetOrCreateNetworkContextForCurrentPrefetch() {
 
   auto owned_network_context = std::make_unique<PrefetchNetworkContext>(
       is_isolated_network_context_required, request().prefetch_type(),
-      referring_render_frame_host_id, referring_origin_);
+      referring_render_frame_host_id, request().referring_origin());
   network_context = owned_network_context.get();
   network_contexts_.emplace(is_isolated_network_context_required,
                             std::move(owned_network_context));
@@ -914,13 +912,14 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
 }
 
 bool PrefetchContainer::IsCrossSiteRequest(const url::Origin& origin) const {
-  return referring_origin_.has_value() &&
-         !net::SchemefulSite::IsSameSite(referring_origin_.value(), origin);
+  return request().referring_origin().has_value() &&
+         !net::SchemefulSite::IsSameSite(request().referring_origin().value(),
+                                         origin);
 }
 
 bool PrefetchContainer::IsCrossOriginRequest(const url::Origin& origin) const {
-  return referring_origin_.has_value() &&
-         !referring_origin_.value().IsSameOriginWith(origin);
+  return request().referring_origin().has_value() &&
+         !request().referring_origin().value().IsSameOriginWith(origin);
 }
 
 void PrefetchContainer::MarkCrossSiteContaminated() {

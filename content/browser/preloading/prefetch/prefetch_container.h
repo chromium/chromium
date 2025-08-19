@@ -286,11 +286,6 @@ class CONTENT_EXPORT PrefetchContainer {
     return speculation_rules_tags_->ConvertStringToHeaderString();
   }
 
-  // The origin and that initiates the prefetch request.
-  const std::optional<url::Origin> GetReferringOrigin() const {
-    return referring_origin_;
-  }
-
   // Whether or not an isolated network context is required to the next
   // prefetch.
   bool IsIsolatedNetworkContextRequiredForCurrentPrefetch() const;
@@ -707,7 +702,6 @@ class CONTENT_EXPORT PrefetchContainer {
  private:
   PrefetchContainer(
       std::unique_ptr<PrefetchRequest> request,
-      const std::optional<url::Origin>& referring_origin,
       const PrefetchContainer::Key& key,
       const blink::mojom::Referrer& referrer,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
@@ -806,12 +800,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   PrefetchServiceWorkerState service_worker_state_ =
       PrefetchServiceWorkerState::kAllowed;
-
-  // The origin and URL that initiates the prefetch request.
-  // For renderer-initiated prefetch, this is calculated by referring
-  // RenderFrameHost's LastCommittedOrigin. For browser-initiated prefetch, this
-  // is sometimes explicitly passed via ctor.
-  const std::optional<url::Origin> referring_origin_;
 
   // The key used to match this PrefetchContainer, including the URL that was
   // requested to prefetch.

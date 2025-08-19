@@ -713,9 +713,11 @@ void PrefetchService::PrefetchUrl(
           (PrefetchAllowAllDomainsForExtendedPreloading() &&
            delegate_->IsExtendedPreloadingEnabled());
       if (!allow_all_domains &&
-          prefetch_container->GetReferringOrigin().has_value() &&
-          !delegate_->IsDomainInPrefetchAllowList(
-              prefetch_container->GetReferringOrigin().value().GetURL())) {
+          prefetch_container->request().referring_origin().has_value() &&
+          !delegate_->IsDomainInPrefetchAllowList(prefetch_container->request()
+                                                      .referring_origin()
+                                                      .value()
+                                                      .GetURL())) {
         DVLOG(1) << *prefetch_container
                  << ": not prefetched (not in allow list)";
         return;
@@ -1040,9 +1042,9 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
         // whether it is behind the feature flag tentatively.
         // TODO(crbug.com/40946257): Migrate to use this in all cases.
         return delegate_ &&
-               prefetch_container->GetReferringOrigin().has_value() &&
+               prefetch_container->request().referring_origin().has_value() &&
                delegate_->IsContaminationExemptPerOrigin(
-                   prefetch_container->GetReferringOrigin().value());
+                   prefetch_container->request().referring_origin().value());
       }
     }();
 
@@ -2127,7 +2129,7 @@ void PrefetchService::EvictPrefetchesForBrowsingDataRemoval(
     // prefetch), use the origin of the prefetch URL itself, since we generally
     // handle no referring origin prefetches as a same-origin prefetch fashion.
     const url::Origin target_origin =
-        prefetch_container->GetReferringOrigin().value_or(
+        prefetch_container->request().referring_origin().value_or(
             url::Origin::Create(prefetch_container->GetURL()));
     if (storage_key_filter.Run(
             blink::StorageKey::CreateFirstParty(target_origin))) {

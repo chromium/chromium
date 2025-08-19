@@ -54,9 +54,11 @@ PrefetchBrowserInitiatorInfo::PrefetchBrowserInitiatorInfo(
 
 PrefetchRequest::PrefetchRequest(
     const PrefetchType& prefetch_type,
+    const std::optional<url::Origin>& referring_origin,
     std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
         initiator_info)
     : prefetch_type_(prefetch_type),
+      referring_origin_(referring_origin),
       initiator_info_(std::move(initiator_info)) {
   if (prefetch_type_.IsRendererInitiated()) {
     CHECK(GetRendererInitiatorInfo());
