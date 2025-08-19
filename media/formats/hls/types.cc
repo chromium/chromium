@@ -80,7 +80,7 @@ ParseStatus::Or<base::Time> ISO8601Date::Parse(ResolvedSourceString str) {
   if (base::Time::FromString(str.Str().data(), &time)) {
     return time;
   }
-  return ParseStatusCode::kMalformedTag;
+  return ParseStatusCode::kMalformedDate;
 }
 
 // static

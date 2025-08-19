@@ -65,6 +65,45 @@ enum class ParseStatusCode : StatusCodeType {
   kRenditionGroupHasDuplicateRenditionNames = 49,
   kRenditionGroupDoesNotExist = 50,
   kUnsupportedEncryptionMethod = 51,
+  kMalformedDate = 52,
+  kNoTagBody = 53,
+  kConflictingDefineTags = 54,
+  kMissingRequiredSegmentInfoTrailingComma = 55,
+  kMalformedDateRange = 56,
+
+  // Invalid attribute value errors
+  kInvalidPreloadHintType = 57,
+  kInvalidDateRangeAttribute = 58,
+  kInvalidSessionDateAttribute = 59,
+  kInvalidStartAttribute = 60,
+  kInvalidMediaAttribute = 61,
+  kInvalidPartAttribute = 62,
+  kInvalidPreloadHintAttribute = 63,
+  kInvalidKeyAttribute = 64,
+  kInvalidSessionDataAttribute = 65,
+  kInvalidIFrameStreamInfAttribute = 66,
+  kInvalidContentSteeringAttribute = 67,
+
+  // Missing attribute errors
+  kMissingDefineAttribute = 68,
+  kMissingStreamInfAttribute = 69,
+  kMissingMapAttribute = 70,
+  kMissingPartInfAttribute = 71,
+  kMissingSkipAttribute = 72,
+  kMissingMediaAttribute = 73,
+  kMissingPartAttribute = 74,
+  kMissingPreloadHintAttribute = 75,
+  kMissingKeyAttribute = 76,
+  kMissingDateRangeAttribute = 77,
+  kMissingContentSteeringAttribute = 78,
+  kMissingSessionDataAttribute = 79,
+  kMissingIFrameStreamInfAttribute = 80,
+  kMissingStartAttribute = 81,
+
+  // Conflicting attribute errors
+  kConflictingServerControlAttributes = 82,
+  kConflictingKeyTagAttributes = 83,
+  kConflictingMediaAttributes = 84,
 };
 
 #define STRINGIFY_CODE(x) \
@@ -129,9 +168,43 @@ struct ParseStatusTraits {
       STRINGIFY_CODE(kRenditionGroupHasDuplicateRenditionNames);
       STRINGIFY_CODE(kRenditionGroupDoesNotExist);
       STRINGIFY_CODE(kUnsupportedEncryptionMethod);
+      STRINGIFY_CODE(kMalformedDate);
+      STRINGIFY_CODE(kNoTagBody);
+      STRINGIFY_CODE(kConflictingDefineTags);
+      STRINGIFY_CODE(kMissingRequiredSegmentInfoTrailingComma);
+      STRINGIFY_CODE(kMalformedDateRange);
+      STRINGIFY_CODE(kInvalidPreloadHintType);
+      STRINGIFY_CODE(kInvalidDateRangeAttribute);
+      STRINGIFY_CODE(kInvalidSessionDateAttribute);
+      STRINGIFY_CODE(kInvalidStartAttribute);
+      STRINGIFY_CODE(kInvalidMediaAttribute);
+      STRINGIFY_CODE(kInvalidPartAttribute);
+      STRINGIFY_CODE(kInvalidPreloadHintAttribute);
+      STRINGIFY_CODE(kInvalidKeyAttribute);
+      STRINGIFY_CODE(kInvalidSessionDataAttribute);
+      STRINGIFY_CODE(kInvalidIFrameStreamInfAttribute);
+      STRINGIFY_CODE(kInvalidContentSteeringAttribute);
+      STRINGIFY_CODE(kMissingDefineAttribute);
+      STRINGIFY_CODE(kMissingStreamInfAttribute);
+      STRINGIFY_CODE(kMissingMapAttribute);
+      STRINGIFY_CODE(kMissingPartInfAttribute);
+      STRINGIFY_CODE(kMissingSkipAttribute);
+      STRINGIFY_CODE(kMissingMediaAttribute);
+      STRINGIFY_CODE(kMissingPartAttribute);
+      STRINGIFY_CODE(kMissingPreloadHintAttribute);
+      STRINGIFY_CODE(kMissingKeyAttribute);
+      STRINGIFY_CODE(kMissingDateRangeAttribute);
+      STRINGIFY_CODE(kMissingContentSteeringAttribute);
+      STRINGIFY_CODE(kMissingSessionDataAttribute);
+      STRINGIFY_CODE(kMissingIFrameStreamInfAttribute);
+      STRINGIFY_CODE(kMissingStartAttribute);
+      STRINGIFY_CODE(kConflictingServerControlAttributes);
+      STRINGIFY_CODE(kConflictingKeyTagAttributes);
+      STRINGIFY_CODE(kConflictingMediaAttributes);
     }
   }
 };
+
 #undef STRINGIFY_CODE
 
 using ParseStatus = TypedStatus<ParseStatusTraits>;
