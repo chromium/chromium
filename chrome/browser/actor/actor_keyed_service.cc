@@ -151,7 +151,7 @@ void ActorKeyedService::RequestTabObservation(
   const GURL& last_committed_url = tab.GetContents()->GetLastCommittedURL();
   auto journal_entry = journal_.CreatePendingAsyncEntry(
       last_committed_url, task_id, mojom::JournalTrack::kActor,
-      "RequestTabOservation", "");
+      "RequestTabObservation", "");
   page_content_annotations::FetchPageContextOptions options;
   options.include_viewport_screenshot = true;
   options.annotated_page_content_options =
