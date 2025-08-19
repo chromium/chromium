@@ -19,10 +19,7 @@ class SpeechRecognitionEventListener;
 class CONTENT_EXPORT SpeechRecognizer
     : public base::RefCountedThreadSafe<SpeechRecognizer> {
  public:
-  SpeechRecognizer(SpeechRecognitionEventListener* listener, int session_id)
-      : listener_(listener), session_id_(session_id) {
-    DCHECK(listener_);
-  }
+  SpeechRecognizer(SpeechRecognitionEventListener* listener, int session_id);
 
   SpeechRecognizer(const SpeechRecognizer&) = delete;
   SpeechRecognizer& operator=(const SpeechRecognizer&) = delete;

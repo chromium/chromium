@@ -559,6 +559,8 @@ SitePerProcessBrowserTest::SitePerProcessBrowserTest() {
   InitAndEnableRenderDocumentFeature(&feature_list_, GetParam());
 }
 
+SitePerProcessBrowserTest::~SitePerProcessBrowserTest() = default;
+
 std::string SitePerProcessBrowserTest::GetExpectedOrigin(
     const std::string& host) {
   GURL url = embedded_test_server()->GetURL(host, "/");
