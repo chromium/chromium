@@ -107,6 +107,8 @@ body {
   align-items: flex-start;
   /* Allow controls to wrap on smaller screens */
   flex-wrap: wrap;
+  /* Add a visual distinction between the controls and the text display area */
+  border-bottom: 1px solid var(--dropdown-border-color);
 }
 
 .google-button {
