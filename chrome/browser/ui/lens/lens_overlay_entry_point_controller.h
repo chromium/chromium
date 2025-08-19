@@ -58,8 +58,6 @@ class LensOverlayEntryPointController : public FullscreenObserver,
   // this current moment in time. Sometimes, entrypoints are hidden ephermally,
   // such as when the Lens Overlay is currently active, so entrypoints do
   // nothing.
-  // When the AIM Omnibox entrypoint is enabled, the Lens Overlay entrypoints
-  // should be hidden in order to mitigate non-deterministic Omnibox behavior.
   bool AreVisible() const;
 
   // Updates the enable/disable and visibility state of entry points. If

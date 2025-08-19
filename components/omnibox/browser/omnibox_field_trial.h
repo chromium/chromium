@@ -412,6 +412,9 @@ bool IsHideSuggestionGroupHeadersEnabledInContext(
 // Returns whether the deterministic AIM shortcut action in typed state is enabled.
 bool IsDeterministicAimActionInTypedStateEnabled(AutocompleteProviderClient* client);
 
+// Returns whether AIM page action in Omnibox is enabled.
+bool IsAimOmniboxEntrypointEnabled(const AutocompleteProviderClient* client);
+
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();
 extern const base::FeatureParam<size_t>
