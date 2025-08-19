@@ -278,4 +278,13 @@ void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(first_image_or_text_);
 }
 
+void SoftNavigationContext::Shutdown() {
+  modified_nodes_.clear();
+  already_painted_modified_nodes_.clear();
+  lcp_calculator_ = nullptr;
+  largest_text_ = nullptr;
+  largest_image_ = nullptr;
+  first_image_or_text_ = nullptr;
+}
+
 }  // namespace blink
