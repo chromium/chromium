@@ -396,6 +396,7 @@ class TastTest(RemoteTest):
         html_artifact = debug_link
         if result == base_test_result.ResultType.SKIP:
           html_artifact = 'Test was skipped because: ' + test['skipReason']
+
         self._rdb_client.Post(
             test['name'],
             result,
@@ -404,7 +405,9 @@ class TastTest(RemoteTest):
             None,
             artifacts=artifacts,
             failure_reason=primary_error_message,
-            html_artifact=html_artifact)
+            html_artifact=html_artifact,
+            test_id_structured=_create_structured_test_id_dict(test['name']),
+        )
 
     if self._rdb_client and self._logs_dir:
       # Attach artifacts from the device that don't apply to a single test.
@@ -717,6 +720,39 @@ class GTestTest(RemoteTest):
       logging.error('Native ResultDB integration is not supported for GTests. '
                     'Upload results via result_adapter instead. '
                     'See crbug.com/1330441.')
+
+
+def _create_structured_test_id_dict(test_id):
+  """Fills in fields for the structured_test_dict.
+
+  Args:
+    test_id: A string of the test name.
+
+  Returns:
+    A dictionary containing structured test id fields.
+  """
+  struct_test_dict = {
+      'coarseName': '',
+      'fineName': '',
+      'caseNameComponents': None,
+  }
+
+  # test_ids are expected to take the form:
+  #    tast.network.DNSProxy.arc_doh_off
+  #    tast.network.DNSProxy
+  #    network.DNSProxy.arc_doh_off
+  #    network.DNSProxy
+  test_id = test_id.removeprefix('tast.')
+  test_split = test_id.split('.', 1)
+  if len(test_split) == 2:
+    struct_test_dict['fineName'] = test_split[0]
+    struct_test_dict['caseNameComponents'] = [test_split[1]]
+  else:
+    logging.error(
+        'Test id: %s, did not match known format, so could not be parsed.',
+        test_id)
+
+  return struct_test_dict
 
 
 def device_test(args, unknown_args):
