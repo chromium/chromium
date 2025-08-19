@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
@@ -55,6 +54,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -445,17 +445,17 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
     // IdentityErrorCardPreference.Listener implementation.
     @Override
-    public void onIdentityErrorCardButtonClicked(@SyncError int error) {
+    public void onIdentityErrorCardButtonClicked(@UserActionableError int error) {
         assert mSignedInCoreAccountInfo != null;
         switch (error) {
-            case SyncError.AUTH_ERROR:
+            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
                 AccountManagerFacadeProvider.getInstance()
                         .updateCredentials(
                                 CoreAccountInfo.getAndroidAccountFrom(mSignedInCoreAccountInfo),
                                 getActivity(),
                                 null);
                 return;
-            case SyncError.CLIENT_OUT_OF_DATE:
+            case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 // Opens the client in play store for update.
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(
@@ -464,29 +464,29 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                         + ContextUtils.getApplicationContext().getPackageName()));
                 startActivity(intent);
                 return;
-            case SyncError.PASSPHRASE_REQUIRED:
+            case UserActionableError.NEEDS_PASSPHRASE:
                 displayPassphraseDialog();
                 return;
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
                 SyncSettingsUtils.openTrustedVaultKeyRetrievalDialog(
                         this, mSignedInCoreAccountInfo, REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL);
                 return;
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 SyncSettingsUtils.openTrustedVaultRecoverabilityDegradedDialog(
                         this,
                         mSignedInCoreAccountInfo,
                         REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED);
                 return;
-            case SyncError.OTHER_ERRORS:
-            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case UserActionableError.UNRECOVERABLE_ERROR:
+            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
                 // Identity error card is not shown for unrecoverable errors nor for sync setup
                 // incomplete error (the latter is shown as part of sync error in the manage sync
                 // settings page).
                 assert false; // NOTREACHED()
                 // fall through
-            case SyncError.NO_ERROR:
+            case UserActionableError.NONE:
             default:
                 return;
         }

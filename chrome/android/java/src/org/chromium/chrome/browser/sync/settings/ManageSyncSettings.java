@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
@@ -77,6 +76,7 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncFirstSetupCompleteSource;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -1131,7 +1131,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 : "Should not show on account settings page";
         assert mSyncService.hasSyncConsent();
 
-        assert mSyncErrorCardPreference.getSyncError() == SyncError.SYNC_SETUP_INCOMPLETE;
+        assert mSyncErrorCardPreference.getSyncError()
+                == UserActionableError.NEEDS_SETTINGS_CONFIRMATION;
         IdentityServicesProvider.get()
                 .getSigninManager(getProfile())
                 .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
@@ -1139,15 +1140,15 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onIdentityErrorCardButtonClicked(@SyncError int error) {
+    public void onIdentityErrorCardButtonClicked(@UserActionableError int error) {
         assert mShouldReplaceSyncSettingsWithAccountSettings
                 : "Should not show on sync settings page";
-        assert error != SyncError.SYNC_SETUP_INCOMPLETE : "Invalid error";
-        assert error != SyncError.OTHER_ERRORS : "Not an identity error";
+        assert error != UserActionableError.NEEDS_SETTINGS_CONFIRMATION : "Invalid error";
+        assert error != UserActionableError.UNRECOVERABLE_ERROR : "Not an identity error";
         onErrorCardClicked(error);
     }
 
-    private void onErrorCardClicked(@SyncError int error) {
+    private void onErrorCardClicked(@UserActionableError int error) {
         Profile profile = getProfile();
         final CoreAccountInfo primaryAccountInfo =
                 IdentityServicesProvider.get()
@@ -1156,14 +1157,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         assert primaryAccountInfo != null;
 
         switch (error) {
-            case SyncError.AUTH_ERROR:
+            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
                 AccountManagerFacadeProvider.getInstance()
                         .updateCredentials(
                                 CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo),
                                 getActivity(),
                                 null);
                 return;
-            case SyncError.CLIENT_OUT_OF_DATE:
+            case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 // Opens the client in play store for update.
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(
@@ -1172,7 +1173,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                                         + ContextUtils.getApplicationContext().getPackageName()));
                 startActivity(intent);
                 return;
-            case SyncError.OTHER_ERRORS:
+            case UserActionableError.UNRECOVERABLE_ERROR:
                 SignOutCoordinator.startSignOutFlow(
                         requireContext(),
                         profile,
@@ -1185,29 +1186,29 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         /* showConfirmDialog= */ false,
                         CallbackUtils.emptyRunnable());
                 return;
-            case SyncError.PASSPHRASE_REQUIRED:
+            case UserActionableError.NEEDS_PASSPHRASE:
                 displayPassphraseDialog();
                 return;
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
                 SyncSettingsUtils.openTrustedVaultKeyRetrievalDialog(
                         this, primaryAccountInfo, REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL);
                 return;
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 SyncSettingsUtils.openTrustedVaultRecoverabilityDegradedDialog(
                         this,
                         primaryAccountInfo,
                         REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED);
                 return;
-            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
                 mSyncService.setInitialSyncFeatureSetupComplete(
                         SyncFirstSetupCompleteSource.ADVANCED_FLOW_INTERRUPTED_TURN_SYNC_ON);
                 return;
-            case SyncError.UPM_BACKEND_OUTDATED:
+            case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
                 GmsUpdateLauncher.launch(getContext());
                 return;
-            case SyncError.NO_ERROR:
+            case UserActionableError.NONE:
             default:
         }
     }

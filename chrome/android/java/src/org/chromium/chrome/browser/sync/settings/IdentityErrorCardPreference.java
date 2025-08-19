@@ -21,27 +21,27 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorCardDetails;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserActionableError;
 
 public class IdentityErrorCardPreference extends Preference
         implements SyncService.SyncStateChangedListener {
     public interface Listener {
         /** Called when the user clicks the button. */
-        void onIdentityErrorCardButtonClicked(@SyncError int error);
+        void onIdentityErrorCardButtonClicked(@UserActionableError int error);
     }
 
     private Profile mProfile;
     private SyncService mSyncService;
     private Listener mListener;
 
-    private @SyncError int mIdentityError;
+    private @UserActionableError int mIdentityError;
 
     public IdentityErrorCardPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         setLayoutResource(R.layout.signin_settings_card_view);
-        mIdentityError = SyncError.NO_ERROR;
+        mIdentityError = UserActionableError.NONE;
     }
 
     /**
@@ -72,7 +72,7 @@ public class IdentityErrorCardPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        if (mIdentityError == SyncError.NO_ERROR) {
+        if (mIdentityError == UserActionableError.NONE) {
             return;
         }
         holder.setDividerAllowedAbove(false);
@@ -80,7 +80,7 @@ public class IdentityErrorCardPreference extends Preference
     }
 
     private void update() {
-        @SyncError int error = SyncSettingsUtils.getSyncError(mProfile);
+        @UserActionableError int error = SyncSettingsUtils.getSyncError(mProfile);
         if (error == mIdentityError) {
             // Nothing changed.
             return;
@@ -133,6 +133,6 @@ public class IdentityErrorCardPreference extends Preference
     }
 
     private boolean shouldShowErrorCard() {
-        return mIdentityError != SyncError.NO_ERROR;
+        return mIdentityError != UserActionableError.NONE;
     }
 }

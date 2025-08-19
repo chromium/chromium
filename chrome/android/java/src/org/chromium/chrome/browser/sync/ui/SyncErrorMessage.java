@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -49,6 +48,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -62,7 +62,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class SyncErrorMessage implements SyncService.SyncStateChangedListener, UnownedUserData {
     // Note: Not all SyncErrors have a corresponding SyncErrorMessage, see getError().
-    private final @SyncError int mError;
+    private final @UserActionableError int mError;
     private final Activity mActivity;
     private final Profile mProfile;
     private final IdentityManager mIdentityManager;
@@ -94,7 +94,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
      */
     public static void maybeShowMessageUi(WindowAndroid windowAndroid, Profile profile) {
         try (TraceEvent t = TraceEvent.scoped("SyncErrorMessage.maybeShowMessageUi")) {
-            if (getError(profile) == SyncError.NO_ERROR) {
+            if (getError(profile) == UserActionableError.NONE) {
                 return;
             }
 
@@ -161,7 +161,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private @DrawableRes int getNotificationIconResourceId() {
-        if (mError == SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS
+        if (mError == UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE)) {
             return R.drawable.ic_password_manager_key_off;
@@ -181,23 +181,23 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
 
     private @PrimaryActionClickBehavior int onAccepted() {
         switch (mError) {
-            case SyncError.NO_ERROR:
+            case UserActionableError.NONE:
                 assert false;
                 break;
-            case SyncError.AUTH_ERROR:
+            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
                 startUpdateCredentialsFlow(mActivity);
                 break;
-            case SyncError.PASSPHRASE_REQUIRED:
-            case SyncError.SYNC_SETUP_INCOMPLETE:
-            case SyncError.CLIENT_OUT_OF_DATE:
+            case UserActionableError.NEEDS_PASSPHRASE:
+            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
+            case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 openSettings();
                 break;
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
                 openTrustedVaultKeyRetrievalActivity();
                 break;
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 openTrustedVaultRecoverabilityDegradedActivity();
                 break;
         }
@@ -226,7 +226,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private void recordHistogram(@ErrorUiAction int action) {
-        assert mError != SyncError.NO_ERROR;
+        assert mError != UserActionableError.NONE;
         String name =
                 (mSyncService.hasSyncConsent()
                                 ? "Signin.SyncErrorMessage"
@@ -236,16 +236,16 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private String getPrimaryButtonText(Context context) {
-        assert mError != SyncError.NO_ERROR;
+        assert mError != UserActionableError.NONE;
         // Check if this is for a sync error.
         if (mSyncService.hasSyncConsent()) {
             switch (mError) {
-                case SyncError.AUTH_ERROR:
+                case UserActionableError.SIGN_IN_NEEDS_UPDATE:
                     return context.getString(R.string.password_error_sign_in_button_title);
-                case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-                case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-                case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-                case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+                case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
+                case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                     return context.getString(R.string.trusted_vault_error_card_button);
                 default:
                     return context.getString(R.string.open_settings_button);
@@ -254,21 +254,21 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
 
         // Strings for identity error.
         switch (mError) {
-            case SyncError.PASSPHRASE_REQUIRED:
+            case UserActionableError.NEEDS_PASSPHRASE:
                 return context.getString(
                         R.string.identity_error_message_button_passphrase_required);
-            case SyncError.CLIENT_OUT_OF_DATE:
+            case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 // Reuse the same string as that for the identity error card button.
                 return context.getString(R.string.identity_error_card_button_client_out_of_date);
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
                 return context.getString(getButtonTextForTrustedVaultErrorInfobarStudy());
-            case SyncError.AUTH_ERROR:
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 return context.getString(R.string.identity_error_message_button_verify);
-            case SyncError.SYNC_SETUP_INCOMPLETE:
-            case SyncError.OTHER_ERRORS:
+            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
+            case UserActionableError.UNRECOVERABLE_ERROR:
             default:
                 assert false;
                 return "";
@@ -297,7 +297,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private String getTitle(Context context) {
-        assert mError != SyncError.NO_ERROR;
+        assert mError != UserActionableError.NONE;
         // Check if this is for a sync error.
         if (mSyncService.hasSyncConsent()) {
             // Use the same title with sync error card of sync settings.
@@ -306,20 +306,20 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
 
         // Strings for identity error.
         switch (mError) {
-            case SyncError.PASSPHRASE_REQUIRED:
+            case UserActionableError.NEEDS_PASSPHRASE:
                 return context.getString(R.string.identity_error_message_title_passphrase_required);
-            case SyncError.CLIENT_OUT_OF_DATE:
+            case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 return context.getString(R.string.identity_error_message_title_client_out_of_date);
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
                 return context.getString(getTitleForTrustedVaultErrorMessageStudy());
-            case SyncError.AUTH_ERROR:
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 // Reuse the same string as that for the identity error card button.
                 return context.getString(R.string.identity_error_card_button_verify);
-            case SyncError.SYNC_SETUP_INCOMPLETE:
-            case SyncError.OTHER_ERRORS:
+            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
+            case UserActionableError.UNRECOVERABLE_ERROR:
             default:
                 assert false;
                 return "";
@@ -335,33 +335,33 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private String getMessage(Context context) {
-        assert mError != SyncError.NO_ERROR;
+        assert mError != UserActionableError.NONE;
         // Check if this is for a sync error.
         if (mSyncService.hasSyncConsent()) {
-            return mError == SyncError.SYNC_SETUP_INCOMPLETE
+            return mError == UserActionableError.NEEDS_SETTINGS_CONFIRMATION
                     ? context.getString(R.string.sync_settings_not_confirmed_title)
                     : SyncSettingsUtils.getSyncErrorHint(context, mError);
         }
 
         // Strings for identity error.
         switch (mError) {
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
                 return context.getString(getContentForTrustedVaultErrorMessageStudy());
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
                 return context.getString(
                         R.string
                                 .identity_error_message_body_sync_recoverability_degraded_for_everything);
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 return context.getString(
                         R.string
                                 .identity_error_message_body_sync_recoverability_degraded_for_passwords);
-            case SyncError.PASSPHRASE_REQUIRED:
-            case SyncError.CLIENT_OUT_OF_DATE:
-            case SyncError.AUTH_ERROR:
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+            case UserActionableError.NEEDS_PASSPHRASE:
+            case UserActionableError.NEEDS_CLIENT_UPGRADE:
+            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
                 return context.getString(R.string.identity_error_message_body);
-            case SyncError.SYNC_SETUP_INCOMPLETE:
-            case SyncError.OTHER_ERRORS:
+            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
+            case UserActionableError.UNRECOVERABLE_ERROR:
             default:
                 assert false;
                 return "";
@@ -453,11 +453,12 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                         CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
     }
 
-    private static @SyncError int getError(Profile profile) {
-        @SyncError int error = SyncSettingsUtils.getSyncError(profile);
+    private static @UserActionableError int getError(Profile profile) {
+        @UserActionableError int error = SyncSettingsUtils.getSyncError(profile);
         // Do not show sync error message for UPM_BACKEND_OUTDATED or OTHER_ERRORS.
-        if (error == SyncError.UPM_BACKEND_OUTDATED || error == SyncError.OTHER_ERRORS) {
-            return SyncError.NO_ERROR;
+        if (error == UserActionableError.NEEDS_UPM_BACKEND_UPGRADE
+                || error == UserActionableError.UNRECOVERABLE_ERROR) {
+            return UserActionableError.NONE;
         }
         return error;
     }

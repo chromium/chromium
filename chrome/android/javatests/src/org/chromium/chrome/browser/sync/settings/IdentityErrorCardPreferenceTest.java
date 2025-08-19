@@ -8,8 +8,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.mockito.Mockito.when;
-
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -20,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -29,8 +26,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -76,15 +71,11 @@ public class IdentityErrorCardPreferenceTest {
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
 
-    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
-
     private FakeSyncServiceImpl mFakeSyncServiceImpl;
     private WebPageStation mPage;
 
     @Before
     public void setUp() {
-        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
-
         mPage = mActivityTestRule.startOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -234,7 +225,7 @@ public class IdentityErrorCardPreferenceTest {
     @LargeTest
     @Feature("RenderTest")
     public void testIdentityErrorCardForUpmBackendOutdated() throws Exception {
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired()).thenReturn(true);
+        mFakeSyncServiceImpl.setRequiresUpmBackendUpgrade(true);
 
         mSigninTestRule.addTestAccountThenSignin();
 

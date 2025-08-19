@@ -19,12 +19,12 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserActionableError;
 
 public class SyncErrorCardPreference extends Preference
         implements SyncService.SyncStateChangedListener, ProfileDataCache.Observer {
@@ -40,8 +40,8 @@ public class SyncErrorCardPreference extends Preference
         void onSyncErrorCardPrimaryButtonClicked();
 
         /**
-         * Called when the user clicks the secondary button. This button is only shown for
-         * {@link SyncError.SYNC_SETUP_INCOMPLETE} error.
+         * Called when the user clicks the secondary button. This button is only shown for {@link
+         * UserActionableError.NEEDS_SETTINGS_CONFIRMATION} error.
          */
         void onSyncErrorCardSecondaryButtonClicked();
     }
@@ -51,13 +51,13 @@ public class SyncErrorCardPreference extends Preference
     private SyncService mSyncService;
     private IdentityManager mIdentityManager;
     private SyncErrorCardPreferenceListener mListener;
-    private @SyncError int mSyncError;
+    private @UserActionableError int mSyncError;
 
     public SyncErrorCardPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         setLayoutResource(R.layout.sync_promo_view_settings);
-        mSyncError = SyncError.NO_ERROR;
+        mSyncError = UserActionableError.NONE;
         setVisible(false);
     }
 
@@ -101,7 +101,7 @@ public class SyncErrorCardPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        if (mSyncError == SyncError.NO_ERROR) {
+        if (mSyncError == UserActionableError.NONE) {
             return;
         }
 
@@ -117,9 +117,9 @@ public class SyncErrorCardPreference extends Preference
 
         mSyncError = SyncSettingsUtils.getSyncError(mProfile);
         boolean suppressSyncSetupIncompleteFromSigninPage =
-                (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE)
+                (mSyncError == UserActionableError.NEEDS_SETTINGS_CONFIRMATION)
                         && mListener.shouldSuppressSyncSetupIncomplete();
-        if (mSyncError == SyncError.NO_ERROR || suppressSyncSetupIncompleteFromSigninPage) {
+        if (mSyncError == UserActionableError.NONE || suppressSyncSetupIncompleteFromSigninPage) {
             setVisible(false);
         } else {
             setVisible(true);
@@ -145,7 +145,7 @@ public class SyncErrorCardPreference extends Preference
         errorCardView.getImage().setImageDrawable(accountImage);
 
         errorCardView.getDismissButton().setVisibility(View.GONE);
-        if (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE) {
+        if (mSyncError == UserActionableError.NEEDS_SETTINGS_CONFIRMATION) {
             errorCardView.getTitle().setVisibility(View.GONE);
         } else {
             errorCardView.getTitle().setVisibility(View.VISIBLE);
@@ -173,7 +173,7 @@ public class SyncErrorCardPreference extends Preference
                                     ErrorUiAction.NUM_ENTRIES);
                             mListener.onSyncErrorCardPrimaryButtonClicked();
                         });
-        if (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE) {
+        if (mSyncError == UserActionableError.NEEDS_SETTINGS_CONFIRMATION) {
             errorCardView
                     .getSecondaryButton()
                     .setOnClickListener(v -> mListener.onSyncErrorCardSecondaryButtonClicked());
@@ -183,7 +183,7 @@ public class SyncErrorCardPreference extends Preference
         }
     }
 
-    public @SyncError int getSyncError() {
+    public @UserActionableError int getSyncError() {
         return mSyncError;
     }
 
