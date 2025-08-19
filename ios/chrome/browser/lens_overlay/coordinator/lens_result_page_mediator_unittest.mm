@@ -56,6 +56,15 @@
   _openInNewTabRequested = YES;
 }
 
+- (void)lensResultPageWebStateShown {
+  // NO-OP
+}
+
+- (void)lensResultPageWebViewDidSwipeWithDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  // NO-OP
+}
+
 @end
 
 @interface LensResultPageMediator (Testing)

@@ -162,7 +162,8 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
 @interface LensResultPageMediator () <CRWWebStateDelegate,
                                       CRWWebStateObserver,
-                                      CRWWebStatePolicyDecider>
+                                      CRWWebStatePolicyDecider,
+                                      UIGestureRecognizerDelegate>
 @end
 
 @implementation LensResultPageMediator {
@@ -359,6 +360,31 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   [_consumer setWebViewHidden:NO];
+  [self.delegate lensResultPageWebStateShown];
+
+  UIView* webView = webState->GetView();
+
+  UISwipeGestureRecognizer* downHorizontalRecognizer =
+      [[UISwipeGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(didSwipeOnWebView:)];
+  downHorizontalRecognizer.direction = UISwipeGestureRecognizerDirectionDown;
+
+  UISwipeGestureRecognizer* upHorizontalRecognizer =
+      [[UISwipeGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(didSwipeOnWebView:)];
+  upHorizontalRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
+
+  NSArray<UIGestureRecognizer*>* swipeRecognizers =
+      @[ downHorizontalRecognizer, upHorizontalRecognizer ];
+
+  for (UIGestureRecognizer* swipeRecognizer in swipeRecognizers) {
+    swipeRecognizer.enabled = YES;
+    swipeRecognizer.delegate = self;
+    swipeRecognizer.cancelsTouchesInView = NO;
+    [webView addGestureRecognizer:swipeRecognizer];
+  }
 }
 
 - (void)webState:(web::WebState*)webState
@@ -581,6 +607,11 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   }
 }
 
+- (void)didSwipeOnWebView:(UISwipeGestureRecognizer*)recognizer {
+  [self.delegate
+      lensResultPageWebViewDidSwipeWithDirection:recognizer.direction];
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateDestroyed:(web::WebState*)webState {
@@ -590,6 +621,14 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   }
 
   [self.delegate lensResultPageWebStateDestroyed];
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  return YES;
 }
 
 @end

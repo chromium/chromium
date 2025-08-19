@@ -418,6 +418,15 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 
 #pragma mark - LensResultPageMediatorDelegate
 
+- (void)lensResultPageWebStateShown {
+  [self.currentLensResult resultWebviewShown];
+}
+
+- (void)lensResultPageWebViewDidSwipeWithDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  [self.currentLensResult resultWebviewSwipedWithDirection:direction];
+}
+
 - (void)lensResultPageWebStateDestroyed {
   [self destroyLensUIAnimated:YES
                        reason:lens::LensOverlayDismissalSource::kTabClosed];

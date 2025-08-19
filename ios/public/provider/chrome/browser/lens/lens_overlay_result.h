@@ -46,6 +46,13 @@ class GURL;
 /// Called when the result fails to load in the webview.
 - (void)resultFailedToLoadInWebViewWithError:(NSError*)error;
 
+/// Called when the result webview is shown.
+- (void)resultWebviewShown;
+
+/// Called when the result webview is swiped with the given direction.
+- (void)resultWebviewSwipedWithDirection:
+    (UISwipeGestureRecognizerDirection)direction;
+
 @end
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_LENS_LENS_OVERLAY_RESULT_H_
