@@ -690,18 +690,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.GoogleAmpViewer.{Type}" enum="Boolean"
-    expires_after="2026-01-11">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how many {Type} registrations are registered from Google AMP
-    viewer. Recorded for every registration to be processed by the attribution
-    manager.
-  </summary>
-  <token key="Type" variants="AttributionReportingRegistrationType"/>
-</histogram>
-
 <histogram name="Conversions.HasAttributionHeaderInAttributionSrcResponse"
     enum="Boolean" expires_after="2026-02-04">
   <owner>linnan@chromium.org</owner>
