@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -18,6 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
@@ -25,8 +25,10 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -77,13 +79,14 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
     std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>
         track_ref;
     base::RunLoop run_loop;
-    signaling_task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RTCRtpTransceiverImplTest::
-                           CreateRemoteTrackAdapterOnSignalingThread,
-                       base::Unretained(this), std::move(webrtc_track),
-                       base::Unretained(&track_ref),
-                       base::Unretained(&run_loop)));
+    PostCrossThreadTask(
+        *signaling_task_runner(), FROM_HERE,
+        CrossThreadBindOnce(&RTCRtpTransceiverImplTest::
+                                CreateRemoteTrackAdapterOnSignalingThread,
+                            CrossThreadUnretained(this),
+                            std::move(webrtc_track),
+                            CrossThreadUnretained(&track_ref),
+                            CrossThreadUnretained(&run_loop)));
     run_loop.Run();
     DCHECK(track_ref);
     return track_ref;
