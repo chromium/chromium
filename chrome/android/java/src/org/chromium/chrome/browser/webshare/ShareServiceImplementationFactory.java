@@ -25,7 +25,7 @@ import org.chromium.webshare.mojom.ShareService;
 
 /** Factory that creates instances of ShareService. */
 @NullMarked
-public class ShareServiceImplementationFactory implements InterfaceFactory<ShareService> {
+public class ShareServiceImplementationFactory implements InterfaceFactory<@Nullable ShareService> {
     private final WebContents mWebContents;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable WindowAndroid mWindowAndroid;

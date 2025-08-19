@@ -69,7 +69,7 @@ public class NfcProviderImpl implements NfcProvider {
     }
 
     /** A factory for implementations of the NfcProvider interface. */
-    public static class Factory implements InterfaceFactory<NfcProvider> {
+    public static class Factory implements InterfaceFactory<@Nullable NfcProvider> {
         private final NfcDelegate mDelegate;
 
         public Factory(NfcDelegate delegate) {

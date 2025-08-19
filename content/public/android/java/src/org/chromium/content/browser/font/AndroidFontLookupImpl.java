@@ -342,7 +342,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     public void onConnectionError(MojoException e) {}
 
     /** A factory for implementations of the AndroidFontLookup interface. */
-    public static class Factory implements InterfaceFactory<AndroidFontLookup> {
+    public static class Factory implements InterfaceFactory<@Nullable AndroidFontLookup> {
         /**
          * It's safe to store this as a global because there's usually only one application context
          * per process, see {@link ContextUtils#getApplicationContext()} for more info.

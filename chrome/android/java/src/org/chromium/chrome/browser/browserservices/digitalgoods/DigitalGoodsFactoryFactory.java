@@ -5,13 +5,14 @@
 package org.chromium.chrome.browser.browserservices.digitalgoods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.payments.mojom.DigitalGoodsFactory;
 import org.chromium.services.service_manager.InterfaceFactory;
 
 /** A factory to produce instances of the mojo {@link DigitalGoodsFactory} interface. */
 @NullMarked
-public class DigitalGoodsFactoryFactory implements InterfaceFactory<DigitalGoodsFactory> {
+public class DigitalGoodsFactoryFactory implements InterfaceFactory<@Nullable DigitalGoodsFactory> {
     private final RenderFrameHost mRenderFrameHost;
 
     public DigitalGoodsFactoryFactory(RenderFrameHost renderFrameHost) {
