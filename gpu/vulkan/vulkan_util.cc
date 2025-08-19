@@ -109,8 +109,8 @@ bool IsBlockedByBuildInfo() {
   return false;
 }
 
-BASE_FEATURE(kVulkanV2, "VulkanV2", base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kVulkanV3, "VulkanV3", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(VulkanV2, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(VulkanV3, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDeviceBlockedByFeatureParams(const GPUInfo& gpu_info,
                                     const base::Feature* feature) {

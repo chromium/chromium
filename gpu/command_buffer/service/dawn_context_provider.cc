@@ -62,9 +62,7 @@ namespace gpu {
 namespace {
 
 // Used as a flag to test dawn initialization failure.
-BASE_FEATURE(kForceDawnInitializeFailure,
-             "ForceDawnInitializeFailure",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(ForceDawnInitializeFailure, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Sets crash key in thread safe manner. This should be used for any crash keys
 // set from dawn error or device lost callbacks that may run on multiple

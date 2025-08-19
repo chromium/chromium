@@ -147,9 +147,7 @@ namespace {
 base::AtomicSequenceNumber g_raster_decoder_id;
 
 // Controls whether we may yield during rasterization.
-BASE_FEATURE(kGpuYieldRasterization,
-             "GpuYieldRasterization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(GpuYieldRasterization, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls how many ops are rastered before checking if we should yield.
 const base::FeatureParam<int> kGpuYieldRasterizationOpCount(

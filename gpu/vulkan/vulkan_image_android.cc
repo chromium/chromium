@@ -14,8 +14,7 @@
 namespace gpu {
 
 namespace {
-BASE_FEATURE(kLimitVkImageUsageToFormatFeaturesForAHB,
-             "LimitVkImageUsageToFormatFeaturesForAHB",
+BASE_FEATURE(LimitVkImageUsageToFormatFeaturesForAHB,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSinglePlaneRGBVulkanAHBFormat(VkFormat format) {

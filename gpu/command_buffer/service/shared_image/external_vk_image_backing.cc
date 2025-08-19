@@ -92,8 +92,7 @@ namespace {
 // using Vulkan staging buffer. This might be less efficient path than using
 // staging buffers. This is fine since it is used on linux only when a user
 // forces Vulkan ON.
-BASE_FEATURE(kUseCpuFallbackPathForExternalVkImage,
-             "UseCpuFallbackPathForExternalVkImage",
+BASE_FEATURE(UseCpuFallbackPathForExternalVkImage,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 class ScopedDedicatedMemoryObject {

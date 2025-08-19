@@ -49,23 +49,17 @@ bool IsDeviceBlocked(const std::string& field, const std::string& block_list) {
 }  // namespace
 
 // Used to limit GL version to 2.0 for skia raster and compositing.
-BASE_FEATURE(kUseGles2ForOopR,
-             "UseGles2ForOopR",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(UseGles2ForOopR, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // More aggressive behavior for the shader cache: increase size, and do not
 // purge as much in case of memory pressure.
-BASE_FEATURE(kAggressiveShaderCacheLimits,
-             "AggressiveShaderCacheLimits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(AggressiveShaderCacheLimits, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Use android SurfaceControl API for managing display compositor's buffer queue
 // and using overlays on Android. Also used by webview to disable surface
 // SurfaceControl.
-BASE_FEATURE(kAndroidSurfaceControl,
-             "AndroidSurfaceControl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(AndroidSurfaceControl, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // https://crbug.com/1176185 List of devices on which SurfaceControl should be
 // disabled.
@@ -79,30 +73,20 @@ const base::FeatureParam<std::string> kAndroidSurfaceControlModelBlocklist{
     "SM-F9*|SM-W202?|SCV44|SCG05|SCG11|SC-55B"};
 
 // Hardware Overlays for WebView.
-BASE_FEATURE(kWebViewSurfaceControl,
-             "WebViewSurfaceControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(WebViewSurfaceControl, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebViewSurfaceControlForTV,
-             "WebViewSurfaceControlForTV",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(WebViewSurfaceControlForTV, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use thread-safe media path on WebView.
-BASE_FEATURE(kWebViewThreadSafeMedia,
-             "WebViewThreadSafeMedia",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(WebViewThreadSafeMedia, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This is used as default state because it's different for webview and chrome.
 // WebView hardcodes this as enabled in AwMainDelegate.
-BASE_FEATURE(kWebViewThreadSafeMediaDefault,
-             "WebViewThreadSafeMediaDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(WebViewThreadSafeMediaDefault, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Used to limit AImageReader max queue size to 1 since many devices especially
 // android Tv devices do not support more than 1 images.
-BASE_FEATURE(kLimitAImageReaderMaxSizeToOne,
-             "LimitAImageReaderMaxSizeToOne",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(LimitAImageReaderMaxSizeToOne, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // List of devices on which to limit AImageReader max queue size to 1.
 const base::FeatureParam<std::string> kLimitAImageReaderMaxSizeToOneBlocklist{
@@ -112,8 +96,7 @@ const base::FeatureParam<std::string> kLimitAImageReaderMaxSizeToOneBlocklist{
 // Used to relax the limit of AImageReader max queue size to 1 for Android Tvs.
 // Currently for all android tv except the ones in this list will have max
 // queue size of 1 image.
-BASE_FEATURE(kRelaxLimitAImageReaderMaxSizeToOne,
-             "RelaxLimitAImageReaderMaxSizeToOne",
+BASE_FEATURE(RelaxLimitAImageReaderMaxSizeToOne,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // List of devices on which to relax the restriction of max queue size of 1 for
@@ -138,14 +121,12 @@ const base::FeatureParam<std::string>
 
 // Allows using recommended AHardwareBuffer usage from Vulkan, that should allow
 // drivers to pick most optimal layout.
-BASE_FEATURE(kUseHardwareBufferUsageFlagsFromVulkan,
-             "UseHardwareBufferUsageFlagsFromVulkan",
+BASE_FEATURE(UseHardwareBufferUsageFlagsFromVulkan,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Same as above (and depends on it) and allows using extra usage even if we use
 // USAGE_COMPOSER_OVERLAY.
-BASE_FEATURE(kAllowHardwareBufferUsageFlagsFromVulkanForScanout,
-             "AllowHardwareBufferUsageFlagsFromVulkanForScanout",
+BASE_FEATURE(AllowHardwareBufferUsageFlagsFromVulkanForScanout,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif
@@ -154,8 +135,7 @@ BASE_FEATURE(kAllowHardwareBufferUsageFlagsFromVulkanForScanout,
 // --enable-gpu-rasterization or --disable-gpu-rasterization.
 // DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS,
 // Android and Linux.
-BASE_FEATURE(kDefaultEnableGpuRasterization,
-             "DefaultEnableGpuRasterization",
+BASE_FEATURE(DefaultEnableGpuRasterization,
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -165,8 +145,7 @@ BASE_FEATURE(kDefaultEnableGpuRasterization,
 );
 
 // Enables the use of MSAA in skia on Ice Lake and later intel architectures.
-BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
-             "EnableMSAAOnNewIntelGPUs",
+BASE_FEATURE(EnableMSAAOnNewIntelGPUs,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -175,48 +154,40 @@ BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
 );
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kNoUndamagedOverlayPromotion,
-             "NoUndamagedOverlayPromotion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(NoUndamagedOverlayPromotion, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
 // If enabled, the TASK_CATEGORY_POLICY value of the GPU process will be
 // adjusted to match the one from the browser process every time it changes.
-BASE_FEATURE(kAdjustGpuProcessPriority,
-             "AdjustGpuProcessPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(AdjustGpuProcessPriority, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // When enabled, Grshader disk cache will be cleared on startup if any cache
 // entry prefix does not match with the current prefix. prefix is made up of
 // various parameters like chrome version, driver version etc.
-BASE_FEATURE(kClearGrShaderDiskCacheOnInvalidPrefix,
-             "ClearGrShaderDiskCacheOnInvalidPrefix",
+BASE_FEATURE(ClearGrShaderDiskCacheOnInvalidPrefix,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the decode acceleration of JPEG images (as opposed to camera
 // captures) in Chrome OS using the VA-API.
 // TODO(andrescj): remove or enable by default in Chrome OS once
 // https://crbug.com/868400 is resolved.
-BASE_FEATURE(kVaapiJpegImageDecodeAcceleration,
-             "VaapiJpegImageDecodeAcceleration",
+BASE_FEATURE(VaapiJpegImageDecodeAcceleration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the decode acceleration of WebP images in Chrome OS using the
 // VA-API.
 // TODO(gildekel): remove or enable by default in Chrome OS once
 // https://crbug.com/877694 is resolved.
-BASE_FEATURE(kVaapiWebPImageDecodeAcceleration,
-             "VaapiWebPImageDecodeAcceleration",
+BASE_FEATURE(VaapiWebPImageDecodeAcceleration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable Vulkan graphics backend for compositing and rasterization. Defaults to
 // native implementation if --use-vulkan flag is not used. Otherwise
 // --use-vulkan will be followed.
 // Note Android WebView uses kWebViewDrawFunctorUsesVulkan instead of this.
-BASE_FEATURE(kVulkan,
-             "Vulkan",
+BASE_FEATURE(Vulkan,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -224,8 +195,7 @@ BASE_FEATURE(kVulkan,
 #endif
 );
 
-BASE_FEATURE(kEnableDrDc,
-             "EnableDrDc",
+BASE_FEATURE(EnableDrDc,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #elif BUILDFLAG(IS_MAC)
@@ -245,8 +215,8 @@ BASE_FEATURE(kEnableDrDc,
 #else
 #define WEBGPU_ENABLED base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-BASE_FEATURE(kWebGPUService, "WebGPUService", WEBGPU_ENABLED);
-BASE_FEATURE(kWebGPUBlobCache, "WebGPUBlobCache", WEBGPU_ENABLED);
+BASE_FEATURE(WebGPUService, WEBGPU_ENABLED);
+BASE_FEATURE(WebGPUBlobCache, WEBGPU_ENABLED);
 #undef WEBGPU_ENABLED
 
 // List of Dawn toggles for WebGPU, delimited by ,
@@ -276,17 +246,12 @@ const base::FeatureParam<std::string> kWebGPUUnsafeFeatures{
 const base::FeatureParam<std::string> kWGSLUnsafeFeatures{
     &kWebGPUService, "UnsafeWGSLFeatures", ""};
 
-BASE_FEATURE(kWebGPUUseVulkanMemoryModel,
-             "WebGPUUseVulkanMemoryModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(WebGPUUseVulkanMemoryModel, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebGPUEnableRangeAnalysisForRobustness,
-             "WebGPUEnableRangeAnalysisForRobustness",
+BASE_FEATURE(WebGPUEnableRangeAnalysisForRobustness,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebGPUUseSpirv14,
-            "WebGPUUseSpirv14",
-            base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(WebGPUUseSpirv14, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 
@@ -351,8 +316,7 @@ const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildFP{
 // builds. See --skia-graphite-backend flag in gpu_switches.h.
 // Note: This can also be overridden by
 // --enable-skia-graphite & --disable-skia-graphite.
-BASE_FEATURE(kSkiaGraphite,
-             "SkiaGraphite",
+BASE_FEATURE(SkiaGraphite,
 #if ((BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_IOS))
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -365,12 +329,9 @@ BASE_FEATURE(kSkiaGraphite,
 // be overridden by
 // --enable-skia-graphite-precompilation and
 // --disable-skia-graphite-precompilation.
-BASE_FEATURE(kSkiaGraphitePrecompilation,
-             "SkiaGraphitePrecompilation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(SkiaGraphitePrecompilation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kConditionallySkipGpuChannelFlush,
-             "ConditionallySkipGpuChannelFlush",
+BASE_FEATURE(ConditionallySkipGpuChannelFlush,
 // To enable on ChromeOS, test failures must be investigated
 // (crrev.com/c/5435673).
 #if BUILDFLAG(IS_CHROMEOS)
@@ -406,29 +367,22 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnDumpWCOnD3DError{
 const base::FeatureParam<bool> kSkiaGraphiteDawnD3D11DelayFlush{
     &kSkiaGraphite, "dawn_d3d11_delay_flush", true};
 
-BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
-             "SkiaGraphiteDawnUseD3D12",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(SkiaGraphiteDawnUseD3D12, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enabling this will make the GPU decode path use a mock implementation of
 // discardable memory.
-BASE_FEATURE(kNoDiscardableMemoryForGpuDecodePath,
-             "NoDiscardableMemoryForGpuDecodePath",
+BASE_FEATURE(NoDiscardableMemoryForGpuDecodePath,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use a 100-command limit before forcing context switch per command buffer
 // instead of 20.
-BASE_FEATURE(kIncreasedCmdBufferParseSlice,
-             "IncreasedCmdBufferParseSlice",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(IncreasedCmdBufferParseSlice, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Prune transfer cache entries not accessed recently. This also turns off
 // similar logic in cc::GpuImageDecodeCache which is the largest (often single)
 // client of transfer cache.
-BASE_FEATURE(kPruneOldTransferCacheEntries,
-             "PruneOldTransferCacheEntries",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(PruneOldTransferCacheEntries, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // On platforms with delegated compositing, try to release overlays later, when
 // no new frames are swapped.
@@ -439,24 +393,19 @@ BASE_FEATURE(kDeferredOverlaysRelease,
 // Use d3d11 UpdateSubresource() (instead of a staging texture) to upload pixels
 // to textures.
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kD3DBackingUploadWithUpdateSubresource,
-             "D3DBackingUploadWithUpdateSubresource",
+BASE_FEATURE(D3DBackingUploadWithUpdateSubresource,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // This feature allows viz to handle overlays' swap failures instead of loosing a context and
 // restarting a gpu service.
-BASE_FEATURE(kHandleOverlaysSwapFailure,
-             "HandleOverlaysSwapFailure",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(HandleOverlaysSwapFailure, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature allows enabling specific entries in
 // software_rendering_list.json, via experimentation. The entries must have
 // test_group property and test_group feature parameter should be set in the
 // experiment for the entries that need to be enabled.
-BASE_FEATURE(kGPUBlockListTestGroup,
-             "GPUBlockListTestGroup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(GPUBlockListTestGroup, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGPUBlockListTestGroupId{&kGPUBlockListTestGroup,
                                                        "test_group", 0};
 
@@ -464,9 +413,7 @@ const base::FeatureParam<int> kGPUBlockListTestGroupId{&kGPUBlockListTestGroup,
 // via experimentation. The entries must have test_group property and
 // test_group feature parameter should be set in the experiment for the entries
 // that need to be enabled.
-BASE_FEATURE(kGPUDriverBugListTestGroup,
-             "GPUDriverBugListTestGroup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(GPUDriverBugListTestGroup, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGPUDriverBugListTestGroupId{
     &kGPUDriverBugListTestGroup, "test_group", 0};
 
@@ -890,30 +837,23 @@ bool IncreaseBufferCountForHighFrameRate() {
 // remove the synchronous flush done by VerifySyncTokens().
 //
 // TODO(b/324276400): Work in progress.
-BASE_FEATURE(kSyncPointGraphValidation,
-             "SyncPointGraphValidation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(SyncPointGraphValidation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsSyncPointGraphValidationEnabled() {
   return base::FeatureList::IsEnabled(kSyncPointGraphValidation);
 }
 
-BASE_FEATURE(kANGLEPerContextBlobCache,
-             "ANGLEPerContextBlobCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(ANGLEPerContextBlobCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_APPLE)
-BASE_FEATURE(kIOSurfaceMultiThreading,
-             "IOSurfaceMultiThreading",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(IOSurfaceMultiThreading, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Support thread safety for graphite::context by sharing the same
 // graphite::context as well as its wrapper class GraphiteSharedContext between
 // GpuMain and CompositorGpuThread. Note: When this feature is disabled,
 // each thread creates its own graphite::context and the context wrapper.
-BASE_FEATURE(kGraphiteContextIsThreadSafe,
-             "GraphiteContextIsThreadSafe",
+BASE_FEATURE(GraphiteContextIsThreadSafe,
 #if BUILDFLAG(IS_MAC)
              // DrDC needs a thread-safe graphite context to work correctly.
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -926,12 +866,8 @@ bool IsGraphiteContextThreadSafe() {
   return base::FeatureList::IsEnabled(features::kGraphiteContextIsThreadSafe);
 }
 
-BASE_FEATURE(kWebGPUCompatibilityMode,
-             "WebGPUCompatibilityMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(WebGPUCompatibilityMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebGPUAndroidOpenGLES,
-             "WebGPUAndroidOpenGLES",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(WebGPUAndroidOpenGLES, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
