@@ -258,12 +258,12 @@ PrefetchContainer::PrefetchContainer(
               prefetch_type,
               std::move(no_vary_search_hint),
               referring_render_frame_host.GetLastCommittedOrigin(),
+              std::move(speculation_rules_tags),
               PrefetchRendererInitiatorInfo(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
           PrefetchContainer::Key(referring_document_token, url),
           referrer,
-          std::move(speculation_rules_tags),
           referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
           std::move(preload_pipeline_info),
           std::move(attempt),
@@ -296,12 +296,12 @@ PrefetchContainer::PrefetchContainer(
               prefetch_type,
               std::move(no_vary_search_hint),
               referring_origin,
+              /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
           PrefetchContainer::Key(
               std::optional<blink::DocumentToken>(std::nullopt),
               url),
           referrer,
-          /*speculation_rules_tags=*/std::nullopt,
           referring_web_contents.GetBrowserContext()->GetWeakPtr(),
           std::move(preload_pipeline_info),
           std::move(attempt),
@@ -336,12 +336,12 @@ PrefetchContainer::PrefetchContainer(
               prefetch_type,
               std::move(no_vary_search_hint),
               referring_origin,
+              /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
           PrefetchContainer::Key(
               std::optional<blink::DocumentToken>(std::nullopt),
               url),
           referrer,
-          /*speculation_rules_tags=*/std::nullopt,
           browser_context->GetWeakPtr(),
           PreloadPipelineInfo::Create(
               /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
@@ -359,7 +359,6 @@ PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
     const PrefetchContainer::Key& key,
     const blink::mojom::Referrer& referrer,
-    std::optional<SpeculationRulesTags> speculation_rules_tags,
     base::WeakPtr<BrowserContext> browser_context,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
@@ -374,7 +373,6 @@ PrefetchContainer::PrefetchContainer(
     : request_(std::move(request)),
       key_(key),
       referrer_(referrer),
-      speculation_rules_tags_(std::move(speculation_rules_tags)),
       browser_context_(std::move(browser_context)),
       request_id_(base::UnguessableToken::Create().ToString()),
       preload_pipeline_info_(base::WrapRefCounted(
@@ -859,11 +857,10 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   // To see more details:
   // https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md#the-cross-site-case
   headers_to_remove.push_back(blink::kSecSpeculationTagsHeaderName);
-  if (speculation_rules_tags_.has_value() &&
+  if (request().speculation_rules_tags().has_value() &&
       !IsCrossSiteRequest(url::Origin::Create(redirect_info.new_url))) {
-    CHECK(IsSpeculationRuleType(request().prefetch_type().trigger_type()));
     std::optional<std::string> serialized_list =
-        speculation_rules_tags_->ConvertStringToHeaderString();
+        request().speculation_rules_tags()->ConvertStringToHeaderString();
     CHECK(serialized_list.has_value());
     updated_headers.SetHeader(blink::kSecSpeculationTagsHeaderName,
                               serialized_list.value());
@@ -1474,10 +1471,10 @@ void PrefetchContainer::MakeResourceRequest(
   // by speculation rules and it is not cross-site prefetch.
   // To see more details:
   // https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md#the-cross-site-case
-  if (speculation_rules_tags_.has_value() && !IsCrossSiteRequest(origin)) {
-    CHECK(IsSpeculationRuleType(request().prefetch_type().trigger_type()));
+  if (request().speculation_rules_tags().has_value() &&
+      !IsCrossSiteRequest(origin)) {
     std::optional<std::string> serialized_list =
-        speculation_rules_tags_->ConvertStringToHeaderString();
+        request().speculation_rules_tags()->ConvertStringToHeaderString();
     CHECK(serialized_list.has_value());
     resource_request->headers.SetHeader(blink::kSecSpeculationTagsHeaderName,
                                         serialized_list.value());

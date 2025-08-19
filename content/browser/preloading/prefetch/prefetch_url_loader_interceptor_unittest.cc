@@ -34,6 +34,7 @@
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

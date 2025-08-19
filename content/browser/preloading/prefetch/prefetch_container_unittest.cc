@@ -373,7 +373,7 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
             PrefetchContainer::Key(std::nullopt, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container.GetNonRedirectHead());
   // Embedder-initiated prefetch shouldn't include any tag.
-  EXPECT_FALSE(prefetch_container.HasSpeculationRulesTags());
+  EXPECT_FALSE(prefetch_container.request().speculation_rules_tags());
 }
 
 TEST_F(PrefetchContainerTest, PrefetchStatus) {

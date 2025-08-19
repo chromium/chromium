@@ -20,7 +20,6 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
-#include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
@@ -54,6 +53,7 @@ class PrefetchStreamingURLLoader;
 class PreloadingAttempt;
 class ProxyLookupClientImpl;
 class RenderFrameHostImpl;
+class SpeculationRulesTags;
 enum class PrefetchPotentialCandidateServingResult;
 enum class PrefetchServableState;
 
@@ -276,15 +276,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The previous URL, if this has been redirected. Invalid to call otherwise.
   GURL GetPreviousURL() const;
-
-  // Returns whether the tags of the speculation rules that triggered this
-  // prefetch exists.
-  bool HasSpeculationRulesTags() { return speculation_rules_tags_.has_value(); }
-
-  // Returns the serialized string of speculation rules tags.
-  std::optional<std::string> GetSpeculationRulesTagsHeaderString() {
-    return speculation_rules_tags_->ConvertStringToHeaderString();
-  }
 
   // Whether or not an isolated network context is required to the next
   // prefetch.
@@ -704,7 +695,6 @@ class CONTENT_EXPORT PrefetchContainer {
       std::unique_ptr<PrefetchRequest> request,
       const PrefetchContainer::Key& key,
       const blink::mojom::Referrer& referrer,
-      std::optional<SpeculationRulesTags> speculation_rules_tags,
       base::WeakPtr<BrowserContext> browser_context,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
@@ -817,12 +807,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // Unless this is set, `no_vary_search` helpers don't perform No-Vary-Search
   // matching for `this`, even if `GetHead()` has No-Vary-Search headers.
   std::optional<net::HttpNoVarySearchData> no_vary_search_data_;
-
-  // The tags of the speculation rules that triggered this prefetch, and this
-  // field is non-null if and only if this is created by SpeculationRules
-  // prefech. These are assumed to have been validated by the time this is
-  // constructed.
-  std::optional<SpeculationRulesTags> speculation_rules_tags_;
 
   // The |BrowserContext| in which this is being run.
   base::WeakPtr<BrowserContext> browser_context_;

@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "net/http/http_no_vary_search_data.h"
@@ -110,6 +111,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       const PrefetchType& prefetch_type,
       const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       const std::optional<url::Origin>& referring_origin,
+      std::optional<SpeculationRulesTags> speculation_rules_tags,
       std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
           info);
   ~PrefetchRequest();
@@ -120,6 +122,10 @@ class CONTENT_EXPORT PrefetchRequest final {
   }
   const std::optional<url::Origin>& referring_origin() const {
     return referring_origin_;
+  }
+
+  const std::optional<SpeculationRulesTags>& speculation_rules_tags() const {
+    return speculation_rules_tags_;
   }
 
   // Returns non-null if renderer-initiated/browser-initiated, respectively.
@@ -145,6 +151,15 @@ class CONTENT_EXPORT PrefetchRequest final {
   // RenderFrameHost's LastCommittedOrigin. For browser-initiated prefetch, this
   // is sometimes explicitly passed via ctor.
   const std::optional<url::Origin> referring_origin_;
+
+  // -------- Parameters that can have non-default values only for
+  // -------- renderer-initiated prefetches:
+
+  // The tags of the speculation rules that triggered this prefetch, and this
+  // field is non-null if and only if this is created by SpeculationRules
+  // prefech. These are assumed to have been validated by the time this is
+  // constructed.
+  std::optional<SpeculationRulesTags> speculation_rules_tags_;
 
   const std::variant<PrefetchRendererInitiatorInfo,
                      PrefetchBrowserInitiatorInfo>

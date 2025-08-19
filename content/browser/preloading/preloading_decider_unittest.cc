@@ -588,8 +588,11 @@ TEST_F(PreloadingDeciderTest,
   const auto& prefetches = GetPrefetchService()->prefetches_;
   preloading_decider->OnPointerDown(url);
 
-  EXPECT_TRUE(prefetches[0]->HasSpeculationRulesTags());
-  EXPECT_EQ(prefetches[0]->GetSpeculationRulesTagsHeaderString().value(),
+  EXPECT_TRUE(prefetches[0]->request().speculation_rules_tags());
+  EXPECT_EQ(prefetches[0]
+                ->request()
+                .speculation_rules_tags()
+                ->ConvertStringToHeaderString(),
             "\"tag1\", \"tag2\"");
   EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
       url, blink::mojom::SpeculationAction::kPrefetch));
@@ -630,8 +633,11 @@ TEST_F(PreloadingDeciderTest,
           /*mouse_acceleration=*/0.0),
       blink::mojom::SpeculationEagerness::kModerate);
 
-  EXPECT_TRUE(prefetches[0]->HasSpeculationRulesTags());
-  EXPECT_EQ(prefetches[0]->GetSpeculationRulesTagsHeaderString().value(),
+  EXPECT_TRUE(prefetches[0]->request().speculation_rules_tags());
+  EXPECT_EQ(prefetches[0]
+                ->request()
+                .speculation_rules_tags()
+                ->ConvertStringToHeaderString(),
             "\"tag2\"");
   EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
       url, blink::mojom::SpeculationAction::kPrefetch));
@@ -661,8 +667,11 @@ TEST_F(PreloadingDeciderTest, SpeculationRulesTagsMergingForImmediatePrefetch) {
   preloading_decider->UpdateSpeculationCandidates(candidates);
   const auto& prefetches = GetPrefetchService()->prefetches_;
 
-  EXPECT_TRUE(prefetches[0]->HasSpeculationRulesTags());
-  EXPECT_EQ(prefetches[0]->GetSpeculationRulesTagsHeaderString().value(),
+  EXPECT_TRUE(prefetches[0]->request().speculation_rules_tags());
+  EXPECT_EQ(prefetches[0]
+                ->request()
+                .speculation_rules_tags()
+                ->ConvertStringToHeaderString(),
             "\"tag1\", \"tag2\"");
   EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
       url, blink::mojom::SpeculationAction::kPrefetch));
