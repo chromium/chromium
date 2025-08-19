@@ -130,7 +130,6 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   std::optional<bool> IsPagePaywalled() const override;
   base::CallbackListSubscription GetLensSuggestInputsWhenReady(
       LensOverlaySuggestInputsCallback callback) const override;
-  bool IsAimEligible() const override;
   base::WeakPtr<AutocompleteProviderClient> GetWeakPtr() override;
 
   // OmniboxAction::Client:
