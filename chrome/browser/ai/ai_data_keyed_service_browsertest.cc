@@ -557,8 +557,14 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest, StartStopTask) {
   EXPECT_EQ(task_id.value(), id);
 }
 
+// TODO(crbug.com/439247740): Fails on Win ASan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_StartNavigateStopTask DISABLED_StartNavigateStopTask
+#else
+#define MAYBE_StartNavigateStopTask StartNavigateStopTask
+#endif
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
-                       StartNavigateStopTask) {
+                       MAYBE_StartNavigateStopTask) {
   int id = 1;
   actor::TaskId task_id = actor_service().CreateTask();
   EXPECT_EQ(task_id.value(), id);
@@ -589,9 +595,15 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   EXPECT_EQ(task_id.value(), id);
 }
 
+// TODO(crbug.com/439247740): Fails on Win ASan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ForceSameTabNavigation DISABLED_ForceSameTabNavigation
+#else
+#define MAYBE_ForceSameTabNavigation ForceSameTabNavigation
+#endif
 // See ExecutionEngineBrowserTest.ForceSameTabNavigation
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
-                       ForceSameTabNavigation) {
+                       MAYBE_ForceSameTabNavigation) {
   int id = 1;
   actor::TaskId task_id = actor_service().CreateTask();
   EXPECT_EQ(task_id.value(), id);
