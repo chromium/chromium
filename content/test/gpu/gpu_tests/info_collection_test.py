@@ -38,8 +38,10 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
         action='append',
         dest='expected_device_ids',
         default=[],
-        help='The expected device id. Can be specified multiple times.')
-    parser.add_argument('--expected-vendor-id', help='The expected vendor id')
+        help=('The expected device id in hexadecimal. Can be specified '
+              'multiple times.'))
+    parser.add_argument('--expected-vendor-id',
+                        help='The expected vendor id in hexadecimal.')
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
@@ -112,12 +114,13 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
 
     # Check expected and detected GPUs match
     if detected_vendor_id != expected_vendor_id:
-      self.fail(f'Vendor ID mismatch, expected {expected_vendor_id} but got '
-                f'{detected_vendor_id}.')
+      self.fail(f'Vendor ID mismatch, expected 0x{expected_vendor_id:x} but '
+                f'got 0x{detected_vendor_id:x}.')
 
     if detected_device_id not in expected_device_ids:
-      self.fail(f'Device ID mismatch, expected {expected_device_ids} but got '
-                f'{detected_device_id}.')
+      hex_ids = [f'0x{edi:x}' for edi in expected_device_ids]
+      self.fail(f'Device ID mismatch, expected one of [{", ".join(hex_ids)}] '
+                f'but got 0x{detected_device_id:x}.')
 
   def _RunDirectCompositionTest(self,
                                 test_args: InfoCollectionTestArgs) -> None:
