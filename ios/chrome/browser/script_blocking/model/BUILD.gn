@@ -10,6 +10,7 @@ source_set("model") {
     "script_blocking_rule_applier_service.mm",
   ]
   deps = [
+    "//components/fingerprinting_protection_filter/common:features",
     "//components/keyed_service/ios",
     "//components/privacy_sandbox:tracking_protection_settings",
     "//ios/web/public/content_manager",

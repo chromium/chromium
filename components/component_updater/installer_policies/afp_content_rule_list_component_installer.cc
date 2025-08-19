@@ -16,6 +16,8 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
@@ -71,14 +73,51 @@ std::optional<std::string> LoadContentRuleListFromDisk(
   return json;
 }
 
-void PopulateContentRuleListData(std::optional<std::string> json) {
+}  // namespace
+
+// TODO(crbug.com/436881800): Clean up the dry-run feature flag after the
+// experiment.
+// static
+std::string AntiFingerprintingContentRuleListComponentInstallerPolicy::
+    TransformJsonForDryRun(std::string json) {
+#if BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(
+          fingerprinting_protection_filter::features::
+              kEnableFingerprintingProtectionFilteriOSDryRun)) {
+    std::optional<base::Value> value = base::JSONReader::Read(json);
+    if (value) {
+      if (base::Value::List* list = value->GetIfList()) {
+        for (base::Value& rule : *list) {
+          if (base::Value::Dict* rule_dict = rule.GetIfDict()) {
+            if (base::Value::Dict* action = rule_dict->FindDict("action")) {
+              if (std::string* type = action->FindString("type")) {
+                if (*type == "block") {
+                  action->Set("type", "ignore-previous-rules");
+                }
+              }
+            }
+          }
+        }
+        std::string modified_json;
+        base::JSONWriter::Write(*value, &modified_json);
+        return modified_json;
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_IOS)
+  return json;
+}
+
+// static
+void AntiFingerprintingContentRuleListComponentInstallerPolicy::
+    PopulateContentRuleListData(std::optional<std::string> json) {
   if (!json) {
     return;
   }
-  script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(*json);
-}
 
-}  // namespace
+  script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
+      TransformJsonForDryRun(std::move(*json)));
+}
 
 AntiFingerprintingContentRuleListComponentInstallerPolicy::
     AntiFingerprintingContentRuleListComponentInstallerPolicy(
@@ -181,7 +220,8 @@ AntiFingerprintingContentRuleListComponentInstallerPolicy::
   };
 }
 
-void RegisterAntiFingerprintingContentRuleListComponent(
+// static
+void AntiFingerprintingContentRuleListComponentInstallerPolicy::Register(
     ComponentUpdateService* cus) {
   if (!fingerprinting_protection_filter::features::
           IsFingerprintingProtectionFeatureEnabled()) {

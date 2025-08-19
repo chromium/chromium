@@ -14,6 +14,7 @@
 #import "base/json/json_writer.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/common/content_settings.h"
+#import "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #import "components/fingerprinting_protection_filter/ios/content_rule_list_data.h"
 #import "components/privacy_sandbox/tracking_protection_settings.h"
 #import "ios/web/public/content_manager/content_rule_list_manager.h"
@@ -81,7 +82,14 @@ void ScriptBlockingRuleApplierService::OnFpProtectionEnabledChanged() {
 
 void ScriptBlockingRuleApplierService::ApplyRules(
     const std::string& base_rules_json) {
-  if (!tracking_protection_settings_->IsFpProtectionEnabled()) {
+  // TODO(crbug.com/436881800): Clean up the dry-run feature flag after the
+  // experiment.
+  bool is_dry_run = base::FeatureList::IsEnabled(
+      fingerprinting_protection_filter::features::
+          kEnableFingerprintingProtectionFilteriOSDryRun);
+
+  // In blocking mode (not a dry run), the feature is incognito-only.
+  if (!is_dry_run && !tracking_protection_settings_->IsFpProtectionEnabled()) {
     content_rule_list_manager_->RemoveRuleList(
         kScriptBlockingRuleListKey,
         base::BindOnce(&ScriptBlockingRuleApplierService::OnRuleUpdateCompleted,

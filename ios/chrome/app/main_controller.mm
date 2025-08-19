@@ -251,7 +251,8 @@ void RegisterComponentsForUpdate() {
                                   GetApplicationContext()->GetLocalState());
   RegisterOptimizationHintsComponent(cus);
   RegisterPlusAddressBlocklistComponent(cus);
-  RegisterAntiFingerprintingContentRuleListComponent(cus);
+  component_updater::AntiFingerprintingContentRuleListComponentInstallerPolicy::
+      Register(cus);
 }
 
 // The delay before beginning memory experimentation.

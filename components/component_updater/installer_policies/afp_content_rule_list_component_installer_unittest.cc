@@ -76,6 +76,12 @@ class AntiFingerprintingContentRuleListComponentInstallerPolicyTest
     return policy_->GetInstalledPath(install_dir);
   }
 
+  // TODO(crbug.com/436881800): For testing only. Remove after the experiment.
+  std::string CallTransformJsonForDryRun(std::string json) {
+    return AntiFingerprintingContentRuleListComponentInstallerPolicy::
+        TransformJsonForDryRun(std::move(json));
+  }
+
  protected:
   void WriteJsonFile(const std::string& content) {
     base::FilePath json_path = CallGetInstalledPath(install_dir_.GetPath());
@@ -104,7 +110,7 @@ TEST_F(AntiFingerprintingContentRuleListComponentInstallerPolicyTest,
         return true;
       });
 
-  RegisterAntiFingerprintingContentRuleListComponent(&service);
+  AntiFingerprintingContentRuleListComponentInstallerPolicy::Register(&service);
   EXPECT_TRUE(future.Wait());
 }
 
@@ -145,6 +151,28 @@ TEST_F(AntiFingerprintingContentRuleListComponentInstallerPolicyTest,
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(*result, kTestJson);
 }
+
+// TODO(crbug.com/436881800): Clean up the dry-run feature flag after the
+// experiment.
+// Tests that the JSON transformation for the dry run mode works correctly.
+#if BUILDFLAG(IS_IOS)
+TEST_F(AntiFingerprintingContentRuleListComponentInstallerPolicyTest,
+       TransformJsonForDryRun) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      fingerprinting_protection_filter::features::
+          kEnableFingerprintingProtectionFilteriOSDryRun);
+
+  const std::string kOriginalJson =
+      R"([{"action": {"type": "block"}, "trigger": {"url-filter": ".*"}}])";
+  const std::string kExpectedJson =
+      R"([{"action":{"type":"ignore-previous-rules"},)"
+      R"("trigger":{"url-filter":".*"}}])";
+
+  std::string result = CallTransformJsonForDryRun(kOriginalJson);
+  EXPECT_EQ(result, kExpectedJson);
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 // Tests that GetInstallerAttributes returns an empty version when features are
 // disabled.

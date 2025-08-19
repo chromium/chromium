@@ -29,6 +29,13 @@ BASE_DECLARE_FEATURE(kEnableFingerprintingProtectionFilter);
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 BASE_DECLARE_FEATURE(kEnableFingerprintingProtectionFilterInIncognito);
 
+// TODO(crbug.com/436881800): Clean up the dry-run feature flag after the
+// experiment.
+// Toggle to enable/disable Fingerprinting Protection Filter dry run on for a
+// client-side iOS experiment. Allows bypassing other checks.
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+BASE_DECLARE_FEATURE(kEnableFingerprintingProtectionFilteriOSDryRun);
+
 // Returns true if either of the Fingerprinting Protection feature flags are
 // enabled, or if the Tracking Protection kFingerprintingProtectionUx flag is
 // enabled.
