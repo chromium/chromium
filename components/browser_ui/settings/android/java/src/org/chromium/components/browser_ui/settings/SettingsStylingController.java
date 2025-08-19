@@ -13,6 +13,7 @@ import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.settings.CustomStyledPreference.BackgroundStyle;
 
 import java.util.ArrayList;
 
@@ -108,8 +109,12 @@ public class SettingsStylingController {
      * @return Whether to skip decoration.
      */
     private boolean shouldSkipDecoration(Preference preference) {
-        return preference instanceof PreferenceCategory
-                || preference instanceof TextMessagePreference;
+        if (preference instanceof PreferenceCategory) return true;
+        if (preference instanceof CustomStyledPreference) {
+            return ((CustomStyledPreference) preference).getCustomBackgroundStyle()
+                    == BackgroundStyle.NONE;
+        }
+        return false;
     }
 
     private @NonNull BackgroundStyleDetails getBackgroundStyleDetailsForPosition(
