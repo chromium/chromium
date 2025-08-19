@@ -31,7 +31,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
-#include "third_party/blink/renderer/platform/geometry/evaluation_input.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -39,6 +38,8 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
+
+struct EvaluationInput;
 
 struct PixelsAndPercent {
   DISALLOW_NEW();

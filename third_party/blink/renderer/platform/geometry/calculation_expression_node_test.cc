@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/geometry/evaluation_input.h"
 
 namespace blink {
 
