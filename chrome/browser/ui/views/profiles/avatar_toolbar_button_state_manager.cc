@@ -1027,7 +1027,19 @@ class HistorySyncOptinStateProvider : public StateProvider {
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
     }
 
-    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY);
+    switch (switches::kHistorySyncOptinExpansionPillOption.Get()) {
+      case switches::HistorySyncOptinExpansionPillOption::kBrowseAcrossDevices:
+      case switches::HistorySyncOptinExpansionPillOption::
+          kBrowseAcrossDevicesNewProfileMenuPromoVariant:
+        return l10n_util::GetStringUTF16(
+            IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES);
+      case switches::HistorySyncOptinExpansionPillOption::kSyncHistory:
+        return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY);
+      case switches::HistorySyncOptinExpansionPillOption::
+          kSeeTabsFromOtherDevices:
+        return l10n_util::GetStringUTF16(
+            IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES);
+    }
   }
 
   void Init() override {

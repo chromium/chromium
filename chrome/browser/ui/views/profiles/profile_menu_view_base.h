@@ -79,7 +79,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kProfileManagementLabel = 20,
     kSigninReauthButton = 21,
     kAutofillSettingsButton = 22,
-    // DEPRECATED: kHistorySyncOptInButton = 23,
+    kHistorySyncOptInButton = 23,
     kBatchUploadButton = 24,
     kMaxValue = kBatchUploadButton,
   };
