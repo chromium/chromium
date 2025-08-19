@@ -610,7 +610,6 @@ class CONTENT_EXPORT PrefetchContainer {
       std::unique_ptr<PrefetchRequest> request,
       const blink::mojom::Referrer& referrer,
       const net::HttpRequestHeaders& additional_headers,
-      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
       bool is_javascript_enabled,
       base::TimeDelta ttl,
       bool should_append_variations_header,
@@ -815,10 +814,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // This must be empty for non-WebView initiated prefetches.
   // TODO(crbug.com/369859822): Revisit the semantics if needed.
   const net::HttpRequestHeaders additional_headers_;
-
-  // Listener of prefetch request. Currently used for WebView initiated
-  // prefetch.
-  std::unique_ptr<PrefetchRequestStatusListener> request_status_listener_;
 
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 

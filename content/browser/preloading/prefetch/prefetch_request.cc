@@ -10,6 +10,7 @@
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/prefetch_request_status_listener.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -48,8 +49,10 @@ PrefetchBrowserInitiatorInfo::PrefetchBrowserInitiatorInfo(
     PrefetchBrowserInitiatorInfo&&) = default;
 
 PrefetchBrowserInitiatorInfo::PrefetchBrowserInitiatorInfo(
-    const std::string& embedder_histogram_suffix)
-    : embedder_histogram_suffix_(embedder_histogram_suffix) {
+    const std::string& embedder_histogram_suffix,
+    std::unique_ptr<PrefetchRequestStatusListener> request_status_listener)
+    : embedder_histogram_suffix_(embedder_histogram_suffix),
+      request_status_listener_(std::move(request_status_listener)) {
   CHECK(!embedder_histogram_suffix_.empty());
 }
 

@@ -267,7 +267,6 @@ PrefetchContainer::PrefetchContainer(
                   std::move(prefetch_document_manager))),
           referrer,
           /*Must be empty: additional_headers=*/{},
-          /*request_status_listener=*/nullptr,
           WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
               ->GetOrCreateWebPreferences()
               .javascript_enabled,
@@ -301,10 +300,11 @@ PrefetchContainer::PrefetchContainer(
               referring_web_contents.GetBrowserContext()->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
               std::move(holdback_status_override),
-              PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
+              PrefetchBrowserInitiatorInfo(
+                  embedder_histogram_suffix,
+                  /*request_status_listener=*/nullptr)),
           referrer,
           /*Must be empty: additional_headers=*/{},
-          /*request_status_listener=*/nullptr,
           referring_web_contents.GetOrCreateWebPreferences().javascript_enabled,
           ttl.has_value() ? ttl.value()
                           : PrefetchContainerDefaultTtlInPrefetchService(),
@@ -341,10 +341,10 @@ PrefetchContainer::PrefetchContainer(
               browser_context->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
               /*holdback_status_override=*/std::nullopt,
-              PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
+              PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
+                                           std::move(request_status_listener))),
           referrer,
           additional_headers,
-          std::move(request_status_listener),
           javascript_enabled,
           ttl,
           should_append_variations_header,
@@ -355,7 +355,6 @@ PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
     const blink::mojom::Referrer& referrer,
     const net::HttpRequestHeaders& additional_headers,
-    std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
     bool is_javascript_enabled,
     base::TimeDelta ttl,
     bool should_append_variations_header,
@@ -365,7 +364,6 @@ PrefetchContainer::PrefetchContainer(
       referrer_(referrer),
       request_id_(base::UnguessableToken::Create().ToString()),
       additional_headers_(additional_headers),
-      request_status_listener_(std::move(request_status_listener)),
       is_javascript_enabled_(is_javascript_enabled),
       ttl_(ttl),
       should_append_variations_header_(should_append_variations_header),
@@ -1083,22 +1081,25 @@ void PrefetchContainer::OnPrefetchCompleteInternal(
     }
   }
 
-  if (request_status_listener_) {
-    switch (prefetch_status) {
-      case PrefetchStatus::kPrefetchSuccessful:
-      case PrefetchStatus::kPrefetchResponseUsed:
-        request_status_listener_->OnPrefetchResponseCompleted();
-        break;
-      case PrefetchStatus::kPrefetchFailedNon2XX: {
-        int response_code = GetNonRedirectHead()
-                                ? GetNonRedirectHead()->headers->response_code()
-                                : 0;
-        request_status_listener_->OnPrefetchResponseServerError(response_code);
-        break;
+  if (auto* browser_initiator_info = request().GetBrowserInitiatorInfo()) {
+    if (auto* listener = browser_initiator_info->request_status_listener()) {
+      switch (prefetch_status) {
+        case PrefetchStatus::kPrefetchSuccessful:
+        case PrefetchStatus::kPrefetchResponseUsed:
+          listener->OnPrefetchResponseCompleted();
+          break;
+        case PrefetchStatus::kPrefetchFailedNon2XX: {
+          int response_code =
+              GetNonRedirectHead()
+                  ? GetNonRedirectHead()->headers->response_code()
+                  : 0;
+          listener->OnPrefetchResponseServerError(response_code);
+          break;
+        }
+        default:
+          listener->OnPrefetchResponseError();
+          break;
       }
-      default:
-        request_status_listener_->OnPrefetchResponseError();
-        break;
     }
   }
 }
@@ -1597,8 +1598,10 @@ void PrefetchContainer::OnInitialPrefetchFailedIneligible(
     PreloadingEligibility eligibility) {
   CHECK(redirect_chain_.size() == 1);
   CHECK_NE(eligibility, PreloadingEligibility::kEligible);
-  if (request_status_listener_) {
-    request_status_listener_->OnPrefetchStartFailedGeneric();
+  if (auto* browser_initiator_info = request().GetBrowserInitiatorInfo()) {
+    if (auto* listener = browser_initiator_info->request_status_listener()) {
+      listener->OnPrefetchStartFailedGeneric();
+    }
   }
 }
 

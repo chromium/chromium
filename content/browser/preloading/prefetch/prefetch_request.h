@@ -22,9 +22,10 @@ namespace content {
 
 class BrowserContext;
 class PrefetchDocumentManager;
-class PreloadingAttempt;
+class PrefetchRequestStatusListener;
 class PreloadPipelineInfo;
 class PreloadPipelineInfoImpl;
+class PreloadingAttempt;
 class RenderFrameHostImpl;
 enum class PreloadingHoldbackStatus;
 
@@ -83,8 +84,9 @@ class CONTENT_EXPORT PrefetchRendererInitiatorInfo final {
 // For browser-initiated prefetches.
 class CONTENT_EXPORT PrefetchBrowserInitiatorInfo final {
  public:
-  explicit PrefetchBrowserInitiatorInfo(
-      const std::string& embedder_histogram_suffix);
+  PrefetchBrowserInitiatorInfo(
+      const std::string& embedder_histogram_suffix,
+      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener);
   ~PrefetchBrowserInitiatorInfo();
 
   // Move-only.
@@ -96,11 +98,18 @@ class CONTENT_EXPORT PrefetchBrowserInitiatorInfo final {
   const std::string& embedder_histogram_suffix() const {
     return embedder_histogram_suffix_;
   }
+  PrefetchRequestStatusListener* request_status_listener() const {
+    return request_status_listener_.get();
+  }
 
  private:
   // The suffix string of embedder triggers used for generating histogram
   // recorded per trigger.
   std::string embedder_histogram_suffix_;
+
+  // Listener of prefetch request. Currently used for WebView initiated
+  // prefetch.
+  std::unique_ptr<PrefetchRequestStatusListener> request_status_listener_;
 };
 
 // `PrefetchRequest` represents request parameters to `PrefetchService` to
