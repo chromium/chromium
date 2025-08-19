@@ -625,7 +625,6 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer(
       std::unique_ptr<PrefetchRequest> request,
       const blink::mojom::Referrer& referrer,
-      base::WeakPtr<BrowserContext> browser_context,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
       std::optional<PreloadingHoldbackStatus> holdback_status_override,
@@ -733,9 +732,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // Unless this is set, `no_vary_search` helpers don't perform No-Vary-Search
   // matching for `this`, even if `GetHead()` has No-Vary-Search headers.
   std::optional<net::HttpNoVarySearchData> no_vary_search_data_;
-
-  // The |BrowserContext| in which this is being run.
-  base::WeakPtr<BrowserContext> browser_context_;
 
   // The current status, if any, of the prefetch.
   // TODO(crbug.com/40075414): Use `load_state_` instead for non-metrics

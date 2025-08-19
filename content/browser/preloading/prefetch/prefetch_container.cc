@@ -257,12 +257,12 @@ PrefetchContainer::PrefetchContainer(
               PrefetchKey(referring_document_token, url),
               std::move(no_vary_search_hint),
               referring_render_frame_host.GetLastCommittedOrigin(),
+              referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
               std::move(speculation_rules_tags),
               PrefetchRendererInitiatorInfo(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
           referrer,
-          referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
           std::move(preload_pipeline_info),
           std::move(attempt),
           /*holdback_status_override=*/std::nullopt,
@@ -296,10 +296,10 @@ PrefetchContainer::PrefetchContainer(
                           url),
               std::move(no_vary_search_hint),
               referring_origin,
+              referring_web_contents.GetBrowserContext()->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
           referrer,
-          referring_web_contents.GetBrowserContext()->GetWeakPtr(),
           std::move(preload_pipeline_info),
           std::move(attempt),
           holdback_status_override,
@@ -335,10 +335,10 @@ PrefetchContainer::PrefetchContainer(
                           url),
               std::move(no_vary_search_hint),
               referring_origin,
+              browser_context->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
           referrer,
-          browser_context->GetWeakPtr(),
           PreloadPipelineInfo::Create(
               /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
           std::move(attempt),
@@ -354,7 +354,6 @@ PrefetchContainer::PrefetchContainer(
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
     const blink::mojom::Referrer& referrer,
-    base::WeakPtr<BrowserContext> browser_context,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<PreloadingHoldbackStatus> holdback_status_override,
@@ -367,7 +366,6 @@ PrefetchContainer::PrefetchContainer(
     std::optional<PrefetchPriority> priority)
     : request_(std::move(request)),
       referrer_(referrer),
-      browser_context_(std::move(browser_context)),
       request_id_(base::UnguessableToken::Create().ToString()),
       preload_pipeline_info_(base::WrapRefCounted(
           static_cast<PreloadPipelineInfoImpl*>(preload_pipeline_info.get()))),
@@ -391,7 +389,7 @@ PrefetchContainer::PrefetchContainer(
 
   // Disallow prefetching ServiceWorker-controlled responses for isolated
   // network contexts.
-  if (!features::IsPrefetchServiceWorkerEnabled(browser_context_.get()) ||
+  if (!features::IsPrefetchServiceWorkerEnabled(request_->browser_context()) ||
       IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
     service_worker_state_ = PrefetchServiceWorkerState::kDisallowed;
   }
@@ -887,14 +885,15 @@ void PrefetchContainer::MarkCrossSiteContaminated() {
 }
 
 void PrefetchContainer::AddXClientDataHeader(
-    network::ResourceRequest& request) {
-  if (browser_context_) {
+    network::ResourceRequest& resource_request) {
+  if (request().browser_context()) {
     // Add X-Client-Data header with experiment IDs from field trials.
-    variations::AppendVariationsHeader(request.url,
-                                       browser_context_->IsOffTheRecord()
-                                           ? variations::InIncognito::kYes
-                                           : variations::InIncognito::kNo,
-                                       variations::SignedIn::kNo, &request);
+    variations::AppendVariationsHeader(
+        resource_request.url,
+        request().browser_context()->IsOffTheRecord()
+            ? variations::InIncognito::kYes
+            : variations::InIncognito::kNo,
+        variations::SignedIn::kNo, &resource_request);
   }
 }
 
@@ -1492,12 +1491,11 @@ void PrefetchContainer::AddClientHintsHeaders(
   if (!base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
     return;
   }
-  BrowserContext* browser_context = browser_context_.get();
-  if (!browser_context_) {
+  if (!request().browser_context()) {
     return;
   }
   ClientHintsControllerDelegate* client_hints_delegate =
-      browser_context->GetClientHintsControllerDelegate();
+      request().browser_context()->GetClientHintsControllerDelegate();
   if (!client_hints_delegate) {
     return;
   }
@@ -1512,8 +1510,8 @@ void PrefetchContainer::AddClientHintsHeaders(
     // TODO(crbug.com/394716357): Revisit if we really want to allow prefetch
     // for non-Javascript enabled profile/origins.
     AddClientHintsHeadersToPrefetchNavigation(
-        origin, &client_hints_headers, browser_context, client_hints_delegate,
-        is_ua_override_on);
+        origin, &client_hints_headers, request().browser_context(),
+        client_hints_delegate, is_ua_override_on);
   }
 
   // Merge in the client hints which are suitable to include given this is a

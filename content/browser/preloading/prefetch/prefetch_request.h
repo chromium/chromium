@@ -20,6 +20,7 @@
 
 namespace content {
 
+class BrowserContext;
 class PrefetchDocumentManager;
 class RenderFrameHostImpl;
 
@@ -113,6 +114,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       const PrefetchKey& key,
       const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       const std::optional<url::Origin>& referring_origin,
+      base::WeakPtr<BrowserContext> browser_context,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
       std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
           info);
@@ -126,6 +128,7 @@ class CONTENT_EXPORT PrefetchRequest final {
   const std::optional<url::Origin>& referring_origin() const {
     return referring_origin_;
   }
+  BrowserContext* browser_context() const { return browser_context_.get(); }
 
   const std::optional<SpeculationRulesTags>& speculation_rules_tags() const {
     return speculation_rules_tags_;
@@ -158,6 +161,9 @@ class CONTENT_EXPORT PrefetchRequest final {
   // RenderFrameHost's LastCommittedOrigin. For browser-initiated prefetch, this
   // is sometimes explicitly passed via ctor.
   const std::optional<url::Origin> referring_origin_;
+
+  // The |BrowserContext| in which this is being run.
+  const base::WeakPtr<BrowserContext> browser_context_;
 
   // -------- Parameters that can have non-default values only for
   // -------- renderer-initiated prefetches:
