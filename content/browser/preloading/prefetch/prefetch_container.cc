@@ -257,6 +257,7 @@ PrefetchContainer::PrefetchContainer(
                   &referring_render_frame_host)
                   ->GetOrCreateWebPreferences()
                   .javascript_enabled,
+              referrer,
               referring_render_frame_host.GetLastCommittedOrigin(),
               referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
               std::move(speculation_rules_tags),
@@ -265,7 +266,6 @@ PrefetchContainer::PrefetchContainer(
               PrefetchRendererInitiatorInfo(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
-          referrer,
           PrefetchContainerDefaultTtlInPrefetchService(),
           /*should_append_variations_header=*/true,
           /*should_disable_block_until_head_timeout=*/false) {}
@@ -294,6 +294,7 @@ PrefetchContainer::PrefetchContainer(
               std::move(attempt),
               referring_web_contents.GetOrCreateWebPreferences()
                   .javascript_enabled,
+              referrer,
               referring_origin,
               referring_web_contents.GetBrowserContext()->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
@@ -302,7 +303,6 @@ PrefetchContainer::PrefetchContainer(
               PrefetchBrowserInitiatorInfo(
                   embedder_histogram_suffix,
                   /*request_status_listener=*/nullptr)),
-          referrer,
           ttl.has_value() ? ttl.value()
                           : PrefetchContainerDefaultTtlInPrefetchService(),
           /*should_append_variations_header=*/true,
@@ -335,6 +335,7 @@ PrefetchContainer::PrefetchContainer(
                   /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
               std::move(attempt),
               javascript_enabled,
+              referrer,
               referring_origin,
               browser_context->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
@@ -342,19 +343,17 @@ PrefetchContainer::PrefetchContainer(
               /*holdback_status_override=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
                                            std::move(request_status_listener))),
-          referrer,
           ttl,
           should_append_variations_header,
           should_disable_block_until_head_timeout) {}
 
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
-    const blink::mojom::Referrer& referrer,
     base::TimeDelta ttl,
     bool should_append_variations_header,
     bool should_disable_block_until_head_timeout)
     : request_(std::move(request)),
-      referrer_(referrer),
+      referrer_(request_->initial_referrer()),
       request_id_(base::UnguessableToken::Create().ToString()),
       ttl_(ttl),
       should_append_variations_header_(should_append_variations_header),

@@ -605,7 +605,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
  private:
   PrefetchContainer(std::unique_ptr<PrefetchRequest> request,
-                    const blink::mojom::Referrer& referrer,
                     base::TimeDelta ttl,
                     bool should_append_variations_header,
                     bool should_disable_block_until_head_timeout);
@@ -694,7 +693,7 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchServiceWorkerState service_worker_state_ =
       PrefetchServiceWorkerState::kAllowed;
 
-  // The referrer to use for the request.
+  // The referrer to use for the request. This is updated through redirects.
   blink::mojom::Referrer referrer_;
 
   // Information about the current prefetch request. Updated when a redirect is

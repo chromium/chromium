@@ -17,6 +17,7 @@
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -132,6 +133,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
       bool is_javascript_enabled,
+      const blink::mojom::Referrer& initial_referrer,
       const std::optional<url::Origin>& referring_origin,
       base::WeakPtr<BrowserContext> browser_context,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
@@ -152,6 +154,9 @@ class CONTENT_EXPORT PrefetchRequest final {
   }
   PreloadingAttempt* attempt() const { return attempt_.get(); }
   bool is_javascript_enabled() const { return is_javascript_enabled_; }
+  const blink::mojom::Referrer& initial_referrer() const {
+    return initial_referrer_;
+  }
   const std::optional<url::Origin>& referring_origin() const {
     return referring_origin_;
   }
@@ -217,6 +222,11 @@ class CONTENT_EXPORT PrefetchRequest final {
   // handled later, according to
   // |ClientHintsControllerDelegate::IsJavaScriptAllowed|.
   const bool is_javascript_enabled_;
+
+  // The referrer to use for the initial request.
+  // Only for initialization of `PrefetchContainer::referrer_`.
+  // For other cases, use `PrefetchContainer::referrer_` instead.
+  const blink::mojom::Referrer initial_referrer_;
 
   // The origin and URL that initiates the prefetch request.
   // For renderer-initiated prefetch, this is calculated by referring
