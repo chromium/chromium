@@ -33,10 +33,10 @@ inline constexpr int kLowEntropySourceVariationIdRangeMax = 3328977;
 
 class VariationsClient;
 
-// The key for a VariationsIdsProvider's |variations_headers_map_|. A
+// The key for a VariationsIdsProvider's `variations_headers_map_`. A
 // VariationsHeaderKey provides more details about the VariationsIDs included in
 // a particular header. For example, the header associated with a key with true
-// for |is_signed_in| and Study_GoogleWebVisibility_ANY for |web_visibility| has
+// for `is_signed_in` and Study_GoogleWebVisibility_ANY for `web_visibility` has
 // (i) VariationsIDs associated with external experiments, which can be sent
 // only for signed-in users and (ii) VariationsIDs that can be sent in first-
 // and third-party contexts.
@@ -90,21 +90,21 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   Mode mode() const { return mode_; }
 
-  // Returns the X-Client-Data headers corresponding to |is_signed_in|: a header
+  // Returns the X-Client-Data headers corresponding to `is_signed_in`: a header
   // that may be sent in first-party requests and a header that may be sent in
   // third-party requests. For more details, see IsFirstPartyContext() in
   // variations_http_headers.cc.
   //
-  // If |is_signed_in| is false, VariationIDs that should be sent for only
+  // If `is_signed_in` is false, VariationIDs that should be sent for only
   // signed in users (i.e. GOOGLE_WEB_PROPERTIES_SIGNED_IN entries) are not
-  // included. Also, computes and caches the header if necessary. |is_signed_in|
+  // included. Also, computes and caches the header if necessary. `is_signed_in`
   // is impacted by the Mode supplied when VariationsIdsProvider is created.
   // See Mode for details.
   variations::mojom::VariationsHeadersPtr GetClientDataHeaders(
       bool is_signed_in);
 
   // Returns a space-separated string containing the list of current active
-  // variations (as would be reported in the |variation_id| repeated field of
+  // variations (as would be reported in the `variation_id` repeated field of
   // the ClientVariations proto). Does not include variation ids that should be
   // sent for signed-in users only and does not include Google app variations.
   // The returned string is guaranteed to have a leading and trailing space,
@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // IMPORTANT: This string should only be used for debugging and diagnostics.
   std::string GetTriggerVariationsString();
 
-  // Returns the collection of VariationIDs associated with |keys|. Each entry
+  // Returns the collection of VariationIDs associated with `keys`. Each entry
   // in the returned vector is unique.
   std::vector<VariationID> GetVariationsVector(
       const std::set<IDCollectionKey>& keys);
@@ -138,15 +138,15 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // Result of ForceVariationIds() call.
   enum class ForceIdsResult {
     SUCCESS,
-    INVALID_VECTOR_ENTRY,  // Invalid entry in |variation_ids|.
-    INVALID_SWITCH_ENTRY,  // Invalid entry in |command_line_variation_ids|.
+    INVALID_VECTOR_ENTRY,  // Invalid entry in `variation_ids`.
+    INVALID_SWITCH_ENTRY,  // Invalid entry in `command_line_variation_ids`.
   };
 
   // Sets *additional* variation ids and trigger variation ids to be encoded in
   // the X-Client-Data request header. This is intended for development use to
-  // force a server side experiment id. |variation_ids| should be a list of
-  // strings of numeric experiment ids. Ids explicitly passed in |variation_ids|
-  // and those in the comma-separated |command_line_variation_ids| are added.
+  // force a server side experiment id. `variation_ids` should be a list of
+  // strings of numeric experiment ids. Ids explicitly passed in `variation_ids`
+  // and those in the comma-separated `command_line_variation_ids` are added.
   ForceIdsResult ForceVariationIds(
       const std::vector<std::string>& variation_ids,
       const std::string& command_line_variation_ids);
@@ -154,7 +154,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // Ensures that the given variation ids and trigger variation ids are not
   // encoded in the X-Client-Data request header. This is intended for
   // development use to force that a server side experiment id is not set.
-  // |command_line_variation_ids| are comma-separted experiment ids.
+  // `command_line_variation_ids` are comma-separted experiment ids.
   // Returns true on success.
   bool ForceDisableVariationIds(const std::string& command_line_variation_ids);
 
@@ -200,13 +200,13 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   static void DestroyInstanceForTesting();
 
   // Returns a space-separated string containing the list of current active
-  // variations (as would be reported in the |variation_id| repeated field of
+  // variations (as would be reported in the `variation_id` repeated field of
   // the ClientVariations proto) for a given ID collection.
   std::string GetVariationsString(const std::set<IDCollectionKey>& keys);
 
   // base::FieldTrialList::Observer:
-  // This will add the variation ID associated with |trial_name| and
-  // |group_name| to the variation ID cache.
+  // This will add the variation ID associated with `trial_name` and
+  // `group_name` to the variation ID cache.
   void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
                                   const std::string& group_name) override;
 
@@ -221,32 +221,32 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // new variation IDs.
   void InitVariationIDsCacheIfNeeded();
 
-  // Looks up the VariationID associated with |trial_name| and |group_name|, and
-  // if found, adds an entry for it to |variation_ids_set_|.
+  // Looks up the VariationID associated with `trial_name` and `group_name`, and
+  // if found, adds an entry for it to `variation_ids_set_`.
   void CacheVariationsId(const std::string& trial_name,
                          const std::string& group_name);
 
-  // Takes whatever is currently in |variation_ids_set_| and recreates
-  // |variation_ids_header_| with it.  Assumes the the |lock_| is currently
+  // Takes whatever is currently in `variation_ids_set_` and recreates
+  // `variation_ids_header_` with it.  Assumes the the `lock_` is currently
   // held.
   void UpdateVariationIDsHeaderValue();
 
   // Generates a base64-encoded ClientVariations proto to be used as a header
-  // value for the given |is_signed_in| and |is_first_party_context| states.
+  // value for the given `is_signed_in` and `is_first_party_context` states.
   std::string GenerateBase64EncodedProto(bool is_signed_in,
                                          bool is_first_party_context);
 
-  // Adds variation ids and trigger variation ids to |target_set|. If
-  // |should_dedupe| is true, the ids in |variation_ids| that have already been
-  // added as non-Google-app ids are not added to |target_set|. Returns false if
+  // Adds variation ids and trigger variation ids to `target_set`. If
+  // `should_dedupe` is true, the ids in `variation_ids` that have already been
+  // added as non-Google-app ids are not added to `target_set`. Returns false if
   // any variation ids are malformed or duplicated. Returns true otherwise.
   bool AddVariationIdsToSet(const std::vector<std::string>& variation_ids,
                             bool should_dedupe,
                             std::set<VariationIDEntry>* target_set);
 
   // Parses a comma-separated string of variation ids and trigger variation ids
-  // and adds them to |target_set|. If |should_dedupe| is true, ids that have
-  // already been added as non-Google-app ids are not added to |target_set|.
+  // and adds them to `target_set`. If `should_dedupe` is true, ids that have
+  // already been added as non-Google-app ids are not added to `target_set`.
   // Returns false if any variation ids are malformed or duplicated. Returns
   // true otherwise.
   bool ParseVariationIdsParameter(const std::string& command_line_variation_ids,
@@ -254,7 +254,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
                                   std::set<VariationIDEntry>* target_set);
 
   // Returns the value of the X-Client-Data header corresponding to
-  // |is_signed_in| and |web_visibility|. Considering |web_visibility| may allow
+  // `is_signed_in` and `web_visibility`. Considering `web_visibility` may allow
   // fewer VariationIDs to be sent in third-party contexts.
   std::string GetClientDataHeaderWhileLocked(
       bool is_signed_in,
@@ -265,11 +265,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   std::set<VariationIDEntry> GetAllVariationIds();
 
   // Returns the collection of variation ids matching any of the given
-  // |keys|. Each entry in the returned vector will be unique.
+  // `keys`. Each entry in the returned vector will be unique.
   std::vector<VariationID> GetVariationsVectorImpl(
       const std::set<IDCollectionKey>& key);
 
-  // Returns whether |id| has already been added to the active set of variation
+  // Returns whether `id` has already been added to the active set of variation
   // ids. This includes ids from field trials, synthetic trials, and forced ids.
   // Note that Google app ids are treated differently. They may be reused as a
   // Google Web id.
