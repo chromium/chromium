@@ -445,9 +445,6 @@ external/wpt/css/css-text/white-space/trailing-ogham-001.html [ Skip ]
 external/wpt/css/css-text/white-space/trailing-ogham-002.html [ Skip ]
 external/wpt/css/css-text/white-space/trailing-ogham-003.html [ Skip ]
 
-# This test conflicts with UAX#24.
-crbug.com/378692756 external/wpt/css/css-text/shaping/shaping-arabic-diacritics-002.html [ Skip ]
-
 # 1px pixel differences that are not relevant to the tests.
 external/wpt/css/CSS2/text/text-transform-bicameral-007.xht [ Skip ]
 [ Mac ] external/wpt/css/CSS2/text/text-transform-bicameral-014.xht [ Skip ]
