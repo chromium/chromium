@@ -129,6 +129,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
+      bool is_javascript_enabled,
       const std::optional<url::Origin>& referring_origin,
       base::WeakPtr<BrowserContext> browser_context,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
@@ -147,6 +148,7 @@ class CONTENT_EXPORT PrefetchRequest final {
     return *preload_pipeline_info_;
   }
   PreloadingAttempt* attempt() const { return attempt_.get(); }
+  bool is_javascript_enabled() const { return is_javascript_enabled_; }
   const std::optional<url::Origin>& referring_origin() const {
     return referring_origin_;
   }
@@ -202,6 +204,12 @@ class CONTENT_EXPORT PrefetchRequest final {
   // holdback status, triggering outcome and failure reason are set in
   // `SetPrefetchStatus`.
   const base::WeakPtr<PreloadingAttempt> attempt_;
+
+  // Whether JavaScript is on in this contents (or was, when this prefetch
+  // started). This affects Client Hints behavior. Per-origin settings are
+  // handled later, according to
+  // |ClientHintsControllerDelegate::IsJavaScriptAllowed|.
+  const bool is_javascript_enabled_;
 
   // The origin and URL that initiates the prefetch request.
   // For renderer-initiated prefetch, this is calculated by referring

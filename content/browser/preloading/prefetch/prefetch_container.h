@@ -608,7 +608,6 @@ class CONTENT_EXPORT PrefetchContainer {
  private:
   PrefetchContainer(std::unique_ptr<PrefetchRequest> request,
                     const blink::mojom::Referrer& referrer,
-                    bool is_javascript_enabled,
                     base::TimeDelta ttl,
                     bool should_append_variations_header,
                     bool should_disable_block_until_head_timeout,
@@ -809,12 +808,6 @@ class CONTENT_EXPORT PrefetchContainer {
   std::unique_ptr<base::OneShotTimer> block_until_head_timer_;
 
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
-
-  // Whether JavaScript is on in this contents (or was, when this prefetch
-  // started). This affects Client Hints behavior. Per-origin settings are
-  // handled later, according to
-  // |ClientHintsControllerDelegate::IsJavaScriptAllowed|.
-  bool is_javascript_enabled_ = false;
 
   // True iff the destructor was called.
   bool is_in_dtor_ = false;

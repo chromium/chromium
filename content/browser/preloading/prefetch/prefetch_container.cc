@@ -258,6 +258,10 @@ PrefetchContainer::PrefetchContainer(
               std::move(no_vary_search_hint),
               std::move(preload_pipeline_info),
               std::move(attempt),
+              WebContentsImpl::FromRenderFrameHostImpl(
+                  &referring_render_frame_host)
+                  ->GetOrCreateWebPreferences()
+                  .javascript_enabled,
               referring_render_frame_host.GetLastCommittedOrigin(),
               referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
               std::move(speculation_rules_tags),
@@ -267,9 +271,6 @@ PrefetchContainer::PrefetchContainer(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
           referrer,
-          WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
-              ->GetOrCreateWebPreferences()
-              .javascript_enabled,
           PrefetchContainerDefaultTtlInPrefetchService(),
           /*should_append_variations_header=*/true,
           /*should_disable_block_until_head_timeout=*/false,
@@ -296,6 +297,8 @@ PrefetchContainer::PrefetchContainer(
               std::move(no_vary_search_hint),
               std::move(preload_pipeline_info),
               std::move(attempt),
+              referring_web_contents.GetOrCreateWebPreferences()
+                  .javascript_enabled,
               referring_origin,
               referring_web_contents.GetBrowserContext()->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
@@ -305,7 +308,6 @@ PrefetchContainer::PrefetchContainer(
                   embedder_histogram_suffix,
                   /*request_status_listener=*/nullptr)),
           referrer,
-          referring_web_contents.GetOrCreateWebPreferences().javascript_enabled,
           ttl.has_value() ? ttl.value()
                           : PrefetchContainerDefaultTtlInPrefetchService(),
           /*should_append_variations_header=*/true,
@@ -337,6 +339,7 @@ PrefetchContainer::PrefetchContainer(
               PreloadPipelineInfo::Create(
                   /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
               std::move(attempt),
+              javascript_enabled,
               referring_origin,
               browser_context->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
@@ -345,7 +348,6 @@ PrefetchContainer::PrefetchContainer(
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
                                            std::move(request_status_listener))),
           referrer,
-          javascript_enabled,
           ttl,
           should_append_variations_header,
           should_disable_block_until_head_timeout,
@@ -354,7 +356,6 @@ PrefetchContainer::PrefetchContainer(
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
     const blink::mojom::Referrer& referrer,
-    bool is_javascript_enabled,
     base::TimeDelta ttl,
     bool should_append_variations_header,
     bool should_disable_block_until_head_timeout,
@@ -362,7 +363,6 @@ PrefetchContainer::PrefetchContainer(
     : request_(std::move(request)),
       referrer_(referrer),
       request_id_(base::UnguessableToken::Create().ToString()),
-      is_javascript_enabled_(is_javascript_enabled),
       ttl_(ttl),
       should_append_variations_header_(should_append_variations_header),
       should_disable_block_until_head_timeout_(
@@ -1499,10 +1499,10 @@ void PrefetchContainer::AddClientHintsHeaders(
   // TODO(crbug.com/41497015): Consider supporting UA override mode here
   const bool is_ua_override_on = false;
   net::HttpRequestHeaders client_hints_headers;
-  if (is_javascript_enabled_) {
+  if (request().is_javascript_enabled()) {
     // Historically, `AddClientHintsHeadersToPrefetchNavigation` added
-    // Client Hints headers iff `is_javascript_enabled_`, so the `if` block here
-    // is to persist the behavior.
+    // Client Hints headers iff `request().is_javascript_enabled()`, so the `if`
+    // block here is to persist the behavior.
     // TODO(crbug.com/394716357): Revisit if we really want to allow prefetch
     // for non-Javascript enabled profile/origins.
     AddClientHintsHeadersToPrefetchNavigation(
