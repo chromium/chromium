@@ -35,9 +35,7 @@ namespace mojo {
 
 namespace {
 
-BASE_FEATURE(kMojoBindingsInlineSLS,
-             "MojoBindingsInlineSLS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(MojoBindingsInlineSLS, base::FEATURE_ENABLED_BY_DEFAULT);
 
 base::GenericSequenceLocalStorageSlot<internal::MessageDispatchContext*>&
 GetSLSMessageDispatchContext() {

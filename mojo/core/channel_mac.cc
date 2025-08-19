@@ -48,9 +48,7 @@ namespace core {
 namespace {
 
 // Kill switch.
-BASE_FEATURE(kUseMachVouchers,
-             "UseMachVouchers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(UseMachVouchers, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool ShouldUseVouchers() {
   static bool enabled = base::FeatureList::IsEnabled(kUseMachVouchers);

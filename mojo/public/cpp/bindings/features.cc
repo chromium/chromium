@@ -27,14 +27,10 @@ BASE_FEATURE(kTaskPerMessage,
 // small random selection of Connectors enable the unread message count quota
 // on their associated message pipe, and record the highest unread message count
 // seen during the Connector's lifetime.
-BASE_FEATURE(kMojoRecordUnreadMessageCount,
-             "MojoRecordUnreadMessageCount",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(MojoRecordUnreadMessageCount, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables predictive allocation for Mojo serialization.
-BASE_FEATURE(kMojoPredictiveAllocation,
-             "MojoPredictiveAllocation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(MojoPredictiveAllocation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace mojo
