@@ -2893,6 +2893,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.MagicStack.ShopCard.{Type}.ImpressionLimitStorageSize"
+    units="KB" expires_after="2026-02-17">
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    The size of the storage in user preferences regarding impression counts for
+    various cards in the Magic Stack. This storage enables auto dismissing cards
+    after 3 impressions. This instance is for the {Type} card.
+  </summary>
+  <token key="Type">
+    <variant name="PriceDropOnTrackedItem"
+        summary="price drop on tracked item"/>
+    <variant name="TabResumptionRegular" summary="regular tab resumption"/>
+    <variant name="TabResumptionWithPriceDrop"
+        summary="tab resumption with a price drop"/>
+    <variant name="TabResumptionWithPriceTracking"
+        summary="tab resumption where the URL is price trackable"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.MagicStack.Start.SegmentationRankingFetchTime" units="ms"
     expires_after="2025-12-14">
   <owner>thegreenfrog@chromium.org</owner>
