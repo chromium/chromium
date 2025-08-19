@@ -689,9 +689,8 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
 
   // Make sure to use the up-to-date scale factor.
   display::Display display;
-  const bool display_exists =
-      display::Screen::GetScreen()->GetDisplayWithDisplayId(
-          requested_display_id, &display);
+  const bool display_exists = display::Screen::Get()->GetDisplayWithDisplayId(
+      requested_display_id, &display);
   DCHECK(display_exists && display.is_valid());
   const float scale =
       use_default_scale_cancellation_ ? 1.f : display.device_scale_factor();
@@ -854,7 +853,7 @@ void ClientControlledShellSurface::OnDidProcessDisplayChanges(
   }
 
   uint32_t changed_metrics = host_display_change->changed_metrics;
-  if (!display::Screen::GetScreen()->InTabletMode() || !widget_->IsActive() ||
+  if (!display::Screen::Get()->InTabletMode() || !widget_->IsActive() ||
       !(changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)) {
     return;
   }
@@ -995,7 +994,7 @@ void ClientControlledShellSurface::SetSystemModal(bool system_modal) {
 void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
                                                    bool adjusted_by_server) {
   set_bounds_is_dirty(true);
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   aura::Window* window = widget_->GetNativeWindow();
   display::Display current_display = screen->GetDisplayNearestWindow(window);
 
@@ -1111,7 +1110,7 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
   UpdateHostWindowOrigin();
 }
 gfx::Rect ClientControlledShellSurface::GetVisibleBounds() const {
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   display::Display display;
 
   if (geometry_.IsEmpty() ||
@@ -1567,8 +1566,7 @@ ClientControlledShellSurface::GetClientBoundsForWindowBoundsAndWindowState(
   const bool is_maximized =
       window_state == chromeos::WindowStateType::kMaximized;
 
-  if (is_maximized ||
-      (is_snapped && display::Screen::GetScreen()->InTabletMode())) {
+  if (is_maximized || (is_snapped && display::Screen::Get()->InTabletMode())) {
     return window_bounds;
   }
 
@@ -1577,7 +1575,7 @@ ClientControlledShellSurface::GetClientBoundsForWindowBoundsAndWindowState(
           ? window_bounds
           : GetFrameView()->GetClientBoundsForWindowBounds(window_bounds);
 
-  if (is_snapped && display::Screen::GetScreen()->GetTabletState() ==
+  if (is_snapped && display::Screen::Get()->GetTabletState() ==
                         display::TabletState::kExitingTabletMode) {
     // Until the next commit, the frame view is in immersive mode, and the above
     // GetClientBoundsForWindowBounds doesn't return bounds taking the caption

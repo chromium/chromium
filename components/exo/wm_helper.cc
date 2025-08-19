@@ -379,7 +379,7 @@ double WMHelper::GetDeviceScaleFactorForWindow(aura::Window* window) const {
   if (default_scale_cancellation_) {
     return GetDefaultDeviceScaleFactor();
   }
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   display::Display display = screen->GetDisplayNearestWindow(window);
   return display.device_scale_factor();
 }

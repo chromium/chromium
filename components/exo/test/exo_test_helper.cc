@@ -158,7 +158,7 @@ void ClientControlledShellSurfaceDelegate::ApplyBoundsChange(
     return;
 
   display::Display target_display;
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
 
   if (!screen->GetDisplayWithDisplayId(display_id, &target_display)) {
     return;

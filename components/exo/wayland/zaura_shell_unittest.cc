@@ -609,9 +609,8 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipFromKeyboard) {
   gfx::Rect expected_tooltip_position =
       gfx::Rect(anchor_point, expected_tooltip_size);
   expected_tooltip_position.Offset(-expected_tooltip_size.width() / 2, 0);
-  gfx::Rect display_bounds(display::Screen::GetScreen()
-                               ->GetDisplayNearestPoint(anchor_point)
-                               .bounds());
+  gfx::Rect display_bounds(
+      display::Screen::Get()->GetDisplayNearestPoint(anchor_point).bounds());
   expected_tooltip_position.AdjustToFit(display_bounds);
   aura::Window::ConvertRectToTarget(surface->window(),
                                     surface->window()->GetToplevelWindow(),
@@ -693,9 +692,8 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipOnMenuFromKeyboard) {
   gfx::Rect expected_tooltip_position =
       gfx::Rect(anchor_point, expected_tooltip_size);
   expected_tooltip_position.Offset(-expected_tooltip_size.width() / 2, 0);
-  gfx::Rect display_bounds(display::Screen::GetScreen()
-                               ->GetDisplayNearestPoint(anchor_point)
-                               .bounds());
+  gfx::Rect display_bounds(
+      display::Screen::Get()->GetDisplayNearestPoint(anchor_point).bounds());
   expected_tooltip_position.AdjustToFit(display_bounds);
   aura::Window::ConvertRectToTarget(surface->window(),
                                     surface->window()->GetToplevelWindow(),
@@ -751,7 +749,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
   }
 
   void UpdateDisplayOutput() {
-    auto display_list = display::Screen::GetScreen()->GetAllDisplays();
+    auto display_list = display::Screen::Get()->GetAllDisplays();
     auto iter = output_holder_list_.begin();
     while (iter != output_holder_list_.end()) {
       auto* out_ptr = (*iter)->output.get();
@@ -782,8 +780,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
   }
 
   MockAuraOutput* GetPrimaryAuraOutput() {
-    return GetAuraOutput(
-        display::Screen::GetScreen()->GetPrimaryDisplay().id());
+    return GetAuraOutput(display::Screen::Get()->GetPrimaryDisplay().id());
   }
 
   MockAuraOutput* GetAuraOutput(int64_t display_id) {
@@ -791,8 +788,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
   }
 
   WaylandDisplayHandler* GetPrimaryDisplayHandler() {
-    return GetOutputHolder(
-               display::Screen::GetScreen()->GetPrimaryDisplay().id())
+    return GetOutputHolder(display::Screen::Get()->GetPrimaryDisplay().id())
         ->handler.get();
   }
 
@@ -892,7 +888,7 @@ TEST_F(ZAuraOutputTest, SendLogicalTransform) {
 // properly regardless of which one is destroyed first.
 TEST_F(ZAuraOutputTest, DestroyAuraOutput) {
   auto* output_holder =
-      GetOutputHolder(display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      GetOutputHolder(display::Screen::Get()->GetPrimaryDisplay().id());
 
   EXPECT_EQ(1u, GetPrimaryDisplayHandler()->CountObserversForTesting());
   output_holder->aura_output.reset();

@@ -50,8 +50,7 @@ void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
   observers_.AddObserver(observer);
 
   display::Display display;
-  bool exists =
-      display::Screen::GetScreen()->GetDisplayWithDisplayId(id(), &display);
+  bool exists = display::Screen::Get()->GetDisplayWithDisplayId(id(), &display);
   if (!exists) {
     // WaylandDisplayHandler is created asynchronously, and the
     // display can be deleted before created. This usually won't happen
@@ -116,7 +115,7 @@ void WaylandDisplayHandler::OnXdgOutputCreated(
   xdg_output_resource_ = xdg_output_resource;
 
   display::Display display;
-  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(id(), &display)) {
+  if (!display::Screen::Get()->GetDisplayWithDisplayId(id(), &display)) {
     return;
   }
 

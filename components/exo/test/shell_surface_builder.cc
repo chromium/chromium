@@ -523,7 +523,7 @@ void ShellSurfaceBuilder::SetCommonPropertiesAndCommitIfNecessary(
     if (centered_) {
       auto* window = shell_surface->GetWidget()->GetNativeWindow();
       const display::Display display =
-          display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+          display::Screen::Get()->GetDisplayNearestWindow(window);
       gfx::Rect center_bounds = display.work_area();
       center_bounds.ClampToCenteredSize(window->bounds().size());
       window->SetBoundsInScreen(center_bounds, display);

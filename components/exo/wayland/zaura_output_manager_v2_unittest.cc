@@ -266,7 +266,7 @@ TEST_F(AuraOutputManagerV2Test, ActiveOutputMetricsUpdate) {
   UpdateDisplay("800x600");
   PostToClientAndWait([] {});
 
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   ASSERT_EQ(1u, screen->GetAllDisplays().size());
 
   const int64_t primary_id = screen->GetAllDisplays()[0].id();
@@ -320,7 +320,7 @@ TEST_F(AuraOutputManagerV2Test, ActiveOutputsAdded) {
   // Start with a single display and round-trip with client to clear the event
   // queue.
   UpdateDisplay("800x600");
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   ASSERT_EQ(1u, screen->GetAllDisplays().size());
   PostToClientAndWait([](test::TestClient* client) {
     ASSERT_EQ(1u, client->globals().outputs.size());
@@ -351,7 +351,7 @@ TEST_F(AuraOutputManagerV2Test, ActiveOutputsRemoved) {
   // Start multiple displays and round-trip with client to clear the event
   // queue.
   UpdateDisplay("800x600,1200x800,1600x1200");
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   ASSERT_EQ(3u, screen->GetAllDisplays().size());
   PostToClientAndWait([](test::TestClient* client) {
     ASSERT_EQ(3u, client->globals().outputs.size());
@@ -398,7 +398,7 @@ TEST_F(AuraOutputManagerV2Test, ActivateDisplay) {
   auto* output_controller = server_->output_controller_for_testing();
   OutputControllerTestApi output_controller_test_api(*output_controller);
   UpdateDisplay("800x600,800x600");
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   ASSERT_EQ(2u, screen->GetAllDisplays().size());
   PostToClientAndWait([](test::TestClient* client) {
     ASSERT_EQ(2u, client->globals().outputs.size());

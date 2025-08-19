@@ -319,8 +319,7 @@ void SurfaceTreeHost::OnFrameSinkLost() {
 // SurfaceTreeHost, protected:
 
 void SurfaceTreeHost::UpdateDisplayOnTree() {
-  auto display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(host_window());
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(host_window());
   if (output_display_id_ != display.id()) {
     if (root_surface_) {
       if (root_surface_->UpdateDisplay(output_display_id_, display.id())) {

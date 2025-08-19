@@ -462,7 +462,7 @@ WaylandRemoteShell::WaylandRemoteShell(
   helper->AddFrameThrottlingObserver();
   helper->SetDefaultScaleCancellation(use_default_scale_cancellation_);
 
-  layout_mode_ = display::Screen::GetScreen()->InTabletMode()
+  layout_mode_ = display::Screen::Get()->InTabletMode()
                      ? ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_TABLET
                      : ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_WINDOWED;
 
@@ -619,7 +619,7 @@ void WaylandRemoteShell::SendDisplayMetrics() {
     return;
   needs_send_display_metrics_ = false;
 
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   double default_dsf = GetDefaultDeviceScaleFactor();
 
   for (const auto& display : screen->GetAllDisplays()) {

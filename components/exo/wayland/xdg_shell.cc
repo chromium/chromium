@@ -536,11 +536,10 @@ class WaylandPopup : aura::WindowObserver {
     }
     xdg_popup_send_repositioned(resource_, token);
 
-    display::Display display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(
-            shell_surface_data_->shell_surface->GetWidget()
-                ->parent()
-                ->GetNativeWindow());
+    display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+        shell_surface_data_->shell_surface->GetWidget()
+            ->parent()
+            ->GetNativeWindow());
     gfx::Rect work_area = display.work_area();
     wm::ConvertRectFromScreen(shell_surface_data_->shell_surface->GetWidget()
                                   ->parent()
@@ -676,9 +675,8 @@ void xdg_surface_get_popup(wl_client* client,
     return;
   }
 
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          parent_data->shell_surface->GetWidget()->GetNativeWindow());
+  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+      parent_data->shell_surface->GetWidget()->GetNativeWindow());
   gfx::Rect work_area = display.work_area();
   wm::ConvertRectFromScreen(
       parent_data->shell_surface->GetWidget()->GetNativeWindow(), &work_area);

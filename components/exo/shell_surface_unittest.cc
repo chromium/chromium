@@ -1703,7 +1703,7 @@ TEST_F(ShellSurfaceTest, SetMinimumSize) {
 }
 
 TEST_F(ShellSurfaceTest, SetMinimumSizeTooLargeAndTranform) {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   auto fullscreen_bounds = screen->GetPrimaryDisplay().bounds();
   auto work_area_bounds = screen->GetPrimaryDisplay().work_area();
 
@@ -1883,7 +1883,7 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize({}));
 
   gfx::Rect maximized_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   // State change should be sent even if the content is not attached.
   // See crbug.com/1138978.
@@ -2940,8 +2940,7 @@ TEST_F(ShellSurfaceTest, NotifyLeaveEnter) {
   // it is created.
   shell_surface->root_surface()->Commit();
   EXPECT_EQ(display::kInvalidDisplayId, old_display_id);
-  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-            new_display_id);
+  EXPECT_EQ(display::Screen::Get()->GetPrimaryDisplay().id(), new_display_id);
 
   // Attaching a 2nd display should not change where the surface
   // is located.
@@ -2959,16 +2958,14 @@ TEST_F(ShellSurfaceTest, NotifyLeaveEnter) {
           .GetSecondaryDisplay()
           .id();
 
-  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-            old_display_id);
+  EXPECT_EQ(display::Screen::Get()->GetPrimaryDisplay().id(), old_display_id);
   EXPECT_EQ(secondary_id, new_display_id);
 
   // Disconnect the display the surface is currently on.
   old_display_id = 0;
   new_display_id = 0;
   UpdateDisplay("800x600");
-  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-            new_display_id);
+  EXPECT_EQ(display::Screen::Get()->GetPrimaryDisplay().id(), new_display_id);
   EXPECT_EQ(secondary_id, old_display_id);
 }
 
@@ -3023,8 +3020,7 @@ TEST_F(ShellSurfaceTest, LacrosToggleAxisMaximize) {
   event_generator->MoveMouseTo(10 + size.width() / 2, 10);
   event_generator->DoubleClickLeftButton();
 
-  gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect work_area = display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Rect bounds_in_screen = shell_surface->GetBoundsInScreen();
 
   EXPECT_EQ(restored_bounds.x(), bounds_in_screen.x());
@@ -3113,7 +3109,7 @@ TEST_F(ShellSurfaceTest, CommitShouldNotMoveDisplay) {
       test::ShellSurfaceBuilder({64, 64})
           .SetOrigin({750, 0})
           .BuildShellSurface();
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   auto* root_surface = shell_surface->root_surface();
 
   EXPECT_EQ(screen->GetPrimaryDisplay().id(),
@@ -3437,7 +3433,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   shell_surface->AcknowledgeConfigure(serial);
   shell_surface->root_surface()->Commit();
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   int64_t secondary_id =
       display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
           .GetSecondaryDisplay()
@@ -3949,7 +3945,7 @@ TEST_F(ShellSurfaceTest, ScreenCoordinates) {
   shell_surface->SetWindowBounds(gfx::Rect(0, 0, 300000, 300000));
   ASSERT_TRUE(!!callbacks.configure_state);
   EXPECT_EQ(callbacks.configure_state->bounds,
-            display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
+            display::Screen::Get()->GetPrimaryDisplay().work_area());
 }
 
 TEST_F(ShellSurfaceTest, InitialBounds) {
@@ -3978,7 +3974,7 @@ TEST_F(ShellSurfaceTest, InitialBounds) {
     shell_surface->root_surface()->Commit();
 
     ASSERT_TRUE(shell_surface->GetWidget());
-    EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().work_area(),
+    EXPECT_EQ(display::Screen::Get()->GetPrimaryDisplay().work_area(),
               shell_surface->GetWidget()->GetWindowBoundsInScreen());
   }
 }
@@ -4005,8 +4001,7 @@ TEST_F(ShellSurfaceTest, InitialCenteredBoundsWithConfigure) {
   EXPECT_TRUE(shell_surface->GetWidget()->IsVisible());
   EXPECT_TRUE(shell_surface->IsReady());
 
-  gfx::Rect expected =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect expected = display::Screen::Get()->GetPrimaryDisplay().work_area();
   expected.ClampToCenteredSize(size);
   EXPECT_EQ(expected, shell_surface->GetWidget()->GetWindowBoundsInScreen());
 }

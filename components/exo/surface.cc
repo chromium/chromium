@@ -523,7 +523,7 @@ void Surface::AddSubSurface(Surface* sub_surface) {
   // The shell might have not be added to the root yet.
   if (window_->GetRootWindow()) {
     auto display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window_.get());
+        display::Screen::Get()->GetDisplayNearestWindow(window_.get());
     sub_surface->UpdateDisplay(display::kInvalidDisplayId, display.id());
   }
 }
@@ -1058,7 +1058,7 @@ bool Surface::UpdateDisplay(int64_t old_display, int64_t new_display) {
 }
 
 display::Display Surface::GetDisplay() const {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window());
+  return display::Screen::Get()->GetDisplayNearestWindow(window());
 }
 
 void Surface::CommitSurfaceHierarchy(bool synchronized) {

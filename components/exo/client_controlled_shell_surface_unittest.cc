@@ -363,7 +363,7 @@ TEST_F(ClientControlledShellSurfaceTest, ShadowWithStateChange) {
   EXPECT_EQ(kShadowBounds.origin(), shadow->content_bounds().origin());
 
   const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   // Maximizing window hides the shadow.
   widget->Maximize();
   ASSERT_TRUE(widget->IsMaximized());
@@ -453,7 +453,7 @@ TEST_F(ClientControlledShellSurfaceTest, Frame) {
   shell_surface->SetSystemUiVisibility(true);  // disable shelf.
   surface->Commit();
 
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager =
       ash::Shell::Get()->display_manager();
 
@@ -696,7 +696,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   shell_surface->set_client_submits_surfaces_in_pixel_coordinates(true);
 
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   constexpr gfx::Rect kInitialBounds(150, 10, 200, 200);
   shell_surface->SetBounds(primary_display.id(), kInitialBounds);
 
@@ -727,7 +727,7 @@ TEST_F(ClientControlledShellSurfaceTest, CompositorLockInRotation) {
 
   EnableTabletMode(true);
   gfx::Rect maximum_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
 
   // Start in maximized.
   auto shell_surface =
@@ -795,7 +795,7 @@ TEST_F(ClientControlledShellSurfaceTest, Maximize) {
   EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
 
   // We always show backdrop because the window may be cropped.
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   shell_surface->SetGeometry(display.bounds());
   surface->Commit();
   EXPECT_TRUE(HasBackdrop());
@@ -847,7 +847,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetFullscreen) {
   EXPECT_TRUE(HasBackdrop());
 
   // We always show backdrop becaues the window can be cropped.
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   shell_surface->SetGeometry(display.bounds());
   surface->Commit();
   EXPECT_TRUE(HasBackdrop());
@@ -891,7 +891,7 @@ TEST_F(ClientControlledShellSurfaceTest, ToggleFullscreen) {
 
 TEST_F(ClientControlledShellSurfaceTest,
        DefaultDeviceScaleFactorFromDisplayManager) {
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::SetInternalDisplayIds({display_id});
   constexpr gfx::Size kSize(1920, 1080);
 
@@ -982,7 +982,7 @@ TEST_F(ClientControlledShellSurfaceTest,
 // The shell surface in SystemModal container should be a target
 // at the edge.
 TEST_F(ClientControlledShellSurfaceTest, ShellSurfaceInSystemModalHitTest) {
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   auto shell_surface = exo::test::ShellSurfaceBuilder({640, 480})
                            .SetUseSystemModalContainer()
                            .SetGeometry(display.bounds())
@@ -1055,7 +1055,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
 // The shell surface in SystemModal container should not become target
 // at the edge.
 TEST_F(ClientControlledShellSurfaceTest, ClientIniatedResize) {
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   auto shell_surface = exo::test::ShellSurfaceBuilder({100, 100})
                            .SetGeometry(gfx::Rect({0, 0, 100, 100}))
                            .BuildClientControlledShellSurface();
@@ -1274,7 +1274,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest, MoveToAnotherDisplayByDrag) {
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   constexpr gfx::Rect kInitialBounds(-100, 10, 200, 200);
   shell_surface->SetBounds(primary_display.id(), kInitialBounds);
   surface->Commit();
@@ -1297,7 +1297,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest, MoveToAnotherDisplayByDrag) {
   // Drag the pointer to the right. Once it reaches the right edge of the
   // primary display, it warps to the secondary.
   display::Display secondary_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]);
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]);
   // TODO(crbug.com/40638870): Unit tests should be able to simulate mouse input
   // without having to call |CursorManager::SetDisplay|.
   ash::Shell::Get()->cursor_manager()->SetDisplay(secondary_display);
@@ -1329,7 +1329,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   auto* surface = shell_surface->root_surface();
 
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
 
   constexpr gfx::Rect kInitialBounds(-139, 10, 200, 200);
   shell_surface->SetBounds(primary_display.id(), kInitialBounds);
@@ -1346,7 +1346,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
       TestClientControlledShellSurfaceDelegate::SetUp(shell_surface.get());
 
   display::Display secondary_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]);
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]);
 
   EXPECT_TRUE(
       ash::window_util::MoveWindowToDisplay(window, secondary_display.id()));
@@ -1390,7 +1390,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   delegate->set_operation_signal_callback(signal.GetRepeatingCallback());
 
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
 
   constexpr gfx::Rect kInitialBounds(100, 100, 200, 200);
   shell_surface->SetBounds(primary_display.id(), kInitialBounds);
@@ -1552,9 +1552,9 @@ TEST_F(ClientControlledShellSurfaceTest, WideFrame) {
   shelf->SetAlignment(ash::ShelfAlignment::kLeft);
 
   const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   const gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   ASSERT_TRUE(work_area.x() != display_bounds.x());
 
   auto* wide_frame = shell_surface->wide_frame_for_test();
@@ -1593,14 +1593,13 @@ TEST_F(ClientControlledShellSurfaceTest, WideFrame) {
   EXPECT_EQ(display_bounds.x(), wide_frame->GetBoundsInScreen().x());
   EXPECT_EQ(display_bounds.width(), wide_frame->GetBoundsInScreen().width());
   EXPECT_EQ(display_bounds,
-            display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
+            display::Screen::Get()->GetPrimaryDisplay().work_area());
 
   // Activating maximized window should not affect the fullscreen shell
   // surface's wide frame.
   another_window->Activate();
   another_window->SetFullscreen(false);
-  EXPECT_EQ(work_area,
-            display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
+  EXPECT_EQ(work_area, display::Screen::Get()->GetPrimaryDisplay().work_area());
   EXPECT_EQ(display_bounds.x(), wide_frame->GetBoundsInScreen().x());
   EXPECT_EQ(display_bounds.width(), wide_frame->GetBoundsInScreen().width());
 
@@ -1704,7 +1703,7 @@ TEST_F(ClientControlledShellSurfaceTest, NoFrameOnModalContainer) {
 TEST_F(ClientControlledShellSurfaceTest,
        SetGeometryReparentsToDisplayOnFirstCommit) {
   UpdateDisplay("100x200,100x200");
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
 
   {
     gfx::Rect geometry(16, 16, 32, 32);
@@ -1738,7 +1737,7 @@ TEST_F(ClientControlledShellSurfaceTest,
 TEST_F(ClientControlledShellSurfaceTest, SetBoundsReparentsToDisplay) {
   UpdateDisplay("100x200,100x200");
 
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   gfx::Rect geometry(16, 16, 32, 32);
   auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
                            .SetGeometry(geometry)
@@ -1798,7 +1797,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   UpdateDisplay("800x600*2,800x600*2");
 
   const auto primary_display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+      display::Screen::Get()->GetPrimaryDisplay().id();
 
   constexpr gfx::Size kBufferSize(64, 64);
   auto buffer = test::ExoTestHelper::CreateBuffer(kBufferSize);
@@ -1881,7 +1880,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetOrientationLock) {
   shell_surface->SetOrientationLock(
       chromeos::OrientationType::kLandscapePrimary);
   EXPECT_TRUE(controller->rotation_locked());
-  display::Display display(display::Screen::GetScreen()->GetPrimaryDisplay());
+  display::Display display(display::Screen::Get()->GetPrimaryDisplay());
   gfx::Size displaySize = display.size();
   EXPECT_GT(displaySize.width(), displaySize.height());
 
@@ -2411,7 +2410,7 @@ TEST_F(ClientControlledShellSurfaceScaleTest,
       TestClientControlledShellSurfaceDelegate::SetUp(shell_surface.get());
 
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   shell_surface->SetScaleFactor(2.f);
   shell_surface->SetBounds(primary_display.id(), initial_native_bounds);
   auto* surface = shell_surface->root_surface();
@@ -2529,7 +2528,7 @@ TEST_F(ClientControlledShellSurfaceTest, OverlayShadowBounds) {
   auto* surface = shell_surface->root_surface();
 
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   shell_surface->SetBounds(primary_display.id(), kInitialBounds);
   shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
   surface->Commit();
@@ -2643,7 +2642,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
 
   const auto primary_display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+      display::Screen::Get()->GetPrimaryDisplay().id();
 
   constexpr gfx::Size kBufferSize(64, 64);
   auto buffer = test::ExoTestHelper::CreateBuffer(kBufferSize);

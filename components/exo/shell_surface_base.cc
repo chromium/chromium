@@ -735,7 +735,7 @@ void ShellSurfaceBase::SetPip() {
   // If no initial bounds is specified, pip windows should start in the bottom
   // right corner of the screen so move |window| to the bottom right of the
   // work area and let the pip positioner move it within the work area.
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(window);
   gfx::Size window_size = window->bounds().size();
   window->SetBoundsInScreen(
       gfx::Rect(display.work_area().bottom_right(), window_size), display);
@@ -875,9 +875,8 @@ void ShellSurfaceBase::SetWindowBounds(const gfx::Rect& bounds) {
 
         // If this expansion pushes the title bar offscreen, push it back
         // onscreen while preserving requested X coordinate, width, and height.
-        gfx::Rect work_area = display::Screen::GetScreen()
-                                  ->GetDisplayMatching(bounds)
-                                  .work_area();
+        gfx::Rect work_area =
+            display::Screen::Get()->GetDisplayMatching(bounds).work_area();
         if (!work_area.IsEmpty() && expanded_bounds.y() < work_area.y()) {
           expanded_bounds.Offset(0, work_area.y() - expanded_bounds.y());
         }
@@ -1709,8 +1708,8 @@ float ShellSurfaceBase::GetPendingScaleFactor() const {
     // the root window yet so we need to fetch the scale factor directly from
     // the pending target display.
     display::Display display;
-    if (display::Screen::GetScreen()->GetDisplayWithDisplayId(
-            pending_display_id_, &display)) {
+    if (display::Screen::Get()->GetDisplayWithDisplayId(pending_display_id_,
+                                                        &display)) {
       return display.device_scale_factor();
     }
   }
@@ -2421,9 +2420,8 @@ void ShellSurfaceBase::CommitWidget() {
     if (window_state && window_state->IsMaximizedOrFullscreenOrPinned() &&
         (!initial_bounds_ || initial_bounds_->IsEmpty())) {
       gfx::Size current_content_size = CalculatePreferredSize({});
-      gfx::Rect restore_bounds = display::Screen::GetScreen()
-                                     ->GetDisplayNearestWindow(window)
-                                     .work_area();
+      gfx::Rect restore_bounds =
+          display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
       if (!current_content_size.IsEmpty())
         restore_bounds.ClampToCenteredSize(current_content_size);
 

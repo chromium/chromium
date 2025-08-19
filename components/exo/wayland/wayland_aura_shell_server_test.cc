@@ -584,7 +584,7 @@ class WaylandAuraOutputServerTest : public test::WaylandServerTest {
 
 TEST_F(WaylandAuraOutputServerTest, ActiveDisplay) {
   UpdateDisplay("800x600,800x600");
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   ASSERT_EQ(2u, screen->GetAllDisplays().size());
   const int64_t primary_id = screen->GetAllDisplays()[0].id();
   const int64_t secondary_id = screen->GetAllDisplays()[1].id();

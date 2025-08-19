@@ -735,7 +735,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
           EXPECT_EQ(
               kOriginalWindowBounds.size(),
               shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
-          auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+          auto display = display::Screen::Get()->GetDisplayNearestWindow(
               shell_surface->GetWidget()->GetNativeWindow());
           // It should stay at the initial position when created.
           EXPECT_EQ(gfx::Rect(400, 0, 800, 600), display.bounds());
@@ -753,7 +753,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   loop.Run();
   EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
   EXPECT_FALSE(shell_surface->GetWidget()->IsMaximized());
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(
       shell_surface->GetWidget()->GetNativeWindow());
 
   gfx::Size secondary_display_size(400, 300);
@@ -789,7 +789,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
 TEST_F(ExtendedDragSourceTest,
        DISABLED_HandlesMouseMoveBeforeExtendedDragStart) {
   UpdateDisplay("800x600,800x600");
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   ASSERT_EQ(2u, screen->GetAllDisplays().size());
 
   // Create and map a toplevel shell surface at position 100, 100 on the second

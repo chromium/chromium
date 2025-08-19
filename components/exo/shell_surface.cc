@@ -846,7 +846,7 @@ gfx::Rect ShellSurface::ComputeAdjustedBounds(const gfx::Rect& bounds) const {
 
   // The size should never be bigger than work area, even if the min size is
   // bigger than that.
-  auto work_area = display::Screen::GetScreen()
+  auto work_area = display::Screen::Get()
                        ->GetDisplayNearestWindow(widget_->GetNativeWindow())
                        .work_area();
   size.SetToMin(work_area.size());
@@ -1157,7 +1157,7 @@ gfx::Rect ShellSurface::GetInitialBoundsForState(
 }
 
 display::Display ShellSurface::GetDisplayForInitialBounds() const {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   display::Display display = screen->GetDisplayForNewWindows();
   // Use `pending_display_id_` as this is called before first commit.
   if (!screen->GetDisplayWithDisplayId(pending_display_id_, &display) &&
