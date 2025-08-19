@@ -1069,7 +1069,7 @@
         "cros_board": "brya",
         "cros_ctp_suite_name": "chrome-uprev-hw",
         "cros_model": "kano",
-        "cros_test_max_in_shard": 40,
+        "cros_test_max_in_shard": 50,
         "cros_test_names_exclude_from_file": [
           "chromeos/tast_control_disabled_tests.txt"
         ],
@@ -1501,7 +1501,7 @@
         "cros_board": "brya",
         "cros_ctp_suite_name": "chrome-uprev-hw",
         "cros_model": "kano",
-        "cros_test_max_in_shard": 40,
+        "cros_test_max_in_shard": 50,
         "cros_test_names_exclude_from_file": [
           "chromeos/tast_control_disabled_tests.txt"
         ],
