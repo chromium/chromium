@@ -81,7 +81,10 @@ component("features") {
     "lens_features.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+  ]
 }
 
 mojom("lens_mojo") {
