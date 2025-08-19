@@ -807,9 +807,21 @@ const NSUInteger kSearchCharacterLimit = 1000;
 - (void)handleAddingToBookmarkWithGaiaID:(NSString*)gaiaID {
   self.shareSheet.dismissedFromSheetAction = YES;
   __weak ExtendedShareViewController* weakSelf = self;
+  if (app_group::MultiProfileShareExtensionEnabled()) {
+    [self queueActionItemURL:_shareURL
+                       title:_shareTitle
+                      gaiaID:gaiaID
+                      action:app_group::BOOKMARK_ITEM
+                      cancel:NO
+                  completion:^{
+                    [weakSelf dismissAndReturnItem:weakSelf.shareItem
+                                             error:nil];
+                  }];
+    return;
+  }
+
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
-                    gaiaID:gaiaID
                     action:app_group::BOOKMARK_ITEM
                     cancel:NO
                 completion:^{
@@ -820,9 +832,21 @@ const NSUInteger kSearchCharacterLimit = 1000;
 - (void)handleAddingToReadingListWithGaiaID:(NSString*)gaiaID {
   self.shareSheet.dismissedFromSheetAction = YES;
   __weak ExtendedShareViewController* weakSelf = self;
+  if (app_group::MultiProfileShareExtensionEnabled()) {
+    [self queueActionItemURL:_shareURL
+                       title:_shareTitle
+                      gaiaID:gaiaID
+                      action:app_group::READING_LIST_ITEM
+                      cancel:NO
+                  completion:^{
+                    [weakSelf dismissAndReturnItem:weakSelf.shareItem
+                                             error:nil];
+                  }];
+    return;
+  }
+
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
-                    gaiaID:gaiaID
                     action:app_group::READING_LIST_ITEM
                     cancel:NO
                 completion:^{
