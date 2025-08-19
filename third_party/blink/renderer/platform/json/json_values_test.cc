@@ -14,7 +14,7 @@ namespace {
 
 class JSONValueDeletionVerifier : public JSONValue {
  public:
-  JSONValueDeletionVerifier(int& counter) : counter_(counter) {}
+  explicit JSONValueDeletionVerifier(int& counter) : counter_(counter) {}
 
   ~JSONValueDeletionVerifier() override { ++(*counter_); }
 
@@ -54,6 +54,16 @@ TEST(JSONValuesTest, ArrayIterator) {
     result.Append(str);
   }
   EXPECT_EQ(result.ToString(), "PASS");
+}
+
+TEST(JSONValuesTest, EmptyArrayIterator) {
+  JSONArray array;
+
+  bool did_iterate = false;
+  for (const JSONValue& _ : array) {
+    did_iterate = true;
+  }
+  EXPECT_FALSE(did_iterate);
 }
 
 }  // namespace blink
