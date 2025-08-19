@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_CLIPBOARD_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
+#define CHROMEOS_ASH_EXPERIENCES_CLIPBOARD_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
 
 #include <list>
 #include <memory>
@@ -65,4 +65,4 @@ class ClipboardImageModelFactoryImpl : public ash::ClipboardImageModelFactory {
   base::WeakPtrFactory<ClipboardImageModelFactoryImpl> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_CLIPBOARD_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_

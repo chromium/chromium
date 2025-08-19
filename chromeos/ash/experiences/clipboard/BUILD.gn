@@ -10,6 +10,8 @@ static_library("clipboard") {
   sources = [
     "clipboard_history_controller_delegate_impl.cc",
     "clipboard_history_controller_delegate_impl.h",
+    "clipboard_image_model_factory_impl.cc",
+    "clipboard_image_model_factory_impl.h",
     "clipboard_image_model_request.cc",
     "clipboard_image_model_request.h",
     "clipboard_util.cc",
@@ -21,6 +23,7 @@ static_library("clipboard") {
     "//ash/public/cpp",
     "//base",
     "//chromeos/ash/components/browser_context_helper",
+    "//components/user_manager",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
     "//ui/aura",

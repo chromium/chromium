@@ -42,7 +42,6 @@ static_library("shell_delegate") {
     "//chrome/browser/ui/ash/back_gesture",
     "//chrome/browser/ui/ash/boca",
     "//chrome/browser/ui/ash/capture_mode",
-    "//chrome/browser/ui/ash/clipboard",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/focus_mode",
     "//chrome/browser/ui/ash/game_dashboard",
