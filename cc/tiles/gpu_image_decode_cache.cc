@@ -462,17 +462,17 @@ sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
 class HeapDiscardableMemory : public base::DiscardableMemory {
  public:
   explicit HeapDiscardableMemory(size_t size)
-      : memory_(new char[size]), size_(size) {}
+      : memory_(base::HeapArray<char>::Uninit(size)), size_(size) {}
   ~HeapDiscardableMemory() override = default;
   [[nodiscard]] bool Lock() override {
     // Locking only succeeds when we have not yet discarded the memory (i.e. if
     // we have never called |Unlock()|.)
-    return memory_ != nullptr;
+    return !memory_.empty();
   }
   void Unlock() override { Discard(); }
   void* data() const override {
-    DCHECK(memory_);
-    return static_cast<void*>(memory_.get());
+    DCHECK(!memory_.empty());
+    return const_cast<char*>(memory_.data());
   }
   void DiscardForTesting() override { Discard(); }
   base::trace_event::MemoryAllocatorDump* CreateMemoryAllocatorDump(
@@ -486,11 +486,11 @@ class HeapDiscardableMemory : public base::DiscardableMemory {
 
  private:
   void Discard() {
-    memory_.reset();
+    memory_ = base::HeapArray<char>();
     size_ = 0;
   }
 
-  std::unique_ptr<char[]> memory_;
+  base::HeapArray<char> memory_;
   size_t size_;
 };
 
