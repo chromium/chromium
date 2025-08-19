@@ -7,8 +7,15 @@
 
 #include <string>
 
-#include "components/keyed_service/core/keyed_service.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+
+class PrefService;
+class TemplateURLService;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 // Concrete implementation of AimEligibilityService needed for fetching the
 // country code and locale from the browser process.

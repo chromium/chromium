@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 
 class AimEligibilityServiceObserver;
@@ -23,6 +22,7 @@ class TemplateURLService;
 
 namespace network {
 class SimpleURLLoader;
+class SharedURLLoaderFactory;
 }  // namespace network
 
 // Utility service to check if the profile is eligible for AI mode features.
