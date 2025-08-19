@@ -8422,11 +8422,6 @@ const char kSupervisedUserLocalWebApprovalsDescription[] =
 const char kHistoryOptInEducationalTipName[] = "History sync educational tip";
 const char kHistoryOptInEducationalTipDescription[] =
     "Enables a history sync promo in the magic stack on NTP";
-
-const char kWebSerialOverBluetoothName[] = "Enable Web Serial over Bluetooth";
-const char kWebSerialOverBluetoothDescription[] =
-    "Provides a way for websites to interact with a serial device over "
-    "Bluetooth";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

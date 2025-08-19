@@ -15,7 +15,7 @@ namespace device {
 
 // Calls Java: BluetoothAdapterWrapper.createWithDefaultAdapter().
 DEVICE_BLUETOOTH_EXPORT base::android::ScopedJavaLocalRef<jobject>
-BluetoothAdapterWrapper_CreateWithDefaultAdapter(bool enable_classic);
+BluetoothAdapterWrapper_CreateWithDefaultAdapter();
 
 }  // namespace device
 

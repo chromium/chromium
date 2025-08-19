@@ -11,10 +11,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "bluetooth_socket_thread.h"
-#include "device/base/features.h"
 #include "device/bluetooth/bluetooth_device_android.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/test/bluetooth_test_android.h"
@@ -57,8 +55,6 @@ class BluetoothSocketAndroidTest
   void ConnectSocket();
   void DisconnectSocket();
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   raw_ptr<BluetoothDeviceAndroid> device_;
   scoped_refptr<BluetoothSocket> socket_;
 
@@ -68,7 +64,6 @@ class BluetoothSocketAndroidTest
 void BluetoothSocketAndroidTest::SetUp() {
   BluetoothTestAndroid::SetUp();
 
-  scoped_feature_list_.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
   InitWithFakeAdapter();
 
   device_ = static_cast<BluetoothDeviceAndroid*>(
@@ -79,8 +74,6 @@ void BluetoothSocketAndroidTest::TearDown() {
   if (socket_) {
     DisconnectSocket();
   }
-
-  scoped_feature_list_.Reset();
 
   BluetoothTestAndroid::TearDown();
 }

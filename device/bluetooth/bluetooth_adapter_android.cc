@@ -10,14 +10,12 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
-#include "device/base/features.h"
 #include "device/bluetooth/android/wrappers.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -55,8 +53,7 @@ namespace device {
 // static
 scoped_refptr<BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
   return BluetoothAdapterAndroid::Create(
-      BluetoothAdapterWrapper_CreateWithDefaultAdapter(
-          base::FeatureList::IsEnabled(features::kBluetoothRfcommAndroid)));
+      BluetoothAdapterWrapper_CreateWithDefaultAdapter());
 }
 
 // static
@@ -138,10 +135,6 @@ BluetoothAdapter::ConstDeviceList BluetoothAdapterAndroid::GetDevices() const {
 }
 
 void BluetoothAdapterAndroid::PopulatePairedDevices() const {
-  if (!base::FeatureList::IsEnabled(features::kBluetoothRfcommAndroid)) {
-    return;
-  }
-
   Java_ChromeBluetoothAdapter_populatePairedDevices(AttachCurrentThread(),
                                                     j_adapter_);
 }

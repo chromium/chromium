@@ -88,7 +88,6 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     WebsitePermissionsFetcherTest.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
     WebsitePermissionsFetcherTest.ENABLE_WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND,
-    WebsitePermissionsFetcherTest.ENABLE_BLUETOOTH_RFCOMM_ANDROID
 })
 @Batch(Batch.PER_CLASS)
 public class WebsitePermissionsFetcherTest {
@@ -105,12 +104,6 @@ public class WebsitePermissionsFetcherTest {
     /** Command line flag to enable the new Web Bluetooth permissions backend in tests. */
     public static final String ENABLE_WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND =
             "enable-features=WebBluetoothNewPermissionsBackend";
-
-    /**
-     * Command line flag to enable Bluetooth RFCOMM support for serial ports on Android in tests.
-     */
-    public static final String ENABLE_BLUETOOTH_RFCOMM_ANDROID =
-            "enable-features=BluetoothRfcommAndroid";
 
     private static final BrowserContextHandle UNUSED_BROWSER_CONTEXT_HANDLE = null;
 

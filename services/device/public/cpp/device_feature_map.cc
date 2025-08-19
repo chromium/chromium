@@ -27,7 +27,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &device::kWebAuthnPasskeyUpgrade,
     &kGenericSensorExtraClasses,
     &kBatteryStatusManagerBroadcastReceiverInBackground,
-    &device::features::kBluetoothRfcommAndroid,
     &device::features::kGmsCoreLocationRequestParamOverride};
 
 // static

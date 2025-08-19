@@ -18,7 +18,6 @@
 #include "base/notimplemented.h"
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "device/base/features.h"
 #include "device/bluetooth/android/outcome.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -171,10 +170,6 @@ bool BluetoothDeviceAndroid::IsConnecting() const {
 }
 
 BluetoothDevice::UUIDSet BluetoothDeviceAndroid::GetUUIDs() const {
-  if (!base::FeatureList::IsEnabled(features::kBluetoothRfcommAndroid)) {
-    return BluetoothDevice::GetUUIDs();
-  }
-
   BluetoothTransport device_type = GetType();
   if (device_type == BLUETOOTH_TRANSPORT_LE ||
       device_type == BLUETOOTH_TRANSPORT_INVALID) {

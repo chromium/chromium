@@ -1473,8 +1473,8 @@
       status: "stable",
       depends_on: ["PseudoElementsFocusable"],
     },
-    
-    
+
+
     {
       // Non-standard 'auto' keyword for the CSS resize property. Used for
       // selectively enable resize corner for textarea via UA stylesheet, but
@@ -2597,7 +2597,7 @@
       name: "HTMLElementScrollParent",
       status: "experimental",
     },
-    
+
     // Return a natural width/height of zero from
     // HTMLImageElement.naturalWidth/Height for SVG images that don't have a
     // natural width/height set.
@@ -2672,7 +2672,7 @@
       status: {"Android": "stable"},
       base_feature: "none",
     },
-    
+
     {
       // Improved retargeting behavior of ToggleEvent.source and
       // CommandEvent.source to match Event.relatedTarget.
@@ -3134,7 +3134,7 @@
       name: "MessagePortCloseEvent",
       status: "test",
     },
-    
+
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
     {
@@ -3229,7 +3229,7 @@
       },
       base_feature: "none",
     },
-    
+
     {
       // This turns off all font antialiasing for tests unless it is
       // explicitly required and enabled using the
@@ -3968,7 +3968,7 @@
       name: "RemoveDataUrlInSvgUse",
       status: "stable",
     },
-    
+
     {
       // See https://issues.chromium.org/issues/41474791
       name: "RemoveSelectionCanonicalizationInMoveParagraph",
@@ -4318,7 +4318,7 @@
       name: "SelectedcontentelementAttribute",
       status: "test",
     },
-    
+
     {
       // See https://crbug.com/40664519
       name: "SelectionAndFocusedVisiblePositionMatch",
@@ -4345,7 +4345,7 @@
       name: "SelectivePermissionsIntervention",
       status: "experimental",
     },
-    
+
     {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       public: true,
@@ -4360,7 +4360,7 @@
     },
     {
       name: "Serial",
-      status: {"Android": "test", "default": "stable"},
+      status: "stable",
       base_feature: "WebSerialAPI",
     },
     {

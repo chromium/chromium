@@ -4877,9 +4877,6 @@ extern const char kHistoryPageHistorySyncPromoDescription[];
 
 extern const char kHistoryOptInEducationalTipName[];
 extern const char kHistoryOptInEducationalTipDescription[];
-
-extern const char kWebSerialOverBluetoothName[];
-extern const char kWebSerialOverBluetoothDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

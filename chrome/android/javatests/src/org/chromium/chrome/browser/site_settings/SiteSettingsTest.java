@@ -151,7 +151,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.media.MediaFeatures;
@@ -174,10 +173,7 @@ import java.util.concurrent.TimeoutException;
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
     "ignore-certificate-errors"
 })
-@EnableFeatures({
-    DeviceFeatureList.BLUETOOTH_RFCOMM_ANDROID,
-    ChromeFeatureList.DISPLAY_WILDCARD_CONTENT_SETTINGS
-})
+@EnableFeatures(ChromeFeatureList.DISPLAY_WILDCARD_CONTENT_SETTINGS)
 // TODO(crbug.com/370008370): Update individual tests after launch.
 @DisableFeatures({
     ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
