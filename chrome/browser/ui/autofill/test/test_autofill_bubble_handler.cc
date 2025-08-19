@@ -11,6 +11,10 @@
 
 namespace autofill {
 
+bool TestAutofillBubble::IsMouseHovered() const {
+  return false;
+}
+
 TestAutofillBubbleHandler::TestAutofillBubbleHandler() = default;
 
 TestAutofillBubbleHandler::~TestAutofillBubbleHandler() = default;

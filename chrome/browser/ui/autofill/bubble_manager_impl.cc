@@ -98,10 +98,11 @@ void BubbleManagerImpl::RequestShowController(
                         (GetPriorityForBubbleType(new_bubble_type) >
                          GetPriorityForBubbleType(active_bubble_type));
 
-  if (should_preempt) {
+  if (should_preempt && !active_bubble_controller_->IsMouseHovered()) {
     HideActiveBubbleForPreemption(controller_weak_ptr);
   } else {
-    // New bubble has lower or equal priority; queue it.
+    // New bubble has lower or equal priority, or the active bubble is hovered;
+    // queue it.
     AddToPendingQueue(controller_weak_ptr);
   }
 }

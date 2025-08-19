@@ -38,6 +38,7 @@ class MockBubbleController : public BubbleControllerBase {
   MOCK_METHOD(void, HideBubble, (), (override));
   MOCK_METHOD(BubbleType, GetBubbleType, (), (const, override));
   MOCK_METHOD(bool, IsShowingBubble, (), (const, override));
+  MOCK_METHOD(bool, IsMouseHovered, (), (const, override));
   MOCK_METHOD(base::WeakPtr<BubbleControllerBase>,
               GetBubbleControllerBaseWeakPtr,
               (),
@@ -291,6 +292,31 @@ TEST_F(BubbleManagerImplTest,
   // Ensure `password_controller_1` is never shown.
   bubble_manager_.OnBubbleHiddenByController(*password_controller_2);
   EXPECT_FALSE(password_controller_1->IsShowingBubble());
+}
+
+// Test that a higher-priority bubble does NOT preempt a lower-priority one if
+// the mouse is hovered.
+TEST_F(BubbleManagerImplTest,
+       RequestShow_HigherPriority_DoesNotPreemptIfHovered) {
+  std::unique_ptr<MockBubbleController> address_controller =
+      CreateController(BubbleType::kSaveUpdateAddress);
+  std::unique_ptr<MockBubbleController> card_controller =
+      CreateController(BubbleType::kSaveUpdateCard);
+
+  EXPECT_CALL(*address_controller, ShowBubble());
+  bubble_manager_.RequestShowController(*address_controller);
+  ASSERT_TRUE(address_controller->IsShowingBubble());
+
+  // Simulate mouse hover.
+  ON_CALL(*address_controller, IsMouseHovered).WillByDefault(Return(true));
+
+  // Card bubble should not be shown, address bubble should not be hidden.
+  EXPECT_CALL(*card_controller, ShowBubble()).Times(0);
+  EXPECT_CALL(*address_controller, HideBubble()).Times(0);
+  bubble_manager_.RequestShowController(*card_controller);
+
+  EXPECT_TRUE(address_controller->IsShowingBubble());
+  EXPECT_FALSE(card_controller->IsShowingBubble());
 }
 
 }  // namespace autofill

@@ -48,6 +48,9 @@ class BubbleControllerBase {
   // Returns true if the bubble is currently visible.
   virtual bool IsShowingBubble() const = 0;
 
+  // Returns true if the mouse is currently inside the bubble view.
+  virtual bool IsMouseHovered() const = 0;
+
   // Subclasses need to implement this method so that the resulting weak
   // pointers are invalidated as soon as the derived class is destroyed.
   virtual base::WeakPtr<BubbleControllerBase>

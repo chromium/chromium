@@ -30,6 +30,7 @@ class MandatoryReauthOptInViewAndroid final : public AutofillBubbleBase {
 
   // AutofillBubbleBase:
   void Hide() override;
+  bool IsMouseHovered() const override;
 
  private:
   bool Show(content::WebContents* web_contents,

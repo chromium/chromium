@@ -1534,6 +1534,11 @@ bool ManagePasswordsUIController::IsShowingBubble() const {
          bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
 }
 
+bool ManagePasswordsUIController::IsMouseHovered() const {
+  // TODO(crbug.com/432429605): Implement.
+  return false;
+}
+
 base::WeakPtr<autofill::BubbleControllerBase>
 ManagePasswordsUIController::GetBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

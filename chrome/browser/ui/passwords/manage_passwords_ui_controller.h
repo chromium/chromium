@@ -234,6 +234,7 @@ class ManagePasswordsUIController
   void HideBubble() override;
   autofill::BubbleType GetBubbleType() const override;
   bool IsShowingBubble() const override;
+  bool IsMouseHovered() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
   // Opens change password bubble and passes `username` and `new_password` that

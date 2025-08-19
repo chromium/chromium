@@ -61,4 +61,8 @@ bool AutofillBubbleControllerBase::IsShowingBubble() const {
   return bubble_view_ != nullptr;
 }
 
+bool AutofillBubbleControllerBase::IsMouseHovered() const {
+  return IsShowingBubble() && bubble_view_->IsMouseHovered();
+}
+
 }  // namespace autofill

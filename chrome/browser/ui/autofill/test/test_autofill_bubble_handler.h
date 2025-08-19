@@ -18,6 +18,7 @@ enum class MandatoryReauthBubbleType;
 
 class TestAutofillBubble final : public AutofillBubbleBase {
   void Hide() override {}
+  bool IsMouseHovered() const override;
 };
 
 class TestAutofillBubbleHandler : public AutofillBubbleHandler {

@@ -88,6 +88,8 @@ class ObserveHideTestAutofillBubble : public AutofillBubbleBase {
     is_visible_ = false;
   }
 
+  bool IsMouseHovered() const override { return false; }
+
   bool is_visible() { return is_visible_; }
 
  private:
