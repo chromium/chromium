@@ -317,8 +317,6 @@ public class CompositorView extends FrameLayout
         mNativeCompositorView =
                 CompositorViewJni.get().init(this, windowAndroid, tabContentManager);
 
-        mIsSurfaceControlEnabled = CompositorViewJni.get().isSurfaceControlEnabled();
-
         // compositor_impl_android.cc will use 565 EGL surfaces if and only if we're using a low
         // memory device, and no alpha channel is desired.  Otherwise, it will use 8888.  Since
         // SurfaceFlinger doesn't need the eOpaque flag to optimize out alpha blending during
@@ -414,7 +412,7 @@ public class CompositorView extends FrameLayout
     }
 
     private boolean canUseSurfaceControl() {
-        if (mSelectionHandlesActive || mLowMemDevice || !mIsSurfaceControlEnabled) {
+        if (mSelectionHandlesActive || mLowMemDevice) {
             return false;
         }
         boolean xrUsesSurfaceControl =
@@ -691,6 +689,19 @@ public class CompositorView extends FrameLayout
         updateNeedsDidSwapBuffersCallback();
     }
 
+    @CalledByNative
+    private void notifyWillUseSurfaceControl() {
+        mIsSurfaceControlEnabled = true;
+
+        // mIsSurfaceControlEnabled can change the output of `getSurfacePixelFormat`. Re-request
+        // the current surface format to keep it up-to-date.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UPDATE_COMPOSTIROR_FOR_SURFACE_CONTROL)
+                && mCompositorSurfaceManager != null
+                && mCompositorSurfaceManager.getFormatOfOwnedSurface() != getSurfacePixelFormat()) {
+            mCompositorSurfaceManager.requestSurface(getSurfacePixelFormat());
+        }
+    }
+
     /**
      * Converts the layout into compositor layers. This is to be called on every frame the layout is
      * changing.
@@ -790,8 +801,6 @@ public class CompositorView extends FrameLayout
                 CompositorView self,
                 WindowAndroid windowAndroid,
                 TabContentManager tabContentManager);
-
-        boolean isSurfaceControlEnabled();
 
         void destroy(long nativeCompositorView);
 

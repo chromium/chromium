@@ -184,10 +184,10 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       "multiple_raster_threads",
       GetFakeFeatureStatus(NumberOfRendererRasterThreads() > 1));
 #if BUILDFLAG(IS_ANDROID)
-  features.emplace_back("surface_control",
-                        features::IsAndroidSurfaceControlEnabled()
-                            ? gpu::kGpuFeatureStatusEnabled
-                            : gpu::kGpuFeatureStatusDisabled);
+  features.emplace_back(
+      "surface_control",
+      SafeGetFeatureStatus(gpu_feature_info,
+                           gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL));
 #endif
   features.emplace_back(
       "webgl2",

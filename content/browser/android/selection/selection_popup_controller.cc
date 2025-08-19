@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
 #include "content/browser/android/selection/composited_touch_handle_drawable.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
@@ -54,6 +55,15 @@ bool IsOffsetAdjustValid(
          endOffset + result->extended_end_adjust <= surroundingTextLength;
 }
 
+}  // namespace
+
+namespace {
+
+bool IsAndroidSurfaceControlMagnifierEnabled() {
+  static bool enabled = gfx::SurfaceControl::SupportsSurfacelessControl();
+  return enabled;
+}
+
 BASE_FEATURE(kDismissMagnifierOnViewSwap,
              "DismissMagnifierOnViewSwap",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -63,8 +73,12 @@ BASE_FEATURE(kDismissMagnifierOnViewSwap,
 static jboolean
 JNI_SelectionPopupControllerImpl_IsMagnifierWithSurfaceControlSupported(
     JNIEnv* env) {
-  static bool enabled = gfx::SurfaceControl::SupportsSurfacelessControl();
-  return enabled;
+  GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
+  return manager->IsGpuFeatureInfoAvailable() &&
+         manager->GetFeatureStatus(
+             gpu::GpuFeatureType::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL) ==
+             gpu::kGpuFeatureStatusEnabled &&
+         IsAndroidSurfaceControlMagnifierEnabled();
 }
 
 jlong JNI_SelectionPopupControllerImpl_Init(

@@ -204,6 +204,9 @@ struct GPU_CONFIG_EXPORT GpuPreferences {
   // ===================================
   // Settings from //gpu/config/gpu_switches.h
 
+  // Enables the use of SurfaceControl for overlays on Android.
+  bool enable_android_surface_control = false;
+
   // An additional Graphite Precompilation control that only enables
   // precompilation when not testing.
   bool perform_graphite_precompilation = false;

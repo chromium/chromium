@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "third_party/blink/public/common/features.h"
@@ -274,11 +273,16 @@ bool SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() {
 #if BUILDFLAG(IS_ANDROID)
 bool SharedGpuContext::MaySupportImageChromium() {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
-  if (this_ptr->context_provider_factory_) {
-    // In unit tests, enable support.
-    return true;
+  this_ptr->CreateContextProviderIfNeeded(/*only_if_gpu_compositing=*/true);
+  if (!this_ptr->context_provider_wrapper_) {
+    return false;
   }
-  return ::features::IsAndroidSurfaceControlEnabled();
+  const gpu::GpuFeatureInfo& gpu_feature_info =
+      this_ptr->context_provider_wrapper_->ContextProvider()
+          .GetGpuFeatureInfo();
+  return gpu_feature_info
+             .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] ==
+         gpu::kGpuFeatureStatusEnabled;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

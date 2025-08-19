@@ -808,18 +808,6 @@ bool IsAndroidSurfaceControlEnabled() {
   if (LimitAImageReaderMaxSizeToOne())
     return false;
 
-  // Check conditions that egl_android_native_fence_sync is enabled.
-  // LINT.IfChange(AndroidSurfaceControlCondition)
-  if (base::SysInfo::GetAndroidHardwareEGL() == "swiftshader" ||
-      base::SysInfo::GetAndroidHardwareEGL() == "emulation") {
-    return false;
-  }
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableAndroidNativeFenceSyncForTesting)) {
-    return false;
-  }
-  // LINT.ThenChange(//gpu/config/gpu_finch_features.cc:AndroidSurfaceControlCondition)
-
   // On WebView we require thread-safe media to use SurfaceControl
   if (IsUsingThreadSafeMediaForWebView()) {
     // We decouple experiments between ATV and the rest of the users by using

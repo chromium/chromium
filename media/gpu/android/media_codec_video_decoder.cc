@@ -56,6 +56,11 @@ void OutputBufferReleased(base::RepeatingClosure pump_cb, bool has_work) {
   }
 }
 
+bool IsSurfaceControlEnabled(const gpu::GpuFeatureInfo& info) {
+  return info.status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] ==
+         gpu::kGpuFeatureStatusEnabled;
+}
+
 std::vector<SupportedVideoDecoderConfig> GenerateSupportedConfigs(
     DeviceInfo* device_info,
     bool allow_media_codec_sw_decoder) {
@@ -226,7 +231,7 @@ MediaCodecVideoDecoder::GetSupportedConfigs() {
 
 MediaCodecVideoDecoder::MediaCodecVideoDecoder(
     const gpu::GpuPreferences& gpu_preferences,
-    bool is_surface_control_enabled,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
     std::unique_ptr<MediaLog> media_log,
     DeviceInfo* device_info,
     CodecAllocator* codec_allocator,
@@ -239,7 +244,7 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
       media_log_(std::move(media_log)),
       codec_allocator_(codec_allocator),
       request_overlay_info_cb_(std::move(request_overlay_info_cb)),
-      is_surface_control_enabled_(is_surface_control_enabled),
+      is_surface_control_enabled_(IsSurfaceControlEnabled(gpu_feature_info)),
       surface_chooser_helper_(
           std::move(surface_chooser),
           base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -266,7 +271,7 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
 
 std::unique_ptr<VideoDecoder> MediaCodecVideoDecoder::Create(
     const gpu::GpuPreferences& gpu_preferences,
-    bool is_surface_control_enabled,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
     std::unique_ptr<MediaLog> media_log,
     DeviceInfo* device_info,
     CodecAllocator* codec_allocator,
@@ -276,8 +281,8 @@ std::unique_ptr<VideoDecoder> MediaCodecVideoDecoder::Create(
     std::unique_ptr<VideoFrameFactory> video_frame_factory,
     scoped_refptr<gpu::RefCountedLock> drdc_lock) {
   auto* decoder = new MediaCodecVideoDecoder(
-      gpu_preferences, is_surface_control_enabled, std::move(media_log),
-      device_info, codec_allocator, std::move(surface_chooser),
+      gpu_preferences, gpu_feature_info, std::move(media_log), device_info,
+      codec_allocator, std::move(surface_chooser),
       std::move(overlay_factory_cb), std::move(request_overlay_info_cb),
       std::move(video_frame_factory), std::move(drdc_lock));
   return std::make_unique<AsyncDestroyVideoDecoder<MediaCodecVideoDecoder>>(

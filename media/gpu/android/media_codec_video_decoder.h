@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/android/media_crypto_context.h"
 #include "media/base/android_overlay_mojo_factory.h"
@@ -77,7 +78,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   static std::unique_ptr<VideoDecoder> Create(
       const gpu::GpuPreferences& gpu_preferences,
-      bool is_surface_control_enabled,
+      const gpu::GpuFeatureInfo& gpu_feature_info,
       std::unique_ptr<MediaLog> media_log,
       DeviceInfo* device_info,
       CodecAllocator* codec_allocator,
@@ -107,7 +108,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   MediaCodecVideoDecoder(
       const gpu::GpuPreferences& gpu_preferences,
-      bool is_surface_control_enabled,
+      const gpu::GpuFeatureInfo& gpu_feature_info,
       std::unique_ptr<MediaLog> media_log,
       DeviceInfo* device_info,
       CodecAllocator* codec_allocator,

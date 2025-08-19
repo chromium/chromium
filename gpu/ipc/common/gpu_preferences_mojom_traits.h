@@ -248,6 +248,8 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuPreferencesDataView,
     out->enable_threaded_texture_mailboxes =
         prefs.enable_threaded_texture_mailboxes();
     out->gl_shader_interm_output = prefs.gl_shader_interm_output();
+    out->enable_android_surface_control =
+        prefs.enable_android_surface_control();
     out->perform_graphite_precompilation =
         prefs.perform_graphite_precompilation();
     out->enable_gpu_service_logging = prefs.enable_gpu_service_logging();
@@ -390,6 +392,9 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuPreferencesDataView,
   }
   static bool gl_shader_interm_output(const gpu::GpuPreferences& prefs) {
     return prefs.gl_shader_interm_output;
+  }
+  static bool enable_android_surface_control(const gpu::GpuPreferences& prefs) {
+    return prefs.enable_android_surface_control;
   }
   static bool perform_graphite_precompilation(
       const gpu::GpuPreferences& prefs) {

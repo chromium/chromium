@@ -15,7 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gl/android/scoped_a_native_window.h"
@@ -35,7 +35,9 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
       gl::GetGLImplementation() == gl::kGLImplementationStubGL)
     return nullptr;
 
-  if (!features::IsAndroidSurfaceControlEnabled()) {
+  if (gpu_feature_info
+          .status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] !=
+      gpu::kGpuFeatureStatusEnabled) {
     return nullptr;
   }
 
