@@ -383,13 +383,17 @@ class AvatarToolbarButtonBaseBrowserTest {
     delay_resets_.push_back(
         signin_ui_util::
             CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting());
-    ClearHistorySyncOptinPromoIfEnabled(avatar);
+    ClearSyncOptinPromoIfEnabled(avatar);
     return account_info;
   }
 
-  // Clears the history sync optin promo if it is enabled. This is a no-op if
-  // the promo is disabled.
-  void ClearHistorySyncOptinPromoIfEnabled(AvatarToolbarButton* avatar) {
+  // Clears the history sync optin promo (or sync promo) if it is enabled. This
+  // is a no-op if the promo is disabled.
+  void ClearSyncOptinPromoIfEnabled(AvatarToolbarButton* avatar) {
+    if (switches::IsAvatarSyncPromoFeatureEnabled()) {
+      avatar->ClearActiveStateForTesting();
+      return;
+    }
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     if (base::FeatureList::IsEnabled(
             switches::kEnableHistorySyncOptinExpansionPill)) {
@@ -747,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
 
   avatar->ClearActiveStateForTesting();
-  ClearHistorySyncOptinPromoIfEnabled(avatar);
+  ClearSyncOptinPromoIfEnabled(avatar);
   // Once the name is not shown anymore, we expect no text.
   EXPECT_EQ(avatar->GetText(), std::u16string());
 
