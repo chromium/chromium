@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "components/memory_pressure/reclaim_target.h"
@@ -56,7 +57,7 @@ class UnnecessaryDiscardMonitor {
   // Called when a tab is discarded. This discard is automatically associated
   // with the most recent reclaim target. |discard_complete_time| should be the
   // time that the tab discard completed.
-  void OnDiscard(uint64_t memory_freed_kb,
+  void OnDiscard(base::ByteCount memory_freed,
                  base::TimeTicks discard_complete_time);
 
  private:
@@ -72,7 +73,7 @@ class UnnecessaryDiscardMonitor {
   // Represents a single kill event.
   struct KillEvent {
     // The estimated size of the kill.
-    uint64_t kill_size_kb = 0;
+    base::ByteCount kill_size;
 
     // The time at which the kill finished.
     base::TimeTicks kill_time;

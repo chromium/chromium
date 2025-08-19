@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/byte_count.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -38,18 +39,17 @@ BASE_FEATURE(kMacCriticalDiskSpacePressure,
              "MacCriticalDiskSpacePressure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// The default threshold in megabytes for the critical disk space pressure
+// The default threshold for the critical disk space pressure
 // signal.
-constexpr int kDefaultCriticalDiskSpaceMb = 250;
-const int64_t kBytesPerMb = 1024 * 1024;
+constexpr base::ByteCount kDefaultCriticalDiskSpace = base::MiB(250);
 
-// Defines the threshold in megabytes for the critical disk space pressure
+// Defines the threshold for the critical disk space pressure
 // signal. This is a parameter for the kMacCriticalDiskSpacePressure feature.
 BASE_FEATURE_PARAM(int,
                    kMacCriticalDiskSpacePressureThresholdMB,
                    &kMacCriticalDiskSpacePressure,
                    "MacCriticalDiskSpacePressureThresholdMB",
-                   kDefaultCriticalDiskSpaceMb);
+                   kDefaultCriticalDiskSpace.InMiB());
 
 // How often to check for free disk space.
 constexpr base::TimeDelta kDiskSpaceCheckPeriod = base::Seconds(5);
@@ -184,12 +184,12 @@ void SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete(
   base::MemoryPressureListener::MemoryPressureLevel new_disk_vote =
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 
-  const int64_t threshold_mb = kMacCriticalDiskSpacePressureThresholdMB.Get();
-  // The minimum free disk space in MB before dispatching a critical memory
-  // pressure signal.
-  const int64_t critical_disk_space_bytes = threshold_mb * kBytesPerMb;
+  // The minimum free disk space before dispatching a critical memory pressure
+  // signal.
+  const base::ByteCount threshold =
+      base::MiB(kMacCriticalDiskSpacePressureThresholdMB.Get());
 
-  if (free_bytes != -1 && free_bytes < critical_disk_space_bytes) {
+  if (free_bytes != -1 && base::ByteCount(free_bytes) < threshold) {
     new_disk_vote =
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
@@ -207,7 +207,7 @@ void SystemMemoryPressureEvaluator::UpdatePressureAndManageNotifications() {
   UpdatePressureLevel();
 
   // Run the callback that's waiting on memory pressure change notifications.
-  // The convention is to not send notifiations on memory pressure returning to
+  // The convention is to not send notifications on memory pressure returning to
   // normal.
   bool notify = current_vote() !=
                 base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;

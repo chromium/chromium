@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_
 #define COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_
 
-#include <CoreFoundation/CFDate.h>
+#include <CoreFoundation/CoreFoundation.h>
 #include <dispatch/dispatch.h>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_dispatch_object.h"
+#include "base/byte_count.h"
 #include "base/files/file_path.h"
 #include "base/message_loop/message_pump_apple.h"
 #include "base/sequence_checker.h"
@@ -18,8 +19,7 @@
 #include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
-namespace memory_pressure {
-namespace mac {
+namespace memory_pressure::mac {
 
 class TestSystemMemoryPressureEvaluator;
 
@@ -87,7 +87,6 @@ class SystemMemoryPressureEvaluator
   base::WeakPtrFactory<SystemMemoryPressureEvaluator> weak_ptr_factory_;
 };
 
-}  // namespace mac
-}  // namespace memory_pressure
+}  // namespace memory_pressure::mac
 
 #endif  // COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_

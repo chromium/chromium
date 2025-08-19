@@ -137,7 +137,7 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
   }
 
   LOG(WARNING) << "Discarding multiple pages with target (kb): "
-               << (reclaim_target ? reclaim_target->target_kb : 0)
+               << (reclaim_target ? reclaim_target->target.InKiB() : 0)
                << ", discard_protected_tabs: " << discard_protected_tabs;
 
   DiscardEligibilityPolicy* eligiblity_policy =
@@ -178,10 +178,9 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
   base::ByteCount total_reclaim;
   std::optional<base::TimeTicks> first_successful_discard_time;
 
-  // Note: If `reclaim_target->target_kb` is zero, this loop is not entered.
+  // Note: If `reclaim_target->target` is zero, this loop is not entered.
   while (!candidates.empty() &&
-         (!reclaim_target ||
-          total_reclaim < base::KiB(reclaim_target->target_kb))) {
+         (!reclaim_target || total_reclaim < reclaim_target->target)) {
     const PageNodeSortProxy candidate = std::move(candidates.back());
     candidates.pop_back();
 
@@ -229,8 +228,8 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
     if (estimated_memory_freed.has_value()) {
       const base::TimeTicks discard_time = base::TimeTicks::Now();
 
-      unnecessary_discard_monitor_.OnDiscard(
-          estimated_memory_freed.value().InKiB(), discard_time);
+      unnecessary_discard_monitor_.OnDiscard(estimated_memory_freed.value(),
+                                             discard_time);
 
       RecordDiscardedTabMetrics(candidate);
 
