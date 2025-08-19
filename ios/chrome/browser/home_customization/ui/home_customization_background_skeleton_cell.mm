@@ -12,7 +12,11 @@
 #pragma mark - HomeCustomizationBackgroundCell
 
 - (void)setupContentView:(UIView*)contentView {
-  contentView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  [self applyTheme];
+}
+
+- (void)applyTheme {
+  self.innerContentView.backgroundColor = [UIColor colorNamed:kGrey100Color];
 }
 
 @end

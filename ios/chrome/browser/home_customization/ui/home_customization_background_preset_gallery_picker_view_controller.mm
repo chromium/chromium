@@ -20,6 +20,8 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/shared/ui/util/custom_ui_trait_accessor.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -397,9 +399,12 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
       [self.searchEngineLogoMediatorProvider
           provideSearchEngineLogoMediatorForKey:itemIdentifier];
 
+  CustomUITraitAccessor* traitAccessor =
+      [[CustomUITraitAccessor alloc] initWithMutableTraits:cell.traitOverrides];
+  [traitAccessor setBoolForNewTabPageImageBackgroundTrait:YES];
+
   [cell configureWithBackgroundOption:backgroundConfiguration
-             searchEngineLogoMediator:searchEngineLogoMediator
-                         colorPalette:nil];
+             searchEngineLogoMediator:searchEngineLogoMediator];
 
   if ([itemIdentifier isEqualToString:_selectedBackgroundId]) {
     [_collectionView selectItemAtIndexPath:indexPath

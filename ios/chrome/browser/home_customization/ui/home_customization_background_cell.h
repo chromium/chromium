@@ -22,6 +22,10 @@
 // Mutator for communicating with the HomeCustomizationMediator.
 @property(nonatomic, weak) id<HomeCustomizationMutator> mutator;
 
+// Main content view rendered inside the border wrapper.
+// Displays the core visual element.
+@property(nonatomic, strong) UIStackView* innerContentView;
+
 // Sets up and positions the view responsible for displaying the cell's
 // content.
 - (void)setupContentView:(UIView*)contentView;
@@ -32,11 +36,13 @@
 - (void)configureWithBackgroundOption:
             (id<BackgroundCustomizationConfiguration>)backgroundConfiguration
              searchEngineLogoMediator:
-                 (SearchEngineLogoMediator*)searchEngineLogoMediator
-                         colorPalette:(NewTabPageColorPalette*)colorPalette;
+                 (SearchEngineLogoMediator*)searchEngineLogoMediator;
 
 // Updates the background image displayed behind the cell’s content.
 - (void)updateBackgroundImage:(UIImage*)image;
+
+// Applies the current theme.
+- (void)applyTheme;
 
 @end
 

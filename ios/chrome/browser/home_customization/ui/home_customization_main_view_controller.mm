@@ -16,10 +16,14 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/custom_ui_trait_accessor.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -283,6 +287,7 @@
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
 
+  // TODO(crbug.com/438568944): Display user-uploaded background images as well.
   if (backgroundConfiguration &&
       !backgroundConfiguration.thumbnailURL.is_empty()) {
     [self.mutator
@@ -376,24 +381,30 @@
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
 
-  if (![backgroundConfiguration
+  CustomUITraitAccessor* traitAccessor =
+      [[CustomUITraitAccessor alloc] initWithMutableTraits:cell.traitOverrides];
+  if ([backgroundConfiguration
           isKindOfClass:[BackgroundCustomizationConfigurationItem class]]) {
-    return;
+    BackgroundCustomizationConfigurationItem* configurationItem =
+        static_cast<BackgroundCustomizationConfigurationItem*>(
+            backgroundConfiguration);
+    NewTabPageColorPalette* colorPalette = [self.colorPaletteProvider
+        provideColorPaletteFromSeedColor:backgroundConfiguration.backgroundColor
+                            colorVariant:configurationItem.colorVariant];
+    [traitAccessor setObjectForNewTabPageTrait:colorPalette];
   }
-  BackgroundCustomizationConfigurationItem* configurationItem =
-      static_cast<BackgroundCustomizationConfigurationItem*>(
-          backgroundConfiguration);
+
+  BOOL hasBackgroundImage =
+      !backgroundConfiguration.thumbnailURL.is_empty() ||
+      backgroundConfiguration.userUploadedImagePath.length > 0;
+  [traitAccessor setBoolForNewTabPageImageBackgroundTrait:hasBackgroundImage];
 
   SearchEngineLogoMediator* searchEngineLogoMediator =
       [self.searchEngineLogoMediatorProvider
           provideSearchEngineLogoMediatorForKey:itemIdentifier];
-  NewTabPageColorPalette* colorPalette = [self.colorPaletteProvider
-      provideColorPaletteFromSeedColor:backgroundConfiguration.backgroundColor
-                          colorVariant:configurationItem.colorVariant];
 
   [cell configureWithBackgroundOption:backgroundConfiguration
-             searchEngineLogoMediator:searchEngineLogoMediator
-                         colorPalette:colorPalette];
+             searchEngineLogoMediator:searchEngineLogoMediator];
 
   if ([itemIdentifier isEqualToString:_selectedBackgroundId]) {
     [self.collectionView
