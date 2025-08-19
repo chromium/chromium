@@ -105,6 +105,7 @@
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
+#import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_factory_ios.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 #import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
@@ -216,6 +217,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   data_sharing::DataSharingServiceFactory::GetInstance();
   drive::DriveServiceFactory::GetInstance();
   enterprise::ProfileIdServiceFactoryIOS::GetInstance();
+  enterprise_reporting::CloudProfileReportingServiceFactoryIOS::GetInstance();
   enterprise_connectors::ConnectorsServiceFactory::GetInstance();
   enterprise_connectors::IOSRealtimeReportingClientFactory::GetInstance();
   enterprise_connectors::IOSReportingEventRouterFactory::GetInstance();
