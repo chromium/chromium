@@ -55,4 +55,18 @@ public interface ChromeAndroidTaskTracker {
      * @param activityWindowAndroid The {@link ActivityWindowAndroid} that is being destroyed.
      */
     void onActivityWindowAndroidDestroy(ActivityWindowAndroid activityWindowAndroid);
+
+    /**
+     * Adds an observer which will be called on addition or removal of tasks.
+     *
+     * @param observer The observer to add.
+     */
+    void addObserver(ChromeAndroidTaskTrackerObserver observer);
+
+    /**
+     * Removes an observer, if it exists.
+     *
+     * @param observer The observer to remove.
+     */
+    boolean removeObserver(ChromeAndroidTaskTrackerObserver observer);
 }

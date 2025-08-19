@@ -54,6 +54,7 @@ if (is_android) {
       "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTask.java",
       "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskFeature.java",
       "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTracker.java",
+      "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerObserver.java",
     ]
     deps = [
       "//build/android:build_java",

@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -182,5 +184,29 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Assert.
         assertFalse(chromeAndroidTask.isDestroyed());
         assertEquals(chromeAndroidTask, mChromeAndroidTaskTracker.get(/* taskId= */ 1));
+    }
+
+    @Test
+    public void obtainAndRemoveTask_observerNotified() {
+        // Arrange.
+        var observer = mock(ChromeAndroidTaskTrackerObserver.class);
+        mChromeAndroidTaskTracker.addObserver(observer);
+
+        // Act (add task).
+        var activityWindowAndroid =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
+        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
+
+        // Assert (add task).
+        verify(observer).onTaskAdded(chromeAndroidTask);
+
+        // Act (remove task).
+        mChromeAndroidTaskTracker.remove(chromeAndroidTask.getId());
+
+        // Assert (remove task).
+        verify(observer).onTaskRemoved(chromeAndroidTask);
+
+        // Cleanup.
+        mChromeAndroidTaskTracker.removeObserver(observer);
     }
 }
