@@ -40,6 +40,8 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
       ash::prefs::kClassManagementToolsNetworkRestrictionSetting, true);
   registry->RegisterIntegerPref(
       ash::prefs::kClassManagementToolsOOBEAccessCountSetting, 0);
+  registry->RegisterDictionaryPref(
+      ash::prefs::kClassManagementToolsKioskReceiverCodes);
 }
 
 bool IsEnabled(const user_manager::User* user) {

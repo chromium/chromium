@@ -2665,6 +2665,10 @@ inline constexpr char kClassManagementToolsViewScreenEligibilitySetting[] =
 inline constexpr char kClassManagementToolsOOBEAccessCountSetting[] =
     "ash.class_management_tools.oobe_access_count_setting";
 
+// A list pref containing Class Tools kiosk receiver codes.
+inline constexpr char kClassManagementToolsKioskReceiverCodes[] =
+    "ash.class_management_tools.kiosk_receiver_codes";
+
 // A boolean pref indicating whether age requirement met for GenAI access for
 // Coral.
 inline constexpr char kCoralGenAIAgeAllowed[] = "ash.coral.gen_ai_age_allowed";

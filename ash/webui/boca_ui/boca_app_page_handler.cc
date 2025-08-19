@@ -231,6 +231,8 @@ std::string GetPrefName(mojom::BocaValidPref pref) {
       return ::prefs::kManagedDefaultMediaStreamSetting;
     case mojom::BocaValidPref::kOOBEAccessCount:
       return ash::prefs::kClassManagementToolsOOBEAccessCountSetting;
+    case mojom::BocaValidPref::kKioskReceiverCodes:
+      return ash::prefs::kClassManagementToolsKioskReceiverCodes;
   }
   NOTREACHED();
 }

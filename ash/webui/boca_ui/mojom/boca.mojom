@@ -186,6 +186,8 @@ enum BocaValidPref {
   kDefaultMediaStreamSetting = 2,
   // OOBE page access count.
   kOOBEAccessCount = 3,
+  // Kiosk receiver codes.
+  kKioskReceiverCodes = 4,
 };
 
 struct Session {
