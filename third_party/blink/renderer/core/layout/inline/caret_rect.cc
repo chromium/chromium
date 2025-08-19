@@ -145,6 +145,11 @@ LogicalRect ComputeNextCharacterLogicalRect(const InlineCursor& cursor,
           cursor, offset - cursor.Current().TextStartOffset() - 1, style);
     }
   }
+  // When the inline size is zero, e.g. in the case that character is
+  // "&ZeroWidthSpace;", the inline size falls back to bar width.
+  if (cursor_inline_size == LayoutUnit()) {
+    cursor_inline_size = caret_width;
+  }
   caret_rect.offset.block_offset = cursor_block_offset;
 
   if (caret_shape == CaretShape::kBlock) {
