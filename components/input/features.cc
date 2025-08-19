@@ -52,4 +52,19 @@ BASE_FEATURE_PARAM(
     input::kHungRendererDelay  // Default value in input_constants.h
 );
 
+// Flag guard for unresponsive renderer multiple stack collection attempts.
+BASE_FEATURE(kUnresponsiveMultipleStackCollection,
+             "UnresponsiveMultipleStackCollection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kUnresponsiveMultipleStackCollectionDelay,
+                   &kUnresponsiveMultipleStackCollection,
+                   "delay",
+                   base::Milliseconds(100));
+BASE_FEATURE_PARAM(size_t,
+                   kUnresponsiveMultipleStackCollectionCount,
+                   &kUnresponsiveMultipleStackCollection,
+                   "count",
+                   5);
+
 }  // namespace input::features

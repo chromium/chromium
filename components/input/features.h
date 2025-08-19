@@ -42,6 +42,14 @@ COMPONENT_EXPORT(INPUT) BASE_DECLARE_FEATURE(kRendererHangWatcher);
 COMPONENT_EXPORT(INPUT)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kRendererHangWatcherDelay);
 
+COMPONENT_EXPORT(INPUT)
+BASE_DECLARE_FEATURE(kUnresponsiveMultipleStackCollection);
+COMPONENT_EXPORT(INPUT)
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kUnresponsiveMultipleStackCollectionDelay);
+COMPONENT_EXPORT(INPUT)
+BASE_DECLARE_FEATURE_PARAM(size_t, kUnresponsiveMultipleStackCollectionCount);
+
 }  // namespace input::features
 
 #endif  // COMPONENTS_INPUT_FEATURES_H_

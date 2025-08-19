@@ -59,6 +59,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
@@ -71,6 +72,7 @@
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/embedder_support/switches.h"
+#include "components/input/features.h"
 #include "components/input/utils.h"
 #include "components/metrics/histogram_controller.h"
 #include "components/metrics/single_sample_metrics.h"
@@ -3728,10 +3730,32 @@ void RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken(
 }
 
 void RenderProcessHostImpl::InterruptJavaScriptIsolateAndCollectCallStack() {
-  GetJavaScriptCallStackGeneratorInterface()->CollectJavaScriptCallStack(
-      base::BindOnce(
-          &RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken,
-          instance_weak_factory_.GetWeakPtr()));
+  blink::mojom::CallStackGenerator* js_interface =
+      GetJavaScriptCallStackGeneratorInterface();
+  js_interface->CollectJavaScriptCallStack(base::BindOnce(
+      &RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken,
+      instance_weak_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(
+          input::features::kUnresponsiveMultipleStackCollection)) {
+    for (size_t i = 1;
+         i < input::features::kUnresponsiveMultipleStackCollectionCount.Get();
+         i++) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              &RenderProcessHostImpl::CollectDelayedJavaScriptCallStack,
+              instance_weak_factory_.GetWeakPtr()),
+          input::features::kUnresponsiveMultipleStackCollectionDelay.Get() * i);
+    }
+  }
+}
+
+void RenderProcessHostImpl::CollectDelayedJavaScriptCallStack() {
+  blink::mojom::CallStackGenerator* js_interface =
+      GetJavaScriptCallStackGeneratorInterface();
+  js_interface->CollectJavaScriptCallStack(base::BindOnce(
+      &RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken,
+      instance_weak_factory_.GetWeakPtr()));
 }
 
 bool RenderProcessHostImpl::Shutdown(int exit_code) {

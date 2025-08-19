@@ -391,6 +391,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   void InterruptJavaScriptIsolateAndCollectCallStack();
 
+  // Helper method to safely collect JavaScript call stack on a delay.
+  void CollectDelayedJavaScriptCallStack();
+
   // HistogramChildProcess implementation:
   void BindChildHistogramFetcherFactory(
       mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
