@@ -253,6 +253,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      * @return {@link SelectionPopupController} object. {@code null} if not available because {@link
      *     #create()} is not called yet.
      */
+    @CalledByNative
     public static @Nullable SelectionPopupControllerImpl fromWebContents(WebContents webContents) {
         return webContents.getOrSetUserData(
                 SelectionPopupControllerImpl.class, UserDataFactoryLazyHolder.INSTANCE);
@@ -1971,6 +1972,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @CalledByNative
     private static Rect createJavaRect(int x, int y, int right, int bottom) {
         return new Rect(x, y, right, bottom);
+    }
+
+    @CalledByNative
+    private long getNativePtr() {
+        return mNativeSelectionPopupController;
     }
 
     /**

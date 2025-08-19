@@ -80,6 +80,26 @@ jlong JNI_SelectionPopupControllerImpl_Init(
   return reinterpret_cast<intptr_t>(controller);
 }
 
+SelectionPopupController* SelectionPopupController::FromWebContents(
+    WebContents& web_contents) {
+  ScopedJavaLocalRef<jobject> jweb_contents = web_contents.GetJavaWebContents();
+  JNIEnv* env = AttachCurrentThread();
+  // Call the Java-side fromWebContents method. This gets the Java
+  // SelectionPopupController if it already exists. Otherwise, this will
+  // instantiate the Java SelectionPopupController and store it in the web
+  // contents.
+  ScopedJavaLocalRef<jobject> jselection_popup_controller =
+      Java_SelectionPopupControllerImpl_fromWebContents(env, jweb_contents);
+  // Then get the native pointer from the newly-created
+  // SelectionPopupController. The Java SelectionPopupController owns the C++
+  // SelectionPopupController.
+  jlong selection_popup_controller =
+      Java_SelectionPopupControllerImpl_getNativePtr(
+          env, jselection_popup_controller);
+  return reinterpret_cast<SelectionPopupController*>(
+      selection_popup_controller);
+}
+
 SelectionPopupController::SelectionPopupController(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,

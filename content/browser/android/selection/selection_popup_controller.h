@@ -25,6 +25,8 @@ struct ContextMenuParams;
 
 class SelectionPopupController : public RenderWidgetHostConnector {
  public:
+  static SelectionPopupController* FromWebContents(WebContents& web_contents);
+
   SelectionPopupController(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj,
                            WebContents* web_contents);
