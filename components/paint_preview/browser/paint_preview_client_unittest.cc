@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "base/version.h"
@@ -60,12 +59,14 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
       mojom::PaintPreviewCaptureParamsPtr params,
       mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback)
       override {
-    if (closure_) {
-      base::ScopedAllowBlockingForTesting scope;
-      std::move(closure_).Run();
-    }
     CheckParams(params);
-    std::move(callback).Run(status_, std::move(response_));
+
+    if (received_request_closure_) {
+      send_response_callback_ = std::move(callback);
+      std::move(received_request_closure_).Run();
+    } else {
+      std::move(callback).Run(status_, std::move(response_));
+    }
   }
 
   void SetExpectedParams(mojom::PaintPreviewCaptureParamsPtr params) {
@@ -78,8 +79,14 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
     response_ = std::move(response);
   }
 
-  void SetResponseAction(base::OnceClosure closure) {
-    closure_ = std::move(closure);
+  void SetReceivedRequestClosure(base::OnceClosure closure) {
+    ASSERT_FALSE(received_request_closure_);
+    received_request_closure_ = std::move(closure);
+  }
+
+  void SendResponse() {
+    ASSERT_TRUE(send_response_callback_);
+    std::move(send_response_callback_).Run(status_, std::move(response_));
   }
 
   void BindRequest(mojo::ScopedInterfaceEndpointHandle handle) {
@@ -97,7 +104,11 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
     }
   }
 
-  base::OnceClosure closure_;
+  // If non-null, this is invoked when the recorder receives a paint preview
+  // request.
+  base::OnceClosure received_request_closure_;
+  mojom::PaintPreviewRecorder::CapturePaintPreviewCallback
+      send_response_callback_;
   mojom::PaintPreviewCaptureParamsPtr expected_params_;
   mojom::PaintPreviewStatus status_;
   mojom::PaintPreviewCaptureResponsePtr response_;
@@ -333,21 +344,26 @@ TEST_F(PaintPreviewClientRenderViewHostTestBase, SubframeFileCreationFails) {
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
   ASSERT_NE(client, nullptr);
 
-  recorder.SetResponseAction(base::BindLambdaForTesting([&]() {
-    // Before sending the main frame response, make the directory read-only to
-    // cause a file creation error on subsequent writes, and issue a reentrant
-    // call for a subframe, to see if the main frame's control flow mistakenly
-    // invokes the callback even after the subframe failed the whole capture.
-
-    base::SetPosixFilePermissions(temp_dir_.GetPath(), 0555);
-
-    client->CaptureSubframePaintPreview(params.inner.document_guid, gfx::Rect(),
-                                        subframe);
-  }));
+  base::test::TestFuture<void> recorder_received_request_future;
+  recorder.SetReceivedRequestClosure(
+      recorder_received_request_future.GetCallback());
 
   CaptureResultFuture main_capture_future;
   client->CapturePaintPreview(params, main_rfh(),
                               main_capture_future.GetCallback());
+
+  ASSERT_TRUE(recorder_received_request_future.Wait());
+  // Before sending the main frame response, make the directory read-only to
+  // cause a file creation error on subsequent writes, and issue a reentrant
+  // call for a subframe, to see if the main frame's control flow mistakenly
+  // invokes the callback even after the subframe failed the whole capture.
+
+  base::SetPosixFilePermissions(temp_dir_.GetPath(), 0555);
+
+  client->CaptureSubframePaintPreview(params.inner.document_guid, gfx::Rect(),
+                                      subframe);
+
+  recorder.SendResponse();
 
   auto [returned_guid, status, result] = main_capture_future.Take();
   EXPECT_EQ(returned_guid, params.inner.document_guid);
@@ -385,10 +401,17 @@ TEST_P(PaintPreviewClientRenderViewHostTest, RenderFrameDeletedDuringCapture) {
   PaintPreviewClient::CreateForWebContents(web_contents());
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
   ASSERT_NE(client, nullptr);
-  service.SetResponseAction(
-      base::BindLambdaForTesting([&]() { client->RenderFrameDeleted(rfh); }));
+
+  base::test::TestFuture<void> service_received_request_future;
+  service.SetReceivedRequestClosure(
+      service_received_request_future.GetCallback());
+
   CaptureResultFuture main_capture_future;
   client->CapturePaintPreview(params, rfh, main_capture_future.GetCallback());
+
+  ASSERT_TRUE(service_received_request_future.Wait());
+  client->RenderFrameDeleted(rfh);
+  service.SendResponse();
 
   auto [guid, status, result] = main_capture_future.Take();
   EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
