@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
@@ -97,9 +98,14 @@ public class RegionalCapabilitiesServiceClientAndroid {
     }
 
     @CalledByNative
-    private static void requestDeviceCountry(Callback<@Nullable String> deviceCountryCallback) {
+    private static void requestDeviceCountry(long ptrToNativeCallback) {
         ThreadUtils.checkUiThread();
-        getInstance().requestDeviceCountryInternal(deviceCountryCallback);
+        getInstance()
+                .requestDeviceCountryInternal(
+                        deviceCountry ->
+                                RegionalCapabilitiesServiceClientAndroidJni.get()
+                                        .processDeviceCountryResponse(
+                                                ptrToNativeCallback, deviceCountry));
     }
 
     private @RegionalProgram int getDeviceProgramInternal() {
@@ -113,5 +119,10 @@ public class RegionalCapabilitiesServiceClientAndroid {
     private static @RegionalProgram int getDeviceProgram() {
         ThreadUtils.checkUiThread();
         return getInstance().getDeviceProgramInternal();
+    }
+
+    @NativeMethods
+    public interface Natives {
+        void processDeviceCountryResponse(long ptrToNativeCallback, @Nullable String deviceCountry);
     }
 }
