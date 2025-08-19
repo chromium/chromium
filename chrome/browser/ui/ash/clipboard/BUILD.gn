@@ -6,25 +6,6 @@ import("//build/config/chromeos/args.gni")
 
 assert(is_chromeos)
 
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "clipboard_history_test_util.cc",
-    "clipboard_history_test_util.h",
-  ]
-
-  public_deps = [
-    "//ash/public/cpp",
-    "//base",
-  ]
-
-  deps = [
-    "//chromeos/ash/experiences/clipboard",
-    "//testing/gtest",
-  ]
-}
-
 if (!is_chromeos_device) {
   source_set("interactive_ui_tests") {
     testonly = true
@@ -34,12 +15,12 @@ if (!is_chromeos_device) {
     sources = [ "clipboard_history_interactive_uitest.cc" ]
 
     deps = [
-      ":test_support",
       "//ash",
       "//base",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//chromeos/ash/experiences/clipboard",
+      "//chromeos/ash/experiences/clipboard:test_support",
       "//content/test:test_support",
       "//net:test_support",
       "//ui/events:test_support",
@@ -55,7 +36,6 @@ source_set("browser_tests") {
   sources = [ "clipboard_history_browsertest.cc" ]
 
   deps = [
-    ":test_support",
     "//ash",
     "//ash:test_support",
     "//ash/constants",
@@ -75,6 +55,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/experiences/clipboard:test_support",
     "//chromeos/constants",
     "//components/user_manager",
     "//content/public/browser",

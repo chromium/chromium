@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_HISTORY_TEST_UTIL_H_
-#define CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_HISTORY_TEST_UTIL_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_CLIPBOARD_CLIPBOARD_HISTORY_TEST_UTIL_H_
+#define CHROMEOS_ASH_EXPERIENCES_CLIPBOARD_CLIPBOARD_HISTORY_TEST_UTIL_H_
 
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/memory/raw_ptr.h"
@@ -59,4 +59,4 @@ class ScopedClipboardHistoryListUpdateWaiter
 
 }  // namespace clipboard_history
 
-#endif  // CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_HISTORY_TEST_UTIL_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_CLIPBOARD_CLIPBOARD_HISTORY_TEST_UTIL_H_

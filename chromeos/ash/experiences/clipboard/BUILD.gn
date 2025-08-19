@@ -35,3 +35,19 @@ static_library("clipboard") {
     "//ui/views/controls/webview",
   ]
 }
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "clipboard_history_test_util.cc",
+    "clipboard_history_test_util.h",
+  ]
+
+  deps = [
+    ":clipboard",
+    "//ash/public/cpp",
+    "//base",
+    "//testing/gtest",
+  ]
+}

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/clipboard/clipboard_history_test_util.h"
+#include "chromeos/ash/experiences/clipboard/clipboard_history_test_util.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
