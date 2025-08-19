@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/raster_decoder.h"
 
 #include <limits>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -48,8 +44,9 @@ namespace {
 void CopyMailboxes(GLbyte (&output)[sizeof(Mailbox) * 2],
                    const Mailbox& source,
                    const Mailbox& dest) {
-  memcpy(output, source.name, sizeof(source.name));
-  memcpy(output + sizeof(source.name), dest.name, sizeof(dest.name));
+  UNSAFE_TODO(memcpy(output, source.name, sizeof(source.name)));
+  UNSAFE_TODO(
+      memcpy(output + sizeof(source.name), dest.name, sizeof(dest.name)));
 }
 
 }  // anonymous namespace
@@ -228,8 +225,8 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
         command_buffer_service_->CreateTransferBufferHelper(kSharedBufferSize,
                                                             &shared_memory_id_);
     shared_memory_offset_ = kSharedMemoryOffset;
-    shared_memory_address_ =
-        static_cast<int8_t*>(buffer->memory()) + shared_memory_offset_;
+    shared_memory_address_ = UNSAFE_TODO(
+        static_cast<int8_t*>(buffer->memory()) + shared_memory_offset_);
 
     workarounds.webgl_or_caps_max_texture_size = INT_MAX - 1;
     shared_image_factory_ = std::make_unique<SharedImageFactory>(
@@ -262,7 +259,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
   }
 
   RasterDecoderOOPTest() : memory_tracker_(nullptr) {
-    memset(immediate_buffer_, 0xEE, sizeof(immediate_buffer_));
+    UNSAFE_TODO(memset(immediate_buffer_, 0xEE, sizeof(immediate_buffer_)));
   }
 
   // DecoderClient implementation.

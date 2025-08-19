@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/gamepad_provider.h"
 
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -86,11 +82,11 @@ class GamepadProviderTest : public testing::Test, public GamepadTestHelper {
 
   void ReadGamepadHardwareBuffer(const GamepadHardwareBuffer* buffer,
                                  Gamepads* output) {
-    memset(output, 0, sizeof(Gamepads));
+    UNSAFE_TODO(memset(output, 0, sizeof(Gamepads)));
     int32_t version;
     do {
       version = buffer->seqlock.ReadBegin();
-      memcpy(output, &buffer->data, sizeof(Gamepads));
+      UNSAFE_TODO(memcpy(output, &buffer->data, sizeof(Gamepads)));
     } while (buffer->seqlock.ReadRetry(version));
   }
 
@@ -105,7 +101,7 @@ class GamepadProviderTest : public testing::Test, public GamepadTestHelper {
 
 TEST_F(GamepadProviderTest, PollingAccess) {
   Gamepads test_data;
-  memset(&test_data, 0, sizeof(Gamepads));
+  UNSAFE_TODO(memset(&test_data, 0, sizeof(Gamepads)));
   test_data.items[0].connected = true;
   test_data.items[0].timestamp = 0;
   test_data.items[0].buttons_length = 1;

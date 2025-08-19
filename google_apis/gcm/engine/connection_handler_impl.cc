@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "google_apis/gcm/engine/connection_handler_impl.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
@@ -424,9 +420,9 @@ void ConnectionHandlerImpl::OnGotMessageBytes() {
     const void* data_ptr = nullptr;
     int size = 0;
     input_stream_->Next(&data_ptr, &size);
-    payload_input_buffer_.insert(payload_input_buffer_.end(),
-                                 static_cast<const uint8_t*>(data_ptr),
-                                 static_cast<const uint8_t*>(data_ptr) + size);
+    payload_input_buffer_.insert(
+        payload_input_buffer_.end(), static_cast<const uint8_t*>(data_ptr),
+        UNSAFE_TODO(static_cast<const uint8_t*>(data_ptr) + size));
     DCHECK_LE(payload_input_buffer_.size(), message_size_);
 
     if (payload_input_buffer_.size() == message_size_) {

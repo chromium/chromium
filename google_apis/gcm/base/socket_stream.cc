@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "google_apis/gcm/base/socket_stream.h"
 
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -66,7 +62,7 @@ bool SocketInputStream::Next(const void** data, int* size) {
   DCHECK_EQ(GetState(), READY)
       << " Input stream must have pending data before reading.";
   DCHECK_LT(next_pos_, read_buffer_->BytesConsumed());
-  *data = io_buffer_->data() + next_pos_;
+  *data = UNSAFE_TODO(io_buffer_->data() + next_pos_);
   *size = UnreadByteCount();
   next_pos_ = read_buffer_->BytesConsumed();
   DVLOG(1) << "Consuming " << *size << " bytes in input buffer.";
@@ -188,7 +184,8 @@ void SocketInputStream::RebuildBuffer() {
              << " unread bytes remaining, shifting.";
     // Move any remaining unread data to the start of the buffer;
     std::copy(static_cast<const char*>(unread_data_ptr),
-              static_cast<const char*>(unread_data_ptr) + unread_data_size,
+              UNSAFE_TODO(static_cast<const char*>(unread_data_ptr) +
+                          unread_data_size),
               io_buffer_->data());
   } else {
     DVLOG(1) << "Have " << unread_data_size << " unread bytes remaining.";
@@ -254,7 +251,7 @@ bool SocketOutputStream::Next(void** data, int* size) {
   if (next_pos_ == io_buffer_->size())
     return false;
 
-  *data = io_buffer_->data() + next_pos_;
+  *data = UNSAFE_TODO(io_buffer_->data() + next_pos_);
   *size = io_buffer_->size() - next_pos_;
   next_pos_ = io_buffer_->size();
   return true;

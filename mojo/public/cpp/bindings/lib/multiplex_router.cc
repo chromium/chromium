@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -1250,7 +1246,7 @@ bool MultiplexRouter::InsertEndpointsForMessage(const Message& message) {
     // The IDs are from the remote side and therefore their namespace bit is
     // supposed to be different than the value that this router would use.
     if (set_interface_id_namespace_bit_ ==
-        HasInterfaceIdNamespaceBitSet(ids[i])) {
+        HasInterfaceIdNamespaceBitSet(UNSAFE_TODO(ids[i]))) {
       return false;
     }
 
@@ -1258,7 +1254,8 @@ bool MultiplexRouter::InsertEndpointsForMessage(const Message& message) {
     // is well-behaved: it might have notified us that the peer endpoint has
     // closed.
     bool inserted = false;
-    InterfaceEndpoint* endpoint = FindOrInsertEndpoint(ids[i], &inserted);
+    InterfaceEndpoint* endpoint =
+        FindOrInsertEndpoint(UNSAFE_TODO(ids[i]), &inserted);
     if (endpoint->closed() || endpoint->handle_created())
       return false;
   }
@@ -1278,7 +1275,7 @@ void MultiplexRouter::CloseEndpointsForMessage(const Message& message) {
 
   const uint32_t* ids = message.payload_interface_ids();
   for (uint32_t i = 0; i < num_ids; ++i) {
-    InterfaceEndpoint* endpoint = FindEndpoint(ids[i]);
+    InterfaceEndpoint* endpoint = FindEndpoint(UNSAFE_TODO(ids[i]));
     // If the remote side maliciously sends the same interface ID in another
     // message which has been dispatched, we could get here with no endpoint
     // for the ID, a closed endpoint, or an endpoint with handle created.
@@ -1289,7 +1286,8 @@ void MultiplexRouter::CloseEndpointsForMessage(const Message& message) {
 
     UpdateEndpointStateMayRemove(endpoint, ENDPOINT_CLOSED);
     MayAutoUnlock unlocker(&lock_);
-    control_message_proxy_.NotifyPeerEndpointClosed(ids[i], std::nullopt);
+    control_message_proxy_.NotifyPeerEndpointClosed(UNSAFE_TODO(ids[i]),
+                                                    std::nullopt);
   }
 
   ProcessTasks(NO_DIRECT_CLIENT_CALLS, nullptr);

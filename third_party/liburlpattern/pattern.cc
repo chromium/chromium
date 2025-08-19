@@ -3,11 +3,6 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/liburlpattern/pattern.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -128,8 +124,9 @@ std::string Pattern::GeneratePatternString() const {
         next_part->prefix.empty() && next_part->suffix.empty()) {
       if (next_part->type == PartType::kFixed) {
         UChar32 codepoint = -1;
-        U8_GET(reinterpret_cast<const uint8_t*>(next_part->value.data()), 0, 0,
-               static_cast<int>(next_part->value.size()), codepoint);
+        UNSAFE_TODO(
+            U8_GET(reinterpret_cast<const uint8_t*>(next_part->value.data()), 0,
+                   0, static_cast<int>(next_part->value.size()), codepoint));
         needs_grouping = IsNameCodepoint(codepoint, /*first_codepoint=*/false);
       } else {
         needs_grouping = !next_part->HasCustomName();
@@ -208,8 +205,9 @@ std::string Pattern::GeneratePatternString() const {
     if (part.type == PartType::kSegmentWildcard && custom_name &&
         !part.suffix.empty()) {
       UChar32 codepoint = -1;
-      U8_GET(reinterpret_cast<const uint8_t*>(part.suffix.data()), 0, 0,
-             static_cast<int>(part.suffix.size()), codepoint);
+      UNSAFE_TODO(U8_GET(reinterpret_cast<const uint8_t*>(part.suffix.data()),
+                         0, 0, static_cast<int>(part.suffix.size()),
+                         codepoint));
       if (IsNameCodepoint(codepoint, /*first_codepoint=*/false)) {
         result += "\\";
       }

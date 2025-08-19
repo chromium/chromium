@@ -3,15 +3,11 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/liburlpattern/tokenize.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utf8.h"
@@ -249,7 +245,8 @@ class Tokenizer {
   // read next.  Returns true iff the codepoint was read successfully. On
   // success, `codepoint_` is non-negative.
   [[nodiscard]] bool Next() {
-    U8_NEXT(pattern_.data(), next_index_, pattern_.size(), codepoint_);
+    UNSAFE_TODO(
+        U8_NEXT(pattern_.data(), next_index_, pattern_.size(), codepoint_));
     return codepoint_ >= 0;
   }
 

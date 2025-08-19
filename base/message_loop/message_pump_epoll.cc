@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/message_loop/message_pump_epoll.h"
 
 #include <sys/eventfd.h>
@@ -19,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -543,7 +539,7 @@ bool MessagePumpEpoll::GetEventsPoll(int epoll_timeout,
     }
 
     epoll_event event;
-    memset(&event, 0, sizeof(event));
+    UNSAFE_TODO(memset(&event, 0, sizeof(event)));
 
     if (pollfd_entry.fd == wake_event_.get()) {
       event.data.ptr = &wake_event_;

@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "build/build_config.h"
-
 #include "ipc/ipc_message_protobuf_utils.h"
 
 #include <initializer_list>
 
-#include "ipc/test_proto.pb.h"
+#include "base/compiler_specific.h"
+#include "build/build_config.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
+#include "ipc/test_proto.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace IPC {
@@ -73,7 +68,7 @@ void AssertRepeatedFieldEquals(std::initializer_list<P1> expected,
   ASSERT_EQ(static_cast<int>(expected.size()), fields.size());
   auto it = expected.begin();
   int i = 0;
-  for (; it != expected.end(); it++, i++) {
+  for (; it != expected.end(); UNSAFE_TODO(it++), i++) {
     AssertEqual(*it, fields.Get(i));
   }
 }

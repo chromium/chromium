@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/jpeg_parser.h"
 
 #include <cstring>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/logging.h"
@@ -270,7 +266,7 @@ static bool ParseDHT(base::span<const uint8_t> buffer,
       return false;
     }
     for (size_t i = 0; i < std::size(table->code_length); i++)
-      count += table->code_length[i];
+      count += UNSAFE_TODO(table->code_length[i]);
 
     if (!InRange(count, 0u, sizeof(table->code_value))) {
       DVLOG(1) << "Invalid code count " << count;

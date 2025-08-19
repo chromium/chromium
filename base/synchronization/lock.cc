@@ -6,14 +6,11 @@
 // is functionally a wrapper around the LockImpl class, so the only
 // real intelligence in the class is in the debugging logic.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/synchronization/lock.h"
 
 #include <cstdint>
+
+#include "base/compiler_specific.h"
 
 #if DCHECK_IS_ON()
 #include <array>
@@ -145,8 +142,9 @@ void Lock::RemoveFromLocksHeldOnCurrentThread() {
 namespace subtle {
 
 span<const uintptr_t> GetTrackedLocksHeldByCurrentThread() {
-  return span<const uintptr_t>(g_tracked_locks_held_by_thread.begin(),
-                               g_num_tracked_locks_held_by_thread);
+  return UNSAFE_TODO(
+      span<const uintptr_t>(g_tracked_locks_held_by_thread.begin(),
+                            g_num_tracked_locks_held_by_thread));
 }
 
 }  // namespace subtle

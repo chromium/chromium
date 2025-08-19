@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // A class to Manage a growing transfer buffer.
 
 #include "gpu/command_buffer/client/transfer_buffer.h"
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <climits>
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 
@@ -337,7 +334,7 @@ bool ScopedTransferBufferPtr::BelongsToBuffer(uint8_t* memory) const {
   if (!buffer_)
     return false;
   uint8_t* start = static_cast<uint8_t*>(buffer_.get());
-  uint8_t* end = start + size_;
+  uint8_t* end = UNSAFE_TODO(start + size_);
   return memory >= start && memory <= end;
 }
 

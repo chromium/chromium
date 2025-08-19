@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/audio_renderer_algorithm.h"
 
 #include <algorithm>
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -527,16 +523,17 @@ bool AudioRendererAlgorithm::RunOneWsolaIteration(double playback_rate) {
 
     const base::span<const float> ch_opt_frame =
         optimal_block_->channel_span(k);
-    float* ch_output =
-        wsola_output_->channel_span(k).data() + num_complete_frames_;
+    float* ch_output = UNSAFE_TODO(wsola_output_->channel_span(k).data() +
+                                   num_complete_frames_);
     for (int n = 0; n < ola_hop_size_; ++n) {
-      ch_output[n] = ch_output[n] * ola_window_[ola_hop_size_ + n] +
-                     ch_opt_frame[n] * ola_window_[n];
+      UNSAFE_TODO(ch_output[n]) =
+          UNSAFE_TODO(ch_output[n]) * ola_window_[ola_hop_size_ + n] +
+          ch_opt_frame[n] * ola_window_[n];
     }
 
     // Copy the second half to the output.
-    memcpy(&ch_output[ola_hop_size_], &ch_opt_frame[ola_hop_size_],
-           sizeof(ch_opt_frame[0]) * ola_hop_size_);
+    UNSAFE_TODO(memcpy(&ch_output[ola_hop_size_], &ch_opt_frame[ola_hop_size_],
+                       sizeof(ch_opt_frame[0]) * ola_hop_size_));
   }
 
   num_complete_frames_ += ola_hop_size_;
@@ -586,9 +583,10 @@ int AudioRendererAlgorithm::WriteCompletedFramesTo(
     if (!channel_mask_[k])
       continue;
     base::span<float> ch = wsola_output_->channel_span(k);
-    memmove(ch.data(),
-            ch.subspan(base::checked_cast<size_t>(rendered_frames)).data(),
-            sizeof(ch[0]) * frames_to_move);
+    UNSAFE_TODO(
+        memmove(ch.data(),
+                ch.subspan(base::checked_cast<size_t>(rendered_frames)).data(),
+                sizeof(ch[0]) * frames_to_move));
   }
   num_complete_frames_ -= rendered_frames;
   return rendered_frames;

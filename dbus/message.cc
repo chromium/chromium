@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "dbus/message.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -468,7 +464,7 @@ std::unique_ptr<ErrorResponse> ErrorResponse::FromMethodCall(
 
 MessageWriter::MessageWriter(Message* message)
     : message_(message), container_is_open_(false) {
-  memset(&raw_message_iter_, 0, sizeof(raw_message_iter_));
+  UNSAFE_TODO(memset(&raw_message_iter_, 0, sizeof(raw_message_iter_)));
   if (message)
     dbus_message_iter_init_append(message_->raw_message(), &raw_message_iter_);
 }
@@ -761,7 +757,7 @@ void MessageWriter::AppendFileDescriptor(int value) {
 //
 
 MessageReader::MessageReader(Message* message) : message_(message) {
-  memset(&raw_message_iter_, 0, sizeof(raw_message_iter_));
+  UNSAFE_TODO(memset(&raw_message_iter_, 0, sizeof(raw_message_iter_)));
   if (message)
     dbus_message_iter_init(message_->raw_message(), &raw_message_iter_);
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 
 // Create a state machine for validating UTF-8. The algorithm in brief:
@@ -143,7 +138,7 @@ class TablePrinter {
 
   void PrintValue(uint8_t value) {
     if (values_on_this_line_ == 0) {
-      fputs("   ", stream_);
+      UNSAFE_TODO(fputs("   ", stream_));
     } else if (values_on_this_line_ == kMaxValuesPerLine) {
       fprintf(stream_.get(), "  // 0x%02x\n   ", current_offset_);
       values_on_this_line_ = 0;
@@ -155,7 +150,7 @@ class TablePrinter {
 
   void NewLine() {
     while (values_on_this_line_ < kMaxValuesPerLine) {
-      fputs("      ", stream_);
+      UNSAFE_TODO(fputs("      ", stream_));
       ++values_on_this_line_;
     }
     fprintf(stream_.get(), "  // 0x%02x\n", current_offset_);
@@ -396,7 +391,7 @@ void PrintStates(const std::vector<State>& states, FILE* stream) {
 
   DCHECK_EQ(129, state_offset[1]);
 
-  fputs(kProlog, stream);
+  UNSAFE_TODO(fputs(kProlog, stream));
   TablePrinter table_printer(stream);
 
   for (uint8_t state_index = 0; state_index < states.size(); ++state_index) {
@@ -420,7 +415,7 @@ void PrintStates(const std::vector<State>& states, FILE* stream) {
     table_printer.NewLine();
   }
 
-  fputs(kEpilog, stream);
+  UNSAFE_TODO(fputs(kEpilog, stream));
 }
 
 }  // namespace
@@ -432,7 +427,7 @@ int main(int argc, char* argv[]) {
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("help")) {
-    fwrite(kHelpText, 1, std::size(kHelpText), stdout);
+    UNSAFE_TODO(fwrite(kHelpText, 1, std::size(kHelpText), stdout));
     exit(EXIT_SUCCESS);
   }
   base::FilePath filename =
