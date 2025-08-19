@@ -52,6 +52,21 @@ public abstract class SearchEngineCountryDelegate {
         return null;
     }
 
+    @IntDef({
+        DefaultBrowserPromoSuppressionDelayType.STANDARD,
+        DefaultBrowserPromoSuppressionDelayType.MAX,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DefaultBrowserPromoSuppressionDelayType {
+        int STANDARD = 1;
+        int MAX = 2;
+    }
+
+    public @DefaultBrowserPromoSuppressionDelayType int
+            getDefaultBrowserPromoSuppressionDelayType() {
+        return DefaultBrowserPromoSuppressionDelayType.MAX;
+    }
+
     /** Proxy for {@link SearchEngineChoiceService#isDeviceChoiceDialogEligible()}. */
     @MainThread
     public boolean isDeviceChoiceDialogEligible() {
