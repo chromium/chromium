@@ -1134,7 +1134,7 @@ public class CompositorViewHolder extends FrameLayout
             if (!BrowserControlsUtils.areBrowserControlsIdle(mBrowserControlsManager)) return;
 
             boolean controlsResizeView =
-                    BrowserControlsUtils.controlsResizeView(mBrowserControlsManager, mActivity);
+                    BrowserControlsUtils.controlsResizeView(mBrowserControlsManager);
             if (controlsResizeView != mControlsResizeView) {
                 mControlsResizeView = controlsResizeView;
                 controlsResizeViewChanged = true;

@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
-import android.content.Context;
-
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /** Static utilities related to browser controls interfaces. */
 @NullMarked
@@ -37,19 +33,11 @@ public class BrowserControlsUtils {
 
     /**
      * TODO(jinsukkim): Move this to CompositorViewHolder.
-     *
-     * @return {@code true} if browser controls shrink Blink view's size. Note that this is valid
-     *     only when the browser controls are in idle state i.e. not scrolling or animating.
+     * @return {@code true} if browser controls shrink Blink view's size. Note that this
+     *         is valid only when the browser controls are in idle state i.e. not scrolling
+     *         or animating.
      */
-    public static boolean controlsResizeView(
-            BrowserControlsStateProvider stateProvider, Context context) {
-        // Returning 'true' here works around b/437820869, landing as a temporary fix.
-        // TODO(https://crbug.com/436900619): Remove this code in favor of a real long term
-        // solution.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS)
-                && DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(context)) {
-            return true;
-        }
+    public static boolean controlsResizeView(BrowserControlsStateProvider stateProvider) {
         return stateProvider.getContentOffset() > stateProvider.getTopControlsMinHeight()
                 || getBottomContentOffset(stateProvider)
                         > stateProvider.getBottomControlsMinHeight();
