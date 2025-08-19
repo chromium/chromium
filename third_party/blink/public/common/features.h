@@ -1203,6 +1203,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowLatencyWebGLImageChromium);
 // If enabled, async scripts will be run on a lower priority task queue.
 // See https://crbug.com/1348467.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityAsyncScriptExecution);
+// The minimum amount of the physical memory (GB) to use
+// kLowPriorityAsyncScriptExecution.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kMinimumPhysicalMemoryForLowPriorityAsyncScriptExecution);
 // The timeout value for kLowPriorityAsyncScriptExecution. Async scripts run on
 // lower priority queue until this timeout elapsed.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(

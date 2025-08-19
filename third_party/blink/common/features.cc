@@ -1784,6 +1784,12 @@ BASE_FEATURE(kLowPriorityAsyncScriptExecution,
 #endif
 );
 
+BASE_FEATURE_PARAM(double,
+                   kMinimumPhysicalMemoryForLowPriorityAsyncScriptExecution,
+                   &kLowPriorityAsyncScriptExecution,
+                   "low_pri_async_exec_minimum_physical_memory_gb",
+                   3.0);
+
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kTimeoutForLowPriorityAsyncScriptExecution,
                    &kLowPriorityAsyncScriptExecution,
