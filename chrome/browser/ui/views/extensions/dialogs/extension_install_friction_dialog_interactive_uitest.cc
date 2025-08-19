@@ -14,28 +14,34 @@
 #include "content/public/test/test_utils.h"
 #include "ui/views/controls/styled_label.h"
 
-using ExtensionInstallFrictionDialogUITest = InteractiveBrowserTest;
+class ExtensionInstallFrictionDialogUITest : public InteractiveBrowserTest {
+ public:
+  ExtensionInstallFrictionDialogUITest() = default;
+  ~ExtensionInstallFrictionDialogUITest() override = default;
+  ExtensionInstallFrictionDialogUITest(
+      const ExtensionInstallFrictionDialogUITest&) = delete;
+  ExtensionInstallFrictionDialogUITest& operator=(
+      const ExtensionInstallFrictionDialogUITest&) = delete;
+
+  auto ShowExtensionInstallFrictionDialog() {
+    return Do([&]() {
+      extensions::ShowExtensionInstallFrictionDialog(
+          browser()->tab_strip_model()->GetActiveWebContents(),
+          base::DoNothing());
+    });
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallFrictionDialogUITest, ShowDialog) {
   RunTestSequence(
-      // Trigger the dialog.
-      Do([&]() {
-        extensions::ShowExtensionInstallFrictionDialog(
-            browser()->tab_strip_model()->GetActiveWebContents(),
-            base::DoNothing());
-      }),
+      ShowExtensionInstallFrictionDialog(),
       WaitForShow(extensions::kExtensionInstallFrictionLearnMoreLink));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallFrictionDialogUITest,
                        LearnMoreLinkClosesDialog) {
   RunTestSequence(
-      // Trigger the dialog.
-      Do([&]() {
-        extensions::ShowExtensionInstallFrictionDialog(
-            browser()->tab_strip_model()->GetActiveWebContents(),
-            base::DoNothing());
-      }),
+      ShowExtensionInstallFrictionDialog(),
       WaitForShow(extensions::kExtensionInstallFrictionLearnMoreLink),
 
       // Clicking the link closes the dialog.
@@ -47,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallFrictionDialogUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallFrictionDialogUITest,
-                       DialogRemainsOpenWhenAnchorTabIsClosed) {
+                       WebContentsDestroyedClosesDialog) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
   const GURL first_url("https://one.com/");
@@ -63,26 +69,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallFrictionDialogUITest,
       SelectTab(kTabStripElementId, first_tab_index),
 
       // Trigger the dialog.
-      Do([&]() {
-        extensions::ShowExtensionInstallFrictionDialog(
-            browser()->tab_strip_model()->GetActiveWebContents(),
-            base::DoNothing());
-      }),
+      ShowExtensionInstallFrictionDialog(),
+      // We cannot add an element identifier to the dialog when it's built using
+      // DialogModel::Builder. Thus, we check for its existence by checking the
+      // visibility of one of its elements.
       WaitForShow(extensions::kExtensionInstallFrictionLearnMoreLink),
 
-      // Close the tab where the dialog is opened
+      // Close the tab where the dialog is opened.
       Do([&]() {
         browser()->tab_strip_model()->CloseWebContentsAt(
             first_tab_index, TabCloseTypes::CLOSE_NONE);
       }),
 
-      // Dialog should remain open on the other tab.
-      EnsurePresent(extensions::kExtensionInstallFrictionLearnMoreLink),
-
-      // Clicking the link closes the dialog.
-      WithView(extensions::kExtensionInstallFrictionLearnMoreLink,
-               [](views::StyledLabel* learn_more_label) {
-                 learn_more_label->ClickFirstLinkForTesting();
-               }),
+      // Dialog should be closed.
       WaitForHide(extensions::kExtensionInstallFrictionLearnMoreLink));
 }

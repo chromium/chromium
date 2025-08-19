@@ -13,6 +13,7 @@
 
 #include "base/auto_reset.h"
 #include "base/base64.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
@@ -873,6 +874,34 @@ bool WebstorePrivateBeginInstallWithManifest3Function::ShouldShowFrictionDialog(
 void WebstorePrivateBeginInstallWithManifest3Function::
     ShowInstallFrictionDialog(content::WebContents* contents) {
   friction_dialog_shown_ = true;
+
+  // Tests can auto confirm the dialog.
+  auto auto_confirm_value = ScopedTestDialogAutoConfirm::GetAutoConfirmValue();
+  switch (auto_confirm_value) {
+    case ScopedTestDialogAutoConfirm::NONE:
+      // Continue, auto confirm has not been set.
+      break;
+    case ScopedTestDialogAutoConfirm::ACCEPT:
+      CHECK_IS_TEST();
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
+                             OnFrictionPromptDone,
+                         this, true));
+      return;
+    case ScopedTestDialogAutoConfirm::CANCEL:
+      CHECK_IS_TEST();
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
+                             OnFrictionPromptDone,
+                         this, false));
+      return;
+    case ScopedTestDialogAutoConfirm::AutoConfirm::ACCEPT_AND_OPTION:
+      NOTREACHED();
+  }
+
+// TODO(crbug.com/424012380): Enable on Desktop Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ShowExtensionInstallFrictionDialog(
       contents,

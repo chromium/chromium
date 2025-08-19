@@ -2,22 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/check_is_test.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/referrer.h"
-#include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -43,35 +38,13 @@ void ReportExtensionInstallFrictionDialogAction(
                                 action);
 }
 
-void AutoConfirmDialog(
-    extensions::ScopedTestDialogAutoConfirm::AutoConfirm auto_confirm_value,
-    base::OnceCallback<void(bool)> callback) {
-  CHECK_IS_TEST();
-  switch (auto_confirm_value) {
-    case extensions::ScopedTestDialogAutoConfirm::AutoConfirm::ACCEPT:
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), true));
-      return;
-    case extensions::ScopedTestDialogAutoConfirm::AutoConfirm::CANCEL:
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), false));
-      return;
-    case extensions::ScopedTestDialogAutoConfirm::AutoConfirm::NONE:
-    case extensions::ScopedTestDialogAutoConfirm::AutoConfirm::
-        ACCEPT_AND_OPTION:
-      NOTREACHED();
-  }
-}
-
 class ExtensionInstallFrictionDialogDelegate : public ui::DialogModelDelegate {
  public:
   explicit ExtensionInstallFrictionDialogDelegate(
-      base::OnceCallback<void(bool)> callback,
       content::WebContents* web_contents,
-      Profile* profile)
-      : callback_(std::move(callback)),
-        original_web_contents_(web_contents->GetWeakPtr()),
-        profile_(profile) {}
+      base::OnceCallback<void(bool)> callback)
+      : original_web_contents_(web_contents->GetWeakPtr()),
+        callback_(std::move(callback)) {}
 
   ~ExtensionInstallFrictionDialogDelegate() override = default;
 
@@ -103,25 +76,20 @@ class ExtensionInstallFrictionDialogDelegate : public ui::DialogModelDelegate {
   void OnLearnMoreLinkClicked() {
     learn_more_clicked_ = true;
 
-    GURL url(chrome::kCwsEnhancedSafeBrowsingLearnMoreURL);
-    content::OpenURLParams params(
-        url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
-
     if (original_web_contents_) {
+      GURL url(chrome::kCwsEnhancedSafeBrowsingLearnMoreURL);
+      content::OpenURLParams params(
+          url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
       original_web_contents_->OpenURL(params, {});
-    } else {
-      chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
-      displayer.browser()->OpenURL(params, {});
     }
 
     dialog_model()->host()->Close();
   }
 
  private:
-  base::OnceCallback<void(bool)> callback_;
   base::WeakPtr<content::WebContents> original_web_contents_;
-  raw_ptr<Profile> profile_;
+  base::OnceCallback<void(bool)> callback_;
   bool learn_more_clicked_ = false;
 };
 
@@ -134,16 +102,9 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionInstallFrictionLearnMoreLink);
 void ShowExtensionInstallFrictionDialog(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> callback) {
-  auto auto_confirm_value = ScopedTestDialogAutoConfirm::GetAutoConfirmValue();
-  if (auto_confirm_value != extensions::ScopedTestDialogAutoConfirm::NONE) {
-    AutoConfirmDialog(auto_confirm_value, std::move(callback));
-    return;
-  }
-
   auto dialog_delegate_unique =
       std::make_unique<ExtensionInstallFrictionDialogDelegate>(
-          std::move(callback), web_contents,
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+          web_contents, std::move(callback));
   ExtensionInstallFrictionDialogDelegate* dialog_delegate =
       dialog_delegate_unique.get();
 
@@ -186,8 +147,7 @@ void ShowExtensionInstallFrictionDialog(
                         /*id=*/kExtensionInstallFrictionLearnMoreLink)
           .Build();
 
-  constrained_window::ShowBrowserModal(std::move(dialog),
-                                       web_contents->GetTopLevelNativeWindow());
+  constrained_window::ShowWebModal(std::move(dialog), web_contents);
 }
 
 }  // namespace extensions
