@@ -95,6 +95,10 @@ class PdfCaret {
   bool WillCaretExitPage(const PageCharacterIndex& index,
                          bool move_right) const;
 
+  // Returns whether `index` is a valid char or not. False when `index` is the
+  // last caret position of a page.
+  bool IndexHasChar(const PageCharacterIndex& index) const;
+
   // Client must outlive `this`.
   const raw_ptr<PdfCaretClient> client_;
 

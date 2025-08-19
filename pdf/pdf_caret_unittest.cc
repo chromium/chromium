@@ -585,6 +585,8 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRight) {
   TestDrawCaret(kTestChar1EndCaret);
 
   // Right of char 1.
+  PageCharacterIndex kTestLastCaret{0, 2};
+  EXPECT_CALL(client(), IsSynthesizedNewline(kTestLastCaret)).Times(0);
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
   TestDrawCaret(kTestChar1EndCaret);

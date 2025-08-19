@@ -199,7 +199,7 @@ void PdfCaret::MoveToNextChar(bool move_right) {
                                     index_.char_index + delta};
     // Newlines synthetically created by PDFium have empty screen rects.
     // Skip consecutive newlines.
-    if (next_char.char_index < client_->GetCharCount(next_char.page_index) &&
+    if (IndexHasChar(index_) && IndexHasChar(next_char) &&
         client_->IsSynthesizedNewline(index_) &&
         client_->IsSynthesizedNewline(next_char)) {
       // Synthetic newlines cannot be the first or last char on a page.
@@ -241,6 +241,10 @@ bool PdfCaret::WillCaretExitPage(const PageCharacterIndex& index,
     return index.char_index == client_->GetCharCount(index.page_index);
   }
   return index.char_index == 0;
+}
+
+bool PdfCaret::IndexHasChar(const PageCharacterIndex& index) const {
+  return index.char_index < client_->GetCharCount(index.page_index);
 }
 
 }  // namespace chrome_pdf
