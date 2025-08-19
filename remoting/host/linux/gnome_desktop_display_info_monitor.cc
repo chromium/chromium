@@ -62,6 +62,11 @@ void GnomeDesktopDisplayInfoMonitor::OnGnomeDisplayConfigReceived(
                    << " ignored because it has no current mode";
       continue;
     }
+    // Ideally we should multiply the DPI with text-scaling-factor, but that
+    // causes the client to resize the display to the actual screen resolution
+    // at 1x scale when "High-DPI mode" is disabled.
+    // TODO: crbug.com/431816005 - fix this bug on the host and set the the DPI
+    // to `kDefaultDPI * monitor.scale * text_scaling_factor`.
     info.AddDisplay(DisplayGeometry(
         GnomeDisplayConfig::GetScreenId(name), monitor.x, monitor.y,
         current_mode->width, current_mode->height, kDefaultDPI * monitor.scale,

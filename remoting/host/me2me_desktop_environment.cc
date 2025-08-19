@@ -131,6 +131,8 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += " ";
     capabilities += protocol::kClientControlledLayoutCapability;
 #endif
+    capabilities += " ";
+    capabilities += protocol::kHighDpiCapability;
   } else if (UsingVideoDummyDriver()) {
     capabilities += " ";
     capabilities += protocol::kClientControlledLayoutCapability;

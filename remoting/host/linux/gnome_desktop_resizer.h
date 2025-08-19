@@ -5,6 +5,8 @@
 #ifndef REMOTING_HOST_LINUX_GNOME_DESKTOP_RESIZER_H_
 #define REMOTING_HOST_LINUX_GNOME_DESKTOP_RESIZER_H_
 
+#include <gio/gio.h>
+
 #include <map>
 #include <memory>
 #include <string>
@@ -18,6 +20,7 @@
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "remoting/host/linux/pipewire_capture_stream_manager.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "ui/base/glib/scoped_gobject.h"
 
 namespace remoting {
 
@@ -59,6 +62,8 @@ class GnomeDesktopResizer : public DesktopResizer {
   void ScheduleApplyMonitorsConfig();
   void DoApplyMonitorsConfig();
 
+  double GetTextScalingFactor() const;
+
   base::WeakPtr<PipewireCaptureStreamManager> stream_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -84,6 +89,9 @@ class GnomeDesktopResizer : public DesktopResizer {
   // We can't use flat_map since we may remove elements during iteration.
   std::map<std::string /* monitor_name */, PendingMonitorConfig>
       pending_monitors_config_;
+
+  // Used to set the text-scaling-factor.
+  ScopedGObject<GSettings> registry_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
