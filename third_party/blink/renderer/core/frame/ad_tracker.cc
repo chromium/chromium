@@ -176,15 +176,15 @@ void AdTracker::Will(const probe::ExecuteScript& probe) {
                                         probe.script_id);
   }
 
-  if (is_ad) {
-    ad_scripts_in_stack_.push_back(probe.script_id);
+  if (is_ad && !bottom_most_ad_script_.has_value()) {
+    bottom_most_ad_script_ = probe.script_id;
   }
 }
 
 void AdTracker::Did(const probe::ExecuteScript& probe) {
-  if (!ad_scripts_in_stack_.empty() &&
-      ad_scripts_in_stack_.back() == probe.script_id) {
-    ad_scripts_in_stack_.pop_back();
+  if (bottom_most_ad_script_.has_value() &&
+      bottom_most_ad_script_.value() == probe.script_id) {
+    bottom_most_ad_script_.reset();
   }
 }
 
@@ -196,8 +196,8 @@ void AdTracker::Will(const probe::CallFunction& probe) {
   }
 
   auto it = ad_script_ids_.find(probe.function->ScriptId());
-  if (it != ad_script_ids_.end()) {
-    ad_scripts_in_stack_.push_back(probe.function->ScriptId());
+  if (it != ad_script_ids_.end() && !bottom_most_ad_script_.has_value()) {
+    bottom_most_ad_script_ = probe.function->ScriptId();
   }
 }
 
@@ -205,9 +205,9 @@ void AdTracker::Did(const probe::CallFunction& probe) {
   if (probe.depth) {
     return;
   }
-  if (!ad_scripts_in_stack_.empty() &&
-      ad_scripts_in_stack_.back() == probe.function->ScriptId()) {
-    ad_scripts_in_stack_.pop_back();
+  if (bottom_most_ad_script_.has_value() &&
+      bottom_most_ad_script_.value() == probe.function->ScriptId()) {
+    bottom_most_ad_script_.reset();
   }
 }
 
@@ -347,9 +347,9 @@ bool AdTracker::IsAdScriptInStackHelper(
 
   // We check this after checking for an ad context because we don't keep track
   // of script ids for ad frames.
-  if (!ad_scripts_in_stack_.empty()) {
+  if (bottom_most_ad_script_.has_value()) {
     if (out_ad_script) {
-      auto it = ad_script_ids_.find(ad_scripts_in_stack_[0]);
+      auto it = ad_script_ids_.find(bottom_most_ad_script_.value());
       if (it != ad_script_ids_.end()) {
         *out_ad_script = it->value;
       }

@@ -234,8 +234,9 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
   Member<LocalFrame> local_root_;
 
-  // The list of ad script ids currently in the stack.
-  Vector<int> ad_scripts_in_stack_;
+  // Indicates the bottom-most synchronous ad script on the stack or
+  // `std::nullopt` if there isn't one.
+  std::optional<int> bottom_most_ad_script_;
 
   // Indicates the bottom-most ad script on the async stack or `std::nullopt`
   // if there isn't one.
