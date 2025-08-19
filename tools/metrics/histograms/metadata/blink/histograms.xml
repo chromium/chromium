@@ -1649,6 +1649,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.HasNonce" enum="BooleanHit"
+    expires_after="2025-12-14">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records a 1 whenever a FedCM API call includes the nonce parameter. Records
+    towards the beginning of the call, except for some cases where the call is
+    immediately rejected.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.HasSigninAccount" enum="BooleanYesNo"
     expires_after="2026-02-15">
   <owner>yigu@chromium.org</owner>

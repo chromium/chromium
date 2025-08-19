@@ -278,7 +278,6 @@ void FederatedAuthRequestImpl::RequestToken(
   if (ShouldTerminateRequest(idp_get_params_ptrs, requirement)) {
     return;
   }
-
   bool intercept = false;
   bool should_complete_request_immediately = false;
   devtools_instrumentation::WillSendFedCmRequest(
@@ -366,6 +365,16 @@ void FederatedAuthRequestImpl::RequestToken(
   if (!fedcm_metrics_) {
     fedcm_metrics_ = CreateFedCmMetrics();
   }
+  std::set<GURL> idps_with_nonce;
+  for (const auto& idp_get_params_ptr : idp_get_params_ptrs) {
+    for (const auto& idp_ptr : idp_get_params_ptr->providers) {
+      if (!idp_ptr->nonce.empty()) {
+        idps_with_nonce.insert(idp_ptr->config->config_url);
+      }
+    }
+  }
+  fedcm_metrics_->RecordHasNonce(idps_with_nonce);
+
   // TODO(crbug.com/40218857): handle active mode with multiple IdP.
   if (idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kActive) {
     rp_mode_ = RpMode::kActive;

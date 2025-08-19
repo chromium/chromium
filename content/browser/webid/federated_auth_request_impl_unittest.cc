@@ -8357,6 +8357,22 @@ TEST_F(FederatedAuthRequestImplTest,
                         FedCmEntry::kEntryName, 0);
 }
 
+TEST_F(FederatedAuthRequestImplTest, RecordsNoncePresence) {
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].nonce = "12345";
+  RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
+  ExpectUkmValue("HasNonce", true);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.HasNonce", true, 1);
+}
+
+TEST_F(FederatedAuthRequestImplTest, NonceAbsenceNoRecord) {
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].nonce = "";
+  RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
+  ExpectNoUKMPresence("HasNonce");
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.HasNonce", 0);
+}
+
 // Tests that LifecycleStateFailureReason is recorded when page is non-primary.
 TEST_F(FederatedAuthRequestImplTest, NonPrimaryPageMetrics) {
   static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())

@@ -4124,6 +4124,13 @@ be describing additional metrics about the same event.
       category. Records at the time the API call is completed.
     </summary>
   </metric>
+  <metric name="HasNonce" enum="BooleanHit">
+    <summary>
+      Records a 1 whenever a FedCM API call includes the nonce parameter.
+      Records towards the beginning of the call, except for some cases where the
+      call is immediately rejected.
+    </summary>
+  </metric>
   <metric name="HasSigninAccount" enum="Boolean">
     <summary>
       Records whether a user is signing up with the API. Records once per
@@ -4453,6 +4460,13 @@ be describing additional metrics about the same event.
       iframe, where the site of the caller frame is compared with the site of
       the main frame. Same-origin iframes are recorded under the same-site
       category. Records at the time the API call is completed.
+    </summary>
+  </metric>
+  <metric name="HasNonce" enum="BooleanHit">
+    <summary>
+      Records a 1 whenever a FedCM API call includes the nonce parameter.
+      Records towards the beginning of the call, except for some cases where the
+      call is immediately rejected.
     </summary>
   </metric>
   <metric name="HasSigninAccount" enum="Boolean">

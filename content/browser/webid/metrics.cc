@@ -275,6 +275,16 @@ void Metrics::RecordContinueOnResponseAndTurnaroundTime(
                                 turnaround_time);
 }
 
+void Metrics::RecordHasNonce(const std::set<GURL>& idps_with_nonce) {
+  if (!idps_with_nonce.empty()) {
+    base::UmaHistogramBoolean("Blink.FedCm.HasNonce", true);
+    GetOrCreateFedCmBuilder()->SetHasNonce(true);
+  }
+  for (const GURL& idp : idps_with_nonce) {
+    GetOrCreateFedCmIdpBuilder(idp)->SetHasNonce(true);
+  }
+}
+
 void Metrics::RecordRequestTokenStatus(
     RequestIdTokenStatus status,
     MediationRequirement requirement,
