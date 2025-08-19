@@ -13,8 +13,6 @@ namespace ash::assistant::features {
 
 BASE_FEATURE(AssistantAudioEraser, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(AssistantAppSupport, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(AssistantDebugging, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(EnableDspHotword, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -45,11 +43,6 @@ BASE_FEATURE(kEnableAssistantOnboarding,
 BASE_FEATURE(kEnableNewEntryPoint,
              "ChromeOSEnableNewEntryPoint",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsAppSupportEnabled() {
-  return base::FeatureList::IsEnabled(
-      assistant::features::kAssistantAppSupport);
-}
 
 bool IsAudioEraserEnabled() {
   return base::FeatureList::IsEnabled(kAssistantAudioEraser);
