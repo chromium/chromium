@@ -310,6 +310,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="443121186588148776">Sarjaportti</translation>
 <translation id="4434045419905280838">Ponn.ikkunat ja uudelleenohjaus</translation>
 <translation id="443552056913301231">Tämä toiminto poistaa kaiken paikallisen datan, myös evästeet, ja nollaa kaikki luvat: <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Chromen värien alapaneeli avattu koko näytön kokoisena</translation>
 <translation id="4468959413250150279">Mykistä tietyn sivuston äänet.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# eväste}other{# evästettä}}</translation>
 <translation id="4478158430052450698">Helpota zoomauksen muokkausta eri sivustoilla</translation>
@@ -345,6 +346,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4953688446973710931">Kun tämä on päällä, sivustot voivat pyytää lupaa ladata useita tiedostoja automaattisesti. Kun tämä on pois päältä, sivustot eivät voi ladata useita tiedostoja automaattisesti.</translation>
 <translation id="4962975101802056554">Peru kaikki laitteen käyttöoikeudet</translation>
 <translation id="4972737347717125191">Sivustot saavat pyytää virtuaalitodellisuuslaitteiden ja ‑datan käyttölupaa</translation>
+<translation id="4973805849704516244">Chrome-värien alapaneeli</translation>
 <translation id="497421865427891073">Siirry eteenpäin</translation>
 <translation id="4976702386844183910">Viimeksi avattu <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Lue lisää Discover-fiidistä</translation>

@@ -1105,7 +1105,6 @@
 <translation id="174123615272205933">Приспособени</translation>
 <translation id="1741314857973421784">Продолжи</translation>
 <translation id="1744108098763830590">страница на заднина</translation>
-<translation id="174516937379651657">Кога ќе споделите страница со Gemini, сите содржини на страницата и нејзината URL-адреса се испраќаат до Google.</translation>
 <translation id="1745732479023874451">Управувајте со контакти</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Да се отворат и изменат # датотека во оваа веб-апликација?}other{Да се отворат и изменат # датотеки во оваа веб-апликација?}}</translation>
 <translation id="1748329107062243374">Користете криптографски клуч од <ph name="DEVICE_NAME" /> за да се најавите на <ph name="WEBSITE" /></translation>
@@ -1142,6 +1141,7 @@
 <translation id="1768212860412467516">Испратете повратни информации за <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Отвори ја врската во нов &amp;прозорец</translation>
 <translation id="1769157454356586138">Скенирањето не успеа. Администраторот ја блокираше датотекава.</translation>
+<translation id="176920518817780870">Конвертирај ја групата во папка со обележувачи</translation>
 <translation id="1770407692401984718">Повлечете слика овде или</translation>
 <translation id="177053719077591686">Направете бекап од апликациите на Android во Google Drive.</translation>
 <translation id="1773329206876345543">Создајте точка на пристап за Wi‑Fi со мобилниот интернет на вашиот <ph name="DEVICE_TYPE" /> за да обезбедите интернет за други уреди. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5289,6 +5289,7 @@
 <translation id="4653116291358041820">Мала сенка</translation>
 <translation id="4653405415038586100">Грешка при конфигурирање на Linux</translation>
 <translation id="4654236001025007561">Споделувајте датотеки со уреди Chromebook и уреди со Android околу вас</translation>
+<translation id="4654801841330730814">Сите</translation>
 <translation id="4657810666108475055">Пребарување во картичка</translation>
 <translation id="4657914796247705218">Брзина на TrackPoint</translation>
 <translation id="4658285806588491142">Екранот нека ви биде приватен</translation>
@@ -7247,6 +7248,7 @@
 <translation id="606449270532897041">Управувајте со податоците од сајт</translation>
 <translation id="6064764629679333574">Подобрете го звукот на микрофонот преку надградување на квалитетот на аудиото од низок на висок.</translation>
 <translation id="6065289257230303064">Одлики на директориум за субјект на сертификат</translation>
+<translation id="6066649679804058181">Конвертирај ја групата во папка со обележувачи</translation>
 <translation id="6066794465984119824">Хашот за сликата не е поставен</translation>
 <translation id="6069464830445383022">На Chromebook ќе се најавувате со сметката на Google</translation>
 <translation id="6071181508177083058">потврди ја лозинката</translation>
@@ -8208,7 +8210,6 @@
 <translation id="6759193508432371551">Ресетирање до фабрички вредности</translation>
 <translation id="6760354150216532978">Предупредување: сајтов може да гледа измените што ги вршите</translation>
 <translation id="6761209758867628753">Алатка: Помогни ми да напишам</translation>
-<translation id="6761459308170527362">Може да користите глас или текст за да му поставите прашање на Gemini за содржините на страницата што ги споделувате</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6761623907967804682">Не се дозволени податоци од сајт на уредот</translation>
 <translation id="6762833852331690540">Вклучено</translation>
@@ -8997,7 +8998,6 @@
 <translation id="7320213904474460808">Стандардно на мрежа</translation>
 <translation id="7321545336522791733">Серверот е недостапен</translation>
 <translation id="7322515217754205362">Дозволи за сајт</translation>
-<translation id="7322919329844967709">Ќе добивате порелевантни одговори поврзани со содржините на страницата што ги споделувате</translation>
 <translation id="7323315405936922211">Големина на површина на курсор</translation>
 <translation id="7324020307732396723">Отворете ги поставките за јазик</translation>
 <translation id="7324297612904500502">Форум за Beta Chrome</translation>
@@ -10336,7 +10336,6 @@
 <translation id="8222112516148944758">Вашите групи картички се зачувуваат и ажурираат на сите ваши уреди автоматски</translation>
 <translation id="8222674561049363989">Датотеката не е важечки документ</translation>
 <translation id="822347941086490485">Се бараат HID-уреди…</translation>
-<translation id="8224209912580158729">Споделувајте ги содржините на страниците со Gemini за да добивате порелевантни одговори.</translation>
 <translation id="8224427620313426549">Вашата сметка на <ph name="DOMAIN_LINK" /> нема да се избрише</translation>
 <translation id="8225046344534779393">Проверете ја интернет-врската</translation>
 <translation id="8225265270453771718">Споделете го прозорецот на апликацијата</translation>

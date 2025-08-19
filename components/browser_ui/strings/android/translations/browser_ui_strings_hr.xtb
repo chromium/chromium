@@ -310,6 +310,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="443121186588148776">Serijski priključak</translation>
 <translation id="4434045419905280838">Skočni prozori i preusmjeravanja</translation>
 <translation id="443552056913301231">Tom će se radnjom izbrisati svi lokalni podaci, uključujući kolačiće, i poništiti sva dopuštenja za <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Donja tablica boja u Chromeu otvorena je u punoj visini</translation>
 <translation id="4468959413250150279">Isključivanje zvuka za određenu web-lokaciju.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# kolačić}one{# kolačić}few{# kolačića}other{# kolačića}}</translation>
 <translation id="4478158430052450698">Olakšavanje prilagodbe zumiranja za različite web-lokacije</translation>
@@ -345,6 +346,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="4953688446973710931">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za automatsko preuzimanje više datoteka. Kad je ta postavka isključena, web-lokacije ne mogu automatski preuzimati više datoteka.</translation>
 <translation id="4962975101802056554">Opoziv svih dopuštenja za uređaj</translation>
 <translation id="4972737347717125191">Web-lokacije mogu tražiti dopuštenje za upotrebu uređaja i podataka virtualne stvarnosti</translation>
+<translation id="4973805849704516244">Donja tablica boja u Chromeu</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
 <translation id="4976702386844183910">Posljednji posjet bio je <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Saznajte više o feedu Discovera</translation>

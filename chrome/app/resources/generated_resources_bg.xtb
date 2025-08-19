@@ -1100,7 +1100,6 @@
 <translation id="174123615272205933">Персонализиран</translation>
 <translation id="1741314857973421784">Напред</translation>
 <translation id="1744108098763830590">фонова страница</translation>
-<translation id="174516937379651657">Когато споделите страница с Gemini, пълното съдържание и URL адресът ѝ се изпращат до Google.</translation>
 <translation id="1745732479023874451">Управление на контактите</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Искате ли да отворите и редактирате # файла в това уеб приложение?}}</translation>
 <translation id="1748329107062243374">Използване на ключа за достъп от <ph name="DEVICE_NAME" /> за влизане в(ъв) <ph name="WEBSITE" /></translation>
@@ -8206,7 +8205,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6759193508432371551">Възстановяване на фабричните настройки</translation>
 <translation id="6760354150216532978">Предупреждение: този сайт може да вижда редакциите, които правите</translation>
 <translation id="6761209758867628753">Инструмент: Помощ при писане</translation>
-<translation id="6761459308170527362">Можете да разговаряте с глас или текст, за да зададете въпрос на Gemini относно съдържанието на страницата, която споделяте</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6761623907967804682">Локалните данни за сайтовете са забранени</translation>
 <translation id="6762833852331690540">Включено</translation>
@@ -8996,7 +8994,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7320213904474460808">Мрежа по подразбиране</translation>
 <translation id="7321545336522791733">Няма достъп до сървъра</translation>
 <translation id="7322515217754205362">Разрешения за сайтове</translation>
-<translation id="7322919329844967709">Ще получавате по-уместни отговори, свързани със съдържанието на страницата, която споделяте</translation>
 <translation id="7323315405936922211">Размер на курсора</translation>
 <translation id="7324020307732396723">Отваряне на настройките за езика</translation>
 <translation id="7324297612904500502">Форум за бета версията</translation>
@@ -10336,7 +10333,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8222112516148944758">Групите раздели се запазват и актуализират автоматично на всичките ви устройства</translation>
 <translation id="8222674561049363989">Файлът не е валиден документ</translation>
 <translation id="822347941086490485">Търсят се HID устройства...</translation>
-<translation id="8224209912580158729">Споделяйте съдържанието на страниците с Gemini, за да получавате по-уместни отговори.</translation>
 <translation id="8224427620313426549">Профилът ви в(ъв) <ph name="DOMAIN_LINK" /> няма да бъде изтрит</translation>
 <translation id="8225046344534779393">Проверете връзката с интернет</translation>
 <translation id="8225265270453771718">Споделяне на прозорец на приложение</translation>

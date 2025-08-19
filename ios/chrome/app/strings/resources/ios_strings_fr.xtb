@@ -58,6 +58,7 @@
 <translation id="1227113644794103810">Onglets inactifs</translation>
 <translation id="1231733316453485619">Activer la synchronisation ?</translation>
 <translation id="1253032109800629289">Masquer "Recevoir des notifications de suivi des prix"</translation>
+<translation id="1254424942107648268">Rechercher la précédente</translation>
 <translation id="1258491128795710625">Nouveautés</translation>
 <translation id="1262724000444746916">Masquer "Ajouter aux favoris"</translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
@@ -147,6 +148,7 @@
 <translation id="1547610699249301703">Partagez vos mots de passe</translation>
 <translation id="1554477036522844996">Nouvelle fenêtre</translation>
 <translation id="1558391695376153246">Fermer onglets nav. privée</translation>
+<translation id="1565371473877914088">Nouvel onglet de navigation privée</translation>
 <translation id="1571780780926010134">Onglets de navigation privée</translation>
 <translation id="1580715474678097352">Pour vous protéger contre les sites Web dangereux</translation>
 <translation id="1580783302095112590">E-mail envoyé.</translation>
@@ -392,6 +394,7 @@
 <translation id="2484459871750294497">Comment activer cette fonctionnalité ?</translation>
 <translation id="2493269659028026145">Verrouiller immédiatement avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Historique de navigation</translation>
+<translation id="2496626742194544812">Accéder au premier onglet</translation>
 <translation id="2497852260688568942">Votre administrateur a désactivé la synchronisation</translation>
 <translation id="2499505845365628575">Vous pouvez consulter tout votre historique de navigation en sélectionnant <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe compromis pouvant menacer votre sécurité.</translation>
@@ -468,6 +471,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2789552044937754463">{COUNT,plural, =1{Mot de passe enregistré dans votre compte Google ({EMAIL})}one{Mot de passe enregistré dans votre compte Google ({EMAIL})}other{Mots de passe enregistrés dans votre compte Google ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Ajouter un mot de passe…</translation>
 <translation id="2793703503584038325">Sélectionnez un mot de passe, puis appuyez sur l'icône de partage</translation>
+<translation id="2797029671965852011">Afficher l'historique</translation>
 <translation id="2797302972324086597">Code pays</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fichier}one{{COUNT} fichier}other{{COUNT} fichiers}}</translation>
 <translation id="2816489851009559785">Menu → Réglages → Navigateur par défaut</translation>
@@ -583,6 +587,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3273510436356991673">Personnaliser votre écran d'accueil</translation>
 <translation id="3277021493514034324">Adresse du site copiée</translation>
 <translation id="3280562213547448728">Recherche vocale</translation>
+<translation id="3289505634533552500">Recherche vocale</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, nouvelle activité</translation>
 <translation id="3305294846493618482">plus</translation>
 <translation id="3311748811247479259">Désactivé</translation>
@@ -619,6 +624,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3474048842645761983">{COUNT,plural, =1{pour {COUNT} site ou appli}one{pour {COUNT} site ou appli}other{pour {COUNT} sites ou applis}}</translation>
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Retrouvez vos mots de passe dans d'autres applis.</translation>
+<translation id="3485558910355485767">Nouvelle fenêtre de navigation privée</translation>
 <translation id="3488501490964659223">Les onglets ont été fermés et les données de navigation ont été supprimées. Vous avez été déconnecté.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="349446645805573740">Choisissez où enregistrer "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
@@ -637,6 +643,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3530767473765895035">Gérer les comptes sur cet appareil…</translation>
 <translation id="3533436815740441613">Nouvel onglet</translation>
 <translation id="3533860663366814939">Ouvrez les réglages "Remplissage automatique et mots de passe"</translation>
+<translation id="3540141921715814660">Ajouter aux favoris</translation>
 <translation id="3546122170015471515">Maps Preview sur Google.com</translation>
 <translation id="3547356470684043247">Lire les évaluations des clients sur les produits, services ou expériences pour prendre des décisions éclairées</translation>
 <translation id="3547933853190131743">Rechercher avec le Mode IA</translation>
@@ -680,6 +687,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3751873026576444885">Arrêter de rechercher sur l'écran avec Google Lens</translation>
 <translation id="3753408171347588045">Suivi des prix</translation>
 <translation id="3762232513783804601">Conçu pour votre iPad</translation>
+<translation id="3768725474733206671">Dernier onglet fermé</translation>
 <translation id="3779810277399252432">Aucune connexion Internet.</translation>
 <translation id="3782614601387961027">Fermer l'avertissement</translation>
 <translation id="3789841737615482174">Installer</translation>
@@ -690,10 +698,12 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="381219490185664296">Dégrouper le groupe d'onglets ?</translation>
 <translation id="3812308602011798782">Avis</translation>
 <translation id="3813175908845379029">Des suggestions utiles pour une navigation plus simple et plus agréable</translation>
+<translation id="3818293389945649617">Rechercher la suivante</translation>
 <translation id="3819183753496523827">Vous êtes hors connexion. Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 mode de paiement}one{# mode de paiement}other{# modes de paiement}}</translation>
 <translation id="3831560640878483188">Fermer l'avertissement ?</translation>
 <translation id="3832419617903252251">Mot de passe enregistré uniquement sur cet appareil</translation>
+<translation id="3835964409414434850">Onglet suivant</translation>
 <translation id="3838691874161539578">Vérifiez vos mots de passe enregistrés pour renforcer votre sécurité et naviguer en toute tranquillité</translation>
 <translation id="3838985624086228724">Baisse de prix du produit que vous suivez, de <ph name="PREVIOUS_PRICE" /> à <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Retour</translation>
@@ -762,6 +772,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4049419681095579435">Colis déjà suivi</translation>
 <translation id="4049507953662678203">Vérifiez si vous disposez bien d'une connexion réseau, puis réessayez.</translation>
 <translation id="4070132839822635162">Ne pas se connecter</translation>
+<translation id="4092655288299341041">Afficher l'aide</translation>
 <translation id="4099756562043439968">Définir un rappel</translation>
 <translation id="4108998448622696017">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent.</translation>
 <translation id="4111985840824673503">Tout marquer comme lu</translation>
@@ -844,6 +855,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4405320213589929829">Utilisez des adresses sur des pages Web pour obtenir des informations locales et des itinéraires.</translation>
 <translation id="441218095371040430">Utiliser le clavier</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
+<translation id="4420409367264901497">Modifier le favori</translation>
 <translation id="4425365312778464779">Ce compte est géré</translation>
 <translation id="4430277756566635951">Actuellement sélectionné : <ph name="EMAIL" />. Choisissez un compte.</translation>
 <translation id="4430505936695785931">Accédez aux mots de passe enregistrés dans d'autres applis</translation>
@@ -1087,6 +1099,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5343472494710226394">Actualités, sports et contenus basés sur vos centres d'intérêt.</translation>
 <translation id="5352128922772839949">Enregistrer le fichier</translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
+<translation id="536067926684072644">Afficher les favoris</translation>
 <translation id="5371112366564891538">Augmenter la taille du texte</translation>
 <translation id="537853552771686272">Gérez les thèmes et les sites qui vous intéressent</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} fermé}one{{count} fermé}other{{count} fermés}}</translation>
@@ -1196,6 +1209,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5740123193752401435">Rechercher dans les onglets…</translation>
 <translation id="5744274077973758795">Notifications activées pour <ph name="FEATURE_NAME" /></translation>
 <translation id="5745598824054949526">Aucun texte trouvé</translation>
+<translation id="5745916533876677730">Onglet précédent</translation>
 <translation id="574762237186762643">Événements</translation>
 <translation id="5749158352074143502">Continuer avec cet onglet</translation>
 <translation id="5753021559215751319">Enregistrer le mot de passe</translation>
@@ -1257,6 +1271,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5988097621740394599">Les prix en baisse s'affichent dans les onglets.</translation>
 <translation id="5988851877894965432">Ouvrir les URL dans Chrome</translation>
 <translation id="6001839398155993679">OK</translation>
+<translation id="6006672969046233841">Nouvel onglet</translation>
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6012140227487808125">Chiffrement…</translation>
 <translation id="6027619584715411062">Connectez-vous pour accéder à vos favoris, mots de passe et bien plus sur tous vos appareils.</translation>
@@ -1369,6 +1384,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6368102751067608420">Pour supprimer toutes les données du Gestionnaire de mots de passe</translation>
 <translation id="6372558618707314581">Accédez à la page de votre choix</translation>
 <translation id="6374469231428023295">Réessayer</translation>
+<translation id="6383719166112032471">Ouvrir l'emplacement…</translation>
 <translation id="6387994324662817823">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google uniquement sur cet appareil.</translation>
 <translation id="6393156038355142111">Suggérer un mot de passe sécurisé</translation>
 <translation id="6404422529625928907">Ouvrir dans Google Drive</translation>
@@ -1381,6 +1397,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6421038304268477484">Texte traduit</translation>
 <translation id="6429213933892582367">Ouvrez "Options de mots de passe"</translation>
 <translation id="6434591244308415567">Une erreur s'est produite. Réessayez plus tard.</translation>
+<translation id="6435236283694032571">Ajouter à la liste de lecture</translation>
 <translation id="6435307030888827407">Rester déconnecté</translation>
 <translation id="6436318499800111867">Partagé avec moi le <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">Retirer l'onglet</translation>
@@ -1498,6 +1515,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6867400383614725881">Nouvel onglet de navigation privée</translation>
 <translation id="686831807558000905">Ne pas se connecter</translation>
 <translation id="686899695320434745">Les adresses ne sont pas chiffrées avec votre phrase secrète. Vous pourrez ainsi les utiliser dans d'autres services Google.</translation>
+<translation id="687135068089457384">Afficher les paramètres</translation>
 <translation id="6871397658902960384">Commencer la navigation</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Enregistrer le mot de passe dans le compte}one{Enregistrer le mot de passe dans le compte}other{Enregistrer les mots de passe dans le compte}}</translation>
 <translation id="6875166646976836138">Vous pouvez aussi afficher et gérer ces éléments dans les favoris, la liste de lecture ou le Gestionnaire de mots de passe.</translation>
@@ -1580,6 +1598,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7215621211572884440">Pop-ups autorisés</translation>
 <translation id="7218491361283758048">Code postal</translation>
 <translation id="7221173315674413369">Découvrez de nouvelles fonctionnalités et des astuces dans "Nouveautés"</translation>
+<translation id="7223102419539744003">Fermer l'onglet</translation>
 <translation id="7223134495231529579">Enregistrer dans Téléchargements</translation>
 <translation id="722339453342442311">Vérifier maintenant</translation>
 <translation id="7227235818314667565">Gérer le partage</translation>
@@ -1659,6 +1678,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="75362970626182391">Nouveau groupe d'onglets</translation>
 <translation id="7537586195939242955">Impossible d'installer votre Pass dans Passbook actuellement.</translation>
 <translation id="754655535278952384">Vérifié <ph name="TIME" /></translation>
+<translation id="7554645225856321710">Tout fermer</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
 <translation id="7557508262441527045">Déconnecté</translation>
 <translation id="7561196759112975576">Toujours</translation>
@@ -1710,6 +1730,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7729458878441927652">Pour voir les onglets de vos autres appareils, synchronisez vos onglets et l'historique.</translation>
 <translation id="7730020510075123961">Non, fusionner les données</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Uniquement sur cet appareil.</translation>
+<translation id="7738120385185846461">Signaler un problème…</translation>
 <translation id="7744192722284567281">Détecté lors d'une violation des données</translation>
 <translation id="7749790401023484470">Vous n'avez pas sélectionné de texte.</translation>
 <translation id="7757015014239760147">Aucun nom d'utilisateur ••••••••</translation>
@@ -1735,6 +1756,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7840771868269352570">Les éléments sélectionnés seront supprimés.</translation>
 <translation id="7841180087127694526">Rechercher le texte copié</translation>
 <translation id="7841418003178675048">Choisissez les cartes à afficher sur la page "Nouvel onglet".</translation>
+<translation id="7845466610722898">Afficher la liste de lecture</translation>
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
 <translation id="784623644169604270">Aucune activité récente</translation>
 <translation id="7846296061357476882">Services Google</translation>
@@ -1747,6 +1769,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7865127013871431856">Options de traduction</translation>
 <translation id="7866872729285243843">Pour accéder à votre liste de lecture sur tous vos appareils, activez "Liste de lecture" dans les paramètres.</translation>
 <translation id="7874107544081154809">Compléter automatiquement le formulaire avec <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
+<translation id="7879275349003161544">Afficher les téléchargements</translation>
 <translation id="7883882164760409935">Vous avez des mots de passe réutilisés.</translation>
 <translation id="7887174313503389866">Visite guidée des paramètres clés de confidentialité et de sécurité. Accédez à chaque paramètre pour obtenir plus d'options.</translation>
 <translation id="7887198238286927132">Pour protéger votre vie privée, Chrome ne renseigne pas automatiquement de champ.</translation>
@@ -1762,6 +1785,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7930998711684428189">Il vous avertit en cas de divulgation de mots de passe suite à une violation des données.</translation>
 <translation id="7933880123415105005">Rechercher sur <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
+<translation id="7939856641500914040">Supprimer les données de navigation…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Page ajoutée à votre liste de lecture dans votre compte {email}}one{{count} page ajoutée à votre liste de lecture dans votre compte {email}}other{{count} pages ajoutées à votre liste de lecture dans votre compte {email}}}</translation>
 <translation id="7952353944614086413">Vos groupes et onglets ouverts</translation>
 <translation id="7952670906562503188">Vous êtes sur le point de supprimer {passkey_count} clés d'accès et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
@@ -1906,6 +1930,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8481184073299279701">Appuyez sur le bouton "Débuter la journalisation" pour recueillir les prochains journaux de la console JavaScript et les erreurs à partir de tous les onglets. Les journaux sont recueillis (et stockés uniquement en mémoire) jusqu'à ce que cette page soit fermée ou que vous appuyiez sur "Débuter la journalisation".</translation>
 <translation id="8487667956631253959">Allumée</translation>
 <translation id="8487700953926739672">Disponible hors connexion</translation>
+<translation id="8488923644885757471">Nouvelle fenêtre</translation>
 <translation id="8490629238792920282">Impossible de créer le lien</translation>
 <translation id="8501469528283376592">Supprimer automatiquement les téléchargements</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
@@ -1989,6 +2014,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8748678031495824833">Ouvrir les outils IA sur la page</translation>
 <translation id="8750037785291841318">Vos onglets s'afficheront ici</translation>
 <translation id="8756969031206844760">Mettre à jour le mot de passe ?</translation>
+<translation id="8763613688786959833">Accéder au dernier onglet</translation>
 <translation id="8764015330924122850">Ne plus suivre <ph name="DOMAIN_NAME" /></translation>
 <translation id="8766790350274092814">Les mots de passe pour <ph name="WEBSITE" /> et <ph name="SECOND_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="8775144690796719618">URL non valide.</translation>
@@ -2004,6 +2030,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8819155700324279105">Ajoutez un niveau de sécurité supplémentaire contre les menaces en ligne</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8822421075653507124">Pour une utilisation sécurisée de cet appareil, votre organisation peut avoir besoin d'informations le concernant (système d'exploitation, navigateur, paramètres et logiciels installés).</translation>
+<translation id="882557203579758546">Rechercher sur la page</translation>
 <translation id="8831208860914609320">Fermer tous les onglets inactifs</translation>
 <translation id="8837654851594567190">Trier par éditeur</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté de votre compte Google.</translation>
@@ -2108,6 +2135,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="9203951165704618409">Déplacez la barre d'adresse du haut vers le bas pour une expérience de navigation personnalisée.</translation>
 <translation id="9205189991633470489">Verrouillage de la navigation privée</translation>
 <translation id="9206887540681440657">Vitesse</translation>
+<translation id="9219154867334666734">Rechercher dans les onglets…</translation>
 <translation id="9223358826628549784">Le rapport d'erreur a bien été envoyé.</translation>
 <translation id="926455622548529175">Changer et supprimer</translation>
 <translation id="929748059769569925">Texte en surbrillance</translation>

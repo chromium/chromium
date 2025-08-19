@@ -1103,7 +1103,6 @@
 <translation id="174123615272205933">בהתאמה אישית</translation>
 <translation id="1741314857973421784">המשך</translation>
 <translation id="1744108098763830590">דף רקע</translation>
-<translation id="174516937379651657">‏כשמשתפים דף עם Gemini, התוכן המלא של הדף וכתובת ה-URL שלו נשלחים אל Google.</translation>
 <translation id="1745732479023874451">ניהול אנשי קשר</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{לפתוח ולערוך # קבצים באפליקציית האינטרנט הזו?}two{לפתוח ולערוך # קבצים באפליקציית האינטרנט הזו?}other{לפתוח ולערוך # קבצים באפליקציית האינטרנט הזו?}}</translation>
 <translation id="1748329107062243374">שימוש במפתח גישה מ-<ph name="DEVICE_NAME" /> כדי להיכנס אל <ph name="WEBSITE" /></translation>
@@ -8212,7 +8211,6 @@
 <translation id="6759193508432371551">איפוס להגדרות היצרן</translation>
 <translation id="6760354150216532978">אזהרה: לאתר הזה יש הרשאה לראות את העריכות שלך</translation>
 <translation id="6761209758867628753">כלי: עזרה בכתיבה</translation>
-<translation id="6761459308170527362">‏אפשר לשאול את Gemini שאלה בקול או בטקסט לגבי תוכן הדף ששיתפת</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">אין הרשאה לשמירת נתונים מאתרים במכשיר</translation>
 <translation id="6762833852331690540">מופעל</translation>
@@ -9002,7 +9000,6 @@
 <translation id="7320213904474460808">הגדרת הרשת כברירת המחדל</translation>
 <translation id="7321545336522791733">השרת אינו נגיש</translation>
 <translation id="7322515217754205362">הרשאות לאתרים</translation>
-<translation id="7322919329844967709">התשובות שיתקבלו יהיו רלוונטיות יותר לתוכן הדף ששיתפת</translation>
 <translation id="7323315405936922211">גודל אזור הסמן</translation>
 <translation id="7324020307732396723">פתיחת הגדרות השפה</translation>
 <translation id="7324297612904500502">פורום ביטא</translation>
@@ -10343,7 +10340,6 @@
 <translation id="8222112516148944758">קבוצות הכרטיסיות נשמרות אוטומטית ומתעדכנות בכל המכשירים</translation>
 <translation id="8222674561049363989">הקובץ הוא לא מסמך תקין</translation>
 <translation id="822347941086490485">‏מתבצע חיפוש של מכשירי HID...</translation>
-<translation id="8224209912580158729">‏כדי לקבל תשובות רלוונטיות יותר, אפשר לשתף את תוכן הדף עם Gemini.</translation>
 <translation id="8224427620313426549">החשבון שלך ב-<ph name="DOMAIN_LINK" /> לא יימחק</translation>
 <translation id="8225046344534779393">צריך לבדוק את החיבור לאינטרנט</translation>
 <translation id="8225265270453771718">שיתוף חלון של אפליקציה</translation>

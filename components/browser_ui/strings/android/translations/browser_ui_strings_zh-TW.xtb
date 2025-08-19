@@ -310,6 +310,7 @@
 <translation id="443121186588148776">序列埠</translation>
 <translation id="4434045419905280838">彈出式視窗與重新導向</translation>
 <translation id="443552056913301231">這項操作會刪除 Cookie 等所有本機資料，並重設 <ph name="ORIGIN" /> 的所有權限</translation>
+<translation id="4441527683895888777">Chrome 顏色底部功能表已開啟，並顯示在整個畫面</translation>
 <translation id="4468959413250150279">關閉特定網站的音訊。</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# 個 Cookie}other{# 個 Cookie}}</translation>
 <translation id="4478158430052450698">在不同網站上都能更輕鬆地自訂縮放比例</translation>
@@ -345,6 +346,7 @@
 <translation id="4953688446973710931">如果啟用，網站就可以要求自動下載多個檔案。如果停用，網站將無法自動下載多個檔案。</translation>
 <translation id="4962975101802056554">撤銷裝置的所有權限</translation>
 <translation id="4972737347717125191">網站可以要求使用虛擬實境裝置和資料</translation>
+<translation id="4973805849704516244">Chrome 顏色底部功能表</translation>
 <translation id="497421865427891073">往前</translation>
 <translation id="4976702386844183910">上次造訪日期：<ph name="DATE" /></translation>
 <translation id="4978178243417029856">進一步瞭解「探索」動態消息</translation>

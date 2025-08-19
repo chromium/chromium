@@ -1095,7 +1095,6 @@
 <translation id="174123615272205933">حسب ضرورت</translation>
 <translation id="1741314857973421784">جاری رکھیں</translation>
 <translation id="1744108098763830590">پس منظر کا صفحہ</translation>
-<translation id="174516937379651657">‏جب آپ Gemini کے ساتھ کسی صفحہ کا اشتراک کرتے ہیں تو Google کو صفحہ کا مکمل مواد اور URL بھیج دیا جاتا ہے۔</translation>
 <translation id="1745732479023874451">رابطوں کا نظم کریں</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{اس ویب ایپ میں # فائلز کھولیں اور ان میں ترمیم کریں؟}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> میں سائن ان کرنے کے لئے <ph name="DEVICE_NAME" /> سے پاس کی کا استعمال کریں</translation>
@@ -1132,6 +1131,7 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> کے لئے تاثرات بھیجیں۔</translation>
 <translation id="1769104665586091481">لنک نئی &amp;ونڈو میں کھولیں</translation>
 <translation id="1769157454356586138">اسکین ناکام ہوا۔ یہ فائل آپ کے منتظم نے مسدود کر دی ہے</translation>
+<translation id="176920518817780870">گروپ کو بُک مارک فولڈر میں تبدیل کریں</translation>
 <translation id="1770407692401984718">یہاں ایک تصویر گھسیٹیں یا</translation>
 <translation id="177053719077591686">‏Google Drive میں Android ایپس کا بیک اپ لیں۔</translation>
 <translation id="1773329206876345543">‏دوسرے آلات کو انٹرنیٹ فراہم کرنے کے لیے اپنے <ph name="DEVICE_TYPE" /> کے موبائل ڈیٹا کا استعمال کرتے ہوئے ایک Wi-Fi ہاٹ اسپاٹ تخلیق کریں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5275,6 +5275,7 @@
 <translation id="4653116291358041820">چھوٹا شیڈو</translation>
 <translation id="4653405415038586100">‏Linux کو کنفیگر کرنے میں خرابی</translation>
 <translation id="4654236001025007561">‏اپنے اطراف موجود Chromebooks اور Android آلات کے ساتھ فائلز کا اشتراک کریں</translation>
+<translation id="4654801841330730814">سبھی</translation>
 <translation id="4657810666108475055">ٹیب تلاش</translation>
 <translation id="4657914796247705218">‏TrackPoint کی رفتار</translation>
 <translation id="4658285806588491142">اپنی اسکرین کو نجی رکھیں</translation>
@@ -7230,6 +7231,7 @@
 <translation id="606449270532897041">سائٹ کے ڈیٹا کا نظم کریں</translation>
 <translation id="6064764629679333574">کم ریزولیوشن آڈیو کو ہائی ریزولوشن آڈیو میں تبدیل کر کے بلوٹوتھ مائیک کی آواز کے معیار کو بہتر بنائیں۔</translation>
 <translation id="6065289257230303064">سرٹیفیکیٹ موضوع ڈائریکٹری انتسابات</translation>
+<translation id="6066649679804058181">گروپ کو بُک مارک فولڈر میں تبدیل کریں</translation>
 <translation id="6066794465984119824">تصویری ہیش سیٹ نہیں ہے</translation>
 <translation id="6069464830445383022">‏آپ کا Google اکاؤنٹ آپ کا Chromebook سائن ان ہے</translation>
 <translation id="6071181508177083058">پاس ورڈ کی توثیق کریں</translation>
@@ -8189,7 +8191,6 @@
 <translation id="6759193508432371551">فیکٹری ری سیٹ</translation>
 <translation id="6760354150216532978">وارننگ: یہ سائٹ آپ کی وہ ترامیم دیکھ سکتی ہے جنہیں آپ کرتے ہیں</translation>
 <translation id="6761209758867628753">ٹول: لکھنے میں میری مدد کریں</translation>
-<translation id="6761459308170527362">‏آپ جس صفحہ کے مواد کا اشتراک کر رہے ہیں اس کے بارے میں Gemini سے سوال پوچھنے کے لیے آپ آواز یا ٹیکسٹ چیٹ کا استعمال کر سکتے ہیں</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">آلے پر سائٹ ڈیٹا کی اجازت نہیں ہے</translation>
 <translation id="6762833852331690540">آن</translation>
@@ -8978,7 +8979,6 @@
 <translation id="7320213904474460808">نیٹ ورک کو ترجیح دیں</translation>
 <translation id="7321545336522791733">سرور ناقابل رسائی ہے</translation>
 <translation id="7322515217754205362">سائٹ کی اجازتیں</translation>
-<translation id="7322919329844967709">آپ جس صفحہ کے مواد کا اشتراک کر رہے ہیں اس سے متعلق آپ کو مزید متعلقہ جوابات ملیں گے</translation>
 <translation id="7323315405936922211">کرسر ایریا کا سائز</translation>
 <translation id="7324020307732396723">زبان کی ترتیبات کھولیں</translation>
 <translation id="7324297612904500502">بی ٹا فورم</translation>
@@ -10317,7 +10317,6 @@
 <translation id="8222112516148944758">آپ کے ٹیب گروپس آپ کے تمام آلات پر خودکار طور پر محفوظ ہو جاتے ہیں، نیز اپ ڈیٹ بھی ہو جاتے ہیں</translation>
 <translation id="8222674561049363989">یہ فائل ایک درست دستاویز نہیں ہے</translation>
 <translation id="822347941086490485">‏HID آلات تلاش کئے جا رہے ہیں...</translation>
-<translation id="8224209912580158729">‏مزید متعلقہ جوابات حاصل کرنے کے لیے صفحہ کے مواد کا Gemini کے ساتھ اشتراک کریں۔</translation>
 <translation id="8224427620313426549">آپ کے <ph name="DOMAIN_LINK" /> اکاؤنٹ کو حذف نہیں کیا جائے گا</translation>
 <translation id="8225046344534779393">انٹرنیٹ کنکشن چیک کریں</translation>
 <translation id="8225265270453771718">ایک ایپلیکیشن ونڈو کا اشتراک کریں</translation>

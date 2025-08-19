@@ -310,6 +310,7 @@
 <translation id="443121186588148776">직렬 포트</translation>
 <translation id="4434045419905280838">팝업 및 리디렉션</translation>
 <translation id="443552056913301231">이 작업을 실행하면 쿠키를 포함한 모든 로컬 데이터가 삭제되고, <ph name="ORIGIN" />에 대한 권한이 모두 재설정됩니다.</translation>
+<translation id="4441527683895888777">Chrome 색상 하단 시트가 전체 높이로 열림</translation>
 <translation id="4468959413250150279">특정 사이트를 음소거합니다.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{쿠키 #개}other{쿠키 #개}}</translation>
 <translation id="4478158430052450698">여러 사이트의 확대/축소 맞춤설정이 더 쉬워집니다.</translation>
@@ -345,6 +346,7 @@
 <translation id="4953688446973710931">사용 설정하면 사이트에서 여러 파일의 자동 다운로드를 요청할 수 있습니다. 사용 중지하면 사이트에서 여러 파일을 자동으로 다운로드할 수 없습니다.</translation>
 <translation id="4962975101802056554">기기에서 모든 권한을 취소합니다.</translation>
 <translation id="4972737347717125191">사이트에서 가상 현실 기기 및 데이터의 사용을 요청할 수 있음</translation>
+<translation id="4973805849704516244">Chrome 색상 하단 시트</translation>
 <translation id="497421865427891073">앞으로 이동</translation>
 <translation id="4976702386844183910">최근 방문: <ph name="DATE" /></translation>
 <translation id="4978178243417029856">디스커버 피드에 대해 자세히 알아보기</translation>

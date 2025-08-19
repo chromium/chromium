@@ -310,6 +310,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="443121186588148776">Serieport</translation>
 <translation id="4434045419905280838">Pop op-vinduer og omdirigeringer</translation>
 <translation id="443552056913301231">Denne handling sletter alle lokale data, herunder cookies, og nulstiller alle tilladelser for <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Felt i bunden med Chrome-farver er åbnet i fuld højde</translation>
 <translation id="4468959413250150279">Slå lyden fra for et bestemt website.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Gør det nemmere at tilpasse zoom på forskellige websites</translation>
@@ -345,6 +346,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="4953688446973710931">Når dette er slået til, kan websites anmode om tilladelse til automatisk at downloade flere filer. Når dette er slået fra, kan websites ikke downloade flere filer automatisk.</translation>
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="4972737347717125191">Websites kan anmode om tilladelse til at bruge virtual reality-enheder og -data</translation>
+<translation id="4973805849704516244">Felt i bunden med Chrome-farver</translation>
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="4976702386844183910">Senest besøgt <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Få flere oplysninger om Discover-feedet</translation>

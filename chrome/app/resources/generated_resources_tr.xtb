@@ -1095,7 +1095,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="174123615272205933">Özel</translation>
 <translation id="1741314857973421784">Devam</translation>
 <translation id="1744108098763830590">arka plan sayfası</translation>
-<translation id="174516937379651657">Bir sayfayı Gemini ile paylaştığınızda sayfanın tüm içerikleri ve URL'si Google'a gönderilir.</translation>
 <translation id="1745732479023874451">Kişileri yönet</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# dosyayı bu web uygulamasında açıp düzenlemek istiyor musunuz?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> adresinde oturum açmak için <ph name="DEVICE_NAME" /> adlı cihazdaki bir geçiş anahtarını kullanın</translation>
@@ -1132,6 +1131,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> için geri bildirim gönderin.</translation>
 <translation id="1769104665586091481">Bağlantıyı Yeni &amp;Pencerede Aç</translation>
 <translation id="1769157454356586138">Tarama başarısız oldu. Bu dosya, yöneticiniz tarafından engellendi</translation>
+<translation id="176920518817780870">Grubu yer işareti klasörüne dönüştür</translation>
 <translation id="1770407692401984718">Buraya bir resim sürükleyin veya</translation>
 <translation id="177053719077591686">Android uygulamalarını Google Drive'da yedekleyin.</translation>
 <translation id="1773329206876345543">Diğer cihazlara internet sağlamak için <ph name="DEVICE_TYPE" /> cihazınızın mobil verisini kullanarak kablosuz hotspot oluşturun. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5271,6 +5271,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4653116291358041820">Küçük gölge</translation>
 <translation id="4653405415038586100">Linux yapılandırılırken hata oluştu</translation>
 <translation id="4654236001025007561">Çevrenizdeki Chromebook'lar ve Android cihazlarla dosya paylaşın</translation>
+<translation id="4654801841330730814">Tümü</translation>
 <translation id="4657810666108475055">Sekme araması</translation>
 <translation id="4657914796247705218">TrackPoint hızı</translation>
 <translation id="4658285806588491142">Ekranınızın gizliliğini koruyun</translation>
@@ -6083,7 +6084,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5230190638672215545">"ươ" karakterlerini kullanmak için "uow" yazın</translation>
 <translation id="5230516054153933099">Pencere</translation>
 <translation id="5232714764496316200">Google Lens ile ev ödevlerinizde yardım alın</translation>
-<translation id="5233231016133573565">İşlem Kimliği</translation>
+<translation id="5233231016133573565">İşlem kimliği</translation>
 <translation id="5233638681132016545">Yeni sekme</translation>
 <translation id="5233736638227740678">&amp;Yapıştır</translation>
 <translation id="5234523649284990414">ChromeOS'teki ekran okuyucu olan ChromeVox, özellikle görme engelli ve az gören kişiler tarafından konuşma sentezleyici ya da Braille ekranla birlikte ekranda gösterilen metni okumak için kullanılır. ChromeVox'u açmak için boşluk çubuğuna basın. ChromeVox etkinleştirildiğinde hızlı bir tura çıkarsınız.</translation>
@@ -7229,6 +7230,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="606449270532897041">Site verilerini yönetin</translation>
 <translation id="6064764629679333574">Düşük çözünürlüklü sesi yüksek çözünürlüklü sese dönüştürerek Bluetooth mikrofon sesinin kalitesini artırın.</translation>
 <translation id="6065289257230303064">Sertifika Konusu Dizin Öznitelikleri</translation>
+<translation id="6066649679804058181">Grubu Yer İşareti Klasörüne Dönüştür</translation>
 <translation id="6066794465984119824">Görüntü karması ayarlanmamış</translation>
 <translation id="6069464830445383022">Google Hesabınızla Chromebook'unuzda oturum açarsınız</translation>
 <translation id="6071181508177083058">şifreyi onaylayın</translation>
@@ -7359,7 +7361,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Geçiş anahtarı oluştur</translation>
 <translation id="6156323911414505561">Yer işaretleri çubuğunu göster</translation>
-<translation id="6156863943908443225">Komut Dosyası Önbelleği</translation>
+<translation id="6156863943908443225">Komut dosyası önbelleği</translation>
 <translation id="6156944117133588106">Tablet modunda gezinme düğmelerini göster</translation>
 <translation id="615930144153753547">Siteler resim gösterebilir</translation>
 <translation id="6160290816917599257">Geçersiz kod. Girişiniz, <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adresi<ph name="LPA_2" />$<ph name="LPA_3" />isteğe bağlı eşleşme kimliği<ph name="LPA_4" /> biçiminde olmalıdır</translation>
@@ -8188,7 +8190,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6759193508432371551">Fabrika ayarlarına sıfırlama</translation>
 <translation id="6760354150216532978">Uyarı: Bu site, yaptığınız düzenlemeleri görebilir</translation>
 <translation id="6761209758867628753">Araç: Yazmama yardım et</translation>
-<translation id="6761459308170527362">Paylaştığınız sayfa içeriğiyle ilgili olarak Gemini'a soru sormak için sesli veya yazılı sohbeti kullanabilirsiniz</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Cihaz üzerindeki site verilerine izin verilmiyor</translation>
 <translation id="6762833852331690540">Açık</translation>
@@ -8978,7 +8979,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7320213904474460808">Varsayılan olarak ağa bağlan</translation>
 <translation id="7321545336522791733">Sunucuya ulaşılamıyor</translation>
 <translation id="7322515217754205362">Site İzinleri</translation>
-<translation id="7322919329844967709">Paylaştığınız sayfa içeriğiyle ilgili daha alakalı yanıtlar alırsınız</translation>
 <translation id="7323315405936922211">İmleç alanı boyutu</translation>
 <translation id="7324020307732396723">Dil Ayarlarını Aç</translation>
 <translation id="7324297612904500502">Beta Forumu</translation>
@@ -10317,7 +10317,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8222112516148944758">Sekme gruplarınız tüm cihazlarınızda otomatik olarak kaydedilip güncellenir</translation>
 <translation id="8222674561049363989">Dosya geçerli bir doküman değil</translation>
 <translation id="822347941086490485">HID cihazlar bulunuyor...</translation>
-<translation id="8224209912580158729">Daha alakalı yanıtlar almak için sayfa içeriğini Gemini ile paylaşın.</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> hesabınız silinmeyecek</translation>
 <translation id="8225046344534779393">İnternet bağlantınızı kontrol edin</translation>
 <translation id="8225265270453771718">Uygulama penceresi paylaşın</translation>

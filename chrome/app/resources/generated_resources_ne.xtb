@@ -1092,7 +1092,6 @@
 <translation id="174123615272205933">रोजाइअनुसारको</translation>
 <translation id="1741314857973421784">जारी राख्नुहोस्</translation>
 <translation id="1744108098763830590">पृष्ठभूमि पृष्ठ</translation>
-<translation id="174516937379651657">तपाईंले Gemini सँग पेज सेयर गर्नुभयो भने पेजमा भएका पूरा कन्टेन्ट र URL Google मा पठाइन्छन्।</translation>
 <translation id="1745732479023874451">सम्पर्क सूची व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# वटा फाइल यो वेब एपमा खोलेर सम्पादन गर्ने हो?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> मा साइन इन गर्न <ph name="DEVICE_NAME" /> बाट प्राप्त पासकी प्रयोग गर्नुहोस्</translation>
@@ -1129,6 +1128,7 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> का बारेमा प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="1769104665586091481">लिङ्कलाई नयाँ &amp;विन्डोमा खोल्नुहोस्</translation>
 <translation id="1769157454356586138">स्क्यान गर्न सकिएन। तपाईंका एड्मिनले यो फाइल ब्लक गर्नुभएको छ</translation>
+<translation id="176920518817780870">समूहलाई बुकमार्कको फोल्डरमा रूपान्तरण गर्नुहोस्</translation>
 <translation id="1770407692401984718">कुनै फोटो ड्रयाग गरेर यहाँ ड्रप गर्नुहोस् वा</translation>
 <translation id="177053719077591686">Android एपहरू Google Drive मा ब्याकअप गर्नुहोस्।</translation>
 <translation id="1773329206876345543">अन्य डिभाइसहरूमा इन्टरनेट उपलब्ध गराउन आफ्नो <ph name="DEVICE_TYPE" /> को मोबाइल डेटा प्रयोग गरेर Wi-Fi हटस्पट बनाउनुहोस्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5270,6 +5270,7 @@
 <translation id="4653116291358041820">सानो छाया</translation>
 <translation id="4653405415038586100">Linux कन्फिगर गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="4654236001025007561">आफू वरपरका Chromebook तथा Android यन्त्रसँग फाइलहरू सेयर गर्नुहोस्</translation>
+<translation id="4654801841330730814">सबै</translation>
 <translation id="4657810666108475055">ट्याबको खोजी</translation>
 <translation id="4657914796247705218">TrackPoint को गति</translation>
 <translation id="4658285806588491142">आफ्नो डिभाइसको स्क्रिन गोप्य राख्नुहोस्</translation>
@@ -7227,6 +7228,7 @@
 <translation id="606449270532897041">साइट डेटा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6064764629679333574">न्यून रिजोल्युसनको अडियोलाई उच्च रिजोल्युसनको अडियोमा लगेर ब्लुटुथ माइकको साउन्डको गुणस्तर सुधार गर्नुहोस्।</translation>
 <translation id="6065289257230303064">सर्टिफिकेट विषय निर्देशिका गुणहरू</translation>
+<translation id="6066649679804058181">समूहलाई बुकमार्कको फोल्डरमा रूपान्तरण गर्नुहोस्</translation>
 <translation id="6066794465984119824">इमेज ह्यास सेट गरिएको छैन</translation>
 <translation id="6069464830445383022">तपाईंको Chromebook मा साइन इन गर्ने विधि भनेको तपाईंको Google खाता नै हो</translation>
 <translation id="6071181508177083058">पासवर्ड पुष्टि गर्नुहोस्</translation>
@@ -8186,7 +8188,6 @@
 <translation id="6759193508432371551">कारखाना रिसेट</translation>
 <translation id="6760354150216532978">चेतावनी: यो साइटले तपाईंले गर्ने परिवर्तनहरू हेर्न सक्छ</translation>
 <translation id="6761209758867628753">टुल: मलाई लेख्न मद्दत गर्नुहोस्</translation>
-<translation id="6761459308170527362">तपाईं आफूले सेयर गरिरहेको पेजमा भएको कन्टेन्टका बारेमा Gemini लाई प्रश्न सोध्न आवाज वा टेक्स्ट प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">डिभाइसमा साइट डेटा सेभ गर्ने अनुमति दिइएको छैन</translation>
 <translation id="6762833852331690540">अन छ</translation>
@@ -8975,7 +8976,6 @@
 <translation id="7320213904474460808">डिफल्ट नेटवर्क बनाउनुहोस्</translation>
 <translation id="7321545336522791733">सर्भर पहुँचयोग्य छैन</translation>
 <translation id="7322515217754205362">साइटसम्बन्धी अनुमतिहरू</translation>
-<translation id="7322919329844967709">तपाईं आफूले सेयर गरिरहेको पेजमा भएको कन्टेन्टसँग सम्बन्धित अझ धेरै सान्दर्भिक जवाफहरू प्राप्त गर्नु हुने छ</translation>
 <translation id="7323315405936922211">कर्सरको क्षेत्रको आकार</translation>
 <translation id="7324020307732396723">भाषासम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="7324297612904500502">बिटा फोरम</translation>
@@ -10314,7 +10314,6 @@
 <translation id="8222112516148944758">तपाईंका ट्याब समूहहरू स्वतः सेभ गरिन्छन् र तपाईंका सबै डिभाइसमा अपडेट गरिन्छन्</translation>
 <translation id="8222674561049363989">यो फाइल वैध डकुमेन्ट होइन</translation>
 <translation id="822347941086490485">HID यन्त्रहरू पत्ता लगाइँदै छ...</translation>
-<translation id="8224209912580158729">थप सान्दर्भिक जवाफहरू प्राप्त गर्न Gemini सँग पेजमा भएको कन्टेन्ट सेयर गर्नुहोस्।</translation>
 <translation id="8224427620313426549">तपाईंको <ph name="DOMAIN_LINK" /> खाता मेटिने छैन</translation>
 <translation id="8225046344534779393">इन्टरनेट कनेक्सन जाँच्नुहोस्</translation>
 <translation id="8225265270453771718">एपसम्बन्धी विन्डो सेयर गर्नुहोस्</translation>

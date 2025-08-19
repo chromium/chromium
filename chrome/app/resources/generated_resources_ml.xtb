@@ -1092,7 +1092,6 @@
 <translation id="174123615272205933">ഇഷ്‍ടാനുസൃതം</translation>
 <translation id="1741314857973421784">തുടരുക</translation>
 <translation id="1744108098763830590">പശ്ചാത്തല പേജ്</translation>
-<translation id="174516937379651657">നിങ്ങൾ Gemini-യുമായി ഒരു പേജ് പങ്കിടുമ്പോൾ, ആ പേജിന്റെ മുഴുവൻ ഉള്ളടക്കവും URL-ഉം Google-ലേക്ക് അയയ്ക്കുന്നു.</translation>
 <translation id="1745732479023874451">കോൺടാക്‌റ്റുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{ഈ വെബ് ആപ്പിൽ # ഫയലുകൾ തുറന്ന് എഡിറ്റ് ചെയ്യണോ?}}</translation>
 <translation id="1748329107062243374"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്നുള്ള പാസ്‌കീ ഉപയോഗിച്ച് <ph name="WEBSITE" />-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -8191,7 +8190,6 @@
 <translation id="6759193508432371551">ഫാക്‌ടറി റീസെറ്റ് ചെയ്യൽ</translation>
 <translation id="6760354150216532978">മുന്നറിയിപ്പ്: നിങ്ങൾ വരുത്തുന്ന എഡിറ്റുകൾ ഈ സൈറ്റിന് കാണാനാകും</translation>
 <translation id="6761209758867628753">ടൂൾ: എന്നെ എഴുതാൻ സഹായിക്കൂ</translation>
-<translation id="6761459308170527362">നിങ്ങൾ പങ്കിടുന്ന പേജ് ഉള്ളടക്കത്തെക്കുറിച്ച് Gemini-യോട് ഒരു ചോദ്യം ചോദിക്കാൻ നിങ്ങൾക്ക് വോയ്‌സ് ചാറ്റോ ടെക്സ്റ്റ് ചാറ്റോ ഉപയോഗിക്കാം</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">ഉപകരണത്തിലുള്ള സൈറ്റ് ഡാറ്റ അനുവദനീയമല്ല</translation>
 <translation id="6762833852331690540">ഓണാണ്</translation>
@@ -8981,7 +8979,6 @@
 <translation id="7320213904474460808">നെറ്റ്‌വർക്ക് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7321545336522791733">സെർവർ ലഭ്യമല്ല</translation>
 <translation id="7322515217754205362">സൈറ്റ് അനുമതികൾ</translation>
-<translation id="7322919329844967709">പങ്കിടുന്ന പേജിന്റെ ഉള്ളടക്കവുമായി ബന്ധപ്പെട്ട കൂടുതൽ പ്രസക്തമായ പ്രതികരണങ്ങൾ നിങ്ങൾക്ക് ലഭിക്കും</translation>
 <translation id="7323315405936922211">കഴ്സർ ഏരിയയുടെ വലുപ്പം</translation>
 <translation id="7324020307732396723">ഭാഷാ ക്രമീകരണം തുറക്കുക</translation>
 <translation id="7324297612904500502">ബീറ്റ ഫോറം</translation>
@@ -10320,7 +10317,6 @@
 <translation id="8222112516148944758">ടാബ് ഗ്രൂപ്പുകൾ നിങ്ങളുടെ ഉപകരണങ്ങളിലുടനീളം സ്വയമേവ സംരക്ഷിച്ച് അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="8222674561049363989">ഫയൽ ഒരു സാധുവായ ഡോക്യുമെന്റ് അല്ല</translation>
 <translation id="822347941086490485">HID ഉപകരണങ്ങൾ കണ്ടെത്തുന്നു...</translation>
-<translation id="8224209912580158729">കൂടുതൽ പ്രസക്തമായ ഉത്തരങ്ങൾ ലഭിക്കാൻ പേജിന്റെ ഉള്ളടക്കം Gemini-യുമായി പങ്കിടുക.</translation>
 <translation id="8224427620313426549">നിങ്ങളുടെ <ph name="DOMAIN_LINK" /> അക്കൗണ്ട് ഇല്ലാതാക്കില്ല</translation>
 <translation id="8225046344534779393">ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="8225265270453771718">ഒരു ആപ്പ് വിൻഡോ പങ്കിടുക</translation>

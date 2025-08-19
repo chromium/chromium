@@ -1104,7 +1104,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="174123615272205933">Custom</translation>
 <translation id="1741314857973421784">Continue</translation>
 <translation id="1744108098763830590">background page</translation>
-<translation id="174516937379651657">When you share a page with Gemini, the page's full content and URL are sent to Google.</translation>
 <translation id="1745732479023874451">Manage contacts</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Open and edit # files in this web app?}}</translation>
 <translation id="1748329107062243374">Use a passkey from <ph name="DEVICE_NAME" /> to sign in to <ph name="WEBSITE" /></translation>
@@ -8208,7 +8207,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6759193508432371551">Factory reset</translation>
 <translation id="6760354150216532978">Warning: this site can see edits you make</translation>
 <translation id="6761209758867628753">Tool: Help me write</translation>
-<translation id="6761459308170527362">You can use voice or text chat to ask Gemini a question about the page content that you're sharing</translation>
 <translation id="676158322851696513">‘<ph name="EXTENSION_NAME" />’</translation>
 <translation id="6761623907967804682">On-device site data not allowed</translation>
 <translation id="6762833852331690540">On</translation>
@@ -8998,7 +8996,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7320213904474460808">Default to network</translation>
 <translation id="7321545336522791733">Server unreachable</translation>
 <translation id="7322515217754205362">Site permissions</translation>
-<translation id="7322919329844967709">You'll get more relevant answers related to the page content that you're sharing</translation>
 <translation id="7323315405936922211">Cursor area size</translation>
 <translation id="7324020307732396723">Open language settings</translation>
 <translation id="7324297612904500502">Beta forum</translation>
@@ -10338,7 +10335,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8222112516148944758">Your tab groups automatically save and update across all your devices</translation>
 <translation id="8222674561049363989">File is not a valid document</translation>
 <translation id="822347941086490485">Finding HID devices…</translation>
-<translation id="8224209912580158729">Share page content with Gemini to get more relevant answers.</translation>
 <translation id="8224427620313426549">Your <ph name="DOMAIN_LINK" /> account won't be deleted</translation>
 <translation id="8225046344534779393">Check Internet connection</translation>
 <translation id="8225265270453771718">Share an application window</translation>

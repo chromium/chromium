@@ -310,6 +310,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="443121186588148776">Port de série</translation>
 <translation id="4434045419905280838">Pop-ups et redirections</translation>
 <translation id="443552056913301231">Cela supprimera toutes les données locales, y compris les cookies, et réinitialisera toutes les autorisations pour <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Bottom sheet des couleurs Chrome ouverte à pleine hauteur</translation>
 <translation id="4468959413250150279">Coupez le son d'un site spécifique.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Permet de faciliter la personnalisation du zoom en fonction des sites</translation>
@@ -345,6 +346,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="4953688446973710931">Lorsque cette option est activée, les sites peuvent demander à télécharger automatiquement plusieurs fichiers. Lorsqu'elle est désactivée, les sites ne peuvent pas télécharger automatiquement plusieurs fichiers.</translation>
 <translation id="4962975101802056554">Révoquer toutes les autorisations de l'appareil</translation>
 <translation id="4972737347717125191">Les sites peuvent demander à utiliser des données et des appareils de réalité virtuelle</translation>
+<translation id="4973805849704516244">Bottom sheet des couleurs Chrome</translation>
 <translation id="497421865427891073">Avancer</translation>
 <translation id="4976702386844183910">Dernière visite : <ph name="DATE" /></translation>
 <translation id="4978178243417029856">En savoir plus sur le flux Discover</translation>

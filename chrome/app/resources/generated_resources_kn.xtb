@@ -1098,7 +1098,6 @@
 <translation id="174123615272205933">ಕಸ್ಟಮ್</translation>
 <translation id="1741314857973421784">ಮುಂದುವರಿಸಿ</translation>
 <translation id="1744108098763830590">ಹಿನ್ನೆಲೆ ಪುಟ</translation>
-<translation id="174516937379651657">ನೀವು Gemini ಜೊತೆಗೆ ಪುಟವನ್ನು ಹಂಚಿಕೊಂಡಾಗ, ಪುಟದ ಪೂರ್ಣ ಕಂಟೆಂಟ್ ಮತ್ತು URL ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1745732479023874451">ಸಂಪರ್ಕಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{ಈ ವೆಬ್ ಆ್ಯಪ್‌ನಲ್ಲಿ # ಫೈಲ್‌ಗಳನ್ನು ತೆರೆದು, ಎಡಿಟ್ ಮಾಡಬೇಕೇ?}other{ಈ ವೆಬ್ ಆ್ಯಪ್‌ನಲ್ಲಿ # ಫೈಲ್‌ಗಳನ್ನು ತೆರೆದು, ಎಡಿಟ್ ಮಾಡಬೇಕೇ?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು <ph name="DEVICE_NAME" /> ನಿಂದ ಪಾಸ್‌ಕೀಯನ್ನು ಬಳಸಿ</translation>
@@ -1135,6 +1134,7 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> ಗಾಗಿ ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ.</translation>
 <translation id="1769104665586091481">ಹೊಸ &amp;ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="1769157454356586138">ಸ್ಕ್ಯಾನ್ ವಿಫಲಗೊಂಡಿದೆ. ಈ ಫೈಲ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
+<translation id="176920518817780870">ಗುಂಪನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಫೋಲ್ಡರ್‌ಗೆ ಪರಿವರ್ತಿಸಿ</translation>
 <translation id="1770407692401984718">ಚಿತ್ರವನ್ನು ಇಲ್ಲಿಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ ಅಥವಾ</translation>
 <translation id="177053719077591686">Android ಆ್ಯಪ್‌‌ಗಳನ್ನು Google Drive ನಲ್ಲಿ ಬ್ಯಾಕಪ್ ಮಾಡಿ.</translation>
 <translation id="1773329206876345543">ಇತರ ಸಾಧನಗಳಿಗೆ ಇಂಟರ್ನೆಟ್ ಒದಗಿಸಲು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನ ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಬಳಸಿಕೊಂಡು ವೈ-ಫೈ ಹಾಟ್‌ಸ್ಪಾಟ್ ರಚಿಸಿ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5280,6 +5280,7 @@
 <translation id="4653116291358041820">ಸಣ್ಣ ಶ್ಯಾಡೋ</translation>
 <translation id="4653405415038586100">Linux ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡುವಾಗ ದೋಷ ಉಂಟಾಗಿದೆ</translation>
 <translation id="4654236001025007561">ನಿಮ್ಮ ಸುತ್ತಲಿನ Chromebook ಗಳು ಮತ್ತು Android ಸಾಧನಗಳ ಜೊತೆಗೆ ಫೈಲ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
+<translation id="4654801841330730814">ಎಲ್ಲಾ</translation>
 <translation id="4657810666108475055">ಟ್ಯಾಬ್ ಹುಡುಕಾಟ</translation>
 <translation id="4657914796247705218">TrackPoint ವೇಗ</translation>
 <translation id="4658285806588491142">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿರಿಸಿ</translation>
@@ -7238,6 +7239,7 @@
 <translation id="606449270532897041">ಸೈಟ್ ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6064764629679333574">ಕಡಿಮೆ ರೆಸಲ್ಯೂಷನ್‌‌ ಆಡಿಯೊವನ್ನು ಹೆಚ್ಚಿನ ರೆಸಲ್ಯೂಷನ್‌‌ಗೆ ಹೆಚ್ಚಿಸುವ ಮೂಲಕ ಬ್ಲೂಟೂತ್ ಮೈಕ್ ಸೌಂಡ್ ಗುಣಮಟ್ಟವನ್ನು ಸುಧಾರಿಸಿ.</translation>
 <translation id="6065289257230303064">ಪ್ರಮಾಣಪತ್ರ ವಿಷಯ ಡೈರೆಕ್ಟರಿ ಆಟ್ರಿಬ್ಯೂಟ್‌ಗಳು</translation>
+<translation id="6066649679804058181">ಗುಂಪನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಫೋಲ್ಡರ್‌ಗೆ ಪರಿವರ್ತಿಸಿ</translation>
 <translation id="6066794465984119824">ಚಿತ್ರದ ಹ್ಯಾಶ್ ಸೆಟ್ ಮಾಡಿಲ್ಲ</translation>
 <translation id="6069464830445383022">ನಿಮ್ಮ Google ಖಾತೆಯು ನಿಮ್ಮ Chromebook ಸೈನ್ ಇನ್ ಆಗಿದೆ</translation>
 <translation id="6071181508177083058">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಖಚಿತಪಡಿಸು</translation>
@@ -8199,7 +8201,6 @@
 <translation id="6759193508432371551">ಫ್ಯಾಕ್ಟರಿ ರಿಸೆಟ್‌</translation>
 <translation id="6760354150216532978">ಎಚ್ಚರಿಕೆ: ನೀವು ಮಾಡುವ ಎಡಿಟ್‌ಗಳನ್ನು ಈ ಸೈಟ್ ನೋಡಬಹುದು</translation>
 <translation id="6761209758867628753">ಟೂಲ್: ನನಗೆ ಬರೆಯಲು ಸಹಾಯ ಮಾಡಿ</translation>
-<translation id="6761459308170527362">ನೀವು ಹಂಚಿಕೊಳ್ಳುತ್ತಿರುವ ಪುಟದ ಕಂಟೆಂಟ್‌ ಕುರಿತು Gemini ಗೆ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಲು ನೀವು ಧ್ವನಿ ಅಥವಾ ಪಠ್ಯ ಚಾಟ್ ಅನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">ಸಾಧನದಲ್ಲಿರುವ ಸೈಟ್ ಡೇಟಾವನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6762833852331690540">ಆನ್‌ ಆಗಿದೆ</translation>
@@ -8990,7 +8991,6 @@
 <translation id="7320213904474460808">ನೆಟ್‌ವರ್ಕ್ ಡೀಫಾಲ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7321545336522791733">ಸರ್ವರ್ ತಲುಪಲಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="7322515217754205362">ಸೈಟ್ ಅನುಮತಿಗಳು</translation>
-<translation id="7322919329844967709">ನೀವು ಹಂಚಿಕೊಳ್ಳುತ್ತಿರುವ ಪುಟದ ಕಂಟೆಂಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ಹೆಚ್ಚು ಸೂಕ್ತವಾದ ಉತ್ತರಗಳನ್ನು ನೀವು ಪಡೆಯುತ್ತೀರಿ</translation>
 <translation id="7323315405936922211">ಕರ್ಸರ್ ಪ್ರದೇಶದ ಗಾತ್ರ</translation>
 <translation id="7324020307732396723">ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7324297612904500502">ಬೀಟಾ ಫೋರಮ್‌</translation>
@@ -10325,7 +10325,6 @@
 <translation id="8222112516148944758">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ ಗುಂಪುಗಳು ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಾದ್ಯಂತ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೇವ್‌ ಆಗುತ್ತವೆ ಮತ್ತು ಅಪ್‌ಡೇಟ್‌ ಆಗುತ್ತವೆ.</translation>
 <translation id="8222674561049363989">ಫೈಲ್ ಮಾನ್ಯ ಡಾಕ್ಯುಮೆಂಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="822347941086490485">HID ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="8224209912580158729">ಹೆಚ್ಚು ಸೂಕ್ತವಾದ ಉತ್ತರಗಳನ್ನು ಪಡೆಯಲು ಪುಟದ ಕಂಟೆಂಟ್ ಅನ್ನು Gemini ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಿ.</translation>
 <translation id="8224427620313426549">ನಿಮ್ಮ <ph name="DOMAIN_LINK" /> ಖಾತೆಯನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="8225046344534779393">ಇಂಟರ್ನೆಟ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="8225265270453771718">ಅಪ್ಲಿಕೇಶನ್ ವಿಂಡೋ ಹಂಚಿಕೊಳ್ಳಿ</translation>

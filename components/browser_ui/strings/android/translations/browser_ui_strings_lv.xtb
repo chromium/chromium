@@ -310,6 +310,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="443121186588148776">Seriālais ports</translation>
 <translation id="4434045419905280838">Uznirstošie elem. un novirzīšana</translation>
 <translation id="443552056913301231">Veicot šo darbību, tiks dzēsti visi lokālie dati, tostarp sīkfaili, kā arī tiks atiestatītas visas pakalpojuma <ph name="ORIGIN" /> atļaujas.</translation>
+<translation id="4441527683895888777">Chrome krāsu ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
 <translation id="4468959413250150279">Izslēgt skaņu noteiktai vietnei</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# sīkfails}zero{# sīkfailu}one{# sīkfails}other{# sīkfaili}}</translation>
 <translation id="4478158430052450698">Varat vienkāršot tālummaiņas pielāgošanu dažādās vietnēs</translation>
@@ -345,6 +346,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="4953688446973710931">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju automātiski lejupielādēt vairākus failus. Kad šis slēdzis ir izslēgts, vietnes nevar automātiski lejupielādēt vairākus failus.</translation>
 <translation id="4962975101802056554">Atsaukt visas atļaujas, kas piešķirtas ierīcei</translation>
 <translation id="4972737347717125191">Atļaut vietnēm pieprasīt atļauju izmantot virtuālās realitātes ierīces un datus</translation>
+<translation id="4973805849704516244">Chrome krāsu ekrāna apakšdaļas lapa</translation>
 <translation id="497421865427891073">Doties uz priekšu</translation>
 <translation id="4976702386844183910">Pēdējoreiz apmeklēta: <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Uzzināt vairāk par Discover plūsmu</translation>

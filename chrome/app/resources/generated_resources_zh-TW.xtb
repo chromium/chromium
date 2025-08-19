@@ -1095,7 +1095,6 @@
 <translation id="174123615272205933">自訂</translation>
 <translation id="1741314857973421784">繼續</translation>
 <translation id="1744108098763830590">背景頁面</translation>
-<translation id="174516937379651657">與 Gemini 分享網頁時，系統會將完整內容和網址傳送給 Google。</translation>
 <translation id="1745732479023874451">管理聯絡人</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{要在這個網頁應用程式中開啟並編輯 # 個檔案嗎？}}</translation>
 <translation id="1748329107062243374">使用「<ph name="DEVICE_NAME" />」的密碼金鑰登入 <ph name="WEBSITE" /></translation>
@@ -1132,6 +1131,7 @@
 <translation id="1768212860412467516">提供你對「<ph name="EXPERIMENT_NAME" />」的意見。</translation>
 <translation id="1769104665586091481">在新視窗中開啟連結(&amp;W)</translation>
 <translation id="1769157454356586138">掃描失敗。系統管理員已封鎖這個檔案。</translation>
+<translation id="176920518817780870">將群組轉換為書籤資料夾</translation>
 <translation id="1770407692401984718">將圖片拖曳到這裡或</translation>
 <translation id="177053719077591686">在 Google 雲端硬碟中備份 Android 應用程式。</translation>
 <translation id="1773329206876345543">使用 <ph name="DEVICE_TYPE" /> 的行動數據建立 Wi-Fi 無線基地台，讓其他裝置連上網際網路。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5268,6 +5268,7 @@
 <translation id="4653116291358041820">小型陰影</translation>
 <translation id="4653405415038586100">設定 Linux 時發生錯誤</translation>
 <translation id="4654236001025007561">將檔案分享給附近的 Chromebook 和 Android 裝置</translation>
+<translation id="4654801841330730814">全部</translation>
 <translation id="4657810666108475055">分頁搜尋</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="4658285806588491142">避免螢幕內容外洩</translation>
@@ -7220,6 +7221,7 @@
 <translation id="606449270532897041">管理網站資料</translation>
 <translation id="6064764629679333574">將低解析度音訊提升至高解析度，來改善藍牙麥克風音質。</translation>
 <translation id="6065289257230303064">憑證主體目錄屬性</translation>
+<translation id="6066649679804058181">將群組轉換為書籤資料夾</translation>
 <translation id="6066794465984119824">未設定映像檔雜湊</translation>
 <translation id="6069464830445383022">你的 Google 帳戶就是你用來登入 Chromebook 的帳戶</translation>
 <translation id="6071181508177083058">確認密碼</translation>
@@ -8178,7 +8180,6 @@
 <translation id="6759193508432371551">恢復原廠設定</translation>
 <translation id="6760354150216532978">警告：這個網站可以看見你編輯的內容</translation>
 <translation id="6761209758867628753">工具：幫我寫</translation>
-<translation id="6761459308170527362">你可以透過語音或文字對話，問問 Gemini 你分享的頁面內容</translation>
 <translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6761623907967804682">禁止在裝置端儲存網站資料</translation>
 <translation id="6762833852331690540">開啟</translation>
@@ -8967,7 +8968,6 @@
 <translation id="7320213904474460808">預設網路</translation>
 <translation id="7321545336522791733">無法連上伺服器</translation>
 <translation id="7322515217754205362">網站權限</translation>
-<translation id="7322919329844967709">系統會根據你分享的頁面內容，提供更符合需求的答案</translation>
 <translation id="7323315405936922211">游標區域大小</translation>
 <translation id="7324020307732396723">開啟語言設定</translation>
 <translation id="7324297612904500502">Beta 版論壇</translation>
@@ -10307,7 +10307,6 @@
 <translation id="8222112516148944758">系統現在會自動儲存分頁群組，並同步到所有裝置</translation>
 <translation id="8222674561049363989">這個檔案不是有效的文件</translation>
 <translation id="822347941086490485">正在尋找 HID 裝置…</translation>
-<translation id="8224209912580158729">與 Gemini 分享頁面內容，即可取得更符合需求的答案。</translation>
 <translation id="8224427620313426549">系統不會刪除你的 <ph name="DOMAIN_LINK" /> 帳戶。</translation>
 <translation id="8225046344534779393">檢查網際網路連線</translation>
 <translation id="8225265270453771718">分享應用程式視窗</translation>

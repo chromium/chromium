@@ -310,6 +310,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="443121186588148776">Port serial</translation>
 <translation id="4434045419905280838">Pop-up dan pengalihan</translation>
 <translation id="443552056913301231">Tindakan ini akan menghapus semua data lokal, termasuk cookie, dan mereset semua izin untuk <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Panel bawah warna Chrome terbuka sepenuhnya</translation>
 <translation id="4468959413250150279">Mematikan suara untuk situs tertentu.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
 <translation id="4478158430052450698">Permudah penyesuaian zoom untuk berbagai situs</translation>
@@ -345,6 +346,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="4953688446973710931">JIka diaktifkan, situs dapat meminta untuk otomatis mendownload beberapa file. Jika dinonaktifkan, situs tidak dapat otomatis mendownload beberapa file.</translation>
 <translation id="4962975101802056554">Cabut semua izin untuk perangkat</translation>
 <translation id="4972737347717125191">Situs dapat meminta untuk menggunakan perangkat dan data virtual reality</translation>
+<translation id="4973805849704516244">Panel bawah Warna Chrome</translation>
 <translation id="497421865427891073">Maju</translation>
 <translation id="4976702386844183910">Terakhir dibuka <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Pelajari lebih lanjut feed Discover</translation>

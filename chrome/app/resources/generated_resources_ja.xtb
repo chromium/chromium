@@ -1094,7 +1094,6 @@
 <translation id="174123615272205933">カスタム</translation>
 <translation id="1741314857973421784">次へ</translation>
 <translation id="1744108098763830590">バックグラウンド ページ</translation>
-<translation id="174516937379651657">ページを Gemini と共有すると、ページのコンテンツ全体と URL が Google に送信されます。</translation>
 <translation id="1745732479023874451">連絡先を管理</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# 件のファイルをこのウェブアプリで開いて編集しますか？}}</translation>
 <translation id="1748329107062243374"><ph name="DEVICE_NAME" /> のパスキーを使用して <ph name="WEBSITE" /> にログインする</translation>
@@ -1131,6 +1130,7 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> についてのご意見、ご感想をお聞かせください。</translation>
 <translation id="1769104665586091481">新しいウインドウで開く(&amp;W)</translation>
 <translation id="1769157454356586138">スキャンに失敗しました。このファイルは管理者によってブロックされました。</translation>
+<translation id="176920518817780870">グループをブックマーク フォルダに変換</translation>
 <translation id="1770407692401984718">ここに画像をドラッグ、または</translation>
 <translation id="177053719077591686">Android アプリを Google ドライブにバックアップします。</translation>
 <translation id="1773329206876345543">他のデバイスでインターネットを使用するには、<ph name="DEVICE_TYPE" /> のモバイルデータ通信を使用する Wi-Fi アクセス ポイントを作成します。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5264,6 +5264,7 @@
 <translation id="4653116291358041820">小さいシャドウ</translation>
 <translation id="4653405415038586100">Linux の設定中にエラーが発生しました</translation>
 <translation id="4654236001025007561">近くの Chromebook や Android デバイスとファイルを共有できます</translation>
+<translation id="4654801841330730814">すべて</translation>
 <translation id="4657810666108475055">タブ検索</translation>
 <translation id="4657914796247705218">トラック ポイントの速度</translation>
 <translation id="4658285806588491142">画面を非公開のままにする</translation>
@@ -7217,6 +7218,7 @@
 <translation id="606449270532897041">サイトデータを管理</translation>
 <translation id="6064764629679333574">低解像度音声を高解像度にアップスケーリングすることで、Bluetooth マイクの音質を向上させます。</translation>
 <translation id="6065289257230303064">証明書のサブジェクトのディレクトリ属性</translation>
+<translation id="6066649679804058181">グループをブックマーク フォルダに変換</translation>
 <translation id="6066794465984119824">画像ハッシュが設定されていません</translation>
 <translation id="6069464830445383022">Google アカウントを使用して Chromebook にログイン</translation>
 <translation id="6071181508177083058">パスワードの確認入力</translation>
@@ -8175,7 +8177,6 @@
 <translation id="6759193508432371551">初期状態へのリセット</translation>
 <translation id="6760354150216532978">警告: このサイトはあなたが行った編集内容を参照できます</translation>
 <translation id="6761209758867628753">ツール: 文書作成サポート</translation>
-<translation id="6761459308170527362">音声やテキストによる会話形式で、共有しているページのコンテンツについて Gemini に質問できます</translation>
 <translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6761623907967804682">デバイス上のサイトデータは許可されていません</translation>
 <translation id="6762833852331690540">オン</translation>
@@ -8964,7 +8965,6 @@
 <translation id="7320213904474460808">デフォルトのネットワーク</translation>
 <translation id="7321545336522791733">サーバーにアクセスできません</translation>
 <translation id="7322515217754205362">サイトの権限</translation>
-<translation id="7322919329844967709">共有しているページのコンテンツに基づく関連性の高い回答が得られます</translation>
 <translation id="7323315405936922211">カーソル領域のサイズ</translation>
 <translation id="7324020307732396723">言語設定を開く</translation>
 <translation id="7324297612904500502">ベータ版フォーラム</translation>
@@ -10303,7 +10303,6 @@
 <translation id="8222112516148944758">タブグループは自動的に保存され、すべてのデバイスで更新されます。</translation>
 <translation id="8222674561049363989">ファイルは有効なドキュメントではありません</translation>
 <translation id="822347941086490485">HID デバイスを検出しています...</translation>
-<translation id="8224209912580158729">ページのコンテンツを Gemini と共有して、より関連性の高い回答を得ることができます。</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> のアカウントは削除されません</translation>
 <translation id="8225046344534779393">インターネット接続をご確認ください</translation>
 <translation id="8225265270453771718">アプリケーション ウィンドウの共有</translation>

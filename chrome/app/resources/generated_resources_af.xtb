@@ -1104,7 +1104,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="174123615272205933">Gepasmaak</translation>
 <translation id="1741314857973421784">Gaan voort</translation>
 <translation id="1744108098763830590">agtergrondbladsy</translation>
-<translation id="174516937379651657">Wanneer jy ’n bladsy met Gemini deel, word die bladsy se volledige inhoud en URL na Google toe gestuur.</translation>
 <translation id="1745732479023874451">Bestuur kontakte</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Maak # lêers in hierdie webprogram oop en wysig dit?}}</translation>
 <translation id="1748329107062243374">Gebruik <ph name="DEVICE_NAME" /> se toegangsleutel om aan te meld by <ph name="WEBSITE" /></translation>
@@ -1141,6 +1140,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1768212860412467516">Stuur terugvoer vir <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Maak skakel in 'n nuwe venster oop</translation>
 <translation id="1769157454356586138">Skandering het misluk. Hierdie lêer is deur jou administrateur geblokkeer</translation>
+<translation id="176920518817780870">Skakel groep om na boekmerkvouer</translation>
 <translation id="1770407692401984718">Sleep ’n prent hierheen of</translation>
 <translation id="177053719077591686">Rugsteun Android-programme na Google Drive.</translation>
 <translation id="1773329206876345543">Skep ’n wi-fi-warmkol met gebruik van jou <ph name="DEVICE_TYPE" /> se mobiele data om internet aan ander toestelle te verskaf. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5288,6 +5288,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4653116291358041820">Klein skaduwee</translation>
 <translation id="4653405415038586100">Kon nie Linux opstel nie</translation>
 <translation id="4654236001025007561">Deel lêers met Chromebooks en Android-toestelle rondom jou</translation>
+<translation id="4654801841330730814">Alles</translation>
 <translation id="4657810666108475055">Oortjiesoektog</translation>
 <translation id="4657914796247705218">TrackPoint-spoed</translation>
 <translation id="4658285806588491142">Hou jou skerm privaat</translation>
@@ -7247,6 +7248,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="606449270532897041">Bestuur werfdata</translation>
 <translation id="6064764629679333574">Verbeter die gehalte van Bluetooth se mikrofoonklank deur laeresolusie-oudio na hoë resolusie op te skaal.</translation>
 <translation id="6065289257230303064">Sertifikaatonderwerp se gidseienskappe</translation>
+<translation id="6066649679804058181">Skakel groep om na boekmerkvouer</translation>
 <translation id="6066794465984119824">Prenthuts is nie gestel nie</translation>
 <translation id="6069464830445383022">Jou Google-rekening is jou Chromebook-aanmelding</translation>
 <translation id="6071181508177083058">bevestig wagwoord</translation>
@@ -8206,7 +8208,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6759193508432371551">Fabriekterugstelling</translation>
 <translation id="6760354150216532978">Waarskuwing: hierdie werf kan wysigings sien wat jy maak</translation>
 <translation id="6761209758867628753">Nutsding: Help my skryf</translation>
-<translation id="6761459308170527362">Jy kan stem- of teksklets gebruik om vir Gemini ’n vraag te vra oor die bladsy-inhoud wat jy deel</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Optoestelwerfdata word nie toegelaat nie</translation>
 <translation id="6762833852331690540">Aan</translation>
@@ -8995,7 +8996,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7320213904474460808">Verstek vir netwerk</translation>
 <translation id="7321545336522791733">Bediener onbereikbaar</translation>
 <translation id="7322515217754205362">Werftoestemmings</translation>
-<translation id="7322919329844967709">Jy sal meer relevante antwoorde kry wat betrekking het op die bladsy-inhoud wat jy deel</translation>
 <translation id="7323315405936922211">Grootte van skermpyltjie-area</translation>
 <translation id="7324020307732396723">Maak Taalinstellings oop</translation>
 <translation id="7324297612904500502">Beta-forum</translation>
@@ -10334,7 +10334,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8222112516148944758">Jou oortjiegroepe stoor en dateer outomaties op al jou toestelle op</translation>
 <translation id="8222674561049363989">Lêer is nie ’n geldige dokument nie</translation>
 <translation id="822347941086490485">Soek tans HID-toestelle …</translation>
-<translation id="8224209912580158729">Deel bladsyinhoud met Gemini om meer relevante antwoorde te kry.</translation>
 <translation id="8224427620313426549">Jou <ph name="DOMAIN_LINK" />-rekening sal nie uitgevee word nie</translation>
 <translation id="8225046344534779393">Gaan internetverbinding na</translation>
 <translation id="8225265270453771718">Deel 'n programvenster</translation>

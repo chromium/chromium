@@ -1105,7 +1105,6 @@
 <translation id="174123615272205933">কাস্টম</translation>
 <translation id="1741314857973421784">চালিয়ে যান</translation>
 <translation id="1744108098763830590">পৃষ্ঠভূমি পৃষ্ঠা</translation>
-<translation id="174516937379651657">আপনি Gemini-র সাথে কোনও পৃষ্ঠা শেয়ার করলে, Google-এর কাছে, পৃষ্ঠাটির সম্পূর্ণ কন্টেন্ট ও URL পাঠানো হয়।</translation>
 <translation id="1745732479023874451">পরিচিতি ম্যানেজ করুন</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{এই ওয়েব অ্যাপে #টি ফাইল খুলবেন এবং এডিট করবেন?}other{এই ওয়েব অ্যাপে #টি ফাইল খুলবেন এবং এডিট করবেন?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" />-এ লগ-ইন করতে <ph name="DEVICE_NAME" /> থেকে 'পাসকী' ব্যবহার করুন</translation>
@@ -1142,6 +1141,7 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" />-এর জন্য মতামত জানান।</translation>
 <translation id="1769104665586091481">নতুন &amp;উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="1769157454356586138">স্ক্যান করা যায়নি। আপনার অ্যাডমিনিস্ট্রেটর এই ফাইল ব্লক করে দিয়েছেন</translation>
+<translation id="176920518817780870">বুকমার্ক ফোল্ডারে গ্রুপ রূপান্তর করুন</translation>
 <translation id="1770407692401984718">এখানে একটি ছবি টেনে আনুন অথবা</translation>
 <translation id="177053719077591686">Google Drive-এ Android অ্যাপের ব্যাক-আপ নিন।</translation>
 <translation id="1773329206876345543">অন্য ডিভাইসকে ইন্টারনেট দিতে আপনার <ph name="DEVICE_TYPE" />-এর মোবাইল ডেটা ব্যবহার করে ওয়াই-ফাই হটস্পট তৈরি করুন। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5289,6 +5289,7 @@
 <translation id="4653116291358041820">ছোট শ্যাডো</translation>
 <translation id="4653405415038586100">Linux কনফিগার করার সময় কোনও সমস্যা হয়েছে</translation>
 <translation id="4654236001025007561">আপনার আশেপাশের Chromebooks ও Android ডিভাইসের সাথে ফাইল শেয়ার করুন</translation>
+<translation id="4654801841330730814">সব</translation>
 <translation id="4657810666108475055">ট্যাব সার্চ করার বিকল্প</translation>
 <translation id="4657914796247705218">TrackPoint-এর স্পিড</translation>
 <translation id="4658285806588491142">আপনার স্ক্রিনটি ব্যক্তিগত রাখুন</translation>
@@ -7248,6 +7249,7 @@
 <translation id="606449270532897041">সাইট ডেটা ম্যানেজ করুন</translation>
 <translation id="6064764629679333574">ব্লুটুথ মাইকের সাউন্ড কোয়ালিটি উন্নত করুন। এটি করার জন্য, নিম্ন কোয়ালিটির অডিওকে ভালো কেয়ালিটির অডিওতে আপস্কেল করা চালু করুন।</translation>
 <translation id="6065289257230303064">সার্টিফিকেট বিষয় নির্দেশিকা গুণাবলী</translation>
+<translation id="6066649679804058181">বুকমার্ক ফোল্ডারে গ্রুপ রূপান্তর করুন</translation>
 <translation id="6066794465984119824">ইমেজ হ্যাশ সেট করা নেই</translation>
 <translation id="6069464830445383022">আপনার Google অ্যাকাউন্টই হল আপনার Chromebook-এর সাইন-ইন</translation>
 <translation id="6071181508177083058">পাসওয়ার্ড নিশ্চিত করুন</translation>
@@ -8209,7 +8211,6 @@
 <translation id="6759193508432371551">ফ্যাক্টরি রিসেট</translation>
 <translation id="6760354150216532978">সতর্কতা: এই সাইট আপনার করা এডিট দেখতে পারে</translation>
 <translation id="6761209758867628753">টুল: আমাকে লিখতে সাহায্য করো</translation>
-<translation id="6761459308170527362">আপনার শেয়ার করা পৃষ্ঠার কন্টেন্ট সম্পর্কে Gemini-কে জিজ্ঞাসা করার জন্য ভয়েস বা টেক্সট চ্যাট ব্যবহার করতে পারবেন</translation>
 <translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6761623907967804682">অন-ডিভাইস সাইট ডেটাকে অনুমোদন দেওয়া হয় না</translation>
 <translation id="6762833852331690540">চালু করা আছে</translation>
@@ -8999,7 +9000,6 @@
 <translation id="7320213904474460808">ডিফল্ট নেটওয়ার্ক</translation>
 <translation id="7321545336522791733">সার্ভারে সংযোগ করা যাচ্ছে না</translation>
 <translation id="7322515217754205362">সাইট অ্যাক্সেস করার অনুমতি</translation>
-<translation id="7322919329844967709">আপনার শেয়ার করা পৃষ্ঠার কন্টেন্টের সাথে সম্পর্কিত আরও প্রাসঙ্গিক উত্তর পাবেন।</translation>
 <translation id="7323315405936922211">কার্সর এরিয়া সাইজ</translation>
 <translation id="7324020307732396723">ভাষার সেটিংস খুলুন</translation>
 <translation id="7324297612904500502">বিটা ফোরাম</translation>
@@ -10338,7 +10338,6 @@
 <translation id="8222112516148944758">আপনার সবকটি ডিভাইস জুড়ে আপনার ট্যাব গ্রুপ অটোমেটিক সেভ এবং আপডেট হয়</translation>
 <translation id="8222674561049363989">ফাইল সঠিক ফর্ম্যাটে নেই</translation>
 <translation id="822347941086490485">HID ডিভাইস খোঁজা হচ্ছে...</translation>
-<translation id="8224209912580158729">আরও বেশি প্রাসঙ্গিক উত্তর পাওয়ার জন্য Gemini-র সাথে পৃষ্ঠার কন্টেন্ট শেয়ার করুন।</translation>
 <translation id="8224427620313426549">আপনার <ph name="DOMAIN_LINK" /> অ্যাকাউন্ট মুছে ফেলা হবে না</translation>
 <translation id="8225046344534779393">ইন্টারনেট কানেকশন চালু আছে কিনা দেখে নিন</translation>
 <translation id="8225265270453771718">একটি অ্যাপ্লিকেশনের উইন্ডো শেয়ার করুন</translation>

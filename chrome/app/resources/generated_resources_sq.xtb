@@ -1092,7 +1092,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="174123615272205933">Të personalizuara</translation>
 <translation id="1741314857973421784">Vazhdo</translation>
 <translation id="1744108098763830590">faqja e sfondit</translation>
-<translation id="174516937379651657">Kur ndan një faqe me Gemini, përmbajtja e plotë dhe URL-ja e faqes i dërgohen Google.</translation>
 <translation id="1745732479023874451">Menaxho kontaktet</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Të hapen dhe të modifikohen # skedarë në këtë aplikacion uebi?}}</translation>
 <translation id="1748329107062243374">Përdor një çelës kalimi nga <ph name="DEVICE_NAME" /> për t'u identifikuar në <ph name="WEBSITE" /></translation>
@@ -1129,6 +1128,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1768212860412467516">Dërgo komente për <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Hape lidhjen në dritare &amp;të re</translation>
 <translation id="1769157454356586138">Skanimi dështoi. Ky skedar është bllokuar nga administratori yt</translation>
+<translation id="176920518817780870">Konverto grupin në një dosje faqeshënuesish</translation>
 <translation id="1770407692401984718">Zvarrit një imazh këtu ose</translation>
 <translation id="177053719077591686">Rezervo aplikacionet për Android në "Diskun e Google".</translation>
 <translation id="1773329206876345543">Krijo një zonë qasjeje për internet me Wi-Fi duke përdorur të dhënat celulare të <ph name="DEVICE_TYPE" /> për të ofruar internet për pajisjet e tjera. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5271,6 +5271,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4653116291358041820">Hije e vogël</translation>
 <translation id="4653405415038586100">Gabim gjatë konfigurimit të Linux</translation>
 <translation id="4654236001025007561">Ndaji skedarët me pajisjet Chromebook dhe Android rrotull teje</translation>
+<translation id="4654801841330730814">Të gjitha</translation>
 <translation id="4657810666108475055">Kërkimi në skeda</translation>
 <translation id="4657914796247705218">Shpejtësia e TrackPoint</translation>
 <translation id="4658285806588491142">Mbaje ekranin tënd privat</translation>
@@ -7227,6 +7228,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="606449270532897041">Menaxho të dhënat e sajtit</translation>
 <translation id="6064764629679333574">Përmirëso cilësinë e tingullit të mikrofonit me Bluetooth duke e përmirësuar audion me rezolucion të ulët në audio me rezolucion të lartë.</translation>
 <translation id="6065289257230303064">Atributet e direktorisë së subjektit të certifikatës</translation>
+<translation id="6066649679804058181">Konverto grupin në një dosje faqeshënuesish</translation>
 <translation id="6066794465984119824">Hash-i i imazhit nuk është caktuar</translation>
 <translation id="6069464830445383022">Identifikohu në pajisjen Chromebook me "Llogarinë tënde të Google"</translation>
 <translation id="6071181508177083058">konfirmo fjalëkalimin</translation>
@@ -8186,7 +8188,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6759193508432371551">Rivendosje në gjendje fabrike</translation>
 <translation id="6760354150216532978">Paralajmërim: ky sajt mund të shikojë modifikimet që ti bën</translation>
 <translation id="6761209758867628753">Vegla: Më ndihmo të shkruaj</translation>
-<translation id="6761459308170527362">Mund të përdorësh bisedën me zë ose tekst për t'i bërë Gemini një pyetje rreth përmbajtjes së faqes që po ndan</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Të dhënat e sajtit në pajisje nuk lejohen</translation>
 <translation id="6762833852331690540">Aktiv</translation>
@@ -8975,7 +8976,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7320213904474460808">Kalo si parazgjedhje te rrjeti</translation>
 <translation id="7321545336522791733">Serveri i paarritshëm</translation>
 <translation id="7322515217754205362">Lejet e sajtit</translation>
-<translation id="7322919329844967709">Do të marrësh përgjigje më të përshtatshme në lidhje me përmbajtjen e faqes që po ndan</translation>
 <translation id="7323315405936922211">Madhësia e zonës së kursorit</translation>
 <translation id="7324020307732396723">Hap cilësimet e gjuhës</translation>
 <translation id="7324297612904500502">Forumi beta</translation>
@@ -10313,7 +10313,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8222112516148944758">Grupet e tua të skedave ruhen dhe përditësohen automatikisht nëpër të gjitha pajisjet e tua</translation>
 <translation id="8222674561049363989">Skedari nuk është një dokument i vlefshëm</translation>
 <translation id="822347941086490485">Po gjen pajisje HID...</translation>
-<translation id="8224209912580158729">Ndaj përmbajtjen e faqes me Gemini për të marrë përgjigje më të përshtatshme.</translation>
 <translation id="8224427620313426549">Llogaria jote e <ph name="DOMAIN_LINK" /> nuk do të fshihet</translation>
 <translation id="8225046344534779393">Kontrollo lidhjen me internetin</translation>
 <translation id="8225265270453771718">Ndaj një dritare të aplikacionit</translation>

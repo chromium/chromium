@@ -289,7 +289,7 @@
 <translation id="1184037892196730210">Не удалось запустить трансляцию экрана</translation>
 <translation id="1185924365081634987">Чтобы исправить данную сетевую ошибку, попробуйте <ph name="GUEST_SIGNIN_LINK_START" />войти в гостевом режиме<ph name="GUEST_SIGNIN_LINK_END" />.</translation>
 <translation id="1187214683155615962">Проблемы с производительностью</translation>
-<translation id="1187722533808055681">переходы в активный режим</translation>
+<translation id="1187722533808055681">Переходы в активный режим</translation>
 <translation id="1188807932851744811">Журнал не загружен.</translation>
 <translation id="1190086046506744802">Очень большой межстрочный интервал</translation>
 <translation id="1190155014618058972">Создать свое сочетание клавиш</translation>
@@ -1097,7 +1097,6 @@
 <translation id="174123615272205933">Другое</translation>
 <translation id="1741314857973421784">Далее</translation>
 <translation id="1744108098763830590">фоновая страница</translation>
-<translation id="174516937379651657">Когда вы делитесь страницей с Gemini, ее URL и все содержимое передаются в Google.</translation>
 <translation id="1745732479023874451">Управление контактами</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Использовать это веб-приложение для просмотра и редактирования # файла?}few{Использовать это веб-приложение для просмотра и редактирования # файлов?}many{Использовать это веб-приложение для просмотра и редактирования # файлов?}other{Использовать это веб-приложение для просмотра и редактирования # файла?}}</translation>
 <translation id="1748329107062243374">Используйте ключ доступа с устройства "<ph name="DEVICE_NAME" />" для входа на сайт <ph name="WEBSITE" /></translation>
@@ -1134,6 +1133,7 @@
 <translation id="1768212860412467516">Оставьте отзыв об эксперименте "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="1769104665586091481">Открыть ссылку в новом окне</translation>
 <translation id="1769157454356586138">Не удалось выполнить сканирование. Этот файл заблокирован администратором.</translation>
+<translation id="176920518817780870">Преобразовать группу закладок в папку</translation>
 <translation id="1770407692401984718">Перетащите изображение сюда или</translation>
 <translation id="177053719077591686">Резервное копирование приложений для Android на Google Диск.</translation>
 <translation id="1773329206876345543">Создайте точку доступа Wi-Fi, используя мобильную передачу данных на устройстве <ph name="DEVICE_TYPE" />, чтобы другие устройства могли подключаться к интернету. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5277,6 +5277,7 @@
 <translation id="4653116291358041820">Мелкая тень</translation>
 <translation id="4653405415038586100">Ошибка при настройке Linux</translation>
 <translation id="4654236001025007561">Делитесь файлами с устройствами Chromebook и Android поблизости.</translation>
+<translation id="4654801841330730814">Все</translation>
 <translation id="4657810666108475055">Вкладка поиска</translation>
 <translation id="4657914796247705218">Скорость TrackPoint</translation>
 <translation id="4658285806588491142">Защитите данные на экране</translation>
@@ -7234,6 +7235,7 @@
 <translation id="606449270532897041">Управление данными сайтов</translation>
 <translation id="6064764629679333574">Улучшите качество звука на Bluetooth-микрофоне. Измените настройки аудио с низкого на высокое разрешение.</translation>
 <translation id="6065289257230303064">Атрибуты каталога субъекта сертификата</translation>
+<translation id="6066649679804058181">Преобразовать группу закладок в папку</translation>
 <translation id="6066794465984119824">Хеш изображения не задан.</translation>
 <translation id="6069464830445383022">Для входа в Chromebook используется ваш обычный аккаунт Google</translation>
 <translation id="6071181508177083058">подтвердите пароль</translation>
@@ -8199,7 +8201,6 @@
 <translation id="6759193508432371551">Сброс настроек</translation>
 <translation id="6760354150216532978">Внимание! Этому сайту доступны ваши правки</translation>
 <translation id="6761209758867628753">Инструмент: генератор текстов</translation>
-<translation id="6761459308170527362">Задавайте Gemini вопросы о содержимом страницы, который вы поделились, голосом или текстом.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Запрещено сохранять данные сайта на устройстве</translation>
 <translation id="6762833852331690540">Включено</translation>
@@ -8989,7 +8990,6 @@
 <translation id="7320213904474460808">Выбрать сеть по умолчанию</translation>
 <translation id="7321545336522791733">Сервер недоступен</translation>
 <translation id="7322515217754205362">Разрешения на доступ к сайтам</translation>
-<translation id="7322919329844967709">Вы будете получать более подходящие ответы по содержимому страницы, которой делитесь.</translation>
 <translation id="7323315405936922211">Область незначительного движения</translation>
 <translation id="7324020307732396723">Открыть языковые настройки</translation>
 <translation id="7324297612904500502">Форум бета-версии</translation>
@@ -10328,7 +10328,6 @@
 <translation id="8222112516148944758">Группы вкладок автоматически сохраняются и обновляются на всех ваших устройствах.</translation>
 <translation id="8222674561049363989">Формат файла не поддерживается.</translation>
 <translation id="822347941086490485">Поиск HID-устройств…</translation>
-<translation id="8224209912580158729">Предоставить Gemini доступ к содержимому страницы, чтобы получать более подходящие ответы</translation>
 <translation id="8224427620313426549">Ваш аккаунт на сайте <ph name="DOMAIN_LINK" /> не будет удален.</translation>
 <translation id="8225046344534779393">Проверьте подключение к интернету.</translation>
 <translation id="8225265270453771718">Откройте доступ к окну приложения</translation>

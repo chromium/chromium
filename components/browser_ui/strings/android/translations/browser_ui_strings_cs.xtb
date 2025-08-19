@@ -310,6 +310,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="443121186588148776">Sériový port</translation>
 <translation id="4434045419905280838">Vyskakovací okna a přesměrování</translation>
 <translation id="443552056913301231">Touto akcí vymažete všechna místní data, včetně souborů cookie, a resetujete všechna oprávnění pro <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Spodní panel barev Chromu otevřený na celou výšku</translation>
 <translation id="4468959413250150279">Vypne zvuk na konkrétním webu.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# soubor cookie}few{# soubory cookie}many{# soubory cookie}other{# souborů cookie}}</translation>
 <translation id="4478158430052450698">Usnadnit přizpůsobení velikosti zobrazení pro různé weby</translation>
@@ -345,6 +346,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="4953688446973710931">Když je tato možnost zapnutá, weby mohou žádat o automatické stažení více souborů. Když je vypnutá, weby nemohou stahovat automaticky více souborů.</translation>
 <translation id="4962975101802056554">Zrušit všechna oprávnění pro zařízení</translation>
 <translation id="4972737347717125191">Weby mohou požádat o použití zařízení a dat pro virtuální realitu</translation>
+<translation id="4973805849704516244">Spodní panel barev Chromu</translation>
 <translation id="497421865427891073">Vpřed</translation>
 <translation id="4976702386844183910">Naposledy navštíveno <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Další informace o feedu Objevit</translation>

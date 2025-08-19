@@ -1096,7 +1096,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="174123615272205933">Personnalisé</translation>
 <translation id="1741314857973421784">Continuer</translation>
 <translation id="1744108098763830590">page en arrière-plan</translation>
-<translation id="174516937379651657">Lorsque vous partagez une page avec Gemini, tout son contenu et son URL sont envoyés à Google.</translation>
 <translation id="1745732479023874451">Gérer les contacts</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Ouvrir et modifier # fichier dans cette appli Web ?}other{Ouvrir et modifier # fichiers dans cette appli Web ?}}</translation>
 <translation id="1748329107062243374">Utiliser une clé d'accès de <ph name="DEVICE_NAME" /> pour vous connecter à <ph name="WEBSITE" /></translation>
@@ -1133,6 +1132,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1768212860412467516">Envoyez des commentaires sur <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Ouvrir le lien dans une nouvelle &amp;fenêtre</translation>
 <translation id="1769157454356586138">Échec de l'analyse. Votre administrateur a bloqué ce fichier.</translation>
+<translation id="176920518817780870">Convertir le groupe en dossier de favoris</translation>
 <translation id="1770407692401984718">Faites glisser une image ici ou</translation>
 <translation id="177053719077591686">Sauvegardez les applis Android dans Google Drive.</translation>
 <translation id="1773329206876345543">Créez un point d'accès Wi-Fi avec les données mobiles de votre <ph name="DEVICE_TYPE" /> pour fournir un accès Internet à d'autres appareils. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5274,6 +5274,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4653116291358041820">Ombre fine</translation>
 <translation id="4653405415038586100">Erreur lors de la configuration de Linux</translation>
 <translation id="4654236001025007561">Partagez des fichiers avec des Chromebooks et des appareils Android à proximité</translation>
+<translation id="4654801841330730814">Toutes</translation>
 <translation id="4657810666108475055">Recherche dans les onglets</translation>
 <translation id="4657914796247705218">Vitesse</translation>
 <translation id="4658285806588491142">Protéger la confidentialité du contenu à l'écran</translation>
@@ -7231,6 +7232,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="606449270532897041">Gérer les données des sites</translation>
 <translation id="6064764629679333574">Améliorez la qualité du son du micro Bluetooth en convertissant le son basse résolution en son haute résolution.</translation>
 <translation id="6065289257230303064">Attributs du répertoire de l'objet du certificat</translation>
+<translation id="6066649679804058181">Convertir le groupe en dossier de favoris</translation>
 <translation id="6066794465984119824">Hachage d'image non défini</translation>
 <translation id="6069464830445383022">Connectez-vous à votre Chromebook à l'aide de votre compte Google</translation>
 <translation id="6071181508177083058">confirmer le mot de passe</translation>
@@ -8192,7 +8194,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6759193508432371551">Rétablir la configuration d'usine</translation>
 <translation id="6760354150216532978">Avertissement : Ce site peut voir les modifications que vous apportez</translation>
 <translation id="6761209758867628753">Outil : M'aider à écrire</translation>
-<translation id="6761459308170527362">Vous pouvez poser une question à Gemini de vive voix ou par écrit sur le contenu de la page que vous partagez</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Données des sites non autorisées sur l'appareil</translation>
 <translation id="6762833852331690540">Activé</translation>
@@ -8982,7 +8983,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7320213904474460808">Définir un réseau par défaut</translation>
 <translation id="7321545336522791733">Serveur inaccessible</translation>
 <translation id="7322515217754205362">Autorisations liées aux sites</translation>
-<translation id="7322919329844967709">Vous obtiendrez des réponses plus en lien avec le contenu de la page que vous partagez</translation>
 <translation id="7323315405936922211">Taille de la zone de curseur</translation>
 <translation id="7324020307732396723">Ouvrir les paramètres de langue</translation>
 <translation id="7324297612904500502">Forum bêta</translation>
@@ -10322,7 +10322,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8222112516148944758">Vos groupes d'onglets sont automatiquement enregistrés et mis à jour sur tous vos appareils.</translation>
 <translation id="8222674561049363989">Ce fichier n'est pas un document valide</translation>
 <translation id="822347941086490485">Recherche d'périphériques HID…</translation>
-<translation id="8224209912580158729">Partagez le contenu de la page avec Gemini pour obtenir des réponses plus pertinentes.</translation>
 <translation id="8224427620313426549">Votre compte <ph name="DOMAIN_LINK" /> ne sera pas supprimé</translation>
 <translation id="8225046344534779393">Vérifiez votre connexion Internet</translation>
 <translation id="8225265270453771718">Partager une fenêtre d'application</translation>

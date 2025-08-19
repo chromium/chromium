@@ -310,6 +310,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="443121186588148776">Porto en serie</translation>
 <translation id="4434045419905280838">Ventás emerxentes e redireccións</translation>
 <translation id="443552056913301231">Eliminaranse todos os datos locais, incluídas as cookies, e restableceranse todos os permisos de <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Panel inferior de cores de Chrome aberto a altura completa</translation>
 <translation id="4468959413250150279">Silencia o son dun sitio específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Fai que sexa máis fácil personalizar o zoom nos diferentes sitios</translation>
@@ -345,6 +346,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="4953688446973710931">Cando esta opción está activada, os sitios poden pedirche permiso para descargar automaticamente varios ficheiros. Cando esta opción está desactivada, os sitios non poden descargar automaticamente varios ficheiros.</translation>
 <translation id="4962975101802056554">Revogar todos os permisos do dispositivo</translation>
 <translation id="4972737347717125191">Os sitios poden pedirche permiso para usar datos e dispositivos de realidade virtual</translation>
+<translation id="4973805849704516244">Panel inferior de cores de Chrome</translation>
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4976702386844183910">Visitouse o <ph name="DATE" /> por última vez</translation>
 <translation id="4978178243417029856">Máis información sobre o feed de Discover</translation>

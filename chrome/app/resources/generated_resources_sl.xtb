@@ -1107,7 +1107,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="174123615272205933">Po meri</translation>
 <translation id="1741314857973421784">Naprej</translation>
 <translation id="1744108098763830590">stran v ozadju</translation>
-<translation id="174516937379651657">Ko stran delite z Geminijem, se vsebina in URL strani v celoti pošljeta Googlu.</translation>
 <translation id="1745732479023874451">Upravljanje stikov</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Želite odpreti in urediti # datoteko v tej spletni aplikaciji?}two{Želite odpreti in urediti # datoteki v tej spletni aplikaciji?}few{Želite odpreti in urediti # datoteke v tej spletni aplikaciji?}other{Želite odpreti in urediti # datotek v tej spletni aplikaciji?}}</translation>
 <translation id="1748329107062243374">Uporabite ključ za dostop v napravi <ph name="DEVICE_NAME" /> za prijavo na spletnem mestu <ph name="WEBSITE" /></translation>
@@ -1144,6 +1143,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1768212860412467516">Pošiljanje povratnih informacij za preizkus <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Odpri povezavo v novem &amp;oknu</translation>
 <translation id="1769157454356586138">Pregledovanje ni uspelo. To dejanje je blokiral skrbnik.</translation>
+<translation id="176920518817780870">Pretvori skupino v mapo z zaznamki</translation>
 <translation id="1770407692401984718">Povlecite sliko sem ali</translation>
 <translation id="177053719077591686">Varnostno kopirajte aplikacije za Android v Google Drive.</translation>
 <translation id="1773329206876345543">Če želite drugim napravam zagotoviti internetno povezavo, ustvarite dostopno točko Wi-Fi, ki uporablja prenos podatkov v mobilnem omrežju naprave <ph name="DEVICE_TYPE" />. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5291,6 +5291,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4653116291358041820">Majhna senca</translation>
 <translation id="4653405415038586100">Napaka pri konfiguriranju Linuxa</translation>
 <translation id="4654236001025007561">Delite datoteke s Chromebooki in napravami Android v bližini.</translation>
+<translation id="4654801841330730814">Vse</translation>
 <translation id="4657810666108475055">Iskanje zavihkov</translation>
 <translation id="4657914796247705218">Hitrost sledilne palčke</translation>
 <translation id="4658285806588491142">Poskrbite za zasebnost zaslona</translation>
@@ -7251,6 +7252,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="606449270532897041">Upravljanje podatkov spletnih mest</translation>
 <translation id="6064764629679333574">Izboljšajte kakovost zvoka mikrofona Bluetooth tako, da povečate kakovost zvoka v nizki ločljivosti na visoko ločljivost.</translation>
 <translation id="6065289257230303064">Atributi imenika subjekta potrdila</translation>
+<translation id="6066649679804058181">Pretvori skupino v mapo z zaznamki</translation>
 <translation id="6066794465984119824">Zgoščena vrednost slike ni nastavljena.</translation>
 <translation id="6069464830445383022">Z računom Google se prijavite v Chromebook</translation>
 <translation id="6071181508177083058">potrditev gesla</translation>
@@ -8216,7 +8218,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6759193508432371551">Ponastavitev na tovarniške nastavitve</translation>
 <translation id="6760354150216532978">Opozorilo: To spletno mesto lahko vidi vaše spremembe</translation>
 <translation id="6761209758867628753">Orodje: Pomagaj mi pisati</translation>
-<translation id="6761459308170527362">Z glasovnim ali besedilnim klepetom lahko Geminiju zastavite vprašanje o vsebini strani, ki jo delite</translation>
 <translation id="676158322851696513">»<ph name="EXTENSION_NAME" />«</translation>
 <translation id="6761623907967804682">Podatki spletnih mest v napravi niso dovoljeni</translation>
 <translation id="6762833852331690540">Vklopljeno</translation>
@@ -9006,7 +9007,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7320213904474460808">Privzeto omrežje</translation>
 <translation id="7321545336522791733">Strežnik ni dosegljiv</translation>
 <translation id="7322515217754205362">Dovoljenja spletnih mest</translation>
-<translation id="7322919329844967709">Prejeli boste ustreznejše odgovore, povezane z vsebino strani, ki jo delite</translation>
 <translation id="7323315405936922211">Velikost območja kazalca</translation>
 <translation id="7324020307732396723">Odpri nastavitve jezika</translation>
 <translation id="7324297612904500502">Forum za beto</translation>
@@ -10346,7 +10346,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8222112516148944758">Skupine zavihkov se samodejno shranjujejo in posodabljajo v vseh napravah</translation>
 <translation id="8222674561049363989">Datoteka ni veljaven dokument</translation>
 <translation id="822347941086490485">Iskanje naprav HID …</translation>
-<translation id="8224209912580158729">Delite vsebino strani z Geminijem in prejmite ustreznejše odgovore.</translation>
 <translation id="8224427620313426549">Vaš račun za <ph name="DOMAIN_LINK" /> ne bo izbrisan</translation>
 <translation id="8225046344534779393">Preverite internetno povezavo</translation>
 <translation id="8225265270453771718">Deljenje okna aplikacije</translation>

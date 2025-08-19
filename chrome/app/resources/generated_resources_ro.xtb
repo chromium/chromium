@@ -1096,7 +1096,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="174123615272205933">Personalizată</translation>
 <translation id="1741314857973421784">Continuă</translation>
 <translation id="1744108098763830590">pagină de fundal</translation>
-<translation id="174516937379651657">Când trimiți o pagină la Gemini, conținutul complet și adresa URL a paginii sunt trimise la Google.</translation>
 <translation id="1745732479023874451">Gestionează agenda</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}few{Deschizi și editezi # fișiere în această aplicație web?}other{Deschizi și editezi # de fișiere în această aplicație web?}}</translation>
 <translation id="1748329107062243374">Folosește o cheie de acces de la <ph name="DEVICE_NAME" /> pentru a te conecta la <ph name="WEBSITE" /></translation>
@@ -1133,6 +1132,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1768212860412467516">Trimite feedback pentru <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="1769104665586091481">Deschide linkul într-o &amp;fereastră nouă</translation>
 <translation id="1769157454356586138">Scanarea nu a reușit. Inserarea acestui fișier a fost blocată de administrator</translation>
+<translation id="176920518817780870">Convertește grupul în dosar de marcaje</translation>
 <translation id="1770407692401984718">Trage o imagine aici sau</translation>
 <translation id="177053719077591686">Fă backup la aplicațiile pentru Android pe Google Drive.</translation>
 <translation id="1773329206876345543">Creează un hotspot Wi-Fi folosind datele mobile ale dispozitivului <ph name="DEVICE_TYPE" /> pentru a conecta alte dispozitive la internet. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5275,6 +5275,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4653116291358041820">Umbră mică</translation>
 <translation id="4653405415038586100">Eroare la configurarea Linux</translation>
 <translation id="4654236001025007561">Trimite fișiere către Chromebookuri și dispozitive Android din apropiere</translation>
+<translation id="4654801841330730814">Toate</translation>
 <translation id="4657810666108475055">Căutarea filelor</translation>
 <translation id="4657914796247705218">Viteza TrackPoint</translation>
 <translation id="4658285806588491142">Păstrează-ți ecranul privat</translation>
@@ -7231,6 +7232,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="606449270532897041">Gestionează datele privind site-urile</translation>
 <translation id="6064764629679333574">Îmbunătățește calitatea sunetului microfonului prin Bluetooth prin optimizarea sunetului de la rezoluție joasă la rezoluție înaltă.</translation>
 <translation id="6065289257230303064">Atribute director pentru subiectul certificatului</translation>
+<translation id="6066649679804058181">Convertește grupul în dosar de marcaje</translation>
 <translation id="6066794465984119824">Valoarea hash a imaginii nu este setată</translation>
 <translation id="6069464830445383022">Contul tău Google reprezintă informațiile de conectare pentru Chromebook</translation>
 <translation id="6071181508177083058">confirmă parola</translation>
@@ -8192,7 +8194,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6759193508432371551">Resetare la setările din fabrică</translation>
 <translation id="6760354150216532978">Avertisment: acest site poate vedea modificările pe care le faci</translation>
 <translation id="6761209758867628753">Instrument: Ajută-mă să scriu</translation>
-<translation id="6761459308170527362">Poți folosi chatul vocal sau prin text pentru a-i pune o întrebare serviciului Gemini despre conținutul paginii pe care o trimiți</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Nu se permit datele privind site-urile pe dispozitiv</translation>
 <translation id="6762833852331690540">Activat</translation>
@@ -8982,7 +8983,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7320213904474460808">Setează ca rețea prestabilită</translation>
 <translation id="7321545336522791733">Serverul nu poate fi accesat</translation>
 <translation id="7322515217754205362">Permisiuni la nivel de site</translation>
-<translation id="7322919329844967709">Vei primi răspunsuri mai relevante legate de conținutul paginii pe care îl trimiți</translation>
 <translation id="7323315405936922211">Mărimea zonei cursorului</translation>
 <translation id="7324020307732396723">Deschide setările de limbă</translation>
 <translation id="7324297612904500502">Forumul pentru versiunea beta</translation>
@@ -10322,7 +10322,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8222112516148944758">Grupurile de file se salvează și se actualizează automat pe toate dispozitivele</translation>
 <translation id="8222674561049363989">Fișierul nu este un document valid</translation>
 <translation id="822347941086490485">Se caută dispozitive HID...</translation>
-<translation id="8224209912580158729">Trimite conținutul paginii la Gemini pentru a primi răspunsuri mai relevante.</translation>
 <translation id="8224427620313426549">Contul tău <ph name="DOMAIN_LINK" /> nu se va șterge</translation>
 <translation id="8225046344534779393">Verifică starea conexiunii la internet</translation>
 <translation id="8225265270453771718">Arată fereastra unei aplicații</translation>

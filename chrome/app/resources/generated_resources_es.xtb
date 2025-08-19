@@ -1095,7 +1095,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="174123615272205933">Personalizados</translation>
 <translation id="1741314857973421784">Continuar</translation>
 <translation id="1744108098763830590">página en segundo plano</translation>
-<translation id="174516937379651657">Cuando compartes una página con Gemini, el contenido completo y la URL de la página se envían a Google.</translation>
 <translation id="1745732479023874451">Gestionar contactos</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{¿Abrir y editar # archivos en esta aplicación web?}}</translation>
 <translation id="1748329107062243374">Usa una llave de acceso de <ph name="DEVICE_NAME" /> para iniciar sesión en <ph name="WEBSITE" /></translation>
@@ -1132,6 +1131,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1768212860412467516">Escribe tus comentarios sobre <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Abrir enlace en una &amp;ventana nueva</translation>
 <translation id="1769157454356586138">Error al analizar. Tu administrador ha bloqueado este archivo.</translation>
+<translation id="176920518817780870">Convertir grupo en carpeta de marcadores</translation>
 <translation id="1770407692401984718">Arrastra una imagen aquí o</translation>
 <translation id="177053719077591686">Haz una copia de seguridad de las aplicaciones Android en Google Drive.</translation>
 <translation id="1773329206876345543">Crea un punto de acceso Wi-Fi usando los datos móviles de tu <ph name="DEVICE_TYPE" /> para proporcionar Internet a otros dispositivos. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5275,6 +5275,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4653116291358041820">Sombra pequeña</translation>
 <translation id="4653405415038586100">No se ha podido configurar Linux</translation>
 <translation id="4654236001025007561">Comparte archivos con Chromebooks y dispositivos Android que estén cerca de ti</translation>
+<translation id="4654801841330730814">Todas</translation>
 <translation id="4657810666108475055">Búsqueda de pestañas</translation>
 <translation id="4657914796247705218">Velocidad del TrackPoint</translation>
 <translation id="4658285806588491142">Mantén la privacidad de tu pantalla</translation>
@@ -7231,6 +7232,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="606449270532897041">Gestionar datos de sitios</translation>
 <translation id="6064764629679333574">Mejora la calidad del sonido del micrófono Bluetooth cambiando el audio de baja resolución a alta.</translation>
 <translation id="6065289257230303064">Atributos de directorio de la entidad receptora del certificado</translation>
+<translation id="6066649679804058181">Convertir grupo en carpeta de marcadores</translation>
 <translation id="6066794465984119824">El hash de la imagen no está establecido</translation>
 <translation id="6069464830445383022">Tu cuenta de Google te permitirá iniciar sesión en el Chromebook</translation>
 <translation id="6071181508177083058">confirmar contraseña</translation>
@@ -8190,7 +8192,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6759193508432371551">Restablecer estado de fábrica</translation>
 <translation id="6760354150216532978">Advertencia: Este sitio puede ver los cambios que hagas</translation>
 <translation id="6761209758867628753">Herramienta: Ayúdame a escribir</translation>
-<translation id="6761459308170527362">Puedes usar la voz o el chat de texto para hacerle una pregunta a Gemini sobre el contenido de la página que estás compartiendo</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Datos de sitios en el dispositivo no permitidos</translation>
 <translation id="6762833852331690540">Activado</translation>
@@ -8980,7 +8981,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7320213904474460808">Establecer como red predeterminada</translation>
 <translation id="7321545336522791733">No se puede acceder al servidor</translation>
 <translation id="7322515217754205362">Permisos de sitios</translation>
-<translation id="7322919329844967709">Obtendrás respuestas más relevantes relacionadas con el contenido de la página que estés compartiendo</translation>
 <translation id="7323315405936922211">Tamaño del área del cursor</translation>
 <translation id="7324020307732396723">Abrir ajustes de idioma</translation>
 <translation id="7324297612904500502">Foro beta</translation>
@@ -10320,7 +10320,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8222112516148944758">Tus grupos de pestañas se guardan y actualizan automáticamente en todos tus dispositivos</translation>
 <translation id="8222674561049363989">El archivo no es un documento válido</translation>
 <translation id="822347941086490485">Buscando dispositivos HID...</translation>
-<translation id="8224209912580158729">Comparte el contenido de la página con Gemini para obtener respuestas más relevantes.</translation>
 <translation id="8224427620313426549">Tu cuenta de <ph name="DOMAIN_LINK" /> no se eliminará</translation>
 <translation id="8225046344534779393">Comprueba la conexión a Internet</translation>
 <translation id="8225265270453771718">Compartir una ventana de aplicación</translation>

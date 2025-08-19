@@ -1104,7 +1104,6 @@
 <translation id="174123615272205933">Ыңгайлаштырылган</translation>
 <translation id="1741314857973421784">Улантуу</translation>
 <translation id="1744108098763830590">фон бети</translation>
-<translation id="174516937379651657">Баракты Gemini менен бөлүшсөңүз, андагы контент толугу менен жана URL дареги Google'га жөнөтүлөт.</translation>
 <translation id="1745732479023874451">Байланыштарды башкаруу</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# файлды ушул веб-колдонмодо ачып, түзөтөсүзбү?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> сайтына кирүү үчүн <ph name="DEVICE_NAME" /> түзмөгүндөгү киргизүүчү ачкычты колдонуңуз</translation>
@@ -1141,6 +1140,7 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> боюнча пикир жөнөтүү.</translation>
 <translation id="1769104665586091481">Шилтеме жаңы &amp;терезеде ачылсын</translation>
 <translation id="1769157454356586138">Скандалган жок. Бул файлды администраторуңуз бөгөттөп койгон</translation>
+<translation id="176920518817780870">Топту кыстармалар папкасына өзгөртүү</translation>
 <translation id="1770407692401984718">Сүрөттү бул жерге сүйрөңүз же</translation>
 <translation id="177053719077591686">Android колдонмолорунун камдык көчүрмөсүн Google Drive'га сактаңыз.</translation>
 <translation id="1773329206876345543">Башка түзмөктөргө Интернет таратуу үчүн <ph name="DEVICE_TYPE" /> түзмөгүнүн мобилдик трафигинин жардамы менен Wi-Fi байланыш түйүнүн түзүңүз. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5288,6 +5288,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4653116291358041820">Кичине көлөкө</translation>
 <translation id="4653405415038586100">Linux'ту конфигурациялоо катасы</translation>
 <translation id="4654236001025007561">Файлдарды айланаңыздагы Chromebook жана Android түзмөктөрү менен бөлүшүңүз</translation>
+<translation id="4654801841330730814">Баары</translation>
 <translation id="4657810666108475055">Өтмөктө издөө</translation>
 <translation id="4657914796247705218">TrackPoint ылдамдыгы</translation>
 <translation id="4658285806588491142">Экраныңызды өзүңүз гана көрүңүз</translation>
@@ -7246,6 +7247,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="606449270532897041">Сайттагы маалыматты тескөө</translation>
 <translation id="6064764629679333574">Төмөн дааналыктагы аудиону жогору дааналыка көтөрүү менен Bluetooth микрофонунун үнүнүн сапатынжакшыртыңыз.</translation>
 <translation id="6065289257230303064">Тастыктама объектисинин каталог атрибуттары</translation>
+<translation id="6066649679804058181">Топту Кыстармалар папкасына өзгөртүү</translation>
 <translation id="6066794465984119824">Сүрөттүн хеши жөндөлгөн жок</translation>
 <translation id="6069464830445383022">Chromebook'ка Google аккаунтуңуз менен киресиз</translation>
 <translation id="6071181508177083058">сырсөздү ырастоо</translation>
@@ -8205,7 +8207,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6759193508432371551">Демейки параметрлерге кайтаруу</translation>
 <translation id="6760354150216532978">Эскертүү: бул сайт түзөтүүлөрүңүздү көрө алат</translation>
 <translation id="6761209758867628753">Курал: Жазууга жардам бер</translation>
-<translation id="6761459308170527362">Gemini менен бөлүшүп жаткан баракчанын материалдары жөнүндө суроо берүү үчүн үн же текст чатын колдоно аласыз</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Сайттагы маалыматты түзмөккө сактоого тыюу салынган</translation>
 <translation id="6762833852331690540">Күйүк</translation>
@@ -8994,7 +8995,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7320213904474460808">Тармакты демейки катары коюу</translation>
 <translation id="7321545336522791733">Серверге туташуу мүмкүн эмес</translation>
 <translation id="7322515217754205362">Сайттын уруксаттары</translation>
-<translation id="7322919329844967709">Сиз бөлүшүп жаткан баракчадага материалдарга байланыштуу көбүрөөк ылайыктуу жоопторду аласыз</translation>
 <translation id="7323315405936922211">Курсордун аймагынын өлчөмү</translation>
 <translation id="7324020307732396723">Тил параметрлерин ачуу</translation>
 <translation id="7324297612904500502">Бета форуму</translation>
@@ -10333,7 +10333,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8222112516148944758">Өтмөк топтору автоматтык түрдө сакталып, бардык түзмөктөрдө жаңыртылат</translation>
 <translation id="8222674561049363989">Файл жарактуу документ эмес</translation>
 <translation id="822347941086490485">HID түзмөктөрү изделүүдө…</translation>
-<translation id="8224209912580158729">Ылайыктуу жоопторду алуу үчүн Gemini менен барактагы контентти бөлүшүңүз.</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> аккаунтуңуз өчүрүлбөйт</translation>
 <translation id="8225046344534779393">Интернет байланышын текшериңиз</translation>
 <translation id="8225265270453771718">Колдонмонун терезесин бөлүшүңүз…</translation>

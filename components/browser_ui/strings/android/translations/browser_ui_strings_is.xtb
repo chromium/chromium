@@ -310,6 +310,7 @@
 <translation id="443121186588148776">Raðtengi</translation>
 <translation id="4434045419905280838">Sprettigluggar og framsendingar</translation>
 <translation id="443552056913301231">Þessi aðgerð eyðir öllum staðbundnum gögnum, þar á meðal fótsporum, og endurstillir allar heimildir fyrir <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Blað neðst í Chrome-litum opnað í fullri hæð</translation>
 <translation id="4468959413250150279">Slökkva á hljóði á tilteknu vefsvæði.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# fótspor}one{# fótspor}other{# fótspor}}</translation>
 <translation id="4478158430052450698">Einfaldaðu sérsnið aðdráttar fyrir mismunandi vefsvæði</translation>
@@ -345,6 +346,7 @@
 <translation id="4953688446973710931">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að hlaða niður mörgum skrám. Þegar slökkt er á þessu geta vefsvæði ekki hlaðið niður mörgum skrám.</translation>
 <translation id="4962975101802056554">Afturkalla allar heimildir fyrir þetta tæki</translation>
 <translation id="4972737347717125191">Vefsvæði geta beðið um leyfi til að nota sýndarveruleikatæki og -gögn</translation>
+<translation id="4973805849704516244">Blað neðst í Chrome-litum</translation>
 <translation id="497421865427891073">Áfram</translation>
 <translation id="4976702386844183910">Síðast skoðað <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Nánar um tillögustraum</translation>

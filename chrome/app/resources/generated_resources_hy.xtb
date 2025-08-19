@@ -1097,7 +1097,6 @@
 <translation id="174123615272205933">Այլ</translation>
 <translation id="1741314857973421784">Շարունակել</translation>
 <translation id="1744108098763830590">հետնաշերտի էջ</translation>
-<translation id="174516937379651657">Երբ Gemini-ին հասանելի եք դարձնում այս էջը, դրա URL-ը և ամբողջ բովանդակությունն ուղարկվում են Google-ին։</translation>
 <translation id="1745732479023874451">Կառավարել կոնտակտները</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Ուզո՞ւմ եք բացել և փոփոխել # ֆայլ այս վեբ հավելվածում։}other{Ուզո՞ւմ եք բացել և փոփոխել # ֆայլ այս վեբ հավելվածում։}}</translation>
 <translation id="1748329107062243374">Օգտագործեք <ph name="DEVICE_NAME" /> սարքի մուտքի բանալին՝ <ph name="WEBSITE" /> կայք մուտք գործելու համար</translation>
@@ -8191,7 +8190,6 @@
 <translation id="6759193508432371551">Գործարանային կարգավորումների վերականգնում</translation>
 <translation id="6760354150216532978">Զգուշացում. այս կայքը կարող է տեսնել ձեր կատարած փոփոխությունները</translation>
 <translation id="6761209758867628753">Գործիք՝ «Օգնիր ինձ գրել»</translation>
-<translation id="6761459308170527362">Բանավոր կամ գրավոր ձևով Gemini-ին տվեք հարցեր ձեր տրամադրած էջի բովանդակության մասին</translation>
 <translation id="676158322851696513">«<ph name="EXTENSION_NAME" />»</translation>
 <translation id="6761623907967804682">Արգելվում է կայքերի տվյալներ պահել սարքում</translation>
 <translation id="6762833852331690540">Միացված է</translation>
@@ -8980,7 +8978,6 @@
 <translation id="7320213904474460808">Կանխադրված ցանց</translation>
 <translation id="7321545336522791733">Սերվերն անհասանելի է</translation>
 <translation id="7322515217754205362">Կայքերի թույլտվություններ</translation>
-<translation id="7322919329844967709">Դուք կստանաք ավելի համապատասխան պատասխաններ ձեր տրամադրած էջի բովանդակության մասին</translation>
 <translation id="7323315405936922211">Նշորդի տարածքի չափ</translation>
 <translation id="7324020307732396723">Բացել լեզվի կարգավորումները</translation>
 <translation id="7324297612904500502">Բետա ֆորում</translation>
@@ -10318,7 +10315,6 @@
 <translation id="8222112516148944758">Ձեր ներդիրների խմբերն ավտոմատ պահվում և թարմացվում են ձեր բոլոր սարքերում</translation>
 <translation id="8222674561049363989">Ֆայլը վավեր փաստաթուղթ չէ</translation>
 <translation id="822347941086490485">HID սարքերի որոնում…</translation>
-<translation id="8224209912580158729">Ավելի համապատասխան պատասխաններ ստանալու համար Gemini-ին թույլատրեք օգտագործել էջերի բովանդակությունը։</translation>
 <translation id="8224427620313426549">Ձեր <ph name="DOMAIN_LINK" /> հաշիվը չի ջնջվի</translation>
 <translation id="8225046344534779393">Ստուգեք կապը</translation>
 <translation id="8225265270453771718">Կիսվեք հավելվածի պատուհանով</translation>

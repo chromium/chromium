@@ -429,7 +429,7 @@
 <translation id="1277597051786235230">جستجوی <ph name="SEARCH_ENGINE" /> برای «<ph name="SEARCH_TERMS" />» در «برگه جدید»</translation>
 <translation id="127849925363482083">برای بستن زبانه سنجاق‌شده، <ph name="SHORTCUT_TEXT" /> را دوباره فشار دهید</translation>
 <translation id="1278859221870828664">‏بازبینی برنامه‌ها و سرویس‌های Google Play</translation>
-<translation id="1279024913354609713">مجاز نیست</translation>
+<translation id="1279024913354609713">اجازه ندادن</translation>
 <translation id="127946606521051357">دستگاهی همین اطراف درحال هم‌رسانی است</translation>
 <translation id="1280332775949918163">پنجره چفت‌شده</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{فایل باز نمی‌شود}one{فایل باز نمی‌شود}other{فایل‌ها باز نمی‌شود}}</translation>
@@ -1102,7 +1102,6 @@
 <translation id="174123615272205933">سفارشی</translation>
 <translation id="1741314857973421784">ادامه</translation>
 <translation id="1744108098763830590">صفحه پس‌زمینه</translation>
-<translation id="174516937379651657">‏وقتی صفحه‌ای را با Gemini هم‌رسانی می‌کنید محتوای کامل صفحه و نشانی وب به Google ارسال می‌شود.</translation>
 <translation id="1745732479023874451">مدیریت مخاطبین</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{# فایل در این برنامهٔ وب باز و ویرایش شود؟}other{# فایل در این برنامهٔ وب باز و ویرایش شود؟}}</translation>
 <translation id="1748329107062243374">از گذرکلید <ph name="DEVICE_NAME" /> برای ورود به سیستم <ph name="WEBSITE" /> استفاده کنید</translation>
@@ -1139,6 +1138,7 @@
 <translation id="1768212860412467516">برای <ph name="EXPERIMENT_NAME" />، بازخورد ارسال کنید.</translation>
 <translation id="1769104665586091481">باز کردن پیوند در &amp;پنجره جدید</translation>
 <translation id="1769157454356586138">اسکن انجام نشد. سرپرست این فایل را مسدود کرده است.</translation>
+<translation id="176920518817780870">تبدیل کردن گروه به پوشه نشانک</translation>
 <translation id="1770407692401984718">تصویری را به اینجا بکشید یا</translation>
 <translation id="177053719077591686">‏از برنامه‌های Android در Google Drive پشتیبان‌گیری کنید.</translation>
 <translation id="1773329206876345543">‏برای ارائه اینترنت به دیگر دستگاه‌ها، بااستفاده داده همراه <ph name="DEVICE_TYPE" /> نقطه اتصال Wi-Fi ایجاد کنید. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4432,7 +4432,7 @@
 <translation id="4033963223187371752">ممکن است سایت‌های امن محتوایی مثل قاب وب یا تصویری را که امن نیست جاسازی کنند</translation>
 <translation id="4034824040120875894">چاپگر</translation>
 <translation id="4035758313003622889">مدیر &amp;فعالیت ها</translation>
-<translation id="4035877632587724847">مجاز نیست</translation>
+<translation id="4035877632587724847">اجازه ندادن</translation>
 <translation id="4036778507053569103">خط‌مشی بارگیری‌شده از سرور نامعتبر است.</translation>
 <translation id="4037084878352560732">اسب</translation>
 <translation id="403725336528835653">امتحان کردن</translation>
@@ -4611,7 +4611,7 @@
 <translation id="4167924027691268367">کنش‌های بیشتر برای میان‌بر <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">برخی از تنظیمات متعلق به <ph name="PRIMARY_EMAIL" /> با شما به اشتراک گذاشته می‌شود. این تنظیمات وقتی از ورود چندگانه به سیستم استفاده شود، فقط در حساب شما اعمال می‌شود.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> با ارقام آخر <ph name="LAST_FOUR_DIGITS" /></translation>
-<translation id="4169535189173047238">اجازه داده نشود</translation>
+<translation id="4169535189173047238">اجازه ندادن</translation>
 <translation id="4170314459383239649">پاک کردن هنگام خروج</translation>
 <translation id="4175137578744761569">بنفش روشن و سفید</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
@@ -5285,6 +5285,7 @@
 <translation id="4653116291358041820">سایه کوچک</translation>
 <translation id="4653405415038586100">‏خطا در پیکربندی Linux</translation>
 <translation id="4654236001025007561">‏هم‌رسانی فایل با دستگاه‌های Chromebook و Android در اطراف شما</translation>
+<translation id="4654801841330730814">همه</translation>
 <translation id="4657810666108475055">جستجوی برگه</translation>
 <translation id="4657914796247705218">‏سرعت TrackPoint</translation>
 <translation id="4658285806588491142">صفحه‌نمایشتان را خصوصی نگه دارید</translation>
@@ -7011,7 +7012,7 @@
 <translation id="589541317545606110">جستجوی صفحه با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5895549920267917925">به شما کمک می‌کند روی کارتان تمرکز داشته باشید</translation>
 <translation id="5895758411979561724"><ph name="APP_ORIGIN" /> درحال ضبط صفحه‌نمایش است</translation>
-<translation id="5896436821193322561">اجازه داده نشود</translation>
+<translation id="5896436821193322561">اجازه ندادن</translation>
 <translation id="5899860758576822363">‏پخش با صدایی کمتر هنگامی که ChromeVox درحال صحبت کردن است</translation>
 <translation id="5900243355162006650">پیکربندی اشتراک‌گذاری اینترنت:</translation>
 <translation id="5900302528761731119">‏عکس نمایهٔ Google</translation>
@@ -7243,6 +7244,7 @@
 <translation id="606449270532897041">مدیریت داده‌های سایت</translation>
 <translation id="6064764629679333574">بهبود کیفیت صدای میکروفون بلوتوث با ارتقای صدای با وضوح پایین به صدای با وضوح بالا.</translation>
 <translation id="6065289257230303064">ویژگی‌های دایرکتوری موضوع گواهی</translation>
+<translation id="6066649679804058181">تبدیل کردن گروه به پوشه نشانک</translation>
 <translation id="6066794465984119824">درهم‌سازی تصویر تنظیم نشده است</translation>
 <translation id="6069464830445383022">‏ورود به سیستم در Chromebook با «حساب Google» انجام می‌شود</translation>
 <translation id="6071181508177083058">تأیید گذرواژه</translation>
@@ -8204,7 +8206,6 @@
 <translation id="6759193508432371551">بازنشانی به تنظیمات کارخانه</translation>
 <translation id="6760354150216532978">هشدار: این سایت می‌تواند ویرایش‌های شما را ببیند</translation>
 <translation id="6761209758867628753">ابزار: کمک به نوشتن</translation>
-<translation id="6761459308170527362">‏برای پرسیدن سؤال از Gemini درباره محتوای صفحه‌ای که درحال هم‌رسانی هستید می‌توانید از گپ صوتی یا نوشتاری استفاده کنید</translation>
 <translation id="676158322851696513">«<ph name="EXTENSION_NAME" />»</translation>
 <translation id="6761623907967804682">ذخیره داده‌های سایت در دستگاه مجاز نیست</translation>
 <translation id="6762833852331690540">روشن</translation>
@@ -8994,7 +8995,6 @@
 <translation id="7320213904474460808">شبکه پیش‌فرض</translation>
 <translation id="7321545336522791733">سرور غیرقابل دسترسی است</translation>
 <translation id="7322515217754205362">اجازه‌های سایت</translation>
-<translation id="7322919329844967709">پاسخ‌های مربوط‌تری درباره محتوای صفحه‌ای که هم‌رسانی می‌کنید دریافت خواهید کرد</translation>
 <translation id="7323315405936922211">اندازه ناحیه مکان‌نما</translation>
 <translation id="7324020307732396723">باز کردن تنظیمات زبان</translation>
 <translation id="7324297612904500502">تالار گفتمان بتا</translation>
@@ -10333,7 +10333,6 @@
 <translation id="8222112516148944758">گروه‌های برگه شما به‌طور خودکار در همه دستگاه‌هایتان ذخیره و به‌روز می‌شود</translation>
 <translation id="8222674561049363989">این فایل سند معتبری نیست</translation>
 <translation id="822347941086490485">‏درحال پیدا کردن دستگاه‌های HID…</translation>
-<translation id="8224209912580158729">‏محتوای صفحه را با Gemini هم‌رسانی کنید تا پاسخ‌های مربوط‌تری دریافت کنید.</translation>
 <translation id="8224427620313426549">حساب <ph name="DOMAIN_LINK" /> حذف نخواهد شد</translation>
 <translation id="8225046344534779393">اتصال اینترنت را بررسی کنید</translation>
 <translation id="8225265270453771718">هم‌رسانی پنجره برنامه</translation>

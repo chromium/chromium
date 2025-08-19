@@ -58,6 +58,7 @@
 <translation id="1227113644794103810">Inactive tabs</translation>
 <translation id="1231733316453485619">Turn on sync?</translation>
 <translation id="1253032109800629289">Hide 'Get price tracking notifications'</translation>
+<translation id="1254424942107648268">Find Previous</translation>
 <translation id="1258491128795710625">What’s new</translation>
 <translation id="1262724000444746916">Hide Add to bookmarks</translation>
 <translation id="1263231323834454256">Reading list</translation>
@@ -147,6 +148,7 @@
 <translation id="1547610699249301703">Share passwords</translation>
 <translation id="1554477036522844996">New window</translation>
 <translation id="1558391695376153246">Close Incognito tabs</translation>
+<translation id="1565371473877914088">New Incognito tab</translation>
 <translation id="1571780780926010134">Incognito tabs</translation>
 <translation id="1580715474678097352">Stay protected from dangerous websites</translation>
 <translation id="1580783302095112590">Mail sent.</translation>
@@ -392,6 +394,7 @@
 <translation id="2484459871750294497">How do I enable this feature?</translation>
 <translation id="2493269659028026145">Lock immediately with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Browsing history</translation>
+<translation id="2496626742194544812">Go to first tab</translation>
 <translation id="2497852260688568942">Sync is disabled by your administrator</translation>
 <translation id="2499505845365628575">You can find all your browsing history from the <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">You have <ph name="NUMBER_OF_PASSWORDS" /> compromised passwords that could put your security at risk.</translation>
@@ -468,6 +471,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2789552044937754463">{COUNT,plural, =1{Password saved in your Google Account, {EMAIL}}other{Passwords saved in your Google Account, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Add password…</translation>
 <translation id="2793703503584038325">Select a password and tap the 'share' icon</translation>
+<translation id="2797029671965852011">Show history</translation>
 <translation id="2797302972324086597">Country code</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} file}other{{COUNT} files}}</translation>
 <translation id="2816489851009559785">Menu → Settings → Default browser</translation>
@@ -583,6 +587,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3273510436356991673">Customise your home screen</translation>
 <translation id="3277021493514034324">Site address copied</translation>
 <translation id="3280562213547448728">Voice search</translation>
+<translation id="3289505634533552500">Voice search</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, new activity</translation>
 <translation id="3305294846493618482">more</translation>
 <translation id="3311748811247479259">Off</translation>
@@ -619,6 +624,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3474048842645761983">{COUNT,plural, =1{for {COUNT} site or app}other{for {COUNT} sites and apps}}</translation>
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Access your passwords across other apps.</translation>
+<translation id="3485558910355485767">New incognito window</translation>
 <translation id="3488501490964659223">Tabs were closed and browsing data was deleted. You were signed out</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /> about suggested content</translation>
 <translation id="349446645805573740">Choose where to save '<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />'</translation>
@@ -637,6 +643,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3530767473765895035">Manage accounts on this device…</translation>
 <translation id="3533436815740441613">New tab</translation>
 <translation id="3533860663366814939">Open Autofill &amp; Password settings</translation>
+<translation id="3540141921715814660">Add to Bookmarks</translation>
 <translation id="3546122170015471515">Maps Preview on Google.com</translation>
 <translation id="3547356470684043247">Read customer evaluations of products, services or experiences to help inform your decisions with reviews.</translation>
 <translation id="3547933853190131743">Search with AI Mode</translation>
@@ -680,6 +687,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3751873026576444885">Stop searching your screen with Google Lens</translation>
 <translation id="3753408171347588045">Tracking prices</translation>
 <translation id="3762232513783804601">Built for your iPad</translation>
+<translation id="3768725474733206671">Reopen last closed tab</translation>
 <translation id="3779810277399252432">No Internet connection.</translation>
 <translation id="3782614601387961027">Dismiss warning</translation>
 <translation id="3789841737615482174">Install</translation>
@@ -690,10 +698,12 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="381219490185664296">Ungroup tab group?</translation>
 <translation id="3812308602011798782">Reviews</translation>
 <translation id="3813175908845379029">Helpful suggestions that make browsing better and easier</translation>
+<translation id="3818293389945649617">Find Next</translation>
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 payment method}other{# payment methods}}</translation>
 <translation id="3831560640878483188">Dismiss warning?</translation>
 <translation id="3832419617903252251">Password saved only on this device</translation>
+<translation id="3835964409414434850">Go to next tab</translation>
 <translation id="3838691874161539578">Check your saved passwords to strengthen your security and stay safer online</translation>
 <translation id="3838985624086228724">Price drop on your tracked product, from <ph name="PREVIOUS_PRICE" /> to <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Back</translation>
@@ -762,6 +772,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4049419681095579435">Parcel already tracked</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
 <translation id="4070132839822635162">Don't sign in</translation>
+<translation id="4092655288299341041">Show help</translation>
 <translation id="4099756562043439968">Set a reminder</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
 <translation id="4111985840824673503">Mark all read</translation>
@@ -844,6 +855,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4405320213589929829">Use addresses on web pages to get local info and directions.</translation>
 <translation id="441218095371040430">Use keyboard</translation>
 <translation id="4415276339145661267">Manage your Google Account</translation>
+<translation id="4420409367264901497">Edit Bookmark</translation>
 <translation id="4425365312778464779">This account is managed</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> currently selected. Choose an account.</translation>
 <translation id="4430505936695785931">Get saved passwords in other apps</translation>
@@ -1087,6 +1099,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5343472494710226394">News, sports and content based on your interests.</translation>
 <translation id="5352128922772839949">Save file</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
+<translation id="536067926684072644">Show bookmarks</translation>
 <translation id="5371112366564891538">Increase text size</translation>
 <translation id="537853552771686272">Manage the topics and sites that you're interested in</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} closed}other{{count} closed}}</translation>
@@ -1196,6 +1209,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5740123193752401435">Search tabs…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> notifications turned on</translation>
 <translation id="5745598824054949526">No text found</translation>
+<translation id="5745916533876677730">Go to previous tab</translation>
 <translation id="574762237186762643">Events</translation>
 <translation id="5749158352074143502">Continue with this tab</translation>
 <translation id="5753021559215751319">Save password</translation>
@@ -1257,6 +1271,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5988097621740394599">See price drops on your tabs.</translation>
 <translation id="5988851877894965432">Open URLs in Chrome</translation>
 <translation id="6001839398155993679">Let's go</translation>
+<translation id="6006672969046233841">New tab</translation>
 <translation id="6011308810877101166">Improve search suggestions</translation>
 <translation id="6012140227487808125">Encrypting…</translation>
 <translation id="6027619584715411062">Sign in to get your bookmarks, passwords and more on all your devices.</translation>
@@ -1369,6 +1384,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6368102751067608420">To delete all passwords manager data</translation>
 <translation id="6372558618707314581">Go to any page that you like</translation>
 <translation id="6374469231428023295">Try Again</translation>
+<translation id="6383719166112032471">Open location…</translation>
 <translation id="6387994324662817823">Passwords are saved to Google Password Manager on this device only.</translation>
 <translation id="6393156038355142111">Suggest strong password</translation>
 <translation id="6404422529625928907">Open in Google Drive</translation>
@@ -1381,6 +1397,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6421038304268477484">Translated text</translation>
 <translation id="6429213933892582367">Open password options</translation>
 <translation id="6434591244308415567">An error occurred. Try again later.</translation>
+<translation id="6435236283694032571">Add to reading list</translation>
 <translation id="6435307030888827407">Stay signed out</translation>
 <translation id="6436318499800111867">Shared with me on <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">Unpin Tab</translation>
@@ -1498,6 +1515,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6867400383614725881">New Incognito tab</translation>
 <translation id="686831807558000905">Don't sign in</translation>
 <translation id="686899695320434745">Addresses aren't encrypted with your passphrase. This lets you use them in other Google services.</translation>
+<translation id="687135068089457384">Show settings</translation>
 <translation id="6871397658902960384">Start browsing</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Save password in account}other{Save passwords in account}}</translation>
 <translation id="6875166646976836138">You can also view and manage these items in your bookmarks, reading list or password manager.</translation>
@@ -1580,6 +1598,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7215621211572884440">Pop-ups allowed</translation>
 <translation id="7218491361283758048">Postcode</translation>
 <translation id="7221173315674413369">Explore new features and tips in 'What’s new'</translation>
+<translation id="7223102419539744003">Close tab</translation>
 <translation id="7223134495231529579">Save to Downloads</translation>
 <translation id="722339453342442311">Check now</translation>
 <translation id="7227235818314667565">Manage sharing</translation>
@@ -1659,6 +1678,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="75362970626182391">New tab group</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="754655535278952384">Checked <ph name="TIME" /></translation>
+<translation id="7554645225856321710">Close all</translation>
 <translation id="7554791636758816595">New tab</translation>
 <translation id="7557508262441527045">Signed out</translation>
 <translation id="7561196759112975576">Always</translation>
@@ -1710,6 +1730,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7729458878441927652">To see tabs from your other devices, sync your tabs and history.</translation>
 <translation id="7730020510075123961">No, merge data</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Only on this device.</translation>
+<translation id="7738120385185846461">Report an issue…</translation>
 <translation id="7744192722284567281">Found in data breach</translation>
 <translation id="7749790401023484470">You have not selected any text.</translation>
 <translation id="7757015014239760147">No username ••••••••</translation>
@@ -1735,6 +1756,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7840771868269352570">The items that you selected will be removed.</translation>
 <translation id="7841180087127694526">Search for copied text</translation>
 <translation id="7841418003178675048">Choose what cards you see on your new tab page.</translation>
+<translation id="7845466610722898">Show reading list</translation>
 <translation id="7846161022626028328">There was an error. Try again.</translation>
 <translation id="784623644169604270">No recent activity</translation>
 <translation id="7846296061357476882">Google services</translation>
@@ -1747,6 +1769,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7865127013871431856">Translate options</translation>
 <translation id="7866872729285243843">To get your reading list on all your devices, turn on 'Reading list' in Settings.</translation>
 <translation id="7874107544081154809">Autofill form with <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
+<translation id="7879275349003161544">Show downloads</translation>
 <translation id="7883882164760409935">You have reused passwords.</translation>
 <translation id="7887174313503389866">Take a guided tour of key privacy and security controls. For more options, go to individual settings.</translation>
 <translation id="7887198238286927132">To protect your privacy, Chrome will not auto-fill this field.</translation>
@@ -1762,6 +1785,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7930998711684428189">Warns you if passwords are exposed in a data breach.</translation>
 <translation id="7933880123415105005">Search <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
+<translation id="7939856641500914040">Delete browsing data…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Page added to your reading list in your account, {email}}other{{count} pages added to your reading list in your account, {email}}}</translation>
 <translation id="7952353944614086413">Your open tabs and groups</translation>
 <translation id="7952670906562503188">You are about to delete {passkey_count} passkeys and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
@@ -1906,6 +1930,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8481184073299279701">Tap the 'Start logging' button to collect future JavaScript console logs and errors from all tabs. Logs will be collected (and stored only in memory) until this page is closed or 'Stop logging' is tapped.</translation>
 <translation id="8487667956631253959">On</translation>
 <translation id="8487700953926739672">Available offline</translation>
+<translation id="8488923644885757471">New window</translation>
 <translation id="8490629238792920282">Unable to create link</translation>
 <translation id="8501469528283376592">Auto-delete downloads</translation>
 <translation id="8503813439785031346">Username</translation>
@@ -1989,6 +2014,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8748678031495824833">Open on-page AI tools</translation>
 <translation id="8750037785291841318">You'll find your tabs here</translation>
 <translation id="8756969031206844760">Update password?</translation>
+<translation id="8763613688786959833">Go to last tab</translation>
 <translation id="8764015330924122850">Unfollow <ph name="DOMAIN_NAME" /></translation>
 <translation id="8766790350274092814">Passwords for <ph name="WEBSITE" /> and <ph name="SECOND_WEBSITE" /> will be deleted. Your accounts won't be deleted.</translation>
 <translation id="8775144690796719618">Invalid URL</translation>
@@ -2004,6 +2030,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8819155700324279105">Add an extra layer of protection against online threats</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8822421075653507124">To make sure that this device can be used safely, your organisation may need to see information about its operating system, browser, settings and what software is installed on the device.</translation>
+<translation id="882557203579758546">Find in page…</translation>
 <translation id="8831208860914609320">Close all inactive</translation>
 <translation id="8837654851594567190">Sort by publisher</translation>
 <translation id="8840513115188359703">You won't be signed out of your Google Account.</translation>
@@ -2108,6 +2135,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="9203951165704618409">Switch your address bar from the top to the bottom for a customised browsing experience.</translation>
 <translation id="9205189991633470489">Incognito lock</translation>
 <translation id="9206887540681440657">Speed</translation>
+<translation id="9219154867334666734">Search Tabs…</translation>
 <translation id="9223358826628549784">Crash report sent.</translation>
 <translation id="926455622548529175">Switch and delete</translation>
 <translation id="929748059769569925">Highlighted text</translation>

@@ -310,6 +310,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="443121186588148776">Port serial</translation>
 <translation id="4434045419905280838">Ferestre pop-up și redirecționări</translation>
 <translation id="443552056913301231">Această acțiune va șterge toate datele locale, inclusiv cookie-urile, și va reseta toate permisiunile pentru <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Foaia din partea de jos cu culorile Chrome este deschisă la înălțime completă</translation>
 <translation id="4468959413250150279">Dezactivează sunetul pentru un anumit site.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}few{# cookie-uri}other{# de cookie-uri}}</translation>
 <translation id="4478158430052450698">Simplifică personalizarea zoomului pentru diferite site-uri</translation>
@@ -345,6 +346,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4953688446973710931">Când opțiunea este activată, site-urile pot solicita permisiunea de a descărca automat mai multe fișiere. Când opțiunea este dezactivată, site-urile nu pot descărca automat mai multe fișiere.</translation>
 <translation id="4962975101802056554">Revocă toate permisiunile pentru dispozitiv</translation>
 <translation id="4972737347717125191">Site-urile pot solicita permisiunea de a folosi dispozitive de realitate virtuală și date conexe</translation>
+<translation id="4973805849704516244">Foaia din partea de jos Culori Chrome</translation>
 <translation id="497421865427891073">Înainte</translation>
 <translation id="4976702386844183910">Accesat ultima dată pe <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Află mai multe despre feedul Discover</translation>

@@ -1092,7 +1092,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="174123615272205933">Personalizado</translation>
 <translation id="1741314857973421784">Continuar</translation>
 <translation id="1744108098763830590">página en segundo plano</translation>
-<translation id="174516937379651657">Cuando compartes una página con Gemini, se envían a Google el contenido completo y la URL de la página.</translation>
 <translation id="1745732479023874451">Administrar contactos</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{¿Quieres abrir y editar # archivos en la aplicación web?}}</translation>
 <translation id="1748329107062243374">Usa una llave de acceso de <ph name="DEVICE_NAME" /> para acceder a <ph name="WEBSITE" /></translation>
@@ -1129,6 +1128,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1768212860412467516">Envía comentarios sobre <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Abrir vínculo en una ventana &amp;nueva</translation>
 <translation id="1769157454356586138">No se pudo realizar el análisis. Tu administrador bloqueó este archivo.</translation>
+<translation id="176920518817780870">Convertir grupo en carpeta de favoritos</translation>
 <translation id="1770407692401984718">Arrastra una imagen hasta aquí o</translation>
 <translation id="177053719077591686">Crea copias de seguridad de las apps para Android en Google Drive.</translation>
 <translation id="1773329206876345543">Crea un hotspot de Wi-Fi con los datos móviles de tu <ph name="DEVICE_TYPE" /> para brindar Internet a otros dispositivos. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5272,6 +5272,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4653116291358041820">Sombra pequeña</translation>
 <translation id="4653405415038586100">Se produjo un error al configurar Linux</translation>
 <translation id="4654236001025007561">Comparte archivos con Chromebooks y dispositivos Android que tengas cerca</translation>
+<translation id="4654801841330730814">Todas</translation>
 <translation id="4657810666108475055">Búsqueda de pestañas</translation>
 <translation id="4657914796247705218">Velocidad de TrackPoint</translation>
 <translation id="4658285806588491142">Mantén la privacidad de tu pantalla</translation>
@@ -7230,6 +7231,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="606449270532897041">Administrar los datos de sitios</translation>
 <translation id="6064764629679333574">Aumenta el audio de baja resolución a alta resolución para mejorar la calidad de sonido del micrófono Bluetooth.</translation>
 <translation id="6065289257230303064">Atributos de directorio del sujeto del certificado</translation>
+<translation id="6066649679804058181">Convertir grupo en carpeta de favoritos</translation>
 <translation id="6066794465984119824">No se estableció un hash de imagen</translation>
 <translation id="6069464830445383022">Accede a la Chromebook con tu Cuenta de Google</translation>
 <translation id="6071181508177083058">confirmar contraseña</translation>
@@ -8189,7 +8191,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6759193508432371551">Restablecer configuración de fábrica</translation>
 <translation id="6760354150216532978">Advertencia: Este sitio puede ver los cambios que haces</translation>
 <translation id="6761209758867628753">Herramienta: Ayúdame a escribir</translation>
-<translation id="6761459308170527362">Puedes usar el chat de voz o de texto para preguntarle a Gemini sobre el contenido de la página que estás compartiendo</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">No se permiten los datos de sitios en el dispositivo</translation>
 <translation id="6762833852331690540">Sí</translation>
@@ -8979,7 +8980,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7320213904474460808">Elegir la red predeterminada</translation>
 <translation id="7321545336522791733">No se puede acceder al servidor</translation>
 <translation id="7322515217754205362">Permisos de sitios</translation>
-<translation id="7322919329844967709">Obtendrás respuestas más pertinentes relacionadas con el contenido de la página que compartes</translation>
 <translation id="7323315405936922211">Tamaño del área del cursor</translation>
 <translation id="7324020307732396723">Abrir configuración de idioma</translation>
 <translation id="7324297612904500502">Foro de la versión Beta</translation>
@@ -10319,7 +10319,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8222112516148944758">Tus grupos de pestañas se guardan y actualizan automáticamente en todos tus dispositivos</translation>
 <translation id="8222674561049363989">El archivo no es un documento válido</translation>
 <translation id="822347941086490485">Buscando dispositivos HID…</translation>
-<translation id="8224209912580158729">Comparte el contenido de la página con Gemini para obtener respuestas más pertinentes.</translation>
 <translation id="8224427620313426549">No se borrará tu cuenta de <ph name="DOMAIN_LINK" /></translation>
 <translation id="8225046344534779393">Comprueba la conexión a Internet.</translation>
 <translation id="8225265270453771718">Compartir la ventana de una aplicación</translation>

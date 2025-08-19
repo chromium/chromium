@@ -1096,7 +1096,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="174123615272205933">Kohandatud</translation>
 <translation id="1741314857973421784">Jätka</translation>
 <translation id="1744108098763830590">taustleht</translation>
-<translation id="174516937379651657">Kui jagate lehte Geminiga, saadetakse kogu lehe sisu ja URL Google'ile.</translation>
 <translation id="1745732479023874451">Kontaktide haldamine</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Kas soovite selles veebirakenduses # faili avada ja neid redigeerida?}}</translation>
 <translation id="1748329107062243374">Veebisaidil <ph name="WEBSITE" /> seadme <ph name="DEVICE_NAME" /> pääsuvõtme abil sisselogimine</translation>
@@ -1133,6 +1132,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1768212860412467516">Katse <ph name="EXPERIMENT_NAME" /> kohta tagasiside saatmine.</translation>
 <translation id="1769104665586091481">Ava link uues &amp;aknas</translation>
 <translation id="1769157454356586138">Skannimine ebaõnnestus. Teie administraator on selle faili blokeerinud</translation>
+<translation id="176920518817780870">Teisenda grupp järjehoidjate kaustaks</translation>
 <translation id="1770407692401984718">Lohistage pilt siia või</translation>
 <translation id="177053719077591686">Varundage Androidi rakendused Google Drive'i.</translation>
 <translation id="1773329206876345543">Seadme <ph name="DEVICE_TYPE" /> mobiilset andmesidet kasutades luuakse WiFi-kuumkoht, millega saavad ühenduse luua teised seadmed. <ph name="BEGIN_LINK_LEARN_MORE" />Lugege lisateavet.<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5279,6 +5279,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4653116291358041820">Väike vari</translation>
 <translation id="4653405415038586100">Viga Linuxi seadistamisel</translation>
 <translation id="4654236001025007561">Jagage faile läheduses olevate Chromebookide ja Android-seadmetega</translation>
+<translation id="4654801841330730814">Kõik</translation>
 <translation id="4657810666108475055">Vahelehtede otsing</translation>
 <translation id="4657914796247705218">Näpuhiire kiirus</translation>
 <translation id="4658285806588491142">Hoidke oma ekraanikuva privaatsena</translation>
@@ -7237,6 +7238,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="606449270532897041">Saidi andmete haldamine</translation>
 <translation id="6064764629679333574">Parandage Bluetoothi mikrofoni heli kvaliteeti, skaleerides madala eraldusvõimega heli kõrge eraldusvõimega.</translation>
 <translation id="6065289257230303064">Sertifikaadi subjekti kataloogi atribuudid</translation>
+<translation id="6066649679804058181">Teisenda grupp järjehoidjate kaustaks</translation>
 <translation id="6066794465984119824">Kujutise räsiväärtust pole määratud</translation>
 <translation id="6069464830445383022">Chromebooki saate sisse logida oma Google'i kontoga</translation>
 <translation id="6071181508177083058">parooli kinnitamine</translation>
@@ -8196,7 +8198,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6759193508432371551">Tehaseseadete lähtestamine</translation>
 <translation id="6760354150216532978">Hoiatus: see sait näeb teie tehtud muudatusi</translation>
 <translation id="6761209758867628753">Tööriist: Aita mul kirjutada</translation>
-<translation id="6761459308170527362">Saate vestelda hääle või teksti abil, et esitada Geminile küsimus lehe sisu kohta, mida jagate.</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6761623907967804682">Seadmes olevad saidiandmed pole lubatud</translation>
 <translation id="6762833852331690540">Sees</translation>
@@ -8986,7 +8987,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7320213904474460808">Vaikevõrk</translation>
 <translation id="7321545336522791733">Serveriga ei saa ühendust</translation>
 <translation id="7322515217754205362">Saidi load</translation>
-<translation id="7322919329844967709">Saate asjakohasemaid vastused, mis on seotud teie jagatava lehe sisuga</translation>
 <translation id="7323315405936922211">Liikumisulatus</translation>
 <translation id="7324020307732396723">Avage valik Keeleseaded</translation>
 <translation id="7324297612904500502">Beeta foorum</translation>
@@ -10326,7 +10326,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8222112516148944758">Teie vahelehegruppe salvestatakse ja värskendatakse kõikides teie seadmetes automaatselt</translation>
 <translation id="8222674561049363989">Fail ei ole kehtiv dokument</translation>
 <translation id="822347941086490485">HID-seadmete leidmine …</translation>
-<translation id="8224209912580158729">Jagage lehe sisu Geminiga, et saada asjakohasemaid vastuseid.</translation>
 <translation id="8224427620313426549">Teie teenuse <ph name="DOMAIN_LINK" /> kontot ei kustutata</translation>
 <translation id="8225046344534779393">Kontrollige internetiühendust</translation>
 <translation id="8225265270453771718">Rakenduse akna jagamine</translation>

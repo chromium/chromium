@@ -1104,7 +1104,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="174123615272205933">Egyéni</translation>
 <translation id="1741314857973421784">Tovább</translation>
 <translation id="1744108098763830590">háttéroldal</translation>
-<translation id="174516937379651657">Amikor megoszt egy oldalt a Geminivel, az oldal teljes tartalma és URL-je elküldésre kerül a Google-nak.</translation>
 <translation id="1745732479023874451">Névjegyek kezelése</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Megnyitja és szerkeszti a kiválasztott #fájlt ebben az internetes alkalmazásban?}}</translation>
 <translation id="1748329107062243374">A(z) <ph name="DEVICE_NAME" /> eszközön lévő azonosítókulcs használata a következő webhelyre való bejelentkezéshez: <ph name="WEBSITE" /></translation>
@@ -1141,6 +1140,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1768212860412467516">Visszajelzés küldése a következőről: <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Link megnyitása új &amp;ablakban</translation>
 <translation id="1769157454356586138">Sikertelen ellenőrzés. Ezt a fájlt letiltotta a rendszergazda</translation>
+<translation id="176920518817780870">Csoport konvertálása könyvjelzőmappává</translation>
 <translation id="1770407692401984718">Húzzon ide egy képet, vagy</translation>
 <translation id="177053719077591686">Android-alkalmazások biztonsági mentése a Google Drive szolgáltatásba.</translation>
 <translation id="1773329206876345543">Hozzon létre Wi-Fi-hotspotot a(z) <ph name="DEVICE_TYPE" /> mobiladat-kapcsolata segítségével, ha internetet szeretne biztosítani más eszközöknek. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
@@ -5286,6 +5286,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4653116291358041820">Kis árnyék</translation>
 <translation id="4653405415038586100">Hiba történt a Linux konfigurálásakor</translation>
 <translation id="4654236001025007561">Megoszthat fájlokat az Ön közelében lévő Chromebookokkal és Android-eszközökkel</translation>
+<translation id="4654801841330730814">Mind</translation>
 <translation id="4657810666108475055">Keresés a lapok között</translation>
 <translation id="4657914796247705218">TrackPoint-sebesség</translation>
 <translation id="4658285806588491142">Képernyő privát jellegének megőrzése</translation>
@@ -7245,6 +7246,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="606449270532897041">Webhelyadatok kezelése</translation>
 <translation id="6064764629679333574">Javíthatja a Bluetooth-mikrofon hangjának minőségét a kis felbontású hang nagy felbontásúra való feljavításával.</translation>
 <translation id="6065289257230303064">Tanúsítványtulajdonos könyvtárattribútumai</translation>
+<translation id="6066649679804058181">Csoport konvertálása könyvjelzőmappává</translation>
 <translation id="6066794465984119824">A kép kivonata nincs beállítva</translation>
 <translation id="6069464830445383022">A Google-fiókjával jelentkezhet be Chromebookján</translation>
 <translation id="6071181508177083058">jelszó megerősítése</translation>
@@ -8204,7 +8206,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6759193508432371551">Gyári beállítások visszaállítása</translation>
 <translation id="6760354150216532978">Figyelmeztetés: a webhely láthatja az Ön által végzett módosításokat</translation>
 <translation id="6761209758867628753">Eszköz: Segítség az íráshoz</translation>
-<translation id="6761459308170527362">Hangalapú vagy szöveges csevegésben kérdezhet a Geminitől a megosztott oldal tartalmával kapcsolatban</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6761623907967804682">Az eszközalapú webhelyadatok nem engedélyezettek</translation>
 <translation id="6762833852331690540">Be</translation>
@@ -8994,7 +8995,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7320213904474460808">Hálózat alapértelmezetté tétele</translation>
 <translation id="7321545336522791733">A szerver nem áll rendelkezésre</translation>
 <translation id="7322515217754205362">Webhelyengedélyek</translation>
-<translation id="7322919329844967709">Relevánsabb válaszokat kaphat a megosztott oldal tartalmával kapcsolatban</translation>
 <translation id="7323315405936922211">Kurzorterület beállítása</translation>
 <translation id="7324020307732396723">Nyelvi beállítások megnyitása</translation>
 <translation id="7324297612904500502">Béta fórum</translation>
@@ -10333,7 +10333,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8222112516148944758">A rendszer automatikusan menti a lapcsoportokat, és frissíti őket az Ön összes eszközén</translation>
 <translation id="8222674561049363989">A fájl nem érvényes dokumentum</translation>
 <translation id="822347941086490485">HID-eszközök keresése…</translation>
-<translation id="8224209912580158729">Megoszthatja az oldal tartalmát a Geminivel, hogy relevánsabb válaszokat kaphasson.</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" />-fiókja nem törlődik.</translation>
 <translation id="8225046344534779393">Ellenőrizze internetkapcsolatát</translation>
 <translation id="8225265270453771718">Alkalmazásablak megosztása</translation>

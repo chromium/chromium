@@ -310,6 +310,7 @@
 <translation id="443121186588148776">シリアルポート</translation>
 <translation id="4434045419905280838">ポップアップとリダイレクト</translation>
 <translation id="443552056913301231">この操作を行うと、Cookie を含むすべてのローカルデータが削除され、<ph name="ORIGIN" /> のすべての権限がリセットされます</translation>
+<translation id="4441527683895888777">Chrome の色のボトムシートが画面全体に表示されています</translation>
 <translation id="4468959413250150279">特定のサイトの音声をミュートします。</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# 件の Cookie}other{# 件の Cookie}}</translation>
 <translation id="4478158430052450698">サイトごとにズーム設定をカスタマイズしやすくします</translation>
@@ -345,6 +346,7 @@
 <translation id="4953688446973710931">オンにすると、サイトは複数のファイルの自動ダウンロードを要求できます。オフにすると、サイトは複数のファイルを自動ダウンロードできません。</translation>
 <translation id="4962975101802056554">デバイスのすべての権限を取り消します</translation>
 <translation id="4972737347717125191">サイトがバーチャル リアリティ デバイスとデータの使用を要求できるようにする</translation>
+<translation id="4973805849704516244">Chrome の色のボトムシート</translation>
 <translation id="497421865427891073">次に進む</translation>
 <translation id="4976702386844183910">最終アクセス日: <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Discover フィードの詳細を確認する</translation>

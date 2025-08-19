@@ -1095,7 +1095,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="174123615272205933">Personalitzats</translation>
 <translation id="1741314857973421784">Continua</translation>
 <translation id="1744108098763830590">pàgina en segon pla</translation>
-<translation id="174516937379651657">Quan comparteixes una pàgina amb Gemini, s'envien a Google l'URL i tot el contingut de la pàgina.</translation>
 <translation id="1745732479023874451">Gestiona els contactes</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Vols obrir i editar # en aquesta aplicació web?}}</translation>
 <translation id="1748329107062243374">Utilitza una clau d'accés de <ph name="DEVICE_NAME" /> per iniciar la sessió a <ph name="WEBSITE" /></translation>
@@ -1132,6 +1131,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1768212860412467516">Envia suggeriments amb relació a <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Obre l'enllaç en una &amp;finestra nova</translation>
 <translation id="1769157454356586138">Ha fallat l'anàlisi. El teu administrador ha bloquejat aquest fitxer.</translation>
+<translation id="176920518817780870">Converteix el grup en una carpeta d'adreces d'interès</translation>
 <translation id="1770407692401984718">Arrossega una imatge aquí o</translation>
 <translation id="177053719077591686">Crea una còpia de seguretat de les aplicacions d'Android a Google Drive.</translation>
 <translation id="1773329206876345543">Crea un punt d'accés Wi-Fi amb les dades mòbils del teu <ph name="DEVICE_TYPE" /> per proporcionar Internet a altres dispositius. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5272,6 +5272,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4653116291358041820">Ombra petita</translation>
 <translation id="4653405415038586100">Hi ha hagut un error en configurar Linux</translation>
 <translation id="4654236001025007561">Comparteix fitxers amb dispositius Chromebook i Android a prop teu</translation>
+<translation id="4654801841330730814">Tot</translation>
 <translation id="4657810666108475055">Cerca de pestanyes</translation>
 <translation id="4657914796247705218">Velocitat del TrackPoint</translation>
 <translation id="4658285806588491142">Mantén la pantalla en privat</translation>
@@ -7227,6 +7228,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="606449270532897041">Gestiona les dades del lloc web</translation>
 <translation id="6064764629679333574">Millora la qualitat del so del micròfon Bluetooth augmentant a alta resolució l'àudio de baixa resolució.</translation>
 <translation id="6065289257230303064">Atributs del directori del subjecte del certificat</translation>
+<translation id="6066649679804058181">Converteix el grup en una carpeta d'adreces d'interès</translation>
 <translation id="6066794465984119824">La funció resum de la imatge no està definida</translation>
 <translation id="6069464830445383022">El Compte de Google és el teu inici de sessió al Chromebook</translation>
 <translation id="6071181508177083058">confirmeu la contrasenya</translation>
@@ -8186,7 +8188,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6759193508432371551">Restabliment de fàbrica</translation>
 <translation id="6760354150216532978">Advertiment: aquest lloc web pot veure els canvis que fas</translation>
 <translation id="6761209758867628753">Eina: Ajuda'm a escriure</translation>
-<translation id="6761459308170527362">Pots utilitzar el xat de veu o de text per fer una pregunta a Gemini sobre el contingut de la pàgina que estàs compartint</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">No es permeten dades del lloc web al dispositiu</translation>
 <translation id="6762833852331690540">Activat</translation>
@@ -8976,7 +8977,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7320213904474460808">Estableix com a xarxa predeterminada</translation>
 <translation id="7321545336522791733">No s'ha pogut accedir al servidor</translation>
 <translation id="7322515217754205362">Permisos del lloc web</translation>
-<translation id="7322919329844967709">Obtindràs respostes més rellevants relacionades amb el contingut de la pàgina que estàs compartint</translation>
 <translation id="7323315405936922211">Mida de l'àrea del cursor</translation>
 <translation id="7324020307732396723">Obre la configuració d'idioma</translation>
 <translation id="7324297612904500502">Fòrum per a la versió beta</translation>
@@ -10316,7 +10316,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8222112516148944758">Els grups de pestanyes es desen i s'actualitzen automàticament en tots els teus dispositius</translation>
 <translation id="8222674561049363989">El fitxer no és un document vàlid</translation>
 <translation id="822347941086490485">S'estan cercant dispositius d'interfície humana...</translation>
-<translation id="8224209912580158729">Comparteix el contingut de la pàgina amb Gemini per obtenir respostes més rellevants.</translation>
 <translation id="8224427620313426549">El teu compte de <ph name="DOMAIN_LINK" /> no se suprimirà</translation>
 <translation id="8225046344534779393">Comprova la connexió a Internet</translation>
 <translation id="8225265270453771718">Comparteix la finestra d'una aplicació</translation>

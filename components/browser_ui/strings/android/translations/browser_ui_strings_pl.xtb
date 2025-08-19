@@ -310,6 +310,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="443121186588148776">Port szeregowy</translation>
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
 <translation id="443552056913301231">Spowoduje to usunięcie wszystkich danych lokalnych, w tym plików cookie, oraz zresetowanie wszystkich uprawnień witryny <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Plansza dolna Kolory Chrome otwarta na całą wysokość</translation>
 <translation id="4468959413250150279">Wycisz dźwięk na konkretnej stronie.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# plik cookie}few{# pliki cookie}many{# plików cookie}other{# pliku cookie}}</translation>
 <translation id="4478158430052450698">Łatwiejsze dostosowywanie powiększenia w różnych witrynach</translation>
@@ -345,6 +346,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4953688446973710931">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na automatyczne pobieranie kilku plików. Gdy jest wyłączona, strony nie mogą automatycznie pobierać kilku plików.</translation>
 <translation id="4962975101802056554">Anuluj wszystkie uprawnienia urządzenia</translation>
 <translation id="4972737347717125191">Strony mogą prosić o zgodę na używanie urządzeń i danych rzeczywistości wirtualnej</translation>
+<translation id="4973805849704516244">Plansza dolna Kolory Chrome</translation>
 <translation id="497421865427891073">Dalej</translation>
 <translation id="4976702386844183910">Ostatnia wizyta <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Więcej informacji o kanale Discover</translation>

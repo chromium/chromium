@@ -310,6 +310,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="443121186588148776">Jadaport</translation>
 <translation id="4434045419905280838">Hüpikaknad ja ümbersuunamised</translation>
 <translation id="443552056913301231">See toiming kustutab kõik kohalikud andmed, sh küpsised, ja lähtestab kõik lähtekoha <ph name="ORIGIN" /> õigused</translation>
+<translation id="4441527683895888777">Chrome'i värvide alumine leht on avatud täiskõrgusel</translation>
 <translation id="4468959413250150279">Konkreetse saidi heli vaigistamine.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# küpsisefail}other{# küpsisefaili}}</translation>
 <translation id="4478158430052450698">Muutke erinevate saitide jaoks suumi kohandamine lihtsamaks</translation>
@@ -345,6 +346,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="4953688446973710931">Kui see on sisse lülitatud, võivad saidid küsida luba mitme faili automaatseks allalaadimiseks. Kui see on välja lülitatud, ei saa saidid mitut faili automaatselt alla laadida.</translation>
 <translation id="4962975101802056554">Seadme puhul kõigi lubade tühistamine</translation>
 <translation id="4972737347717125191">Saidid saavad küsida luba VR-seadmete ja -andmete kasutamiseks</translation>
+<translation id="4973805849704516244">Chrome'i värvide alumine leht</translation>
 <translation id="497421865427891073">Edasiminek</translation>
 <translation id="4976702386844183910">Viimati külastati <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Lisateave Discoveri voo kohta</translation>

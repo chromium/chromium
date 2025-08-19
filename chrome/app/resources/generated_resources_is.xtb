@@ -1105,7 +1105,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="174123615272205933">Sérsniðið</translation>
 <translation id="1741314857973421784">Áfram</translation>
 <translation id="1744108098763830590">bakgrunnssíða</translation>
-<translation id="174516937379651657">Þegar þú deilir síðu með Gemini er allt efni síðunnar og vefslóðin send til Google.</translation>
 <translation id="1745732479023874451">Stjórna tengiliðum</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Opna og breyta # skrá í þessu vefforriti?}other{Opna og breyta # skrám í þessu vefforriti?}}</translation>
 <translation id="1748329107062243374">Nota aðgangslykil úr <ph name="DEVICE_NAME" /> fyrir innskráningu á <ph name="WEBSITE" /></translation>
@@ -1142,6 +1141,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1768212860412467516">Senda ábendingu um <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Opna tengil í nýjum glugga</translation>
 <translation id="1769157454356586138">Skönnun mistókst. Stjórnandinn lokaði á þessa aðgerð</translation>
+<translation id="176920518817780870">Breyta hópi í bókamerkjamöppu</translation>
 <translation id="1770407692401984718">Dragðu mynd hingað eða</translation>
 <translation id="177053719077591686">Vista afrit Android forrita á Google Drive.</translation>
 <translation id="1773329206876345543">Búðu til heitan WiFi-reit með farsímagögnum úr <ph name="DEVICE_TYPE" /> til að tryggja öðrum tækjum nettengingu. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5289,6 +5289,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4653116291358041820">Lítill skuggi</translation>
 <translation id="4653405415038586100">Villa við að stilla Linux</translation>
 <translation id="4654236001025007561">Deildu skrám með nálægum Chromebook tölvum og Android tækjum</translation>
+<translation id="4654801841330730814">Allt</translation>
 <translation id="4657810666108475055">Flipaleit</translation>
 <translation id="4657914796247705218">TrackPoint-hraði</translation>
 <translation id="4658285806588491142">Hafðu skjáinn út af fyrir þig</translation>
@@ -7247,6 +7248,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="606449270532897041">Stjórna vefsvæðagögnum</translation>
 <translation id="6064764629679333574">Auktu hljómgæði Bluetooth-hljóðnemans með því að skipta úr lágri upplausn í háa upplausn.</translation>
 <translation id="6065289257230303064">Skráasafnseigindir vottorðsviðfangs</translation>
+<translation id="6066649679804058181">Breyta hópi í bókamerkjamöppu</translation>
 <translation id="6066794465984119824">Tæti myndar er ekki stillt</translation>
 <translation id="6069464830445383022">Google reikningurinn þinn er notaður fyrir innskráningu á Chromebook</translation>
 <translation id="6071181508177083058">staðfestu aðgangsorð</translation>
@@ -8208,7 +8210,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6759193508432371551">Núllstilling</translation>
 <translation id="6760354150216532978">Viðvörun: Þetta vefsvæði sér breytingar sem þú gerir</translation>
 <translation id="6761209758867628753">Verkfæri: Rithjálp</translation>
-<translation id="6761459308170527362">Þú getur talað eða skrifað texta og beðið Gemini að svara spurningu um efni síðunnar sem þú deilir</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6761623907967804682">Vefsvæðagögn í tæki ekki leyfð</translation>
 <translation id="6762833852331690540">Kveikt</translation>
@@ -8997,7 +8998,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7320213904474460808">Sjálfgefið eftir netkerfi</translation>
 <translation id="7321545336522791733">Ekki næst í þjón</translation>
 <translation id="7322515217754205362">Heimildir vefsvæðis</translation>
-<translation id="7322919329844967709">Þú færð meira viðeigandi upplýsingar sem tengjast efni síðunnar sem þú deilir</translation>
 <translation id="7323315405936922211">Stærð bendilssvæðis</translation>
 <translation id="7324020307732396723">Opna tungumálastillingar</translation>
 <translation id="7324297612904500502">Beta-umræðusvæði</translation>
@@ -10336,7 +10336,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8222112516148944758">Flipahóparnir þínir vistast og uppfærast sjálfkrafa í öllum tækjunum þínum</translation>
 <translation id="8222674561049363989">Skráin er ekki gilt skjal</translation>
 <translation id="822347941086490485">Leitar að HID-tækjum...</translation>
-<translation id="8224209912580158729">Deildu efni síðu með Gemini til að fá meira viðeigandi svör.</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" />-reikningnum þínum verður ekki eytt</translation>
 <translation id="8225046344534779393">Athugaðu nettenginguna</translation>
 <translation id="8225265270453771718">Deila forritaglugga</translation>

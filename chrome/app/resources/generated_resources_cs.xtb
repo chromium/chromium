@@ -1097,7 +1097,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="174123615272205933">Vlastní</translation>
 <translation id="1741314857973421784">Pokračovat</translation>
 <translation id="1744108098763830590">stránka na pozadí</translation>
-<translation id="174516937379651657">Když sdílíte stránku s Gemini, celý obsah stránky a její adresa URL se odešlou do Googlu.</translation>
 <translation id="1745732479023874451">Spravovat kontakty</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}few{Otevřít a upravit # soubory v této webové aplikaci?}many{Otevřít a upravit # souboru v této webové aplikaci?}other{Otevřít a upravit # souborů v této webové aplikaci?}}</translation>
 <translation id="1748329107062243374">K přihlášení na web <ph name="WEBSITE" /> použijte přístupový klíč ze zařízení <ph name="DEVICE_NAME" /></translation>
@@ -1134,6 +1133,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1768212860412467516">Odeslat zpětnou vazbu k funkci <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Otevřít odkaz v &amp;novém okně</translation>
 <translation id="1769157454356586138">Kontrola se nezdařila. Váš administrátor tento soubor blokuje</translation>
+<translation id="176920518817780870">Převést skupinu na složku záložek</translation>
 <translation id="1770407692401984718">Přetáhněte obrázek sem nebo</translation>
 <translation id="177053719077591686">Zálohování aplikací pro Android na Disk Google.</translation>
 <translation id="1773329206876345543">Vytvořením hotspot Wi-Fi pomocí mobilního datového připojení zařízení <ph name="DEVICE_TYPE" /> poskytovat internet dalším zařízením. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5274,6 +5274,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4653116291358041820">Malý stín</translation>
 <translation id="4653405415038586100">Chyba konfigurace Linuxu</translation>
 <translation id="4654236001025007561">Sdílejte soubory s Chromebooky a zařízeními Android v okolí</translation>
+<translation id="4654801841330730814">Vše</translation>
 <translation id="4657810666108475055">Vyhledávání v kartách</translation>
 <translation id="4657914796247705218">Rychlost TrackPointu</translation>
 <translation id="4658285806588491142">Chraňte obsah své obrazovky</translation>
@@ -7227,6 +7228,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="606449270532897041">Spravovat data webů</translation>
 <translation id="6064764629679333574">Zlepšit kvalitu zvuku mikrofonu připojeného přes Bluetooth převzorkováním zvuku s nízkým rozlišením na zvuk s vysokým rozlišením.</translation>
 <translation id="6065289257230303064">Atributy adresáře subjektu certifikátu</translation>
+<translation id="6066649679804058181">Převést skupinu na složku záložek</translation>
 <translation id="6066794465984119824">Není nastaven hash obrazu</translation>
 <translation id="6069464830445383022">K přihlašování do Chromebooku slouží účet Google</translation>
 <translation id="6071181508177083058">potvrzení hesla</translation>
@@ -8190,7 +8192,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6759193508432371551">Tovární nastavení</translation>
 <translation id="6760354150216532978">Upozornění: Tento web může vidět vámi provedené úpravy</translation>
 <translation id="6761209758867628753">Nástroj: Pomozte mi s psaním</translation>
-<translation id="6761459308170527362">Prostřednictvím hlasového nebo textového chatu můžete Gemini položit otázku ohledně obsahu stránky, kterou sdílíte</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Data webu v zařízení nejsou povolena</translation>
 <translation id="6762833852331690540">Zapnuto</translation>
@@ -8980,7 +8981,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7320213904474460808">Nastavit výchozí síť</translation>
 <translation id="7321545336522791733">Server je nedostupný</translation>
 <translation id="7322515217754205362">Oprávnění k webům</translation>
-<translation id="7322919329844967709">Získáte relevantnější odpovědi související s obsahem stránky, kterou sdílíte</translation>
 <translation id="7323315405936922211">Velikost oblasti kurzoru</translation>
 <translation id="7324020307732396723">Otevřít nastavení jazyků</translation>
 <translation id="7324297612904500502">Fórum beta</translation>
@@ -10319,7 +10319,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8222112516148944758">Skupiny karet se automaticky ukládají a aktualizují na všech vašich zařízeních</translation>
 <translation id="8222674561049363989">Soubor není platný dokument</translation>
 <translation id="822347941086490485">Hledání zařízení HID…</translation>
-<translation id="8224209912580158729">Sdílet obsah stránky s Gemini, aby odpovědi byly relevantnější.</translation>
 <translation id="8224427620313426549">Účet na webu <ph name="DOMAIN_LINK" /> smazán nebude</translation>
 <translation id="8225046344534779393">Zkontrolujte připojení k internetu</translation>
 <translation id="8225265270453771718">Sdílet okno aplikace</translation>

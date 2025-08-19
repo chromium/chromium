@@ -934,7 +934,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1623723619460186680">Giảm ánh sáng xanh</translation>
 <translation id="1624863973697515675">Tệp này quá lớn nên thiết bị của bạn không quản lý được. Hãy thử tải xuống trên một thiết bị khác</translation>
 <translation id="1626581272720526544">Bạn có thể tải ứng dụng và trò chơi Android xuống qua Cửa hàng Play. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
-<translation id="1627276047960621195">Phần mô tả tệp</translation>
+<translation id="1627276047960621195">Bộ mô tả tệp</translation>
 <translation id="1627408615528139100">Đã tải xuống</translation>
 <translation id="1628948239858170093">Quét tệp trước khi mở?</translation>
 <translation id="1629314197035607094">Mật khẩu đã hết hạn</translation>
@@ -1104,7 +1104,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="174123615272205933">Tùy chỉnh</translation>
 <translation id="1741314857973421784">Tiếp tục</translation>
 <translation id="1744108098763830590">trang nền</translation>
-<translation id="174516937379651657">Khi bạn chia sẻ một trang với Gemini, toàn bộ nội dung và URL của trang đó sẽ được gửi đến Google.</translation>
 <translation id="1745732479023874451">Quản lý danh bạ</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Mở và chỉnh sửa # tệp trong ứng dụng web này?}}</translation>
 <translation id="1748329107062243374">Sử dụng khoá đăng nhập từ <ph name="DEVICE_NAME" /> để đăng nhập vào <ph name="WEBSITE" /></translation>
@@ -1141,6 +1140,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1768212860412467516">Gửi ý kiến phản hồi về <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Mở đường liên kết trong cửa sổ &amp;mới</translation>
 <translation id="1769157454356586138">Quá trình quét không thành công. Quản trị viên của bạn đã chặn tệp này</translation>
+<translation id="176920518817780870">Chuyển đổi nhóm thành thư mục dấu trang</translation>
 <translation id="1770407692401984718">Kéo hình ảnh vào đây hoặc</translation>
 <translation id="177053719077591686">Sao lưu các ứng dụng Android vào Google Drive.</translation>
 <translation id="1773329206876345543">Tạo điểm phát sóng Wi-Fi bằng dữ liệu di động của <ph name="DEVICE_TYPE" /> để cung cấp kết nối Internet cho các thiết bị khác. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -2641,7 +2641,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2783952358106015700">Sử dụng khóa bảo mật cho <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Kiểm tra mật khẩu</translation>
 <translation id="2785279781154577715">Giao diện của thẻ xem trước khi di chuột qua thẻ</translation>
-<translation id="2785873697295365461">Phần mô tả tệp</translation>
+<translation id="2785873697295365461">Bộ mô tả tệp</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -5288,6 +5288,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4653116291358041820">Bóng nhỏ</translation>
 <translation id="4653405415038586100">Lỗi khi định cấu hình Linux</translation>
 <translation id="4654236001025007561">Chia sẻ tệp với Chromebook và thiết bị Android ở gần bạn</translation>
+<translation id="4654801841330730814">Tất cả</translation>
 <translation id="4657810666108475055">Tìm thẻ</translation>
 <translation id="4657914796247705218">Tốc độ TrackPoint</translation>
 <translation id="4658285806588491142">Giữ màn hình của bạn ở chế độ riêng tư</translation>
@@ -6524,7 +6525,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5537725057119320332">Truyền</translation>
 <translation id="5539070192556911367">Không thể kết nối với Google</translation>
 <translation id="5541091577812545428">Mật khẩu không thay đổi</translation>
-<translation id="5542132724887566711">Tiểu sử</translation>
+<translation id="5542132724887566711">Hồ sơ</translation>
 <translation id="5542750926112347543">Đã chặn cookie từ <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Đang kết nối với <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Đang kiểm tra trạng thái...</translation>
@@ -7246,6 +7247,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="606449270532897041">Quản lý dữ liệu trang web</translation>
 <translation id="6064764629679333574">Nâng cấp âm thanh có độ phân giải thấp lên độ phân giải cao để cải thiện chất lượng âm thanh của micrô Bluetooth.</translation>
 <translation id="6065289257230303064">Các Thuộc tính Thư mục Đối tượng Chứng chỉ</translation>
+<translation id="6066649679804058181">Chuyển đổi nhóm thành thư mục dấu trang</translation>
 <translation id="6066794465984119824">Chưa đặt hàm băm hình ảnh</translation>
 <translation id="6069464830445383022">Tài khoản Google của bạn chính là tài khoản để đăng nhập vào Chromebook</translation>
 <translation id="6071181508177083058">xác nhận mật khẩu</translation>
@@ -8205,7 +8207,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6759193508432371551">Khôi phục cài đặt gốc</translation>
 <translation id="6760354150216532978">Cảnh báo: trang web này có thể xem nội dung mà bạn chỉnh sửa</translation>
 <translation id="6761209758867628753">Công cụ: Giúp tôi viết</translation>
-<translation id="6761459308170527362">Bạn có thể trò chuyện bằng giọng nói hoặc văn bản để hỏi Gemini về nội dung của trang mà bạn đang chia sẻ</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Không được phép lưu dữ liệu trang web trên thiết bị</translation>
 <translation id="6762833852331690540">Đang bật</translation>
@@ -8997,7 +8998,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7320213904474460808">Đặt mạng mặc định</translation>
 <translation id="7321545336522791733">Máy chủ không truy cập được</translation>
 <translation id="7322515217754205362">Quyền cho trang web</translation>
-<translation id="7322919329844967709">Bạn sẽ nhận được câu trả lời phù hợp hơn liên quan đến nội dung của trang mà bạn đang chia sẻ</translation>
 <translation id="7323315405936922211">Kích thước vùng con trỏ</translation>
 <translation id="7324020307732396723">Mở phần cài đặt ngôn ngữ</translation>
 <translation id="7324297612904500502">Diễn đàn beta</translation>
@@ -9545,7 +9545,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7684718995427157417">Để tạo và thử nghiệm ứng dụng của bạn, hãy bật Cầu gỡ lỗi Android (Android Debug Bridge – ADB). Xin lưu ý rằng thao tác này sẽ cho phép cài đặt các ứng dụng Android mà Google chưa xác minh. Để tắt ADB, bạn cần phải đặt lại thiết bị về trạng thái ban đầu.</translation>
 <translation id="7684913007876670600">Để hiển thị chế độ xem đơn giản của trang này, hãy mở bảng điều khiển bên rồi chọn Chế độ đọc</translation>
 <translation id="7685038817958445325">Không truyền được</translation>
-<translation id="7685049629764448582">Bộ nhớ cho JavaScript</translation>
+<translation id="7685049629764448582">Bộ nhớ JavaScript</translation>
 <translation id="7685087414635069102">Cần có mã PIN</translation>
 <translation id="7685351732518564314">Nhấn vào một nút trên <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Tìm hiểu thêm về quảng cáo do trang web đề xuất</translation>
@@ -10004,7 +10004,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7992080146463834191">Tóm tắt nội dung, đơn giản hoá ngôn ngữ phức tạp hoặc đặt câu hỏi.</translation>
 <translation id="7992203134935383159">Tổng hợp giọng nói</translation>
 <translation id="7993332993977106257">Dễ dàng sử dụng Gemini trên thiết bị của bạn, ngay cả khi Chrome đang ở trạng thái thu nhỏ.</translation>
-<translation id="7997826902155442747">Mức độ ưu tiên quá trình</translation>
+<translation id="7997826902155442747">Mức độ ưu tiên tiến trình</translation>
 <translation id="7997828719430450286">Thành công.</translation>
 <translation id="7998701048266085837">URL</translation>
 <translation id="7999229196265990314">Đã tạo các tệp sau:
@@ -10337,7 +10337,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8222112516148944758">Các nhóm thẻ sẽ tự động lưu và cập nhật trên mọi thiết bị của bạn.</translation>
 <translation id="8222674561049363989">Tệp không phải là tài liệu hợp lệ</translation>
 <translation id="822347941086490485">Đang tìm thiết bị HID...</translation>
-<translation id="8224209912580158729">Chia sẻ nội dung trang với Gemini để nhận được câu trả lời phù hợp hơn.</translation>
 <translation id="8224427620313426549">Tài khoản <ph name="DOMAIN_LINK" /> của bạn sẽ không bị xoá</translation>
 <translation id="8225046344534779393">Kiểm tra kết nối Internet</translation>
 <translation id="8225265270453771718">Chia sẻ cửa sổ ứng dụng</translation>

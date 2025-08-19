@@ -310,6 +310,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="443121186588148776">Porta seriale</translation>
 <translation id="4434045419905280838">Popup e reindirizzamenti</translation>
 <translation id="443552056913301231">Questa azione eliminerà tutti i dati locali, compresi i cookie, e reimposterà tutte le autorizzazioni per <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Riquadro inferiore Colori di Chrome aperto a schermo intero</translation>
 <translation id="4468959413250150279">Disattiva l'audio per un sito specifico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
 <translation id="4478158430052450698">Semplifica la personalizzazione dello zoom per diversi siti</translation>
@@ -345,6 +346,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="4953688446973710931">Quando l'opzione è attiva, i siti possono chiedere di scaricare automaticamente più file. Quando l'opzione è disattivata, i siti non possono scaricare automaticamente più file.</translation>
 <translation id="4962975101802056554">Revoca tutte le autorizzazioni per il dispositivo</translation>
 <translation id="4972737347717125191">I siti possono chiedere di usare dati e dispositivi per realtà virtuale</translation>
+<translation id="4973805849704516244">Riquadro inferiore Colori di Chrome</translation>
 <translation id="497421865427891073">Avanti</translation>
 <translation id="4976702386844183910">Ultima visita: <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Scopri di più sul feed personalizzato</translation>

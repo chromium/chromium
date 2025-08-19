@@ -1094,7 +1094,6 @@
 <translation id="174123615272205933">Прилагођено</translation>
 <translation id="1741314857973421784">Настави</translation>
 <translation id="1744108098763830590">страница у позадини</translation>
-<translation id="174516937379651657">Када делите страницу са Gemini-јем, цео садржај и URL странице се шаљу Google-у.</translation>
 <translation id="1745732479023874451">Управљајте контактима</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Желите да отворите и измените # фајл у овој веб-апликацији?}few{Желите да отворите и измените # фајла у овој веб-апликацији?}other{Желите да отворите и измените # фајлова у овој веб-апликацији?}}</translation>
 <translation id="1748329107062243374">Користите приступни кључ уређаја <ph name="DEVICE_NAME" /> да бисте се пријавили на <ph name="WEBSITE" /></translation>
@@ -8196,7 +8195,6 @@
 <translation id="6759193508432371551">Враћање фабричких подешавања</translation>
 <translation id="6760354150216532978">Упозорење: Овај сајт може да види измене које уносите</translation>
 <translation id="6761209758867628753">Алатка: Помоћ при писању</translation>
-<translation id="6761459308170527362">Можете да користите гласовни или текстуални чет да бисте поставили питање Gemini-ју о садржају странице коју делите</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Подаци о сајтовима на уређају нису дозвољени</translation>
 <translation id="6762833852331690540">Укључено</translation>
@@ -8986,7 +8984,6 @@
 <translation id="7320213904474460808">Постави као подразумевану мрежу</translation>
 <translation id="7321545336522791733">Сервер није доступан</translation>
 <translation id="7322515217754205362">Дозволе за сајтове</translation>
-<translation id="7322919329844967709">Добијаћете релевантније одговоре у вези са садржајем странице коју делите</translation>
 <translation id="7323315405936922211">Величина области курсора</translation>
 <translation id="7324020307732396723">Отвори подешавања језика</translation>
 <translation id="7324297612904500502">Форум за бета верзију</translation>
@@ -10326,7 +10323,6 @@
 <translation id="8222112516148944758">Групе картица се аутоматски чувају и ажурирају на свим уређајима</translation>
 <translation id="8222674561049363989">Фајл није важећи документ</translation>
 <translation id="822347941086490485">Траже се уређаји са интерфејсом…</translation>
-<translation id="8224209912580158729">Делите садржај странице са Gemini-јем да бисте добијали релевантније одговоре.</translation>
 <translation id="8224427620313426549">Налог за <ph name="DOMAIN_LINK" /> неће бити избрисан</translation>
 <translation id="8225046344534779393">Проверите интернет везу</translation>
 <translation id="8225265270453771718">Делите прозор апликације</translation>

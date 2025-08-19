@@ -1095,7 +1095,6 @@
 <translation id="174123615272205933">მორგებული</translation>
 <translation id="1741314857973421784">გაგრძელება</translation>
 <translation id="1744108098763830590">ფონური გვერდი</translation>
-<translation id="174516937379651657">Gemini-სთან გვერდის გაზიარებისას, გვერდის სრული კონტენტი და URL ეგზავნება Google-ს.</translation>
 <translation id="1745732479023874451">კონტაქტების მართვა</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{გსურთ, გახსნათ და დაარედაქტიროთ # ფაილი ამ ვებ-აპში?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" />-ში შესასვლელად გამოიყენეთ <ph name="DEVICE_NAME" />-ის წვდომის გასაღები</translation>
@@ -8195,7 +8194,6 @@
 <translation id="6759193508432371551">ქარხნული პარამეტრების დაბრუნება</translation>
 <translation id="6760354150216532978">ყურადღება: ამ საიტს შეუძლია თქვენ მიერ განხორციელებული რედაქტირებების ნახვა</translation>
 <translation id="6761209758867628753">ხელსაწყო: დაწერაში დახმარება</translation>
-<translation id="6761459308170527362">შეგიძლიათ გამოიყენოთ ხმოვანი ან ტექსტური ჩეთი, რათა ჰკითხოთ Gemini-ს თქვენ მიერ გაზიარებული გვერდის კონტენტის შესახებ</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6761623907967804682">მოწყობილობაზე შენახული საიტების მონაცემები დაუშვებელია</translation>
 <translation id="6762833852331690540">ჩართული</translation>
@@ -8984,7 +8982,6 @@
 <translation id="7320213904474460808">ნაგულისხმევი ქსელი</translation>
 <translation id="7321545336522791733">სერვერი მიუწვდომელია</translation>
 <translation id="7322515217754205362">საიტების ნებართვები</translation>
-<translation id="7322919329844967709">თქვენ მიერ გაზიარებული გვერდის კონტენტთან დაკავშირებით უფრო აქტუალურ პასუხებს მიიღებთ</translation>
 <translation id="7323315405936922211">კურსორის არის ზომა</translation>
 <translation id="7324020307732396723">ენის პარამეტრების გახსნა</translation>
 <translation id="7324297612904500502">ბეტა ფორუმი</translation>
@@ -10322,7 +10319,6 @@
 <translation id="8222112516148944758">თქვენი ჩანართების ჯგუფები ავტომატურად შეინახება და განახლდება თქვენს ყველა მოწყობილობაში</translation>
 <translation id="8222674561049363989">ფაილი არ არის მართებული დოკუმენტი</translation>
 <translation id="822347941086490485">მიმდინარეობს HID მოწყობილობების პოვნა…</translation>
-<translation id="8224209912580158729">გაუზიარეთ გვერდის კონტენტი Gemini-ს, რომ მიიღოთ უფრო შესაბამისი პასუხები.</translation>
 <translation id="8224427620313426549">თქვენი <ph name="DOMAIN_LINK" /> ანგარიში არ წაიშლება</translation>
 <translation id="8225046344534779393">შეამოწმეთ კავშირი ინტერნეტთან</translation>
 <translation id="8225265270453771718">აპლიკაციის ფანჯრის გაზიარება</translation>

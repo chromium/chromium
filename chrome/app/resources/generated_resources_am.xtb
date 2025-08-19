@@ -1103,7 +1103,6 @@
 <translation id="174123615272205933">ብጁ</translation>
 <translation id="1741314857973421784">ቀጥል</translation>
 <translation id="1744108098763830590">የጀርባ ገፅ</translation>
-<translation id="174516937379651657">አንድን ገፅ ለGemini ሲያጋሩ የገፁ ሙሉ ይዘት እና ዩአርኤል ለGoogle ይላካሉ።</translation>
 <translation id="1745732479023874451">እውቂያዎችን ያስተዳድሩ</translation>
 <translation id="1748283190377208783">{0,plural, =1{ሥራ ላይ ያልዋለ ብዙ ቁጥር}one{በዚህ የድር መተግበሪያ ውስጥ # ፋይሎችን ይክፈቱ እና ያርትዑ?}other{በዚህ የድር መተግበሪያ ውስጥ # ፋይሎችን ይክፈቱ እና ያርትዑ?}}</translation>
 <translation id="1748329107062243374">ወደ <ph name="WEBSITE" /> በመለያ ለመግባት ከ<ph name="DEVICE_NAME" /> የይለፍ ቁልፍ ይጠቀሙ</translation>
@@ -1140,6 +1139,7 @@
 <translation id="1768212860412467516">ለ <ph name="EXPERIMENT_NAME" /> ግብረመልስ ይላኩ።</translation>
 <translation id="1769104665586091481">አገናኙን በአዲስ &amp;መስኮት ክፈት</translation>
 <translation id="1769157454356586138">ቅኝት አልተሳካም። ይህ ፋይል በአስተዳዳሪዎ ታግዷል</translation>
+<translation id="176920518817780870">ቡድንን ወደ የዕልባቅ አቃፊ ቀይር</translation>
 <translation id="1770407692401984718">ምስል ወደዚህ ይጎትቱ ወይም</translation>
 <translation id="177053719077591686">የAndroid መተግበሪያዎች ምትኬ Google Drive ላይ ያስቀምጡ።</translation>
 <translation id="1773329206876345543">ለሌሎች መሣሪያዎች በይነ መረብ ለማቅረብ የእርስዎን <ph name="DEVICE_TYPE" /> የተንቀሳቃሽ ስልክ ውሂብ በመጠቀም የWi-Fi መገናኛ ነጥብ ይፍጠሩ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5282,6 +5282,7 @@
 <translation id="4653116291358041820">ትንሽ ጥላ</translation>
 <translation id="4653405415038586100">Linuxን ማዋቀር ላይ ስህተት</translation>
 <translation id="4654236001025007561">ፋይሎችን በዙሪያዎ ላሉ የChromebooks እና የAndroid መሣሪያዎች ያጋሩ</translation>
+<translation id="4654801841330730814">ሁሉም</translation>
 <translation id="4657810666108475055">የትር ፍለጋ</translation>
 <translation id="4657914796247705218">የTrackPoint ፍጥነት</translation>
 <translation id="4658285806588491142">የእርስዎን ማያ ገፅ የግል ያድርጉት</translation>
@@ -7240,6 +7241,7 @@
 <translation id="606449270532897041">የጣቢያ ውሂብ አስተዳድር</translation>
 <translation id="6064764629679333574">ዝቅተኛ ጥራት ያለው ኦዲዮ ወደ ከፍተኛ ጥራት በማሳደግ የብሉቱዝ ማይክሮፎን ድምጽ ጥራትን ያሻሽሉ።</translation>
 <translation id="6065289257230303064">የሰርቲፊኬት ርዕስ የማውጫ አይነታዎች</translation>
+<translation id="6066649679804058181">ቡድንን ወደ የዕልባቅ አቃፊ ቀይር</translation>
 <translation id="6066794465984119824">የምስል ሃሽ አልተዘጋጀም</translation>
 <translation id="6069464830445383022">የእርስዎ Google መለያ የእርስዎ Chromebook መግቢያ ነው</translation>
 <translation id="6071181508177083058">የይለፍ ቃል ያረጋግጡ</translation>
@@ -8201,7 +8203,6 @@
 <translation id="6759193508432371551">የፋብሪካ ዳግም ማስጀመር</translation>
 <translation id="6760354150216532978">ማስጠንቀቂያ፦ ይህ ጣቢያ እርስዎ የሚያደርጓቸውን አርትዖቶች መመልከት ይችላል</translation>
 <translation id="6761209758867628753">መሳሪያ፦ እንድጽፍ አግዘኝ</translation>
-<translation id="6761459308170527362">እያጋሩ ስላሉት የገፅ ይዘት Geminiን ጥያቄ ለመጠየቅ የድምፅ ወይም የጽሑፍ ውይይት መጠቀም ይችላሉ</translation>
 <translation id="676158322851696513">«<ph name="EXTENSION_NAME" />»</translation>
 <translation id="6761623907967804682">የመሣሪያ ላይ የጣቢያ ውሂብ አልተፈቀደም</translation>
 <translation id="6762833852331690540">አብራ</translation>
@@ -8991,7 +8992,6 @@
 <translation id="7320213904474460808">በነባሪነት ወደ አውታረ መረቡ ተመለስ</translation>
 <translation id="7321545336522791733">አገልጋይ አይደረስበትም</translation>
 <translation id="7322515217754205362">የጣቢያ ፈቃዶች</translation>
-<translation id="7322919329844967709">እያጋሩ ካሉት የገፅ ይዘት ጋር የተያያዙ ይበልጥ አግባብነት ያላቸው መልሶችን ያገኛሉ</translation>
 <translation id="7323315405936922211">የጠቋሚ የስፋት መጠን</translation>
 <translation id="7324020307732396723">የቋንቋ ቅንብሮችን ይክፈቱ</translation>
 <translation id="7324297612904500502">የቅድመ-ይሁንታ ሙከራ መድረክ</translation>
@@ -10336,7 +10336,6 @@ nil</translation>
 <translation id="8222112516148944758">የትር ቡድኖችዎ በሁሉም መሣሪያዎችዎ ላይ በራስ-ሰር ይቀመጣሉ እና ይዘመናሉ</translation>
 <translation id="8222674561049363989">ፋይል የሚሠራ ሰነድ አይደለም</translation>
 <translation id="822347941086490485">የHID መሣሪያዎችን በማግኘት ላይ...</translation>
-<translation id="8224209912580158729">ይበልጥ አግባብነት ያላቸው መልሶችን ለማግኘት የገፅ ይዘትን ለGemini ያጋሩ።</translation>
 <translation id="8224427620313426549">የእርስዎ የ<ph name="DOMAIN_LINK" /> መለያ አይሰረዝም</translation>
 <translation id="8225046344534779393">የበይነመረብ ግንኙነትን ይፈትሹ</translation>
 <translation id="8225265270453771718">የመተግበሪያ መስኮት ያጋሩ</translation>

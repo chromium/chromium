@@ -1095,7 +1095,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="174123615272205933">Personalizzati</translation>
 <translation id="1741314857973421784">Continua</translation>
 <translation id="1744108098763830590">pagina di sfondo</translation>
-<translation id="174516937379651657">Quando condividi una pagina con Gemini, i contenuti completi e l'URL della pagina vengono inviati a Google.</translation>
 <translation id="1745732479023874451">Gestisci contatti</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Aprire e modificare # file in questa app web?}}</translation>
 <translation id="1748329107062243374">Usa una passkey di <ph name="DEVICE_NAME" /> per accedere al sito <ph name="WEBSITE" /></translation>
@@ -1132,6 +1131,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1768212860412467516">Invia feedback su <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Apri link in un'altra &amp;finestra</translation>
 <translation id="1769157454356586138">Analisi non riuscita. Questo file è bloccato dall'amministratore</translation>
+<translation id="176920518817780870">Converti gruppo in cartella di preferiti</translation>
 <translation id="1770407692401984718">Trascina un'immagine qui oppure</translation>
 <translation id="177053719077591686">Esegui il backup delle app per Android su Google Drive.</translation>
 <translation id="1773329206876345543">Crea un hotspot Wi-Fi utilizzando i dati mobili di <ph name="DEVICE_TYPE" /> per fornire internet ad altri dispositivi. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5275,6 +5275,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4653116291358041820">Ombra piccola</translation>
 <translation id="4653405415038586100">Errore durante la configurazione di Linux</translation>
 <translation id="4654236001025007561">Condividi file con Chromebook e dispositivi Android nelle vicinanze</translation>
+<translation id="4654801841330730814">Tutte</translation>
 <translation id="4657810666108475055">Ricerca nelle schede</translation>
 <translation id="4657914796247705218">Velocità TrackPoint</translation>
 <translation id="4658285806588491142">Mantieni privato lo schermo</translation>
@@ -7229,6 +7230,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="606449270532897041">Gestisci i dati dei siti</translation>
 <translation id="6064764629679333574">Migliora la qualità del suono del microfono Bluetooth aumentando la risoluzione dell'audio da bassa risoluzione ad alta risoluzione.</translation>
 <translation id="6065289257230303064">Attributi directory soggetto certificato</translation>
+<translation id="6066649679804058181">Converti gruppo in cartella di preferiti</translation>
 <translation id="6066794465984119824">L'hash dell'immagine non è impostato</translation>
 <translation id="6069464830445383022">Accedi al Chromebook con il tuo Account Google</translation>
 <translation id="6071181508177083058">conferma password</translation>
@@ -8188,7 +8190,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6759193508432371551">Ripristino dati di fabbrica</translation>
 <translation id="6760354150216532978">Attenzione: questo sito può vedere le modifiche che apporti</translation>
 <translation id="6761209758867628753">Strumento: Aiutami a scrivere</translation>
-<translation id="6761459308170527362">Puoi usare la chat vocale o di testo per fare una domanda a Gemini sui contenuti della pagina che stai condividendo</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Dati dei siti sul dispositivo non consentiti</translation>
 <translation id="6762833852331690540">On</translation>
@@ -8978,7 +8979,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7320213904474460808">Scegli rete predefinita</translation>
 <translation id="7321545336522791733">Server non raggiungibile</translation>
 <translation id="7322515217754205362">Autorizzazioni siti</translation>
-<translation id="7322919329844967709">Riceverai risposte più pertinenti relative ai contenuti della pagina che stai condividendo</translation>
 <translation id="7323315405936922211">Dimensione area cursore</translation>
 <translation id="7324020307732396723">Apri le impostazioni di lingua</translation>
 <translation id="7324297612904500502">Forum per la versione Beta</translation>
@@ -10318,7 +10318,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8222112516148944758">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i tuoi dispositivi</translation>
 <translation id="8222674561049363989">Il file non è un documento valido</translation>
 <translation id="822347941086490485">Ricerca di dispositivi HID in corso…</translation>
-<translation id="8224209912580158729">Condividi i contenuti della pagina con Gemini per ricevere risposte più pertinenti.</translation>
 <translation id="8224427620313426549">Il tuo account <ph name="DOMAIN_LINK" /> non verrà eliminato</translation>
 <translation id="8225046344534779393">Controlla la connessione a Internet</translation>
 <translation id="8225265270453771718">Condividi una finestra dell'applicazione</translation>

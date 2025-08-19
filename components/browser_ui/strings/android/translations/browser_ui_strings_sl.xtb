@@ -310,6 +310,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="443121186588148776">Serijska vrata</translation>
 <translation id="4434045419905280838">Pojavna okna in preusmeritve</translation>
 <translation id="443552056913301231">To dejanje bo izbrisalo vse lokalne podatke, vključno s piškotki, in ponastavilo vsa dovoljenja za <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Razdelek na dnu zaslona z barvami Chroma je odprt pri polni višini</translation>
 <translation id="4468959413250150279">Izklop zvoka za določeno spletno mesto.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# piškotek}one{# piškotek}two{# piškotka}few{# piškotki}other{# piškotkov}}</translation>
 <translation id="4478158430052450698">Poenostavljeno nastavljanje povečave po meri za različna spletna mesta</translation>
@@ -345,6 +346,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="4953688446973710931">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo samodejni prenos več datotek. Če je ta možnost izklopljena, spletna mesta ne smejo samodejno prenesti več datotek.</translation>
 <translation id="4962975101802056554">Umik vseh dovoljenj za napravo</translation>
 <translation id="4972737347717125191">Spletna mesta lahko zahtevajo uporabo naprav in podatkov za navidezno resničnost</translation>
+<translation id="4973805849704516244">Razdelek na dnu zaslona z barvami Chroma</translation>
 <translation id="497421865427891073">Pojdi naprej</translation>
 <translation id="4976702386844183910">Nazadnje obiskano: <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Preberite več o viru Odkrivanje</translation>

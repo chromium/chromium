@@ -310,6 +310,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="443121186588148776">Seriell port</translation>
 <translation id="4434045419905280838">Forgrunnsvinduer/viderekoblinger</translation>
 <translation id="443552056913301231">Denne handlingen sletter alle lokale data, inkludert informasjonskapsler, og tilbakestiller alle tillatelsene for <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Feltet nederst for Chrome-farger er åpnet i full høyde</translation>
 <translation id="4468959413250150279">Kutt lyden for et bestemt nettsted.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# informasjonskapsel}other{# informasjonskapsler}}</translation>
 <translation id="4478158430052450698">Gjør det enklere å tilpasse zoomen for ulike nettsteder</translation>
@@ -345,6 +346,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="4953688446973710931">Når dette er på, kan nettsteder be om å få laste ned flere filer automatisk. Når dette er av, kan ikke nettsteder laste ned flere filer automatisk.</translation>
 <translation id="4962975101802056554">Opphev alle tillatelser for enheten</translation>
 <translation id="4972737347717125191">Nettsteder kan be om å få bruke virtuell virkelighet-enheter og -data</translation>
+<translation id="4973805849704516244">Felt nederst for Chrome-farger</translation>
 <translation id="497421865427891073">Gå til neste</translation>
 <translation id="4976702386844183910">Sist besøkt <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Finn ut mer om Discover-feeden</translation>

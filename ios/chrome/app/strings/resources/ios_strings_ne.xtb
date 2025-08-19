@@ -58,6 +58,7 @@
 <translation id="1227113644794103810">निष्क्रिय ट्याबहरू</translation>
 <translation id="1231733316453485619">सिंक गर्ने सुविधा सक्रिय गर्ने हो?</translation>
 <translation id="1253032109800629289">"मूल्यको ट्र्याकिङसम्बन्धी नोटिफिकेसन प्राप्त गर्नुहोस्" लुकाउनुहोस्</translation>
+<translation id="1254424942107648268">अघिल्लो भेट्टाउनुहोस्</translation>
 <translation id="1258491128795710625">नयाँ के छ</translation>
 <translation id="1262724000444746916">"बुकमार्कहरूको सूचीमा हाल्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="1263231323834454256">पाठ्य सूची</translation>
@@ -147,6 +148,7 @@
 <translation id="1547610699249301703">पासवर्डहरू सेयर गर्नुहोस्</translation>
 <translation id="1554477036522844996">नयाँ विन्डो</translation>
 <translation id="1558391695376153246">इन्कोग्निटो ट्याबहरू बन्द गर्नुहोस्</translation>
+<translation id="1565371473877914088">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="1571780780926010134">इनकग्निटो ट्याबहरू</translation>
 <translation id="1580715474678097352">हानिकारक वेबसाइटहरूबाट सुरक्षित रहनुहोस्</translation>
 <translation id="1580783302095112590">पत्र पठाइयो।</translation>
@@ -392,6 +394,7 @@
 <translation id="2484459871750294497">यो सुविधा अन गर्न के गर्नु पर्छ?</translation>
 <translation id="2493269659028026145"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गरी तुरुन्तै लक गर्नुहोस्</translation>
 <translation id="2496180316473517155">ब्राउजिङ इतिहास</translation>
+<translation id="2496626742194544812">पहिलो ट्याबमा जानुहोस्</translation>
 <translation id="2497852260688568942">तपाईंको प्रशासकले सिंंक असक्षम पार्नुभएको छ।</translation>
 <translation id="2499505845365628575">तपाई <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> मा गई आफ्ना सबै ब्राउजिङ हिस्ट्री भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="2511117522375201202">तपाईंको सुरक्षा जोखिममा पार्न सक्ने ह्याक वा चोरी भएका <ph name="NUMBER_OF_PASSWORDS" /> वटा पासवर्ड छन्।</translation>
@@ -468,6 +471,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{यो पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएको छ}other{यी पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएका छन्}}</translation>
 <translation id="2791174088547598693">पासवर्ड हाल्नुहोस्…</translation>
 <translation id="2793703503584038325">कुनै पासवर्ड चयन गर्नुहोस् र "सेयर गर्नुहोस्" आइकनमा ट्याप गर्नुहोस्</translation>
+<translation id="2797029671965852011">इतिहास देखाउनुहोस्</translation>
 <translation id="2797302972324086597">देशको कोड</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} फाइल}other{{COUNT} वटा फाइल}}</translation>
 <translation id="2816489851009559785">मेनु → सेटिङहरू → डिफल्ट ब्राउजर</translation>
@@ -583,6 +587,7 @@
 <translation id="3273510436356991673">आफ्नो होम स्क्रिन कस्टमाइज गर्नुहोस्</translation>
 <translation id="3277021493514034324">साइटको ठेगाना कपी गरियो</translation>
 <translation id="3280562213547448728">भ्वाइस सर्च</translation>
+<translation id="3289505634533552500">भ्वाइस सर्च</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, नयाँ गतिविधि</translation>
 <translation id="3305294846493618482">थप</translation>
 <translation id="3311748811247479259">अफ छ</translation>
@@ -619,6 +624,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} वटा साइट वा एप}other{{COUNT} वटा साइट वा एप}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> का रूपमा जारी राख्नुहोस्</translation>
 <translation id="3476450923187944815">आफ्नो पासवर्ड अन्य विभिन्न एपहरूमा प्रयोग गर्नुहोस्।</translation>
+<translation id="3485558910355485767">नयाँ इन्कोग्निटो विन्डो</translation>
 <translation id="3488501490964659223">ट्याबहरू बन्द गरिए र ब्राउजिङ डेटा मेटाइयो। तपाईंलाई साइन आउट गरियो</translation>
 <translation id="3493531032208478708">सुझाव दिइएको सामग्रीको बारेमा <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" कहाँ सेभ गर्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
@@ -637,6 +643,7 @@
 <translation id="3530767473765895035">यो डिभाइसका खाताहरू व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="3533436815740441613">नयाँ ट्याब</translation>
 <translation id="3533860663366814939">अटोफिल तथा पासवर्डसम्बन्धी सेटिङ खोल्नुहोस्</translation>
+<translation id="3540141921715814660">"बुकमार्कहरू" मा हाल्नुहोस्</translation>
 <translation id="3546122170015471515">Google.com मा उपलब्ध नक्साको प्रयोगात्मक संस्करण</translation>
 <translation id="3547356470684043247">तपाईंलाई निर्णय लिन सजिलो होस् भन्नाका लागि उत्पादन, सेवा वा सुविधाहरूका बारेमा ग्राहकले गरेका समीक्षाहरू पढ्नुहोस्</translation>
 <translation id="3547933853190131743">AI मोड प्रयोग गरेर खोज्नुहोस्</translation>
@@ -680,6 +687,7 @@
 <translation id="3751873026576444885">Google लेन्स प्रयोग गरी आफ्नो डिभाइसको स्क्रिनमा भएका कुरा खोज्न छाड्नुहोस्</translation>
 <translation id="3753408171347588045">मूल्य ट्रयाक गरिँदै छ</translation>
 <translation id="3762232513783804601">तपाईंको iPad का लागि बनाइएको</translation>
+<translation id="3768725474733206671">अन्तिममा बन्द गरिएको ट्याब फेरि खोल्नुहोस्</translation>
 <translation id="3779810277399252432">इन्टरनेट छैन</translation>
 <translation id="3782614601387961027">चेतावनी बन्द गर्नुहोस्</translation>
 <translation id="3789841737615482174">इन्स्टल गर्नुहोस्</translation>
@@ -690,10 +698,12 @@
 <translation id="381219490185664296">ट्याबहरू समूहबाट हटाउने हो?</translation>
 <translation id="3812308602011798782">समीक्षाहरू</translation>
 <translation id="3813175908845379029">अझ राम्ररी र सजिलैसँग ब्राउज गर्न सघाउने उपयोगी सुझावहरू</translation>
+<translation id="3818293389945649617">अर्को भेट्टाउनुहोस्</translation>
 <translation id="3819183753496523827">तपाईं अफलाइन हुनुहुन्छ। आफ्नो इन्टरनेट कनेक्सनको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{एउटा भुक्तानी विधि}other{# वटा भुक्तानी विधि}}</translation>
 <translation id="3831560640878483188">चेतावनी बन्द गर्ने हो?</translation>
 <translation id="3832419617903252251">यो पासवर्ड यस डिभाइसमा मात्र सेभ गरिएको छ</translation>
+<translation id="3835964409414434850">अर्को ट्याबमा जानुहोस्</translation>
 <translation id="3838691874161539578">तपाईं आफ्नो खाता अझ सुरक्षित राख्नुका साथै इन्टरनेटमा अझ सुरक्षित रहन चाहनुहुन्छ भने आफूले सेभ गरेका पासवर्डहरू जाँच्नुहोस्</translation>
 <translation id="3838985624086228724">तपाईंले ट्र्याक गरिरहनुभएको उत्पादनको मूल्य घटेको छ। <ph name="DOMAIN" /> मा <ph name="PRODUCT_NAME" /> को मूल्य <ph name="PREVIOUS_PRICE" /> बाट घटेर <ph name="PRICE" /> पुगेको छ</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
@@ -762,6 +772,7 @@
 <translation id="4049419681095579435">यो प्याकेज पहिल्यैदेखि ट्र्याक गरिराखिएको छ</translation>
 <translation id="4049507953662678203">तपाईँसँग नेटवर्क जडान छ भनी निश्चित गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4070132839822635162">साइन इन नगर्नुहोस्</translation>
+<translation id="4092655288299341041">मद्दत केन्द्र देखाउनुहोस्</translation>
 <translation id="4099756562043439968">रिमाइन्डर सेट गर्नुहोस्</translation>
 <translation id="4108998448622696017">खतरनाक गतिविधि हुँदा पत्ता लगाउँछ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
 <translation id="4111985840824673503">सबै सामग्री पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
@@ -844,6 +855,7 @@
 <translation id="4405320213589929829">स्थानीय जानकारी र जाने बाटो प्राप्त गर्न वेबपेजमा ठेगानाहरू प्रयोग गर्नुहोस्।</translation>
 <translation id="441218095371040430">किबोर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="4415276339145661267">आफ्नो Google खाता व्यवस्थापन गर्नुहोस्</translation>
+<translation id="4420409367264901497">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="4425365312778464779">यो खाता व्यवस्थापन गरिन्छ</translation>
 <translation id="4430277756566635951">अहिले <ph name="EMAIL" /> चयन गरिएको छ। एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="4430505936695785931">अन्य एपहरूमा सेभ गरिएका पासवर्डहरू प्राप्त गर्नुहोस्</translation>
@@ -1087,6 +1099,7 @@
 <translation id="5343472494710226394">समाचार, खेलकुद र तपाईंका रुचिहरूमा आधारित सामग्री।</translation>
 <translation id="5352128922772839949">फाइल सेभ गर्नुहोस्</translation>
 <translation id="5355191726083956201">'उन्नत सुरक्षा' सक्रिय छ</translation>
+<translation id="536067926684072644">बुकमार्कहरू देखाउनुहोस्</translation>
 <translation id="5371112366564891538">टेक्स्टको आकार बढाउनुहोस्</translation>
 <translation id="537853552771686272">आफूलाई रुचि लाग्ने विषय र साइटहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} बन्द गरिएको छ}other{{count} बन्द गरिएको छ}}</translation>
@@ -1196,6 +1209,7 @@
 <translation id="5740123193752401435">ट्याबहरू खोज्नुहोस्…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> सम्बन्धी सूचना प्राप्त गर्ने सुविधा अन गरिएको छ</translation>
 <translation id="5745598824054949526">कुनै पनि टेक्स्ट भेटिएन</translation>
+<translation id="5745916533876677730">अघिल्लो ट्याबमा जानुहोस्</translation>
 <translation id="574762237186762643">कार्यक्रमहरू</translation>
 <translation id="5749158352074143502">यो ट्याब प्रयोग गरी जारी राख्नुहोस्</translation>
 <translation id="5753021559215751319">पासवर्ड सेभ गर्नुहोस्</translation>
@@ -1257,6 +1271,7 @@
 <translation id="5988097621740394599">आफ्ना ट्याबहरूमा मूल्य घटेको कुरासम्बन्धी जानकारी हेर्नुहोस्।</translation>
 <translation id="5988851877894965432">Chrome मा URL हरू खोल्नुहोस्</translation>
 <translation id="6001839398155993679">जाऔँ</translation>
+<translation id="6006672969046233841">नयाँ ट्याब</translation>
 <translation id="6011308810877101166">खोजसम्बन्धी सुझावहरूको गुणस्तर सुधार गर्नुहोस्</translation>
 <translation id="6012140227487808125">इन्क्रिप्सन गर्दै ...</translation>
 <translation id="6027619584715411062">आफ्ना बुकमार्क, पासवर्डलगायतका कुरा आफ्ना सबै डिभाइसहरूमा प्राप्त गर्न साइन इन गर्नुहोस्।</translation>
@@ -1369,6 +1384,7 @@
 <translation id="6368102751067608420">पासवर्ड म्यानेजरका सबै जानकारी मेटाउन</translation>
 <translation id="6372558618707314581">आफूले चाहेको जुनसुकै पेजमा जानुहोस्</translation>
 <translation id="6374469231428023295">फेरि प्रयास गर्नुहोस्</translation>
+<translation id="6383719166112032471">लोकेसन खोल्नुहोस्…</translation>
 <translation id="6387994324662817823">पासवर्डहरू यो डिभाइसको Google पासवर्ड म्यानेजरमा मात्र सेभ गरिन्छन्।</translation>
 <translation id="6393156038355142111">भरपर्दो पासवर्ड सिफारिस गर्नुहोस्</translation>
 <translation id="6404422529625928907">Google Drive मा खोल्नुहोस्</translation>
@@ -1381,6 +1397,7 @@
 <translation id="6421038304268477484">अनुवाद गरिएको टेक्स्ट</translation>
 <translation id="6429213933892582367">पासवर्डसम्बन्धी विकल्पहरू खोल्नुहोस्</translation>
 <translation id="6434591244308415567">कुनै त्रुटि भयो। पछि फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="6435236283694032571">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्नुहोस्</translation>
 <translation id="6435307030888827407">साइन आउट अवस्थामा रहिरहनुहोस्</translation>
 <translation id="6436318499800111867">मसँग सेयर गरिएको <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">ट्याब अनपिन गर्नुहोस्</translation>
@@ -1498,6 +1515,7 @@
 <translation id="6867400383614725881">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="686831807558000905">साइन इन नगर्नुहोस्</translation>
 <translation id="686899695320434745">ठेगानाहरू तपाईंका पासफ्रेज प्रयोग गरी इन्क्रिप्ट गरिँदैनन्। यसले तपाईंलाई ती ठेगानाहरू Google का अन्य सेवाहरूमा प्रयोग गर्ने अनुमति दिन्छ।</translation>
+<translation id="687135068089457384">सेटिङ देखाउनुहोस्</translation>
 <translation id="6871397658902960384">ब्राउज गर्न थाल्नुहोस्</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{यो पासवर्ड खातामा सेभ गर्नुहोस्}other{यी पासवर्डहरू खातामा सेभ गर्नुहोस्}}</translation>
 <translation id="6875166646976836138">तपाईं आफ्ना बुकमार्क, रिडिङ लिस्ट वा पासवर्ड म्यानेजरमा गएर पनि यी सामग्री हेर्न तथा व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
@@ -1580,6 +1598,7 @@
 <translation id="7215621211572884440">पप अप देखाउने अनुमति दिइएको छ</translation>
 <translation id="7218491361283758048">Zip कोड</translation>
 <translation id="7221173315674413369">"नयाँ के छ" मा गई नयाँ सुविधा र सुझावहरूका बारेमा जान्नुहोस्</translation>
+<translation id="7223102419539744003">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="7223134495231529579">डाउनलोडमा सेभ गर्नुहोस्</translation>
 <translation id="722339453342442311">अहिले नै जाँच्नुहोस्</translation>
 <translation id="7227235818314667565">सेयर गर्ने सुविधा व्यवस्थापन गर्नुहोस्</translation>
@@ -1659,6 +1678,7 @@
 <translation id="75362970626182391">नयाँ ट्याब समूह</translation>
 <translation id="7537586195939242955">माफ गर्नुहोस्, यस समयमा तपाईंको पासलाई पासबुकमा स्थापना गर्न सकिदैन।</translation>
 <translation id="754655535278952384"><ph name="TIME" /> जाँच गरियो</translation>
+<translation id="7554645225856321710">सबै ट्याब बन्द गर्नुहोस्</translation>
 <translation id="7554791636758816595">नयाँ ट्याब</translation>
 <translation id="7557508262441527045">साइन आउट गरिएको छ</translation>
 <translation id="7561196759112975576">सधैं</translation>
@@ -1710,6 +1730,7 @@
 <translation id="7729458878441927652">आफूले अन्य डिभाइसमा खोलेका ट्याबहरू हेर्न आफ्ना ट्याब र हिस्ट्री सिंक गर्नुहोस्।</translation>
 <translation id="7730020510075123961">अहँ, डेटा मर्ज गर्नुहोस्</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />। यो डिभाइसमा मात्र।</translation>
+<translation id="7738120385185846461">समस्याका बारेमा रिपोर्ट गर्नुहोस्…</translation>
 <translation id="7744192722284567281">डेटा चोरीको घटनामा फेला परेको</translation>
 <translation id="7749790401023484470">तपाईंले कुनै पनि टेक्स्ट चयन गर्नुभएको छैन।</translation>
 <translation id="7757015014239760147">कुनै पनि युजरनेम छैन ••••••••</translation>
@@ -1735,6 +1756,7 @@
 <translation id="7840771868269352570">तपाईंले चयन गर्नुभएका वस्तुहरू हटाइने छन्।</translation>
 <translation id="7841180087127694526">कपी गरिएको टेक्स्ट खोज्नुहोस्</translation>
 <translation id="7841418003178675048">तपाईंको नयाँ ट्याब पेजमा देखाइनु पर्ने कार्डहरू छान्नुहोस्।</translation>
+<translation id="7845466610722898">पछि पढ्न सेभ गरिएका वेबपेजको सूची देखाउनुहोस्</translation>
 <translation id="7846161022626028328">कुनै त्रुटि भयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="784623644169604270">हालसालै कुनै पनि क्रियाकलाप गरिएको छैन</translation>
 <translation id="7846296061357476882">Google का सेवाहरू</translation>
@@ -1747,6 +1769,7 @@
 <translation id="7865127013871431856">अनुवादसम्बन्धी विकल्पहरू</translation>
 <translation id="7866872729285243843">आफ्ना सबै डिभाइसमा रिडिङ लिस्ट प्राप्त गर्न सेटिङमा गई "रिडिङ लिस्ट" अन गर्नुहोस्।</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> प्रयोग गरी फाराम स्वतः भर्नुहोस्</translation>
+<translation id="7879275349003161544">डाउनलोड गरिएका सामग्री देखाउनुहोस्</translation>
 <translation id="7883882164760409935">तपाईंले एकभन्दा बढी ठाउँमा पासवर्डहरू प्रयोग गर्नुभएको छ।</translation>
 <translation id="7887174313503389866">हामीले तयार पारेको मार्गदर्शन सामग्रीका सहायताले गोपनीयता तथा सुरक्षासम्बन्धी मुख्य नियन्त्रण सुविधाहरूका बारेमा जानकारी प्राप्त गर्नुहोस्। तपाईं थप विकल्पहरू हेर्न चाहनुहुन्छ भने प्रत्येक सेटिङमा जानुहोस्।</translation>
 <translation id="7887198238286927132">तपाईंको गोपनीयताको सुरक्षा गर्न Chrome ले यो फिल्ड स्वतः भर्ने छैन।</translation>
@@ -1762,6 +1785,7 @@
 <translation id="7930998711684428189">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा तपाईंलाई चेतावनी दिन्छ।</translation>
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> मा खोज्नुहोस्</translation>
 <translation id="7938254975914653459">फेसटाइम</translation>
+<translation id="7939856641500914040">ब्राउजिङ डेटा मेटाउनुहोस्…</translation>
 <translation id="7941578031639087549">{count,plural, =1{यो पेज तपाईंको खाता ({email}) मा पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएको छ}other{{count} वटा पेज तपाईंको खाता ({email}) मा पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएका छन्}}</translation>
 <translation id="7952353944614086413">तपाईंका खुला ट्याब र समूहहरू</translation>
 <translation id="7952670906562503188">तपाईं {passkey_count} वटा पासकी र आफूले कहिल्यै पनि साइन इनसम्बन्धी जानकारी सेभ नगर्ने विकल्प रोजेका साइट तथा एपहरूको सूची मेटाउन लाग्दै हुनुहुन्छ। तपाईंले साइट तथा एपहरूको खाता बनाउनुभएको छ भने सो खाता मेटाइने छैन।</translation>
@@ -1906,6 +1930,7 @@
 <translation id="8481184073299279701">सबै ट्याबहरूबाट JavaScript कन्सोलका भावी लग तथा त्रुटिहरू सङ्कलन गर्न "लग गर्न सुरु गर्नुहोस्" मा ट्याप गर्नुहोस्। यो पेज बन्द नगरेसम्म वा "लग गर्न छाड्नुहोस्" बटन ट्याप नगरेसम्म लगहरू सङ्कलन गरिने छ (र मेमोरीमा मात्र भण्डारण गरिने छ)।</translation>
 <translation id="8487667956631253959">अन छ</translation>
 <translation id="8487700953926739672">अफलाईन उपलब्ध</translation>
+<translation id="8488923644885757471">नयाँ विन्डो</translation>
 <translation id="8490629238792920282">लिंक बनाउन सकिएन</translation>
 <translation id="8501469528283376592">डाउनलोड गरिएका सामग्री स्वतः मेटाउनुहोस्</translation>
 <translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
@@ -1989,6 +2014,7 @@
 <translation id="8748678031495824833">पेजमै भएका AI टुलहरू खोल्नुहोस्</translation>
 <translation id="8750037785291841318">तपाईंका ट्याबहरू यहाँ देखिने छन्</translation>
 <translation id="8756969031206844760">पासवर्ड अद्यावधिक गर्ने हो?</translation>
+<translation id="8763613688786959833">अन्तिम ट्याबमा जानुहोस्</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> लाई अनफलो गर्नुहोस्</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> र <ph name="SECOND_WEBSITE" /> का पासवर्डहरू मेटिने छन्। तपाईंका खाताहरू मेटिने छैनन्।</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>
@@ -2004,6 +2030,7 @@
 <translation id="8819155700324279105">अनलाइन जोखिमहरूबाट सुरक्षित रहन सुरक्षाको एउटा अतिरिक्त तह थप्नुहोस्</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="8822421075653507124">यो डिभाइस सुरक्षित रूपमा प्रयोग गर्न सकिन्छ भन्ने कुरा सुनिश्चित गर्न तपाईंको सङ्गठनले यसको अपरेटिङ सिस्टम, ब्राउजर, सेटिङ र डिभाइसमा कुन सफ्टवेयर इन्स्टल गरिएको छ भन्ने कुराका बारेमा जानकारी हेर्नु पर्ने हुन सक्छ।</translation>
+<translation id="882557203579758546">पेजमा खोज्नुहोस्…</translation>
 <translation id="8831208860914609320">सबै निष्क्रिय ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="8837654851594567190">प्रकाशकअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="8840513115188359703">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
@@ -2108,6 +2135,7 @@
 <translation id="9203951165704618409">कस्टमाइज गरिएको ब्राउजिङ अनुभव प्राप्त गर्न एड्रेस बारलाई स्क्रिनको सिरानबाट सारेर तलपट्टि लैजानुहोस्।</translation>
 <translation id="9205189991633470489">इन्कोग्निटो ट्याब लक गर्ने सुविधा</translation>
 <translation id="9206887540681440657">गति</translation>
+<translation id="9219154867334666734">ट्याबहरू खोज्नुहोस्…</translation>
 <translation id="9223358826628549784">क्र्याश रिपोर्ट पठाइयो।</translation>
 <translation id="926455622548529175">बदल्नुहोस् र मेटाउनुहोस्</translation>
 <translation id="929748059769569925">हाइलाइट गरिएको टेक्स्ट</translation>

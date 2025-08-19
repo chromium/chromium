@@ -310,6 +310,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="443121186588148776">Porth cyfresol</translation>
 <translation id="4434045419905280838">Ffenestri naid ac ailgyfeiriadau</translation>
 <translation id="443552056913301231">Bydd y weithred hon yn dileu'r holl ddata lleol, gan gynnwys cwcis, ac yn ailosod pob caniatâd ar gyfer <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Dalen waelod lliwiau Chrome wedi'i hagor ar ei huchder llawn</translation>
 <translation id="4468959413250150279">Distewi sain ar gyfer gwefan benodol.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cwci}zero{# cwci}two{# gwci}few{# chwci}many{# chwci}other{# cwci}}</translation>
 <translation id="4478158430052450698">Ei gwneud hi'n haws i addasu chwyddo ar gyfer gwahanol wefannau</translation>
@@ -345,6 +346,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="4953688446973710931">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am lawrlwytho mwy nag un ffeil yn awtomatig. Pan fydd wedi'i ddiffodd, ni all gwefannau lawrlwytho mwy nag un ffeil yn awtomatig.</translation>
 <translation id="4962975101802056554">Dirymu pob caniatâd ar gyfer y ddyfais</translation>
 <translation id="4972737347717125191">Gall gwefannau ofyn am gael defnyddio dyfeisiau rhithwirionedd a'u data</translation>
+<translation id="4973805849704516244">Dalen waelod Lliwiau Chrome</translation>
 <translation id="497421865427891073">Mynd ymlaen</translation>
 <translation id="4976702386844183910">Ymwelwyd ddiwethaf <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Dysgu rhagor am y ffrwd darganfod</translation>

@@ -1095,7 +1095,6 @@
 <translation id="174123615272205933">กำหนดเอง</translation>
 <translation id="1741314857973421784">ต่อไป</translation>
 <translation id="1744108098763830590">หน้าพื้นหลัง</translation>
-<translation id="174516937379651657">เมื่อคุณแชร์หน้าเว็บกับ Gemini ระบบจะส่งเนื้อหาและ URL แบบเต็มของหน้าเว็บไปยัง Google</translation>
 <translation id="1745732479023874451">จัดการรายชื่อติดต่อ</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{เปิดและแก้ไข # ไฟล์ในเว็บแอปนี้ใช่ไหม}}</translation>
 <translation id="1748329107062243374">ใช้พาสคีย์จาก <ph name="DEVICE_NAME" /> เพื่อลงชื่อเข้าใช้ <ph name="WEBSITE" /></translation>
@@ -8188,7 +8187,6 @@
 <translation id="6759193508432371551">รีเซ็ตเป็นค่าเริ่มต้น</translation>
 <translation id="6760354150216532978">คำเตือน: เว็บไซต์นี้จะเห็นการแก้ไขที่คุณทำ</translation>
 <translation id="6761209758867628753">เครื่องมือ: ช่วยฉันเขียน</translation>
-<translation id="6761459308170527362">คุณสามารถใช้การแชทด้วยเสียงหรือข้อความเพื่อถาม Gemini เกี่ยวกับเนื้อหาของหน้าที่คุณกำลังแชร์</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">ไม่อนุญาตข้อมูลเว็บไซต์ในอุปกรณ์</translation>
 <translation id="6762833852331690540">เปิด</translation>
@@ -8978,7 +8976,6 @@
 <translation id="7320213904474460808">เครือข่ายเริ่มต้น</translation>
 <translation id="7321545336522791733">ไม่สามารถเข้าถึงเซิร์ฟเวอร์</translation>
 <translation id="7322515217754205362">สิทธิ์ของเว็บไซต์</translation>
-<translation id="7322919329844967709">คุณจะได้รับคำตอบที่เกี่ยวข้องมากขึ้นซึ่งเกี่ยวข้องกับเนื้อหาของหน้าเว็บที่คุณกำลังแชร์</translation>
 <translation id="7323315405936922211">ขนาดพื้นที่เคอร์เซอร์</translation>
 <translation id="7324020307732396723">เปิดการตั้งค่าภาษา</translation>
 <translation id="7324297612904500502">ฟอรัมเบต้า</translation>
@@ -10317,7 +10314,6 @@
 <translation id="8222112516148944758">กลุ่มแท็บจะบันทึกและอัปเดตโดยอัตโนมัติในอุปกรณ์ทั้งหมด</translation>
 <translation id="8222674561049363989">ไฟล์ไม่ใช่เอกสารที่ถูกต้อง</translation>
 <translation id="822347941086490485">กำลังค้นหาอุปกรณ์ HID...</translation>
-<translation id="8224209912580158729">แชร์เนื้อหาของหน้าเว็บกับ Gemini เพื่อรับคำตอบที่เกี่ยวข้องมากขึ้น</translation>
 <translation id="8224427620313426549">บัญชี <ph name="DOMAIN_LINK" /> จะไม่ถูกลบ</translation>
 <translation id="8225046344534779393">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="8225265270453771718">แชร์หน้าต่างแอปพลิเคชัน</translation>

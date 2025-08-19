@@ -1090,7 +1090,6 @@
 <translation id="174123615272205933">自定义</translation>
 <translation id="1741314857973421784">继续</translation>
 <translation id="1744108098763830590">背景页</translation>
-<translation id="174516937379651657">当您与 Gemini 分享网页时，系统会将网页的完整内容和网址发送给 Google。</translation>
 <translation id="1745732479023874451">管理联系人</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{要在此 Web 应用中打开并修改 # 个文件吗？}}</translation>
 <translation id="1748329107062243374">使用<ph name="DEVICE_NAME" />中的通行密钥登录 <ph name="WEBSITE" /></translation>
@@ -5296,7 +5295,7 @@
 <translation id="4676543021048806071">请输入 Google 密码管理工具的 6 位数 PIN 码</translation>
 <translation id="4676595058027112862">Phone Hub，了解详情</translation>
 <translation id="4676616966096505747">部分数据尚未保存到您的账号</translation>
-<translation id="4677772697204437347">GPU内存</translation>
+<translation id="4677772697204437347">GPU 内存</translation>
 <translation id="467809019005607715">Google 幻灯片</translation>
 <translation id="4678848110205818817">信用卡/借记卡</translation>
 <translation id="4679018849559620189">这样有助于您在任意设备上访问已保存的通行密钥</translation>
@@ -7869,7 +7868,7 @@
 <translation id="6538036594527795020">更改 <ph name="APP" /> 的语言。当前语言为<ph name="LANGUAGE" />。</translation>
 <translation id="6538098297809675636">检测代码时出错</translation>
 <translation id="653920215766444089">正在搜索指控设备</translation>
-<translation id="653983593749614101">正在恢复…</translation>
+<translation id="653983593749614101">继续下载中…</translation>
 <translation id="6540174167103635041">安装应用</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您有意这么做或被要求这样做，否则请不要随意启用这项功能，因为收集数据可能会降低性能。</translation>
 <translation id="6540488083026747005">您已允许此网站使用第三方 Cookie</translation>
@@ -8179,7 +8178,6 @@
 <translation id="6759193508432371551">恢复出厂设置</translation>
 <translation id="6760354150216532978">警告：此网站可以看到您所做的修改</translation>
 <translation id="6761209758867628753">工具：帮我写</translation>
-<translation id="6761459308170527362">您可以使用语音或文字对话，就您正在分享的网页内容向 Gemini 提问</translation>
 <translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6761623907967804682">不允许使用设备端网站数据</translation>
 <translation id="6762833852331690540">已开启</translation>
@@ -8969,7 +8967,6 @@
 <translation id="7320213904474460808">设置默认网络</translation>
 <translation id="7321545336522791733">无法连接到服务器</translation>
 <translation id="7322515217754205362">网站权限</translation>
-<translation id="7322919329844967709">您将获得与您正在分享的网页内容相关且更贴合您需求的回答</translation>
 <translation id="7323315405936922211">光标区域大小</translation>
 <translation id="7324020307732396723">打开语言设置</translation>
 <translation id="7324297612904500502">Chrome（测试版）论坛</translation>
@@ -10309,7 +10306,6 @@
 <translation id="8222112516148944758">您的标签页分组会自动保存，并在您的所有设备上更新</translation>
 <translation id="8222674561049363989">文件不是有效的文档</translation>
 <translation id="822347941086490485">正在查找 HID 设备…</translation>
-<translation id="8224209912580158729">与 Gemini 分享网页内容，以获得更贴合需求的回答。</translation>
 <translation id="8224427620313426549">您的 <ph name="DOMAIN_LINK" /> 账号不会被删除</translation>
 <translation id="8225046344534779393">请检查互联网连接状况</translation>
 <translation id="8225265270453771718">共享应用窗口</translation>

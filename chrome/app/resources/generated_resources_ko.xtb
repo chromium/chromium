@@ -1104,7 +1104,6 @@
 <translation id="174123615272205933">맞춤</translation>
 <translation id="1741314857973421784">계속</translation>
 <translation id="1744108098763830590">백그라운드 페이지</translation>
-<translation id="174516937379651657">Gemini와 페이지를 공유하면 페이지의 전체 콘텐츠와 URL이 Google로 전송됩니다.</translation>
 <translation id="1745732479023874451">연락처 관리</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{이 웹 앱에서 # 파일을 열고 수정하시겠습니까?}}</translation>
 <translation id="1748329107062243374"><ph name="DEVICE_NAME" />의 패스키로 <ph name="WEBSITE" />에 로그인하세요</translation>
@@ -1141,6 +1140,7 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" />에 관한 의견 보내기</translation>
 <translation id="1769104665586091481">새 창에서 링크 열기(&amp;W)</translation>
 <translation id="1769157454356586138">스캔할 수 없습니다. 관리자가 이 파일을 차단했습니다.</translation>
+<translation id="176920518817780870">그룹을 북마크 폴더로 변환</translation>
 <translation id="1770407692401984718">여기로 이미지를 드래그하거나</translation>
 <translation id="177053719077591686">Google Drive에 Android 앱 백업.</translation>
 <translation id="1773329206876345543"><ph name="DEVICE_TYPE" />의 모바일 데이터를 사용해 다른 기기에 인터넷을 제공하는 Wi-Fi 핫스팟을 만드세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5289,6 +5289,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4653116291358041820">작은 음영</translation>
 <translation id="4653405415038586100">Linux 설정 중 오류 발생</translation>
 <translation id="4654236001025007561">파일을 근처의 Chromebook 및 Android 기기와 공유합니다.</translation>
+<translation id="4654801841330730814">전체</translation>
 <translation id="4657810666108475055">탭 검색</translation>
 <translation id="4657914796247705218">TrackPoint 속도</translation>
 <translation id="4658285806588491142">화면을 비공개로 유지하세요</translation>
@@ -7247,6 +7248,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="606449270532897041">사이트 데이터 관리</translation>
 <translation id="6064764629679333574">저해상도 오디오를 고해상도로 업스케일링하여 블루투스 마이크 사운드의 품질을 개선합니다.</translation>
 <translation id="6065289257230303064">인증서 대상 디렉터리 속성</translation>
+<translation id="6066649679804058181">그룹을 북마크 폴더로 변환</translation>
 <translation id="6066794465984119824">이미지 해시가 설정되지 않았습니다.</translation>
 <translation id="6069464830445383022">Google 계정으로 Chromebook 로그인하기</translation>
 <translation id="6071181508177083058">비밀번호 확인</translation>
@@ -8206,7 +8208,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6759193508432371551">초기화</translation>
 <translation id="6760354150216532978">경고: 이 사이트에서 내가 수정한 내용을 볼 수 있습니다</translation>
 <translation id="6761209758867628753">도구: 작성 지원 기능</translation>
-<translation id="6761459308170527362">음성 또는 텍스트 채팅을 사용하여 Gemini에게 공유 중인 페이지 콘텐츠에 대해 질문할 수 있습니다.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">기기 내 사이트 데이터가 허용되지 않음</translation>
 <translation id="6762833852331690540">사용</translation>
@@ -8996,7 +8997,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7320213904474460808">기본 네트워크 설정</translation>
 <translation id="7321545336522791733">서버에 연결할 수 없음</translation>
 <translation id="7322515217754205362">사이트 권한</translation>
-<translation id="7322919329844967709">공유하는 페이지 콘텐츠와 관련된 더 관련성 높은 답변을 얻을 수 있습니다.</translation>
 <translation id="7323315405936922211">커서 영역 크기</translation>
 <translation id="7324020307732396723">언어 설정 열기</translation>
 <translation id="7324297612904500502">베타 포럼</translation>
@@ -10336,7 +10336,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8222112516148944758">탭 그룹이 모든 기기에서 자동으로 저장되고 업데이트됩니다.</translation>
 <translation id="8222674561049363989">유효한 파일 문서가 아닙니다</translation>
 <translation id="822347941086490485">HID 기기를 찾는 중...</translation>
-<translation id="8224209912580158729">더 관련성 높은 대답을 얻으려면 Gemini와 페이지 콘텐츠를 공유하세요.</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> 계정은 삭제되지 않습니다.</translation>
 <translation id="8225046344534779393">인터넷 연결 상태 확인</translation>
 <translation id="8225265270453771718">애플리케이션 창 공유</translation>

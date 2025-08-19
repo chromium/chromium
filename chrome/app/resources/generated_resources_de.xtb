@@ -1092,7 +1092,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="174123615272205933">Benutzerdefiniert</translation>
 <translation id="1741314857973421784">Weiter</translation>
 <translation id="1744108098763830590">Hintergrundseite</translation>
-<translation id="174516937379651657">Wenn du eine Seite mit Gemini teilst, werden der gesamte Inhalt und die URL der Seite an Google gesendet.</translation>
 <translation id="1745732479023874451">Kontakte verwalten</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# Dateien in dieser Web-App öffnen und bearbeiten?}}</translation>
 <translation id="1748329107062243374">Passkey von <ph name="DEVICE_NAME" /> zur Anmeldung auf <ph name="WEBSITE" /> verwenden</translation>
@@ -1129,6 +1128,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1768212860412467516">Feedback geben zu „<ph name="EXPERIMENT_NAME" />“.</translation>
 <translation id="1769104665586091481">Link in neuem &amp;Fenster öffnen</translation>
 <translation id="1769157454356586138">Fehler beim Scannen. Diese Datei wird von deinem Administrator blockiert.</translation>
+<translation id="176920518817780870">Gruppe in Lesezeichenordner umwandeln</translation>
 <translation id="1770407692401984718">Bild hierher ziehen oder</translation>
 <translation id="177053719077591686">Android-Apps auf Google Drive sichern.</translation>
 <translation id="1773329206876345543">Du kannst einen WLAN-Hotspot mit der mobilen Datenverbindung deines Geräts (<ph name="DEVICE_TYPE" />) erstellen, um anderen Geräten eine Internetverbindung zur Verfügung zu stellen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5270,6 +5270,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4653116291358041820">Kleiner Schatten</translation>
 <translation id="4653405415038586100">Fehler bei der Konfiguration von Linux</translation>
 <translation id="4654236001025007561">Du kannst Dateien ganz einfach mit Chromebooks und Android-Geräten in der Nähe teilen</translation>
+<translation id="4654801841330730814">Alle</translation>
 <translation id="4657810666108475055">Tab-Suche</translation>
 <translation id="4657914796247705218">TrackPoint-Geschwindigkeit</translation>
 <translation id="4658285806588491142">Daten auf dem Bildschirm schützen</translation>
@@ -7223,6 +7224,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="606449270532897041">Websitedaten verwalten</translation>
 <translation id="6064764629679333574">Du kannst die Klangqualität des Bluetooth-Mikrofons verbessern, indem du eine höhere Audio-Auflösung wählst.</translation>
 <translation id="6065289257230303064">Verzeichnisattribute des Zertifikatsinhabers</translation>
+<translation id="6066649679804058181">Gruppe in Lesezeichenordner umwandeln</translation>
 <translation id="6066794465984119824">Image-Hash ist nicht festgelegt</translation>
 <translation id="6069464830445383022">Verwende dein Google-Konto, um dich auf deinem Chromebook anzumelden</translation>
 <translation id="6071181508177083058">Passwort bestätigen</translation>
@@ -8182,7 +8184,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6759193508432371551">Zurücksetzen auf Werkseinstellungen</translation>
 <translation id="6760354150216532978">Warnung: Website kann vorgenommene Änderungen sehen</translation>
 <translation id="6761209758867628753">Tool: Formuliere für mich</translation>
-<translation id="6761459308170527362">Du kannst Gemini per Spracheingabe oder Chat eine Frage zum Inhalt einer Seite stellen, die du gerade teilst</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6761623907967804682">Websitedaten auf dem Gerät nicht zugelassen</translation>
 <translation id="6762833852331690540">An</translation>
@@ -8972,7 +8973,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7320213904474460808">Netzwerk als Standard festlegen</translation>
 <translation id="7321545336522791733">Server nicht erreichbar</translation>
 <translation id="7322515217754205362">Websiteberechtigungen</translation>
-<translation id="7322919329844967709">Du erhältst relevantere Antworten zum Inhalt der Seite, die du gerade teilst</translation>
 <translation id="7323315405936922211">Größe des Cursorbereichs</translation>
 <translation id="7324020307732396723">Spracheinstellungen öffnen</translation>
 <translation id="7324297612904500502">Beta-Forum</translation>
@@ -10312,7 +10312,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8222112516148944758">Deine Tabgruppen werden auf allen deinen Geräten automatisch gespeichert und aktualisiert</translation>
 <translation id="8222674561049363989">Datei ist kein gültiges Dokument</translation>
 <translation id="822347941086490485">HID-Geräte werden gesucht…</translation>
-<translation id="8224209912580158729">Teile Seiteninhalte mit Gemini, um relevantere Antworten zu bekommen.</translation>
 <translation id="8224427620313426549">Dein <ph name="DOMAIN_LINK" />-Konto wird nicht gelöscht</translation>
 <translation id="8225046344534779393">Internetverbindung prüfen</translation>
 <translation id="8225265270453771718">Anwendungsfenster freigeben</translation>

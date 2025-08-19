@@ -310,6 +310,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="443121186588148776">Seri bağlantı noktası</translation>
 <translation id="4434045419905280838">Pop-up ve yönlendirmeler</translation>
 <translation id="443552056913301231">Bu işlem, çerezler de dahil olmak üzere yerel verilerin tamamını temizler ve tüm <ph name="ORIGIN" /> izinlerini siler</translation>
+<translation id="4441527683895888777">Chrome renkleri alt sayfası tüm yükseklikte açıldı</translation>
 <translation id="4468959413250150279">Belirli bir site için sesi kapatın.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# çerez}other{# çerez}}</translation>
 <translation id="4478158430052450698">Yakınlaştırma işlevini farklı siteler için özelleştirmeyi kolay hale getirin</translation>
@@ -345,6 +346,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="4953688446973710931">Bu düğme açıkken siteler birden fazla dosyayı otomatik olarak indirmek isteyebilir. Düğme kapalıyken siteler birden fazla dosyayı otomatik olarak indiremez.</translation>
 <translation id="4962975101802056554">Cihaz için tüm izinleri iptal eder</translation>
 <translation id="4972737347717125191">Siteler sanal gerçeklik cihazlarını ve verilerini kullanmak isteyebilir</translation>
+<translation id="4973805849704516244">Chrome Renkleri alt sayfası</translation>
 <translation id="497421865427891073">İlerle</translation>
 <translation id="4976702386844183910">Son ziyaret tarihi: <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Keşfet feed'i hakkında daha fazla bilgi</translation>

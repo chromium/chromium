@@ -1105,7 +1105,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="174123615272205933">Custom</translation>
 <translation id="1741314857973421784">Magpatuloy</translation>
 <translation id="1744108098763830590">pahina ng background</translation>
-<translation id="174516937379651657">Kapag nag-share ka ng page sa Gemini, ipapadala sa Google ang buong content at URL ng page.</translation>
 <translation id="1745732479023874451">Pamahalaan ang mga contact</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Buksan at i-edit ang # file sa web app na ito?}other{Buksan at i-edit ang # na file sa web app na ito?}}</translation>
 <translation id="1748329107062243374">Gumamit ng passkey mula sa <ph name="DEVICE_NAME" /> para makapag-sign in sa <ph name="WEBSITE" /></translation>
@@ -1142,6 +1141,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1768212860412467516">Magpadala ng feedback para sa <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">Buksan ang Link sa Bagong &amp;Window</translation>
 <translation id="1769157454356586138">Hindi na-scan. Na-block ng iyong administrator ang file na ito</translation>
+<translation id="176920518817780870">I-convert ang grupo sa folder ng bookmark</translation>
 <translation id="1770407692401984718">Mag-drag ng larawan dito o</translation>
 <translation id="177053719077591686">Mag-back up ng mga Android app sa Google Drive.</translation>
 <translation id="1773329206876345543">Gumawa ng Wi-Fi hotspot gamit ang mobile data ng iyong <ph name="DEVICE_TYPE" /> para magbigay ng Internet sa iba pang device. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5289,6 +5289,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4653116291358041820">Maliit na shadow</translation>
 <translation id="4653405415038586100">Error sa pag-configure ng Linux</translation>
 <translation id="4654236001025007561">Magbahagi ng mga file sa Mga Chromebook at Android device sa paligid mo</translation>
+<translation id="4654801841330730814">Lahat</translation>
 <translation id="4657810666108475055">Paghahanap sa tab</translation>
 <translation id="4657914796247705218">Bilis ng TrackPoint</translation>
 <translation id="4658285806588491142">Panatilihing pribado ang iyong screen</translation>
@@ -7247,6 +7248,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="606449270532897041">Pamahalaan ang data ng site</translation>
 <translation id="6064764629679333574">Pagandahin ang kalidad ng tunog ng Bluetooth na mikropono sa pamamagitan ng pag-upscale sa high-res mula sa low-res.</translation>
 <translation id="6065289257230303064">Mga Katangian ng Direktoryo ng Paksa ng Certificate</translation>
+<translation id="6066649679804058181">I-convert ang Grupo sa Folder ng Bookmark</translation>
 <translation id="6066794465984119824">Hindi nakatakda ang hash ng larawan</translation>
 <translation id="6069464830445383022">Ang iyong Google Account ang gagamitin mo sa pag-sign in sa Chromebook</translation>
 <translation id="6071181508177083058">kumpirmahin ang password</translation>
@@ -8208,7 +8210,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6759193508432371551">Factory reset</translation>
 <translation id="6760354150216532978">Babala: makikita ng site na ito ang mga pag-edit na gagawin mo</translation>
 <translation id="6761209758867628753">Tool: Tulungan akong magsulat</translation>
-<translation id="6761459308170527362">Puwede kang gumamit ng voice o text chat para magtanong sa Gemini tungkol sa content ng page na shine-share mo</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Hindi pinapayagan ang on-device na data ng site</translation>
 <translation id="6762833852331690540">Naka-on</translation>
@@ -8998,7 +8999,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7320213904474460808">Pumili ng default na network</translation>
 <translation id="7321545336522791733">Hindi makakonekta sa server</translation>
 <translation id="7322515217754205362">Mga Pahintulot sa Site</translation>
-<translation id="7322919329844967709">Makakakuha ka ng mga mas nauugnay na sagot na may kaugnayan sa content ng page na shine-share mo</translation>
 <translation id="7323315405936922211">Laki ng lugar ng cursor</translation>
 <translation id="7324020307732396723">Buksan ang Mga Setting ng Wika</translation>
 <translation id="7324297612904500502">Forum sa Beta</translation>
@@ -10338,7 +10338,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8222112516148944758">Awtomatikong nase-save at naa-update ang iyong mga grupo ng tab sa lahat ng device mo</translation>
 <translation id="8222674561049363989">Hindi valid na dokumento ang file</translation>
 <translation id="822347941086490485">Naghahanap ng mga HID device...</translation>
-<translation id="8224209912580158729">I-share ang content ng page sa Gemini para makakuha ng mga mas nauugnay na sagot.</translation>
 <translation id="8224427620313426549">Hindi made-delete ang iyong <ph name="DOMAIN_LINK" /> account.</translation>
 <translation id="8225046344534779393">Tingnan ang koneksyon sa internet</translation>
 <translation id="8225265270453771718">Magbahagi ng application window</translation>

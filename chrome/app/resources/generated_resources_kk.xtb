@@ -1092,7 +1092,6 @@
 <translation id="174123615272205933">Арнаулы</translation>
 <translation id="1741314857973421784">Жалғастыру</translation>
 <translation id="1744108098763830590">фондық бет</translation>
-<translation id="174516937379651657">Бетті Gemini-мен бөліскен кезде, беттің толық контенті мен URL мекенжайы Google-ға жіберіледі.</translation>
 <translation id="1745732479023874451">Контактілерді басқару</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Осы веб-қолданбада # файлды ашып, өзгерту керек пе?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> сайтына кіру үшін <ph name="DEVICE_NAME" /> кіру кілтін пайдалану</translation>
@@ -1129,6 +1128,7 @@
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> туралы пікір жіберіңіз.</translation>
 <translation id="1769104665586091481">Сілтемені &amp;жаңа терезеде ашу</translation>
 <translation id="1769157454356586138">Сканерлеу сәтсіз аяқталды. Бұл файлды әкімшіңіз блоктады.</translation>
+<translation id="176920518817780870">Топты бетбелгі қалтасына түрлендіру</translation>
 <translation id="1770407692401984718">Суретті мына жерге сүйреп апарыңыз немесе</translation>
 <translation id="177053719077591686">Google Drive-та Android қолданбаларының сақтық көшірмесін жасаңыз.</translation>
 <translation id="1773329206876345543">Басқа құрылғыларға интернетті қамтамасыз ету үшін <ph name="DEVICE_TYPE" /> мобильдік интернеті көмегімен Wi-Fi хотспотын жасаңыз. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5270,6 +5270,7 @@
 <translation id="4653116291358041820">Кіші көлеңке</translation>
 <translation id="4653405415038586100">Linux-ті конфигурациялау қатесі шықты</translation>
 <translation id="4654236001025007561">Файлдарды маңайдағы Chromebook және Android құрылғыларымен бөлісіңіз.</translation>
+<translation id="4654801841330730814">Барлығы</translation>
 <translation id="4657810666108475055">Қойындыны іздеу</translation>
 <translation id="4657914796247705218">TrackPoint жылдамдығы</translation>
 <translation id="4658285806588491142">Экраныңызды өзіңіз ғана көріңіз</translation>
@@ -7223,6 +7224,7 @@
 <translation id="606449270532897041">Сайт деректерін басқару</translation>
 <translation id="6064764629679333574">Аудионың төмен ажыратымдылығын жоғары деңгейге көтеру арқылы Bluetooth микрофонының сапасын жақсартады.</translation>
 <translation id="6065289257230303064">Сертификат тақырыбының каталог төлсипаттары</translation>
+<translation id="6066649679804058181">Топты бетбелгі қалтасына түрлендіру</translation>
 <translation id="6066794465984119824">Кескіннің хеші орнатылмаған.</translation>
 <translation id="6069464830445383022">Google аккаунтымен Chromebook құрылғысына кіріңіз</translation>
 <translation id="6071181508177083058">құпия сөзді растау</translation>
@@ -8182,7 +8184,6 @@
 <translation id="6759193508432371551">Зауыттық параметрлерге қайта орнату</translation>
 <translation id="6760354150216532978">Ескерту: бұл сайт сіз енгізген өзгерістерді көре алады</translation>
 <translation id="6761209758867628753">Құрал: Жазуға көмек керек</translation>
-<translation id="6761459308170527362">Gemini-ға өзіңіз бөлісіп жатқан бет контенті туралы сұрақ қою үшін дауыстық немесе мәтіндік чатты пайдалануға болады.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Құрылғыға сайт деректерін сақтауға рұқсат берілмеді</translation>
 <translation id="6762833852331690540">Қосулы</translation>
@@ -8971,7 +8972,6 @@
 <translation id="7320213904474460808">Желіні әдепкісінше таңдау</translation>
 <translation id="7321545336522791733">Сервер қолжетімді емес</translation>
 <translation id="7322515217754205362">Сайт рұқсаттары</translation>
-<translation id="7322919329844967709">Өзіңіз бөлісетін бет контентіне қатысты көбірек сәйкес келетін жауаптар аласыз.</translation>
 <translation id="7323315405936922211">Курсор аумағының өлшемі</translation>
 <translation id="7324020307732396723">Тіл параметрлерін ашу</translation>
 <translation id="7324297612904500502">Бета форумы</translation>
@@ -10309,7 +10309,6 @@
 <translation id="8222112516148944758">Қойындылар топтары барлық құрылғыңызда автоматты түрде сақталып, жаңарады.</translation>
 <translation id="8222674561049363989">Файл жарамсыз.</translation>
 <translation id="822347941086490485">HID құрылғылары ізделуде...</translation>
-<translation id="8224209912580158729">Барынша дұрыс жауаптар алу үшін бет контентін Gemini-мен бөлісіңіз.</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> аккаунтыңыз жойылмайды.</translation>
 <translation id="8225046344534779393">Интернет байланысын тексеріңіз.</translation>
 <translation id="8225265270453771718">Қолданба терезесін бөлісу</translation>
