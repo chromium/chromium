@@ -15,7 +15,6 @@
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 using testing::NiceMock;
 using testing::Return;
@@ -131,7 +130,7 @@ D3D12VideoEncodeDelegateTestBase::GetEncoderOutputMetadataResourceMap(
       D3D12ResourceMock*, std::unique_ptr<D3D12_VIDEO_ENCODER_OUTPUT_METADATA>>>
       mapped_metadata;
   ON_CALL(*resource.Get(), Map(0, _, _))
-      .WillByDefault(Invoke([&](UINT, const D3D12_RANGE*, void** data) {
+      .WillByDefault([&](UINT, const D3D12_RANGE*, void** data) {
         D3D12_VIDEO_ENCODER_OUTPUT_METADATA* metadata =
             new D3D12_VIDEO_ENCODER_OUTPUT_METADATA{
                 .EncodedBitstreamWrittenBytesCount = bitstream_size,
@@ -140,17 +139,17 @@ D3D12VideoEncodeDelegateTestBase::GetEncoderOutputMetadataResourceMap(
         (*mapped_metadata)[resource.Get()].reset(metadata);
         *data = metadata;
         return S_OK;
-      }));
+      });
   ScopedD3D12ResourceMap metadata_buffer;
   EXPECT_TRUE(metadata_buffer.Map(resource.Get(), 0, nullptr));
   ON_CALL(*resource.Get(), Unmap(0, _))
-      .WillByDefault(Invoke(
+      .WillByDefault(
           [resource = std::move(resource)](UINT, const D3D12_RANGE*) mutable {
             mapped_metadata->erase(resource.Get());
             // gtest complains that the mock isn't freed if we don't drop the
             // reference to it here.
             resource.Reset();
-          }));
+          });
   return metadata_buffer;
 }
 

@@ -137,7 +137,6 @@
 
 using base::test::RunClosure;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::WithArgs;
@@ -310,25 +309,25 @@ class VideoCaptureDeviceTest
 
   std::unique_ptr<MockVideoCaptureDeviceClient> CreateDeviceClient() {
     auto result = std::make_unique<NiceMockVideoCaptureDeviceClient>();
-    ON_CALL(*result, OnError).WillByDefault(Invoke(DumpError));
+    ON_CALL(*result, OnError).WillByDefault(DumpError);
     EXPECT_CALL(*result, ReserveOutputBuffer).Times(0);
     EXPECT_CALL(*result, DoOnIncomingCapturedBuffer).Times(0);
     EXPECT_CALL(*result, DoOnIncomingCapturedBufferExt).Times(0);
     ON_CALL(*result, OnIncomingCapturedData)
         .WillByDefault(WithArgs<0, 1, 2>(
-            Invoke([this](const uint8_t* data, int length,
-                          const media::VideoCaptureFormat& frame_format) {
+            [this](const uint8_t* data, int length,
+                   const media::VideoCaptureFormat& frame_format) {
               ASSERT_GT(length, 0);
               ASSERT_TRUE(data);
               main_thread_task_runner_->PostTask(
                   FROM_HERE,
                   base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,
                                  base::Unretained(this), frame_format));
-            })));
+            }));
     ON_CALL(*result, OnIncomingCapturedImage)
         .WillByDefault(WithArgs<0, 1>(
-            Invoke([this](scoped_refptr<gpu::ClientSharedImage> shared_image,
-                          const media::VideoCaptureFormat& frame_format) {
+            [this](scoped_refptr<gpu::ClientSharedImage> shared_image,
+                   const media::VideoCaptureFormat& frame_format) {
               ASSERT_TRUE(shared_image);
               ASSERT_GT(
                   shared_image->size().width() * shared_image->size().height(),
@@ -337,7 +336,7 @@ class VideoCaptureDeviceTest
                   FROM_HERE,
                   base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,
                                  base::Unretained(this), frame_format));
-            })));
+            }));
     return result;
   }
 

@@ -53,7 +53,6 @@ using ::testing::_;
 using ::testing::AnyOf;
 using ::testing::AtLeast;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Return;
@@ -660,7 +659,7 @@ class AudioAndroidOutputTest : public testing::TestWithParam<AudioApi> {
                       &count, num_callbacks,
                       base::SingleThreadTaskRunner::GetCurrentDefault(),
                       run_loop.QuitWhenIdleClosure()),
-                  Invoke(RealOnMoreData)));
+                  RealOnMoreData));
     EXPECT_CALL(source, OnError(_)).Times(0);
 
     OpenAndStartAudioOutputStreamOnAudioThread(&source);
@@ -1484,7 +1483,7 @@ TEST_P(AudioAndroidInputTest, DISABLED_RunDuplexInputStreamWithFileAsSink) {
   MockAudioSourceCallback source;
 
   EXPECT_CALL(source, OnMoreData(_, _, AudioGlitchInfo(), NotNull()))
-      .WillRepeatedly(Invoke(RealOnMoreData));
+      .WillRepeatedly(RealOnMoreData);
   EXPECT_CALL(source, OnError(_)).Times(0);
 
   OpenAndStartAudioInputStreamOnAudioThread(&sink);

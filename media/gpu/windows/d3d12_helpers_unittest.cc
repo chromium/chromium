@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -33,7 +32,7 @@ class D3D12Helpers : public ::testing::Test {
   void SetUp() override {
     device_ = MakeComPtr<NiceMock<D3D12DeviceMock>>();
     ON_CALL(*device_.Get(), OpenSharedHandle(_, _, _))
-        .WillByDefault(Invoke([this](HANDLE handle, REFIID riid, void** ppv) {
+        .WillByDefault([this](HANDLE handle, REFIID riid, void** ppv) {
           Microsoft::WRL::ComPtr<D3D12ResourceMock> d3d12_resource =
               MakeComPtr<NiceMock<D3D12ResourceMock>>();
           ON_CALL(*d3d12_resource.Get(), GetDesc())
@@ -48,7 +47,7 @@ class D3D12Helpers : public ::testing::Test {
               }));
           *ppv = d3d12_resource.Detach();
           return S_OK;
-        }));
+        });
   }
 
   ComD3D12Resource CreateD3D12Resource() {

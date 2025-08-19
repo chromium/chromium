@@ -277,9 +277,9 @@ class VideoRendererImplTest : public testing::Test {
     WaitableMessageLoopEvent event;
     PipelineStatusCallback error_cb = event.GetPipelineStatusCB();
     EXPECT_CALL(mock_cb_, OnError(_))
-        .WillOnce(Invoke([cb = &error_cb](PipelineStatus status) {
+        .WillOnce([cb = &error_cb](PipelineStatus status) {
           std::move(*cb).Run(status);
-        }));
+        });
     event.RunAndWaitForStatus(expected);
   }
 

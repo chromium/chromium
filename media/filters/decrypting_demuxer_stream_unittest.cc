@@ -29,7 +29,6 @@ using ::base::test::RunOnceCallbackRepeatedly;
 using ::testing::_;
 using ::testing::HasSubstr;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -240,9 +239,9 @@ class DecryptingDemuxerStreamTest : public testing::Test {
     EXPECT_CALL(*input_audio_stream_, OnRead(_))
         .WillRepeatedly(ReturnBuffer(encrypted_buffer_));
     EXPECT_CALL(*decryptor_, Decrypt(_, encrypted_buffer_, _))
-        .WillOnce(WithArg<2>(Invoke([&](Decryptor::DecryptCB callback) {
+        .WillOnce(WithArg<2>([&](Decryptor::DecryptCB callback) {
           pending_decrypt_cb_ = std::move(callback);
-        })));
+        }));
 
     demuxer_stream_->Read(
         1, base::BindOnce(&DecryptingDemuxerStreamTest::BufferReady,

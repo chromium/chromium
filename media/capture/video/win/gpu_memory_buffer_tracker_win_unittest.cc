@@ -22,7 +22,6 @@
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Pointee;
 
@@ -128,7 +127,7 @@ TEST_F(GpuMemoryBufferTrackerWinTest, InvalidateOnDeviceLoss) {
   // Mock device loss.
   EXPECT_CALL(*(dxgi_device_manager_->GetMockDevice().Get()),
               OnGetDeviceRemovedReason())
-      .WillOnce(Invoke([]() { return DXGI_ERROR_DEVICE_REMOVED; }));
+      .WillOnce([]() { return DXGI_ERROR_DEVICE_REMOVED; });
   // Create and init tracker (causes initial texture creation)
   std::unique_ptr<VideoCaptureBufferTracker> tracker =
       std::make_unique<GpuMemoryBufferTrackerWin>(dxgi_device_manager_);
@@ -200,11 +199,10 @@ TEST_F(GpuMemoryBufferTrackerWinTest, DuplicateAsUnsafeRegion) {
   // DXGI texture should be opened as a shared resource.
   EXPECT_CALL(*(dxgi_device_manager_->GetMockDevice().Get()),
               DoOpenSharedResource1)
-      .WillOnce(
-          Invoke([&dxgi_texture](HANDLE resource, REFIID returned_interface,
-                                 void** resource_out) {
-            return dxgi_texture.CopyTo(returned_interface, resource_out);
-          }));
+      .WillOnce([&dxgi_texture](HANDLE resource, REFIID returned_interface,
+                                void** resource_out) {
+        return dxgi_texture.CopyTo(returned_interface, resource_out);
+      });
 
   // Expect creation of a staging texture.
   EXPECT_CALL(
@@ -237,7 +235,7 @@ TEST_F(GpuMemoryBufferTrackerWinTest, DuplicateAsUnsafeRegion) {
   EXPECT_CALL(
       *dxgi_device_manager_->GetMockDevice()->mock_immediate_context_.Get(),
       OnMap(_, _, _, _, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&tmp_mapped_resource](ID3D11Resource* resource, UINT subresource,
                                  D3D11_MAP MapType, UINT MapFlags,
                                  D3D11_MAPPED_SUBRESOURCE* mapped_resource) {
@@ -247,14 +245,14 @@ TEST_F(GpuMemoryBufferTrackerWinTest, DuplicateAsUnsafeRegion) {
             mapped_resource->RowPitch = 1920;
             mapped_resource->DepthPitch = buffer_size;
             return S_OK;
-          }));
+          });
   EXPECT_CALL(
       *dxgi_device_manager_->GetMockDevice()->mock_immediate_context_.Get(),
       OnUnmap(_, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&tmp_mapped_resource](ID3D11Resource* resource, UINT subresource) {
             delete[] tmp_mapped_resource;
-          }));
+          });
 
   auto memory_region = tracker->DuplicateAsUnsafeRegion();
   EXPECT_TRUE(memory_region.IsValid());

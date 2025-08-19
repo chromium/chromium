@@ -18,7 +18,6 @@
 
 using media::SetComPointeeAndReturnOk;
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 using testing::NiceMock;
 using testing::Return;
@@ -89,13 +88,13 @@ class MockVideoEncoderDelegateFactory
     ON_CALL(*encoder_delegate, GetMaxNumOfRefFrames())
         .WillByDefault(Return(16));
     ON_CALL(*encoder_delegate, Encode(_, _, _, _, _))
-        .WillByDefault(Invoke([](Microsoft::WRL::ComPtr<ID3D12Resource>, UINT,
-                                 const gfx::ColorSpace&,
-                                 const BitstreamBuffer& bitstream_buffer,
-                                 const VideoEncoder::EncodeOptions&)
-                                  -> D3D12VideoEncodeDelegate::EncodeResult {
+        .WillByDefault([](Microsoft::WRL::ComPtr<ID3D12Resource>, UINT,
+                          const gfx::ColorSpace&,
+                          const BitstreamBuffer& bitstream_buffer,
+                          const VideoEncoder::EncodeOptions&)
+                           -> D3D12VideoEncodeDelegate::EncodeResult {
           return {bitstream_buffer.id()};
-        }));
+        });
     return std::move(encoder_delegate);
   }
 
@@ -304,11 +303,11 @@ TEST_F(D3D12VideoEncodeAcceleratorTest,
   unsigned bitstream_buffer_count = 0;
   size_t bitstream_buffer_size = 0;
   EXPECT_CALL(*client_, RequireBitstreamBuffers(_, _, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](unsigned int count, const gfx::Size& size, size_t size_in_bytes) {
             bitstream_buffer_count = count;
             bitstream_buffer_size = size_in_bytes;
-          }));
+          });
   EXPECT_TRUE(
       d3d12_video_encode_accelerator
           ->Initialize(supported_config, client_.get(), media_log_->Clone())
@@ -349,11 +348,11 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, FlushEncoder) {
   unsigned bitstream_buffer_count = 0;
   size_t bitstream_buffer_size = 0;
   EXPECT_CALL(*client_, RequireBitstreamBuffers(_, _, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](unsigned int count, const gfx::Size& size, size_t size_in_bytes) {
             bitstream_buffer_count = count;
             bitstream_buffer_size = size_in_bytes;
-          }));
+          });
   EXPECT_TRUE(
       d3d12_video_encode_accelerator
           ->Initialize(supported_config, client_.get(), media_log_->Clone())

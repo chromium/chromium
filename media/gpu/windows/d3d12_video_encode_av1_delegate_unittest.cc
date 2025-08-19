@@ -16,7 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -53,9 +52,9 @@ class D3D12VideoEncodeAV1DelegateTest
     ON_CALL(*video_device3_.Get(), QueryInterface(IID_ID3D12VideoDevice1, _))
         .WillByDefault(SetComPointeeAndReturnOk<1>(video_device3_.Get()));
     ON_CALL(*video_device3_.Get(), CheckFeatureSupport(_, _, _))
-        .WillByDefault(Invoke([](D3D12_FEATURE_VIDEO feature,
-                                 void* pFeatureSupportData,
-                                 UINT FeatureSupportDataSize) -> HRESULT {
+        .WillByDefault([](D3D12_FEATURE_VIDEO feature,
+                          void* pFeatureSupportData,
+                          UINT FeatureSupportDataSize) -> HRESULT {
           if (feature == D3D12_FEATURE_VIDEO_ENCODER_CODEC) {
             auto* feature_data =
                 static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC*>(
@@ -104,7 +103,7 @@ class D3D12VideoEncodeAV1DelegateTest
                 D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK;
           }
           return S_OK;
-        }));
+        });
 
     encoder_delegate_ =
         std::make_unique<MockD3D12VideoEncodeAV1Delegate>(video_device3_);

@@ -36,7 +36,6 @@
 
 using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -134,11 +133,11 @@ class MediaVideoEncoderWrapperTest : public TestWithCastEnvironment {
     EXPECT_CALL(*mock_encoder_,
                 Encode(FrameInfosAreEqual(frame_info),
                        FrameTypeIsEqual(frame_info.frame_type), _))
-        .WillOnce(Invoke([&](scoped_refptr<VideoFrame> frame,
-                             const media::VideoEncoder::EncodeOptions& options,
-                             media::VideoEncoder::EncoderStatusCB done) {
+        .WillOnce([&](scoped_refptr<VideoFrame> frame,
+                      const media::VideoEncoder::EncodeOptions& options,
+                      media::VideoEncoder::EncoderStatusCB done) {
           std::move(done).Run(EncoderStatus::Codes::kOk);
-        }));
+        });
   }
 
   // Expect that the encoder gets initialized. Note this only occurs if a frame
@@ -148,24 +147,23 @@ class MediaVideoEncoderWrapperTest : public TestWithCastEnvironment {
     const media::VideoEncoder::Options options = GetOptions();
     EXPECT_CALL(*mock_encoder_,
                 Initialize(kProfile, OptionsAreEqual(options), _, _, _))
-        .WillOnce(
-            Invoke([output_cb](VideoCodecProfile profile,
-                               const media::VideoEncoder::Options& options,
-                               media::VideoEncoder::EncoderInfoCB info,
-                               media::VideoEncoder::OutputCB output,
-                               media::VideoEncoder::EncoderStatusCB done) {
-              std::move(info).Run(VideoEncoderInfo());
-              std::move(done).Run(EncoderStatus::Codes::kOk);
+        .WillOnce([output_cb](VideoCodecProfile profile,
+                              const media::VideoEncoder::Options& options,
+                              media::VideoEncoder::EncoderInfoCB info,
+                              media::VideoEncoder::OutputCB output,
+                              media::VideoEncoder::EncoderStatusCB done) {
+          std::move(info).Run(VideoEncoderInfo());
+          std::move(done).Run(EncoderStatus::Codes::kOk);
 
-              // The first frame should be returned after initialization is
-              // complete, and should always be a keyframe.
-              media::VideoEncoderOutput encoder_output;
-              encoder_output.key_frame = true;
-              output.Run(std::move(encoder_output), std::nullopt);
-              if (output_cb) {
-                *output_cb = std::move(output);
-              }
-            }));
+          // The first frame should be returned after initialization is
+          // complete, and should always be a keyframe.
+          media::VideoEncoderOutput encoder_output;
+          encoder_output.key_frame = true;
+          output.Run(std::move(encoder_output), std::nullopt);
+          if (output_cb) {
+            *output_cb = std::move(output);
+          }
+        });
     EXPECT_CALL(*mock_encoder_, DisablePostedCallbacks());
   }
 
@@ -268,21 +266,21 @@ TEST_F(MediaVideoEncoderWrapperTest, CanSetBitRate) {
   ExpectVideoFrameEncoded(second_frame_info);
 
   EXPECT_CALL(*mock_encoder_, Flush(_))
-      .WillOnce(Invoke([](media::VideoEncoder::EncoderStatusCB done) {
+      .WillOnce([](media::VideoEncoder::EncoderStatusCB done) {
         std::move(done).Run(EncoderStatus::Codes::kOk);
-      }));
+      });
 
   base::OnceClosure quit_closure;
   EXPECT_CALL(*mock_encoder_, ChangeOptions(_, _, _))
-      .WillOnce(Invoke([&](const media::VideoEncoder::Options& options,
-                           media::VideoEncoder::OutputCB output,
-                           media::VideoEncoder::EncoderStatusCB done_cb) {
+      .WillOnce([&](const media::VideoEncoder::Options& options,
+                    media::VideoEncoder::OutputCB output,
+                    media::VideoEncoder::EncoderStatusCB done_cb) {
         EXPECT_EQ(options.bitrate,
                   Bitrate::ConstantBitrate(
                       base::checked_cast<uint32_t>(kNewBitRate)));
         std::move(done_cb).Run(EncoderStatus::Codes::kOk);
         std::move(quit_closure).Run();
-      }));
+      });
 
   EXPECT_NE(EncodeVideoFrame(frame_info), nullptr);
 
@@ -309,26 +307,26 @@ TEST_F(MediaVideoEncoderWrapperTest, StillOutputsIfFrameDroppedByEncoder) {
   const media::VideoEncoder::Options options = GetOptions();
   EXPECT_CALL(*mock_encoder_,
               Initialize(kProfile, OptionsAreEqual(options), _, _, _))
-      .WillOnce(Invoke([](VideoCodecProfile profile,
-                          const media::VideoEncoder::Options& options,
-                          media::VideoEncoder::EncoderInfoCB info,
-                          media::VideoEncoder::OutputCB output,
-                          media::VideoEncoder::EncoderStatusCB done) {
+      .WillOnce([](VideoCodecProfile profile,
+                   const media::VideoEncoder::Options& options,
+                   media::VideoEncoder::EncoderInfoCB info,
+                   media::VideoEncoder::OutputCB output,
+                   media::VideoEncoder::EncoderStatusCB done) {
         std::move(info).Run(VideoEncoderInfo());
         std::move(done).Run(EncoderStatus::Codes::kOk);
-      }));
+      });
   EXPECT_CALL(*mock_encoder_, DisablePostedCallbacks());
 
   const FrameInfo frame_info = CreateFrameInfo(FrameType::kKey);
   EXPECT_CALL(*mock_encoder_,
               Encode(FrameInfosAreEqual(frame_info),
                      FrameTypeIsEqual(frame_info.frame_type), _))
-      .WillOnce(Invoke([&](scoped_refptr<VideoFrame> frame,
-                           const media::VideoEncoder::EncodeOptions& options,
-                           media::VideoEncoder::EncoderStatusCB done) {
+      .WillOnce([&](scoped_refptr<VideoFrame> frame,
+                    const media::VideoEncoder::EncodeOptions& options,
+                    media::VideoEncoder::EncoderStatusCB done) {
         std::move(done).Run(
             EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
-      }));
+      });
 
   // We should have a nullptr output, but what's important is that we have
   // output. If the encoder implementation does not invoke the output callback,

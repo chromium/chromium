@@ -42,7 +42,6 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::InSequence;
 using ::testing::NiceMock;
 using ::testing::NotNull;
@@ -462,14 +461,14 @@ TEST_F(WinAudioTest, PCMWaveStreamPendingBytes) {
 
   EXPECT_CALL(source,
               OnMoreData(base::TimeDelta(), _, AudioGlitchInfo(), NotNull()))
-      .WillOnce(Invoke(ClearData));
+      .WillOnce(ClearData);
 
   // Note: If AudioManagerWin::NumberOfWaveOutBuffers() ever changes, or if this
   // test is run on Vista, these expectations will fail.
   EXPECT_CALL(source, OnMoreData(delay_100_ms, _, AudioGlitchInfo(), NotNull()))
-      .WillOnce(Invoke(ClearData));
+      .WillOnce(ClearData);
   EXPECT_CALL(source, OnMoreData(delay_200_ms, _, AudioGlitchInfo(), NotNull()))
-      .WillOnce(Invoke(ClearData));
+      .WillOnce(ClearData);
   EXPECT_CALL(source, OnMoreData(delay_200_ms, _, AudioGlitchInfo(), NotNull()))
       .Times(AnyNumber())
       .WillRepeatedly(Return(0));

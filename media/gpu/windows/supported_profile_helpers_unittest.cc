@@ -23,7 +23,6 @@
 
 using ::testing::_;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SetArgPointee;
@@ -76,8 +75,8 @@ class SupportedResolutionResolverTest : public ::testing::Test {
     max_size_for_guids_[g] = max_res;
     ON_CALL(*mock_d3d11_video_device_.Get(), GetVideoDecoderConfigCount(_, _))
         .WillByDefault(
-            WithArgs<0, 1>(Invoke([this](const D3D11_VIDEO_DECODER_DESC* desc,
-                                         UINT* count) -> HRESULT {
+            WithArgs<0, 1>([this](const D3D11_VIDEO_DECODER_DESC* desc,
+                                  UINT* count) -> HRESULT {
               *count = 0;
               const auto& itr = this->max_size_for_guids_.find(desc->Guid);
               if (itr == this->max_size_for_guids_.end())
@@ -91,7 +90,7 @@ class SupportedResolutionResolverTest : public ::testing::Test {
                 return S_OK;
               *count = 1;
               return S_OK;
-            })));
+            }));
   }
 
   void EnableDecoders(const std::vector<GUID>& decoder_guids) {
@@ -101,13 +100,13 @@ class SupportedResolutionResolverTest : public ::testing::Test {
     // Note that we don't check if the guid in the config actually matches
     // |decoder_profile|.  Perhaps we should.
     ON_CALL(*mock_d3d11_video_device_.Get(), GetVideoDecoderProfile(_, _))
-        .WillByDefault(WithArgs<0, 1>(
-            Invoke([decoder_guids](UINT p_idx, GUID* guid) -> HRESULT {
+        .WillByDefault(
+            WithArgs<0, 1>([decoder_guids](UINT p_idx, GUID* guid) -> HRESULT {
               if (p_idx >= decoder_guids.size())
                 return E_FAIL;
               *guid = decoder_guids.at(p_idx);
               return S_OK;
-            })));
+            }));
   }
 
   void SetGpuProfile(std::pair<uint16_t, uint16_t> vendor_and_gpu) {

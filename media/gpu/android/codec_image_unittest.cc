@@ -32,7 +32,6 @@
 using testing::_;
 using testing::Eq;
 using testing::InSequence;
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 
@@ -78,13 +77,12 @@ class CodecImageTest : public testing::Test {
         texture_id_, context_.get(), context_->default_surface(),
         BindsTextureOnUpdate());
     ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
-        .WillByDefault(
-            Invoke([](gfx::Size rotated_visible_size, gfx::Size* coded_size,
-                      gfx::Rect* visible_rect) {
-              *visible_rect = gfx::Rect(rotated_visible_size);
-              *coded_size = visible_rect->size();
-              return true;
-            }));
+        .WillByDefault([](gfx::Size rotated_visible_size, gfx::Size* coded_size,
+                          gfx::Rect* visible_rect) {
+          *visible_rect = gfx::Rect(rotated_visible_size);
+          *coded_size = visible_rect->size();
+          return true;
+        });
 
     codec_buffer_wait_coordinator_ =
         base::MakeRefCounted<NiceMock<MockCodecBufferWaitCoordinator>>(

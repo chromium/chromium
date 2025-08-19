@@ -13,7 +13,6 @@
 #include "media/base/video_frame.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::WithArgs;
 
 namespace media {
@@ -115,36 +114,36 @@ MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
   auto* raw_result_ptr = result.get();
   ON_CALL(*result, ReserveOutputBuffer)
       .WillByDefault(
-          Invoke([](const gfx::Size& dimensions, VideoPixelFormat format, int,
-                    VideoCaptureDevice::Client::Buffer* buffer,
-                    int* require_new_buffer_id, int* retire_old_buffer_id) {
+          [](const gfx::Size& dimensions, VideoPixelFormat format, int,
+             VideoCaptureDevice::Client::Buffer* buffer,
+             int* require_new_buffer_id, int* retire_old_buffer_id) {
             EXPECT_GT(dimensions.GetArea(), 0);
             const VideoCaptureFormat frame_format(dimensions, 0.0, format);
             *buffer = CreateStubBuffer(
                 0, VideoFrame::AllocationSize(frame_format.pixel_format,
                                               frame_format.frame_size));
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
-          }));
+          });
   ON_CALL(*result, OnIncomingCapturedData)
-      .WillByDefault(WithArgs<2>(Invoke(
+      .WillByDefault(WithArgs<2>(
           [raw_result_ptr](const media::VideoCaptureFormat& frame_format) {
             raw_result_ptr->fake_frame_captured_callback_.Run(frame_format);
-          })));
+          }));
   ON_CALL(*result, OnIncomingCapturedImage)
-      .WillByDefault(WithArgs<1>(Invoke(
+      .WillByDefault(WithArgs<1>(
           [raw_result_ptr](const media::VideoCaptureFormat& frame_format) {
             raw_result_ptr->fake_frame_captured_callback_.Run(frame_format);
-          })));
+          }));
   ON_CALL(*result, DoOnIncomingCapturedBuffer)
-      .WillByDefault(WithArgs<1>(Invoke(
+      .WillByDefault(WithArgs<1>(
           [raw_result_ptr](const media::VideoCaptureFormat& frame_format) {
             raw_result_ptr->fake_frame_captured_callback_.Run(frame_format);
-          })));
+          }));
   ON_CALL(*result, DoOnIncomingCapturedBufferExt)
-      .WillByDefault(WithArgs<1>(Invoke(
+      .WillByDefault(WithArgs<1>(
           [raw_result_ptr](const media::VideoCaptureFormat& frame_format) {
             raw_result_ptr->fake_frame_captured_callback_.Run(frame_format);
-          })));
+          }));
   return result;
 }
 

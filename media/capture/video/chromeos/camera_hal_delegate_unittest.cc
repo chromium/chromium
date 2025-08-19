@@ -30,7 +30,6 @@
 
 using testing::_;
 using testing::A;
-using testing::Invoke;
 using testing::Return;
 
 namespace {
@@ -189,7 +188,7 @@ TEST_F(CameraHalDelegateTest, GetBuiltinCameraInfo) {
 
   EXPECT_CALL(mock_camera_module_, DoGetNumberOfCameras(_))
       .Times(1)
-      .WillOnce(Invoke(get_number_of_cameras_cb));
+      .WillOnce(get_number_of_cameras_cb);
   EXPECT_CALL(
       mock_camera_module_,
       DoSetCallbacksAssociated(
@@ -197,28 +196,28 @@ TEST_F(CameraHalDelegateTest, GetBuiltinCameraInfo) {
               cros::mojom::CameraModuleCallbacks>&>(),
           A<cros::mojom::CameraModule::SetCallbacksAssociatedCallback&>()))
       .Times(1)
-      .WillOnce(Invoke(set_callbacks_cb));
+      .WillOnce(set_callbacks_cb);
   EXPECT_CALL(mock_camera_module_,
               DoGetVendorTagOps(
                   A<mojo::PendingReceiver<cros::mojom::VendorTagOps>>(),
                   A<cros::mojom::CameraModule::GetVendorTagOpsCallback&>()))
       .Times(1)
-      .WillOnce(Invoke(get_vendor_tag_ops_cb));
+      .WillOnce(get_vendor_tag_ops_cb);
   EXPECT_CALL(mock_camera_module_,
               DoGetCameraInfo(
                   0, A<cros::mojom::CameraModule::GetCameraInfoCallback&>()))
       .Times(1)
-      .WillOnce(Invoke(get_camera_info_cb));
+      .WillOnce(get_camera_info_cb);
   EXPECT_CALL(mock_camera_module_,
               DoGetCameraInfo(
                   1, A<cros::mojom::CameraModule::GetCameraInfoCallback&>()))
       .Times(1)
-      .WillOnce(Invoke(get_camera_info_cb));
+      .WillOnce(get_camera_info_cb);
   EXPECT_CALL(mock_camera_module_,
               DoGetCameraInfo(
                   2, A<cros::mojom::CameraModule::GetCameraInfoCallback&>()))
       .Times(1)
-      .WillOnce(Invoke(get_camera_info_cb));
+      .WillOnce(get_camera_info_cb);
 
   EXPECT_CALL(mock_vendor_tag_ops_, DoGetTagCount())
       .Times(1)

@@ -36,7 +36,6 @@ using base::test::RunClosure;
 using ::testing::_;
 
 #if BUILDFLAG(IS_LINUX)
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 #endif  // BUILDFLAG(IS_LINUX)
 
@@ -453,7 +452,7 @@ TEST_P(V4l2CaptureDelegateGPUMemoryBufferTest, CameraCaptureOneCopy) {
       std::make_unique<MockV4l2GpuClient>();
   MockV4l2GpuClient* client_ptr = client.get();
   EXPECT_CALL(*client_ptr, ReserveOutputBuffer)
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [](const gfx::Size& size, VideoPixelFormat format, int feedback_id,
              VideoCaptureDevice::Client::Buffer* capture_buffer,
              int* require_new_buffer_id, int* retire_old_buffer_id) {
@@ -462,7 +461,7 @@ TEST_P(V4l2CaptureDelegateGPUMemoryBufferTest, CameraCaptureOneCopy) {
                 std::make_unique<MockCaptureHandleProvider>(
                     size, gfx::BufferFormat::YUV_420_BIPLANAR);
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
-          }));
+          });
 
   base::RunLoop wait_loop;
   EXPECT_CALL(*client_ptr, OnIncomingCapturedBufferExt)

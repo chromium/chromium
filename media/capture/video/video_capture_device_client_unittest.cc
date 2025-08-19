@@ -50,7 +50,6 @@ using ::testing::AtLeast;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Optional;
@@ -450,9 +449,9 @@ TEST_F(VideoCaptureDeviceClientTest, DropsFrameIfNoBuffer) {
       read_permission;
   EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer)
       .Times(2)
-      .WillRepeatedly(Invoke([&read_permission](ReadyFrameInBuffer frame) {
+      .WillRepeatedly([&read_permission](ReadyFrameInBuffer frame) {
         read_permission.push_back(std::move(frame.buffer_read_permission));
-      }));
+      });
   // Pass three frames. The third will be dropped.
   device_client_->VideoCaptureDevice::Client::OnIncomingCapturedData(
       data, kScratchpadSizeInBytes, kFrameFormat, kColorSpace,
@@ -559,9 +558,9 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
     gfx::Size coded_size;
     EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer)
         .Times(1)
-        .WillOnce(Invoke([&coded_size](ReadyFrameInBuffer frame) {
+        .WillOnce([&coded_size](ReadyFrameInBuffer frame) {
           coded_size = frame.frame_info->coded_size;
-        }));
+        });
     device_client_->VideoCaptureDevice::Client::OnIncomingCapturedData(
         data,
         media::VideoFrame::AllocationSize(params.requested_format.pixel_format,
@@ -596,9 +595,9 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
     gfx::Size coded_size;
     EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer)
         .Times(1)
-        .WillOnce(Invoke([&coded_size](ReadyFrameInBuffer frame) {
+        .WillOnce([&coded_size](ReadyFrameInBuffer frame) {
           coded_size = frame.frame_info->coded_size;
-        }));
+        });
     device_client_->VideoCaptureDevice::Client::OnIncomingCapturedImage(
         std::move(shared_image), params.requested_format,
         size_and_rotation.rotation, base::TimeTicks(), base::TimeDelta(),

@@ -16,7 +16,6 @@
 
 using testing::_;
 using testing::DoAll;
-using testing::Invoke;
 using testing::Mock;
 using testing::Return;
 using testing::SetArgPointee;
@@ -420,9 +419,9 @@ TEST_F(FrameInfoHelperTest, TextureOwnerBufferNotAvailable) {
   // Save buffer available callback, we will run it manually.
   base::OnceClosure buffer_available_cb;
   EXPECT_CALL(*texture_owner, RunWhenBufferIsAvailable(_))
-      .WillOnce(Invoke([&buffer_available_cb](base::OnceClosure cb) {
+      .WillOnce([&buffer_available_cb](base::OnceClosure cb) {
         buffer_available_cb = std::move(cb);
-      }));
+      });
 
   // Verify that no GetCodedSizeAndVisibleRect will be called until buffer is
   // available.
