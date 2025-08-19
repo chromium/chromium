@@ -194,6 +194,27 @@ class Target:
   def __lt__(self, other):
     return self.name < other.name
 
+  def __eq__(self, other):
+    return self.name == other.name
+
+  def __hash__(self):
+    return hash(self.name)
+
+  @property
+  def header_deps(self) -> set[Header]:
+    direct_deps = set()
+    for hdr in self.headers:
+      direct_deps.update(hdr.required_deps)
+    return direct_deps
+
+  @property
+  def public_deps(self) -> list[str]:
+    return sorted(
+        set([
+            hdr.root_module for hdr in self.header_deps
+            if hdr.root_module is not None and hdr.root_module != self.name
+        ]))
+
 
 def run_build(graph: dict[str, Header]) -> list[Target]:
   """Calculates the correct way to run a build."""
