@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -69,6 +70,7 @@ PrefetchRequest::PrefetchRequest(
     base::WeakPtr<BrowserContext> browser_context,
     std::optional<SpeculationRulesTags> speculation_rules_tags,
     const net::HttpRequestHeaders& additional_headers,
+    base::TimeDelta ttl,
     std::optional<PreloadingHoldbackStatus> holdback_status_override,
     std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
         initiator_info)
@@ -85,6 +87,7 @@ PrefetchRequest::PrefetchRequest(
       browser_context_(std::move(browser_context)),
       speculation_rules_tags_(std::move(speculation_rules_tags)),
       additional_headers_(additional_headers),
+      ttl_(std::move(ttl)),
       holdback_status_override_(std::move(holdback_status_override)),
       initiator_info_(std::move(initiator_info)) {
   CHECK(preload_pipeline_info_);
@@ -92,6 +95,7 @@ PrefetchRequest::PrefetchRequest(
     CHECK(GetRendererInitiatorInfo());
     CHECK(!GetBrowserInitiatorInfo());
     CHECK(additional_headers_.IsEmpty());
+    CHECK_EQ(ttl_, PrefetchContainerDefaultTtlInPrefetchService());
     CHECK(!holdback_status_override_);
   } else {
     CHECK(!GetRendererInitiatorInfo());

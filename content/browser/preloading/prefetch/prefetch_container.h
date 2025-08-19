@@ -605,7 +605,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
  private:
   PrefetchContainer(std::unique_ptr<PrefetchRequest> request,
-                    base::TimeDelta ttl,
                     bool should_append_variations_header,
                     bool should_disable_block_until_head_timeout);
 
@@ -811,11 +810,6 @@ class CONTENT_EXPORT PrefetchContainer {
   base::ObserverList<Observer> observers_;
 
   bool is_likely_ahead_of_prerender_ = false;
-
-  // Time-to-live (TTL) for this prefetched data. Currently, this is configured
-  // for browser-initiated prefetch that doesn't depend on web content.
-  // Default value is `PrefetchContainerDefaultTtlInPrefetchService()`.
-  base::TimeDelta ttl_;
 
   // Whether to add the X-Client-Data header with experiment IDs from field
   // trials. This will not be applied to redirects. Currently, this is

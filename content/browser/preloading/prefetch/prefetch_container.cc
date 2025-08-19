@@ -262,11 +262,11 @@ PrefetchContainer::PrefetchContainer(
               referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
               std::move(speculation_rules_tags),
               /*Must be empty: additional_headers=*/net::HttpRequestHeaders(),
+              PrefetchContainerDefaultTtlInPrefetchService(),
               /*holdback_status_override=*/std::nullopt,
               PrefetchRendererInitiatorInfo(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
-          PrefetchContainerDefaultTtlInPrefetchService(),
           /*should_append_variations_header=*/true,
           /*should_disable_block_until_head_timeout=*/false) {}
 
@@ -299,12 +299,12 @@ PrefetchContainer::PrefetchContainer(
               referring_web_contents.GetBrowserContext()->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
               /*Must be empty: additional_headers=*/net::HttpRequestHeaders(),
+              ttl.has_value() ? ttl.value()
+                              : PrefetchContainerDefaultTtlInPrefetchService(),
               std::move(holdback_status_override),
               PrefetchBrowserInitiatorInfo(
                   embedder_histogram_suffix,
                   /*request_status_listener=*/nullptr)),
-          ttl.has_value() ? ttl.value()
-                          : PrefetchContainerDefaultTtlInPrefetchService(),
           /*should_append_variations_header=*/true,
           /*should_disable_block_until_head_timeout=*/false) {}
 
@@ -340,22 +340,20 @@ PrefetchContainer::PrefetchContainer(
               browser_context->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
               additional_headers,
+              ttl,
               /*holdback_status_override=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
                                            std::move(request_status_listener))),
-          ttl,
           should_append_variations_header,
           should_disable_block_until_head_timeout) {}
 
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
-    base::TimeDelta ttl,
     bool should_append_variations_header,
     bool should_disable_block_until_head_timeout)
     : request_(std::move(request)),
       referrer_(request_->initial_referrer()),
       request_id_(base::UnguessableToken::Create().ToString()),
-      ttl_(ttl),
       should_append_variations_header_(should_append_variations_header),
       should_disable_block_until_head_timeout_(
           should_disable_block_until_head_timeout) {
@@ -996,10 +994,11 @@ void PrefetchContainer::MaybeSetNoVarySearchData() {
 
 void PrefetchContainer::StartTimeoutTimerIfNeeded(
     base::OnceClosure on_timeout_callback) {
-  if (ttl_.is_positive()) {
+  if (request().ttl().is_positive()) {
     CHECK(!timeout_timer_);
     timeout_timer_ = std::make_unique<base::OneShotTimer>();
-    timeout_timer_->Start(FROM_HERE, ttl_, std::move(on_timeout_callback));
+    timeout_timer_->Start(FROM_HERE, request().ttl(),
+                          std::move(on_timeout_callback));
   }
 }
 

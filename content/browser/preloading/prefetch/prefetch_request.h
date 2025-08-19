@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
@@ -138,6 +139,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       base::WeakPtr<BrowserContext> browser_context,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
       const net::HttpRequestHeaders& additional_headers,
+      base::TimeDelta ttl,
       std::optional<PreloadingHoldbackStatus> holdback_status_override,
       std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
           info);
@@ -169,6 +171,7 @@ class CONTENT_EXPORT PrefetchRequest final {
   const net::HttpRequestHeaders& additional_headers() const {
     return additional_headers_;
   }
+  const base::TimeDelta& ttl() const { return ttl_; }
   const std::optional<PreloadingHoldbackStatus>& holdback_status_override()
       const {
     return holdback_status_override_;
@@ -253,6 +256,11 @@ class CONTENT_EXPORT PrefetchRequest final {
   // This must be empty for non-WebView initiated prefetches.
   // TODO(crbug.com/369859822): Revisit the semantics if needed.
   const net::HttpRequestHeaders additional_headers_;
+
+  // Time-to-live (TTL) for this prefetched data. Currently, this is configured
+  // for browser-initiated prefetch that doesn't depend on web content.
+  // Default value is `PrefetchContainerDefaultTtlInPrefetchService()`.
+  base::TimeDelta ttl_;
 
   // If set, this value is used to override holdback status derived by the
   // normal process. It is set to `attempt_` on
