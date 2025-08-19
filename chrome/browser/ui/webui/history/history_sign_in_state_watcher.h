@@ -10,7 +10,9 @@
 #include "base/scoped_observation.h"
 #include "components/sync/service/sync_service_observer.h"
 
-class Profile;
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace syncer {
 class SyncService;
@@ -28,12 +30,18 @@ enum class HistorySignInState {
 };
 // LINT.ThenChange(/chrome/browser/resources/history/constants.ts:HistorySignInState)
 
-HistorySignInState GetHistorySignInState(Profile* profile);
+HistorySignInState GetHistorySignInState(
+    const signin::IdentityManager* identity_manager,
+    const syncer::SyncService* sync_service);
 
-// Watches a profile for changes in the sign-in state.
+// Watches for changes in the history sign-in state.
 class HistorySignInStateWatcher : public syncer::SyncServiceObserver {
  public:
-  HistorySignInStateWatcher(Profile* profile, base::RepeatingClosure callback);
+  // `identity_manager` and `sync_service` may be null, but if non-null, must
+  // outlive this instance.
+  HistorySignInStateWatcher(signin::IdentityManager* identity_manager,
+                            syncer::SyncService* sync_service,
+                            base::RepeatingClosure callback);
 
   HistorySignInStateWatcher(const HistorySignInStateWatcher&) = delete;
   HistorySignInStateWatcher& operator=(const HistorySignInStateWatcher&) =
@@ -51,8 +59,9 @@ class HistorySignInStateWatcher : public syncer::SyncServiceObserver {
   // Runs |callback_| when the sign-in state changes.
   void RunCallback();
 
-  // Weak reference to the profile this class observes.
-  const raw_ptr<Profile> profile_;
+  // Weak references to the services this class observes.
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   // Called when the history sync state changes.
   base::RepeatingClosure callback_;

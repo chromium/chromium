@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/history/history_sign_in_state_watcher.h"
@@ -41,8 +42,13 @@ void HistoryLoginHandler::RegisterMessages() {
 }
 
 void HistoryLoginHandler::OnJavascriptAllowed() {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
   history_sign_in_state_watcher_ = std::make_unique<HistorySignInStateWatcher>(
-      Profile::FromWebUI(web_ui()),
+      identity_manager, sync_service,
       base::BindRepeating(&HistoryLoginHandler::SigninStateChanged,
                           base::Unretained(this)));
   SigninStateChanged();

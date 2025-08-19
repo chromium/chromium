@@ -6,6 +6,8 @@
 
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history/history_sign_in_state_watcher.h"
@@ -79,8 +81,12 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
   source->AddBoolean("isSignInAllowed",
                      prefs->GetBoolean(prefs::kSigninAllowed));
 
-  source->AddInteger(kSignInStateKey,
-                     static_cast<int>(GetHistorySignInState(profile)));
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  source->AddInteger(kSignInStateKey, static_cast<int>(GetHistorySignInState(
+                                          identity_manager, sync_service)));
 
   source->AddInteger(
       "lastSelectedTab",
