@@ -20,10 +20,7 @@ namespace {
 class MockPeerConnectionObserver : public webrtc::PeerConnectionObserver {
  public:
   MOCK_METHOD(void, OnRenegotiationNeeded, (), (override));
-  MOCK_METHOD(void,
-              OnIceCandidate,
-              (const webrtc::IceCandidateInterface*),
-              (override));
+  MOCK_METHOD(void, OnIceCandidate, (const webrtc::IceCandidate*), (override));
   MOCK_METHOD(void,
               OnDataChannel,
               (webrtc::scoped_refptr<webrtc::DataChannelInterface>),

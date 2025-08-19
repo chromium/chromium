@@ -195,9 +195,9 @@ class MockPeerConnectionDependencyFactory
   scoped_refptr<webrtc::VideoTrackInterface> CreateLocalVideoTrack(
       const String& id,
       webrtc::VideoTrackSourceInterface* source) override;
-  webrtc::IceCandidateInterface* CreateIceCandidate(const String& sdp_mid,
-                                                    int sdp_mline_index,
-                                                    const String& sdp) override;
+  webrtc::IceCandidate* CreateIceCandidate(const String& sdp_mid,
+                                           int sdp_mline_index,
+                                           const String& sdp) override;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetWebRtcNetworkTaskRunner()
       override;

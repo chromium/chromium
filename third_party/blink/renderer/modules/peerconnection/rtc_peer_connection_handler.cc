@@ -79,7 +79,7 @@
 #include "third_party/webrtc/pc/session_description.h"
 
 using webrtc::DataChannelInterface;
-using webrtc::IceCandidateInterface;
+using webrtc::IceCandidate;
 using webrtc::MediaStreamInterface;
 using webrtc::PeerConnectionInterface;
 using webrtc::PeerConnectionObserver;
@@ -603,7 +603,7 @@ class RTCPeerConnectionHandler::Observer
     }
   }
 
-  void OnIceCandidate(const IceCandidateInterface* candidate) override {
+  void OnIceCandidate(const IceCandidate* candidate) override {
     DCHECK(native_peer_connection_);
     std::string sdp;
     if (!candidate->ToString(&sdp)) {
@@ -1264,7 +1264,7 @@ void RTCPeerConnectionHandler::AddIceCandidate(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(dependency_factory_);
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::addIceCandidate");
-  std::unique_ptr<webrtc::IceCandidateInterface> native_candidate(
+  std::unique_ptr<webrtc::IceCandidate> native_candidate(
       dependency_factory_->CreateIceCandidate(
           candidate->SdpMid(),
           candidate->SdpMLineIndex()

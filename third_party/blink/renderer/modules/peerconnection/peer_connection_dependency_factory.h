@@ -117,10 +117,9 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   CreateAsyncDnsResolverFactory();
 
   // Creates a libjingle representation of an ice candidate.
-  virtual webrtc::IceCandidateInterface* CreateIceCandidate(
-      const String& sdp_mid,
-      int sdp_mline_index,
-      const String& sdp);
+  virtual webrtc::IceCandidate* CreateIceCandidate(const String& sdp_mid,
+                                                   int sdp_mline_index,
+                                                   const String& sdp);
 
   // Returns the most optimistic view of the capabilities of the system for
   // sending or receiving media of the given kind ("audio" or "video").

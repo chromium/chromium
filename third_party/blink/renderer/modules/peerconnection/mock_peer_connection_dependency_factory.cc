@@ -18,8 +18,8 @@
 using webrtc::AudioSourceInterface;
 using webrtc::AudioTrackInterface;
 using webrtc::AudioTrackVector;
+using webrtc::IceCandidate;
 using webrtc::IceCandidateCollection;
-using webrtc::IceCandidateInterface;
 using webrtc::MediaStreamInterface;
 using webrtc::ObserverInterface;
 using webrtc::SessionDescriptionInterface;
@@ -373,10 +373,10 @@ MockPeerConnectionDependencyFactory::CreateLocalVideoTrack(
   return track;
 }
 
-webrtc::IceCandidateInterface*
-MockPeerConnectionDependencyFactory::CreateIceCandidate(const String& sdp_mid,
-                                                        int sdp_mline_index,
-                                                        const String& sdp) {
+webrtc::IceCandidate* MockPeerConnectionDependencyFactory::CreateIceCandidate(
+    const String& sdp_mid,
+    int sdp_mline_index,
+    const String& sdp) {
   std::string sdp_mid_str = sdp_mid.Utf8();
   std::string sdp_str = sdp.Utf8();
   return webrtc::CreateIceCandidate(sdp_mid_str, sdp_mline_index, sdp_str,

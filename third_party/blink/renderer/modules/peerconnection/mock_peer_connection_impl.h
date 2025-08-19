@@ -295,8 +295,8 @@ class MockPeerConnectionImpl : public webrtc::MockPeerConnectionInterface {
   webrtc::RTCError SetConfiguration(
       const RTCConfiguration& configuration) override;
 
-  bool AddIceCandidate(const webrtc::IceCandidateInterface* candidate) override;
-  void AddIceCandidate(std::unique_ptr<webrtc::IceCandidateInterface> candidate,
+  bool AddIceCandidate(const webrtc::IceCandidate* candidate) override;
+  void AddIceCandidate(std::unique_ptr<webrtc::IceCandidate> candidate,
                        std::function<void(webrtc::RTCError)> callback) override;
   void AddRemoteStream(webrtc::MediaStreamInterface* stream);
 

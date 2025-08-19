@@ -1159,10 +1159,10 @@ PeerConnectionDependencyFactory::CreateLocalVideoTrack(
       .get();
 }
 
-webrtc::IceCandidateInterface*
-PeerConnectionDependencyFactory::CreateIceCandidate(const String& sdp_mid,
-                                                    int sdp_mline_index,
-                                                    const String& sdp) {
+webrtc::IceCandidate* PeerConnectionDependencyFactory::CreateIceCandidate(
+    const String& sdp_mid,
+    int sdp_mline_index,
+    const String& sdp) {
   return webrtc::CreateIceCandidate(sdp_mid.Utf8(), sdp_mline_index, sdp.Utf8(),
                                     nullptr);
 }

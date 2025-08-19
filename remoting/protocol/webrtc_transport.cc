@@ -394,7 +394,7 @@ class WebrtcTransport::PeerConnectionWrapper
       transport_->OnIceGatheringChange(new_state);
     }
   }
-  void OnIceCandidate(const webrtc::IceCandidateInterface* candidate) override {
+  void OnIceCandidate(const webrtc::IceCandidate* candidate) override {
     if (transport_) {
       transport_->OnIceCandidate(candidate);
     }
@@ -614,9 +614,8 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     }
 
     webrtc::SdpParseError error;
-    std::unique_ptr<webrtc::IceCandidateInterface> candidate(
-        webrtc::CreateIceCandidate(sdp_mid, sdp_mlineindex, candidate_str,
-                                   &error));
+    std::unique_ptr<webrtc::IceCandidate> candidate(webrtc::CreateIceCandidate(
+        sdp_mid, sdp_mlineindex, candidate_str, &error));
     if (!candidate) {
       LOG(ERROR) << "Failed to parse incoming candidate: " << error.description
                  << " line: " << error.line;
@@ -1009,8 +1008,7 @@ void WebrtcTransport::OnIceGatheringChange(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void WebrtcTransport::OnIceCandidate(
-    const webrtc::IceCandidateInterface* candidate) {
+void WebrtcTransport::OnIceCandidate(const webrtc::IceCandidate* candidate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::unique_ptr<XmlElement> candidate_element(
