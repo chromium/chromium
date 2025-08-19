@@ -130,7 +130,7 @@ function onProcessCpu(port) {
   // Listen for a message from the client that explicitly provides the PID.
   const messageListener = function(message) {
     if (message && message.pid !== undefined) {
-      tapPid = message.pid;
+      tabPid = message.pid;
       // Once the PID is received, remove the listener.
       port.onMessage.removeListener(messageListener);
     }
