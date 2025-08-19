@@ -8,7 +8,7 @@ import io
 import pathlib
 
 from compiler import Compiler
-from graph import Header
+import config
 from graph import IncludeDir
 from graph import Target
 
@@ -26,6 +26,34 @@ _SYSROOT_MODULEMAP = """modulemap_config("sysroot_modulemap") {
 }
 
 """
+
+
+def _filter_targets(targets: list[Target], compiler: Compiler) -> list[Target]:
+  module_to_modulemap = compiler.modulemaps_for_modules()
+  modulemap_to_modules = collections.defaultdict(list)
+  for k, v in module_to_modulemap.items():
+    modulemap_to_modules[v].append(k)
+
+  remaining = [target for target in targets if config.should_compile(target)]
+  compiled = set(remaining)
+  targets = {target.name: target for target in targets}
+  while remaining:
+    target = remaining.pop()
+    for dep in target.public_deps:
+      dep = targets[dep]
+      if dep not in compiled:
+        compiled.add(dep)
+        remaining.append(dep)
+
+    # If we use -fmodule-map-file=c_standard_library.modulemap for one target,
+    # all modules in c_standard_library.modulemap need to be precompiled.
+    if dep.name not in module_to_modulemap:
+      continue
+    for module in modulemap_to_modules[module_to_modulemap[dep.name]]:
+      if module in targets and targets[module] not in compiled:
+        compiled.add(targets[module])
+        remaining.append(targets[module])
+  return sorted(compiled)
 
 
 def _update_content(path: pathlib.Path, content: str):
@@ -81,12 +109,12 @@ def _render_string_list(f, indent: int, key: str, values: list[str]):
 def render_build_gn(out_dir: pathlib.Path, targets: list[Target],
                     compiler: Compiler):
   """Renders a BUILD.gn file for a specific platform to {out_dir}"""
+  targets = _filter_targets(targets, compiler)
+
   f = io.StringIO()
   f.write(_HEADER)
   f.write('import("//buildtools/third_party/libc++/modules.gni")\n\n')
-  all_modulemap_configs = []
   if compiler.sysroot_dir == IncludeDir.Sysroot:
-    all_modulemap_configs.append("sysroot_modulemap")
     f.write(_SYSROOT_MODULEMAP)
 
   for target in sorted(targets):
@@ -120,15 +148,6 @@ def render_build_gn(out_dir: pathlib.Path, targets: list[Target],
   f.write('  public_deps = [\n')
   for target in sorted(targets):
     f.write(f'    ":{target.name}",\n')
-  f.write('  ]\n')
-  f.write('}\n\n')
-
-  f.write('config("all_modulemap_configs") {\n')
-  f.write('  configs = [\n')
-  f.write('    "//buildtools/third_party/libc++:builtin_modulemap",\n')
-  f.write('    "//buildtools/third_party/libc++:libcxx_modulemap",\n')
-  for target in sorted(all_modulemap_configs):
-    f.write(f'    ":{target}",\n')
   f.write('  ]\n')
   f.write('}\n')
 
