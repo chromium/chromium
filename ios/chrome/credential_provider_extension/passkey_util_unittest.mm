@@ -11,6 +11,7 @@
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
+#import "ios/chrome/credential_provider_extension/passkey_util_swift.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -242,4 +243,35 @@ TEST_F(PasskeyUtilTest,
       /*is_biometric_authentication_enabled=*/NO));
 }
 
+// Tests that the 'setLargeBlobIsSupported' setter works to mark Large Blob
+// support in iOS 18.0+.
+TEST_F(PasskeyUtilTest, LargeBlobRegistrationIsSupportedWorks) {
+  if (@available(iOS 18.0, *)) {
+    NSData* clientDataHash = ClientDataHash();
+    id<Credential> seed = TestPasskeyCredential();
+
+    PasskeyCreationOutput passkeyCreationOutput = PerformPasskeyCreation(
+        clientDataHash, seed.rpId, seed.username, seed.userId,
+        /*gaia=*/nil, SecurityDomainSecrets(), /*prf_inputs=*/nil);
+    ASSERT_NSNE(passkeyCreationOutput.credential, nil);
+    // By default there should be no Large Blob support marked.
+    ASPasskeyRegistrationCredentialExtensionOutput* ext0 =
+        passkeyCreationOutput.credential.extensionOutput;
+    if ([ext0 respondsToSelector:@selector(largeBlobRegistrationOutput)]) {
+      EXPECT_TRUE([ext0 largeBlobRegistrationOutput] == nil ||
+                  ![[ext0 largeBlobRegistrationOutput] isSupported]);
+    }
+    // Mark support and verify it propagates into the extension output.
+    [passkeyCreationOutput.credential setLargeBlobIsSupported];
+    ASPasskeyRegistrationCredentialExtensionOutput* ext =
+        passkeyCreationOutput.credential.extensionOutput;
+    ASSERT_NSNE(ext, nil);
+    ASAuthorizationPublicKeyCredentialLargeBlobRegistrationOutput*
+        large_blob_output = [ext largeBlobRegistrationOutput];
+    ASSERT_NSNE(large_blob_output, nil);
+    EXPECT_TRUE([large_blob_output isSupported]);
+  } else {
+    GTEST_SKIP() << "Large Blob requires iOS 18.0+.";
+  }
+}
 }  // namespace credential_provider_extension

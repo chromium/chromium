@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/credential_provider_extension/passkey_request_details.h"
+
+#import <AuthenticationServices/AuthenticationServices.h>
+
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/credential_provider_extension/passkey_request_details+Testing.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
 
@@ -146,6 +153,54 @@ TEST_F(PasskeyRequestDetailsTest, ExcludedPasskey) {
                                               username:user3
                                    excludedCredentials:@[ id2, id3 ]];
   EXPECT_FALSE([details hasExcludedPasskey:credentials]);
+}
+
+TEST_F(PasskeyRequestDetailsTest, LargeBlobHelperDetectsRequest) {
+  if (@available(iOS 18.0, *)) {
+    NSUserDefaults* defaults = app_group::GetGroupUserDefaults();
+    [defaults
+        setBool:YES
+         forKey:AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
+    [defaults synchronize];
+
+    // Large Blob required.
+    id mockInputRequired =
+        OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
+    id mockLargeBlobRequired = OCMClassMock(
+        [ASAuthorizationPublicKeyCredentialLargeBlobRegistrationInput class]);
+    OCMStub([mockLargeBlobRequired supportRequirement])
+        .andReturn(
+            ASAuthorizationPublicKeyCredentialLargeBlobSupportRequirementRequired);
+    OCMStub([mockInputRequired largeBlob]).andReturn(mockLargeBlobRequired);
+    EXPECT_TRUE([PasskeyRequestDetails
+        isLargeBlobSupportRequestedFromRegistrationInput:mockInputRequired]);
+
+    // Large Blob preferred.
+    id mockInputPreferred =
+        OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
+    id mockLargeBlobPreferred = OCMClassMock(
+        [ASAuthorizationPublicKeyCredentialLargeBlobRegistrationInput class]);
+    OCMStub([mockLargeBlobPreferred supportRequirement])
+        .andReturn(
+            ASAuthorizationPublicKeyCredentialLargeBlobSupportRequirementPreferred);
+    OCMStub([mockInputPreferred largeBlob]).andReturn(mockLargeBlobPreferred);
+    EXPECT_TRUE([PasskeyRequestDetails
+        isLargeBlobSupportRequestedFromRegistrationInput:mockInputPreferred]);
+
+    // Large Blob preference none.
+    id mockInputNil =
+        OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
+    OCMStub([mockInputNil largeBlob]).andReturn(nil);
+    EXPECT_FALSE([PasskeyRequestDetails
+        isLargeBlobSupportRequestedFromRegistrationInput:mockInputNil]);
+
+    // Clean up flag.
+    [defaults
+        removeObjectForKey:
+            AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
+  } else {
+    GTEST_SKIP() << "Large Blob requires iOS 18.0+.";
+  }
 }
 
 }  // namespace credential_provider_extension

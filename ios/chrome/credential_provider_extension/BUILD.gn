@@ -83,6 +83,7 @@ source_set("unit_tests") {
     ":passkey_request_details",
     ":passkey_request_details_testing",
     ":passkey_util",
+    ":passkey_util_swift",
     "//base",
     "//base/test:test_support",
     "//components/sync/protocol",
@@ -90,6 +91,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

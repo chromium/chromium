@@ -65,7 +65,7 @@ struct PasskeyAssertionOutput {
 // to if `prf_inputs` is provided. Otherwise, returns a structure with nil
 // members.
 //
-// `prf_inputs` is provided is PRF support is requested, otherwise, it should be
+// `prf_inputs` is provided if PRF support is requested, otherwise, it should be
 // nil.
 PasskeyAssertionOutput PerformPasskeyAssertion(
     id<Credential> credential,
