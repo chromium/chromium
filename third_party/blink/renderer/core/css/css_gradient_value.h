@@ -116,6 +116,8 @@ class CSSGradientValue : public CSSImageGeneratorValue {
   CSSGradientType GradientType() const { return gradient_type_; }
 
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
+  const CSSGradientValue* ResolveValuesIfNeeded(
+      const CSSToLengthConversionData& conversion_data) const;
   CSSGradientValue* ComputedCSSValue(const ComputedStyle&,
                                      bool allow_visited_style,
                                      CSSValuePhase value_phase) const;
@@ -198,6 +200,8 @@ class CSSLinearGradientValue final : public CSSGradientValue {
 
   bool Equals(const CSSLinearGradientValue&) const;
 
+  const CSSLinearGradientValue* ResolveValuesIfNeeded(
+      const CSSToLengthConversionData& conversion_data) const;
   CSSLinearGradientValue* ComputedCSSValue(const ComputedStyle&,
                                            bool allow_visited_style,
                                            CSSValuePhase value_phase) const;
@@ -300,6 +304,8 @@ class CORE_EXPORT CSSRadialGradientValue final : public CSSGradientValue {
 
   bool Equals(const CSSRadialGradientValue&) const;
 
+  const CSSRadialGradientValue* ResolveValuesIfNeeded(
+      const CSSToLengthConversionData& conversion_data) const;
   CSSRadialGradientValue* ComputedCSSValue(const ComputedStyle&,
                                            bool allow_visited_style,
                                            CSSValuePhase value_phase) const;
@@ -350,6 +356,8 @@ class CSSConicGradientValue final : public CSSGradientValue {
 
   bool Equals(const CSSConicGradientValue&) const;
 
+  const CSSConicGradientValue* ResolveValuesIfNeeded(
+      const CSSToLengthConversionData& conversion_data) const;
   CSSConicGradientValue* ComputedCSSValue(const ComputedStyle&,
                                           bool allow_visited_style,
                                           CSSValuePhase value_phase) const;

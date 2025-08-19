@@ -24,6 +24,7 @@
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
+#include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
@@ -366,6 +367,15 @@ const CSSValue& StyleResolverState::ResolveLightDarkPair(
       return pair->First();
     }
     return pair->Second();
+  }
+  return value;
+}
+
+const CSSValue& StyleResolverState::ResolveGradient(const CSSValue& value) {
+  if (const auto* gradient_value =
+          DynamicTo<cssvalue::CSSGradientValue>(&value)) {
+    return *gradient_value->ResolveValuesIfNeeded(
+        css_to_length_conversion_data_);
   }
   return value;
 }

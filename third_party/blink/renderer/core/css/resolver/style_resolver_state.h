@@ -202,6 +202,9 @@ class CORE_EXPORT StyleResolverState {
   // reference to the passed value.
   const CSSValue& ResolveLightDarkPair(const CSSValue&);
 
+  // If the input CSSValue is a CSSGradientValue, resolve its "calc" functions.
+  const CSSValue& ResolveGradient(const CSSValue&);
+
   const ComputedStyle* OriginatingElementStyle() const {
     return originating_element_style_;
   }

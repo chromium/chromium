@@ -160,8 +160,8 @@ void CSSToStyleMap::MapFillImage(StyleResolverState& state,
   CSSPropertyID property = layer->GetType() == EFillLayerType::kBackground
                                ? CSSPropertyID::kBackgroundImage
                                : CSSPropertyID::kMaskImage;
-  layer->SetImage(
-      state.GetStyleImage(property, state.ResolveLightDarkPair(value)));
+  layer->SetImage(state.GetStyleImage(
+      property, state.ResolveGradient(state.ResolveLightDarkPair(value))));
 }
 
 void CSSToStyleMap::MapFillRepeat(StyleResolverState&,
