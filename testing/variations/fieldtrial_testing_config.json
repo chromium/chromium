@@ -2060,13 +2060,6 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithoutApc",
-                    "enable_features": [
-                        "AutofillAiWithDataSchema",
-                        "FormsClassificationsMqlsLogging"
-                    ]
-                },
-                {
                     "name": "EnabledWithApc",
                     "enable_features": [
                         "AutofillAiServerModel",
