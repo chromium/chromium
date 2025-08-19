@@ -76,4 +76,11 @@ class BookmarkBar extends LinearLayout {
     public void setOverflowButtonVisibility(int visibility) {
         mOverflowButton.setVisibility(visibility);
     }
+
+    /**
+     * @return The overflow button view.
+     */
+    public ImageButton getOverflowButton() {
+        return mOverflowButton;
+    }
 }

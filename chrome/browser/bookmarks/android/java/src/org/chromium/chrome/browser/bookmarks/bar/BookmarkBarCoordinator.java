@@ -157,7 +157,7 @@ public class BookmarkBarCoordinator
                         allBookmarksButtonModel,
                         controlsHeightSupplier,
                         itemsModel,
-                        mBookmarkBarItemsLayoutManager.getItemsOverflowSupplier(),
+                        mBookmarkBarItemsLayoutManager,
                         model,
                         profileSupplier,
                         currentTab,

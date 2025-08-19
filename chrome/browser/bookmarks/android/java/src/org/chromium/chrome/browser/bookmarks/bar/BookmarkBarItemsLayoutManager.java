@@ -119,6 +119,14 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
         mItemMaxWidth = itemMaxWidth;
     }
 
+    /**
+     * @return The adapter position of the first item that is not visible, or the total item count
+     *     if all items are visible.
+     */
+    public int getFirstHiddenItemPosition() {
+        return getChildCount();
+    }
+
     private int getStartOffset() {
         return LocalizationUtils.isLayoutRtl() ? getWidth() : 0;
     }

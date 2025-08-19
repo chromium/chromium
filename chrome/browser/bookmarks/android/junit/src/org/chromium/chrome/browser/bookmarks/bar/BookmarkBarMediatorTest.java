@@ -75,6 +75,7 @@ public class BookmarkBarMediatorTest {
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Mock private AnchoredPopupWindow mAnchoredPopupWindow;
     @Mock private BasicListMenu mMockListMenu;
+    @Mock private BookmarkBarItemsLayoutManager mLayoutManager;
 
     private Activity mActivity;
     private BookmarkBarMediator mMediator;
@@ -89,6 +90,7 @@ public class BookmarkBarMediatorTest {
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
         mProfileSupplier = new ObservableSupplierImpl<>(mProfile);
         Supplier<Pair<Integer, Integer>> controlsHeightSupplier = () -> new Pair<>(0, 0);
+        when(mLayoutManager.getItemsOverflowSupplier()).thenReturn(mItemsOverflowSupplier);
 
         mMediator =
                 new BookmarkBarMediator(
@@ -96,7 +98,7 @@ public class BookmarkBarMediatorTest {
                         mAllBookmarksButtonModel,
                         controlsHeightSupplier,
                         mItemsModel,
-                        mItemsOverflowSupplier,
+                        mLayoutManager,
                         mPropertyModel,
                         mProfileSupplier,
                         /* currentTab= */ null,
@@ -126,7 +128,7 @@ public class BookmarkBarMediatorTest {
         assertNull("Cache should be empty initially.", BookmarkBarMediator.sFolderIconBitmap);
 
         // Trigger #createListItemForBookmarkFolder, which populates the sFolderIconBitmap cache.
-        mMediator.buildMenuModelListForFolder(rootFolderId);
+        mMediator.buildMenuModelListForFolder(mBookmarkModel, rootFolderId);
 
         assertNotNull("Cache should be populated.", BookmarkBarMediator.sFolderIconBitmap);
 
@@ -143,7 +145,7 @@ public class BookmarkBarMediatorTest {
         mBookmarkModel.addBookmark(f2, 0, "L2", JUnitTestGURLs.URL_2);
 
         // Build the model list for the top-level folder F1.
-        ModelList modelList = mMediator.buildMenuModelListForFolder(f1);
+        ModelList modelList = mMediator.buildMenuModelListForFolder(mBookmarkModel, f1);
 
         // Verify the structure of the top-level menu.
         assertEquals("Top-level menu should have two items (L1, F2).", 2, modelList.size());
@@ -168,6 +170,41 @@ public class BookmarkBarMediatorTest {
         ListItem l2ListItem = submenuItems.get(0);
         assertEquals(ListItemType.MENU_ITEM, l2ListItem.type);
         assertEquals("L2", l2ListItem.model.get(ListMenuItemProperties.TITLE));
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildMenuModelListFromIds_showsOnlyHiddenItems() {
+        // Create 5 bookmarks in the desktop folder.
+        BookmarkId desktopFolder = mBookmarkModel.getDesktopFolderId();
+        mBookmarkModel.addBookmark(desktopFolder, 0, "Visible 1", JUnitTestGURLs.URL_1);
+        mBookmarkModel.addBookmark(desktopFolder, 1, "Visible 2", JUnitTestGURLs.URL_2);
+        mBookmarkModel.addBookmark(desktopFolder, 2, "Hidden 1", JUnitTestGURLs.URL_3);
+        mBookmarkModel.addBookmark(desktopFolder, 3, "Hidden 2", JUnitTestGURLs.URL_1);
+        mBookmarkModel.addBookmark(desktopFolder, 4, "Hidden 3", JUnitTestGURLs.URL_2);
+
+        // Get the full list of all 5 bookmark IDs.
+        List<BookmarkId> allItemIds = mBookmarkModel.getChildIds(desktopFolder);
+
+        when(mLayoutManager.getFirstHiddenItemPosition()).thenReturn(2);
+
+        // The first 2 items are visible, so the hidden items start at index 2.
+        int firstHiddenIndex = mLayoutManager.getFirstHiddenItemPosition();
+        List<BookmarkId> hiddenItemIds = allItemIds.subList(firstHiddenIndex, allItemIds.size());
+
+        // Call #buildMenuModelListFromIds with the list of hidden item IDs.
+        ModelList hiddenItemsModel =
+                mMediator.buildMenuModelListFromIds(mBookmarkModel, hiddenItemIds);
+
+        assertEquals("The model should only contain the hidden items.", 3, hiddenItemsModel.size());
+        assertEquals(
+                "The first item in the model should be the first hidden bookmark.",
+                "Hidden 1",
+                hiddenItemsModel.get(0).model.get(ListMenuItemProperties.TITLE));
+        assertEquals(
+                "The last item in the model should be the last hidden bookmark.",
+                "Hidden 3",
+                hiddenItemsModel.get(2).model.get(ListMenuItemProperties.TITLE));
     }
 
     @Test
