@@ -6454,6 +6454,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Accounts share the same id"/>
 </enum>
 
+<!-- LINT.IfChange(FedCmCancelReason) -->
+
 <enum name="FedCmCancelReason">
   <int value="0" label="Other"/>
   <int value="1" label="Close button"/>
@@ -6463,7 +6465,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="More details button"/>
   <int value="6" label="Android back button"/>
   <int value="7" label="Tap scrim on Android"/>
+  <int value="8" label="Segmentation platform (obsolete)"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/public/browser/webid/identity_request_dialog_controller.h:DismissReason) -->
 
 <enum name="FedCmClosePopupWindowReason">
   <int value="0" label="IDP initiated close"/>

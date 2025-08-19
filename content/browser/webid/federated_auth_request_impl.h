@@ -318,7 +318,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void MaybeShowAccountsDialog();
   void OnShouldShowAccountsPassiveDialogResult(
-      bool did_succeed_for_at_least_one_idp,
+      const std::set<GURL>& unique_idps,
       bool should_show);
   // To be called immediately after ShowAccountsDialog for correct devtools
   // integration and metrics reporting.

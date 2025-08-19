@@ -141,6 +141,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogDismissReason
+  // LINT.IfChange(DismissReason)
   enum class DismissReason {
     kOther = 0,
     kCloseButton = 1,
@@ -154,10 +155,11 @@ class CONTENT_EXPORT IdentityRequestDialogController {
     kBackPress = 6,
     // Android-specific
     kTapScrim = 7,
-    kSuppressed = 8,
+    kSuppressed = 8,  // obsolete
 
     kMaxValue = kSuppressed,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmCancelReason)
 
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid

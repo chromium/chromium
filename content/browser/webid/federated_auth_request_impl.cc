@@ -531,6 +531,12 @@ void FederatedAuthRequestImpl::RequestToken(
   fedcm_metrics_->RecordIdentityProvidersCount(idp_order_.size());
 
   CHECK(!unique_idps.empty());
+  if (rp_mode_ == RpMode::kPassive) {
+    request_dialog_controller_->ShouldShowAccountsPassiveDialog(base::BindOnce(
+        &FederatedAuthRequestImpl::OnShouldShowAccountsPassiveDialogResult,
+        weak_ptr_factory_.GetWeakPtr(), std::move(unique_idps)));
+    return;
+  }
   FetchEndpointsForIdps(std::move(unique_idps));
 }
 
@@ -1130,14 +1136,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       return;
     }
   } else {
-    if (rp_mode_ == RpMode::kPassive) {
-      request_dialog_controller_->ShouldShowAccountsPassiveDialog(
-          base::BindOnce(&FederatedAuthRequestImpl::
-                             OnShouldShowAccountsPassiveDialogResult,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         did_succeed_for_at_least_one_idp));
-      return;
-    }
     if (!request_dialog_controller_->ShowAccountsDialog(
             CreateRpData(), idp_data_for_display_, accounts_, rp_mode_,
             new_accounts_,
@@ -1157,28 +1155,16 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 }
 
 void FederatedAuthRequestImpl::OnShouldShowAccountsPassiveDialogResult(
-    bool did_succeed_for_at_least_one_idp,
+    const std::set<GURL>& unique_idps,
     bool should_show) {
   if (!should_show) {
-    OnDialogDismissed(
-        IdentityRequestDialogController::DismissReason::kSuppressed);
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kSuppressedBySegmentationPlatform,
+        TokenStatus::kSuppressedBySegmentationPlatform,
+        /*should_delay_callback=*/true);
     return;
   }
-  if (!request_dialog_controller_->ShowAccountsDialog(
-          CreateRpData(), idp_data_for_display_, accounts_, rp_mode_,
-          new_accounts_,
-          base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              /*can_append_hints=*/false),
-          base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&FederatedAuthRequestImpl::OnAccountsDisplayed,
-                         weak_ptr_factory_.GetWeakPtr()))) {
-    return;
-  }
-  AfterAccountsDialogShown(did_succeed_for_at_least_one_idp);
+  FetchEndpointsForIdps(std::move(unique_idps));
 }
 
 void FederatedAuthRequestImpl::AfterAccountsDialogShown(
@@ -1554,10 +1540,6 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
   if (should_embargo) {
     token_status = TokenStatus::kShouldEmbargo;
     result = FederatedAuthRequestResult::kShouldEmbargo;
-  } else if (dismiss_reason ==
-             IdentityRequestDialogController::DismissReason::kSuppressed) {
-    token_status = TokenStatus::kNotSelectAccount;
-    result = FederatedAuthRequestResult::kSuppressedBySegmentationPlatform;
   } else {
     token_status = TokenStatus::kNotSelectAccount;
     result = FederatedAuthRequestResult::kUiDismissedNoEmbargo;

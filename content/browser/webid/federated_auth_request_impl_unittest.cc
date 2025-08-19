@@ -228,7 +228,6 @@ enum class AccountsDialogAction {
   kClose,
   kSelectFirstAccount,
   kAddAccount,
-  kSuppressed,
 };
 
 // Action on IdP-sign-in-status-mismatch dialog taken by TestDialogController.
@@ -273,6 +272,7 @@ struct MockConfiguration {
   std::optional<ErrorDialogType> error_dialog_type;
   std::optional<ErrorUrlType> error_url_type;
   blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
+  bool suppressed_by_segmentation_platform{false};
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -613,7 +613,9 @@ class TestDialogController
         idp_signin_status_mismatch_dialog_action_(
             config.idp_signin_status_mismatch_dialog_action),
         error_dialog_action_(config.error_dialog_action),
-        loading_dialog_action_(config.loading_dialog_action) {}
+        loading_dialog_action_(config.loading_dialog_action),
+        should_show_accounts_passive_dialog_(
+            !config.suppressed_by_segmentation_platform) {}
 
   ~TestDialogController() override = default;
   TestDialogController(TestDialogController&) = delete;
@@ -624,6 +626,11 @@ class TestDialogController
   void SetIdpSigninStatusMismatchDialogAction(
       IdpSigninStatusMismatchDialogAction action) {
     idp_signin_status_mismatch_dialog_action_ = action;
+  }
+
+  void ShouldShowAccountsPassiveDialog(
+      ShouldShowAccountsPassiveDialogCallback cb) override {
+    std::move(cb).Run(should_show_accounts_passive_dialog_);
   }
 
   bool ShowAccountsDialog(
@@ -685,11 +692,6 @@ class TestDialogController
         // Set `accounts_dialog_action_` such that subsequent calls will select
         // the first account.
         accounts_dialog_action_ = AccountsDialogAction::kSelectFirstAccount;
-        break;
-      case AccountsDialogAction::kSuppressed:
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(dismiss_callback),
-                                      DismissReason::kSuppressed));
         break;
       case AccountsDialogAction::kNone:
         break;
@@ -829,6 +831,7 @@ class TestDialogController
   ErrorDialogAction error_dialog_action_{ErrorDialogAction::kNone};
   LoadingDialogAction loading_dialog_action_{LoadingDialogAction::kNone};
   bool did_show_ui_ = false;
+  bool should_show_accounts_passive_dialog_;
 
   // Pointer so that the state can be queried after FederatedAuthRequestImpl
   // destroys TestDialogController.
@@ -8245,7 +8248,7 @@ TEST_F(FederatedAuthRequestImplTest, CancelReasonMetrics) {
 // accounts dialog is suppressed by segmentation platform.
 TEST_F(FederatedAuthRequestImplTest, SuppressedBySegmentationPlatform) {
   MockConfiguration configuration = kConfigurationValid;
-  configuration.accounts_dialog_action = AccountsDialogAction::kSuppressed;
+  configuration.suppressed_by_segmentation_platform = true;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kSuppressedBySegmentationPlatform,
