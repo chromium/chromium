@@ -1336,7 +1336,7 @@ TEST_P(WaylandWindowDragControllerTest,
   // to when a tab is detached in a Chrome's tab drag session.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
-  MockWaylandPlatformWindowDelegate delegate_2;
+  MockWaylandPlatformWindowDelegate delegate_2(connection_.get());
   EXPECT_CALL(delegate_2, OnAcceleratedWidgetAvailable(_)).Times(1);
   auto window_2 =
       delegate_2.CreateWaylandWindow(connection_.get(), std::move(properties));
@@ -1601,7 +1601,7 @@ TEST_P(WaylandWindowDragControllerTest,
   // when a tab is detached in a Chrome's tab drag session.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
-  MockWaylandPlatformWindowDelegate delegate_2;
+  MockWaylandPlatformWindowDelegate delegate_2(connection_.get());
   EXPECT_CALL(delegate_2, OnAcceleratedWidgetAvailable(_)).Times(1);
   auto window_2 =
       delegate_2.CreateWaylandWindow(connection_.get(), std::move(properties));

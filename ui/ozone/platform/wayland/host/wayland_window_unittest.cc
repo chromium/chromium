@@ -1101,7 +1101,7 @@ TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
 }
 
 TEST_P(WaylandWindowTest, StartWithFullscreen) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(100, 100);
   properties.type = PlatformWindowType::kWindow;
@@ -1157,7 +1157,7 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
 }
 
 TEST_P(WaylandWindowTest, StartMaximized) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(100, 100);
   properties.type = PlatformWindowType::kWindow;
@@ -1974,13 +1974,13 @@ TEST_P(WaylandWindowTest, InitialConfigureFollowedByBoundsChangeCompletesAck) {
 TEST_P(WaylandWindowTest, OnActivationChanged) {
   uint32_t serial = 0;
 
-  MockWaylandPlatformWindowDelegate new_window_delegate;
+  MockWaylandPlatformWindowDelegate new_window_delegate(connection_.get());
   auto new_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kWindow, gfx::Rect(100, 100), &new_window_delegate);
   ASSERT_TRUE(new_window);
   auto new_window_surface_id = new_window->root_surface()->get_surface_id();
 
-  MockWaylandPlatformWindowDelegate menu_delegate;
+  MockWaylandPlatformWindowDelegate menu_delegate(connection_.get());
   auto menu = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
                                             gfx::Rect(100, 100), &menu_delegate,
                                             new_window->GetWidget());
@@ -2042,7 +2042,7 @@ TEST_P(WaylandWindowTest, OnAcceleratedWidgetDestroy) {
 }
 
 TEST_P(WaylandWindowTest, CanCreateMenuWindow) {
-  MockWaylandPlatformWindowDelegate menu_window_delegate;
+  MockWaylandPlatformWindowDelegate menu_window_delegate(connection_.get());
 
   // SetPointerFocus(true) requires a WaylandPointer.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -2075,7 +2075,7 @@ TEST_P(WaylandWindowTest, CanCreateMenuWindow) {
 }
 
 TEST_P(WaylandWindowTest, CreateAndDestroyNestedMenuWindow) {
-  MockWaylandPlatformWindowDelegate menu_window_delegate;
+  MockWaylandPlatformWindowDelegate menu_window_delegate(connection_.get());
   gfx::AcceleratedWidget menu_window_widget;
   EXPECT_CALL(menu_window_delegate, OnAcceleratedWidgetAvailable(_))
       .WillOnce(SaveArg<0>(&menu_window_widget));
@@ -2086,7 +2086,8 @@ TEST_P(WaylandWindowTest, CreateAndDestroyNestedMenuWindow) {
   EXPECT_TRUE(menu_window);
   ASSERT_NE(menu_window_widget, gfx::kNullAcceleratedWidget);
 
-  MockWaylandPlatformWindowDelegate nested_menu_window_delegate;
+  MockWaylandPlatformWindowDelegate nested_menu_window_delegate(
+      connection_.get());
   std::unique_ptr<WaylandWindow> nested_menu_window =
       CreateWaylandWindowWithParams(
           PlatformWindowType::kMenu, gfx::Rect(20, 0, 10, 10),
@@ -2095,7 +2096,7 @@ TEST_P(WaylandWindowTest, CreateAndDestroyNestedMenuWindow) {
 }
 
 TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
-  MockWaylandPlatformWindowDelegate menu_window_delegate;
+  MockWaylandPlatformWindowDelegate menu_window_delegate(connection_.get());
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, gfx::Rect(10, 10, 10, 10),
       &menu_window_delegate, widget_);
@@ -2169,7 +2170,8 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
 
   // If nested menu window is added, the events are still correctly translated
   // to the captured window.
-  MockWaylandPlatformWindowDelegate nested_menu_window_delegate;
+  MockWaylandPlatformWindowDelegate nested_menu_window_delegate(
+      connection_.get());
   std::unique_ptr<WaylandWindow> nested_menu_window =
       CreateWaylandWindowWithParams(
           PlatformWindowType::kMenu, gfx::Rect(15, 18, 10, 10),
@@ -2233,7 +2235,7 @@ TEST_P(WaylandWindowTest, ConvertEventToTarget) {
 
   // Create a menu.
   constexpr gfx::Rect kMenuBounds{100, 100, 80, 50};
-  MockWaylandPlatformWindowDelegate menu_window_delegate;
+  MockWaylandPlatformWindowDelegate menu_window_delegate(connection_.get());
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, kMenuBounds, &menu_window_delegate, widget_);
   EXPECT_TRUE(menu_window);
@@ -2258,14 +2260,15 @@ TEST_P(WaylandWindowTest, ConvertEventToTarget) {
 // rerouted from another toplevel window to the event grabber.
 TEST_P(WaylandWindowTest,
        DispatchesLocatedEventsToCapturedWindowInTheSameStack) {
-  MockWaylandPlatformWindowDelegate menu_window_delegate;
+  MockWaylandPlatformWindowDelegate menu_window_delegate(connection_.get());
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, gfx::Rect(30, 40, 20, 50),
       &menu_window_delegate, widget_);
   EXPECT_TRUE(menu_window);
 
   // Second toplevel window has the same bounds as the |window_|.
-  MockWaylandPlatformWindowDelegate toplevel_window2_delegate;
+  MockWaylandPlatformWindowDelegate toplevel_window2_delegate(
+      connection_.get());
   std::unique_ptr<WaylandWindow> toplevel_window2 =
       CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                     window_->GetBoundsInDIP(),
@@ -2331,7 +2334,7 @@ TEST_P(WaylandWindowTest,
 }
 
 TEST_P(WaylandWindowTest, DispatchesKeyboardEventToToplevelWindow) {
-  MockWaylandPlatformWindowDelegate menu_window_delegate;
+  MockWaylandPlatformWindowDelegate menu_window_delegate(connection_.get());
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, gfx::Rect(10, 10, 10, 10),
       &menu_window_delegate, widget_);
@@ -2400,7 +2403,7 @@ TEST_P(WaylandWindowTest, DispatchesKeyboardEventToToplevelWindow) {
 // Tests that event is processed by the surface that has the focus. More
 // extensive tests are located in wayland touch/keyboard/pointer unittests.
 TEST_P(WaylandWindowTest, CanDispatchEvent) {
-  MockWaylandPlatformWindowDelegate menu_window_delegate;
+  MockWaylandPlatformWindowDelegate menu_window_delegate(connection_.get());
   gfx::AcceleratedWidget menu_window_widget;
   EXPECT_CALL(menu_window_delegate, OnAcceleratedWidgetAvailable(_))
       .WillOnce(SaveArg<0>(&menu_window_widget));
@@ -2410,7 +2413,8 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
       widget_);
   EXPECT_TRUE(menu_window);
 
-  MockWaylandPlatformWindowDelegate nested_menu_window_delegate;
+  MockWaylandPlatformWindowDelegate nested_menu_window_delegate(
+      connection_.get());
   std::unique_ptr<WaylandWindow> nested_menu_window =
       CreateWaylandWindowWithParams(
           PlatformWindowType::kMenu, gfx::Rect(20, 0, 10, 10),
@@ -3059,7 +3063,7 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
   // Buffer scale must be 1 when no output has been entered by the window.
   EXPECT_EQ(1, window_->applied_state().window_scale);
 
-  MockWaylandPlatformWindowDelegate menu_window_delegate;
+  MockWaylandPlatformWindowDelegate menu_window_delegate(connection_.get());
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, gfx::Rect(10, 10, 10, 10),
       &menu_window_delegate, window_->GetWidget());
@@ -3189,7 +3193,7 @@ TEST_P(WaylandWindowTest, PopupPassesDefaultAnchorInformation) {
   // Case 1: properties are not provided. In this case, bounds' origin must
   // be used as anchor rect and anchor position, gravity and constraints should
   // be normal.
-  MockWaylandPlatformWindowDelegate menu_window_delegate;
+  MockWaylandPlatformWindowDelegate menu_window_delegate(connection_.get());
   EXPECT_CALL(menu_window_delegate, GetOwnedWindowAnchorAndRectInDIP())
       .WillOnce(Return(std::nullopt));
   gfx::Rect menu_window_bounds(gfx::Point(439, 46),
@@ -3207,7 +3211,8 @@ TEST_P(WaylandWindowTest, PopupPassesDefaultAnchorInformation) {
   EXPECT_EQ(menu_window->GetBoundsInDIP(), menu_window_bounds);
 
   // Case 2: the nested menu window is positioned normally.
-  MockWaylandPlatformWindowDelegate nested_menu_window_delegate;
+  MockWaylandPlatformWindowDelegate nested_menu_window_delegate(
+      connection_.get());
   gfx::Rect nested_menu_window_bounds(gfx::Point(724, 47),
                                       nested_menu_window_positioner.size);
   std::unique_ptr<WaylandWindow> nested_menu_window =
@@ -3238,7 +3243,7 @@ TEST_P(WaylandWindowTest, PopupPassesSetAnchorInformation) {
   auto* toplevel_window = window_.get();
   toplevel_window->SetBoundsInDIP(gfx::Rect(508, 212));
 
-  MockWaylandPlatformWindowDelegate menu_window_delegate;
+  MockWaylandPlatformWindowDelegate menu_window_delegate(connection_.get());
   ui::OwnedWindowAnchor anchor = {
       gfx::Rect(menu_window_positioner.anchor_rect),
       OwnedWindowAnchorPosition::kBottomRight,
@@ -3255,7 +3260,8 @@ TEST_P(WaylandWindowTest, PopupPassesSetAnchorInformation) {
 
   VerifyXdgPopupPosition(menu_window.get(), menu_window_positioner);
 
-  MockWaylandPlatformWindowDelegate nested_menu_window_delegate;
+  MockWaylandPlatformWindowDelegate nested_menu_window_delegate(
+      connection_.get());
   anchor = {{180, 157, 312, 1},
             OwnedWindowAnchorPosition::kTopRight,
             OwnedWindowAnchorGravity::kBottomRight,
@@ -3281,7 +3287,8 @@ TEST_P(WaylandWindowTest, SetBoundsResizesEmptySizes) {
   auto* toplevel_window = window_.get();
   toplevel_window->SetBoundsInDIP(gfx::Rect(666, 666));
 
-  testing::NiceMock<MockWaylandPlatformWindowDelegate> popup_delegate;
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> popup_delegate(
+      connection_.get());
   gfx::Rect menu_window_bounds(gfx::Point(0, 0), {0, 0});
   std::unique_ptr<WaylandWindow> popup = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, menu_window_bounds, &popup_delegate,
@@ -3513,7 +3520,7 @@ TEST_P(WaylandWindowTest, OnSizeConstraintsChanged) {
 }
 
 TEST_P(WaylandWindowTest, DestroysCreatesSurfaceOnHideShow) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   auto window = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                               gfx::Rect(100, 100), &delegate);
   ASSERT_TRUE(window);
@@ -3542,7 +3549,7 @@ TEST_P(WaylandWindowTest, DestroysCreatesSurfaceOnHideShow) {
 }
 
 TEST_P(WaylandWindowTest, DestroysCreatesPopupsOnHideShow) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   auto window = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
                                               gfx::Rect(50, 50), &delegate,
                                               window_->GetWidget());
@@ -3595,7 +3602,7 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   base::RunLoop().RunUntilIdle();
 
   // Create window.
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   auto window = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                               gfx::Rect(100, 100), &delegate);
   ASSERT_TRUE(window);
@@ -3683,7 +3690,7 @@ TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
   properties.type = PlatformWindowType::kWindow;
   properties.wm_class_class = kAppId;
 
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   auto window =
       delegate.CreateWaylandWindow(connection_.get(), std::move(properties));
   ASSERT_TRUE(window);
@@ -3792,7 +3799,7 @@ TEST_P(WaylandWindowTest, CreatesPopupOnButtonPressSerial) {
     });
 
     // Create a popup window and verify the client used correct serial.
-    MockWaylandPlatformWindowDelegate delegate;
+    MockWaylandPlatformWindowDelegate delegate(connection_.get());
     auto popup = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
                                                gfx::Rect(50, 50), &delegate,
                                                window_->GetWidget());
@@ -3855,7 +3862,7 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
     });
 
     // Create a popup window and verify the client used correct serial.
-    MockWaylandPlatformWindowDelegate delegate;
+    MockWaylandPlatformWindowDelegate delegate(connection_.get());
     auto popup = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
                                                gfx::Rect(50, 50), &delegate,
                                                window_->GetWidget());
@@ -3953,7 +3960,7 @@ TEST_P(WaylandWindowTest, NestedPopupWindowsGetCorrectParent) {
 
 TEST_P(WaylandWindowTest, DoesNotGrabPopupIfNoSeat) {
   // Create a popup window and verify the grab serial is not set.
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   auto popup = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
                                              gfx::Rect(50, 50), &delegate,
                                              window_->GetWidget());
@@ -3980,7 +3987,7 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
   // ozone/wayland does not attempt to grab it.
   connection_->serial_tracker().ClearForTesting();
 
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   std::unique_ptr<WaylandWindow> root_menu;
   root_menu = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
                                             gfx::Rect(50, 50), &delegate,
@@ -4017,7 +4024,7 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
       });
   Mock::VerifyAndClearExpectations(&delegate);
 
-  MockWaylandPlatformWindowDelegate delegate_2;
+  MockWaylandPlatformWindowDelegate delegate_2(connection_.get());
   std::unique_ptr<WaylandWindow> child_menu;
   child_menu = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
                                              gfx::Rect(10, 10), &delegate_2,
@@ -4044,7 +4051,8 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
 }
 
 TEST_P(WaylandWindowTest, InitialBounds) {
-  testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_2;
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_2(
+      connection_.get());
   auto toplevel = CreateWaylandWindowWithParams(
       PlatformWindowType::kWindow, gfx::Rect(10, 10, 200, 200), &delegate_2);
   {
@@ -4465,7 +4473,7 @@ class BlockableWaylandToplevelWindow : public WaylandToplevelWindow {
 TEST_P(WaylandWindowTest, BlockingTouchDownUp_NoCrash) {
   window_.reset();
 
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   auto window = BlockableWaylandToplevelWindow::Create(
       gfx::Rect(800, 600), connection_.get(), &delegate);
 
@@ -4637,7 +4645,8 @@ TEST_P(WaylandWindowTest, NoRoundingErrorInDIP) {
     // Update to delegate to use the correct scale;
     window_->UpdateWindowScale(true);
 
-    testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate;
+    testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate(
+        connection_.get());
     std::unique_ptr<WaylandWindow> wayland_window =
         CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                       gfx::Rect(20, 0, 100, 100), &delegate);
@@ -4794,7 +4803,7 @@ class MultiDisplayWaylandWindowTest : public WaylandWindowTest {
 // Asserts new windows ignore the display for new windows if bounds have been
 // explicitly specified.
 TEST_P(MultiDisplayWaylandWindowTest, NewWindowsRespectInitParamBounds) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
 
   // Set the secondary display as the new window target.
   const display::ScopedDisplayForNewWindows scoped_display_new_windows(
@@ -5073,7 +5082,8 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_InitScaleAndBounds) {
   connection_->window_manager()->SetFontScale(1.25f);
 
   // Create a new toplelvel `window`.
-  testing::NiceMock<MockWaylandPlatformWindowDelegate> new_window_delegate;
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> new_window_delegate(
+      connection_.get());
   EXPECT_CALL(new_window_delegate, OnAcceleratedWidgetAvailable(_));
   EXPECT_CALL(new_window_delegate, OnBoundsChanged(_)).Times(0);
   PlatformWindowInitProperties properties(gfx::Rect(800, 800));
@@ -5190,7 +5200,8 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandlePopupGeometry) {
   // (1.25 ui inv-scaled). So it must be positioned at (125, 125) with 25x100
   // dip wayland pixels.
   auto* toplevel = window_.get();
-  testing::NiceMock<MockWaylandPlatformWindowDelegate> menu_delegate;
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> menu_delegate(
+      connection_.get());
   ui::OwnedWindowAnchor anchor{
       .anchor_rect = gfx::Rect(100, 100, 20, 20),
       .anchor_position = OwnedWindowAnchorPosition::kBottomRight,

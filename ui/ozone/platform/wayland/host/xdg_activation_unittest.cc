@@ -33,7 +33,7 @@ using XdgActivationTest = WaylandTestSimple;
 
 // Tests that XdgActivation uses the proper surface to request token.
 TEST_F(XdgActivationTest, RequestNewToken) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),

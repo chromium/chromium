@@ -167,7 +167,7 @@ TEST_P(WaylandEventSourceTest, DeleteBeforeTouchFrame) {
   });
   ASSERT_TRUE(connection_->seat()->touch());
 
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                                kDefaultBounds, &delegate);
 

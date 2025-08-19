@@ -5,14 +5,26 @@
 #include "ui/ozone/platform/wayland/test/mock_wayland_platform_window_delegate.h"
 
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
 
-MockWaylandPlatformWindowDelegate::MockWaylandPlatformWindowDelegate() =
-    default;
-MockWaylandPlatformWindowDelegate::~MockWaylandPlatformWindowDelegate() =
-    default;
+void MockWaylandPlatformWindowDelegate::OnWindowRemoved(WaylandWindow* window) {
+  if (wayland_window_ == window) {
+    wayland_window_ = nullptr;
+  }
+}
+
+MockWaylandPlatformWindowDelegate::MockWaylandPlatformWindowDelegate(
+    raw_ptr<WaylandConnection> connection)
+    : connection_(connection) {
+  connection_->window_manager()->AddObserver(this);
+}
+
+MockWaylandPlatformWindowDelegate::~MockWaylandPlatformWindowDelegate() {
+  connection_->window_manager()->RemoveObserver(this);
+}
 
 gfx::Rect MockWaylandPlatformWindowDelegate::ConvertRectToPixels(
     const gfx::Rect& rect_in_dp) const {
