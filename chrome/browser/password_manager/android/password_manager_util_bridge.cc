@@ -41,11 +41,6 @@ bool PasswordManagerUtilBridge::IsInternalBackendPresent() {
       base::android::AttachCurrentThread());
 }
 
-bool PasswordManagerUtilBridge::IsPlayStoreAppPresent() {
-  return Java_PasswordManagerUtilBridge_isPlayStoreAppPresent(
-      base::android::AttachCurrentThread());
-}
-
 bool PasswordManagerUtilBridge::IsGooglePlayServicesUpdatable() {
   return Java_PasswordManagerUtilBridge_isGooglePlayServicesUpdatable(
       base::android::AttachCurrentThread());

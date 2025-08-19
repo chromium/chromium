@@ -21,7 +21,6 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
-#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -423,8 +422,6 @@ class AllPasswordsBottomSheetControllerAccountStoreTest
     : public AllPasswordsBottomSheetControllerTest {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
-                                                      true);
     profile_store_ = CreateAndUseTestPasswordStore(profile());
     profile_store_->Init(/*prefs=*/nullptr,
                          /*affiliated_match_helper=*/nullptr);

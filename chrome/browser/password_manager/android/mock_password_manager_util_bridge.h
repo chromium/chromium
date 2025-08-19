@@ -15,7 +15,6 @@ class MockPasswordManagerUtilBridge
   ~MockPasswordManagerUtilBridge() override;
 
   MOCK_METHOD(bool, IsInternalBackendPresent, (), (override));
-  MOCK_METHOD(bool, IsPlayStoreAppPresent, (), (override));
   MOCK_METHOD(bool, IsGooglePlayServicesUpdatable, (), (override));
 };
 

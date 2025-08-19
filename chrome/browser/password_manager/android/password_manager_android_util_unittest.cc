@@ -18,16 +18,12 @@
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/android/mock_password_manager_util_bridge.h"
-#include "components/browser_sync/sync_to_signin_migration.h"
 #include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/sync/base/data_type.h"
-#include "components/sync/base/pref_names.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,27 +41,11 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
   PasswordManagerAndroidUtilTest() {
     password_manager::RegisterLegacySplitStoresPref(pref_service_.registry());
     pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kCredentialsEnableService, false);
-    pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kCredentialsEnableAutosignin, false);
-    pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
-    pref_service_.registry()->RegisterBooleanPref(
-        syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, false);
-    pref_service_.registry()->RegisterBooleanPref(
-        syncer::prefs::internal::kSyncKeepEverythingSynced, false);
-    pref_service_.registry()->RegisterBooleanPref(
-        base::StrCat(
-            {syncer::prefs::internal::
-                 kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-             ".", syncer::DataTypeToStableLowerCaseString(syncer::PASSWORDS)}),
-        false);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kUpmAutoExportCsvNeedsDeletion, false);
-
-    SetPasswordSyncEnabledPref(false);
     base::WriteFile(login_db_directory_.Append(
                         password_manager::kLoginDataForProfileFileName),
                     "");
@@ -73,36 +53,6 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
     // Most tests check the modern GmsCore case.
     base::android::device_info::set_gms_version_code_for_test(
         base::NumberToString(GetSplitStoresUpmMinVersion()));
-  }
-
-  // MaybeDeleteLoginDatabases() reads whether password sync is enabled
-  // from a pref rather than the SyncService. This helper sets such pref.
-  void SetPasswordSyncEnabledPref(bool enabled) {
-    if (enabled) {
-      pref_service_.SetBoolean(
-          syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
-      pref_service_.SetBoolean(
-          syncer::prefs::internal::kSyncKeepEverythingSynced, true);
-      pref_service_.SetBoolean(
-          base::StrCat(
-              {syncer::prefs::internal::
-                   kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-               ".",
-               syncer::DataTypeToStableLowerCaseString(syncer::PASSWORDS)}),
-          true);
-      ASSERT_EQ(browser_sync::GetSyncToSigninMigrationDataTypeDecision(
-                    &pref_service_, syncer::PASSWORDS,
-                    syncer::prefs::internal::kSyncPasswords),
-                browser_sync::SyncToSigninMigrationDataTypeDecision::kMigrate);
-    } else {
-      pref_service_.SetBoolean(
-          syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, false);
-      ASSERT_EQ(browser_sync::GetSyncToSigninMigrationDataTypeDecision(
-                    &pref_service_, syncer::PASSWORDS,
-                    syncer::prefs::internal::kSyncPasswords),
-                browser_sync::SyncToSigninMigrationDataTypeDecision::
-                    kDontMigrateTypeDisabled);
-    }
   }
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }

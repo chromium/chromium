@@ -20,7 +20,6 @@ class PasswordManagerUtilBridge : public PasswordManagerUtilBridgeInterface {
       delete;
 
   bool IsInternalBackendPresent() override;
-  bool IsPlayStoreAppPresent() override;
   bool IsGooglePlayServicesUpdatable() override;
 };
 

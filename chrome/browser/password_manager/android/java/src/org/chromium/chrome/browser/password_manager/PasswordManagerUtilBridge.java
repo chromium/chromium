@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import android.content.pm.PackageInfo;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -45,12 +43,6 @@ public class PasswordManagerUtilBridge {
         return PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
     }
 
-    @CalledByNative
-    public static boolean isPlayStoreAppPresent() {
-        PackageInfo packageInfo = PackageUtils.getPackageInfo("com.android.vending", 0);
-        return packageInfo != null;
-    }
-
     /**
      * Checks whether Google Play Services is installed and whether Play Store is installed so that
      * the user can be redirected to the store to update Google Play Services if needed.
@@ -60,7 +52,7 @@ public class PasswordManagerUtilBridge {
     @CalledByNative
     public static boolean isGooglePlayServicesUpdatable() {
         return PackageUtils.isPackageInstalled("com.google.android.gms")
-                && PasswordManagerUtilBridge.isPlayStoreAppPresent();
+                && PackageUtils.getPackageInfo("com.android.vending", 0) != null;
     }
 
     @NativeMethods

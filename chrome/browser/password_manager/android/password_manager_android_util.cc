@@ -63,10 +63,6 @@ void MaybeDeleteLoginDataFiles(PrefService* prefs,
   base::FilePath account_db_journal_path = login_db_directory.Append(
       password_manager::kLoginDataJournalForAccountFileName);
 
-  // Delete the login data files for the user migrated to UPM.
-  // In the unlikely case that the deletion operation fails, it will be
-  // retried upon next startup as part of
-  // `MaybeDeactivateSplitStoresAndLocalUpm`.
   if (PathExists(profile_db_path)) {
     bool success = base::DeleteFile(profile_db_path);
     base::UmaHistogramBoolean("PasswordManager.ProfileLoginData.RemovalStatus",
