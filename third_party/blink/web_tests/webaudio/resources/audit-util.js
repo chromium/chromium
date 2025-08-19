@@ -344,21 +344,48 @@ function createTestBuffer(context, length) {
 }
 
 /**
- * Asserts that two arrays are equal within a given epsilon for each element.
- * @param {!Array<number>} actual
- * @param {!Array<number>} expected
- * @param {number} epsilon
+ * Asserts that two arrays are equal within a given tolerance for each element.
+ * The |threshold| can be:
+ *   - A number (absolute epsilon)
+ *   - An object with optional {absoluteThreshold, relativeThreshold}
+ *   - If omitted, compares with exact equality (epsilon = 0)
+ *
+ * For each element i, we require:
+ *   |actual[i] − expected[i]| ≤ max(absoluteThreshold,
+ *                                   |expected[i]|·relativeThreshold)
+ *
+ * @param {!Array<number>|!TypedArray<number>} actual
+ * @param {!Array<number>|!TypedArray<number>} expected
+ * @param {number|{ absoluteThreshold?:number, relativeThreshold?:number }}
+ *   [threshold=0]
  * @param {string} desc
  */
 function assert_array_equal_within_eps(
-    actual, expected, epsilon, desc) {
-  assert_equals(
-      actual.length, expected.length, desc + ": length");
+    actual, expected, threshold = 0, desc = '') {
+  assert_equals(actual.length, expected.length, desc + ': length mismatch');
+
+  let abs = 0;
+  let rel = 0;
+
+  if (typeof threshold === 'number') {
+    abs = threshold;
+  } else if (threshold && typeof threshold === 'object') {
+    abs = threshold.absoluteThreshold ?? 0;
+    rel = threshold.relativeThreshold ?? 0;
+  }
+
   for (let i = 0; i < actual.length; ++i) {
+    const epsilon = Math.max(abs, Math.abs(expected[i]) * rel);
+    const diff = Math.abs(actual[i] - expected[i]);
     assert_approx_equals(
-        actual[i], expected[i], epsilon, `${desc} sample[${i}]`);
+        actual[i],
+        expected[i],
+        epsilon,
+        `${desc} sample[${i}] |${actual[i]} - ${expected[i]}|` +
+            ` = ${diff} > ${epsilon}`);
   }
 }
+
 
 /**
  * Asserts that all elements of an array are (approximately) equal to a value.
