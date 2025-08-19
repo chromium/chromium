@@ -247,6 +247,7 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Direction"/>
   <int value="30" label="RtcpMux"/>
   <int value="31" label="IceOptionsTrickle"/>
+  <int value="32" label="IceCandidateCount"/>
   <int value="40" label="RtpHeaderExtensionsRemoved"/>
   <int value="41" label="RtpHeaderExtensionsAdded"/>
   <int value="42" label="RtpHeaderExtensionsModified"/>
