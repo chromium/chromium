@@ -935,26 +935,21 @@ void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
   CHECK(!profile().IsGuestSession());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile());
-
   if (!identity_manager) {
     return;
   }
 
-  bool show_button = true;
   switch (signin_util::GetSignedInState(identity_manager)) {
     case signin_util::SignedInState::kSignInPending:
     case signin_util::SignedInState::kSyncPaused:
     case signin_util::SignedInState::kSignedOut:
     case signin_util::SignedInState::kWebOnlySignedIn:
-      show_button = false;
-      break;
+      // Do not show the button.
+      return;
     case signin_util::SignedInState::kSignedIn:
     case signin_util::SignedInState::kSyncing:
       // Show the button.
       break;
-  }
-  if (!show_button) {
-    return;
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -970,7 +965,8 @@ void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
   AddFeatureButton(
       l10n_util::GetStringUTF16(IDS_SETTINGS_MANAGE_GOOGLE_ACCOUNT),
       base::BindRepeating(&ProfileMenuView::OnManageGoogleAccountButtonClicked,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      vector_icons::kFilterIcon);
 #endif
 }
 

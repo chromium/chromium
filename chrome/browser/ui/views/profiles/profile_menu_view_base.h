@@ -166,11 +166,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                       base::RepeatingClosure action,
                       const gfx::VectorIcon& icon);
 
-  void AddFeatureButton(
-      const std::u16string& text,
-      base::RepeatingClosure action,
-      const gfx::VectorIcon& icon = gfx::VectorIcon::EmptyIcon(),
-      float icon_to_image_ratio = 1.0f);
+  void AddFeatureButton(const std::u16string& text,
+                        base::RepeatingClosure action,
+                        const gfx::VectorIcon& icon,
+                        float icon_to_image_ratio = 1.0f);
   void SetProfileManagementHeading(const std::u16string& heading);
   void AddAvailableProfile(const ui::ImageModel& image_model,
                            const std::u16string& name,
