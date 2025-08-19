@@ -328,7 +328,10 @@ def libfuzzer_builder(
         # Build and run fuzzing unit tests.
         targets = targets.bundle(
             targets = ["fuzzing_unittests"],
-            mixins = ["chromium-tester-service-account"] + swarming_mixins,
+            mixins = [
+                "chromium-tester-service-account",
+                targets.mixin(args = ["--asan-detect-odr-violation=0"]),
+            ] + swarming_mixins,
         ),
         # TODO(https://crbug.com/432407787): Add to a gardening rotation
         # once the bots are proven green enough.
