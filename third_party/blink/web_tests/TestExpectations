@@ -9608,3 +9608,9 @@ crbug.com/395962971 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context
 crbug.com/439269634 [ Linux ] external/wpt/webdriver/tests/classic/execute_script/arguments.py [ Failure Timeout ]
 crbug.com/439070606 [ Mac12 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-014.html [ Failure Timeout ]
 crbug.com/439070606 [ Mac13 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-014.html [ Failure Timeout ]
+
+# Gardener 2025-08-19
+crbug.com/439730387 [ Linux ] http/tests/inspector-protocol/network/get-durable-crossdomain-navigation-body.js [ Failure Pass ]
+crbug.com/439730387 [ Linux ] http/tests/inspector-protocol/network/get-durable-redirected-resource.js [ Failure Pass ]
+crbug.com/439730387 [ Linux ] http/tests/inspector-protocol/network/get-durable-response-body.js [ Failure Pass ]
+crbug.com/439730387 [ Linux ] http/tests/inspector-protocol/network/get-durable-response-chunked-body.js [ Failure Pass ]
