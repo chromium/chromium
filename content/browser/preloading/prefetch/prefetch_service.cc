@@ -204,7 +204,7 @@ void CookieSetHelper(base::RepeatingClosure closure,
 // correspondingly.
 bool CheckAndSetPrefetchHoldbackStatus(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  if (!prefetch_container->HasPreloadingAttempt()) {
+  if (!prefetch_container->request().attempt()) {
     return false;
   }
 
@@ -234,7 +234,7 @@ bool CheckAndSetPrefetchHoldbackStatus(
   if (devtools_client_exist) {
     // 1. When developers debug Speculation Rules Prefetch using DevTools,
     // always set status to kAllowed for developer experience.
-    prefetch_container->preloading_attempt()->SetHoldbackStatus(
+    prefetch_container->request().attempt()->SetHoldbackStatus(
         PreloadingHoldbackStatus::kAllowed);
   } else if (prefetch_container->IsLikelyAheadOfPrerender()) {
     // 2. If PrefetchContainer is likely ahead of prerender, always set status
@@ -244,15 +244,15 @@ bool CheckAndSetPrefetchHoldbackStatus(
     // for this purpose because it can't handle a prefetch that was not ahead of
     // prerender but another ahead of prerender one is migrated into it. We need
     // to update migration if we'd like to do it.
-    prefetch_container->preloading_attempt()->SetHoldbackStatus(
+    prefetch_container->request().attempt()->SetHoldbackStatus(
         PreloadingHoldbackStatus::kAllowed);
   } else if (prefetch_container->HasOverriddenHoldbackStatus()) {
     // 3. If PrefetchContainer has custom overridden status, set that value.
-    prefetch_container->preloading_attempt()->SetHoldbackStatus(
+    prefetch_container->request().attempt()->SetHoldbackStatus(
         prefetch_container->GetOverriddenHoldbackStatus());
   }
 
-  if (prefetch_container->preloading_attempt()->ShouldHoldback()) {
+  if (prefetch_container->request().attempt()->ShouldHoldback()) {
     prefetch_container->SetLoadState(
         PrefetchContainer::LoadState::kFailedHeldback);
     prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchHeldback);
@@ -892,10 +892,8 @@ void PrefetchService::CheckHasServiceWorker(CheckEligibilityParams params) {
   // calling `CheckHasServiceWorker`.
   auto has_registration_for_storage_key =
       service_worker_context->MaybeHasRegistrationForStorageKey(key);
-  if (prefetch_container->HasPreloadingAttempt()) {
-    auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
-        prefetch_container->preloading_attempt().get());
-    CHECK(preloading_attempt);
+  if (auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
+          prefetch_container->request().attempt())) {
     preloading_attempt->SetServiceWorkerRegisteredCheck(
         has_registration_for_storage_key
             ? PreloadingAttemptImpl::ServiceWorkerRegisteredCheck::kPath
@@ -933,12 +931,10 @@ void PrefetchService::OnGotServiceWorkerResult(
     return;
   }
   CHECK(prefetch_container);
-  if (prefetch_container->HasPreloadingAttempt()) {
+  if (auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
+          prefetch_container->request().attempt())) {
     const auto duration =
         base::Time::Now() - check_has_service_worker_start_time;
-    auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
-        prefetch_container->preloading_attempt().get());
-    CHECK(preloading_attempt);
     preloading_attempt->SetServiceWorkerRegisteredCheckDuration(duration);
   }
   // Note that after ServiceWorker+Prefetch support is implemented,

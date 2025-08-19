@@ -257,6 +257,7 @@ PrefetchContainer::PrefetchContainer(
               PrefetchKey(referring_document_token, url),
               std::move(no_vary_search_hint),
               std::move(preload_pipeline_info),
+              std::move(attempt),
               referring_render_frame_host.GetLastCommittedOrigin(),
               referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
               std::move(speculation_rules_tags),
@@ -264,7 +265,6 @@ PrefetchContainer::PrefetchContainer(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
           referrer,
-          std::move(attempt),
           /*holdback_status_override=*/std::nullopt,
           /*Must be empty: additional_headers=*/{},
           /*request_status_listener=*/nullptr,
@@ -296,12 +296,12 @@ PrefetchContainer::PrefetchContainer(
                           url),
               std::move(no_vary_search_hint),
               std::move(preload_pipeline_info),
+              std::move(attempt),
               referring_origin,
               referring_web_contents.GetBrowserContext()->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
           referrer,
-          std::move(attempt),
           holdback_status_override,
           /*Must be empty: additional_headers=*/{},
           /*request_status_listener=*/nullptr,
@@ -336,12 +336,12 @@ PrefetchContainer::PrefetchContainer(
               std::move(no_vary_search_hint),
               PreloadPipelineInfo::Create(
                   /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
+              std::move(attempt),
               referring_origin,
               browser_context->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
           referrer,
-          std::move(attempt),
           /*holdback_status_override=*/std::nullopt,
           additional_headers,
           std::move(request_status_listener),
@@ -354,7 +354,6 @@ PrefetchContainer::PrefetchContainer(
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
     const blink::mojom::Referrer& referrer,
-    base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<PreloadingHoldbackStatus> holdback_status_override,
     const net::HttpRequestHeaders& additional_headers,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
@@ -366,7 +365,6 @@ PrefetchContainer::PrefetchContainer(
     : request_(std::move(request)),
       referrer_(referrer),
       request_id_(base::UnguessableToken::Create().ToString()),
-      attempt_(std::move(attempt)),
       holdback_status_override_(holdback_status_override),
       additional_headers_(additional_headers),
       request_status_listener_(std::move(request_status_listener)),
@@ -518,15 +516,17 @@ void PrefetchContainer::SetTriggeringOutcomeAndFailureReasonFromStatus(
     MaybeRecordPrefetchStatusToUMA(new_prefetch_status);
   }
 
-  if (attempt_) {
+  if (request().attempt()) {
     switch (new_prefetch_status) {
       case PrefetchStatus::kPrefetchNotFinishedInTime:
-        attempt_->SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
+        request().attempt()->SetTriggeringOutcome(
+            PreloadingTriggeringOutcome::kRunning);
         break;
       case PrefetchStatus::kPrefetchSuccessful:
         // A successful prefetch means the response is ready to be used for the
         // next navigation.
-        attempt_->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
+        request().attempt()->SetTriggeringOutcome(
+            PreloadingTriggeringOutcome::kReady);
         break;
       case PrefetchStatus::kPrefetchResponseUsed:
         if (old_prefetch_status && old_prefetch_status.value() !=
@@ -537,9 +537,11 @@ void PrefetchContainer::SetTriggeringOutcomeAndFailureReasonFromStatus(
           // outcome to |kReady| to ensure valid triggering outcome state
           // transitions. This can occur in cases where the prefetch is served
           // before the body is fully received.
-          attempt_->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
+          request().attempt()->SetTriggeringOutcome(
+              PreloadingTriggeringOutcome::kReady);
         }
-        attempt_->SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
+        request().attempt()->SetTriggeringOutcome(
+            PreloadingTriggeringOutcome::kSuccess);
         break;
       // A decoy is considered eligible because a network request is made for
       // it. It is considered as a failure as the final response is never
@@ -559,7 +561,7 @@ void PrefetchContainer::SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
       case PrefetchStatus::kPrefetchIsStale:
       case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved:
-        attempt_->SetFailureReason(
+        request().attempt()->SetFailureReason(
             ToPreloadingFailureReason(new_prefetch_status));
         break;
       case PrefetchStatus::kPrefetchHeldback:
@@ -761,10 +763,10 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       OnInitialPrefetchFailedIneligible(eligibility);
     }
 
-    if (attempt_) {
+    if (request().attempt()) {
       // Please follow go/preloading-dashboard-updates if a new eligibility is
       // added.
-      attempt_->SetEligibility(eligibility);
+      request().attempt()->SetEligibility(eligibility);
     }
 
     time_initial_eligibility_got_ = base::TimeTicks::Now();
@@ -1208,9 +1210,9 @@ void PrefetchContainer::UpdateServingPageMetrics() {
 }
 
 void PrefetchContainer::SimulatePrefetchEligibleForTest() {
-  if (attempt_) {
-    attempt_->SetEligibility(PreloadingEligibility::kEligible);
-    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
+  if (request().attempt()) {
+    request().attempt()->SetEligibility(PreloadingEligibility::kEligible);
+    request().attempt()->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
   }
   SetLoadState(LoadState::kEligible);
   SetPrefetchStatus(PrefetchStatus::kPrefetchNotStarted);
@@ -1229,8 +1231,8 @@ void PrefetchContainer::SimulatePrefetchFailedIneligibleForTest(
     PreloadingEligibility eligibility) {
   CHECK_NE(PreloadingEligibility::kEligible, eligibility);
 
-  if (attempt_) {
-    attempt_->SetEligibility(eligibility);
+  if (request().attempt()) {
+    request().attempt()->SetEligibility(eligibility);
   }
   SetLoadState(LoadState::kFailedIneligible);
 }
@@ -1672,8 +1674,8 @@ void PrefetchContainer::OnUnregisterCandidate(
   // received from the server. This happens after `DidStartNavigation()`. At
   // this point in the code we have already decided we are going to use the
   // prefetch, so we can safely call `SetIsAccurateTriggering()`.
-  if (auto attempt = preloading_attempt()) {
-    static_cast<PreloadingAttemptImpl*>(attempt.get())
+  if (request().attempt()) {
+    static_cast<PreloadingAttemptImpl*>(request().attempt())
         ->SetIsAccurateTriggering(navigated_url);
   }
 }

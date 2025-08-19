@@ -58,6 +58,7 @@ PrefetchRequest::PrefetchRequest(
     const PrefetchKey& key,
     const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
+    base::WeakPtr<PreloadingAttempt> attempt,
     const std::optional<url::Origin>& referring_origin,
     base::WeakPtr<BrowserContext> browser_context,
     std::optional<SpeculationRulesTags> speculation_rules_tags,
@@ -68,6 +69,7 @@ PrefetchRequest::PrefetchRequest(
       no_vary_search_hint_(std::move(no_vary_search_hint)),
       preload_pipeline_info_(base::WrapRefCounted(
           static_cast<PreloadPipelineInfoImpl*>(preload_pipeline_info.get()))),
+      attempt_(std::move(attempt)),
       referring_origin_(referring_origin),
       browser_context_(std::move(browser_context)),
       speculation_rules_tags_(std::move(speculation_rules_tags)),

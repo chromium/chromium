@@ -22,6 +22,7 @@ namespace content {
 
 class BrowserContext;
 class PrefetchDocumentManager;
+class PreloadingAttempt;
 class PreloadPipelineInfo;
 class PreloadPipelineInfoImpl;
 class RenderFrameHostImpl;
@@ -116,6 +117,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       const PrefetchKey& key,
       const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
+      base::WeakPtr<PreloadingAttempt> attempt,
       const std::optional<url::Origin>& referring_origin,
       base::WeakPtr<BrowserContext> browser_context,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
@@ -131,6 +133,7 @@ class CONTENT_EXPORT PrefetchRequest final {
   PreloadPipelineInfoImpl& preload_pipeline_info() const {
     return *preload_pipeline_info_;
   }
+  PreloadingAttempt* attempt() const { return attempt_.get(); }
   const std::optional<url::Origin>& referring_origin() const {
     return referring_origin_;
   }
@@ -170,6 +173,14 @@ class CONTENT_EXPORT PrefetchRequest final {
   // PreloadPipelineInfoImpl is mutable as we'll update/notify the
   // PreloadPipelineInfoImpl.
   const scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info_;
+
+  // `PreloadingAttempt` is used to track the lifecycle of the preloading event,
+  // and reports various statuses to UKM dashboard. It is initialised along with
+  // `this`, and destroyed when `WCO::DidFinishNavigation` is fired.
+  // `attempt_`'s eligibility is set in `OnEligibilityCheckComplete`, and its
+  // holdback status, triggering outcome and failure reason are set in
+  // `SetPrefetchStatus`.
+  const base::WeakPtr<PreloadingAttempt> attempt_;
 
   // The origin and URL that initiates the prefetch request.
   // For renderer-initiated prefetch, this is calculated by referring

@@ -242,7 +242,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The status of the current prefetch. Note that |HasPrefetchStatus| will be
   // initially false until |SetPrefetchStatus| is called. |SetPrefetchStatus|
-  // also sets |attempt_| PreloadingTriggeringOutcome and
+  // also sets |request().attempt()| PreloadingTriggeringOutcome and
   // PreloadingFailureReason. It is only safe to call after
   // `OnEligibilityCheckComplete`.
   void SetPrefetchStatus(PrefetchStatus prefetch_status);
@@ -251,7 +251,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // These are intended to be called on
   // PrefetchService::CheckAndSetPrefetchHoldbackStatus() to set this overridden
-  // prefetch status to `attempt_`.
+  // prefetch status to `request().attempt()`.
   bool HasOverriddenHoldbackStatus() const {
     return holdback_status_override_.has_value();
   }
@@ -306,13 +306,13 @@ class CONTENT_EXPORT PrefetchContainer {
     // `PrefetchContainer::LoadState` and `PrefetchResponseReader::LoadState`
     // and verify it by adding CHECK()s.
     //
-    // Also, refer to `attempt_` for triggering outcome and failure reasons for
-    // metrics.
+    // Also, refer to `request().attempt()` for triggering outcome and failure
+    // reasons for metrics.
     // `PreloadingAttempt::SetFailureReason()` can be only called on this state.
-    // Note that these states of `attempt_` don't directly affect
+    // Note that these states of `request().attempt()` don't directly affect
     // `PrefetchResponseReader`'s servability.
     // (e.g. `PrefetchResponseReader::GetServableState()` can be still
-    // `kServable` even if `attempt_` has a failure).
+    // `kServable` even if `request().attempt()` has a failure).
     kStarted,
     kDeterminedHead,
     kCompletedOrFailed,
@@ -460,9 +460,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Returns request id to be used by DevTools and test utilities.
   const std::string& RequestId() const { return request_id_; }
-
-  bool HasPreloadingAttempt() { return !!attempt_; }
-  base::WeakPtr<PreloadingAttempt> preloading_attempt() { return attempt_; }
 
   // Simulates state transitions for:
   // - Passing eligibility check successfully (`LoadState::kEligible`),
@@ -623,7 +620,6 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer(
       std::unique_ptr<PrefetchRequest> request,
       const blink::mojom::Referrer& referrer,
-      base::WeakPtr<PreloadingAttempt> attempt,
       std::optional<PreloadingHoldbackStatus> holdback_status_override,
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
@@ -638,10 +634,11 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
       PrefetchStatus prefetch_status);
 
-  // Updates `attempt_`'s outcome and failure reason based on
+  // Updates `request().attempt()`'s outcome and failure reason based on
   // `new_prefetch_status`.
   // This should only be called after the prefetch is started, because
-  // `attempt_` is degined to record the outcome or failure of started triggers.
+  // `request().attempt()` is degined to record the outcome or failure of
+  // started triggers.
   void SetTriggeringOutcomeAndFailureReasonFromStatus(
       PrefetchStatus new_prefetch_status);
 
@@ -818,16 +815,8 @@ class CONTENT_EXPORT PrefetchContainer {
   std::vector<scoped_refptr<PreloadPipelineInfoImpl>>
       inherited_preload_pipeline_infos_;
 
-  // `PreloadingAttempt` is used to track the lifecycle of the preloading event,
-  // and reports various statuses to UKM dashboard. It is initialised along with
-  // `this`, and destroyed when `WCO::DidFinishNavigation` is fired.
-  // `attempt_`'s eligibility is set in `OnEligibilityCheckComplete`, and its
-  // holdback status, triggering outcome and failure reason are set in
-  // `SetPrefetchStatus`.
-  base::WeakPtr<PreloadingAttempt> attempt_;
-
   // If set, this value is used to override holdback status derived by the
-  // normal process. It is set to `attempt_` on
+  // normal process. It is set to `request().attempt()` on
   // PrefetchService::CheckAndSetPrefetchHoldbackStatus().
   std::optional<PreloadingHoldbackStatus> holdback_status_override_ =
       std::nullopt;

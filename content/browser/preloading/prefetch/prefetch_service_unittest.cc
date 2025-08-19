@@ -31,6 +31,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_scheduler.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
@@ -7836,8 +7837,6 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest, ReplacesOldWithNewByDefault) {
                                               PreloadingType::kPrefetch);
   prefetch_container1->SimulatePrefetchEligibleForTest();
   prefetch_container1->SimulatePrefetchStartedForTest();
-  base::WeakPtr<PreloadingAttempt> attempt1 =
-      prefetch_container1->preloading_attempt();
   AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::move(prefetch_container1));
 
@@ -7845,8 +7844,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest, ReplacesOldWithNewByDefault) {
       CreateSpeculationRulesPrefetchContainer(document_token,
                                               GURL("https://example.com"),
                                               PreloadingType::kPrefetch);
-  base::WeakPtr<PreloadingAttempt> attempt2 =
-      prefetch_container2->preloading_attempt();
+  PreloadingAttempt* attempt2 = prefetch_container2->request().attempt();
   AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::move(prefetch_container2));
 
@@ -7856,7 +7854,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest, ReplacesOldWithNewByDefault) {
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
 
-  ASSERT_EQ(attempt2.get(), prefetch_container->preloading_attempt().get());
+  ASSERT_EQ(attempt2, prefetch_container->request().attempt());
 }
 
 TEST_P(PrefetchServiceAddPrefetchContainerTest,
@@ -7867,8 +7865,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
       CreateSpeculationRulesPrefetchContainer(document_token,
                                               GURL("https://example.com"),
                                               PreloadingType::kPrerender);
-  base::WeakPtr<PreloadingAttempt> attempt1 =
-      prefetch_container1->preloading_attempt();
+  PreloadingAttempt* attempt1 = prefetch_container1->request().attempt();
   AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::move(prefetch_container1));
 
@@ -7876,8 +7873,6 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
       CreateSpeculationRulesPrefetchContainer(document_token,
                                               GURL("https://example.com"),
                                               PreloadingType::kPrefetch);
-  base::WeakPtr<PreloadingAttempt> attempt2 =
-      prefetch_container2->preloading_attempt();
   AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::move(prefetch_container2));
 
@@ -7887,7 +7882,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
 
-  ASSERT_EQ(attempt1.get(), prefetch_container->preloading_attempt().get());
+  ASSERT_EQ(attempt1, prefetch_container->request().attempt());
 }
 
 TEST_P(PrefetchServiceAddPrefetchContainerTest,
@@ -7900,8 +7895,6 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
                                               PreloadingType::kPrerender);
   prefetch_container1->SimulatePrefetchFailedIneligibleForTest(
       PreloadingEligibility::kDataSaverEnabled);
-  base::WeakPtr<PreloadingAttempt> attempt1 =
-      prefetch_container1->preloading_attempt();
   AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::move(prefetch_container1));
 
@@ -7909,8 +7902,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
       CreateSpeculationRulesPrefetchContainer(document_token,
                                               GURL("https://example.com"),
                                               PreloadingType::kPrefetch);
-  base::WeakPtr<PreloadingAttempt> attempt2 =
-      prefetch_container2->preloading_attempt();
+  PreloadingAttempt* attempt2 = prefetch_container2->request().attempt();
   AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::move(prefetch_container2));
 
@@ -7920,7 +7912,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
 
-  ASSERT_EQ(attempt2.get(), prefetch_container->preloading_attempt().get());
+  ASSERT_EQ(attempt2, prefetch_container->request().attempt());
 }
 
 TEST_P(PrefetchServiceAddPrefetchContainerTest,
@@ -7931,8 +7923,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
       CreateSpeculationRulesPrefetchContainer(document_token,
                                               GURL("https://example.com"),
                                               PreloadingType::kPrefetch);
-  base::WeakPtr<PreloadingAttempt> attempt1 =
-      prefetch_container1->preloading_attempt();
+  PreloadingAttempt* attempt1 = prefetch_container1->request().attempt();
   AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::move(prefetch_container1));
 
@@ -7940,8 +7931,6 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
       CreateSpeculationRulesPrefetchContainer(document_token,
                                               GURL("https://example.com"),
                                               PreloadingType::kPrerender);
-  base::WeakPtr<PreloadingAttempt> attempt2 =
-      prefetch_container2->preloading_attempt();
   AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::move(prefetch_container2));
 
@@ -7952,7 +7941,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
     ASSERT_EQ(1u, prefetches.size());
     base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
 
-    ASSERT_EQ(attempt1.get(), prefetch_container->preloading_attempt().get());
+    ASSERT_EQ(attempt1, prefetch_container->request().attempt());
     ASSERT_TRUE(prefetch_container->IsLikelyAheadOfPrerender());
   }
 
@@ -7973,7 +7962,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
     ASSERT_EQ(1u, prefetches.size());
     base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
 
-    ASSERT_EQ(attempt1.get(), prefetch_container->preloading_attempt().get());
+    ASSERT_EQ(attempt1, prefetch_container->request().attempt());
   }
 }
 
