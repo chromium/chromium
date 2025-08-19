@@ -23,10 +23,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier.NotifyBehavior;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
@@ -114,6 +116,8 @@ class AutocompleteMediator
     private final OmniboxSuggestionsDropdownEmbedder mEmbedder;
     private final AutocompleteInput mAutocompleteInput = new AutocompleteInput();
     private final boolean mForcePhoneStyleOmnibox;
+    private final Callback<@ControlsPosition Integer> mToolbarPositionChangedCallback =
+            this::onToolbarPositionChanged;
 
     private Optional<AutocompleteController> mAutocomplete = Optional.empty();
     private Optional<AutocompleteResult> mAutocompleteResult = Optional.empty();
@@ -227,6 +231,10 @@ class AutocompleteMediator
                 .setDialerAvailable(!pm.queryIntentActivities(dialIntent, 0).isEmpty());
 
         mAnimationDriver = initializeAnimationDriver();
+
+        mDataProvider
+                .getToolbarPositionSupplier()
+                .addObserver(mToolbarPositionChangedCallback, NotifyBehavior.NOTIFY_ON_ADD);
     }
 
     /**
@@ -257,6 +265,7 @@ class AutocompleteMediator
 
     public void destroy() {
         stopAutocomplete(false);
+        mDataProvider.getToolbarPositionSupplier().removeObserver(mToolbarPositionChangedCallback);
         mAutocomplete.ifPresent(a -> a.removeOnSuggestionsReceivedListener(this));
 
         if (mNativeInitialized) {
@@ -1178,9 +1187,6 @@ class AutocompleteMediator
                         && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                         && mContext.getResources().getConfiguration().screenWidthDp
                                 >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
-        mListPropertyModel.set(
-                SuggestionListProperties.TOOLBAR_POSITION,
-                mDataProvider.getToolbarPositionSupplier().get());
     }
 
     /** Trigger autocomplete for the given query. */
@@ -1421,6 +1427,10 @@ class AutocompleteMediator
                     };
         }
         return driver;
+    }
+
+    private void onToolbarPositionChanged(@ControlsPosition Integer newPosition) {
+        mListPropertyModel.set(SuggestionListProperties.TOOLBAR_POSITION, newPosition);
     }
 
     /** Returns the current AutocompleteInput instance. */

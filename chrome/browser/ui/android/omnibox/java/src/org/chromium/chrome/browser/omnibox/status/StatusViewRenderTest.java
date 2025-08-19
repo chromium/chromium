@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -122,7 +123,7 @@ public class StatusViewRenderTest {
                                     NewTabPageDelegate.EMPTY,
                                     url -> url.getSpec(),
                                     ToolbarUnitTestUtils.OFFLINE_STATUS,
-                                    () -> ControlsPosition.TOP);
+                                    new ObservableSupplierImpl(ControlsPosition.TOP));
                     mLocationBarModel.setTab(null, mProfile);
                     mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
                     PropertyModelChangeProcessor.create(
