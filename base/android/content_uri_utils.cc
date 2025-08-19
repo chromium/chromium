@@ -99,10 +99,11 @@ bool ContentUriGetFileInfo(const FilePath& content_uri,
 }
 
 std::vector<FileEnumerator::FileInfo> ListContentUriDirectory(
-    const FilePath& content_uri) {
+    const FilePath& content_uri,
+    int file_type) {
   JNIEnv* env = android::AttachCurrentThread();
   std::vector<FileEnumerator::FileInfo> result;
-  Java_ContentUriUtils_listDirectory(env, content_uri.value(),
+  Java_ContentUriUtils_listDirectory(env, content_uri.value(), file_type,
                                      reinterpret_cast<jlong>(&result));
   // Java will call back sync to AddFileInfoToVector(&result).
   return result;

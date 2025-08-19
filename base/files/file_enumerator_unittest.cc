@@ -494,6 +494,44 @@ TEST(FileEnumerator, GetInfo) {
   }
 }
 
+// Test that FileEnumerator::GetInfo() honors the `file_type` parameter.
+TEST(FileEnumerator, GetInfoOnFiles) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  auto file = temp_dir.GetPath().Append(FILE_PATH_LITERAL("file"));
+  auto dir = temp_dir.GetPath().Append(FILE_PATH_LITERAL("dir"));
+  auto dir_file = dir.Append(FILE_PATH_LITERAL("dir_file"));
+  ASSERT_TRUE(WriteFile(file, "x"));
+  ASSERT_TRUE(CreateDirectory(dir));
+  ASSERT_TRUE(WriteFile(dir_file, ""));
+
+#if BUILDFLAG(IS_ANDROID)
+  FilePath root_dir =
+      *base::test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(
+          temp_dir.GetPath());
+#else
+  FilePath root_dir = temp_dir.GetPath();
+#endif
+
+  FileEnumerator file_enumerator(root_dir, false, FileEnumerator::FILES);
+  int count = 0;
+  while (!file_enumerator.Next().empty()) {
+    count++;
+    EXPECT_EQ(file_enumerator.GetInfo().GetSize(), 1);
+    EXPECT_FALSE(file_enumerator.GetInfo().IsDirectory());
+  }
+  EXPECT_EQ(count, 1);
+
+  FileEnumerator dir_enumerator(root_dir, false, FileEnumerator::DIRECTORIES);
+  count = 0;
+  while (!dir_enumerator.Next().empty()) {
+    count++;
+    EXPECT_TRUE(dir_enumerator.GetInfo().IsDirectory());
+  }
+  EXPECT_EQ(count, 1);
+}
+
 // Test that FileEnumerator::GetInfo() works when searching recursively. It also
 // tests that it returns the correct information about directories.
 TEST(FileEnumerator, GetInfoRecursive) {

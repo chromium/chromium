@@ -111,6 +111,8 @@ class BASE_EXPORT FileEnumerator {
 #endif
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
+  // GENERATED_JAVA_IS_FLAG: true
   enum FileType {
     FILES = 1 << 0,
     DIRECTORIES = 1 << 1,
