@@ -22,9 +22,10 @@
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -34,7 +35,11 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
 #include "url/gurl.h"
 
 using collaboration::messaging::CollaborationEvent;
@@ -171,17 +176,20 @@ class CollaborationMessagingObserverBrowserTest
         browser()->profile());
   }
 
-  TabStrip* GetTabStrip(Browser* target_browser) {
-    return BrowserView::GetBrowserViewForBrowser(target_browser)->tabstrip();
+  TabStripViewInterface* GetTabStripView(Browser* target_browser) {
+    return BrowserView::GetBrowserViewForBrowser(target_browser)
+        ->tab_strip_view();
   }
 
   TabIcon* GetTabIcon(Browser* target_browser, int index) {
-    return GetTabStrip(target_browser)->tab_at(index)->GetTabIconForTesting();
+    return GetTabStripView(target_browser)
+        ->GetTabAnchorViewAt(index)
+        ->GetTabIconForTesting();
   }
 
-  TabGroupHeader* GetTabGroupHeader(Browser* target_browser,
-                                    const tab_groups::TabGroupId index) {
-    return GetTabStrip(target_browser)->group_header(index);
+  views::View* GetTabGroupHeader(Browser* target_browser,
+                                 const tab_groups::TabGroupId index) {
+    return GetTabStripView(target_browser)->GetTabGroupAnchorView(index);
   }
 
   tabs::TabInterface* GetTabInterface(Browser* target_browser, int index) {
@@ -264,21 +272,33 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
   EXPECT_FALSE(GetTabIcon(browser(), 3)->GetShowingAttentionIndicator());
 
   // Collapse group so it can receive an attention indicator.
-  GetTabStrip(browser())->ToggleTabGroupCollapsedState(
-      group_id, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  views::View* tab_group_header =
+      GetTabStripView(browser())->GetTabGroupAnchorView(group_id);
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  tab_group_header->OnMousePressed(event);
+  tab_group_header->OnMouseReleased(event);
 
   // DIRTY_TAB_GROUP messages set attention on tab group header
   auto dirty_tab_group_message = CreateMessage(
       "User", "URL", CollaborationEvent::TAB_ADDED,
       PersistentNotificationType::DIRTY_TAB_GROUP, tab2_id, group_id);
-  EXPECT_FALSE(
-      GetTabGroupHeader(browser(), group_id)->GetShowingAttentionIndicator());
+
+  views::View* attention_indicator_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          /*id=*/TabGroupHeader::kAttentionIndicatorViewElementId,
+          /*context=*/views::ElementTrackerViews::GetContextForView(
+              tab_group_header));
+
+  // Verify the attention indicator updates correctly with persistent message
+  // notifications.
+  EXPECT_FALSE(attention_indicator_view->GetVisible());
   observer()->DisplayPersistentMessage(dirty_tab_group_message);
-  EXPECT_TRUE(
-      GetTabGroupHeader(browser(), group_id)->GetShowingAttentionIndicator());
+  EXPECT_TRUE(attention_indicator_view->GetVisible());
   observer()->HidePersistentMessage(dirty_tab_group_message);
-  EXPECT_FALSE(
-      GetTabGroupHeader(browser(), group_id)->GetShowingAttentionIndicator());
+  EXPECT_FALSE(attention_indicator_view->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
@@ -294,8 +314,16 @@ IN_PROC_BROWSER_TEST_P(CollaborationMessagingObserverBrowserTest,
 
   // Group 2 tabs and collapse group.
   auto group_id = browser()->tab_strip_model()->AddToNewGroup({1, 2});
-  GetTabStrip(browser())->ToggleTabGroupCollapsedState(
-      group_id, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+
+  // Collapse the TabGroupHeader.
+  views::View* tab_group_header =
+      GetTabStripView(browser())->GetTabGroupAnchorView(group_id);
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  tab_group_header->OnMousePressed(event);
+  tab_group_header->OnMouseReleased(event);
 
   // Tab 2 should be hidden. Do all tests on this tab.
   EXPECT_FALSE(GetTabIcon(browser(), 2)->IsDrawn());

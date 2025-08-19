@@ -155,6 +155,8 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
   SetProperty(views::kDrawFocusRingBackgroundOutline, true);
 
   SetProperty(views::kElementIdentifierKey, kTabGroupHeaderElementId);
+  attention_indicator_->SetProperty(views::kElementIdentifierKey,
+                                    kAttentionIndicatorViewElementId);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -766,3 +768,6 @@ void TabGroupHeader::EditorBubbleTracker::OnWidgetDestroying(
   widget_ = nullptr;
   tab_slot_controller_->NotifyTabstripBubbleClosed();
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupHeader,
+                                      kAttentionIndicatorViewElementId);
