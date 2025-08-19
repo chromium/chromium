@@ -7,18 +7,25 @@
 
 #include <memory>
 
-#include "ui/aura/window.h"
+#include "build/build_config.h"
 #include "ui/base/class_property.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif
 
 namespace views::test {
 
 struct WidgetBuilderParams {
+#if defined(USE_AURA)
   int window_id = aura::Window::kInitialId;
   std::u16string window_title = std::u16string();
+#endif
   bool show = true;
 };
 
@@ -30,6 +37,8 @@ struct WidgetBuilderParams {
 class TestWidgetBuilder {
  public:
   explicit TestWidgetBuilder(WidgetBuilderParams params = {});
+  explicit TestWidgetBuilder(Widget::InitParams widget_init_params,
+                             WidgetBuilderParams params = {});
   TestWidgetBuilder(TestWidgetBuilder&& other);
   TestWidgetBuilder(const TestWidgetBuilder& other) = delete;
   TestWidgetBuilder& operator=(const TestWidgetBuilder& other) = delete;
@@ -40,8 +49,8 @@ class TestWidgetBuilder {
   TestWidgetBuilder& SetWidgetType(Widget::InitParams::Type type);
   TestWidgetBuilder& SetZOrderLevel(ui::ZOrderLevel z_order);
   TestWidgetBuilder& SetBounds(const gfx::Rect& bounds);
-  TestWidgetBuilder& SetParent(aura::Window* parent);
-  TestWidgetBuilder& SetContext(aura::Window* context);
+  TestWidgetBuilder& SetParent(gfx::NativeView parent);
+  TestWidgetBuilder& SetContext(gfx::NativeWindow context);
   TestWidgetBuilder& SetActivatable(bool activatable);
   TestWidgetBuilder& SetShowState(ui::mojom::WindowShowState show_state);
 
@@ -53,6 +62,7 @@ class TestWidgetBuilder {
     return *this;
   }
 
+#if defined(USE_AURA)
   // Set the window id used on the window of a test widget.
   TestWidgetBuilder& SetWindowId(int window_id);
 
@@ -60,6 +70,7 @@ class TestWidgetBuilder {
   // in tests. For instance, `WindowMiniView` gets its accessible name from
   // the window title.
   TestWidgetBuilder& SetWindowTitle(const std::u16string& title);
+#endif
 
   // A widget is shown when created by default. Use this if you want not
   // to show when created.
@@ -67,6 +78,12 @@ class TestWidgetBuilder {
 
   // Set the widget's delegate. It is not owned by the widget.
   TestWidgetBuilder& SetDelegate(WidgetDelegate* delegate);
+
+  // Set the widget to be used for initialization.
+  TestWidgetBuilder& SetWidget(std::unique_ptr<Widget> widget);
+
+  // Set the native widget to be used for the widget.
+  TestWidgetBuilder& SetNativeWidget(NativeWidget* native_widet);
 
   // Deprecated: Use `BuildClientOwnsWidget` instead.
   // Creates a widget owned by a native window (aura::Window on ChromeOS) and
@@ -98,6 +115,10 @@ class TestWidgetBuilder {
   // allowed to happen asynchronously.
   [[nodiscard]] std::unique_ptr<Widget> BuildClientOwnsWidget();
 
+  // Deprecated: Use `BuildClientOwnsWidget` instead.
+  // Create a widget using the ownership model given in the Widget::IntiParams.
+  [[nodiscard]] std::unique_ptr<Widget> BuildDeprecated();
+
  private:
   // Both BuildOwnsNativeWidget() and BuildClientOwnsWidget() are just
   // wrappers around this.
@@ -109,6 +130,7 @@ class TestWidgetBuilder {
   views::Widget::InitParams widget_init_params_{
       views::Widget::InitParams::CLIENT_OWNS_WIDGET};
   WidgetBuilderParams params_;
+  std::unique_ptr<Widget> widget_;
   bool built_ = false;
 };
 

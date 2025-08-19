@@ -19,6 +19,7 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/test/test_platform_native_widget.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/view_test_api.h"
 
 #if defined(USE_AURA)
@@ -117,9 +118,9 @@ std::unique_ptr<Widget> ViewsTestBase::CreateTestWidget(
 
 std::unique_ptr<Widget> ViewsTestBase::CreateTestWidget(
     Widget::InitParams params) {
-  std::unique_ptr<Widget> widget = AllocateTestWidget();
-  widget->Init(std::move(params));
-  return widget;
+  return test::TestWidgetBuilder(std::move(params), {.show = false})
+      .SetWidget(AllocateTestWidget())
+      .BuildDeprecated();
 }
 
 void ViewsTestBase::SimulateNativeDestroy(Widget* widget) {

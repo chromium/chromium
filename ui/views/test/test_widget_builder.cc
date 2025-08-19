@@ -6,10 +6,6 @@
 
 #include <utility>
 
-#include "ui/aura/client/aura_constants.h"
-#include "ui/aura/client/window_parenting_client.h"
-#include "ui/aura/test/test_windows.h"
-#include "ui/aura/window.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -19,9 +15,15 @@ namespace views::test {
 TestWidgetBuilder::TestWidgetBuilder(WidgetBuilderParams params)
     : params_(std::move(params)) {}
 
+TestWidgetBuilder::TestWidgetBuilder(Widget::InitParams widget_init_params,
+                                     WidgetBuilderParams params)
+    : widget_init_params_(std::move(widget_init_params)),
+      params_(std::move(params)) {}
+
 TestWidgetBuilder::TestWidgetBuilder(TestWidgetBuilder&& other)
     : widget_init_params_(std::move(other.widget_init_params_)),
-      params_(std::move(other.params_)) {
+      params_(std::move(other.params_)),
+      widget_(std::move(other.widget_)) {
   DCHECK(!other.built_);
   other.built_ = true;
 }
@@ -54,13 +56,13 @@ TestWidgetBuilder& TestWidgetBuilder::SetBounds(const gfx::Rect& bounds) {
   return *this;
 }
 
-TestWidgetBuilder& TestWidgetBuilder::SetParent(aura::Window* parent) {
+TestWidgetBuilder& TestWidgetBuilder::SetParent(gfx::NativeView parent) {
   DCHECK(!built_);
   widget_init_params_.parent = parent;
   return *this;
 }
 
-TestWidgetBuilder& TestWidgetBuilder::SetContext(aura::Window* context) {
+TestWidgetBuilder& TestWidgetBuilder::SetContext(gfx::NativeWindow context) {
   DCHECK(!built_);
   widget_init_params_.context = context;
   return *this;
@@ -81,6 +83,7 @@ TestWidgetBuilder& TestWidgetBuilder::SetShowState(
   return *this;
 }
 
+#if defined(USE_AURA)
 TestWidgetBuilder& TestWidgetBuilder::SetWindowId(int window_id) {
   DCHECK(!built_);
   params_.window_id = window_id;
@@ -93,10 +96,23 @@ TestWidgetBuilder& TestWidgetBuilder::SetWindowTitle(
   params_.window_title = title;
   return *this;
 }
+#endif
 
 TestWidgetBuilder& TestWidgetBuilder::SetShow(bool show) {
   DCHECK(!built_);
   params_.show = show;
+  return *this;
+}
+
+TestWidgetBuilder& TestWidgetBuilder::SetWidget(
+    std::unique_ptr<Widget> widget) {
+  widget_ = std::move(widget);
+  return *this;
+}
+
+TestWidgetBuilder& TestWidgetBuilder::SetNativeWidget(
+    NativeWidget* native_widget) {
+  widget_init_params_.native_widget = native_widget;
   return *this;
 }
 
@@ -109,20 +125,27 @@ std::unique_ptr<Widget> TestWidgetBuilder::BuildClientOwnsWidget() {
   return BuildWidgetWithOwnership(Widget::InitParams::CLIENT_OWNS_WIDGET);
 }
 
+std::unique_ptr<Widget> TestWidgetBuilder::BuildDeprecated() {
+  return BuildWidgetWithOwnership(widget_init_params_.ownership);
+}
+
 std::unique_ptr<Widget> TestWidgetBuilder::BuildWidgetWithOwnership(
     Widget::InitParams::Ownership ownership) {
   DCHECK(!built_);
   built_ = true;
 
-  std::unique_ptr<Widget> widget = std::make_unique<Widget>();
+  std::unique_ptr<Widget> widget =
+      widget_ ? std::move(widget_) : std::make_unique<Widget>();
   widget_init_params_.ownership = ownership;
   widget->Init(std::move(widget_init_params_));
+#if defined(USE_AURA)
   if (params_.window_id != aura::Window::kInitialId) {
     widget->GetNativeWindow()->SetId(params_.window_id);
   }
   if (!params_.window_title.empty()) {
     widget->GetNativeWindow()->SetTitle(params_.window_title);
   }
+#endif
   if (params_.show) {
     widget->Show();
   }
@@ -130,23 +153,8 @@ std::unique_ptr<Widget> TestWidgetBuilder::BuildWidgetWithOwnership(
 }
 
 Widget* TestWidgetBuilder::BuildOwnedByNativeWidget() {
-  DCHECK(!built_);
-  built_ = true;
-
-  Widget* widget = new Widget();
-  widget_init_params_.ownership = Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
-  widget->Init(std::move(widget_init_params_));
-
-  if (params_.window_id != aura::Window::kInitialId) {
-    widget->GetNativeWindow()->SetId(params_.window_id);
-  }
-  if (!params_.window_title.empty()) {
-    widget->GetNativeWindow()->SetTitle(params_.window_title);
-  }
-  if (params_.show) {
-    widget->Show();
-  }
-  return widget;
+  return BuildWidgetWithOwnership(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
+      .release();
 }
 
 }  // namespace views::test
