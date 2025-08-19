@@ -1393,7 +1393,7 @@
       "awado@google.com",
       "jacastro@chromium.org",
       "chrome-counter-abuse-alerts@google.com"],
-      "expiry_milestone": 140
+      "expiry_milestone": 145
   },
   {
     "name": "bwg-precise-location",
