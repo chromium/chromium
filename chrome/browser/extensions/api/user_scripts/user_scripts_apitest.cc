@@ -154,6 +154,8 @@ UserScriptsAPITest::UserScriptsAPITest() {
   }
 }
 
+UserScriptsAPITest::~UserScriptsAPITest() = default;
+
 IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, GetUserScripts) {
   ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/get_scripts"))
       << message_;

@@ -83,8 +83,8 @@ DECLARE_STATE_IDENTIFIER_VALUE(GlicAppStateObserver, kGlicAppState);
 // True when the timer is not running. Use `Start()` to start the timer.
 class WaitingStateObserver : public ui::test::StateObserver<bool> {
  public:
-  WaitingStateObserver() { OnStateObserverStateChanged(true); }
-  ~WaitingStateObserver() override = default;
+  WaitingStateObserver();
+  ~WaitingStateObserver() override;
 
   void Start(base::TimeDelta timeout) {
     OnStateObserverStateChanged(false);

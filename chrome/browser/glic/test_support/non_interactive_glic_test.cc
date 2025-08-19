@@ -13,4 +13,7 @@ NonInteractiveGlicTest::NonInteractiveGlicTest(
     const GlicTestEnvironmentConfig& glic_config)
     : test::InteractiveGlicTestT<InteractiveBrowserTest>(glic_params,
                                                          glic_config) {}
-}
+
+NonInteractiveGlicTest::~NonInteractiveGlicTest() = default;
+
+}  // namespace glic

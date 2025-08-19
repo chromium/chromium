@@ -31,7 +31,7 @@ class UserScriptsAPITest : public ExtensionApiTest,
   UserScriptsAPITest();
   UserScriptsAPITest(const UserScriptsAPITest&) = delete;
   const UserScriptsAPITest& operator=(const UserScriptsAPITest&) = delete;
-  ~UserScriptsAPITest() override = default;
+  ~UserScriptsAPITest() override;
 
  protected:
   void SetUpOnMainThread() override;
