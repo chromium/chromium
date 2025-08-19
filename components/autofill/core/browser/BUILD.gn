@@ -705,6 +705,7 @@ static_library("browser") {
     "ui/payments/bnpl_tos_controller_impl.cc",
     "ui/payments/bnpl_tos_controller_impl.h",
     "ui/payments/bnpl_tos_view.h",
+    "ui/payments/bnpl_ui_delegate.h",
     "ui/payments/bubble_show_options.cc",
     "ui/payments/bubble_show_options.h",
     "ui/payments/card_unmask_authentication_selection_dialog.h",

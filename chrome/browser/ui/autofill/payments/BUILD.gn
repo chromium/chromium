@@ -32,6 +32,7 @@ source_set("payments") {
 
   if (is_android) {
     sources += [
+      "android_bnpl_ui_delegate.h",
       "android_payments_window_manager.h",
       "autofill_message_controller.h",
       "autofill_message_model.h",
@@ -43,6 +44,7 @@ source_set("payments") {
     ]
   } else {
     sources += [
+      "desktop_bnpl_ui_delegate.h",
       "desktop_payments_window_manager.h",
       "webauthn_dialog.h",
       "webauthn_dialog_controller.h",
@@ -113,6 +115,7 @@ source_set("impl") {
 
   if (is_android) {
     sources += [
+      "android_bnpl_ui_delegate.cc",
       "android_payments_window_manager.cc",
       "autofill_message_controller.cc",
       "autofill_message_model.cc",
@@ -132,6 +135,7 @@ source_set("impl") {
     ]
   } else {
     sources += [
+      "desktop_bnpl_ui_delegate.cc",
       "desktop_payments_window_manager.cc",
       "webauthn_dialog_controller_impl.cc",
       "webauthn_dialog_model.cc",
