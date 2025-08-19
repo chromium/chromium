@@ -904,8 +904,9 @@ void AutocompleteResult::AttachPedalsToMatches(
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 void AutocompleteResult::AttachAimAction(
-    TemplateURLService* template_url_service) {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxAimShortcutTypedState)) {
+    TemplateURLService* template_url_service,
+    AutocompleteProviderClient* client) {
+  if (!OmniboxFieldTrial::IsDeterministicAimActionInTypedStateEnabled(client)) {
     return;
   }
 
