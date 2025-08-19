@@ -11754,15 +11754,9 @@ TEST_F(URLRequestTest, URLRequestRedirectJobCancelRequest) {
   EXPECT_EQ(0, d.received_redirect_count());
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_HeadersCallbacks DISABLED_HeadersCallbacks
-#else
-#define MAYBE_HeadersCallbacks HeadersCallbacks
-#endif
-TEST_F(URLRequestTestHTTP, MAYBE_HeadersCallbacks) {
+TEST_F(URLRequestTestHTTP, HeadersCallbacks) {
   ASSERT_TRUE(http_test_server()->Start());
   GURL url(http_test_server()->GetURL("/cachetime"));
-  TestDelegate delegate;
   HttpRequestHeaders extra_headers;
   extra_headers.SetHeader("X-Foo", "bar");
 
@@ -11770,15 +11764,25 @@ TEST_F(URLRequestTestHTTP, MAYBE_HeadersCallbacks) {
     HttpRawRequestHeaders raw_req_headers;
     scoped_refptr<const HttpResponseHeaders> raw_resp_headers;
 
+    TestDelegate delegate;
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
         url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->SetExtraRequestHeaders(extra_headers);
-    r->SetRequestHeadersCallback(base::BindRepeating(
-        &HttpRawRequestHeaders::Assign, base::Unretained(&raw_req_headers)));
-    r->SetResponseHeadersCallback(base::BindRepeating(
-        [](scoped_refptr<const HttpResponseHeaders>* left,
-           scoped_refptr<const HttpResponseHeaders> right) { *left = right; },
-        base::Unretained(&raw_resp_headers)));
+    r->SetRequestHeadersCallback(base::BindLambdaForTesting(
+        [&delegate, &raw_req_headers](HttpRawRequestHeaders request_headers) {
+          // This should happen before the delegate is informed the response has
+          // started.
+          EXPECT_EQ(delegate.response_started_count(), 0);
+          raw_req_headers = std::move(request_headers);
+        }));
+    r->SetResponseHeadersCallback(base::BindLambdaForTesting(
+        [&delegate, &raw_resp_headers](
+            scoped_refptr<const HttpResponseHeaders> response_headers) {
+          // This should happen before the delegate is informed the response has
+          // started.
+          EXPECT_EQ(delegate.response_started_count(), 0);
+          raw_resp_headers = response_headers;
+        }));
     r->set_isolation_info(isolation_info1_);
     r->Start();
     delegate.RunUntilComplete();
@@ -11794,6 +11798,7 @@ TEST_F(URLRequestTestHTTP, MAYBE_HeadersCallbacks) {
     EXPECT_EQ(raw_resp_headers.get(), r->response_headers());
   }
   {
+    TestDelegate delegate;
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
         url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->SetExtraRequestHeaders(extra_headers);
