@@ -27,6 +27,9 @@
 
 namespace remoting {
 
+class EiKeymap;
+class GnomeKeyboardLayoutMonitor;
+
 // Manages a sender-client connection to an EIS implementation to allow
 // injecting input events.
 class EiSenderSession {
@@ -37,6 +40,9 @@ class EiSenderSession {
   ~EiSenderSession();
 
   base::WeakPtr<EiSenderSession> GetWeakPtr();
+
+  void SetKeyboardLayoutMonitor(
+      base::WeakPtr<GnomeKeyboardLayoutMonitor> monitor);
 
   // Injects an event for the provided |usb_keycode|. |is_press| should be true
   // for key-down and repeat events, and false for release events.
@@ -81,8 +87,8 @@ class EiSenderSession {
   using EiSeatPtr = CRefCounted<ei_seat, ei_seat_ref, ei_seat_unref>;
   using EiDevicePtr = CRefCounted<ei_device, ei_device_ref, ei_device_unref>;
   using EiRegionPtr = CRefCounted<ei_region, ei_region_ref, ei_region_unref>;
-  using EiKeymapPtr = CRefCounted<ei_keymap, ei_keymap_ref, ei_keymap_unref>;
   using EiTouchPtr = CRefCounted<ei_touch, ei_touch_ref, ei_touch_unref>;
+  using EiKeymapPtr = std::unique_ptr<EiKeymap>;
 
   // Events do not allow additional refs, but one still needs to call unref to
   // release them.
@@ -117,6 +123,9 @@ class EiSenderSession {
   void OnDeviceRemoved(EiDevicePtr device);
   void OnDevicePaused(EiDevicePtr device);
   void OnDeviceResumed(EiDevicePtr device);
+
+  // Invoked when a keymap finishes loading.
+  void OnKeymapLoaded(EiDevicePtr device);
 
   // Processes all events currently available from libei.
   void ProcessEvents(bool shutting_down);
@@ -154,7 +163,7 @@ class EiSenderSession {
   // changes. That might result in the pointer getting removed and readded as
   // well if the compositor opts to provide both capabilities on the same
   // device.
-  std::vector<EiDevicePtr> keyboards_;
+  std::vector<std::tuple<EiDevicePtr, EiKeymapPtr>> keyboards_;
   std::vector<EiDevicePtr> relative_pointers_;
   std::vector<EiDevicePtr> button_devices_;
   std::vector<EiDevicePtr> scroll_devices_;
@@ -184,6 +193,8 @@ class EiSenderSession {
   bool supports_relative_pointer_ = false;
 
   std::unique_ptr<base::FileDescriptorWatcher::Controller> fd_watcher_;
+
+  base::WeakPtr<GnomeKeyboardLayoutMonitor> keyboard_layout_monitor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

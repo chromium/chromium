@@ -24,6 +24,9 @@ using XkbKeyMapUniquePtr = std::unique_ptr<struct xkb_keymap, XkbKeyMapDeleter>;
 
 const char* DeadKeyToUtf8String(guint keyval);
 
+// Convert from a GDK or XKB keysym to the corresponding LayoutKeyFunction, if
+// there is one. Note that, although they are not documented as such, the two
+// sets of keysyms are compatible, at least for these keys.
 protocol::LayoutKeyFunction KeyvalToFunction(guint keyval);
 
 }  // namespace remoting

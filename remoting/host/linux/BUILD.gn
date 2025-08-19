@@ -147,6 +147,8 @@ source_set("platform_impls") {
     "desktop_resizer_linux.cc",
     "desktop_resizer_x11.cc",
     "desktop_resizer_x11.h",
+    "ei_keymap.cc",
+    "ei_keymap.h",
     "ei_sender_session.cc",
     "ei_sender_session.h",
     "fd_string_reader.cc",
@@ -163,6 +165,7 @@ source_set("platform_impls") {
     "gnome_input_injector.h",
     "gnome_interaction_strategy.cc",
     "gnome_interaction_strategy.h",
+    "gnome_keyboard_layout_monitor.cc",
     "gnome_keyboard_layout_monitor.h",
     "gnome_local_input_monitor.h",
     "input_injector_constants_linux.h",
@@ -205,6 +208,7 @@ source_set("platform_impls") {
     "//ui/base",
     "//ui/base/x",
     "//ui/events:dom_keycode_converter",
+    "//ui/events/keycodes:xkb",
     "//ui/gfx/x",
   ]
 }

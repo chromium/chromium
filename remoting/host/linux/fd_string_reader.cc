@@ -9,11 +9,14 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/files/file.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool.h"
 
 namespace remoting {
 
@@ -22,15 +25,40 @@ namespace {
 // Linux pipes typically have a buffer size of 64k, though this can vary.
 constexpr size_t kBufferSize = 1U << 16;
 
+FdStringReader::Result ReadContentsOfFile(base::ScopedFD fd) {
+  base::File file(fd.release());
+  base::MemoryMappedFile mapped_file;
+  if (!mapped_file.Initialize(std::move(file))) {
+    return base::unexpected(
+        Loggable(FROM_HERE, "Failed to initialize MemoryMappedFile"));
+  }
+  auto contents = base::as_chars(mapped_file.bytes());
+  return std::string(contents.begin(), contents.end());
+}
+
 }  // namespace
 
 FdStringReader::~FdStringReader() = default;
 
 // static
-std::unique_ptr<FdStringReader> FdStringReader::Read(base::ScopedFD fd,
-                                                     Callback callback) {
+std::unique_ptr<FdStringReader> FdStringReader::ReadFromPipe(
+    base::ScopedFD fd,
+    Callback callback) {
   return base::WrapUnique(
       new FdStringReader(std::move(fd), std::move(callback)));
+}
+
+// static
+std::unique_ptr<FdStringReader> FdStringReader::ReadFromFile(
+    base::ScopedFD fd,
+    Callback callback) {
+  auto reader = base::WrapUnique(new FdStringReader(std::move(callback)));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&ReadContentsOfFile, std::move(fd)),
+      base::BindOnce(&FdStringReader::OnReadComplete,
+                     reader->weak_factory_.GetWeakPtr()));
+  return reader;
 }
 
 FdStringReader::FdStringReader(base::ScopedFD fd, Callback callback)
@@ -48,6 +76,9 @@ FdStringReader::FdStringReader(base::ScopedFD fd, Callback callback)
       fd_.get(), base::BindRepeating(&FdStringReader::OnFdReadable,
                                      base::Unretained(this)));
 }
+
+FdStringReader::FdStringReader(Callback callback)
+    : callback_(std::move(callback)) {}
 
 void FdStringReader::OnFdReadable() {
   while (true) {
@@ -97,6 +128,10 @@ void FdStringReader::OnFdReadable() {
     // here without CheckAdd().
     read_data_.resize(original_size + bytes_read_as_size_t);
   }
+}
+
+void FdStringReader::OnReadComplete(Result result) {
+  std::move(callback_).Run(std::move(result));
 }
 
 }  // namespace remoting

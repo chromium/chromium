@@ -163,7 +163,7 @@ void ClipboardGnome::OnSelectionReadReply(
     return;
   }
 
-  fd_string_reader_ = FdStringReader::Read(
+  fd_string_reader_ = FdStringReader::ReadFromPipe(
       std::move(read_fd), base::BindOnce(&ClipboardGnome::OnSelectionDataRead,
                                          weak_factory_.GetWeakPtr()));
 }

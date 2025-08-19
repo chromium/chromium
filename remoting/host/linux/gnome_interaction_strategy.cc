@@ -163,7 +163,12 @@ GnomeInteractionStrategy::CreateMouseCursorMonitor() {
 std::unique_ptr<KeyboardLayoutMonitor>
 GnomeInteractionStrategy::CreateKeyboardLayoutMonitor(
     base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback) {
-  return std::make_unique<GnomeKeyboardLayoutMonitor>();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto result =
+      std::make_unique<GnomeKeyboardLayoutMonitor>(std::move(callback));
+  ei_session_->SetKeyboardLayoutMonitor(result->GetWeakPtr());
+  return result;
 }
 
 std::unique_ptr<ActiveDisplayMonitor>

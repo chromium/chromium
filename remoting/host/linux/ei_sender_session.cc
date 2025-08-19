@@ -107,6 +107,8 @@
 #include "base/types/expected.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/loggable.h"
+#include "remoting/host/linux/ei_keymap.h"
+#include "remoting/host/linux/gnome_keyboard_layout_monitor.h"
 #include "remoting/proto/event.pb.h"
 #include "third_party/libei/cipd/include/libei-1.0/libei.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -158,6 +160,13 @@ base::WeakPtr<EiSenderSession> EiSenderSession::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void EiSenderSession::SetKeyboardLayoutMonitor(
+    base::WeakPtr<GnomeKeyboardLayoutMonitor> monitor) {
+  keyboard_layout_monitor_ = monitor;
+  keyboard_layout_monitor_->OnKeymapChanged(
+      keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back())->Get());
+}
+
 void EiSenderSession::InjectKeyEvent(std::uint32_t usb_keycode, bool is_press) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -167,7 +176,7 @@ void EiSenderSession::InjectKeyEvent(std::uint32_t usb_keycode, bool is_press) {
   }
 
   // Assume the most-recently-received keyboard is the one we should use.
-  auto& keyboard = keyboards_.back();
+  auto& [keyboard, _] = keyboards_.back();
 
   ei_device_keyboard_key(
       keyboard.get(),
@@ -407,7 +416,11 @@ void EiSenderSession::OnDeviceAdded(EiDevicePtr device) {
   // The compositor might provide a device with multiple capabilities, in which
   // case it will be inserted in multiple lists.
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_KEYBOARD)) {
-    keyboards_.push_back({device});
+    keyboards_.push_back(
+        std::make_tuple(device, std::make_unique<EiKeymap>(device)));
+    std::get<1>(keyboards_.back())
+        ->Load(base::BindOnce(&EiSenderSession::OnKeymapLoaded, GetWeakPtr(),
+                              device));
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_POINTER)) {
     relative_pointers_.push_back({device});
@@ -428,7 +441,15 @@ void EiSenderSession::OnDeviceAdded(EiDevicePtr device) {
 
 void EiSenderSession::OnDeviceRemoved(EiDevicePtr device) {
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_KEYBOARD)) {
-    std::erase_if(keyboards_, [&device](auto& item) { return item == device; });
+    bool is_current =
+        (!keyboards_.empty() && std::get<0>(keyboards_.back()) == device);
+    std::erase_if(keyboards_, [&device](auto& item) {
+      return std::get<0>(item) == device;
+    });
+    if (is_current && keyboard_layout_monitor_) {
+      keyboard_layout_monitor_->OnKeymapChanged(
+          keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back())->Get());
+    }
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_POINTER)) {
     std::erase_if(relative_pointers_,
@@ -467,6 +488,17 @@ void EiSenderSession::OnDeviceResumed(EiDevicePtr device) {
   // we should probably call stop_emulating on disconnect and start_emulating on
   // connection.
   ei_device_start_emulating(device.get(), ++start_emulating_sequence_);
+}
+
+void EiSenderSession::OnKeymapLoaded(EiDevicePtr keyboard) {
+  // If the load corresponds to the most recently-added keyboard, notify the
+  // client.
+  if (!keyboards_.empty()) {
+    auto& [most_recent_keyboard, keymap] = keyboards_.back();
+    if (keyboard == most_recent_keyboard && keyboard_layout_monitor_) {
+      keyboard_layout_monitor_->OnKeymapChanged(keymap->Get());
+    }
+  }
 }
 
 void EiSenderSession::ProcessEvents(bool shutting_down) {
