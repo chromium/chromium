@@ -44,9 +44,7 @@ namespace request_header_integrity {
 
 namespace {
 
-BASE_FEATURE(kRequestHeaderIntegrity,
-             "RequestHeaderIntegrity",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(RequestHeaderIntegrity, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns extended, stable, beta, dev, or canary if a channel is available,
 // otherwise the empty string.

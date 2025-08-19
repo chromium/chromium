@@ -72,9 +72,7 @@ extern char __executable_start;
 #endif  // UNWINDING_SUPPORTED
 
 // See `RequestUnwindPrerequisitesInstallation` below.
-BASE_FEATURE(kInstallAndroidUnwindDfm,
-             "InstallAndroidUnwindDfm",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(InstallAndroidUnwindDfm, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 

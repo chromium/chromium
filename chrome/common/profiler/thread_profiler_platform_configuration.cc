@@ -15,8 +15,7 @@
 #include "chrome/common/profiler/process_type.h"
 #include "components/sampling_profiler/process_type.h"
 
-BASE_FEATURE(kSamplingProfilerOnWorkerThreads,
-             "SamplingProfilerOnWorkerThreads",
+BASE_FEATURE(SamplingProfilerOnWorkerThreads,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
