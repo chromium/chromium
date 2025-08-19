@@ -62,6 +62,10 @@
 
 namespace enterprise_connectors {
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+using Event = ::chrome::cros::reporting::proto::Event;
+#endif
+
 RealtimeReportingClient::RealtimeReportingClient(
     content::BrowserContext* context)
     : RealtimeReportingClientBase(
@@ -180,7 +184,92 @@ void AddCrowdstrikeSignalsToEvent(
   event.Set("securityAgents", std::move(agents));
 }
 
-#endif
+void AddCrowdstrikeSignalsToEvent(
+    Event& event,
+    const device_signals::SignalsAggregationResponse& response) {
+  if (!response.agent_signals_response ||
+      !response.agent_signals_response->crowdstrike_signals) {
+    return;
+  }
+
+  const auto& crowdstrike_signals =
+      response.agent_signals_response->crowdstrike_signals.value();
+
+  ::chrome::cros::reporting::proto::SecurityAgent security_agent;
+  ::chrome::cros::reporting::proto::CrowdstrikeAgent* agent =
+      security_agent.mutable_crowdstrike();
+  agent->set_agent_id(crowdstrike_signals.agent_id);
+  agent->set_customer_id(crowdstrike_signals.customer_id);
+
+  switch (event.event_case()) {
+    case Event::kPasswordReuseEvent:
+      *event.mutable_password_reuse_event()->mutable_security_agents()->Add() =
+          std::move(security_agent);
+      break;
+    case Event::kPasswordChangedEvent:
+      *event.mutable_password_changed_event()
+           ->mutable_security_agents()
+           ->Add() = security_agent;
+      break;
+    case Event::kDangerousDownloadEvent:
+      *event.mutable_dangerous_download_event()
+           ->mutable_security_agents()
+           ->Add() = security_agent;
+      break;
+    case Event::kInterstitialEvent:
+      *event.mutable_interstitial_event()->mutable_security_agents()->Add() =
+          security_agent;
+      break;
+    case Event::kSensitiveDataEvent:
+      *event.mutable_sensitive_data_event()->mutable_security_agents()->Add() =
+          security_agent;
+      break;
+    case Event::kUnscannedFileEvent:
+      *event.mutable_unscanned_file_event()->mutable_security_agents()->Add() =
+          security_agent;
+      break;
+    case Event::kLoginEvent:
+      *event.mutable_login_event()->mutable_security_agents()->Add() =
+          security_agent;
+      break;
+    case Event::kPasswordBreachEvent:
+      *event.mutable_password_breach_event()->mutable_security_agents()->Add() =
+          security_agent;
+      break;
+    case Event::kBrowserExtensionInstallEvent:
+      *event.mutable_browser_extension_install_event()
+           ->mutable_security_agents()
+           ->Add() = security_agent;
+      break;
+    case Event::kBrowserCrashEvent:
+      *event.mutable_browser_crash_event()->mutable_security_agents()->Add() =
+          security_agent;
+      break;
+    case Event::kUrlFilteringInterstitialEvent:
+      *event.mutable_url_filtering_interstitial_event()
+           ->mutable_security_agents()
+           ->Add() = security_agent;
+      break;
+    case Event::kExtensionTelemetryEvent:
+      *event.mutable_extension_telemetry_event()
+           ->mutable_security_agents()
+           ->Add() = security_agent;
+      break;
+    // The events below don't have `security_agents` field.
+    case Event::EVENT_NOT_SET:
+    case Event::kPolicyValidationReportEvent:
+    case Event::kReportingRecordEvent:
+    case Event::kContentTransferEvent:
+    case Event::kExtensionAppInstallEvent:
+    case Event::kUrlNavigationEvent:
+    case Event::kSuspiciousUrlEvent:
+    case Event::kPrototypeRawEvent:
+    case Event::kTelomereEvent:
+      break;
+  }
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void RealtimeReportingClient::SetProfileUserNameForTesting(
     std::string username) {
@@ -253,7 +342,7 @@ std::string RealtimeReportingClient::GetBrowserClientId() {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void RealtimeReportingClient::MaybeCollectDeviceSignalsAndReportEvent(
-    ::chrome::cros::reporting::proto::Event event,
+    Event event,
     policy::CloudPolicyClient* client,
     const ReportingSettings& settings) {
   Profile* profile = Profile::FromBrowserContext(context_);
@@ -274,11 +363,11 @@ void RealtimeReportingClient::MaybeCollectDeviceSignalsAndReportEvent(
 }
 
 void RealtimeReportingClient::PopulateSignalsAndReportEvent(
-    ::chrome::cros::reporting::proto::Event event,
+    Event event,
     policy::CloudPolicyClient* client,
     ReportingSettings settings,
     device_signals::SignalsAggregationResponse response) {
-  // TODO: AddCrowdstrikeSignalsToEvent(event, response);
+  AddCrowdstrikeSignalsToEvent(event, response);
   UploadSecurityEvent(std::move(event), client, settings);
 }
 

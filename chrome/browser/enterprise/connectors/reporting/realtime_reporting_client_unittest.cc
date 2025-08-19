@@ -40,6 +40,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/notreached.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "components/device_signals/core/browser/signals_types.h"
@@ -50,6 +51,90 @@ using testing::_;
 namespace enterprise_connectors {
 
 namespace {
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+using Event = ::chrome::cros::reporting::proto::Event;
+using SecurityAgent = ::chrome::cros::reporting::proto::SecurityAgent;
+
+Event GetTestEvent(Event::EventCase event_case) {
+  Event event;
+  switch (event_case) {
+    case Event::kPasswordReuseEvent:
+      event.mutable_password_reuse_event();
+      break;
+    case Event::kPasswordChangedEvent:
+      event.mutable_password_changed_event();
+      break;
+    case Event::kDangerousDownloadEvent:
+      event.mutable_dangerous_download_event();
+      break;
+    case Event::kInterstitialEvent:
+      event.mutable_interstitial_event();
+      break;
+    case Event::kSensitiveDataEvent:
+      event.mutable_sensitive_data_event();
+      break;
+    case Event::kUnscannedFileEvent:
+      event.mutable_unscanned_file_event();
+      break;
+    case Event::kLoginEvent:
+      event.mutable_login_event();
+      break;
+    case Event::kPasswordBreachEvent:
+      event.mutable_password_breach_event();
+      break;
+    case Event::kBrowserExtensionInstallEvent:
+      event.mutable_browser_extension_install_event();
+      break;
+    case Event::kBrowserCrashEvent:
+      event.mutable_browser_crash_event();
+      break;
+    case Event::kUrlFilteringInterstitialEvent:
+      event.mutable_url_filtering_interstitial_event();
+      break;
+    case Event::kExtensionTelemetryEvent:
+      event.mutable_extension_telemetry_event();
+      break;
+    default:
+      NOTREACHED();
+  }
+  return event;
+}
+
+google::protobuf::RepeatedPtrField<SecurityAgent> GetSecurityAgents(
+    Event event) {
+  switch (event.event_case()) {
+    case Event::kPasswordReuseEvent:
+      return event.password_reuse_event().security_agents();
+    case Event::kPasswordChangedEvent:
+      return event.password_changed_event().security_agents();
+    case Event::kDangerousDownloadEvent:
+      return event.dangerous_download_event().security_agents();
+    case Event::kInterstitialEvent:
+      return event.interstitial_event().security_agents();
+    case Event::kSensitiveDataEvent:
+      return event.sensitive_data_event().security_agents();
+    case Event::kUnscannedFileEvent:
+      return event.unscanned_file_event().security_agents();
+    case Event::kLoginEvent:
+      return event.login_event().security_agents();
+    case Event::kPasswordBreachEvent:
+      return event.password_breach_event().security_agents();
+    case Event::kBrowserExtensionInstallEvent:
+      return event.browser_extension_install_event().security_agents();
+    case Event::kBrowserCrashEvent:
+      return event.browser_crash_event().security_agents();
+    case Event::kUrlFilteringInterstitialEvent:
+      return event.url_filtering_interstitial_event().security_agents();
+    case Event::kExtensionTelemetryEvent:
+      return event.extension_telemetry_event().security_agents();
+    default:
+      NOTREACHED();
+  }
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
     content::BrowserContext* context) {
@@ -386,6 +471,58 @@ TEST_F(RealtimeReportingClientOidcTest, Username) {
 
 // TODO(b/342232001): Add more tests for the `RealtimeReportingClientOidcTest`
 // fixture to cover key use cases.
+
+class ProtoBasedCrowdStrikeSignalTest
+    : public RealtimeReportingClientTestBase,
+      public testing::WithParamInterface<Event::EventCase> {
+ public:
+  ProtoBasedCrowdStrikeSignalTest() = default;
+};
+
+TEST_P(ProtoBasedCrowdStrikeSignalTest, TestCrowdstrikeSignalsPopulated) {
+  device_signals::CrowdStrikeSignals signals;
+  signals.agent_id = "agent-123";
+  signals.customer_id = "customer-123";
+  device_signals::AgentSignalsResponse agent_signals;
+  agent_signals.crowdstrike_signals = signals;
+  device_signals::SignalsAggregationResponse response;
+  response.agent_signals_response = agent_signals;
+
+  auto event = GetTestEvent(GetParam());
+  AddCrowdstrikeSignalsToEvent(event, response);
+  auto security_agents = GetSecurityAgents(event);
+
+  ASSERT_EQ(security_agents.size(), 1);
+  auto security_agent = security_agents[0];
+  ASSERT_TRUE(security_agent.has_crowdstrike());
+  EXPECT_EQ(security_agent.crowdstrike().agent_id(), "agent-123");
+  EXPECT_EQ(security_agent.crowdstrike().customer_id(), "customer-123");
+}
+
+TEST_P(ProtoBasedCrowdStrikeSignalTest,
+       TestCrowdstrikeSignalsNotPopulatedForEmptyResponse) {
+  device_signals::SignalsAggregationResponse response;
+  auto event = GetTestEvent(GetParam());
+  AddCrowdstrikeSignalsToEvent(event, response);
+  auto security_agents = GetSecurityAgents(event);
+
+  ASSERT_EQ(security_agents.size(), 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ProtoBasedCrowdStrikeSignalTest,
+                         testing::Values(Event::kPasswordReuseEvent,
+                                         Event::kPasswordChangedEvent,
+                                         Event::kDangerousDownloadEvent,
+                                         Event::kInterstitialEvent,
+                                         Event::kSensitiveDataEvent,
+                                         Event::kUnscannedFileEvent,
+                                         Event::kLoginEvent,
+                                         Event::kPasswordBreachEvent,
+                                         Event::kBrowserExtensionInstallEvent,
+                                         Event::kBrowserCrashEvent,
+                                         Event::kUrlFilteringInterstitialEvent,
+                                         Event::kExtensionTelemetryEvent));
 
 #endif
 }  // namespace enterprise_connectors

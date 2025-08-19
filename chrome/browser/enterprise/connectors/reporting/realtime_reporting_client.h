@@ -186,6 +186,9 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
 void AddCrowdstrikeSignalsToEvent(
     base::Value::Dict& event,
     const device_signals::SignalsAggregationResponse& response);
+void AddCrowdstrikeSignalsToEvent(
+    ::chrome::cros::reporting::proto::Event& event,
+    const device_signals::SignalsAggregationResponse& response);
 #endif
 
 }  // namespace enterprise_connectors
