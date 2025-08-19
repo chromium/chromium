@@ -4951,6 +4951,13 @@ enum WebFeature {
   kLineClampByLinesAndHeight = 5640,
   kV8RegExpStaticPropertiesWithLastMatch = 5641,
   kGetStatusForPolicyCrossOriginIframe = 5642,
+  kComputedBorderTopWidthWithNoneOrHiddenStyle = 5643,
+  kComputedBorderRightWidthWithNoneOrHiddenStyle = 5644,
+  kComputedBorderBottomWidthWithNoneOrHiddenStyle = 5645,
+  kComputedBorderLeftWidthWithNoneOrHiddenStyle = 5646,
+  kComputedBorderWidthWithNoneOrHiddenStyle = 5647,
+  kComputedColumnRuleWidthWithNoneOrHiddenStyle = 5648,
+  kComputedOutlineWidthWithNoneOrHiddenStyle = 5649,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

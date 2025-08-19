@@ -6274,6 +6274,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5640" label="LineClampByLinesAndHeight"/>
   <int value="5641" label="V8RegExpStaticPropertiesWithLastMatch"/>
   <int value="5642" label="GetStatusForPolicyCrossOriginIframe"/>
+  <int value="5643" label="ComputedBorderTopWidthWithNoneOrHiddenStyle"/>
+  <int value="5644" label="ComputedBorderRightWidthWithNoneOrHiddenStyle"/>
+  <int value="5645" label="ComputedBorderBottomWidthWithNoneOrHiddenStyle"/>
+  <int value="5646" label="ComputedBorderLeftWidthWithNoneOrHiddenStyle"/>
+  <int value="5647" label="ComputedBorderWidthWithNoneOrHiddenStyle"/>
+  <int value="5648" label="ComputedColumnRuleWidthWithNoneOrHiddenStyle"/>
+  <int value="5649" label="ComputedOutlineWidthWithNoneOrHiddenStyle"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
