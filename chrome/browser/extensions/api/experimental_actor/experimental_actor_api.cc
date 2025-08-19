@@ -483,6 +483,11 @@ void ExperimentalActorPerformActionsFunction::OnObservationResult(
           observation.tab_ids().at(i), browser_context());
       observation.set_tab_ids(i, session_tab_id);
     }
+
+    int32_t activated_tab_id =
+        ConvertTabHandleToSessionTabId(observation.activated_tab_id(),
+                                       browser_context());
+    observation.set_activated_tab_id(activated_tab_id);
   }
 
   std::vector<uint8_t> data_buffer(response->ByteSizeLong());
