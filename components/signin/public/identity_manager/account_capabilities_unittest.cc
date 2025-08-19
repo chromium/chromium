@@ -317,6 +317,36 @@ TEST_F(AccountCapabilitiesTest, CanUseGenerativeAi) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+TEST_F(AccountCapabilitiesTest, ShouldBeAddressedInFeminineGrammaticalGender) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.should_be_addressed_in_feminine_grammatical_gender(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_should_be_addressed_in_feminine_grammatical_gender(true);
+  EXPECT_EQ(capabilities.should_be_addressed_in_feminine_grammatical_gender(),
+            signin::Tribool::kTrue);
+
+  mutator.set_should_be_addressed_in_feminine_grammatical_gender(false);
+  EXPECT_EQ(capabilities.should_be_addressed_in_feminine_grammatical_gender(),
+            signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, ShouldBeAddressedInMasculineGrammaticalGender) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.should_be_addressed_in_masculine_grammatical_gender(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_should_be_addressed_in_masculine_grammatical_gender(true);
+  EXPECT_EQ(capabilities.should_be_addressed_in_masculine_grammatical_gender(),
+            signin::Tribool::kTrue);
+
+  mutator.set_should_be_addressed_in_masculine_grammatical_gender(false);
+  EXPECT_EQ(capabilities.should_be_addressed_in_masculine_grammatical_gender(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest,
        IsSubjectToPrivacySandboxRestrictedMeasurementApiNotice) {
   AccountCapabilities capabilities;

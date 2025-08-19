@@ -87,7 +87,11 @@ public final class AccountCapabilitiesTest {
                 return capabilities.isSubjectToEnterpriseFeatures();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
                 return capabilities.isSubjectToParentalControls();
-            /** keep-sorted end */
+            case AccountCapabilitiesConstants.SHOULD_BE_ADDRESSED_IN_FEMININE_GRAMMATICAL_GENDER:
+                return capabilities.shouldBeAddressedInFeminineGrammaticalGender();
+            case AccountCapabilitiesConstants.SHOULD_BE_ADDRESSED_IN_MASCULINE_GRAMMATICAL_GENDER:
+                return capabilities.shouldBeAddressedInMasculineGrammaticalGender();
+                /** keep-sorted end */
         }
         assert false : "Capability name is not known.";
         return -1;
@@ -191,9 +195,17 @@ public final class AccountCapabilitiesTest {
                                                 .CAN_USE_GENERATIVE_AI_PHOTO_EDITING),
                         new ParameterSet()
                                 .name("CanUseChromeOSGenerativeAi")
+                                .value(AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI),
+                        new ParameterSet()
+                                .name("ShouldBeAddressedInFeminineGrammaticalGender")
                                 .value(
                                         AccountCapabilitiesConstants
-                                                .CAN_USE_CHROMEOS_GENERATIVE_AI));
+                                                .SHOULD_BE_ADDRESSED_IN_FEMININE_GRAMMATICAL_GENDER),
+                        new ParameterSet()
+                                .name("ShouldBeAddressedInMasculineGrammaticalGender")
+                                .value(
+                                        AccountCapabilitiesConstants
+                                                .SHOULD_BE_ADDRESSED_IN_MASCULINE_GRAMMATICAL_GENDER));
 
         // Returns String value added from Capabilities ParameterSet.
         static String getCapabilityName(ParameterSet parameterSet) {

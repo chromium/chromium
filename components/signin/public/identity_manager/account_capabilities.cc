@@ -79,7 +79,7 @@ signin::Tribool AccountCapabilities::GetCapabilityByName(
 }
 
 // clang-format off
-// keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=#endif,can,has,is,must block=yes
+// keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=#endif,can,has,is,must,AccountCapabilities:: block=yes
 // clang-format on
 signin::Tribool AccountCapabilities::can_fetch_family_member_info() const {
   return GetCapabilityByName(kCanFetchFamilyMemberInfoCapabilityName);
@@ -181,6 +181,18 @@ signin::Tribool AccountCapabilities::is_subject_to_enterprise_features() const {
 
 signin::Tribool AccountCapabilities::is_subject_to_parental_controls() const {
   return GetCapabilityByName(kIsSubjectToParentalControlsCapabilityName);
+}
+
+signin::Tribool
+AccountCapabilities::should_be_addressed_in_feminine_grammatical_gender()
+    const {
+  return GetCapabilityByName(kShouldBeAddressedInFeminineGrammaticalGender);
+}
+
+signin::Tribool
+AccountCapabilities::should_be_addressed_in_masculine_grammatical_gender()
+    const {
+  return GetCapabilityByName(kShouldBeAddressedInMasculineGrammaticalGender);
 }
 
 // keep-sorted end

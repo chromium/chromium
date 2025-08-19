@@ -134,6 +134,12 @@ class AccountCapabilities {
   // Chrome applies parental controls to accounts with this capability.
   signin::Tribool is_subject_to_parental_controls() const;
 
+  // The user should be addressed in feminine grammatical gender.
+  signin::Tribool should_be_addressed_in_feminine_grammatical_gender() const;
+
+  // The user should be addressed in masculine grammatical gender.
+  signin::Tribool should_be_addressed_in_masculine_grammatical_gender() const;
+
   // keep-sorted end
 
   // Whether at least one of the capabilities is not
