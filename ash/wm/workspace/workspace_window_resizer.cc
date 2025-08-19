@@ -528,7 +528,7 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
     }
   }
 
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return CreateWindowResizerForTabletMode(window, point_in_parent,
                                             window_component, source);
   }
@@ -787,9 +787,8 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
         kSnapTriggerVerticalMoveThreshold;
   }
 
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(
-          gfx::ToRoundedPoint(location_in_screen));
+  display::Display display = display::Screen::Get()->GetDisplayNearestPoint(
+      gfx::ToRoundedPoint(location_in_screen));
   const SnapType snap_type = GetSnapType(display, location_in_screen);
   // Start dwell countdown if move window to the top of screen.
   if (IsSnapTopOrMaximize(snap_type, display)) {
@@ -1421,8 +1420,7 @@ void WorkspaceWindowResizer::AdjustBoundsForMainWindow(int sticky_size,
   gfx::Point last_location_in_screen =
       gfx::ToRoundedPoint(last_location_in_screen_);
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(
-          last_location_in_screen);
+      display::Screen::Get()->GetDisplayNearestPoint(last_location_in_screen);
   gfx::Rect work_area = display.work_area();
   wm::ConvertRectFromScreen(GetTarget()->parent(), &work_area);
   if (details().window_component == HTCAPTION) {
@@ -1715,7 +1713,7 @@ bool WorkspaceWindowResizer::AreBoundsValidSnappedBounds(
       state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
   gfx::Rect snapped_bounds = GetSnappedWindowBounds(
       screen_util::GetDisplayWorkAreaBoundsInParent(window),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window), window,
+      display::Screen::Get()->GetDisplayNearestWindow(window), window,
       snapped_type, snap_ratio);
   return bounds_in_parent.ApproximatelyEqual(snapped_bounds, 1);
 }

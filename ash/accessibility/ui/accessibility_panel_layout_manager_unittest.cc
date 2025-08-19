@@ -78,7 +78,7 @@ TEST_F(AccessibilityPanelLayoutManagerTest, Shutdown) {
 
 TEST_F(AccessibilityPanelLayoutManagerTest, PanelFullscreen) {
   AccessibilityPanelLayoutManager* layout_manager = GetLayoutManager();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   std::unique_ptr<views::Widget> widget = CreateChromeVoxPanel();
   widget->Show();
@@ -124,7 +124,7 @@ TEST_F(AccessibilityPanelLayoutManagerTest, DisplayBoundsChange) {
   // When the display resolution changes the panel still sits at the top of the
   // screen.
   UpdateDisplay("1200x700,1300x800");
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   gfx::Rect expected_bounds(0, 0, screen->GetPrimaryDisplay().bounds().width(),
                             kDefaultPanelHeight);
   EXPECT_EQ(widget->GetNativeWindow()->bounds(), expected_bounds);
@@ -148,7 +148,7 @@ TEST_F(AccessibilityPanelLayoutManagerTest, DockedMagnifierEnabled) {
   docked_magnifier_controller->SetEnabled(true);
   int magnifier_height = docked_magnifier_controller->GetTotalMagnifierHeight();
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   gfx::Rect expected_bounds(0, magnifier_height,
                             screen->GetPrimaryDisplay().bounds().width(),
                             kDefaultPanelHeight);

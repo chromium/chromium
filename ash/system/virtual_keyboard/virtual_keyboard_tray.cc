@@ -100,11 +100,10 @@ void VirtualKeyboardTray::OnButtonPressed(const ui::Event& event) {
     SetIsActive(false);
     return;
   }
-    keyboard_controller->ShowKeyboardInDisplay(
-        display::Screen::GetScreen()->GetDisplayNearestWindow(
-            shelf_->GetWindow()));
-    SetIsActive(true);
-    return;
+  keyboard_controller->ShowKeyboardInDisplay(
+      display::Screen::Get()->GetDisplayNearestWindow(shelf_->GetWindow()));
+  SetIsActive(true);
+  return;
 }
 
 void VirtualKeyboardTray::Initialize() {

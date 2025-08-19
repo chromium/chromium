@@ -474,7 +474,7 @@ TEST_F(PersistentWindowControllerTest, RestoreBounds) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
           .id();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   ASSERT_EQ(primary_id, screen->GetDisplayNearestWindow(window.get()).id());
 
   // Move the window to the secondary display and maximize it.
@@ -522,7 +522,7 @@ TEST_F(PersistentWindowControllerTest, RestoreBoundsOnInternalDisplayRemoval) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
           .id();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   ASSERT_EQ(primary_id, screen->GetDisplayNearestWindow(window.get()).id());
 
   // Move the window to the secondary display and snap it.
@@ -594,7 +594,7 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStacking) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
           .id();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const std::vector<raw_ptr<aura::Window, VectorExperimental>>
       expected_mru_order = {window3.get(), window2.get(), window1.get()};
   ASSERT_EQ(
@@ -662,7 +662,7 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStackingInterleaved) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
           .id();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const std::vector<raw_ptr<aura::Window, VectorExperimental>>
       expected_mru_order = {window4.get(), window3.get(), window2.get(),
                             window1.get()};
@@ -983,7 +983,7 @@ TEST_F(PersistentWindowControllerTest, WindowStateChangeInSamePhysicalDisplay) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
           .id();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
   ASSERT_TRUE(window_state->HasRestoreBounds());
   const gfx::Rect maximized_bounds = window->GetBoundsInScreen();

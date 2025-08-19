@@ -197,10 +197,8 @@ bool IsViewVisibleOnScreen(views::View* view) {
   if (view->layer() && view->layer()->opacity() == 0.0f)
     return false;
 
-  return display::Screen::GetScreen()
-      ->GetPrimaryDisplay()
-      .work_area()
-      .Intersects(view->GetBoundsInScreen());
+  return display::Screen::Get()->GetPrimaryDisplay().work_area().Intersects(
+      view->GetBoundsInScreen());
 }
 
 class AppListViewTest : public views::ViewsTestBase {

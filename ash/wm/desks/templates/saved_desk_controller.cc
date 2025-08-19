@@ -172,7 +172,7 @@ void SavedDeskController::AttemptAdminTemplateAutoLaunch() {
       if (admin_template->should_launch_on_startup()) {
         LaunchAdminTemplateImpl(
             admin_template->Clone(),
-            display::Screen::GetScreen()->GetPrimaryDisplay().id());
+            display::Screen::Get()->GetPrimaryDisplay().id());
       }
     }
   }

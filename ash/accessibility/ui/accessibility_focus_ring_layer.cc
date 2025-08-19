@@ -98,8 +98,7 @@ void AccessibilityFocusRingLayer::Set(const AccessibilityFocusRing& ring) {
   ring_ = ring;
 
   gfx::Rect bounds = ring.GetBounds();
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds);
+  display::Display display = display::Screen::Get()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
   aura::Window* container = Shell::GetContainer(
       root_window, kShellWindowId_AccessibilityBubbleContainer);

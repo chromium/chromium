@@ -427,8 +427,7 @@ void MultiWindowResizeController::OnOverviewModeEndingAnimationComplete(
 MultiWindowResizeController::ResizeWindows
 MultiWindowResizeController::DetermineWindowsFromScreenPoint(
     aura::Window* window) const {
-  gfx::Point mouse_location(
-      display::Screen::GetScreen()->GetCursorScreenPoint());
+  gfx::Point mouse_location(display::Screen::Get()->GetCursorScreenPoint());
   wm::ConvertPointFromScreen(window, &mouse_location);
   const int component =
       window_util::GetNonClientComponent(window, mouse_location);
@@ -730,7 +729,7 @@ void MultiWindowResizeController::CompleteResize() {
   window_resizer_.reset();
 
   // Mouse may still be over resizer, if not hide.
-  gfx::Point screen_loc = display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point screen_loc = display::Screen::Get()->GetCursorScreenPoint();
   if (!resize_widget_->GetWindowBoundsInScreen().Contains(screen_loc)) {
     Hide();
   } else {

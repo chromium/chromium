@@ -125,7 +125,7 @@ TEST_F(SplitViewHighlightViewTest, PortraitMode) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // Set display to portrait mode.
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
                                                          display_id);

@@ -708,7 +708,7 @@ TEST_F(KeyboardControllerImplTest, SwipeUpToShowHotSeat) {
   ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const gfx::Point end(start + gfx::Vector2d(0, -80));
   const base::TimeDelta time_delta = base::Milliseconds(100);
@@ -734,7 +734,7 @@ TEST_F(KeyboardControllerImplTest, FlingUpToShowOverviewMode) {
   ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const gfx::Point end(start + gfx::Vector2d(0, -200));
   const int fling_speed =
@@ -763,7 +763,7 @@ TEST_F(KeyboardControllerImplTest, SwipeUpDoesntHideKeyboardInClamshellMode) {
   ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const gfx::Point end(start + gfx::Vector2d(0, -80));
   const base::TimeDelta time_delta = base::Milliseconds(100);

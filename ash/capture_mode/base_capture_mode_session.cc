@@ -114,7 +114,7 @@ gfx::Rect BaseCaptureModeSession::GetCaptureSurfaceConfineBounds() const {
     case CaptureModeSource::kFullscreen: {
       auto* parent = GetOnCaptureSurfaceWidgetParentWindow();
       DCHECK(parent);
-      return display::Screen::GetScreen()
+      return display::Screen::Get()
           ->GetDisplayNearestWindow(parent)
           .work_area();
     }

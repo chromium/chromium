@@ -292,7 +292,7 @@ TEST_F(CursorWindowControllerTest, DSF) {
 
   auto cursor_test = [&](ui::Cursor cursor, float large_cursor_size_in_dip) {
     const float dsf =
-        display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+        display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
     SCOPED_TRACE(testing::Message()
                  << cursor.type() << " at scale " << dsf << " and size "
                  << large_cursor_size_in_dip);
@@ -354,9 +354,8 @@ TEST_F(CursorWindowControllerTest, DSF) {
     for (const float zoom : {0.8f, 1.0f, 1.25f}) {
       UpdateDisplay(
           base::StringPrintf("1000x500*%f@%f", device_scale_factor, zoom));
-      const float dsf = display::Screen::GetScreen()
-                            ->GetPrimaryDisplay()
-                            .device_scale_factor();
+      const float dsf =
+          display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
       for (const int large_cursor_size_in_dip : {0, 32, 64, 128}) {
         cursor_manager->SetCursorSize(large_cursor_size_in_dip == 0
@@ -382,7 +381,7 @@ TEST_F(CursorWindowControllerTest, DSF) {
 TEST_F(CursorWindowControllerTest, ShouldEnableCursorCompositing) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   const float dsf = 2.0f;
   display.set_device_scale_factor(dsf);
   display.set_maximum_cursor_size(gfx::Size(128, 128));

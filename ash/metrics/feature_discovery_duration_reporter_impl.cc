@@ -134,7 +134,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeActivateObservation(
     // Record the current tablet mode if `feature`'s discovery duration data
     // should be separated by tablet mode.
     observed_feature_data.Set(kActivatedInTablet,
-                              display::Screen::GetScreen()->InTabletMode());
+                              display::Screen::Get()->InTabletMode());
   }
 
   ScopedDictPrefUpdate update(active_pref_service_, kObservedFeatures);

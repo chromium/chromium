@@ -465,7 +465,7 @@ bool BackGestureEventHandler::CanStartGoingBack(
   if (shell->session_controller()->IsRunningInAppMode())
     return false;
 
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return false;
   }
 
@@ -503,7 +503,7 @@ bool BackGestureEventHandler::CanStartGoingBack(
   }
 
   gfx::Rect hit_bounds_in_screen(
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(
               window_util::GetRootWindowAt(screen_location))
           .work_area());

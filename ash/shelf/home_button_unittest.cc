@@ -1168,7 +1168,7 @@ TEST_P(HomeButtonTest, ClickOnCornerPixel) {
   // that a click on the bottom-left corner (or bottom-right corner in RTL)
   // can trigger the home button.
   gfx::Point corner(
-      0, display::Screen::GetScreen()->GetPrimaryDisplay().bounds().height());
+      0, display::Screen::Get()->GetPrimaryDisplay().bounds().height());
 
   ShelfNavigationWidget::TestApi test_api(
       GetPrimaryShelf()->navigation_widget());

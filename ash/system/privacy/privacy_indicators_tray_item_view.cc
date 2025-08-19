@@ -130,7 +130,7 @@ bool IsInPrimaryDisplay(views::Widget* widget) {
     return false;
   }
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   return screen->GetDisplayNearestWindow(widget->GetNativeWindow()) ==
          screen->GetPrimaryDisplay();
 }

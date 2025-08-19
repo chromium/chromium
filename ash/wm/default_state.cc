@@ -106,13 +106,13 @@ void EnsureWindowInCorrectDisplay(WindowState* window_state,
   // TODO(oshima): Restore information should contain the
   // work area information like WindowResizer does for the
   // last window location.
-  gfx::Rect display_area = display::Screen::GetScreen()
+  gfx::Rect display_area = display::Screen::Get()
                                ->GetDisplayNearestWindow(window_state->window())
                                .bounds();
 
   if (!display_area.Intersects(window_bounds)) {
     int64_t display_id =
-        display::Screen::GetScreen()->GetDisplayMatching(window_bounds).id();
+        display::Screen::Get()->GetDisplayMatching(window_bounds).id();
     MoveWindowToDisplayAsNeeded(window_state->window(), display_id);
   }
 }
@@ -174,8 +174,7 @@ void DefaultState::AttachState(WindowState* window_state,
   // If the display has changed while in the another mode,
   // we need to let windows know the change.
   display::Display current_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          window_state->window());
+      display::Screen::Get()->GetDisplayNearestWindow(window_state->window());
   if (stored_display_state_.bounds() != current_display.bounds()) {
     const DisplayMetricsChangedWMEvent event(
         display::DisplayObserver::DISPLAY_METRIC_BOUNDS);
@@ -197,8 +196,8 @@ void DefaultState::DetachState(WindowState* window_state) {
   // while in the other mode, we can perform necessary action to
   // restore the window state to the proper state for the current
   // display.
-  stored_display_state_ = display::Screen::GetScreen()->GetDisplayNearestWindow(
-      window_state->window());
+  stored_display_state_ =
+      display::Screen::Get()->GetDisplayNearestWindow(window_state->window());
 }
 
 void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
@@ -644,9 +643,7 @@ void DefaultState::UpdateBoundsFromState(
           window_state->window(), state_type_, *window_state->snap_ratio());
       base::UmaHistogramEnumeration(
           kSnapWindowDeviceOrientationHistogramName,
-          display::Screen::GetScreen()
-                  ->GetDisplayNearestWindow(window)
-                  .is_landscape()
+          display::Screen::Get()->GetDisplayNearestWindow(window).is_landscape()
               ? SplitViewMetricsController::DeviceOrientation::kLandscape
               : SplitViewMetricsController::DeviceOrientation::kPortrait);
       break;

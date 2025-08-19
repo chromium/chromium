@@ -87,7 +87,7 @@ namespace {
 
 void PressHomeButton() {
   Shell::Get()->app_list_controller()->ToggleAppList(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      display::Screen::Get()->GetPrimaryDisplay().id(),
       AppListShowSource::kShelfButton, base::TimeTicks());
 }
 
@@ -120,7 +120,7 @@ PagedAppsGridView* GetAppsGridView() {
 
 void ShowAppListNow(AppListViewState state) {
   Shell::Get()->app_list_controller()->fullscreen_presenter()->Show(
-      state, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      state, display::Screen::Get()->GetPrimaryDisplay().id(),
       base::TimeTicks::Now(), /*show_source*/ std::nullopt);
 }
 
@@ -784,7 +784,7 @@ TEST_F(AppListControllerImplTestWithNotificationBadging,
 TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
   // Turn on the tablet mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
 
   Shelf* const shelf = GetPrimaryShelf();
 

@@ -46,7 +46,7 @@ std::unique_ptr<views::Label> CreateLabelView(
 }
 
 aura::Window* FindRootWindowAtMousePosition() {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   CHECK(screen);
   auto display = screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
   return Shell::GetRootWindowForDisplayId(display.id());
@@ -57,7 +57,7 @@ aura::Window* FindRootWindowAtMousePosition() {
 MouseKeysBubbleView::MouseKeysBubbleView() {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   CHECK(screen);
   auto display = screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
 

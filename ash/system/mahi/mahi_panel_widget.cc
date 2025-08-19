@@ -63,9 +63,8 @@ int CalculateAvailableSpaceOnBottom(const gfx::Rect& screen_work_area,
 }
 
 gfx::Rect CalculateAnimationStartBounds(const gfx::Rect& mahi_menu_bounds) {
-  const gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                         ->GetDisplayMatching(mahi_menu_bounds)
-                                         .work_area();
+  const gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(mahi_menu_bounds).work_area();
 
   return gfx::Rect(
       IsSpaceAvailableOnRight(screen_work_area, mahi_menu_bounds)
@@ -78,9 +77,8 @@ gfx::Rect CalculateAnimationStartBounds(const gfx::Rect& mahi_menu_bounds) {
 }
 
 gfx::Rect CalculateInitialWidgetBounds(const gfx::Rect& mahi_menu_bounds) {
-  const gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                         ->GetDisplayMatching(mahi_menu_bounds)
-                                         .work_area();
+  const gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(mahi_menu_bounds).work_area();
 
   int available_space_on_bottom =
       CalculateAvailableSpaceOnBottom(screen_work_area, mahi_menu_bounds);

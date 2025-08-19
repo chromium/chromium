@@ -125,7 +125,7 @@ void AuthErrorBubble::ShowAuthError(base::WeakPtr<views::View> anchor_view,
   // Display a hint to switch keyboards if there are other active input
   // methods in clamshell mode.
   if (ime_controller->GetVisibleImes().size() > 1 &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     error_text += u" ";
     bold_start = error_text.length();
     std::u16string shortcut =

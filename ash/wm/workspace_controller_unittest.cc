@@ -134,9 +134,7 @@ class WorkspaceControllerTest : public AshTestBase {
   }
 
   gfx::Rect GetFullscreenBounds(aura::Window* window) {
-    return display::Screen::GetScreen()
-        ->GetDisplayNearestWindow(window)
-        .bounds();
+    return display::Screen::Get()->GetDisplayNearestWindow(window).bounds();
   }
 
   ShelfWidget* shelf_widget() { return GetPrimaryShelf()->shelf_widget(); }
@@ -1323,7 +1321,7 @@ TEST_F(WorkspaceControllerTest, RestoreMinimizedSnappedWindow) {
   const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   const gfx::Rect work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestPoint(window->bounds().origin())
           .work_area();
   gfx::Rect snapped_bounds(work_area.x(), work_area.y(), work_area.width() / 2,

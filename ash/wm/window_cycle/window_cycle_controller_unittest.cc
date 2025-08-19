@@ -691,7 +691,7 @@ TEST_F(WindowCycleControllerTest, SelectingHidesAppList) {
 // mode.
 TEST_F(WindowCycleControllerTest, SelectingDoesNotHideAppListInTabletMode) {
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_TRUE(Shell::Get()->app_list_controller()->IsHomeScreenVisible());
 
   std::unique_ptr<aura::Window> window0(CreateTestWindowInShellWithId(0));
@@ -1058,7 +1058,7 @@ TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
   // TODO(crbug.com/40638870): Unit tests should be able to simulate mouse input
   // without having to call |CursorManager::SetDisplay|.
   Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(w1.get()));
+      display::Screen::Get()->GetDisplayNearestWindow(w1.get()));
 
   // Test alt-tab activates on first display, the display for new windows, not
   // the second display where the cursor is at.
@@ -1070,10 +1070,10 @@ TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
   ASSERT_EQ(2u, preview_items.size());
   // Ensure preview is generated in first display where the activated window
   // is at.
-  auto preview_display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+  auto preview_display = display::Screen::Get()->GetDisplayNearestWindow(
       GetWindowCycleListWidget()->GetNativeWindow());
   auto activated_window =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(w0.get());
+      display::Screen::Get()->GetDisplayNearestWindow(w0.get());
   EXPECT_EQ(activated_window, preview_display);
   CompleteCycling(cycle_controller);
 }

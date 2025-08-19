@@ -180,7 +180,7 @@ class TouchCalibratorControllerTest : public AshTestBase {
     aura::Window::Windows root_windows = Shell::GetAllRootWindows();
     ui::EventTarget* event_target = nullptr;
     for (aura::Window* window : root_windows) {
-      if (display::Screen::GetScreen()->GetDisplayNearestWindow(window).id() ==
+      if (display::Screen::Get()->GetDisplayNearestWindow(window).id() ==
           display.id()) {
         event_target = window;
         break;

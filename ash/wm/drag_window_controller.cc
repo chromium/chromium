@@ -51,10 +51,9 @@ float GetDragWindowOpacity(aura::Window* root_window,
   // in the constructor and reverted in the destructor.
   DCHECK(!is_touch_dragging || dragged_window->GetRootWindow() != root_window);
   // For mouse dragging, if the mouse is in |root_window|, then return 1.
-  if (!is_touch_dragging && Shell::Get()->cursor_manager()->GetDisplay().id() ==
-                                display::Screen::GetScreen()
-                                    ->GetDisplayNearestWindow(root_window)
-                                    .id()) {
+  if (!is_touch_dragging &&
+      Shell::Get()->cursor_manager()->GetDisplay().id() ==
+          display::Screen::Get()->GetDisplayNearestWindow(root_window).id()) {
     return 1.f;
   }
 
@@ -196,7 +195,7 @@ DragWindowController::DragWindowController(aura::Window* window,
   window->layer()->SetOpacity(1.f);
 
   DCHECK(drag_windows_.empty());
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   display::Display current = screen->GetDisplayNearestWindow(window_);
   for (const display::Display& display : screen->GetAllDisplays()) {
     if (current.id() == display.id())

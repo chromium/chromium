@@ -430,9 +430,8 @@ TEST_F(RefreshRateControllerTest,
   SetUpDisplays(std::move(snapshots));
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(GetSecondaryDisplay().work_area()));
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      external_id);
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            external_id);
 
   // Expect the initial state to be 120 Hz.
   {
@@ -482,9 +481,8 @@ TEST_F(RefreshRateControllerTest, ThrottlingUpdatesWhenBorealisWindowMoves) {
   SetUpDisplays(std::move(snapshots));
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(GetSecondaryDisplay().work_area()));
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      secondary_id);
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            secondary_id);
 
   // Set power state to indicate the device is on battery.
   PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
@@ -505,9 +503,8 @@ TEST_F(RefreshRateControllerTest, ThrottlingUpdatesWhenBorealisWindowMoves) {
 
   // Move the borealis window to the internal display.
   window->SetBoundsInScreen(primary.work_area(), primary);
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      primary.id());
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            primary.id());
 
   // Expect the new state to be 120 Hz.
   {
@@ -532,9 +529,8 @@ TEST_F(RefreshRateControllerTest, ThrottlingUpdatesWhenDisplaysChange) {
   SetUpDisplays(std::move(snapshots));
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(GetSecondaryDisplay().work_area()));
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      external_id);
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            external_id);
 
   // Set power state to indicate the device is on battery.
   PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
@@ -555,9 +551,8 @@ TEST_F(RefreshRateControllerTest, ThrottlingUpdatesWhenDisplaysChange) {
 
   // Swap displays causing borealis window to move to the internal display.
   SwapPrimaryDisplay();
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      internal.id());
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            internal.id());
 
   // Expect the new state to be 120 Hz.
   {
@@ -640,9 +635,8 @@ TEST_F(RefreshRateControllerTest, ShouldEnableVrrForBorealis) {
   SetUpDisplays(std::move(snapshots));
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      internal_id);
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            internal_id);
 
   // Expect VRR to be initially disabled.
   {
@@ -787,9 +781,8 @@ TEST_F(RefreshRateControllerTest, VrrUpdatesWhenBorealisWindowMoves) {
   const display::Display external = GetSecondaryDisplay();
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(internal.work_area()));
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      internal.id());
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            internal.id());
 
   // Expect VRR to be initially disabled.
   {
@@ -849,9 +842,8 @@ TEST_F(RefreshRateControllerTest, VrrUpdatesWhenBorealisWindowMoves) {
 
   // Move borealis window to the external display.
   window->SetBoundsInScreen(external.work_area(), external);
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      external.id());
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            external.id());
 
   // Expect the new state to have VRR enabled on the external display only.
   {

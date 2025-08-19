@@ -48,7 +48,7 @@ gfx::Rect GetWindowInitialBoundsInParent(aura::Window* window) {
   if (WindowState::Get(window)->IsFloated())
     return window->bounds();
 
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
     if (override_bounds && !override_bounds->IsEmpty()) {
       wm::ConvertRectFromScreen(window->GetRootWindow(), override_bounds);
@@ -67,7 +67,7 @@ gfx::Rect GetRestoreBoundsInParent(aura::Window* window, int window_component) {
   // TODO(xdai): Move these logic to WindowState::GetRestoreBoundsInScreen()
   // and let it return the right value.
   gfx::Rect restore_bounds;
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
     if (override_bounds && !override_bounds->IsEmpty()) {
       restore_bounds = *override_bounds;

@@ -111,7 +111,7 @@ display::DisplayPlacement::Position GetDisplayPlacementPosition(
 
 std::vector<crosapi::mojom::DisplayLayoutPtr> GetDisplayLayouts() {
   auto layouts = std::vector<crosapi::mojom::DisplayLayoutPtr>();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const std::vector<display::Display>& displays = screen->GetAllDisplays();
   display::DisplayManager* display_manager = GetDisplayManager();
   for (const display::Display& display : displays) {
@@ -211,7 +211,7 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayoutMode(
     }
   } else {
     const std::vector<display::Display>& displays =
-        display::Screen::GetScreen()->GetAllDisplays();
+        display::Screen::Get()->GetAllDisplays();
     for (const display::Display& display : displays) {
       destination_ids.emplace_back(display.id());
     }
@@ -437,7 +437,7 @@ crosapi::mojom::DisplayConfigResult ValidateDisplayProperties(
   // a reasonable bounds.
   if (properties.bounds_origin) {
     const display::Display& primary =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+        display::Screen::Get()->GetPrimaryDisplay();
     if (id == primary.id() || properties.set_primary) {
       LOG(ERROR) << "Not Supported on Internal Display:" << dump_state();
       return crosapi::mojom::DisplayConfigResult::
@@ -758,13 +758,13 @@ void CrosDisplayConfig::GetDisplayUnitInfoList(
   std::vector<display::Display> displays;
   int64_t primary_id;
   if (!display_manager->IsInUnifiedMode()) {
-    displays = display::Screen::GetScreen()->GetAllDisplays();
-    primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    displays = display::Screen::Get()->GetAllDisplays();
+    primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   } else if (single_unified) {
     for (size_t i = 0; i < display_manager->GetNumDisplays(); ++i) {
       displays.push_back(display_manager->GetDisplayAt(i));
     }
-    primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   } else {
     displays = display_manager->software_mirroring_display_list();
     primary_id = Shell::Get()
@@ -795,8 +795,7 @@ void CrosDisplayConfig::SetDisplayProperties(
   display::DisplayManager* display_manager = GetDisplayManager();
   DisplayConfigurationController* display_configuration_controller =
       Shell::Get()->display_configuration_controller();
-  const display::Display& primary =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& primary = display::Screen::Get()->GetPrimaryDisplay();
 
   if (properties->set_primary && display.id() != primary.id()) {
     display_configuration_controller->SetPrimaryDisplayId(

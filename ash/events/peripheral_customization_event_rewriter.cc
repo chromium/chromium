@@ -365,7 +365,7 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
 // TODO(b/339754921): Add integration test for when the display is rotated and
 // adjusted via overscan boundaries.
 gfx::PointF GetCurrentCursorLocation() {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   CHECK(screen);
   const display::Display display =
       screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());

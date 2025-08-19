@@ -94,7 +94,7 @@ using Sample32 = base::HistogramBase::Sample32;
 TEST_F(WindowStateTest, SnapWindowBasic) {
   UpdateDisplay("0+0-500x400, 0+500-600x400");
   const gfx::Rect kPrimaryDisplayWorkAreaBounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   const gfx::Rect kSecondaryDisplayWorkAreaBounds =
       GetSecondaryDisplay().work_area();
 
@@ -137,7 +137,7 @@ TEST_F(WindowStateTest, SnapWindowBasic) {
 TEST_F(WindowStateTest, SnapWindowOddWorkAreaLength) {
   UpdateDisplay("1517x805");
   const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   ASSERT_EQ(0, work_area.x());
   ASSERT_EQ(1517, work_area.width());
 
@@ -160,7 +160,7 @@ TEST_F(WindowStateTest, SnapWindowOddWorkAreaLength) {
 TEST_F(WindowStateTest, SnapWindowMinimumSizeLandscape) {
   UpdateDisplay("900x600");
   const gfx::Rect kWorkAreaBounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   aura::test::TestWindowDelegate delegate;
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
@@ -197,7 +197,7 @@ TEST_F(WindowStateTest, UnresizableWindowSnap) {
 
   for (const auto is_landscape : orientation_params) {
     UpdateDisplay(is_landscape ? "900x600,200x100" : "600x900,100x200");
-    auto* const screen = display::Screen::GetScreen();
+    auto* const screen = display::Screen::Get();
     ASSERT_EQ(2, screen->GetNumDisplays());
 
     const display::Display primary_display = screen->GetAllDisplays()[0];
@@ -409,7 +409,7 @@ TEST_F(WindowStateTest, AndroidPipWindowUmaMetricsCountsExitOnDestroy) {
 TEST_F(WindowStateTest, SnapModalWindow) {
   UpdateDisplay("0+0-600x900");
   const gfx::Rect kWorkAreaBounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   aura::test::TestWindowDelegate parent_delegate;
   std::unique_ptr<aura::Window> parent_window(
@@ -468,7 +468,7 @@ TEST_F(WindowStateTest, TestRespectMinimumSize) {
 TEST_F(WindowStateTest, TestIgnoreTooBigMinimumSize) {
   UpdateDisplay("0+0-1024x768");
   const gfx::Size work_area_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().size();
+      display::Screen::Get()->GetPrimaryDisplay().work_area().size();
   const gfx::Size illegal_size(1280, 960);
   const gfx::Rect illegal_bounds(gfx::Point(0, 0), illegal_size);
 
@@ -520,7 +520,7 @@ TEST_F(WindowStateTest, TestRespectMaximumSize) {
 TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
   UpdateDisplay("0+0-900x600");
   const gfx::Rect kWorkAreaBounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   aura::test::TestWindowDelegate delegate;
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &delegate, -1, gfx::Rect(100, 100, 100, 100)));
@@ -567,7 +567,7 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   UpdateDisplay("800x600");
   const gfx::Rect kWorkAreaBounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   aura::test::TestWindowDelegate delegate;
   gfx::Size window_normal_size = gfx::Size(800, 100);
   std::unique_ptr<aura::Window> window =
@@ -671,7 +671,7 @@ TEST_F(WindowStateTest, AutoManaged) {
   window_state->OnWMEvent(&snap_secondary);
 
   const gfx::Rect kWorkAreaBounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Rect expected_snapped_bounds(
       kWorkAreaBounds.x() + kWorkAreaBounds.width() / 2, kWorkAreaBounds.y(),
       kWorkAreaBounds.width() / 2, kWorkAreaBounds.height());
@@ -713,8 +713,7 @@ TEST_F(WindowStateTest, RestoredWindowBoundsShrink) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_FALSE(window_state->IsMaximized());
-  gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect work_area = display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   window->SetBounds(work_area);
   window_state->Maximize();
@@ -765,8 +764,7 @@ TEST_F(WindowStateTest, TrustedPinned) {
   window_util::PinWindow(window.get(), true /* trusted */);
   EXPECT_TRUE(window_state->IsTrustedPinned());
 
-  gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect work_area = display::Screen::Get()->GetPrimaryDisplay().work_area();
   EXPECT_EQ(work_area.ToString(), window->bounds().ToString());
 
   // Sending non-unpin/non-workspace related event should be ignored.
@@ -789,8 +787,7 @@ TEST_F(WindowStateTest, AllowSetBoundsDirect) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_FALSE(window_state->IsMaximized());
-  gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect work_area = display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Rect original_bounds(50, 50, 200, 200);
   window->SetBounds(original_bounds);
   ASSERT_EQ(original_bounds, window->bounds());
@@ -875,7 +872,7 @@ TEST_F(WindowStateTest, FullscreenToCurrentDisplayExplicitly) {
   EXPECT_EQ(displays[0].size(), gfx::Size(800, 600));
   EXPECT_EQ(displays[1].size(), gfx::Size(1024, 768));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   // Start from the 1st display.
   const gfx::Rect initial_bounds(100, 10, 200, 100);
@@ -911,7 +908,7 @@ TEST_F(WindowStateTest, FullscreenToAnotherDisplayFromNormal) {
   EXPECT_EQ(displays[1].size(), gfx::Size(1024, 768));
   EXPECT_EQ(displays[2].size(), gfx::Size(1280, 720));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   // Start from the 2nd display.
   const gfx::Rect initial_bounds(900, 10, 200, 100);
@@ -947,7 +944,7 @@ TEST_F(WindowStateTest, FullscreenToAnotherDisplayFromOtherStates) {
   EXPECT_EQ(displays[1].size(), gfx::Size(1024, 768));
   EXPECT_EQ(displays[2].size(), gfx::Size(1280, 720));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   // Start from the 2nd display.
   const gfx::Rect initial_bounds(900, 10, 200, 100);
@@ -1015,7 +1012,7 @@ TEST_F(WindowStateTest, FullscreenToAnotherDisplayFromFullscreen) {
   EXPECT_EQ(displays[1].size(), gfx::Size(1024, 768));
   EXPECT_EQ(displays[2].size(), gfx::Size(1280, 720));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   // Start from the 2nd display.
   const gfx::Rect initial_bounds(900, 10, 200, 100);
@@ -1059,7 +1056,7 @@ TEST_F(WindowStateTest, FullscreenToAnotherDisplayWithMinimize) {
   EXPECT_EQ(displays[1].size(), gfx::Size(1024, 768));
   EXPECT_EQ(displays[2].size(), gfx::Size(1280, 720));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   // Start from the 2nd display.
   const gfx::Rect initial_bounds(900, 10, 200, 100);
@@ -1122,7 +1119,7 @@ TEST_F(WindowStateTest, MouseDragWindowInMultiDisplays) {
   const auto& displays = display_manager()->active_display_list();
 
   // Starts with kDefault window state in the 1st display.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const gfx::Rect initial_bounds(10, 20, 200, 100);
 
   aura::test::TestWindowDelegate test_window_delegate;
@@ -1211,7 +1208,7 @@ TEST_F(WindowStateTest, ShortcutMovingWindowInMultiDisplays) {
   const auto& displays = display_manager()->active_display_list();
 
   // Starts with kDefault window state in the 1st display.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const gfx::Rect initial_bounds(10, 20, 200, 100);
   std::unique_ptr<aura::Window> window = CreateAppWindow(initial_bounds);
   WindowState* window_state = WindowState::Get(window.get());
@@ -1272,7 +1269,7 @@ TEST_F(WindowStateTest, WindowNoOffscreenInMultiDisplays) {
   const auto& displays = display_manager()->active_display_list();
 
   // Starts with kDefault window state in the 2nd display.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const gfx::Rect initial_bounds(900, 10, 200, 100);
   std::unique_ptr<aura::Window> window = CreateAppWindow(initial_bounds);
   WindowState* window_state = WindowState::Get(window.get());
@@ -2149,7 +2146,7 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   window_state->Maximize();
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
 
   // Use keyboard to snap the window in tablet mode.
   AcceleratorController::Get()->PerformActionIfEnabled(
@@ -2192,7 +2189,7 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
 TEST_F(WindowStateTest, SnapWindowMinimumSizePortrait) {
   UpdateDisplay("600x900");
   const gfx::Rect kWorkAreaBounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   aura::test::TestWindowDelegate delegate;
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
@@ -2224,7 +2221,7 @@ TEST_F(WindowStateTest, SnappedWindowsInExternalDisplay) {
   const auto& displays = display_manager()->active_display_list();
   const int64_t primary_id = displays[0].id();
   const int64_t secondary_id = displays[1].id();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   // Create two windows inside the external display.
   std::unique_ptr<aura::Window> w1 =

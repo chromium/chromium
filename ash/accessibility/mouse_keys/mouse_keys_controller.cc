@@ -245,7 +245,7 @@ void MouseKeysController::MoveMouse(const gfx::Vector2d& move_delta_dip) {
   gfx::Point location_in_screen = last_mouse_position_dips_ + move_delta_dip;
 
   const display::Display& target_display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
+      display::Screen::Get()->GetDisplayNearestPoint(location_in_screen);
   auto* host = ash::GetWindowTreeHostForDisplay(target_display.id());
   if (!host) {
     return;

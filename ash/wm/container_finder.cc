@@ -31,8 +31,7 @@ aura::Window* FindContainerRoot(aura::Window* root_window,
   if (bounds_in_screen == gfx::Rect()) {
     return Shell::GetRootWindowForNewWindows();
   }
-  auto display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(root_window);
   auto overlap = display.bounds();
   overlap.Intersect(bounds_in_screen);
 

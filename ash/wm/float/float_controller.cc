@@ -302,7 +302,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver,
       float_start_time_ = base::TimeTicks::Now();
     }
 
-    if (display::Screen::GetScreen()->InTabletMode() &&
+    if (display::Screen::Get()->InTabletMode() &&
         TabletModeTuckEducation::CanActivateTuckEducation() &&
         !Shell::Get()
              ->float_controller()
@@ -861,10 +861,9 @@ void FloatController::OnMovingFloatedWindowToDesk(aura::Window* floated_window,
   if (root != target_root) {
     // If `floated_window_` is dragged to a desk on a different display, we
     // also need to move it to the target display.
-    window_util::MoveWindowToDisplay(floated_window,
-                                     display::Screen::GetScreen()
-                                         ->GetDisplayNearestWindow(target_root)
-                                         .id());
+    window_util::MoveWindowToDisplay(
+        floated_window,
+        display::Screen::Get()->GetDisplayNearestWindow(target_root).id());
   }
 
   if (!desks_util::IsWindowVisibleOnAllWorkspaces(floated_window)) {
@@ -927,8 +926,7 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
   // window changes related with those changes are handled in
   // `OnTabletModeStarting`, `OnTabletModeEnding` or attaching/detaching window
   // states.
-  display::TabletState tablet_state =
-      display::Screen::GetScreen()->GetTabletState();
+  display::TabletState tablet_state = display::Screen::Get()->GetTabletState();
   if (tablet_state == display::TabletState::kEnteringTabletMode ||
       tablet_state == display::TabletState::kExitingTabletMode) {
     return;
@@ -1015,7 +1013,7 @@ void FloatController::OnScreenRotationAnimationFinished(
   for (auto& [window, info] : floated_window_info_map_) {
     if (WindowState::Get(window)->is_client_controlled()) {
       const gfx::Rect bounds =
-          display::Screen::GetScreen()->InTabletMode()
+          display::Screen::Get()->InTabletMode()
               ? GetFloatWindowTabletBounds(window)
               : GetFloatWindowClamshellBounds(
                     window, chromeos::FloatStartLocation::kBottomRight);
@@ -1073,7 +1071,7 @@ FloatController::MagnetismCorner FloatController::GetMagnetismCornerForBounds(
   // the centerpoint of the window was on touch released. Note that the
   // centerpoint may be offscreen.
   const gfx::Point display_bounds_center =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayMatching(bounds_in_screen)
           .bounds()
           .CenterPoint();

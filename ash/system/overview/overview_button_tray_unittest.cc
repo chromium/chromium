@@ -134,12 +134,12 @@ TEST_F(OverviewButtonTrayTest, BasicConstruction) {
 TEST_F(OverviewButtonTrayTest, VisibilityTest) {
   ASSERT_FALSE(GetTray()->GetVisible());
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_TRUE(GetTray()->GetVisible());
 
   TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_FALSE(GetTray()->GetVisible());
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
 
   // When there is an window, it'll take an screenshot and
   // switch becomes asynchronous, but the display tablet state is synchronously
@@ -150,7 +150,7 @@ TEST_F(OverviewButtonTrayTest, VisibilityTest) {
   ASSERT_FALSE(GetTray()->GetVisible());
   TabletMode::Waiter waiter(/*enable=*/true);
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   waiter.Wait();
@@ -158,7 +158,7 @@ TEST_F(OverviewButtonTrayTest, VisibilityTest) {
   EXPECT_TRUE(GetTray()->GetVisible());
 
   TabletModeControllerTestApi().LeaveTabletMode();
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 
@@ -346,7 +346,7 @@ TEST_F(OverviewButtonTrayTest, HideAnimationAlwaysCompletesOnDelete) {
   GetTray()->SetVisiblePreferred(false);
 
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      display::Screen::Get()->GetPrimaryDisplay().id());
   // Colone and delete the old layer tree.
   std::unique_ptr<ui::LayerTreeOwner> old_layer_tree_owner =
       ::wm::RecreateLayers(root_window);
@@ -434,11 +434,11 @@ TEST_F(OverviewButtonTrayTest, LeaveTabletModeBecauseExternalMouse) {
   TabletModeControllerTestApi().DetachAllMice();
 
   TabletModeControllerTestApi().OpenLidToAngle(315.0f);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   ASSERT_TRUE(GetTray()->GetVisible());
 
   TabletModeControllerTestApi().AttachExternalMouse();
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_TRUE(GetTray()->GetVisible());
 }
 
@@ -449,12 +449,12 @@ TEST_F(OverviewButtonTrayTest, ForDevTabletModeForcesTheButtonShown) {
   TabletModeControllerTestApi().DetachAllMice();
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(true);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(TabletModeControllerTestApi().AreEventsBlocked());
   EXPECT_TRUE(GetTray()->GetVisible());
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(false);
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   // When there is a window, a screenshot will be taken before shelf enters
@@ -469,12 +469,12 @@ TEST_F(OverviewButtonTrayTest, ForDevTabletModeForcesTheButtonShown) {
 
   waiter.Wait();
 
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_TRUE(GetTray()->GetVisible());
 
   // When disabling tablet mode, shelf state updates synchronously.
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(false);
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 
@@ -558,12 +558,12 @@ TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest, VisibilityTest) {
   SetTestA11yFeatureEnabled(true);
 
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_EQ(HasTestingAccessibilityFeature(), GetTray()->GetVisible());
 
   TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_FALSE(GetTray()->GetVisible());
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
 
   // When there is an window, it'll take an screenshot and the tablet mode
   // switch becomes asynchronous.
@@ -574,23 +574,23 @@ TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest, VisibilityTest) {
 
   TabletMode::Waiter waiter(/*enable=*/true);
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   waiter.Wait();
 
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_EQ(HasTestingAccessibilityFeature(), GetTray()->GetVisible());
 
   // Disable the accessibility feature while in tablet mode - the button should
   // be hidden.
   SetTestA11yFeatureEnabled(false);
 
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   TabletModeControllerTestApi().LeaveTabletMode();
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 
@@ -599,23 +599,23 @@ TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest, VisibilityTest) {
 TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest,
        AccessibilityFeatureEnabledWhileInTabletMode) {
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   // The button should be shown if the feature gets enabled.
   SetTestA11yFeatureEnabled(true);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_EQ(HasTestingAccessibilityFeature(), GetTray()->GetVisible());
 
   TabletModeControllerTestApi().LeaveTabletMode();
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 
 TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest,
        AccessibilityFeaturesChangeWhileInOverview) {
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   // Create a window to show in overview.
@@ -627,12 +627,12 @@ TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest,
 
   // The button should be shown if the feature gets enabled.
   SetTestA11yFeatureEnabled(true);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_EQ(HasTestingAccessibilityFeature(), GetTray()->GetVisible());
 
   // The button should be hidden if the feature gets disabled.
   SetTestA11yFeatureEnabled(false);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 

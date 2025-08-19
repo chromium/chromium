@@ -134,7 +134,7 @@ display::DisplayManager::MultiDisplayMode GetCurrentMultiDisplayMode() {
 int64_t GetCurrentReflectingSourceId() {
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   if (display_manager->IsInUnifiedMode())
-    return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    return display::Screen::Get()->GetPrimaryDisplay().id();
   if (display_manager->IsInSoftwareMirrorMode())
     return display_manager->mirroring_source_id();
   return display::kInvalidDisplayId;
@@ -185,7 +185,7 @@ void MirrorWindowController::UpdateWindow(
       display::Display display =
           display_manager->GetMirroringDisplayById(display_info.id());
       transformer = CreateRootWindowTransformerForUnifiedDesktop(
-          display::Screen::GetScreen()->GetPrimaryDisplay().bounds(), display);
+          display::Screen::Get()->GetPrimaryDisplay().bounds(), display);
     }
 
     if (!base::Contains(mirroring_host_info_map_, display_info.id())) {
@@ -296,7 +296,7 @@ void MirrorWindowController::UpdateWindow() {
   if (mirroring_host_info_map_.empty())
     return;
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   // Prune the window on the removed displays.

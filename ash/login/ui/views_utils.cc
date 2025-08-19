@@ -88,7 +88,7 @@ bool ShouldShowLandscape(const views::Widget* widget) {
 
   // Get the orientation for |widget|.
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
 
   // The display bounds are updated after a rotation. This means that if the

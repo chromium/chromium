@@ -1742,8 +1742,7 @@ class BirchBarLayoutTest
     // Here, we simulate changing the shelf alignment from context menu which
     // will update the user's pref. Otherwise, it will exit the Overview and
     // reset shelf alignment when we rotate the display.
-    const int64_t display_id =
-        display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
     scoped_internal_display_id_ =
         std::make_unique<display::test::ScopedSetInternalDisplayId>(
             Shell::Get()->display_manager(), display_id);

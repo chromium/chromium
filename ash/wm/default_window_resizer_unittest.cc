@@ -71,7 +71,7 @@ TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioSquare) {
 
   aspect_ratio_window_->SetBoundsInScreen(
       gfx::Rect(200, 200, 200, 200),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]));
   EXPECT_EQ("200,200 200x200", aspect_ratio_window_->bounds().ToString());
 
   std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(
@@ -96,7 +96,7 @@ TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioHorizontal) {
 
   aspect_ratio_window_->SetBoundsInScreen(
       gfx::Rect(200, 200, 400, 200),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]));
   EXPECT_EQ("200,200 400x200", aspect_ratio_window_->bounds().ToString());
 
   std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(
@@ -121,7 +121,7 @@ TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioVertical) {
 
   aspect_ratio_window_->SetBoundsInScreen(
       gfx::Rect(200, 200, 200, 400),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]));
   EXPECT_EQ("200,200 200x400", aspect_ratio_window_->bounds().ToString());
 
   std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(
@@ -146,7 +146,7 @@ TEST_F(DefaultWindowResizerTest, WindowDragWithAspectRatioVertical) {
 
   aspect_ratio_window_->SetBoundsInScreen(
       gfx::Rect(200, 200, 200, 400),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]));
   EXPECT_EQ("200,200 200x400", aspect_ratio_window_->bounds().ToString());
 
   std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(
@@ -175,7 +175,7 @@ TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRationWithoutMaxLimit) {
 
   aspect_ratio_window_->SetBoundsInScreen(
       gfx::Rect(200, 200, 200, 200),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]));
   EXPECT_EQ("200,200 200x200", aspect_ratio_window_->bounds().ToString());
 
   std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(

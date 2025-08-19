@@ -34,7 +34,7 @@ constexpr float kPowerButtonMenuOpacity = 0.4f;
 // Gets the landscape size of the primary display. For landscape orientation,
 // the width is always larger than height.
 gfx::Size GetPrimaryDisplayLandscapeSize() {
-  gfx::Rect bounds = display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  gfx::Rect bounds = display::Screen::Get()->GetPrimaryDisplay().bounds();
   return gfx::Size(std::max(bounds.width(), bounds.height()),
                    std::min(bounds.width(), bounds.height()));
 }
@@ -259,8 +259,7 @@ void PowerButtonMenuScreenView::OnGestureEvent(ui::GestureEvent* event) {
 void PowerButtonMenuScreenView::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
-  GetWidget()->SetBounds(
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
+  GetWidget()->SetBounds(display::Screen::Get()->GetPrimaryDisplay().bounds());
 
   LayoutWithoutTransform();
 }
@@ -388,7 +387,7 @@ gfx::Rect PowerButtonMenuScreenView::GetMenuBounds() {
   gfx::Rect menu_bounds;
 
   if (power_button_position_ == PowerButtonPosition::NONE ||
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     menu_bounds = GetContentsBounds();
     menu_bounds.ClampToCenteredSize(GetMenuViewPreferredSize());
   } else {

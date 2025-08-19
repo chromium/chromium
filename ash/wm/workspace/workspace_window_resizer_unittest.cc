@@ -617,7 +617,7 @@ TEST_F(WorkspaceWindowResizerTest, MultiDisplaySnapPhantom) {
   ASSERT_EQ(2U, root_windows.size());
 
   window_->SetBoundsInScreen(gfx::Rect(0, 0, 50, 60),
-                             display::Screen::GetScreen()->GetPrimaryDisplay());
+                             display::Screen::Get()->GetPrimaryDisplay());
 
   // Make the window snappable.
   AllowSnap(window_.get());
@@ -793,7 +793,7 @@ TEST_F(WorkspaceWindowResizerTest, DontDragOffBottom) {
       root, gfx::Rect(), gfx::Insets::TLBR(0, 0, 10, 0),
       gfx::Insets::TLBR(0, 0, 10, 0));
 
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   window_->SetBounds(gfx::Rect(100, 200, 300, 400));
   std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window_.get());
@@ -807,7 +807,7 @@ TEST_F(WorkspaceWindowResizerTest, DontDragOffBottom) {
 // Makes sure we don't allow dragging on the work area with multidisplay.
 TEST_F(WorkspaceWindowResizerTest, DontDragOffBottomWithMultiDisplay) {
   UpdateDisplay("800x600,800x600");
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   aura::Window* root = Shell::GetPrimaryRootWindow();
   WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
@@ -2162,8 +2162,7 @@ TEST_F(WorkspaceWindowResizerTest, MultiDisplayRestoreBounds) {
   std::unique_ptr<WindowResizer> resizer =
       CreateResizerForTest(window_.get(), gfx::Point(400.f, 1.f), HTCAPTION);
   Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestPoint(
-          gfx::Point(1200, 200)));
+      display::Screen::Get()->GetDisplayNearestPoint(gfx::Point(1200, 200)));
   resizer->Drag(gfx::PointF(1200.f, 200.f), 0);
   resizer->Drag(gfx::PointF(1200.f, 5.f), 0);
   DwellCountdownTimerFireNow();
@@ -2171,8 +2170,8 @@ TEST_F(WorkspaceWindowResizerTest, MultiDisplayRestoreBounds) {
   ASSERT_TRUE(window_state->IsMaximized());
 
   // Tests that the window and its restore bounds on on the secondary display.
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
-  EXPECT_EQ(display::Screen::GetScreen()->GetAllDisplays()[1].id(),
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
+  EXPECT_EQ(display::Screen::Get()->GetAllDisplays()[1].id(),
             window_state->GetDisplay().id());
   EXPECT_EQ(gfx::Rect(800, 0, 200, 200),
             window_state->GetRestoreBoundsInScreen());
@@ -2294,7 +2293,7 @@ TEST_F(MultiDisplayWorkspaceWindowResizerTest, DragWindowBetweenDisplays) {
 // Make sure metrics is recorded during tab dragging.
 TEST_F(WorkspaceWindowResizerTest, TabDraggingHistogram) {
   UpdateDisplay("800x600,800x600");
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   struct {
     bool is_dragging_tab;
@@ -2630,7 +2629,7 @@ TEST_F(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
   // Test dragging to another display and snapping there.
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   const gfx::Rect display2_work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(root_windows[1])
           .work_area();
   {
@@ -2645,7 +2644,7 @@ TEST_F(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
     // trigger the bottom snap if vertical snap is enabled or the right snap
     // otherwise.
     Shell::Get()->cursor_manager()->SetDisplay(
-        display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
+        display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]));
     resizer->Drag(CalculateDragPoint(*resizer, display2_work_area.right(),
                                      display2_work_area.bottom()),
                   0);
@@ -2676,7 +2675,7 @@ TEST_F(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
     // left area of the second display to trigger the top snap if vertical snap
     // is enabled or the bottom snap otherwise.
     Shell::Get()->cursor_manager()->SetDisplay(
-        display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
+        display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]));
     resizer->Drag(CalculateDragPoint(*resizer, 0, -95), 0);
     resizer->Drag(CalculateDragPoint(*resizer, 0, -100), 0);
     resizer->CompleteDrag();

@@ -23,8 +23,7 @@ namespace ash {
 namespace {
 
 std::unique_ptr<views::Widget> CreateWidget(const gfx::Rect& bounds) {
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds);
+  display::Display display = display::Screen::Get()->GetDisplayMatching(bounds);
   auto widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,

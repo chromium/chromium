@@ -102,7 +102,7 @@ TEST_F(ScreenPositionControllerTest, ConvertHostPointToScreen) {
   const gfx::Point window_pos(100, 100);
   window_->SetBoundsInScreen(
       gfx::Rect(window_pos, gfx::Size(100, 100)),
-      display::Screen::GetScreen()->GetDisplayNearestPoint(window_pos));
+      display::Screen::Get()->GetDisplayNearestPoint(window_pos));
   SetSecondaryDisplayLayout(display::DisplayPlacement::RIGHT);
   // The point is on the primary root window.
   EXPECT_EQ("50,50", ConvertHostPointToScreen(50, 50));
@@ -139,7 +139,7 @@ TEST_F(ScreenPositionControllerTest, ConvertHostPointToScreen) {
   const gfx::Point window_pos2(300, 100);
   window_->SetBoundsInScreen(
       gfx::Rect(window_pos2, gfx::Size(100, 100)),
-      display::Screen::GetScreen()->GetDisplayNearestPoint(window_pos2));
+      display::Screen::Get()->GetDisplayNearestPoint(window_pos2));
   // The point is on the secondary display.
   EXPECT_EQ("250,50", ConvertHostPointToScreen(50, 50));
   // The point is out of the all root windows.
@@ -183,7 +183,7 @@ TEST_F(ScreenPositionControllerTest, ConvertHostPointToScreenHiDPI) {
 
   // Put |window_| to the primary 2x display.
   window_->SetBoundsInScreen(gfx::Rect(20, 20, 50, 50),
-                             display::Screen::GetScreen()->GetPrimaryDisplay());
+                             display::Screen::Get()->GetPrimaryDisplay());
   // (30, 30) means the host coordinate, so the point is still on the primary
   // root window.  Since it's 2x, the specified native point was halved.
   EXPECT_EQ("15,15", ConvertHostPointToScreen(30, 30));
@@ -209,7 +209,7 @@ TEST_F(ScreenPositionControllerTest, ConvertHostPointToScreenRotate) {
   UpdateDisplay("100+100-200x190/r,100+500-200x190/l");
   // Put |window_| to the 1st.
   window_->SetBoundsInScreen(gfx::Rect(20, 20, 50, 50),
-                             display::Screen::GetScreen()->GetPrimaryDisplay());
+                             display::Screen::Get()->GetPrimaryDisplay());
 
   // The point is on the 1st host.
   EXPECT_EQ("70,150", ConvertHostPointToScreen(50, 70));
@@ -242,7 +242,7 @@ TEST_F(ScreenPositionControllerTest, ConvertHostPointToScreenZoomScale) {
   UpdateDisplay("100+100-200x190*2@0.8,100+500-200x190");
   // Put |window_| to the 1st.
   window_->SetBoundsInScreen(gfx::Rect(20, 20, 50, 50),
-                             display::Screen::GetScreen()->GetPrimaryDisplay());
+                             display::Screen::Get()->GetPrimaryDisplay());
 
   // The point is on the 1st host.
   EXPECT_EQ("37,37", ConvertHostPointToScreen(60, 60));

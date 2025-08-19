@@ -631,7 +631,7 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
         OverviewEnterExitType::kFadeOutExit;
     const bool single_animation_in_clamshell =
         (animate_count == 1 && !has_non_cover_animating) &&
-        !display::Screen::GetScreen()->InTabletMode();
+        !display::Screen::Get()->InTabletMode();
     // The following instance self-destructs when shutdown animation ends.
     new ShutdownAnimationMetricsTrackerObserver(
         root_window_->layer()->GetCompositor(),
@@ -751,7 +751,7 @@ void OverviewGrid::PrepareForOverview() {
   }
 
   SplitViewController::Get(root_window_)->AddObserver(this);
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     if (auto* animator = RootWindowController::ForWindow(root_window_)
                              ->GetScreenRotationAnimator()) {
       animator->AddObserver(this);
@@ -905,7 +905,7 @@ void OverviewGrid::PositionWindows(
       !item_list_.empty()) {
     bool single_animation_in_clamshell =
         animate_count == 1 && !has_non_cover_animating &&
-        !display::Screen::GetScreen()->InTabletMode();
+        !display::Screen::Get()->InTabletMode();
     bool minimized_in_tablet = overview_session_->enter_exit_overview_type() ==
                                OverviewEnterExitType::kFadeInEnter;
     metrics_tracker_ = std::make_unique<OverviewEnterMetricsTracker>(
@@ -1486,7 +1486,7 @@ void OverviewGrid::CalculateWindowListAnimationStates(
                   : items[i]->GetWindow()->GetBoundsInRootWindow();
     if (!src_bounds_temp.IsEmpty()) {
       if (transition == OverviewTransition::kEnter &&
-          display::Screen::GetScreen()->InTabletMode()) {
+          display::Screen::Get()->InTabletMode()) {
         BackdropController* backdrop_controller =
             GetActiveWorkspaceController(root_window_)
                 ->layout_manager()
@@ -2352,8 +2352,8 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // scroll is in progress.
   const bool target_visible =
       !no_items && !overview_session_->GetCurrentDraggedOverviewItem() &&
-      !display::Screen::GetScreen()->InTabletMode() &&
-      !IsShowingSavedDeskLibrary() && desks_widget_ &&
+      !display::Screen::Get()->InTabletMode() && !IsShowingSavedDeskLibrary() &&
+      desks_widget_ &&
       (!features::IsContinuousOverviewScrollAnimationEnabled() ||
        !OverviewController::Get()->is_continuous_scroll_in_progress());
 

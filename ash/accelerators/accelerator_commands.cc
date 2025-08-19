@@ -223,7 +223,7 @@ display::Display::Rotation GetNextRotationInTabletMode(
     int64_t display_id,
     display::Display::Rotation current) {
   Shell* shell = Shell::Get();
-  DCHECK(display::Screen::GetScreen()->InTabletMode());
+  DCHECK(display::Screen::Get()->InTabletMode());
 
   if (!display::HasInternalDisplay() ||
       display_id != display::Display::InternalDisplayId()) {
@@ -293,8 +293,8 @@ bool ShouldLockRotation(int64_t display_id) {
 }
 
 int64_t GetDisplayIdForRotation() {
-  const gfx::Point point = display::Screen::GetScreen()->GetCursorScreenPoint();
-  return display::Screen::GetScreen()->GetDisplayNearestPoint(point).id();
+  const gfx::Point point = display::Screen::Get()->GetCursorScreenPoint();
+  return display::Screen::Get()->GetDisplayNearestPoint(point).id();
 }
 
 void RotateScreenImpl() {
@@ -304,7 +304,7 @@ void RotateScreenImpl() {
       shell->display_manager()->GetDisplayInfo(display_id);
   const auto active_rotation = display_info.GetActiveRotation();
   const auto next_rotation =
-      display::Screen::GetScreen()->InTabletMode()
+      display::Screen::Get()->InTabletMode()
           ? GetNextRotationInTabletMode(display_id, active_rotation)
           : GetNextRotationInClamshell(active_rotation);
   if (active_rotation == next_rotation)
@@ -461,7 +461,7 @@ GetIndependentWindowPairForSnapGroupCreation() {
   }
 
   aura::Window* root_window = window_util::GetRootWindowAt(
-      display::Screen::GetScreen()->GetCursorScreenPoint());
+      display::Screen::Get()->GetCursorScreenPoint());
   aura::Window::Windows windows = GetActiveDeskAppWindowsInZOrder(root_window);
   aura::Window::Windows window_pair_list;
   for (size_t i = 0; i < windows.size() && window_pair_list.size() < 2; i++) {
@@ -689,7 +689,7 @@ bool CanStartSunfishSession() {
 }
 
 bool CanSwapPrimaryDisplay() {
-  return display::Screen::GetScreen()->GetNumDisplays() > 1;
+  return display::Screen::Get()->GetNumDisplays() > 1;
 }
 
 bool CanTilingWindowResize() {
@@ -718,7 +718,7 @@ bool CanToggleMultitaskMenu() {
   if (!window) {
     return false;
   }
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     // In tablet mode, the window just has to be able to maximize.
     return WindowState::Get(window)->CanMaximize();
   }
@@ -1167,9 +1167,9 @@ void RemoveCurrentDesk() {
 void ResetDisplayZoom() {
   base::RecordAction(base::UserMetricsAction("Accel_Scale_Ui_Reset"));
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
-  gfx::Point point = display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point point = display::Screen::Get()->GetCursorScreenPoint();
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(point);
+      display::Screen::Get()->GetDisplayNearestPoint(point);
   display_manager->ResetDisplayZoom(display.id());
 }
 
@@ -1232,7 +1232,7 @@ void ShiftPrimaryDisplay() {
   CHECK_GE(display_manager->GetNumDisplays(), 2U);
 
   const int64_t primary_display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+      display::Screen::Get()->GetPrimaryDisplay().id();
 
   const display::Displays& active_display_list =
       display_manager->active_display_list();
@@ -1299,7 +1299,7 @@ void ToggleAppList(AppListShowSource show_source,
                    base::TimeTicks event_time_stamp) {
   aura::Window* const root_window = Shell::GetRootWindowForNewWindows();
   Shell::Get()->app_list_controller()->ToggleAppList(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window).id(),
+      display::Screen::Get()->GetDisplayNearestWindow(root_window).id(),
       show_source, event_time_stamp);
 }
 
@@ -1809,7 +1809,7 @@ void ToggleSnapGroup() {
   CHECK(snap_group_controller);
 
   aura::Window* root_window = window_util::GetRootWindowAt(
-      display::Screen::GetScreen()->GetCursorScreenPoint());
+      display::Screen::Get()->GetCursorScreenPoint());
   SnapGroup* top_group = snap_group_controller->GetTopmostVisibleSnapGroup(
       root_window, /*topwindow_only=*/true);
   if (top_group) {
@@ -1863,7 +1863,7 @@ void ToggleMirrorMode() {
 void ToggleMultitaskMenu() {
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     auto* multitask_menu_controller =
         Shell::Get()
             ->tablet_mode_controller()
@@ -2001,7 +2001,7 @@ void WindowMinimize() {
 
 void WindowSnap(AcceleratorAction action) {
   Shell* shell = Shell::Get();
-  const bool in_tablet = display::Screen::GetScreen()->InTabletMode();
+  const bool in_tablet = display::Screen::Get()->InTabletMode();
   const bool in_overview = shell->overview_controller()->InOverviewSession();
   if (action == AcceleratorAction::kWindowCycleSnapLeft) {
     if (in_tablet) {
@@ -2054,9 +2054,9 @@ bool ZoomDisplay(bool up) {
 
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
 
-  gfx::Point point = display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point point = display::Screen::Get()->GetCursorScreenPoint();
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(point);
+      display::Screen::Get()->GetDisplayNearestPoint(point);
   return display_manager->ZoomDisplay(display.id(), up);
 }
 

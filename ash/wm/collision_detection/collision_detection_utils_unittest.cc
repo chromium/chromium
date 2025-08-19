@@ -36,7 +36,7 @@ namespace ash {
 namespace {
 
 display::Display GetDisplayForWindow(aura::Window* window) {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  return display::Screen::Get()->GetDisplayNearestWindow(window);
 }
 
 gfx::Rect ConvertToScreenForWindow(aura::Window* window,

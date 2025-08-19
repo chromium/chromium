@@ -202,7 +202,7 @@ using OverviewControllerTest = AshTestBase;
 // in clamshell mode should not toggle overview.
 TEST_F(OverviewControllerTest,
        PressOverviewKeyDuringWindowDragInClamshellMode) {
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
   std::unique_ptr<aura::Window> dragged_window = CreateTestWindow();
   std::unique_ptr<WindowResizer> resizer =
       CreateWindowResizer(dragged_window.get(), gfx::PointF(), HTCAPTION,

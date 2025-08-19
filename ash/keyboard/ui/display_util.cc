@@ -21,7 +21,7 @@ DisplayUtil::DisplayUtil() = default;
 
 display::Display DisplayUtil::GetNearestDisplayToWindow(
     aura::Window* window) const {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  return display::Screen::Get()->GetDisplayNearestWindow(window);
 }
 
 display::Display DisplayUtil::FindAdjacentDisplayIfPointIsNearMargin(
@@ -54,7 +54,7 @@ display::Display DisplayUtil::FindAdjacentDisplayIfPointIsNearMargin(
   }
 
   for (const display::Display& display :
-       display::Screen::GetScreen()->GetAllDisplays()) {
+       display::Screen::Get()->GetAllDisplays()) {
     const gfx::Rect& new_bounds = display.work_area();
     if (display.touch_support() == display::Display::TouchSupport::AVAILABLE &&
         display.id() != current_display.id() &&

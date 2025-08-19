@@ -2683,7 +2683,7 @@ TEST_F(InputDataProviderTest, MoveAppToTestingScreen) {
 
   // Set up three fake displays.
   UpdateDisplay("500x400, 600x400, 800x600");
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const int64_t primary_display_id = screen->GetAllDisplays()[0].id();
   const int64_t secondary_display_id = screen->GetAllDisplays()[1].id();
   const int64_t third_display_id = screen->GetAllDisplays()[2].id();
@@ -2750,7 +2750,7 @@ TEST_F(InputDataProviderTest, MoveAppBackToPreviousScreen) {
 
   // Set up two fake displays.
   UpdateDisplay("500x400, 600x400");
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const int64_t primary_display_id = screen->GetAllDisplays()[0].id();
   const int64_t secondary_display_id = screen->GetAllDisplays()[1].id();
 

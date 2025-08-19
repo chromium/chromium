@@ -575,7 +575,7 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
   // minimum scale |kMinimumWindowScaleDuringDragging|. Calculate the desired
   // scale based on the current y position.
   const gfx::Rect display_bounds =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestPoint(gfx::ToRoundedPoint(location_in_screen))
           .bounds();
   const float min_y = display_bounds.y() +
@@ -677,7 +677,7 @@ bool DragWindowFromShelfController::ShouldRestoreToOriginalBounds(
     const gfx::PointF& location_in_screen,
     std::optional<float> velocity_y) const {
   const gfx::Rect display_bounds =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestPoint(gfx::ToRoundedPoint(location_in_screen))
           .bounds();
   gfx::RectF transformed_window_bounds =
@@ -809,8 +809,7 @@ void DragWindowFromShelfController::ScaleDownWindowAfterDrag() {
   // home screen and shelf start updating their state as the window is
   // minimizing.
   Shell::Get()->app_list_controller()->OnHomeLauncherPositionChanged(
-      /*percent_shown=*/100,
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      /*percent_shown=*/100, display::Screen::Get()->GetPrimaryDisplay().id());
 
   (new WindowScaleAnimation(
        WindowScaleAnimation::WindowScaleType::kScaleDownToShelf,
@@ -827,7 +826,7 @@ void DragWindowFromShelfController::OnWindowScaledDownAfterDrag() {
     return;
 
   app_list_controller->OnHomeLauncherAnimationComplete(
-      /*shown=*/true, display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      /*shown=*/true, display::Screen::Get()->GetPrimaryDisplay().id());
 }
 
 void DragWindowFromShelfController::ScaleUpToRestoreWindowAfterDrag() {

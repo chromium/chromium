@@ -129,7 +129,7 @@ bool UserSwitchAnimator::CoversScreen(aura::Window* window) {
   }
   gfx::Rect bounds = window->GetBoundsInScreen();
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+      display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
   bounds.Intersect(work_area);
   return work_area == bounds;
 }

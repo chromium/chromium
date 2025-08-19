@@ -191,7 +191,7 @@ void RepeatingEffectiveResolutionUMA(base::RepeatingTimer* timer,
   // Record the UMA only when this is an active user session and the
   // internal display is present.
   if (display::HasInternalDisplay() &&
-      display::Screen::GetScreen()->GetDisplayWithDisplayId(
+      display::Screen::Get()->GetDisplayWithDisplayId(
           display::Display::InternalDisplayId(), &internal_display) &&
       session_controller->IsActiveUserSessionStarted() &&
       session_controller->GetSessionState() ==
@@ -355,7 +355,7 @@ void WindowTreeHostManager::Shutdown() {
   // DisplayManager outlives WindowTreeHostManager.
   Shell::Get()->display_manager()->set_delegate(nullptr);
 
-  int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
 
   // Delete non primary root window controllers first, then
   // delete the primary root window controller.
@@ -471,14 +471,14 @@ void WindowTreeHostManager::UpdateMouseLocationAfterDisplayChange() {
     // DRM cursor controls how cursor position should be updated on the device
     // when the display configuration changes.  The following code is a best
     // effort to emulate DRM's cursor implementation, but not 100% equivalent.
-    auto* screen = display::Screen::GetScreen();
+    auto* screen = display::Screen::Get();
     auto* cursor_manager = Shell::Get()->cursor_manager();
     auto display_id = cursor_manager->GetDisplay().id();
     display::Display display;
     if (screen->GetDisplayWithDisplayId(display_id, &display)) {
       cursor_manager->SetDisplay(display);
       gfx::Point point_in_screen =
-          display::Screen::GetScreen()->GetCursorScreenPoint();
+          display::Screen::Get()->GetCursorScreenPoint();
       if (!display.bounds().Contains(point_in_screen)) {
         aura::Window* root_window =
             ash::Shell::GetRootWindowForDisplayId(display_id);
@@ -754,7 +754,7 @@ void WindowTreeHostManager::UpdateHostOfDisplayProviders() {
 
 void WindowTreeHostManager::OnHostResized(aura::WindowTreeHost* host) {
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(host->window());
+      display::Screen::Get()->GetDisplayNearestWindow(host->window());
 
   display::DisplayManager* display_manager = GetDisplayManager();
   if (display_manager->UpdateDisplayBounds(display.id(),
@@ -813,7 +813,7 @@ void WindowTreeHostManager::PreDisplayConfigurationChange(bool clear_focus) {
   scoped_pause_ = std::make_unique<aura::WindowOcclusionTracker::ScopedPause>();
 
   focus_activation_store_->Store(clear_focus);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   gfx::Point point_in_screen = screen->GetCursorScreenPoint();
   cursor_location_in_screen_coords_for_restore_ = point_in_screen;
 
@@ -856,7 +856,7 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
     return;
 
   display::Display old_primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   const int64_t old_primary_id = old_primary_display.id();
   DCHECK_EQ(old_primary_id, primary_display_id);
 

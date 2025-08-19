@@ -79,7 +79,7 @@ aura::Window* AssistantViewDelegateImpl::GetRootWindowForNewWindows() {
 }
 
 bool AssistantViewDelegateImpl::IsTabletMode() const {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 void AssistantViewDelegateImpl::OnDialogPlateButtonPressed(

@@ -626,7 +626,7 @@ void AnimateHideWindow_SlideOut(aura::Window* window) {
 
   gfx::Rect bounds = window->GetBoundsInScreen();
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   gfx::Rect dismissed_bounds =
       PipPositioner::GetDismissedPosition(display, bounds);
   ::wm::ConvertRectFromScreen(window->parent(), &dismissed_bounds);
@@ -800,7 +800,7 @@ gfx::Rect GetMinimizeAnimationTargetBoundsInScreen(aura::Window* window) {
   // to the location of the application launcher (which is fixed as first item
   // of the shelf).
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+      display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
   int ltr_adjusted_x = base::i18n::IsRTL() ? work_area.right() : work_area.x();
   switch (shelf->alignment()) {
     case ShelfAlignment::kBottom:

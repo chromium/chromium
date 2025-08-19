@@ -374,7 +374,7 @@ void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
   // The library and the library button is always hidden if we enter tablet
   // mode. If not in tablet mode, the library button is visible if there are
   // saved desks in the model, *or* we are already showing the library.
-  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
     const bool is_showing_library = overview_grid->IsShowingSavedDeskLibrary();

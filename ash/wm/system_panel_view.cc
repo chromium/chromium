@@ -60,7 +60,7 @@ void SystemPanelView::DragController::OnLocatedPanelEvent(
       // it remains visible on the screen.
       auto buff_width = panel_widget_bounds.width() * kBufferRatio;
       auto buff_height = panel_widget_bounds.height() * kBufferRatio;
-      auto screen_bounds = display::Screen::GetScreen()
+      auto screen_bounds = display::Screen::Get()
                                ->GetDisplayNearestPoint(event_location)
                                .bounds();
       screen_bounds.SetByBounds(

@@ -47,13 +47,11 @@ gfx::Rect GetSplitViewDividerBoundsInScreen() {
 }
 
 const gfx::Rect GetWorkAreaBounds() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  return display::Screen::Get()->GetPrimaryDisplay().work_area();
 }
 
 const gfx::Rect GetWorkAreaBoundsForWindow(aura::Window* window) {
-  return display::Screen::GetScreen()
-      ->GetDisplayNearestWindow(window)
-      .work_area();
+  return display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
 }
 
 void SnapOneTestWindow(aura::Window* window,

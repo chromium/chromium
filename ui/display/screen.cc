@@ -37,6 +37,11 @@ Screen* Screen::GetScreen() {
 }
 
 // static
+Screen* Screen::Get() {
+  return g_screen;
+}
+
+// static
 Screen* Screen::SetScreenInstance(Screen* instance,
                                   const base::Location& location) {
   // Do not allow screen instance override. The screen object has a lot of

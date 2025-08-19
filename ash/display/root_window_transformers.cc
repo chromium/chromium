@@ -319,7 +319,7 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
     // Calculate the unified height scale value, and apply the same scale on the
     // row physical height to get the row logical height.
     display::Display unified_display =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+        display::Screen::Get()->GetPrimaryDisplay();
     const int unified_physical_height =
         unified_display.GetSizeInPixel().height();
     const int unified_logical_height = screen_bounds.height();

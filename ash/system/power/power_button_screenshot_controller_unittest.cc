@@ -104,7 +104,7 @@ class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
         "Ash.CaptureModeController.EntryPoint.ClamshellMode";
     constexpr char kTabletHistogram[] =
         "Ash.CaptureModeController.EntryPoint.TabletMode";
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       return histogram_tester_->GetBucketCount(
           kTabletHistogram, CaptureModeEntryType::kCaptureAllDisplays);
     }

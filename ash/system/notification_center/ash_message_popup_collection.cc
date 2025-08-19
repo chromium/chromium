@@ -518,8 +518,7 @@ ShelfAlignment AshMessagePopupCollection::GetAlignment() const {
 }
 
 display::Display AshMessagePopupCollection::GetCurrentDisplay() const {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(
-      shelf_->GetWindow());
+  return display::Screen::Get()->GetDisplayNearestWindow(shelf_->GetWindow());
 }
 
 void AshMessagePopupCollection::UpdateWorkArea() {

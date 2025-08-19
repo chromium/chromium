@@ -904,15 +904,13 @@ TEST_P(OverviewSessionTest, CancelOverviewWithClientControlledWindow) {
   ToggleOverview();
   EXPECT_TRUE(window->layer()->transform().IsIdentity());
 
-  EXPECT_EQ(
-      GetPrimaryDisplay(),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()));
+  EXPECT_EQ(GetPrimaryDisplay(),
+            display::Screen::Get()->GetDisplayNearestWindow(window.get()));
 
   EXPECT_EQ(signal.Get(), TestWindowBuilder::kBoundsChange);
 
-  EXPECT_EQ(
-      GetSecondaryDisplay(),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()));
+  EXPECT_EQ(GetSecondaryDisplay(),
+            display::Screen::Get()->GetDisplayNearestWindow(window.get()));
   EXPECT_TRUE(window->layer()->transform().IsIdentity());
 }
 
@@ -1126,7 +1124,7 @@ TEST_P(OverviewSessionTest, FullscreenWindowTabletMode) {
   const gfx::Rect fullscreen(800, 600);
   const int shelf_inset = 600 - ShelfConfig::Get()->shelf_size();
   const gfx::Rect normal_work_area(800, shelf_inset);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(gfx::Rect(800, 600),
             screen->GetDisplayNearestWindow(window1.get()).work_area());
   ToggleOverview();
@@ -1984,7 +1982,7 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPosition) {
       GetOverviewSession()->grid_list()[0]->no_windows_widget();
   ASSERT_TRUE(no_windows_widget);
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   // The padding calculations are complicated and we need to account for the
   // birch bar, so we just check that the widget is roughly centered vertically.
@@ -2023,8 +2021,7 @@ TEST_P(OverviewSessionTest, DragMinimizedWindowHasStableSize) {
   auto* overview_item = GetOverviewItemForWindow(window.get());
   auto* widget = overview_item->item_widget();
 
-  gfx::Rect workarea =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect workarea = display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   gfx::PointF drag_point(workarea.CenterPoint());
   GetOverviewSession()->InitiateDrag(overview_item, drag_point,
@@ -2757,7 +2754,7 @@ TEST_P(OverviewSessionTest, Backdrop) {
   ASSERT_TRUE(GetBackdropView(tall_item)->GetVisible());
   EXPECT_FALSE(GetBackdropView(normal_item));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const display::Display& display = screen->GetPrimaryDisplay();
   display_manager()->SetDisplayRotation(
       display.id(), display::Display::ROTATE_90,
@@ -3880,10 +3877,9 @@ TEST_P(OverviewSessionTest,
 
   // Verify that when setting the window bounds to another display, the window
   // will be moved properly.
-  window->SetBoundsInScreen(
-      gfx::Rect(900, 10, 200, 100),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          Shell::GetAllRootWindows()[1].get()));
+  window->SetBoundsInScreen(gfx::Rect(900, 10, 200, 100),
+                            display::Screen::Get()->GetDisplayNearestWindow(
+                                Shell::GetAllRootWindows()[1].get()));
   EXPECT_NE(window->GetRootWindow(), old_root_window);
   EXPECT_TRUE(IsWindowInItsCorrespondingOverviewGrid(window.get()));
 }
@@ -3908,9 +3904,8 @@ class CrostiniWindowVisibilityObserver : public aura::WindowObserver {
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
     if (visible) {
       auto current_display =
-          display::Screen::GetScreen()->GetDisplayNearestWindow(window);
-      const auto dst_display =
-          display::Screen::GetScreen()->GetPrimaryDisplay();
+          display::Screen::Get()->GetDisplayNearestWindow(window);
+      const auto dst_display = display::Screen::Get()->GetPrimaryDisplay();
       window->SetBoundsInScreen(
           gfx::Rect(dst_display.bounds().origin(), window->bounds().size()),
           dst_display);
@@ -3971,7 +3966,7 @@ TEST_P(OverviewSessionTest,
   EXPECT_TRUE(IsWindowInItsCorrespondingOverviewGrid(window.get()));
 
   // Verify that the windows are moved to the `displays[1]` properly.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(displays[1].id(),
             screen->GetDisplayNearestWindow(window.get()).id());
 
@@ -5016,7 +5011,7 @@ TEST_F(TabletModeOverviewSessionTest, LayoutValidAfterRotation) {
   UpdateDisplay("1366x768");
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(),
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      display::Screen::Get()->GetPrimaryDisplay().id());
   auto windows = CreateAppWindows(9);
 
   // Helper to determine whether a grid layout is valid. It is considered valid
@@ -5560,7 +5555,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
       overview_bounds.SplitVertically(left_bounds, right_bounds);
       // If we are dragging to snap in tablet mode, `split_view_divider` hasn't
       // been created yet, but we still need to subtract the divider width.
-      const int divider_width = display::Screen::GetScreen()->InTabletMode()
+      const int divider_width = display::Screen::Get()->InTabletMode()
                                     ? kSplitviewDividerShortSideLength / 2
                                     : 0;
       switch (split_view_drag_indicators->current_window_dragging_state()) {
@@ -6349,7 +6344,7 @@ TEST_F(SplitViewOverviewSessionTest,
 // Test the overview window drag functionalities when screen rotates.
 TEST_F(SplitViewOverviewSessionTest, SplitViewRotationTest) {
   UpdateDisplay("807x407");
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
                                                          display_id);
@@ -7706,7 +7701,7 @@ class SplitViewOverviewSessionInClamshellTest
 // Test some basic functionalities in clamshell splitview mode.
 TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   UpdateDisplay("600x400");
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
 
   // 1. Test the 1 window scenario.
   const gfx::Rect bounds(400, 400);
@@ -7835,7 +7830,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   AppListControllerImpl* app_list_controller =
       Shell::Get()->app_list_controller();
   app_list_controller->ToggleAppList(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window3.get()).id(),
+      display::Screen::Get()->GetDisplayNearestWindow(window3.get()).id(),
       AppListShowSource::kSearchKey, base::TimeTicks());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
@@ -7846,7 +7841,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   ToggleOverview();
   // Open app list.
   app_list_controller->ToggleAppList(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window3.get()).id(),
+      display::Screen::Get()->GetDisplayNearestWindow(window3.get()).id(),
       AppListShowSource::kSearchKey, base::TimeTicks());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
@@ -7964,7 +7959,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, ResizeWindowTest) {
   // increased.
   EXPECT_EQ(overview_snapped_bounds.width() - drag_x, GetGridBounds().width());
   const gfx::Rect work_area(
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
+      display::Screen::Get()->GetPrimaryDisplay().work_area());
   EXPECT_EQ(work_area.width(),
             GetGridBounds().width() + window1->GetBoundsInScreen().width());
 
@@ -8355,11 +8350,11 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
       .SetFirstDisplayAsInternalDisplay();
   TabletModeControllerTestApi tablet_mode_controller_test_api;
   tablet_mode_controller_test_api.DetachAllMice();
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   tablet_mode_controller_test_api.OpenLidToAngle(315.0f);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   tablet_mode_controller_test_api.OpenLidToAngle(90.0f);
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   // Check the snapped window bounds again. They should be the same as before.
   EXPECT_EQ(
       top_snapped_bounds,
@@ -8395,7 +8390,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
               display::Display::ROTATE_180, display::Display::ROTATE_0}) {
           const auto compute_window_snap_ratio = [this]() {
             const display::Display& display =
-                display::Screen::GetScreen()->GetPrimaryDisplay();
+                display::Screen::Get()->GetPrimaryDisplay();
             const bool is_horizontal = IsLayoutHorizontal(display);
             const gfx::Rect work_area = display.work_area();
             const int size =
@@ -8409,7 +8404,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
           };
           const float before = compute_window_snap_ratio();
           Shell::Get()->display_manager()->SetDisplayRotation(
-              display::Screen::GetScreen()->GetPrimaryDisplay().id(), rotation,
+              display::Screen::Get()->GetPrimaryDisplay().id(), rotation,
               display::Display::RotationSource::ACTIVE);
           const float after = compute_window_snap_ratio();
           EXPECT_NEAR(before, after, 0.001f);
@@ -8417,7 +8412,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
       };
 
   const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   test_many_orientation_changes("centered divider");
   EXPECT_EQ(split_view_window->GetBoundsInScreen().width() * 2,
             work_area.width());
@@ -8451,8 +8446,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
 
   // Rotate to primary portrait orientation. The unsnappable indicator appears.
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display_manager->SetDisplayRotation(display_id, display::Display::ROTATE_270,
                                       display::Display::RotationSource::ACTIVE);
   views::Widget* cannot_snap_widget = GetCannotSnapWidget(overview_item);
@@ -8479,7 +8473,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   ASSERT_EQ(root_windows[0], Shell::GetRootWindowForDisplayId(display_ids[0]));
   ASSERT_EQ(root_windows[1], Shell::GetRootWindowForDisplayId(display_ids[1]));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const gfx::Rect creation_bounds(0, 0, 600, 600);
   ASSERT_EQ(display_ids[0], screen->GetDisplayMatching(creation_bounds).id());
   const gfx::Rect bounds(550, 0, 600, 600);
@@ -8791,9 +8785,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
   const display::Display display_with_root1 =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]);
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]);
   const display::Display display_with_root2 =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]);
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]);
   const gfx::Rect bounds_within_root1(0, 0, 400, 400);
   const gfx::Rect bounds_within_root2(800, 0, 400, 400);
   std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds_within_root1);
@@ -8944,9 +8938,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
   const display::Display display_with_root1 =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]);
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]);
   const display::Display display_with_root2 =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]);
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]);
   const gfx::Rect bounds_within_root1(0, 0, 400, 400);
   const gfx::Rect bounds_within_root2(800, 0, 400, 400);
   // Named for MRU order, which is in reverse of creation order.
@@ -9095,7 +9089,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
                               .CenterPoint()));
   generator->PressLeftButton();
   Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]));
   generator->MoveMouseTo(1200, 300);
   generator->ReleaseLeftButton();
 
@@ -9149,7 +9143,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
       gfx::ToRoundedPoint(item2->target_bounds().CenterPoint()));
   generator->PressLeftButton();
   Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]));
   generator->MoveMouseTo(1200, 300);
   generator->ReleaseLeftButton();
   // |item2| is now a dangling pointer and we have to refresh it, because when
@@ -9197,7 +9191,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
       GetOverviewItemForWindow(window2.get())->target_bounds().CenterPoint()));
   generator->PressLeftButton();
   Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]));
   generator->MoveMouseTo(800, 300);
   generator->ReleaseLeftButton();
   EXPECT_EQ(SplitViewController::State::kNoSnap,
@@ -9238,7 +9232,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   CheckWindowResizingPerformanceHistograms("AfterResizingWindow1", 1, 1, 0, 0);
   // Resize |window2|, which is in split view with a nonempty overview grid.
   Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]));
   ui::test::EventGenerator generator2(root_windows[1], window2.get());
   generator2.PressLeftButton();
   CheckWindowResizingPerformanceHistograms("BeforeResizingWindow2", 1, 1, 0, 0);
@@ -9553,7 +9547,7 @@ class OverviewWallpaperTest : public OverviewTestBase {
   ~OverviewWallpaperTest() override = default;
 
   gfx::Rect GetDisplayBoundsForRootWindow(aura::Window* root_window) {
-    return display::Screen::GetScreen()
+    return display::Screen::Get()
         ->GetDisplayNearestWindow(root_window)
         .bounds();
   }
@@ -9949,7 +9943,7 @@ TEST_F(OverviewWallpaperTest, NoAnimationWithMaximizedWindow) {
 // Tests that the shelf's opaque background transitions from visible (default)
 // to invisible (overview) and back to visible (overview exit).
 TEST_F(OverviewWallpaperTest, ShelfOpaqueBackground) {
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   ShelfWidget* shelf_widget = GetPrimaryShelf()->shelf_widget();
   ui::Layer* opaque_background_layer =
       shelf_widget->GetDelegateViewOpaqueBackgroundLayerForTesting();

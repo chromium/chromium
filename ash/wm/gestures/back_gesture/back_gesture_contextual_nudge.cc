@@ -90,7 +90,7 @@ std::unique_ptr<views::Widget> CreateWidget() {
   // TODO(crbug.com/40100889): Get the bounds of the display that should show
   // the nudge, which may based on the conditions to show the nudge.
   const gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   gfx::Rect widget_bounds;
   if (base::i18n::IsRTL()) {
     widget_bounds = gfx::Rect(display_bounds.right(), display_bounds.y(),

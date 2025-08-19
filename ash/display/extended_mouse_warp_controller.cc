@@ -38,7 +38,7 @@ constexpr int kMinimumIndicatorHeight = 200;
 
 // Helper method that maps an aura::Window to display id;
 int64_t GetDisplayIdFromWindow(aura::Window* window) {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+  return display::Screen::Get()->GetDisplayNearestWindow(window).id();
 }
 
 // Adjust the edge so that it has |barrier_size| gap at the top to
@@ -131,8 +131,9 @@ ExtendedMouseWarpController::ExtendedMouseWarpController(
 ExtendedMouseWarpController::~ExtendedMouseWarpController() = default;
 
 bool ExtendedMouseWarpController::WarpMouseCursor(ui::MouseEvent* event) {
-  if (display::Screen::GetScreen()->GetNumDisplays() <= 1 || !enabled_)
+  if (display::Screen::Get()->GetNumDisplays() <= 1 || !enabled_) {
     return false;
+  }
 
   aura::Window* target = static_cast<aura::Window*>(event->target());
   gfx::Point point_in_screen = event->location();

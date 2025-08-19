@@ -79,7 +79,7 @@ OverviewEnterExitType MaybeOverrideEnterExitType(
   }
 
   // Use normal type if home launcher is not available.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return original_type;
   }
 

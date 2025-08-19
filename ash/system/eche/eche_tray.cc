@@ -765,7 +765,7 @@ void EcheTray::StartGracefulClose() {
 
 gfx::Size EcheTray::CalculateSizeForEche() const {
   const gfx::Rect work_area_bounds =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(
               tray_container()->GetWidget()->GetNativeWindow())
           .work_area();

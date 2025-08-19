@@ -191,7 +191,7 @@ void WideFrameView::OnDisplayMetricsChanged(const display::Display& display,
   if (!target_window->GetRootWindow())
     return;
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (screen->GetDisplayNearestWindow(target_->GetNativeWindow()).id() !=
           display.id() ||
       !widget_) {

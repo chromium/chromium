@@ -280,8 +280,7 @@ TEST_P(ResolutionNotificationControllerTest, ClickMeansAccept) {
 
 TEST_P(ResolutionNotificationControllerTest, AcceptButton) {
   UpdateDisplay("400x300#400x300%59|300x200%60");
-  const display::Display& display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& display = display::Screen::Get()->GetPrimaryDisplay();
   SetDisplayResolutionAndNotify(display, gfx::Size(300, 200), 60,
                                 /*old_is_native=*/true,
                                 /*new_is_native=*/false);
@@ -346,8 +345,7 @@ TEST_P(ResolutionNotificationControllerTest, Close) {
 
 TEST_P(ResolutionNotificationControllerTest, Timeout) {
   UpdateDisplay("400x300#400x300%60|300x200%60");
-  const display::Display& display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& display = display::Screen::Get()->GetPrimaryDisplay();
   SetDisplayResolutionAndNotify(display, gfx::Size(300, 200), 60,
                                 /*old_is_native=*/true,
                                 /*new_is_native=*/false);
@@ -483,8 +481,7 @@ TEST_P(NoSessionResolutionNotificationControllerTest, NoTimeoutInKioskMode) {
             Shell::Get()->session_controller()->login_status());
 
   UpdateDisplay("400x300#400x300%59|300x200%60");
-  const display::Display& display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& display = display::Screen::Get()->GetPrimaryDisplay();
   SetDisplayResolutionAndNotify(display, gfx::Size(300, 200), 60,
                                 /*old_is_native=*/true,
                                 /*new_is_native=*/false);

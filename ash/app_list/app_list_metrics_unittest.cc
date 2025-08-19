@@ -65,12 +65,12 @@ class TestShelfItemDelegate : public ShelfItemDelegate,
       : ShelfItemDelegate(shelf_id),
         wait_for_tablet_mode_(wait_for_tablet_mode) {
     if (wait_for_tablet_mode_) {
-      display::Screen::GetScreen()->AddObserver(this);
+      display::Screen::Get()->AddObserver(this);
     }
   }
 
   ~TestShelfItemDelegate() override {
-    display::Screen::GetScreen()->RemoveObserver(this);
+    display::Screen::Get()->RemoveObserver(this);
   }
 
   void ItemSelected(std::unique_ptr<ui::Event> event,
@@ -105,7 +105,7 @@ class TestShelfItemDelegate : public ShelfItemDelegate,
 }  // namespace
 
 int64_t GetPrimaryDisplayId() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  return display::Screen::Get()->GetPrimaryDisplay().id();
 }
 
 // Used to test that app launched metrics are properly recorded.

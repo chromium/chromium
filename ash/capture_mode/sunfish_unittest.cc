@@ -2767,7 +2767,7 @@ TEST_F(SunfishDisplayMetricsTest, RefreshPanelBoundsInDefaultMode) {
   const gfx::Rect initial_panel_bounds(panel->GetBoundsInScreen());
 
   // Zoom in until the panel is cropped to fit within the work area.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   do {
     PressAndReleaseKey(ui::VKEY_OEM_PLUS,
                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
@@ -2798,7 +2798,7 @@ TEST_F(SunfishDisplayMetricsTest, RefreshPanelBoundsInSunfishMode) {
   const gfx::Rect initial_panel_bounds(panel->GetBoundsInScreen());
 
   // Zoom in until the panel is cropped to fit within the work area.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   do {
     PressAndReleaseKey(ui::VKEY_OEM_PLUS,
                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);

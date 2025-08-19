@@ -138,7 +138,7 @@ std::unique_ptr<aura::Window> TestWindowBuilder::Build() {
       context = Shell::GetPrimaryRootWindow();
     } else {
       display::Display display =
-          display::Screen::GetScreen()->GetDisplayMatching(params().bounds);
+          display::Screen::Get()->GetDisplayMatching(params().bounds);
       aura::Window* root = Shell::GetRootWindowForDisplayId(display.id());
       gfx::Point origin = params().bounds.origin();
       ::wm::ConvertPointFromScreen(root, &origin);

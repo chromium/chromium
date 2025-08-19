@@ -64,7 +64,7 @@ constexpr int kExtraTopOfScreenSpacing = 16;
 
 gfx::Rect GetWorkAreaForBubble(aura::Window* root_window) {
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+      display::Screen::Get()->GetDisplayNearestWindow(root_window);
   gfx::RectF work_area(display.work_area());
 
   // Subtract the shelf's bounds from the work area, since the shelf should
@@ -443,7 +443,7 @@ void AppListBubblePresenter::OnPressOutsideBubble(
 int64_t AppListBubblePresenter::GetDisplayId() const {
   if (!is_target_visibility_show_ || !bubble_widget_)
     return display::kInvalidDisplayId;
-  return display::Screen::GetScreen()
+  return display::Screen::Get()
       ->GetDisplayNearestView(bubble_widget_->GetNativeView())
       .id();
 }

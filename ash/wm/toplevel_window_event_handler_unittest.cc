@@ -427,9 +427,8 @@ TEST_F(ToplevelWindowEventHandlerTest, BottomRightPastMinimum) {
 
 TEST_F(ToplevelWindowEventHandlerTest, BottomRightWorkArea) {
   std::unique_ptr<aura::Window> target(CreateWindow(HTBOTTOMRIGHT));
-  gfx::Rect work_area = display::Screen::GetScreen()
-                            ->GetDisplayNearestWindow(target.get())
-                            .work_area();
+  gfx::Rect work_area =
+      display::Screen::Get()->GetDisplayNearestWindow(target.get()).work_area();
   gfx::Point position = target->bounds().origin();
   // Drag further than work_area bottom.
   DragFromCenterBy(target.get(), 100, work_area.height());
@@ -443,9 +442,8 @@ TEST_F(ToplevelWindowEventHandlerTest, BottomRightWorkArea) {
 
 TEST_F(ToplevelWindowEventHandlerTest, BottomLeftWorkArea) {
   std::unique_ptr<aura::Window> target(CreateWindow(HTBOTTOMLEFT));
-  gfx::Rect work_area = display::Screen::GetScreen()
-                            ->GetDisplayNearestWindow(target.get())
-                            .work_area();
+  gfx::Rect work_area =
+      display::Screen::Get()->GetDisplayNearestWindow(target.get()).work_area();
   gfx::Point position = target->bounds().origin();
   // Drag further than work_area bottom.
   DragFromCenterBy(target.get(), -30, work_area.height());
@@ -460,9 +458,8 @@ TEST_F(ToplevelWindowEventHandlerTest, BottomLeftWorkArea) {
 
 TEST_F(ToplevelWindowEventHandlerTest, BottomWorkArea) {
   std::unique_ptr<aura::Window> target(CreateWindow(HTBOTTOM));
-  gfx::Rect work_area = display::Screen::GetScreen()
-                            ->GetDisplayNearestWindow(target.get())
-                            .work_area();
+  gfx::Rect work_area =
+      display::Screen::Get()->GetDisplayNearestWindow(target.get()).work_area();
   gfx::Point position = target->bounds().origin();
   // Drag further than work_area bottom.
   DragFromCenterBy(target.get(), 0, work_area.height());
@@ -508,9 +505,8 @@ TEST_F(ToplevelWindowEventHandlerTest, DontDragToNegativeY) {
 // Verifies we don't let windows go bigger than the display width.
 TEST_F(ToplevelWindowEventHandlerTest, DontGotWiderThanScreen) {
   std::unique_ptr<aura::Window> target(CreateWindow(HTRIGHT));
-  gfx::Rect work_area = display::Screen::GetScreen()
-                            ->GetDisplayNearestWindow(target.get())
-                            .bounds();
+  gfx::Rect work_area =
+      display::Screen::Get()->GetDisplayNearestWindow(target.get()).bounds();
   DragFromCenterBy(target.get(), work_area.width() * 2, 0);
   // The y location and height should not have changed.
   EXPECT_EQ(work_area.width(), target->bounds().width());
@@ -1087,7 +1083,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDragCaptureLoss) {
 TEST_F(ToplevelWindowEventHandlerTest, DragSnappedWindowToExternalDisplay) {
   UpdateDisplay("940x550,940x550");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
-  int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   int64_t secondary_id = display_manager_test.GetSecondaryDisplay().id();
   display::DisplayLayoutBuilder builder(primary_id);
   builder.SetSecondaryPlacement(secondary_id, display::DisplayPlacement::TOP,
@@ -1213,7 +1209,7 @@ TEST_F(ToplevelWindowEventHandlerTest, DetachDisplayDuringDragging) {
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2U, root_windows.size());
   const display::Display display1 =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]);
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]);
 
   // Move the window to the second display and start drag the window.
   std::unique_ptr<aura::Window> dragged_window(CreateWindow(HTCAPTION));
@@ -1305,7 +1301,7 @@ class ToplevelWindowEventHandlerDragTest : public AshTestBase {
 // dragged.
 TEST_F(ToplevelWindowEventHandlerDragTest,
        NonResizableWindowsCannotBeDraggedInClamshellMode) {
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
 
   dragged_window_->SetProperty(aura::client::kResizeBehaviorKey,
                                aura::client::kResizeBehaviorNone);

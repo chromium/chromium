@@ -419,9 +419,8 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreWindowToOriginalBounds) {
   UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds = GetShelfBounds();
   auto window = CreateTestWindow();
-  const gfx::Rect display_bounds = display::Screen::GetScreen()
-                                       ->GetDisplayNearestWindow(window.get())
-                                       .bounds();
+  const gfx::Rect display_bounds =
+      display::Screen::Get()->GetDisplayNearestWindow(window.get()).bounds();
 
   // Drag it for a small distance and then release.
   StartDrag(window.get(), shelf_bounds.CenterPoint());
@@ -473,9 +472,8 @@ TEST_F(DragWindowFromShelfControllerTest,
   UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds = GetShelfBounds();
   auto window = CreateTestWindow();
-  const gfx::Rect display_bounds = display::Screen::GetScreen()
-                                       ->GetDisplayNearestWindow(window.get())
-                                       .bounds();
+  const gfx::Rect display_bounds =
+      display::Screen::Get()->GetDisplayNearestWindow(window.get()).bounds();
 
   // Drag window enough distance to start overview, but not so much that it
   // goes to its target location in the overview grid.
@@ -501,7 +499,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   // user provides some input to go back to the home screen. This should
   // immediately end the ongoing overview session.
   ASSERT_TRUE(Shell::Get()->app_list_controller()->GoHome(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id()));
+      display::Screen::Get()->GetPrimaryDisplay().id()));
   ASSERT_FALSE(overview_controller->InOverviewSession());
 
   // User then enters overview through some other method. This should destroy
@@ -862,9 +860,8 @@ TEST_F(DragWindowFromShelfControllerTest, DragToSnapMinDistance) {
   auto window1 = CreateTestWindow();
   auto window2 = CreateTestWindow();
 
-  const gfx::Rect display_bounds = display::Screen::GetScreen()
-                                       ->GetDisplayNearestWindow(window1.get())
-                                       .bounds();
+  const gfx::Rect display_bounds =
+      display::Screen::Get()->GetDisplayNearestWindow(window1.get()).bounds();
   const int snap_edge_inset =
       DragWindowFromShelfController::kScreenEdgeInsetForSnap;
 
@@ -1029,9 +1026,8 @@ TEST_F(DragWindowFromShelfControllerTest,
   UpdateDisplay("500x400");
 
   auto window = CreateTestWindow();
-  const gfx::Rect display_bounds = display::Screen::GetScreen()
-                                       ->GetDisplayNearestWindow(window.get())
-                                       .bounds();
+  const gfx::Rect display_bounds =
+      display::Screen::Get()->GetDisplayNearestWindow(window.get()).bounds();
   int snap_edge_inset =
       display_bounds.width() * kHighlightScreenPrimaryAxisRatio +
       kHighlightScreenEdgePaddingDp;

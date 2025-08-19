@@ -348,7 +348,7 @@ void WindowCycleList::OnDisplayMetricsChanged(const display::Display& display,
                                               uint32_t changed_metrics) {
   if (cycle_ui_widget_ &&
       display.id() ==
-          display::Screen::GetScreen()
+          display::Screen::Get()
               ->GetDisplayNearestWindow(cycle_ui_widget_->GetNativeWindow())
               .id() &&
       (changed_metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION))) {
@@ -443,7 +443,7 @@ void WindowCycleList::InitWindowCycleView() {
         std::make_unique<CustomWindowTargeter>(widget->GetNativeWindow()));
   }
   // Close the app list, if it's open in clamshell mode.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     Shell::Get()->app_list_controller()->DismissAppList();
   }
 

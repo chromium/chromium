@@ -34,9 +34,9 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
                          RoundedCornerBehavior::kStartRounded),
       notification_grouping_controller_(
           std::make_unique<NotificationGroupingController>(this)),
-      popup_collection_(std::make_unique<AshMessagePopupCollection>(
-          display::Screen::GetScreen(),
-          shelf)),
+      popup_collection_(
+          std::make_unique<AshMessagePopupCollection>(display::Screen::Get(),
+                                                      shelf)),
       notification_metrics_recorder_(
           std::make_unique<NotificationMetricsRecorder>(this)),
       notification_icons_controller_(

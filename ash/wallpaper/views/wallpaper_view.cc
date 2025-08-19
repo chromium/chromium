@@ -55,7 +55,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
     // wallpaper view such as an overview mode shield.
     window->parent()->StackChildAtBottom(window);
     display::Display display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+        display::Screen::Get()->GetDisplayNearestWindow(window);
 
     for (views::View* child : children()) {
       child->SetBounds(0, 0, display.size().width(), display.size().height());

@@ -319,7 +319,7 @@ AppListControllerImpl::AppListControllerImpl()
   WallpaperController::Get()->AddObserver(this);
   shell->AddShellObserver(this);
   shell->overview_controller()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
+  display::Screen::Get()->AddObserver(this);
   keyboard::KeyboardUIController::Get()->AddObserver(this);
   shell->display_manager()->AddDisplayManagerObserver(this);
   FeatureDiscoveryDurationReporter::GetInstance()->AddObserver(this);
@@ -1426,7 +1426,7 @@ int AppListControllerImpl::GetSystemShelfInsetsInTabletMode() {
 }
 
 bool AppListControllerImpl::IsInTabletMode() const {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 void AppListControllerImpl::RecordAppLaunched(
@@ -1663,10 +1663,10 @@ int64_t AppListControllerImpl::GetDisplayIdToShowAppListOn() {
   if (IsInTabletMode() && !Shell::Get()->display_manager()->IsInUnifiedMode()) {
     return display::HasInternalDisplay()
                ? display::Display::InternalDisplayId()
-               : display::Screen::GetScreen()->GetPrimaryDisplay().id();
+               : display::Screen::Get()->GetPrimaryDisplay().id();
   }
 
-  return display::Screen::GetScreen()
+  return display::Screen::Get()
       ->GetDisplayNearestWindow(Shell::GetRootWindowForNewWindows())
       .id();
 }
@@ -1831,7 +1831,7 @@ void AppListControllerImpl::Shutdown() {
   Shell* shell = Shell::Get();
   shell->display_manager()->RemoveDisplayManagerObserver(this);
   keyboard::KeyboardUIController::Get()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
   shell->overview_controller()->RemoveObserver(this);
   shell->RemoveShellObserver(this);
   WallpaperController::Get()->RemoveObserver(this);

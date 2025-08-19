@@ -71,7 +71,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kShow, true);
 
   // Explicitly close the app list in clamshell mode.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     Shell::Get()->app_list_controller()->DismissAppList();
   }
 }

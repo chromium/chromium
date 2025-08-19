@@ -1028,10 +1028,9 @@ void Desk::MoveWindowToDeskInternal(aura::Window* window,
     // Move the window to the container with the same ID on the target display's
     // root (i.e. container that belongs to the same desk), and adjust its
     // bounds to fit in the new display's work area.
-    window_util::MoveWindowToDisplay(window,
-                                     display::Screen::GetScreen()
-                                         ->GetDisplayNearestWindow(target_root)
-                                         .id());
+    window_util::MoveWindowToDisplay(
+        window,
+        display::Screen::Get()->GetDisplayNearestWindow(target_root).id());
     DCHECK_EQ(target_desk->container_id_, window->parent()->GetId());
   }
 }

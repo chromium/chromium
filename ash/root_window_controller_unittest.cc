@@ -348,7 +348,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
 TEST_F(RootWindowControllerTest, MoveWindows_MaintainMRUordering) {
   UpdateDisplay("600x500,300x250");
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const display::Display primary_display = screen->GetPrimaryDisplay();
   const display::Display secondary_display = GetSecondaryDisplay();
 
@@ -847,12 +847,10 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, RestoreWorkspaceAfterLogin) {
       keyboard::test::KeyboardBoundsFromRootBounds(root_window->bounds(), 100));
   contents_window->Show();
 
-  gfx::Rect before =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect before = display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   if (!controller->IsKeyboardOverscrollEnabled()) {
-    gfx::Rect after =
-        display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+    gfx::Rect after = display::Screen::Get()->GetPrimaryDisplay().work_area();
     EXPECT_LT(after, before);
   }
 
@@ -860,8 +858,7 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, RestoreWorkspaceAfterLogin) {
   SessionInfo info;
   info.state = session_manager::SessionState::ACTIVE;
   Shell::Get()->session_controller()->SetSessionInfo(info);
-  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().work_area(),
-            before);
+  EXPECT_EQ(display::Screen::Get()->GetPrimaryDisplay().work_area(), before);
 }
 
 // Ensure that system modal dialogs do not block events targeted at the virtual
@@ -929,7 +926,7 @@ TEST_F(VirtualKeyboardRootWindowControllerTest,
        EnsureCaretInWorkAreaWithMultipleDisplays) {
   UpdateDisplay("600x500,600x500");
   const int64_t primary_display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+      display::Screen::Get()->GetPrimaryDisplay().id();
   const int64_t secondary_display_id = GetSecondaryDisplay().id();
   ASSERT_NE(primary_display_id, secondary_display_id);
 

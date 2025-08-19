@@ -81,7 +81,7 @@ std::unique_ptr<views::Widget> CreateMenuWidget() {
   menu_widget->Init(std::move(params));
 
   gfx::Rect widget_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   menu_widget->SetBounds(widget_bounds);
 
   // Enable arrow key - arrow right/left and down/up triggers the same focus

@@ -45,7 +45,7 @@ PowerButtonScreenshotController::~PowerButtonScreenshotController() {
 bool PowerButtonScreenshotController::OnPowerButtonEvent(
     bool down,
     const base::TimeTicks& timestamp) {
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return false;
   }
 
@@ -67,7 +67,7 @@ bool PowerButtonScreenshotController::OnPowerButtonEvent(
 }
 
 void PowerButtonScreenshotController::OnKeyEvent(ui::KeyEvent* event) {
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return;
   }
 

@@ -1269,7 +1269,7 @@ TEST_P(AmbientControllerTestForAnyUiSettings, ShowsOnMultipleDisplays) {
 
   SetAmbientShownAndWaitForWidgets();
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   EXPECT_EQ(screen->GetNumDisplays(), 2);
   EXPECT_EQ(GetContainerViews().size(), 2u);
   AmbientViewID expected_child_view_id;
@@ -1299,7 +1299,7 @@ TEST_P(AmbientControllerTestForAnyUiSettings, RespondsToDisplayAdded) {
   UpdateDisplay("800x600");
   SetAmbientShownAndWaitForWidgets();
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   EXPECT_EQ(screen->GetNumDisplays(), 1);
   EXPECT_EQ(GetContainerViews().size(), 1u);
 
@@ -1338,7 +1338,7 @@ TEST_F(AmbientControllerTest, RespondsToDisplayAddedWhileInitializing) {
   FastForwardTiny();
 
   EXPECT_TRUE(ambient_controller()->IsShowing());
-  EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), 2);
+  EXPECT_EQ(display::Screen::Get()->GetNumDisplays(), 2);
   EXPECT_EQ(GetContainerViews().size(), 2u);
   for (auto* ctrl : RootWindowController::root_window_controllers()) {
     EXPECT_TRUE(ctrl->ambient_widget_for_testing() &&
@@ -1352,7 +1352,7 @@ TEST_P(AmbientControllerTestForAnyUiSettings, HandlesDisplayRemoved) {
 
   SetAmbientShownAndWaitForWidgets();
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   EXPECT_EQ(screen->GetNumDisplays(), 2);
   EXPECT_EQ(GetContainerViews().size(), 2u);
   EXPECT_TRUE(ambient_controller()->IsShowing());

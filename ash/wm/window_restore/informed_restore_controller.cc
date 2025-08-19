@@ -71,7 +71,7 @@ bool ShouldShowInformedRestoreImage(const gfx::ImageSkia& image) {
   const bool is_image_landscape = image_size.width() > image_size.height();
 
   const display::Display display_with_dialog =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   const bool is_display_landscape = chromeos::IsLandscapeOrientation(
       chromeos::GetDisplayCurrentOrientation(display_with_dialog));
 

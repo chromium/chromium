@@ -58,7 +58,7 @@ class SwitchAccessBackButtonBubbleControllerTest : public AshTestBase {
 };
 
 TEST_F(SwitchAccessBackButtonBubbleControllerTest, AdjustAnchorRect) {
-  gfx::Rect display_bounds = display::Screen::GetScreen()
+  gfx::Rect display_bounds = display::Screen::Get()
                                  ->GetDisplayNearestPoint(gfx::Point(100, 100))
                                  .bounds();
 

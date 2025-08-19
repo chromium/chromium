@@ -127,7 +127,7 @@ bool InOverviewSession() {
 aura::Window* GetBottomMostSnappedWindowForDeskContainer(
     aura::Window* desk_container) {
   DCHECK(desks_util::IsDeskContainer(desk_container));
-  DCHECK(display::Screen::GetScreen()->InTabletMode());
+  DCHECK(display::Screen::Get()->InTabletMode());
 
   // For the active desk, only use the windows snapped in SplitViewController if
   // SplitView mode is active.
@@ -501,7 +501,7 @@ bool BackdropController::WindowShouldHaveBackdrop(aura::Window* window) {
     return false;
   }
 
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return false;
   }
 

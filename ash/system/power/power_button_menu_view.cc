@@ -114,7 +114,7 @@ PowerButtonMenuView::TransformDisplacement
 PowerButtonMenuView::GetTransformDisplacement() const {
   TransformDisplacement transform_displacement;
   if (power_button_position_ == PowerButtonPosition::NONE ||
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     transform_displacement.direction = TransformDirection::Y;
     transform_displacement.distance = kPowerButtonMenuTransformDistanceDp;
     return transform_displacement;
@@ -191,7 +191,7 @@ void PowerButtonMenuView::RecreateItems() {
   const bool create_lock_screen = login_status != LoginStatus::LOCKED &&
                                   session_controller->CanLockScreen();
   const bool create_capture_mode =
-      display::Screen::GetScreen()->InTabletMode() &&
+      display::Screen::Get()->InTabletMode() &&
       !session_controller->IsUserSessionBlocked() &&
       login_status != LoginStatus::KIOSK_APP;
   const bool create_feedback = login_status != LoginStatus::LOCKED &&

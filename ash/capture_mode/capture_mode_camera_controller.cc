@@ -266,7 +266,7 @@ void UpdateFloatingPanelBoundsIfNeeded(aura::Window* root_window) {
 gfx::Size CalculatePreviewInitialSize() {
   int max_shorter_side = 0;
   for (aura::Window* root_window : Shell::GetAllRootWindows()) {
-    const auto work_area = display::Screen::GetScreen()
+    const auto work_area = display::Screen::Get()
                                ->GetDisplayNearestWindow(root_window)
                                .work_area();
     const int shorter_side = std::min(work_area.width(), work_area.height());

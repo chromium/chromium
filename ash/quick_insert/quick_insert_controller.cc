@@ -120,7 +120,7 @@ gfx::Rect GetCaretBounds() {
 
 // Gets the current cursor point in universal screen coordinates in DIP.
 gfx::Point GetCursorPoint() {
-  return display::Screen::GetScreen()->GetCursorScreenPoint();
+  return display::Screen::Get()->GetCursorScreenPoint();
 }
 
 // Gets the bounds of the current focused window in universal screen coordinates

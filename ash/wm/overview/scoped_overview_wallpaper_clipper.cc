@@ -124,7 +124,7 @@ void ScopedOverviewWallpaperClipper::RefreshWallpaperClipBounds(
       wallpaper_widget_controller->wallpaper_view()->layer();
 
   gfx::Rect target_clip_rect = animation_type == AnimationType::kRestore
-                                   ? display::Screen::GetScreen()
+                                   ? display::Screen::Get()
                                          ->GetDisplayNearestWindow(root_window)
                                          .bounds()
                                    : overview_grid_->GetWallpaperClipBounds();

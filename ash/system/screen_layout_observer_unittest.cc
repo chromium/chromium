@@ -167,7 +167,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   EXPECT_FALSE(IsNotificationShown());
 
   const int64_t first_display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+      display::Screen::Get()->GetPrimaryDisplay().id();
   const int64_t second_display_id =
       display::SynthesizeDisplayIdFromSeed(first_display_id);
   display::ManagedDisplayInfo first_display_info =

@@ -217,7 +217,7 @@ void GetBoundsAndShowStateForNewWindow(
 
   // If there is no valid window we take and adjust the passed coordinates.
   if (!top_window) {
-    gfx::Rect work_area = display::Screen::GetScreen()
+    gfx::Rect work_area = display::Screen::Get()
                               ->GetDisplayNearestWindow(root_window)
                               .work_area();
     bounds_in_out->AdjustToFit(work_area);
@@ -244,7 +244,7 @@ void GetBoundsAndShowStateForNewWindow(
                        gfx::Vector2d(kWindowOffset, kWindowOffset);
     }
     if (is_saved_bounds || has_restore_bounds) {
-      gfx::Rect work_area = display::Screen::GetScreen()
+      gfx::Rect work_area = display::Screen::Get()
                                 ->GetDisplayNearestWindow(root_window)
                                 .work_area();
       bounds_in_out->AdjustToFit(work_area);

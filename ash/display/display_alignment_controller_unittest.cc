@@ -249,7 +249,7 @@ TEST_F(DisplayAlignmentControllerTest, TriggerTwoDisplayOnSameEdge) {
   //      +-------------------+
   //
 
-  int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayIdList list =
       display::test::CreateDisplayIdListN(primary_id, 3);
   display::DisplayLayoutBuilder builder(primary_id);

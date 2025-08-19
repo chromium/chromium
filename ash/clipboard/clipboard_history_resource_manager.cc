@@ -89,7 +89,7 @@ void ClipboardHistoryResourceManager::SetOrRequestHtmlPreview(
     // `text_input_client` can be nullptr in tests.
     const auto* text_input_client =
         ash::GetWindowTreeHostForDisplay(
-            display::Screen::GetScreen()->GetPrimaryDisplay().id())
+            display::Screen::Get()->GetPrimaryDisplay().id())
             ->GetInputMethod()
             ->GetTextInputClient();
     const gfx::Rect bounding_box =

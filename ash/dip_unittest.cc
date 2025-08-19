@@ -32,7 +32,7 @@ TEST_F(DIPTest, WorkArea) {
 
   aura::Window* root = Shell::GetPrimaryRootWindow();
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root);
+      display::Screen::Get()->GetDisplayNearestWindow(root);
   const int shelf_inset = 900 - ShelfConfig::Get()->shelf_size();
 
   EXPECT_EQ("0,0 1000x900", display.bounds().ToString());
@@ -44,7 +44,7 @@ TEST_F(DIPTest, WorkArea) {
       display.bounds().InsetsFrom(work_area).ToString());
 
   UpdateDisplay("2000x1800*2.0f");
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   const display::Display display_2x = screen->GetDisplayNearestWindow(root);
   const display::ManagedDisplayInfo display_info_2x =

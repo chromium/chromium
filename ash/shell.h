@@ -400,7 +400,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   // Called when dictation is ended.
   void OnDictationEnded();
 
-  // DEPRECATED. Use display::Screen::GetScreen()->InTabletMode() instead.
+  // DEPRECATED. Use display::Screen::Get()->InTabletMode() instead.
   // TODO(crbug.com/40942452): Remove this.
   //
   // Returns whether the device is currently in tablet mode.

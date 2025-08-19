@@ -574,7 +574,7 @@ TEST_F(WindowManagerTest, TransformActivate) {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   gfx::Size size = root_window->bounds().size();
   EXPECT_EQ(gfx::Rect(size).ToString(),
-            display::Screen::GetScreen()
+            display::Screen::Get()
                 ->GetDisplayNearestPoint(gfx::Point())
                 .bounds()
                 .ToString());

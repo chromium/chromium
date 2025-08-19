@@ -203,7 +203,7 @@ RoundedDisplayFrameFactory::CreateCompositorFrame(
                                         /*quad_list_size=*/6u);
 
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(&host_window);
+      display::Screen::Get()->GetDisplayNearestWindow(&host_window);
 
   gfx::Rect output_rect(display.GetSizeInPixel());
   render_pass->SetNew(viz::CompositorRenderPassId{1}, output_rect, output_rect,

@@ -110,10 +110,9 @@ TEST_F(MahiPanelWidgetTest, WidgetPositionWithConstrainedBottomSpace) {
 
   // The panel's bottom should be `kPanelBoundsShelfPadding` pixels above the
   // work_area's bottom.
-  EXPECT_EQ(
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().bottom() -
-          kPanelBoundsShelfPadding,
-      widget->GetRestoredBounds().bottom());
+  EXPECT_EQ(display::Screen::Get()->GetPrimaryDisplay().work_area().bottom() -
+                kPanelBoundsShelfPadding,
+            widget->GetRestoredBounds().bottom());
 }
 
 TEST_F(MahiPanelWidgetTest, WidgetAfterResize) {
@@ -137,7 +136,7 @@ TEST_F(MahiPanelWidgetTest, WidgetAfterResize) {
 
 TEST_F(MahiPanelWidgetTest, WidgetPositionAfterWorkAreaBoundsChange) {
   auto default_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   // Create a widget that has the same size as the work area and show it at the
   // bottom of the work area bounds.
@@ -188,9 +187,8 @@ TEST_F(MahiPanelWidgetTest, WidgetPositionWithConstrainedRightSpace) {
       /*mahi_menu_bounds=*/gfx::Rect(500, 100, 300, 300), &ui_controller_);
 
   // The panel should be placed correctly within the work area.
-  EXPECT_EQ(
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().right(),
-      widget->GetRestoredBounds().right());
+  EXPECT_EQ(display::Screen::Get()->GetPrimaryDisplay().work_area().right(),
+            widget->GetRestoredBounds().right());
 }
 
 TEST_F(MahiPanelWidgetTest, WidgetDestroyedDuringShowAnimation) {

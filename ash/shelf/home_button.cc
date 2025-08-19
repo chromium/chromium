@@ -468,7 +468,7 @@ void HomeButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(
 void HomeButton::ButtonPressed(views::Button* sender,
                                const ui::Event& event,
                                views::InkDrop* ink_drop) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     base::RecordAction(
         base::UserMetricsAction("AppList_HomeButtonPressedTablet"));
   } else {
@@ -528,7 +528,7 @@ void HomeButton::HandleLocaleChange() {
 
 int64_t HomeButton::GetDisplayId() const {
   aura::Window* window = GetWidget()->GetNativeWindow();
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+  return display::Screen::Get()->GetDisplayNearestWindow(window).id();
 }
 
 std::unique_ptr<HomeButton::ScopedNoClipRect>

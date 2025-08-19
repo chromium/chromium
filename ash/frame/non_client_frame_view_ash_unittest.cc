@@ -747,7 +747,7 @@ TEST_F(NonClientFrameViewAshTest, WideFrame) {
   wide_frame_view->GetWidget()->Show();
 
   chromeos::HeaderView* wide_header_view = wide_frame_view->header_view();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   const gfx::Rect work_area = screen->GetPrimaryDisplay().work_area();
   gfx::Rect frame_bounds =
@@ -849,7 +849,7 @@ TEST_F(NonClientFrameViewAshTest, WideFrameButton) {
 TEST_F(NonClientFrameViewAshTest, MoveFullscreenWideFrameBetweenDisplay) {
   UpdateDisplay("800x600, 1000x600");
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   auto display_list = screen->GetAllDisplays();
 
   auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();

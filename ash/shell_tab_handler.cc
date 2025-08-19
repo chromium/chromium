@@ -24,8 +24,7 @@ void ShellTabHandler::OnKeyEvent(ui::KeyEvent* key_event) {
   if (key_event->key_code() != ui::KeyboardCode::VKEY_TAB ||
       key_event->type() != ui::EventType::kKeyPressed ||
       key_event->IsAltDown() || key_event->IsControlDown() ||
-      key_event->IsCommandDown() ||
-      display::Screen::GetScreen()->InTabletMode()) {
+      key_event->IsCommandDown() || display::Screen::Get()->InTabletMode()) {
     return;
   }
 

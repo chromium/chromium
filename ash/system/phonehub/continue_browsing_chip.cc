@@ -157,7 +157,7 @@ void ContinueBrowsingChip::ButtonPressed() {
   if (!widget)
     return;
   int64_t current_display_id =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(widget->GetNativeWindow())
           .id();
   Shell::GetRootWindowControllerWithDisplayId(current_display_id)

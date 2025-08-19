@@ -302,7 +302,7 @@ std::unique_ptr<views::Widget> DisclaimerView::CreateWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   const gfx::Rect work_area(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root).work_area());
+      display::Screen::Get()->GetDisplayNearestWindow(root).work_area());
   params.delegate = delegate.release();
   params.parent =
       Shell::GetContainer(root, kShellWindowId_CaptureModeSearchResultsPanel);

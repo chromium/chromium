@@ -71,7 +71,7 @@ bool GetIsPinnedToShelfByDefault() {
 
   display::ManagedDisplayInfo info =
       Shell::Get()->display_manager()->GetDisplayInfo(
-          display::Screen::GetScreen()->GetPrimaryDisplay().id());
+          display::Screen::Get()->GetPrimaryDisplay().id());
   DCHECK(info.device_dpi());
   float screen_width = info.size_in_pixel().width() / info.device_dpi();
   float screen_height = info.size_in_pixel().height() / info.device_dpi();

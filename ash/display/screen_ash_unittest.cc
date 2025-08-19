@@ -30,15 +30,15 @@ TEST_F(ScreenAshTest, TestGetWindowAtScreenPoint) {
 
   ASSERT_NE(win1->GetRootWindow(), win2->GetRootWindow());
 
-  EXPECT_EQ(win1.get(), display::Screen::GetScreen()->GetWindowAtScreenPoint(
-                            gfx::Point(50, 60)));
-  EXPECT_EQ(win2.get(), display::Screen::GetScreen()->GetWindowAtScreenPoint(
+  EXPECT_EQ(win1.get(),
+            display::Screen::Get()->GetWindowAtScreenPoint(gfx::Point(50, 60)));
+  EXPECT_EQ(win2.get(), display::Screen::Get()->GetWindowAtScreenPoint(
                             gfx::Point(350, 260)));
 }
 
 TEST_F(ScreenAshTest, GetDisplayForNewWindows) {
   UpdateDisplay("300x200,500x400");
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const std::vector<display::Display> displays = screen->GetAllDisplays();
   ASSERT_EQ(2u, displays.size());
 
@@ -83,7 +83,7 @@ class TestDisplayRemoveObserver : public display::DisplayObserver {
 
  private:
   void TestPrimaryDisplay() const {
-    auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+    auto display = display::Screen::Get()->GetPrimaryDisplay();
     DCHECK_NE(display.id(), display::kInvalidDisplayId);
   }
 
@@ -165,7 +165,7 @@ TEST_F(ScreenAshTest,
             // window. Calling `GetDisplayNearestWindow` from here used to
             // crash (https://crbug.com/376575664).
             // This tests it doesn't.
-            display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+            display::Screen::Get()->GetDisplayNearestWindow(window);
           },
           window_on_second_display.get())
           .Then(root_window_destroyed_waiter.GetCallback()));

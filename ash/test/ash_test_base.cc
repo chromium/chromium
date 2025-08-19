@@ -112,7 +112,7 @@ class AshEventGeneratorDelegate
 
   // aura::test::EventGeneratorDelegateAura overrides:
   ui::EventTarget* GetTargetAt(const gfx::Point& point_in_screen) override {
-    display::Screen* screen = display::Screen::GetScreen();
+    display::Screen* screen = display::Screen::Get();
     display::Display display = screen->GetDisplayNearestPoint(point_in_screen);
     if (current_display_id_ != display.id()) {
       Shell::Get()->cursor_manager()->SetDisplay(display);
@@ -597,7 +597,7 @@ bool AshTestBase::TestIfMouseWarpsAt(ui::test::EventGenerator* event_generator,
   static_cast<ExtendedMouseWarpController*>(
       Shell::Get()->mouse_cursor_filter()->mouse_warp_controller_for_test())
       ->allow_non_native_event_for_test();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   display::Display original_display =
       screen->GetDisplayNearestPoint(point_in_screen);
   event_generator->MoveMouseTo(point_in_screen);
@@ -694,8 +694,9 @@ void AshTestBase::MaybeRunDragAndDropSequenceForAppList(
 }
 
 void AshTestBase::SwapPrimaryDisplay() {
-  if (display::Screen::GetScreen()->GetNumDisplays() <= 1)
+  if (display::Screen::Get()->GetNumDisplays() <= 1) {
     return;
+  }
   Shell::Get()->window_tree_host_manager()->SetPrimaryDisplayId(
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
@@ -703,7 +704,7 @@ void AshTestBase::SwapPrimaryDisplay() {
 }
 
 display::Display AshTestBase::GetPrimaryDisplay() const {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(
+  return display::Screen::Get()->GetDisplayNearestWindow(
       Shell::GetPrimaryRootWindow());
 }
 

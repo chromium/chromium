@@ -53,10 +53,11 @@ void DragWindowResizer::Drag(const gfx::PointF& location, int event_flags) {
 
   last_mouse_location_ = location;
   // Show a phantom window for dragging in another root window.
-  if (display::Screen::GetScreen()->GetNumDisplays() > 1)
+  if (display::Screen::Get()->GetNumDisplays() > 1) {
     UpdateDragWindow();
-  else
+  } else {
     drag_window_controller_.reset();
+  }
 }
 
 void DragWindowResizer::CompleteDrag() {
@@ -122,7 +123,7 @@ void DragWindowResizer::EndDragImpl() {
   // TODO(oshima): Change the API so |GetDisplay| just returns a display id.
   const int64_t dst_display_id =
       Shell::Get()->cursor_manager()->GetDisplay().id();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (dst_display_id == screen->GetDisplayNearestWindow(root_window).id())
     return;
 

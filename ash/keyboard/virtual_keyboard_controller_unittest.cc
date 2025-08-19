@@ -50,7 +50,7 @@ class VirtualKeyboardControllerTest : public AshTestBase {
   ~VirtualKeyboardControllerTest() override = default;
 
   display::Display GetPrimaryDisplay() {
-    return display::Screen::GetScreen()->GetPrimaryDisplay();
+    return display::Screen::Get()->GetPrimaryDisplay();
   }
 
   display::Display GetSecondaryDisplay() {

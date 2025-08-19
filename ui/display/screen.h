@@ -54,8 +54,8 @@ class DISPLAY_EXPORT Screen {
   // Retrieves the single Screen object; this may be null if it's not already
   // created, except for IOS where it creates a native screen instance
   // automatically. On ChromeOS ash the return value is only null on startup.
-
-  static Screen* GetScreen();
+  static Screen* GetScreen();  // Deprecated
+  static Screen* Get();
 
   // Returns whether a Screen singleton exists or not.
   static bool HasScreen();

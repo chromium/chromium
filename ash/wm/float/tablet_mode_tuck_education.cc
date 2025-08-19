@@ -178,7 +178,7 @@ void TabletModeTuckEducation::ActivateTuckEducation() {
 
   // Move window towards edge of screen.
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+      display::Screen::Get()->GetDisplayNearestWindow(window_);
   const bool bounce_right =
       window_bounds.CenterPoint().x() > display.bounds().CenterPoint().x();
   const gfx::Transform side_transform = gfx::Transform::MakeTranslation(

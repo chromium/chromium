@@ -336,9 +336,10 @@ bool MoveWindowToDisplay(aura::Window* window, int64_t display_id) {
   WindowState* window_state = WindowState::Get(window);
   if (window_state->allow_set_bounds_direct()) {
     display::Display display;
-    if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
-                                                               &display))
+    if (!display::Screen::Get()->GetDisplayWithDisplayId(display_id,
+                                                         &display)) {
       return false;
+    }
     gfx::Rect bounds = window->bounds();
     gfx::Rect work_area_in_display(display.size());
     work_area_in_display.Inset(display.GetWorkAreaInsets());
@@ -428,7 +429,7 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
     return true;
   }
 
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return window == SplitViewController::Get(window->GetRootWindow())
                          ->GetDefaultSnappedWindow();
   }
@@ -522,7 +523,7 @@ void MinimizeAndHideWithoutAnimation(
 
 aura::Window* GetRootWindowAt(const gfx::Point& point_in_screen) {
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(point_in_screen);
+      display::Screen::Get()->GetDisplayNearestPoint(point_in_screen);
   DCHECK(display.is_valid());
   RootWindowController* root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(display.id());
@@ -532,7 +533,7 @@ aura::Window* GetRootWindowAt(const gfx::Point& point_in_screen) {
 
 aura::Window* GetRootWindowMatching(const gfx::Rect& rect_in_screen) {
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayMatching(rect_in_screen);
+      display::Screen::Get()->GetDisplayMatching(rect_in_screen);
   RootWindowController* root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(display.id());
   return root_window_controller ? root_window_controller->GetRootWindow()
@@ -629,7 +630,7 @@ bool ShouldMinimizeTopWindowOnBack() {
     return false;
   }
 
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return false;
   }
 
@@ -850,7 +851,7 @@ bool IsInFasterSplitScreenSetupSession(const aura::Window* window) {
 }
 
 bool IsInFasterSplitScreenSetupSession() {
-  if (!IsInOverviewSession() || display::Screen::GetScreen()->InTabletMode()) {
+  if (!IsInOverviewSession() || display::Screen::Get()->InTabletMode()) {
     return false;
   }
   auto* overview_session = GetOverviewSession();

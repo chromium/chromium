@@ -102,7 +102,7 @@ bool ContainerFullWidthBehavior::HandlePointerEvent(
 bool ContainerFullWidthBehavior::HandleGestureEvent(
     const ui::GestureEvent& event,
     const gfx::Rect& bounds_in_screen) {
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return false;
   }
 

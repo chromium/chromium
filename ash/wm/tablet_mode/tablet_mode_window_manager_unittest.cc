@@ -154,7 +154,7 @@ class TabletModeWindowManagerTest : public AshTestBase {
   // Resize our desktop.
   void ResizeDesktop(int width_delta) {
     gfx::Size size =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
             .size();
     size.Enlarge(0, width_delta);
@@ -1825,7 +1825,7 @@ TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
   const gfx::Rect work_area_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   int divider_origin_x = split_view_controller()
                              ->split_view_divider()
                              ->GetDividerBoundsInScreen(
@@ -1871,7 +1871,7 @@ TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
   // Exit tablet mode and verify the windows are still at 2/3, with allowance
   // for the divider width since it is only there in tablet mode.
   DestroyTabletModeWindowManager();
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     EXPECT_NEAR(
         std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
         window1->bounds().width(), divider_delta);

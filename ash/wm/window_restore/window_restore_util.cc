@@ -179,7 +179,7 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
   }
 
   window_info->display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+      display::Screen::Get()->GetDisplayNearestWindow(window).id();
 
   // For saved desks, store the readable app name so that we can have a nice
   // error message if the user tries to used the saved desk on a device that

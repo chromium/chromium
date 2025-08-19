@@ -204,7 +204,7 @@ const char* GetSnapActionSourceMetricComponent(
 }
 
 void AppendUIModeToHistogram(std::string& histogram_name) {
-  histogram_name.append(display::Screen::GetScreen()->InTabletMode()
+  histogram_name.append(display::Screen::Get()->InTabletMode()
                             ? ".TabletMode"
                             : ".ClamshellMode");
 }
@@ -428,8 +428,7 @@ void SetWindowTransformDuringResizing(aura::Window* window,
 }
 
 void MaybeRestoreSplitView(bool refresh_snapped_windows) {
-  if (!ShouldAllowSplitView() ||
-      !display::Screen::GetScreen()->InTabletMode()) {
+  if (!ShouldAllowSplitView() || !display::Screen::Get()->InTabletMode()) {
     return;
   }
 
@@ -509,7 +508,7 @@ bool ShouldAllowSplitView() {
 
   // Disallow window dragging and split screen while ChromeVox is on in tablet
   // mode.
-  if (display::Screen::GetScreen()->InTabletMode() &&
+  if (display::Screen::Get()->InTabletMode() &&
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     return false;
   }
@@ -628,11 +627,11 @@ SnapPosition GetSnapPosition(aura::Window* root_window,
 
 bool IsLayoutHorizontal(aura::Window* window) {
   return IsLayoutHorizontal(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+      display::Screen::Get()->GetDisplayNearestWindow(window));
 }
 
 bool IsLayoutHorizontal(const display::Display& display) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return IsCurrentScreenOrientationLandscape();
   }
 
@@ -643,11 +642,11 @@ bool IsLayoutHorizontal(const display::Display& display) {
 
 bool IsLayoutPrimary(aura::Window* window) {
   return IsLayoutPrimary(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+      display::Screen::Get()->GetDisplayNearestWindow(window));
 }
 
 bool IsLayoutPrimary(const display::Display& display) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return IsCurrentScreenOrientationPrimary();
   }
 
@@ -742,7 +741,7 @@ gfx::Rect CalculateSnappedWindowBoundsInScreen(
     bool is_resizing_with_divider) {
   const bool snap_left_or_top =
       IsPhysicallyLeftOrTop(snap_position, root_window);
-  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
   const int work_area_size = GetDividerPositionUpperLimit(root_window);
 
   // Edit `divider_position` if window restore is currently restoring a snapped
@@ -987,7 +986,7 @@ bool IsSnapRatioGapWithinThreshold(aura::Window* to_be_snapped,
 float GetAutoSnapRatio(aura::Window* to_be_snapped_window,
                        aura::Window* target_root,
                        SnapViewType snap_type) {
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     // `GetTopmostVisibleWindowOfSnapType()` will include windows in snap
     // groups.
     if (aura::Window* opposite_window =
@@ -1056,7 +1055,7 @@ int GetWindowComponentForResize(aura::Window* window) {
 }
 
 bool ShouldConsiderDivider(aura::Window* window) {
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     if (auto* snap_group =
             SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
       return snap_group->snap_group_divider()->divider_widget();
@@ -1073,9 +1072,8 @@ bool CanWindowsFitInWorkArea(aura::Window* window1, aura::Window* window2) {
   DCHECK_EQ(window1->GetRootWindow(), window2->GetRootWindow());
   aura::Window* root_window = window1->GetRootWindow();
   const bool horizontal = IsLayoutHorizontal(root_window);
-  const gfx::Rect work_area = display::Screen::GetScreen()
-                                  ->GetDisplayNearestWindow(root_window)
-                                  .work_area();
+  const gfx::Rect work_area =
+      display::Screen::Get()->GetDisplayNearestWindow(root_window).work_area();
   const int work_area_length =
       horizontal ? work_area.width() : work_area.height();
   return GetMinimumWindowLength(window1, horizontal) +

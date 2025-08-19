@@ -53,7 +53,7 @@ TEST_F(SplitViewControllerClamshellTest, EndSplitView) {
   auto* event_generator = GetEventGenerator();
   event_generator->set_current_screen_location(drag_point);
   const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   event_generator->DragMouseTo(work_area.right_center());
   EXPECT_EQ(WindowStateType::kSecondarySnapped,
             WindowState::Get(w2.get())->GetStateType());

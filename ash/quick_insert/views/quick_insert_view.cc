@@ -113,9 +113,8 @@ gfx::Rect GetQuickInsertViewBoundsWithoutSelectedText(
     QuickInsertLayoutType layout_type,
     const gfx::Size& quick_insert_view_size,
     int quick_insert_view_search_field_vertical_offset) {
-  gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                   ->GetDisplayMatching(anchor_bounds)
-                                   .work_area();
+  gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(anchor_bounds).work_area();
   screen_work_area.Inset(kPaddingFromScreenEdge);
   gfx::Rect quick_insert_view_bounds(quick_insert_view_size);
   if (anchor_bounds.right() + quick_insert_view_size.width() <=
@@ -161,9 +160,8 @@ gfx::Rect GetQuickInsertViewBoundsWithSelectedText(
     const gfx::Rect& anchor_bounds,
     QuickInsertLayoutType layout_type,
     const gfx::Size& quick_insert_view_size) {
-  gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                   ->GetDisplayMatching(anchor_bounds)
-                                   .work_area();
+  gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(anchor_bounds).work_area();
   screen_work_area.Inset(kPaddingFromScreenEdge);
   gfx::Rect quick_insert_view_bounds(quick_insert_view_size);
   switch (layout_type) {

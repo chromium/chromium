@@ -1077,7 +1077,7 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetBounds) {
   // and `kFullscreen` capture source.
   const auto* capture_mode_session = controller->capture_mode_session();
   const gfx::Rect work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(capture_mode_session->current_root())
           .work_area();
   VerifyPreviewAlignment(work_area);
@@ -1178,10 +1178,9 @@ TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
   // Start the window recording inside the second display, the camera preview
   // should be inside the window that is being recorded inside the second
   // display.
-  window()->SetBoundsInScreen(
-      gfx::Rect(900, 0, 600, 500),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          Shell::GetAllRootWindows()[1]));
+  window()->SetBoundsInScreen(gfx::Rect(900, 0, 600, 500),
+                              display::Screen::Get()->GetDisplayNearestWindow(
+                                  Shell::GetAllRootWindows()[1]));
   StartRecordingFromSource(CaptureModeSource::kWindow);
   const auto* window_being_recorded =
       controller->video_recording_watcher_for_testing()
@@ -2867,18 +2866,16 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnMultiDisplays) {
   const gfx::Rect second_display_bounds(801, 0, 800, 700);
 
   // Set the window's bounds small enough to not fit the camera preview.
-  window()->SetBoundsInScreen(
-      gfx::Rect(600, 500, 100, 100),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          Shell::GetAllRootWindows()[0]));
+  window()->SetBoundsInScreen(gfx::Rect(600, 500, 100, 100),
+                              display::Screen::Get()->GetDisplayNearestWindow(
+                                  Shell::GetAllRootWindows()[0]));
 
   // Create a window in the second display and set its bounds small enough to
   // not fit the camera preview.
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
-  window1->SetBoundsInScreen(
-      gfx::Rect(1400, 500, 100, 100),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          Shell::GetAllRootWindows()[1]));
+  window1->SetBoundsInScreen(gfx::Rect(1400, 500, 100, 100),
+                             display::Screen::Get()->GetDisplayNearestWindow(
+                                 Shell::GetAllRootWindows()[1]));
 
   // Start the capture session.
   auto* controller =
@@ -2924,10 +2921,9 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnMultiDisplays) {
   EXPECT_FALSE(capture_toast_widget->IsVisible());
 
   // Update the bounds of `window` big enough to fit the camera preview.
-  window()->SetBoundsInScreen(
-      gfx::Rect(100, 200, 300, 300),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          Shell::GetAllRootWindows()[0]));
+  window()->SetBoundsInScreen(gfx::Rect(100, 200, 300, 300),
+                              display::Screen::Get()->GetDisplayNearestWindow(
+                                  Shell::GetAllRootWindows()[0]));
 
   // Now move the mouse to the top of `window` again, verify that preview toast
   // is not shown, since the window is big enough to show the camera preview.
@@ -3044,7 +3040,7 @@ class CaptureModeCameraPreviewTest
 
     switch (GetParam()) {
       case CaptureModeSource::kFullscreen:
-        return display::Screen::GetScreen()
+        return display::Screen::Get()
             ->GetDisplayNearestWindow(root)
             .work_area();
 

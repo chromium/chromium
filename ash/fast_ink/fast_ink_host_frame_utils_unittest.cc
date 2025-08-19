@@ -145,7 +145,7 @@ TEST_F(FastInkHostCreateFrameUtilTest, CompositorFrameHasCorrectStructure) {
       kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
       buffer_size_, &resource_manager_, shared_image_, gpu::SyncToken());
 
-  auto primary_display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto primary_display = display::Screen::Get()->GetPrimaryDisplay();
 
   // We should only have the root render pass.
   ASSERT_EQ(frame->render_pass_list.size(), 1u);

@@ -199,7 +199,7 @@ bool GameDashboardButtonRevealController::IsMouseOutsideHeaderBounds(
 
 void GameDashboardButtonRevealController::OnTopEdgeHoverTimeout() {
   if (CanShowGameDashboardButton(
-          display::Screen::GetScreen()->GetCursorScreenPoint())) {
+          display::Screen::Get()->GetCursorScreenPoint())) {
     UpdateVisibility(/*target_visibility=*/true, /*animate=*/true);
   }
 }

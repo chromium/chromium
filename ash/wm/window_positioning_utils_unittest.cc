@@ -74,7 +74,7 @@ TEST_F(WindowPositioningUtilsTest, SnapBoundsWithUnresizableSnapProperty) {
     // Test landscape display.
     UpdateDisplay("800x600");
     const auto work_area =
-        display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+        display::Screen::Get()->GetPrimaryDisplay().work_area();
     window->SetProperty(kUnresizableSnappedSizeKey, new gfx::Size(200, 0));
 
     gfx::Rect left_bounds = GetDefaultSnappedWindowBoundsInParent(
@@ -93,7 +93,7 @@ TEST_F(WindowPositioningUtilsTest, SnapBoundsWithUnresizableSnapProperty) {
     // Test portrait display.
     UpdateDisplay("600x800");
     const auto work_area =
-        display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+        display::Screen::Get()->GetPrimaryDisplay().work_area();
     window->SetProperty(kUnresizableSnappedSizeKey, new gfx::Size(0, 200));
 
     gfx::Rect top_bounds = GetDefaultSnappedWindowBoundsInParent(

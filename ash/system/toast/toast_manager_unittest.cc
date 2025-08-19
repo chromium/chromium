@@ -1184,8 +1184,7 @@ TEST_F(ToastManagerImplTest, SingleDisplayToastDestroyedOnRootWindowRemoved) {
   // Add a secondary display, and set it to be the active display so toasts are
   // added here.
   UpdateDisplay("800x700,800x700");
-  display::Screen::GetScreen()->SetDisplayForNewWindows(
-      GetSecondaryDisplay().id());
+  display::Screen::Get()->SetDisplayForNewWindows(GetSecondaryDisplay().id());
 
   auto* toast_manager = manager();
   std::string toast_id = "TOAST_ID_" + base::NumberToString(GetToastSerial());

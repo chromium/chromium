@@ -123,7 +123,7 @@ void DragItemToPoint(OverviewItemBase* item,
   } else {
     event_generator->PressLeftButton();
     Shell::Get()->cursor_manager()->SetDisplay(
-        display::Screen::GetScreen()->GetDisplayNearestPoint(screen_location));
+        display::Screen::Get()->GetDisplayNearestPoint(screen_location));
     event_generator->MoveMouseTo(screen_location);
     if (drop)
       event_generator->ReleaseLeftButton();

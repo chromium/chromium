@@ -317,7 +317,7 @@ views::Widget::InitParams CreateWidgetParams(aura::Window* parent,
 // capturing video.
 ui::Cursor GetCursorForFullscreenOrWindowCapture(bool capture_image) {
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           capture_mode_util::GetPreferredRootWindow());
   const float device_scale_factor = display.device_scale_factor();
   const gfx::ImageSkia* icon =
@@ -825,7 +825,7 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
   }
 
   // Hide mouse cursor in tablet mode except for the dev tablet mode.
-  if (display::Screen::GetScreen()->InTabletMode() &&
+  if (display::Screen::Get()->InTabletMode() &&
       !Shell::Get()->tablet_mode_controller()->IsInDevTabletMode()) {
     cursor_setter_->HideCursor();
     return;
@@ -957,8 +957,7 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
   // TODO(conniekxu): Handle this for tablet mode which doesn't have a cursor
   // screen point.
   if (!cursor_screen_location) {
-    cursor_screen_location =
-        display::Screen::GetScreen()->GetCursorScreenPoint();
+    cursor_screen_location = display::Screen::Get()->GetCursorScreenPoint();
   }
 
   base::flat_map<views::Widget*, /*opacity=*/float> widget_opacity_map;
@@ -1095,7 +1094,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   layer()->SchedulePaint(layer()->bounds());
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateActionContainerWidget();
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   if (focus_cycler_->RegionGroupFocused()) {
@@ -1113,7 +1112,7 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
   MaybeUpdateSelfieCamInSessionVisibility();
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateActionContainerWidget();
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   A11yAlertCaptureType();
@@ -1193,7 +1192,7 @@ void CaptureModeSession::StartCountDown(
   capture_label_view_->StartCountDown(std::move(countdown_finished_callback));
   UpdateCaptureLabelWidgetBounds(CaptureLabelAnimation::kCountdownStart);
 
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   // Fade out the capture bar, capture settings, recording type menu, and the
@@ -1392,7 +1391,7 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
 
   // Because we use custom cursors for region and full screen capture, we need
   // to update the cursor in case the display DSF changes.
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   // The following call to UpdateCaptureRegion will update the capture label
@@ -1972,7 +1971,7 @@ void CaptureModeSession::OnDisplayTabletStateChanged(
   }
 
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 }
 
@@ -1987,7 +1986,7 @@ void CaptureModeSession::OnDisplayMetricsChanged(
 
   EndSelection();
 
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   // Ensure the region still fits the root window after display changes.
@@ -3882,7 +3881,7 @@ void CaptureModeSession::InitInternal() {
     UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   }
 
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   if (controller_->source() == CaptureModeSource::kWindow) {

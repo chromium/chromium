@@ -355,7 +355,7 @@ std::unique_ptr<views::View> CreateBannerView() {
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
                                              *label);
 
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     banner_view->AddChildView(CreateClipboardShortcutView());
     layout->SetFlexForView(label, 1);
 
@@ -479,8 +479,7 @@ aura::Window* GetPreferredRootWindow(
     std::optional<gfx::Point> location_in_screen) {
   const int64_t display_id =
       (location_in_screen
-           ? display::Screen::GetScreen()->GetDisplayNearestPoint(
-                 *location_in_screen)
+           ? display::Screen::Get()->GetDisplayNearestPoint(*location_in_screen)
            : Shell::Get()->cursor_manager()->GetDisplay())
           .id();
 

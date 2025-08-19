@@ -351,7 +351,7 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
   };
 
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
   for (int i = 2; i < 10; ++i) {
     SetUserCount(i);
@@ -398,7 +398,7 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutExtraSmallUsersListAfterRotation) {
   EXPECT_EQ(contents->height(), users_list->height());
 
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
 
   // Start at 0 degrees (landscape).
@@ -448,7 +448,7 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutSmallUsersListAfterRotation) {
   EXPECT_EQ(users_list->height(), users_list->contents()->height());
 
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
 
   // Start at 0 degrees (landscape).
@@ -1445,7 +1445,7 @@ TEST_F(LockContentsViewKeyboardUnitTest,
   ASSERT_NE(nullptr, contents);
 
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           contents->GetWidget()->GetNativeWindow());
 
   for (int user_count = 1; user_count < 10; user_count++) {

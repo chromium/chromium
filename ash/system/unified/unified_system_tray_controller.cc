@@ -174,7 +174,7 @@ void UnifiedSystemTrayController::HandleLockAction() {
 void UnifiedSystemTrayController::HandleSettingsAction() {
   base::RecordAction(base::UserMetricsAction("Tray_Settings"));
   Shell::Get()->system_tray_model()->client()->ShowSettings(
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestView(
               quick_settings_view_->GetWidget()->GetNativeView())
           .id());
@@ -438,7 +438,7 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   quick_settings_metrics_util::RecordQsFeaturePodCount(
       quick_settings_view_->feature_tiles_container()
           ->GetVisibleFeatureTileCount(),
-      display::Screen::GetScreen()->InTabletMode());
+      display::Screen::Get()->InTabletMode());
 }
 
 void UnifiedSystemTrayController::ShowDetailedView(

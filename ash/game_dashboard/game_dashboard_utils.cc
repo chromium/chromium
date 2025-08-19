@@ -43,7 +43,7 @@ ArcGameControlsFlag UpdateFlag(ArcGameControlsFlag flags,
 
 bool ShouldEnableFeatures() {
   return !OverviewController::Get()->InOverviewSession() &&
-         !display::Screen::GetScreen()->InTabletMode();
+         !display::Screen::Get()->InTabletMode();
 }
 
 views::Widget* GetNextWidgetToFocus(

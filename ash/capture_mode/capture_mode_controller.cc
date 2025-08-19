@@ -509,7 +509,7 @@ bool MaybeLockCursor() {
 void MaybeUnlockCursor(bool was_cursor_originally_blocked) {
   if (!was_cursor_originally_blocked) {
     auto* cursor_manager = Shell::Get()->cursor_manager();
-    if (!display::Screen::GetScreen()->InTabletMode()) {
+    if (!display::Screen::Get()->InTabletMode()) {
       cursor_manager->ShowCursor();
     }
     // TODO(crbug.com/376171009): Investigate why the cursor may have already

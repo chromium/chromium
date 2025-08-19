@@ -168,7 +168,7 @@ TEST_P(RoundedDisplayProviderSurfaceUpdateTest,
   RoundedDisplayProviderTestApi test_api(provider_.get());
 
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
 
   auto display_id = primary_display.id();
 

@@ -589,7 +589,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
     // https://crbug.com/733092.
     // But we should keep any original value so that it can be restored when
     // exiting tablet mode.
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       const base::Value::Dict* original_property =
           pref_data.FindDict(base::NumberToString(id));
       if (original_property) {
@@ -961,7 +961,7 @@ void DisplayPrefs::MaybeStoreDisplayPrefs() {
   // Don't save certain display properties when in tablet mode, so if
   // the device is rebooted in clamshell mode, it won't have an unexpected
   // mirroring layout. https://crbug.com/733092.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     StoreCurrentDisplayLayoutPrefs(local_state_);
     StoreExternalDisplayMirrorInfo(local_state_);
     StoreCurrentDisplayMixedMirrorModeParams(local_state_);

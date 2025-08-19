@@ -450,7 +450,7 @@ TEST_F(FrameSizeButtonTest, ResetButtonsAfterClick) {
             close_button()->GetIcon());
 
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   generator->MoveMouseTo(work_area_bounds_in_screen.bottom_left());
 
   // None of the buttons should be pressed because we are really far away from
@@ -505,7 +505,7 @@ TEST_F(FrameSizeButtonTest, SizeButtonPressedWhenSnapButtonHovered) {
   // the close button (snap right button) should hover the close button and
   // keep the size button pressed.
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   generator->MoveMouseTo(work_area_bounds_in_screen.bottom_left());
   EXPECT_TRUE(AllButtonsInNormalState());
   generator->MoveMouseTo(CenterPointInScreen(close_button()));
@@ -784,8 +784,7 @@ TEST_F(MultitaskMenuTest, HalfButtonRTL) {
 // left side button should snap it to the correct side.
 TEST_F(MultitaskMenuTest, HalfButtonSecondaryLayout) {
   // Rotate the display 180 degrees so its layout is not primary.
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(), display_id);
   ScreenOrientationControllerTestApi(
@@ -814,7 +813,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   window_state()->Deactivate();
   ASSERT_NE(activation_client()->GetActiveWindow(), window());
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   // Verify the metrics initial states.
   base::UserActionTester user_action_tester;
@@ -895,7 +894,7 @@ TEST_F(MultitaskMenuTest, PartialSplitInNonPrimaryDisplay) {
   EXPECT_THAT(window_state()->snap_ratio(),
               testing::Optional(chromeos::kTwoThirdSnapRatio));
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   EXPECT_NEAR(work_area_bounds_in_screen.width() * chromeos::kTwoThirdSnapRatio,
               window_state()->window()->bounds().width(), 1);
 }
@@ -1075,7 +1074,7 @@ TEST_F(MultitaskMenuTest, MinimizeWhenMenuShown) {
 // pressed while the menu is shown.
 TEST_F(MultitaskMenuTest, ReversePartialButton) {
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   // Reverse the menu. Test that the left button snaps to 1/3.
   ShowMultitaskMenu();
@@ -1121,7 +1120,7 @@ TEST_F(MultitaskMenuTest, ReversePartialButton) {
 // pressed while the menu is shown.
 TEST_F(MultitaskMenuTest, ReverseFloatButton) {
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   const gfx::Rect original_bounds = window_state()->window()->bounds();
 
   // Reverse the menu and press the float button. Test that the window is
@@ -1302,7 +1301,7 @@ TEST_F(MultitaskMenuTest, TabAndArrowKeyTraversal) {
 TEST_F(MultitaskMenuTest, AdjustedMenuBounds) {
   // Position the window so that the size button is slightly offscreen.
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   GetWidget()->SetBounds(
       gfx::Rect(gfx::Point(work_area_bounds_in_screen.right() - 50, 0),
                 GetWidget()->GetWindowBoundsInScreen().size()));
@@ -1345,7 +1344,7 @@ TEST_F(SnapGroupFrameSizeButtonTest, SnapCaptionButton) {
 
   // Test the phantom bounds reflect the opposite snapped `w1`.
   const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Rect expected_bounds(work_area);
   expected_bounds.Subtract(w1->GetBoundsInScreen());
   EXPECT_TRUE(expected_bounds.ApproximatelyEqual(

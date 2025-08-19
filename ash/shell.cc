@@ -418,14 +418,14 @@ aura::Window* Shell::GetPrimaryRootWindow() {
 
 // static
 void Shell::SetRootWindowForNewWindows(aura::Window* root) {
-  display::Screen::GetScreen()->SetDisplayForNewWindows(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root).id());
+  display::Screen::Get()->SetDisplayForNewWindows(
+      display::Screen::Get()->GetDisplayNearestWindow(root).id());
 }
 
 // static
 aura::Window* Shell::GetRootWindowForNewWindows() {
   return GetRootWindowForDisplayId(
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+      display::Screen::Get()->GetDisplayForNewWindows().id());
 }
 
 // static
@@ -544,7 +544,7 @@ void Shell::OnDictationEnded() {
 }
 
 bool Shell::IsInTabletMode() const {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 bool Shell::ShouldSaveDisplaySettings() {
@@ -1747,8 +1747,7 @@ void Shell::Init(
   // since root window controller is created in
   // `WindowTreeHostManager::InitHosts()` and
   // `CursorWindowManager::SetDisplay` depends on it.
-  cursor_manager_->SetDisplay(
-      display::Screen::GetScreen()->GetPrimaryDisplay());
+  cursor_manager_->SetDisplay(display::Screen::Get()->GetPrimaryDisplay());
 
   if (ash::features::IsBootAnimationEnabled()) {
     booting_animation_controller_ =

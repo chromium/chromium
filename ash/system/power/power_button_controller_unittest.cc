@@ -127,7 +127,7 @@ class PowerButtonControllerTest : public PowerButtonTestBase {
   // Press the power button to show the menu.
   void OpenPowerButtonMenu() {
     PressPowerButton();
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       EXPECT_TRUE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
       ASSERT_TRUE(power_button_test_api_->TriggerPowerButtonMenuTimeout());
     }
@@ -1173,17 +1173,12 @@ class PowerButtonControllerWithPositionTest
   }
 
   // Returns true if it is in tablet mode.
-  bool IsTabletMode() const {
-    return display::Screen::GetScreen()->InTabletMode();
-  }
+  bool IsTabletMode() const { return display::Screen::Get()->InTabletMode(); }
 
   // Returns true if the menu is at the center of the display.
   bool IsMenuCentered() const {
     return power_button_test_api_->GetMenuBoundsInScreen().CenterPoint() ==
-           display::Screen::GetScreen()
-               ->GetPrimaryDisplay()
-               .bounds()
-               .CenterPoint();
+           display::Screen::Get()->GetPrimaryDisplay().bounds().CenterPoint();
   }
 
   PowerButtonPosition power_button_position() const {

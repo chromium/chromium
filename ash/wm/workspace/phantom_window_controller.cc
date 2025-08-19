@@ -288,7 +288,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
           .Build());
 
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+      display::Screen::Get()->GetDisplayNearestWindow(root_window);
   const gfx::Rect work_area = display.work_area();
   const int maximize_cue_width = maximize_cue_view->GetPreferredSize().width();
   const int maximize_cue_y = work_area.y() + kMaximizeCueTopMargin;

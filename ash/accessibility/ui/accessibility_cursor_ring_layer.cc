@@ -47,8 +47,7 @@ void AccessibilityCursorRingLayer::Set(const gfx::Point& location) {
   int inset = kGradientWidth + kCursorRingRadius + kLayerMargin;
   bounds.Inset(-inset);
 
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds);
+  display::Display display = display::Screen::Get()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
   // Root could be null if window tree host is being updated. See
   // http://b/326074244 for more details.

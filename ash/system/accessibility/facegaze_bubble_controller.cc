@@ -80,7 +80,7 @@ void FaceGazeBubbleController::Update(const std::u16string& text,
   facegaze_bubble_view_->Update(text, is_warning);
 
   const gfx::Rect primary_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   const gfx::Size work_area_size = primary_work_area.size();
   const gfx::Size bubble_size = facegaze_bubble_view_->size();
 
@@ -106,8 +106,7 @@ void FaceGazeBubbleController::OnCloseButtonClicked(const ui::Event& event) {
 }
 
 void FaceGazeBubbleController::OnShowTimer() {
-  gfx::Point cursor_location =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point cursor_location = display::Screen::Get()->GetCursorScreenPoint();
   // Expand the FaceGazeBubbleView bounds by 25 pixels in each direction.
   // This provides a cushion so that we don't show the UI when the user is
   // trying to click on an element that is a few pixels outside of the original

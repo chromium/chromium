@@ -215,8 +215,7 @@ void SplitViewDivider::SetDividerPosition(int divider_position) {
   divider_position_ = divider_position;
   // Only clamp within `observed_windows_` if it is not empty; otherwise it
   // will return an invalid range.
-  if (!observed_windows_.empty() &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+  if (!observed_windows_.empty() && !display::Screen::Get()->InTabletMode()) {
     const gfx::Range divider_allowed_range =
         GetDividerPositionAllowedRange(observed_windows_);
     if (!divider_allowed_range.is_reversed()) {
@@ -234,7 +233,7 @@ void SplitViewDivider::UpdateDividerPosition(
     const gfx::Point& location_in_screen) {
   aura::Window* root = GetRootWindow();
   const bool horizontal = IsLayoutHorizontal(root);
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     // In clamshell mode, we try to keep the center point of the divider as in
     // sync with the mouse event location as possible. `SetDividerPosition()`
     // will clamp the position between the windows' minimum sizes.
@@ -354,7 +353,7 @@ void SplitViewDivider::EndResizeWithDivider(
   // `EndResizeWithDivider()`.
   UpdateDividerPosition(modified_location_in_screen);
   const gfx::Point cursor_point =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+      display::Screen::Get()->GetCursorScreenPoint();
   EnlargeOrShrinkDivider(
       GetDividerBoundsInScreen(/*is_dragging=*/true).Contains(cursor_point));
 

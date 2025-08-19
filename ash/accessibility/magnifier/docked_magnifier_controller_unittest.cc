@@ -182,7 +182,7 @@ class DockedMagnifierTest : public NoSessionAshTestBase {
     const gfx::Rect modal_bounds =
         lock_system_modal_widget->GetWindowBoundsInScreen();
     const gfx::Rect valid_area =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
             .work_area();
     const gfx::Rect docked_magnifier_bounds =
@@ -202,7 +202,7 @@ class DockedMagnifierTest : public NoSessionAshTestBase {
 
     // Expect that the window stays inside the valid area.
     const gfx::Rect valid_area_no_magnifier =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
             .work_area();
     EXPECT_TRUE(valid_area_no_magnifier.Contains(modal_bounds_no_magnifier));
@@ -248,7 +248,7 @@ class DockedMagnifierTest : public NoSessionAshTestBase {
     const gfx::Rect modal_bounds_update_case =
         lock_system_modal_widget_update_case->GetWindowBoundsInScreen();
     const gfx::Rect valid_area =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
             .work_area();
     const gfx::Rect docked_magnifier_bounds =
@@ -520,7 +520,7 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasOverviewMode) {
 TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {
   // Verify that we're in tablet mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
 
   std::unique_ptr<aura::Window> window =
       TestWindowBuilder()
@@ -568,7 +568,7 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {
 TEST_F(DockedMagnifierTest, DisplaysWorkAreasDoubleSplitView) {
   // Verify that we're in tablet mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
 
   std::unique_ptr<aura::Window> window1 =
       TestWindowBuilder()

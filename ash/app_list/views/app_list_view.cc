@@ -499,7 +499,7 @@ void AppListView::EnsureWidgetBoundsMatchCurrentState() {
 }
 
 display::Display AppListView::GetDisplayNearestView() const {
-  return display::Screen::GetScreen()->GetDisplayNearestView(
+  return display::Screen::Get()->GetDisplayNearestView(
       GetWidget()->GetNativeWindow()->parent());
 }
 

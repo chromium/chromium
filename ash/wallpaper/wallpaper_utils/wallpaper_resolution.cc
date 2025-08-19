@@ -13,12 +13,12 @@ namespace ash {
 
 gfx::Size GetMaxDisplaySizeInNative() {
   // Return an empty size for test environments where the screen is null.
-  if (!display::Screen::GetScreen()) {
+  if (!display::Screen::Get()) {
     return gfx::Size();
   }
 
   gfx::Size max;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     max.SetToMax(display.GetSizeInPixel());
   }
 

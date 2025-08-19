@@ -99,7 +99,7 @@ class UIControlsAsh : public UIControlsAura {
   bool SendMouseEvents(MouseButton type,
                        int button_state,
                        int accelerator_state) override {
-    gfx::Point p(display::Screen::GetScreen()->GetCursorScreenPoint());
+    gfx::Point p(display::Screen::Get()->GetCursorScreenPoint());
     UIControlsAura* ui_controls = GetUIControlsAt(p);
     return ui_controls &&
            ui_controls->SendMouseEvents(type, button_state, accelerator_state);
@@ -117,7 +117,7 @@ class UIControlsAsh : public UIControlsAura {
   }
 
   bool SendMouseClick(MouseButton type) override {
-    gfx::Point p(display::Screen::GetScreen()->GetCursorScreenPoint());
+    gfx::Point p(display::Screen::Get()->GetCursorScreenPoint());
     UIControlsAura* ui_controls = GetUIControlsAt(p);
     return ui_controls && ui_controls->SendMouseClick(type);
   }

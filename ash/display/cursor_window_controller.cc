@@ -298,7 +298,7 @@ void CursorWindowController::SetCursorCompositingEnabled(bool enabled) {
 
 void CursorWindowController::UpdateContainer() {
   if (is_cursor_compositing_enabled_) {
-    display::Screen* screen = display::Screen::GetScreen();
+    display::Screen* screen = display::Screen::Get();
     display::Display display =
         screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
     DCHECK(display.is_valid());

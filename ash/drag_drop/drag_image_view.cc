@@ -116,7 +116,7 @@ void DragImageView::OnPaint(gfx::Canvas* canvas) {
     canvas->DrawImageInt(GetImage(), 0, 0);
   } else {
     aura::Window* window = GetWidget()->GetNativeWindow();
-    const float device_scale = display::Screen::GetScreen()
+    const float device_scale = display::Screen::Get()
                                    ->GetDisplayNearestWindow(window)
                                    .device_scale_factor();
     // The drag image already has device scale factor applied. But

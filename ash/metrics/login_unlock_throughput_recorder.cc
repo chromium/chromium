@@ -150,8 +150,7 @@ void WindowRestoreTracker::OnShown(int window_id, ui::Compositor* compositor) {
     std::move(on_shown_).Run(base::TimeTicks::Now());
   }
 
-  if (compositor &&
-      display::Screen::GetScreen()->GetPrimaryDisplay().detected()) {
+  if (compositor && display::Screen::Get()->GetPrimaryDisplay().detected()) {
     compositor->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(&WindowRestoreTracker::OnCompositorFramePresented,
                        weak_ptr_factory_.GetWeakPtr(), window_id));

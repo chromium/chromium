@@ -269,7 +269,7 @@ bool PaletteTray::ShouldShowOnDisplay() {
     return false;
 
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
 
   // Is there a TouchscreenDevice which targets this display or one of
@@ -302,7 +302,7 @@ bool PaletteTray::IsWidgetOnInternalDisplay() {
     return false;
 
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
 
   return display.IsInternal();

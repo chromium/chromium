@@ -136,7 +136,7 @@ bool CanRestoreState(WindowStateType current_state,
 }
 
 bool IsTabletModeEnabled() {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 bool IsToplevelContainer(aura::Window* window) {
@@ -274,8 +274,7 @@ void MoveAllTransientChildrenToNewRoot(aura::Window* window) {
     wm::ConvertRectToScreen(dst_root, &child_bounds);
     container->AddChild(transient_child);
     transient_child->SetBoundsInScreen(
-        child_bounds,
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+        child_bounds, display::Screen::Get()->GetDisplayNearestWindow(window));
 
     // Transient children may have transient children.
     MoveAllTransientChildrenToNewRoot(transient_child);
@@ -841,7 +840,7 @@ void WindowState::OnActivationLost() {
 }
 
 display::Display WindowState::GetDisplay() const {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+  return display::Screen::Get()->GetDisplayNearestWindow(window_);
 }
 
 WindowStateType WindowState::GetRestoreWindowState() const {
@@ -963,15 +962,14 @@ void WindowState::AdjustSnappedBoundsForDisplayWorkspaceChange(
   // might end up calling this function during work area changes, so we avoid
   // unnecessary task in that case when it will be overwritten by tablet mode
   // work.
-  if (is_dragged() || !IsSnapped() ||
-      display::Screen::GetScreen()->InTabletMode()) {
+  if (is_dragged() || !IsSnapped() || display::Screen::Get()->InTabletMode()) {
     return;
   }
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window_);
 
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+      display::Screen::Get()->GetDisplayNearestWindow(window_);
 
   // For snapped window, `GetSnappedWindowBounds` computes bounds position
   // from snap type and size from |snap_ratio|.
@@ -1079,7 +1077,7 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds_in_parent) {
             ? window_->delegate()->GetMaximumSize().value_or(gfx::Size())
             : gfx::Size();
     const display::Display display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+        display::Screen::Get()->GetDisplayNearestWindow(window_);
     min_size.SetToMin(display.work_area().size());
 
     actual_new_bounds.set_width(

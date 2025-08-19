@@ -57,7 +57,7 @@ constexpr char kDockedMagnifierViewportWindowName[] =
 
 // Returns the current cursor location in screen coordinates.
 inline gfx::Point GetCursorScreenPoint() {
-  return display::Screen::GetScreen()->GetCursorScreenPoint();
+  return display::Screen::Get()->GetCursorScreenPoint();
 }
 
 // Updates the workarea of the display associated with |window| such that the
@@ -192,7 +192,7 @@ void DockedMagnifierController::CenterOnPoint(
   if (!GetEnabled())
     return;
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   auto* window = screen->GetWindowAtScreenPoint(point_in_screen);
   if (!window) {
     // In tests and sometimes initially on signin screen, |point_in_screen|

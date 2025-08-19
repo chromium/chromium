@@ -32,7 +32,7 @@ class ShelfTooltipBubbleFrameView : public views::BubbleFrameView {
  private:
   // views::BubbleFrameView:
   gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const override {
-    return display::Screen::GetScreen()
+    return display::Screen::Get()
         ->GetDisplayNearestPoint(rect.CenterPoint())
         .bounds();
   }

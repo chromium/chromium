@@ -877,7 +877,7 @@ OverviewWindowDragController::CompleteNormalDrag(
       !(dragged_item_is_visible_on_all_desks &&
         item_intersects_other_display_desk_bar)) {
     int64_t target_display_id =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(target_root).id();
+        display::Screen::Get()->GetDisplayNearestWindow(target_root).id();
     ScopedWindowsMover mover(target_display_id);
 
     // Get the window and bounds from |item_| before removing it from its grid.
@@ -942,7 +942,7 @@ aura::Window* OverviewWindowDragController::GetRootWindowBeingDraggedIn()
     return item_->root_window();
   }
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   CHECK(screen);
   auto display = screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
   return Shell::GetRootWindowForDisplayId(display.id());
@@ -1020,7 +1020,7 @@ OverviewGrid* OverviewWindowDragController::GetCurrentGrid() const {
 void OverviewWindowDragController::RecordNormalDrag(
     NormalDragAction action,
     bool is_dragged_to_other_display) const {
-  const bool is_tablet = display::Screen::GetScreen()->InTabletMode();
+  const bool is_tablet = display::Screen::Get()->InTabletMode();
   if (is_dragged_to_other_display) {
     DCHECK(!is_touch_dragging_);
     if (!is_tablet) {
@@ -1063,9 +1063,8 @@ void OverviewWindowDragController::RecordDragToClose(
       kTabletDrag = {OverviewDragAction::kSwipeToCloseSuccessfulTabletTouch,
                      OverviewDragAction::kSwipeToCloseCanceledTabletTouch,
                      OverviewDragAction::kFlingToCloseTabletTouch};
-  RecordDrag(display::Screen::GetScreen()->InTabletMode()
-                 ? kTabletDrag[action]
-                 : kClamshellDrag[action]);
+  RecordDrag(display::Screen::Get()->InTabletMode() ? kTabletDrag[action]
+                                                    : kClamshellDrag[action]);
 }
 
 void OverviewWindowDragController::MaybeScaleUpNewDeskButton() {

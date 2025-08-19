@@ -259,7 +259,7 @@ gfx::Rect GetGridBoundsInScreen(
     bounds.Subtract(target_bounds_in_screen);
   } else {
     const bool account_for_divider_width =
-        display::Screen::GetScreen()->InTabletMode();
+        display::Screen::Get()->InTabletMode();
     switch (state) {
       case SplitViewController::State::kPrimarySnapped:
         bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
@@ -288,7 +288,7 @@ gfx::Rect GetGridBoundsInScreen(
   // some cases we don't want its bounds in our calculations. When the forest
   // features are enabled, we want to exclude the hotseat bounds when it is
   // shown in home launcher.
-  if (account_for_hotseat && display::Screen::GetScreen()->InTabletMode()) {
+  if (account_for_hotseat && display::Screen::Get()->InTabletMode()) {
     const HotseatState hotseat_state =
         Shelf::ForWindow(target_root)->shelf_layout_manager()->hotseat_state();
 
@@ -350,7 +350,7 @@ std::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
   if (!ShouldAllowSplitView()) {
     return std::nullopt;
   }
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return std::nullopt;
   }
   auto* overview_session = OverviewController::Get()->overview_session();
@@ -375,7 +375,7 @@ std::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
 }
 
 bool ShouldUseTabletModeGridLayout() {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect) {

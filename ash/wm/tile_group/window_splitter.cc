@@ -158,7 +158,7 @@ bool FitsMinimumSize(aura::Window* window, const gfx::Rect& new_size) {
 }
 
 bool ContainedInWorkArea(aura::Window* window) {
-  return display::Screen::GetScreen()
+  return display::Screen::Get()
       ->GetDisplayNearestWindow(window)
       .work_area()
       .Contains(window->GetBoundsInScreen());
@@ -174,8 +174,7 @@ void ResizeAndActivateWindow(aura::Window* window,
     window_state->OnWMEvent(&event);
   }
   window->SetBoundsInScreen(
-      screen_bounds,
-      display::Screen::GetScreen()->GetDisplayMatching(screen_bounds));
+      screen_bounds, display::Screen::Get()->GetDisplayMatching(screen_bounds));
   window_state->Activate();
 }
 

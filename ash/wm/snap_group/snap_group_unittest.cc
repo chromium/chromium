@@ -201,7 +201,7 @@ void DragGroupItemToPoint(OverviewItemBase* item,
   } else {
     event_generator->PressLeftButton();
     Shell::Get()->cursor_manager()->SetDisplay(
-        display::Screen::GetScreen()->GetDisplayNearestPoint(screen_location));
+        display::Screen::Get()->GetDisplayNearestPoint(screen_location));
     event_generator->MoveMouseTo(screen_location);
     if (drop) {
       event_generator->ReleaseLeftButton();
@@ -250,7 +250,7 @@ void VerifySnapGroupOnDisplay(SnapGroup* snap_group, const int64_t display_id) {
   EXPECT_EQ(root, snap_group->window2()->GetRootWindow());
   EXPECT_EQ(root, snap_group->snap_group_divider()->GetRootWindow());
   EXPECT_EQ(display_id,
-            display::Screen::GetScreen()->GetDisplayNearestWindow(root).id());
+            display::Screen::Get()->GetDisplayNearestWindow(root).id());
 }
 
 void ResizeDividerTo(ui::test::EventGenerator* event_generator,
@@ -320,8 +320,8 @@ void ExpectWindowsSnappedSideBySide(WindowSnapGrouping grouping,
                                                 GetTopmostSnapGroupDivider()));
   } else {
     EXPECT_FALSE(grouped);
-    auto [primary_half, secondary_half] = GetExpectedSnappedBounds(
-        display::Screen::GetScreen()->GetPrimaryDisplay());
+    auto [primary_half, secondary_half] =
+        GetExpectedSnappedBounds(display::Screen::Get()->GetPrimaryDisplay());
     EXPECT_EQ(primary_half, primary->GetBoundsInScreen());
     EXPECT_EQ(secondary_half, secondary->GetBoundsInScreen());
   }
@@ -1265,10 +1265,9 @@ TEST_F(FasterSplitScreenTest, NoCrashOnDisplayRemoval) {
       CreateTestWindowInShellWithBounds(gfx::Rect(1000, 0, 100, 100)));
   SnapOneTestWindow(window1.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
-  ASSERT_EQ(display_manager_test.GetSecondaryDisplay().id(),
-            display::Screen::GetScreen()
-                ->GetDisplayNearestWindow(window1.get())
-                .id());
+  ASSERT_EQ(
+      display_manager_test.GetSecondaryDisplay().id(),
+      display::Screen::Get()->GetDisplayNearestWindow(window1.get()).id());
   const gfx::Rect work_area(
       display_manager_test.GetSecondaryDisplay().work_area());
   EXPECT_EQ(gfx::Rect(800, 0, work_area.width() / 2, work_area.height()),
@@ -1355,7 +1354,7 @@ TEST_F(FasterSplitScreenTest, OppositeSnappedWindowOnOtherDisplay) {
   SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   auto display_list = screen->GetAllDisplays();
   ASSERT_EQ(display_list[0], screen->GetDisplayNearestWindow(w1.get()));
 
@@ -3747,7 +3746,7 @@ TEST_F(SnapGroupPhantomBoundsTest, SnapPhantomBoundsMultiDisplay) {
                     chromeos::kOneThirdSnapRatio);
   const display::Display display2 = display_manager()->active_display_list()[1];
   ASSERT_EQ(display2,
-            display::Screen::GetScreen()->GetDisplayNearestWindow(w1.get()));
+            display::Screen::Get()->GetDisplayNearestWindow(w1.get()));
 
   // Drag to snap `w2` to display 2.
   std::unique_ptr<aura::Window> w2 = CreateAppWindow();
@@ -4808,7 +4807,7 @@ TEST_F(SnapGroupDividerTest, ResizeCursor) {
                                  ->snap_group_divider();
   for (const auto& display_specs : {"800x600", "600x800"}) {
     UpdateDisplay(display_specs);
-    const auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+    const auto display = display::Screen::Get()->GetPrimaryDisplay();
     // Press and move the mouse left without releasing, past `w1`'s min width.
     // Test we don't update bounds beyond `w1`'s min width.
     const gfx::Point divider_point(
@@ -9222,8 +9221,7 @@ TEST_F(SnapGroupDisplayMetricsTest, ScaleUpWorkArea) {
   // Zoom in once. Test we update the group bounds.
   PressAndReleaseKey(ui::VKEY_OEM_PLUS,
                      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-  const int64_t primary_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   const float zoom_factor_1 = 1.05f;
   ASSERT_EQ(zoom_factor_1,
             display_manager()->GetDisplayInfo(primary_id).zoom_factor());
@@ -9271,8 +9269,7 @@ TEST_F(SnapGroupDisplayMetricsTest, ScaleUpWorkAreaInOverview) {
   // Zoom in to make the windows no longer fit, the Snap Group should be broken.
   PressAndReleaseKey(ui::VKEY_OEM_PLUS,
                      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-  const int64_t primary_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   ASSERT_EQ(1.05f, display_manager()->GetDisplayInfo(primary_id).zoom_factor());
   ASSERT_TRUE(GetUnionScreenBoundsForWindow(w1.get()).Intersects(
       GetUnionScreenBoundsForWindow(w2.get())));
@@ -9461,10 +9458,9 @@ TEST_F(SnapGroupMultiDisplayTest, RemoveDisplayInSplitViewSetupSession) {
       WM_EVENT_SNAP_PRIMARY,
       /*snap_action_source=*/WindowSnapActionSource::kSnapByWindowLayoutMenu);
   window_state->OnWMEvent(&snap_type);
-  ASSERT_EQ(display_manager_test.GetSecondaryDisplay().id(),
-            display::Screen::GetScreen()
-                ->GetDisplayNearestWindow(window1.get())
-                .id());
+  ASSERT_EQ(
+      display_manager_test.GetSecondaryDisplay().id(),
+      display::Screen::Get()->GetDisplayNearestWindow(window1.get()).id());
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_TRUE(RootWindowController::ForWindow(window1.get())
@@ -9526,12 +9522,10 @@ TEST_F(SnapGroupMultiDisplayTest, NoCrashOnDisplayMetricsChange) {
       SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get()));
   EXPECT_FALSE(
       SnapGroupController::Get()->GetSnapGroupForGivenWindow(w2.get()));
-  EXPECT_EQ(
-      display_ids[0],
-      display::Screen::GetScreen()->GetDisplayNearestWindow(w1.get()).id());
-  EXPECT_EQ(
-      display_ids[0],
-      display::Screen::GetScreen()->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_EQ(display_ids[0],
+            display::Screen::Get()->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(display_ids[0],
+            display::Screen::Get()->GetDisplayNearestWindow(w2.get()).id());
 }
 
 // Tests to verify that when a window is dragged out of a snap group and onto
@@ -9558,7 +9552,7 @@ TEST_F(SnapGroupMultiDisplayTest, DragWindowOutOfSnapGroupToAnotherDisplay) {
   ASSERT_FALSE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             WindowState::Get(w2.get())->GetStateType());
@@ -9587,7 +9581,7 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplays) {
                   ->GetSnapGroupForGivenWindow(w1.get())
                   ->snap_group_divider());
   const int64_t primary_id = GetPrimaryDisplay().id();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   ASSERT_EQ(primary_id, screen->GetDisplayNearestWindow(w1.get()).id());
   ASSERT_EQ(primary_id, screen->GetDisplayNearestWindow(w2.get()).id());
 
@@ -9666,7 +9660,7 @@ TEST_F(SnapGroupMultiDisplayTest,
   // display.
   EXPECT_TRUE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w1.get()).id());
   EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w2.get()).id());
 }
@@ -9722,7 +9716,7 @@ TEST_F(SnapGroupMultiDisplayTest,
                        /*by_touch_gestures=*/false, /*drop=*/true);
 
   // Verify that the windows are moved to the destination display properly.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_FALSE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
   EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
@@ -9786,7 +9780,7 @@ TEST_F(SnapGroupMultiDisplayTest,
   ASSERT_FALSE(IsInOverviewSession());
 
   EXPECT_FALSE(GetTopmostSnapGroupDivider());
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
   EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
 
@@ -9816,7 +9810,7 @@ TEST_F(SnapGroupMultiDisplayTest, DeskChangeWithMultiDisplay) {
   VerifySnapGroupOnDisplay(
       snap_group_controller->GetSnapGroupForGivenWindow(w1.get()),
       displays[1].id());
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   ASSERT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
   ASSERT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
 
@@ -10195,7 +10189,7 @@ TEST_F(SnapGroupMultiDisplayTest, GroupItemCrossDisplayDragInteractivity) {
   event_generator->ClickLeftButton();
   VerifyNotSplitViewOrOverviewSession(w1.get());
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w1.get()).id());
   EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w2.get()).id());
   VerifySnapGroupOnDisplay(

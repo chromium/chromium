@@ -156,7 +156,7 @@ void LockScreen::Show(ScreenType type) {
   instance_->widget_->SetVisibilityAnimationTransition(
       views::Widget::ANIMATE_NONE);
   instance_->widget_->SetBounds(
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
+      display::Screen::Get()->GetPrimaryDisplay().bounds());
 
   // Postpone showing the screen after the animation of the first wallpaper
   // completes, to make the transition smooth. The callback will be dispatched

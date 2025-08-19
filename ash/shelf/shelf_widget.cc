@@ -760,7 +760,7 @@ gfx::Rect ShelfWidget::GetScreenBoundsOfItemIconForWindow(
 gfx::Rect ShelfWidget::GetVisibleShelfBounds() const {
   gfx::Rect shelf_region = GetWindowBoundsInScreen();
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(GetNativeWindow());
+      display::Screen::Get()->GetDisplayNearestWindow(GetNativeWindow());
   DCHECK(!display.bounds().IsEmpty());
   shelf_region.Intersect(display.bounds());
   return screen_util::SnapBoundsToDisplayEdge(shelf_region, GetNativeWindow());
@@ -807,8 +807,7 @@ void ShelfWidget::CalculateTargetBounds() {
 
   if (layout_manager->is_shelf_auto_hidden()) {
     const display::Display display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(
-            GetNativeWindow());
+        display::Screen::Get()->GetDisplayNearestWindow(GetNativeWindow());
     shelf_in_screen_portion =
         Shell::Get()->app_list_controller()->GetTargetVisibility(display.id())
             ? shelf_size

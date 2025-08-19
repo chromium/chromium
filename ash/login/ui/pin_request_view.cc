@@ -535,8 +535,7 @@ void PinRequestView::OnInputChange(bool last_field_active, bool complete) {
 // If |pin_keyboard_always_enabled_| is not set, pin keyboard is only shown in
 // tablet mode.
 bool PinRequestView::PinKeyboardVisible() const {
-  return pin_keyboard_always_enabled_ ||
-         display::Screen::GetScreen()->InTabletMode();
+  return pin_keyboard_always_enabled_ || display::Screen::Get()->InTabletMode();
 }
 
 gfx::Size PinRequestView::GetPinRequestViewSize() const {

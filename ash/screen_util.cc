@@ -35,7 +35,7 @@ gfx::Rect GetMaximizedWindowBoundsInParent(aura::Window* window) {
 
 gfx::Rect GetDisplayBoundsInParent(aura::Window* window) {
   gfx::Rect result =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).bounds();
+      display::Screen::Get()->GetDisplayNearestWindow(window).bounds();
   ::wm::ConvertRectFromScreen(window->parent(), &result);
   return result;
 }
@@ -61,7 +61,7 @@ gfx::Rect GetDisplayWorkAreaBoundsInParent(aura::Window* window) {
                 ->in_session_user_work_area_insets()
           : WorkAreaInsets::ForWindow(window)->user_work_area_insets();
   gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).bounds();
+      display::Screen::Get()->GetDisplayNearestWindow(window).bounds();
   bounds.Inset(insets);
   ::wm::ConvertRectFromScreen(window->parent(), &bounds);
   return bounds;
@@ -96,9 +96,7 @@ gfx::Rect GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
 
 gfx::Rect GetDisplayBoundsWithShelf(aura::Window* window) {
   if (!Shell::Get()->display_manager()->IsInUnifiedMode()) {
-    return display::Screen::GetScreen()
-        ->GetDisplayNearestWindow(window)
-        .bounds();
+    return display::Screen::Get()->GetDisplayNearestWindow(window).bounds();
   }
 
   // In Unified Mode, the display that should contain the shelf depends on the
@@ -117,9 +115,8 @@ gfx::Rect GetDisplayBoundsWithShelf(aura::Window* window) {
 
 gfx::Rect SnapBoundsToDisplayEdge(const gfx::Rect& bounds,
                                   const aura::Window* window) {
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          const_cast<aura::Window*>(window));
+  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+      const_cast<aura::Window*>(window));
 
   const float dsf = display.device_scale_factor();
   const gfx::Size display_size_in_pixel = display.GetSizeInPixel();
@@ -158,7 +155,7 @@ gfx::Rect GetIdealBoundsForMaximizedOrFullscreenOrPinnedState(
     }
     if (shelf->auto_hide_behavior() ==
         ash::ShelfAutoHideBehavior::kAlwaysHidden) {
-      return display::Screen::GetScreen()
+      return display::Screen::Get()
           ->GetDisplayNearestWindow(const_cast<aura::Window*>(window))
           .work_area();
     }

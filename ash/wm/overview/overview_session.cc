@@ -960,7 +960,7 @@ void OverviewSession::OnWindowActivating(
   // logic to end overview when app list (i.e., home launcher) is open in tablet
   // mode, so do not handle it here.
   if (gained_active == Shell::Get()->app_list_controller()->GetWindow() &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     RestoreWindowActivation(false);
     EndOverview(OverviewEndAction::kAppListActivatedInClamshell);
     return;
@@ -1194,8 +1194,7 @@ void OverviewSession::ShowSavedDeskLibrary(
   // occlusion computations. These should not cause use to exit overview.
   base::AutoReset<bool> ignore(&ignore_activations_, true);
 
-  if (display::Screen::GetScreen()->InTabletMode() ||
-      IsShowingSavedDeskLibrary()) {
+  if (display::Screen::Get()->InTabletMode() || IsShowingSavedDeskLibrary()) {
     return;
   }
 
@@ -1404,7 +1403,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // we let the app list to handle the key event.
   // TODO(crbug.com/40622922): Explore better ways to handle this splitview +
   // overview + applist case.
-  if (!display::Screen::GetScreen()->InTabletMode() &&
+  if (!display::Screen::Get()->InTabletMode() &&
       Shell::Get()->app_list_controller()->IsVisible()) {
     return;
   }
@@ -1668,7 +1667,7 @@ void OverviewSession::Move(bool reverse) {
 }
 
 bool OverviewSession::ProcessForScrolling(const ui::KeyEvent& event) {
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return false;
   }
 

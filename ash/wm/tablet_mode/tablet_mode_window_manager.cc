@@ -602,7 +602,7 @@ int TabletModeWindowManager::CalculateCarryOverDividerPosition(
     return -1;
 
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           left_window ? left_window : right_window);
   gfx::Rect work_area = display.work_area();
   gfx::Rect left_window_bounds =

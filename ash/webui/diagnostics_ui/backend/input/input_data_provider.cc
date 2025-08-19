@@ -289,7 +289,7 @@ void InputDataProvider::OnPowerStateChanged(
 void InputDataProvider::MoveAppToTestingScreen(uint32_t evdev_id) {
   aura::Window* window = widget_->GetNativeWindow();
   const int64_t current_display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+      display::Screen::Get()->GetDisplayNearestWindow(window).id();
 
   // Find the testing touchscreen device.
   auto it = touch_devices_.find((int)evdev_id);

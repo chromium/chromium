@@ -124,7 +124,7 @@ gfx::ImageSkia CreateImageSkiaIcon(SkColor color) {
 }
 
 int64_t GetPrimaryDisplayId() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  return display::Screen::Get()->GetPrimaryDisplay().id();
 }
 
 void ExpectFocused(views::View* view) {
@@ -2506,8 +2506,7 @@ void ExpectWithinOnePixel(int a, int b) {
 }
 
 TEST_P(LtrRtlShelfViewTest, IconCenteringTest) {
-  const display::Display display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   const int screen_width = display.bounds().width();
   const int screen_center = screen_width / 2;
 

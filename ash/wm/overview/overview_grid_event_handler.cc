@@ -99,7 +99,7 @@ void OverviewGridEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 
   // The following events are for scrolling the overview scroll layout, which is
   // tablet only.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return;
   }
 
@@ -149,7 +149,7 @@ void OverviewGridEventHandler::HandleClickOrTap(ui::Event* event) {
     return;
   }
 
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     aura::Window* window = static_cast<views::View*>(event->target())
                                ->GetWidget()
                                ->GetNativeWindow();
@@ -159,7 +159,7 @@ void OverviewGridEventHandler::HandleClickOrTap(ui::Event* event) {
     // the event should be ignored).
     if (!SplitViewController::Get(window)->InSplitViewMode()) {
       int64_t display_id =
-          display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+          display::Screen::Get()->GetDisplayNearestWindow(window).id();
       Shell::Get()->app_list_controller()->GoHome(display_id);
     }
   } else {

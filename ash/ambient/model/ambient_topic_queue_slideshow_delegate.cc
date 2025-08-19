@@ -23,7 +23,7 @@ AmbientTopicQueueSlideshowDelegate::~AmbientTopicQueueSlideshowDelegate() =
 std::vector<gfx::Size> AmbientTopicQueueSlideshowDelegate::GetTopicSizes() {
   auto* ambient_container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_AmbientModeContainer);
-  gfx::Size display_size_px = display::Screen::GetScreen()
+  gfx::Size display_size_px = display::Screen::Get()
                                   ->GetDisplayNearestView(ambient_container)
                                   .GetSizeInPixel();
 

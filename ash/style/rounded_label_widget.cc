@@ -73,7 +73,7 @@ void RoundedLabelWidget::SetBoundsCenteredIn(const gfx::Rect& bounds_in_screen,
       window};
   window->SetBoundsInScreen(
       GetBoundsCenteredIn(bounds_in_screen),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+      display::Screen::Get()->GetDisplayNearestWindow(window));
 }
 
 }  // namespace ash

@@ -45,7 +45,7 @@ namespace {
 // Returns the display id for the display that shows the shelf for |view|.
 int64_t GetDisplayIdForView(const views::View* view) {
   aura::Window* window = view->GetWidget()->GetNativeWindow();
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+  return display::Screen::Get()->GetDisplayNearestWindow(window).id();
 }
 
 void ReportSmoothness(bool tablet_mode, bool launcher_visible, int smoothness) {
@@ -520,7 +520,7 @@ gfx::Rect ScrollableShelfView::GetTargetScreenBoundsOfItemIcon(
     // target bounds from RTL to LTR. (2) Calculates the icon's bounds in screen
     // under LTR. (3) Transforms the icon's bounds to RTL.
     gfx::Rect display_bounds =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(GetWidget()->GetNativeView())
             .bounds();
     hotseat_bounds_in_screen.set_x(display_bounds.right() -
@@ -2059,7 +2059,7 @@ gfx::Rect ScrollableShelfView::CalculateVisibleSpace(
 
 gfx::Insets ScrollableShelfView::CalculateRipplePaddingInsets() const {
   // Indicates whether it is in tablet mode with hotseat enabled.
-  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
 
   const int ripple_padding =
       ShelfConfig::Get()->scrollable_shelf_ripple_padding();
@@ -2078,7 +2078,7 @@ gfx::Insets ScrollableShelfView::CalculateRipplePaddingInsets() const {
 
 gfx::RoundedCornersF
 ScrollableShelfView::CalculateShelfContainerRoundedCorners() const {
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return gfx::RoundedCornersF();
   }
 
@@ -2265,7 +2265,7 @@ void ScrollableShelfView::EnableShelfRoundedCorners(bool enable) {
   // Only enable shelf rounded corners in tablet mode. Note that we allow
   // disabling rounded corners in clamshell. Because when switching to clamshell
   // from tablet, this method may be called after tablet mode ends.
-  if (enable && !display::Screen::GetScreen()->InTabletMode()) {
+  if (enable && !display::Screen::Get()->InTabletMode()) {
     return;
   }
 
@@ -2316,7 +2316,7 @@ bool ScrollableShelfView::ShouldEnableLayerClip() const {
     return true;
 
   // In clamshell, only use layer clip in overflow mode.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return false;
   }
 

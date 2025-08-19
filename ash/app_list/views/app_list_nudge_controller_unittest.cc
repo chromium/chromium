@@ -28,7 +28,7 @@ namespace ash {
 namespace {
 
 bool IsTabletMode() {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 // Returns the number of times the nudge has been shown. Note that the count

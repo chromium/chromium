@@ -88,7 +88,7 @@ bool ShouldShowSavedDesksOptions() {
 }
 
 bool ShouldShowSavedDesksOptionsForDesk(Desk* desk, DeskBarViewBase* bar_view) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return false;
   }
 

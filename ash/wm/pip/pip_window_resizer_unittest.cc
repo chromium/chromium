@@ -261,8 +261,7 @@ TEST_P(PipWindowResizerTest, PipWindowDragIsRestrictedToWorkArea) {
   // Specify point in parent as center so the drag point does not leave the
   // display. If the drag point is not in any display bounds, it causes the
   // window to be moved to the default display.
-  auto landscape =
-      display::Screen::GetScreen()->GetPrimaryDisplay().is_landscape();
+  auto landscape = display::Screen::Get()->GetPrimaryDisplay().is_landscape();
   int right_x = landscape ? 392 : 292;
   int bottom_y = landscape ? 292 : 392;
 
@@ -419,8 +418,7 @@ TEST_P(PipWindowResizerTest,
 }
 
 TEST_P(PipWindowResizerTest, PipWindowIsFlungToEdge) {
-  auto landscape =
-      display::Screen::GetScreen()->GetPrimaryDisplay().is_landscape();
+  auto landscape = display::Screen::Get()->GetPrimaryDisplay().is_landscape();
 
   {
     PreparePipWindow(gfx::Rect(200, 200, 100, 100));
@@ -477,8 +475,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungToEdge) {
 }
 
 TEST_P(PipWindowResizerTest, PipWindowIsFlungDiagonally) {
-  auto landscape =
-      display::Screen::GetScreen()->GetPrimaryDisplay().is_landscape();
+  auto landscape = display::Screen::Get()->GetPrimaryDisplay().is_landscape();
 
   {
     PreparePipWindow(gfx::Rect(200, 200, 100, 100));

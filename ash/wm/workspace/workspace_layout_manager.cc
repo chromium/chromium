@@ -399,7 +399,7 @@ void WorkspaceLayoutManager::OnPostWindowStateTypeChange(
 void WorkspaceLayoutManager::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
-  if (display::Screen::GetScreen()->GetDisplayNearestWindow(window_).id() !=
+  if (display::Screen::Get()->GetDisplayNearestWindow(window_).id() !=
       display.id()) {
     return;
   }
@@ -495,7 +495,7 @@ void WorkspaceLayoutManager::OnHotseatStateChanged(HotseatState old_state,
 
 void WorkspaceLayoutManager::OnAppListVisibilityChanged(bool shown,
                                                         int64_t display_id) {
-  if (display::Screen::GetScreen()->GetDisplayNearestWindow(window_).id() !=
+  if (display::Screen::Get()->GetDisplayNearestWindow(window_).id() !=
       display_id) {
     return;
   }

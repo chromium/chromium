@@ -155,7 +155,7 @@ std::vector<raw_ptr<aura::Window, VectorExperimental>> GetAppWindowList() {
 
 bool WaitForLauncherState(AppListViewState target_state,
                           base::OnceClosure closure) {
-  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
   if (in_tablet_mode) {
     // App-list can't enter kPeeking or kHalf state in tablet mode. Thus
     // |target_state| should be either kClosed, kFullscreenAllApps or

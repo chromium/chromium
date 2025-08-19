@@ -833,7 +833,7 @@ gfx::Rect ShelfAppButton::CalculateSmallRippleArea() const {
   // Add padding to the ink drop for the left-most and right-most app buttons in
   // the shelf when there is a non-zero padding between the app icon and the
   // end of scrollable shelf.
-  if (display::Screen::GetScreen()->InTabletMode() && padding > 0) {
+  if (display::Screen::Get()->InTabletMode() && padding > 0) {
     // Note that `current_index` may be nullopt while the button is fading out
     // after it's been removed from the model - for example, see
     // https://crbug.com/1355561.

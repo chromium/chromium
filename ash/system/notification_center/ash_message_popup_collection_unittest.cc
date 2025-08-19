@@ -73,7 +73,7 @@ namespace {
 class TestMessagePopupCollection : public AshMessagePopupCollection {
  public:
   explicit TestMessagePopupCollection(Shelf* shelf)
-      : AshMessagePopupCollection(display::Screen::GetScreen(), shelf) {}
+      : AshMessagePopupCollection(display::Screen::Get(), shelf) {}
 
   TestMessagePopupCollection(const TestMessagePopupCollection&) = delete;
   TestMessagePopupCollection& operator=(const TestMessagePopupCollection&) =
@@ -149,7 +149,7 @@ class AshMessagePopupCollectionTest : public AshTestBase {
 
   void UpdateWorkArea(AshMessagePopupCollection* popup_collection,
                       const display::Display& display) {
-    popup_collection->StartObserving(display::Screen::GetScreen(), display);
+    popup_collection->StartObserving(display::Screen::Get(), display);
     // Update the layout
     popup_collection->UpdateWorkArea();
   }
@@ -165,7 +165,7 @@ class AshMessagePopupCollectionTest : public AshTestBase {
 
   Position GetPositionInDisplay(const gfx::Point& point) {
     const gfx::Rect work_area =
-        display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+        display::Screen::Get()->GetPrimaryDisplay().work_area();
     const gfx::Point center_point = work_area.CenterPoint();
     if (work_area.x() > point.x() || work_area.y() > point.y() ||
         work_area.right() < point.x() || work_area.bottom() < point.y()) {
@@ -275,7 +275,7 @@ TEST_F(AshMessagePopupCollectionTest, AutoHide) {
   // Move down the mouse to show shelf. Popup should move up.
   ui::test::EventGenerator* generator = GetEventGenerator();
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   generator->MoveMouseTo(display_bounds.bottom_center());
   ASSERT_TRUE(TriggerShelfAutoHideTimeout());
   ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -334,7 +334,7 @@ TEST_F(AshMessagePopupCollectionTest, Extended) {
   display::Display second_display = GetSecondaryDisplay();
   Shelf* second_shelf =
       Shell::GetRootWindowControllerWithDisplayId(second_display.id())->shelf();
-  AshMessagePopupCollection for_2nd_display(display::Screen::GetScreen(),
+  AshMessagePopupCollection for_2nd_display(display::Screen::Get(),
                                             second_shelf);
   UpdateWorkArea(&for_2nd_display, second_display);
   // Make sure that the popup position on the secondary display is
@@ -586,13 +586,13 @@ TEST_F(AshMessagePopupCollectionTest, BaselineUpdates_InTabletMode) {
 
   // Baseline is higher than the top of the shelf after entering tablet mode.
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
             popup_collection->GetBaseline());
 
   // Baseline is higher than the top of the shelf after exiting tablet mode.
   tablet_mode_controller->SetEnabledForTest(false);
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
             popup_collection->GetBaseline());
 }
@@ -606,7 +606,7 @@ TEST_F(AshMessagePopupCollectionTest, BaselineUpdates_InAppMode) {
   // Enable tablet mode without an open window.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   auto previous_popup_collection_bottom =
       popup_collection->popup_collection_bounds().bottom();
   EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,
@@ -690,7 +690,7 @@ TEST_F(AshMessagePopupCollectionTest,
   // Move mouse to the shelf to make it show.
   ui::test::EventGenerator* generator = GetEventGenerator();
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   generator->MoveMouseTo(display_bounds.bottom_center());
   ASSERT_TRUE(TriggerShelfAutoHideTimeout());
   ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -810,7 +810,7 @@ TEST_F(AshMessagePopupCollectionTest,
   // Move mouse to the shelf to make it show.
   ui::test::EventGenerator* generator = GetEventGenerator();
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   generator->MoveMouseTo(display_bounds.bottom_center());
   ASSERT_TRUE(TriggerShelfAutoHideTimeout());
   ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -872,8 +872,8 @@ TEST_F(AshMessagePopupCollectionTest,
   display::Display second_display = GetSecondaryDisplay();
   Shelf* second_shelf =
       Shell::GetRootWindowControllerWithDisplayId(second_display.id())->shelf();
-  AshMessagePopupCollection secondary_popup_collection(
-      display::Screen::GetScreen(), second_shelf);
+  AshMessagePopupCollection secondary_popup_collection(display::Screen::Get(),
+                                                       second_shelf);
   UpdateWorkArea(&secondary_popup_collection, second_display);
 
   auto* primary_popup_collection = GetPrimaryPopupCollection();
@@ -992,7 +992,7 @@ TEST_F(AshMessagePopupCollectionTest, HistogramRecordedForSliderAndHotseat) {
 
   // Dragging up to show the hotseat.
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start = display_bounds.bottom_center();
   const gfx::Point end = start + gfx::Vector2d(0, -80);
   GetEventGenerator()->GestureScrollSequence(
@@ -1301,7 +1301,7 @@ TEST_F(AshMessagePopupCollectionTest,
 
   display::Display second_display = GetSecondaryDisplay();
   AshMessagePopupCollection secondary_popup_collection(
-      display::Screen::GetScreen(),
+      display::Screen::Get(),
       Shell::GetRootWindowControllerWithDisplayId(second_display.id())
           ->shelf());
   UpdateWorkArea(&secondary_popup_collection, second_display);

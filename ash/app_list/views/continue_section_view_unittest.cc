@@ -134,7 +134,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
   }
 
   ContinueSectionView* GetContinueSectionView() {
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       return GetAppListTestHelper()->GetFullscreenContinueSectionView();
     }
     return GetAppListTestHelper()->GetBubbleContinueSectionView();
@@ -145,14 +145,14 @@ class ContinueSectionViewTestBase : public AshTestBase {
   }
 
   views::View* GetRecentAppsView() {
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       return GetAppListTestHelper()->GetFullscreenRecentAppsView();
     }
     return GetAppListTestHelper()->GetBubbleRecentAppsView();
   }
 
   views::View* GetAppsGridView() {
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       return GetAppListTestHelper()->GetRootPagedAppsGridView();
     }
     return GetAppListTestHelper()->GetScrollableAppsGridView();
@@ -197,7 +197,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
   }
 
   SearchBoxView* GetSearchBoxView() {
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       return GetAppListTestHelper()->GetSearchBoxView();
     }
     return GetAppListTestHelper()->GetBubbleSearchBoxView();
@@ -349,7 +349,7 @@ class ContinueSectionViewWithReorderNudgeTest
   }
 
   AppListToastContainerView* GetToastContainerView() {
-    if (!display::Screen::GetScreen()->InTabletMode()) {
+    if (!display::Screen::Get()->InTabletMode()) {
       return GetAppListTestHelper()
           ->GetBubbleAppsPage()
           ->toast_container_for_test();

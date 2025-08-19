@@ -1232,8 +1232,7 @@ bool TouchExplorationController::ShouldEnableVolumeSlideGesture(
   // Can be nullptr in unit tests.
   int edge = FindEdgesWithinInset(event.location(), kMaxDistanceFromEdge);
   return edge & RIGHT_EDGE && edge != BOTTOM_RIGHT_CORNER &&
-         (!Shell::HasInstance() ||
-          display::Screen::GetScreen()->InTabletMode() ||
+         (!Shell::HasInstance() || display::Screen::Get()->InTabletMode() ||
           Shell::Get()
               ->accessibility_controller()
               ->enable_chromevox_volume_slide_gesture());

@@ -127,7 +127,7 @@ TEST_F(PointerMetricsRecorderTest, NonDownEventsInAllPointerHistogram) {
 // Verifies that down events from different combination of input type, form
 // factor and destination are recorded.
 TEST_F(PointerMetricsRecorderTest, DownEventPerCombination) {
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
                                                          display_id);

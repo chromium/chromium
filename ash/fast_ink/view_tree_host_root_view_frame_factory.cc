@@ -124,7 +124,7 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
       gfx::ScaleToCeiledSize(content_rect.size(), device_scale_factor);
 
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
 
   if (display.panel_rotation() == display::Display::ROTATE_90 ||
       display.panel_rotation() == display::Display::ROTATE_270) {

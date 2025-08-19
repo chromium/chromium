@@ -281,7 +281,7 @@ TEST_F(ShelfTooltipManagerTest, ShelfTooltipDoesNotAffectPipWindow) {
   ShowTooltipForFirstAppIcon();
   EXPECT_TRUE(tooltip_manager_->IsVisible());
 
-  auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto display = display::Screen::Get()->GetPrimaryDisplay();
   auto tooltip_bounds = GetTooltip()->GetWindowBoundsInScreen();
   tooltip_bounds.Intersect(CollisionDetectionUtils::GetMovementArea(display));
   EXPECT_FALSE(tooltip_bounds.IsEmpty());
@@ -297,7 +297,7 @@ TEST_F(ShelfTooltipManagerTest, ShelfTooltipClosesIfScroll) {
   ShowTooltipForFirstAppIcon();
   ASSERT_TRUE(tooltip_manager_->IsVisible());
   gfx::Point cursor_position_in_screen =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+      display::Screen::Get()->GetCursorScreenPoint();
   generator->ScrollSequence(cursor_position_in_screen, base::TimeDelta(), 0, 3,
                             10, 1);
   EXPECT_FALSE(tooltip_manager_->IsVisible());

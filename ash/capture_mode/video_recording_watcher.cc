@@ -79,8 +79,7 @@ bool AreWindowsOnSameDesk(aura::Window* window_1, aura::Window* window_2) {
 // Gets the mouse cursor location in the coordinates of the given |window|. Use
 // this if a mouse event is not available.
 gfx::PointF GetCursorLocationInWindow(aura::Window* window) {
-  gfx::PointF cursor_point(
-      display::Screen::GetScreen()->GetCursorScreenPoint());
+  gfx::PointF cursor_point(display::Screen::Get()->GetCursorScreenPoint());
   wm::ConvertPointFromScreen(window, &cursor_point);
   return cursor_point;
 }
@@ -231,7 +230,7 @@ VideoRecordingWatcher::VideoRecordingWatcher(
   if (recording_source_ == CaptureModeSource::kRegion)
     partial_region_bounds_ = controller_->user_capture_region();
 
-  display::Screen::GetScreen()->AddObserver(this);
+  display::Screen::Get()->AddObserver(this);
   window_being_recorded_->AddObserver(this);
 
   // Note the following:
@@ -295,7 +294,7 @@ void VideoRecordingWatcher::ShutDown() {
   // `window_being_recorded_` is not capturable.
   auto to_be_removed_request = std::move(non_root_window_capture_request_);
   window_being_recorded_->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
   controller_->camera_controller()->OnRecordingEnded();
 }
 
@@ -312,7 +311,7 @@ gfx::Rect VideoRecordingWatcher::GetCaptureSurfaceConfineBounds() const {
   DCHECK(window_being_recorded_);
   switch (recording_source_) {
     case CaptureModeSource::kFullscreen:
-      return display::Screen::GetScreen()
+      return display::Screen::Get()
           ->GetDisplayNearestWindow(window_being_recorded_)
           .work_area();
     case CaptureModeSource::kRegion: {
@@ -509,7 +508,7 @@ void VideoRecordingWatcher::OnDisplayMetricsChanged(
   }
 
   const int64_t display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(current_root_).id();
+      display::Screen::Get()->GetDisplayNearestWindow(current_root_).id();
   if (display_id != display.id())
     return;
 
@@ -810,8 +809,7 @@ void VideoRecordingWatcher::UpdateCursorOverlayNow(
   if (!cursor_capture_overlay_remote_)
     return;
 
-  if (force_cursor_overlay_hidden_ ||
-      display::Screen::GetScreen()->InTabletMode()) {
+  if (force_cursor_overlay_hidden_ || display::Screen::Get()->InTabletMode()) {
     HideCursorOverlay();
     return;
   }

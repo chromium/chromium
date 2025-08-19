@@ -29,8 +29,8 @@ constexpr SkColor kInnerColor = gfx::kGoogleBlue300;
 constexpr SkColor kOuterColor = gfx::kGoogleBlue600;
 
 display::Display GetPrimaryDisplay() {
-  DCHECK(display::Screen::GetScreen());
-  return display::Screen::GetScreen()->GetPrimaryDisplay();
+  DCHECK(display::Screen::Get());
+  return display::Screen::Get()->GetPrimaryDisplay();
 }
 }  // namespace
 

@@ -205,9 +205,8 @@ void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
 
   aura::Window* item0_window = item0->GetWindow();
   aura::Window* item1_window = item1->GetWindow();
-  const gfx::Rect work_area = display::Screen::GetScreen()
-                                  ->GetDisplayNearestWindow(item0_window)
-                                  .work_area();
+  const gfx::Rect work_area =
+      display::Screen::Get()->GetDisplayNearestWindow(item0_window).work_area();
   const bool is_horizontal = IsLayoutHorizontal(item0_window);
   item_widget_->SetBounds(gfx::ToRoundedRect(target_bounds));
 

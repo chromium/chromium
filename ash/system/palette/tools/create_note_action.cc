@@ -97,7 +97,7 @@ bool CreateNoteAction::ShouldShowOnDisplay() {
     return true;
 
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root);
+      display::Screen::Get()->GetDisplayNearestWindow(root);
   return display.IsInternal();
 }
 

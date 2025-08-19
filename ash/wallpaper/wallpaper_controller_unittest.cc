@@ -4577,9 +4577,9 @@ TEST_F(WallpaperControllerPrefTest, InitWithPrefs) {
   auto* root_window =
       wallpaper_view->GetWidget()->GetNativeWindow()->GetRootWindow();
 
-  EXPECT_EQ(gfx::Size(600, 800), display::Screen::GetScreen()
-                                     ->GetDisplayNearestWindow(root_window)
-                                     .size());
+  EXPECT_EQ(
+      gfx::Size(600, 800),
+      display::Screen::Get()->GetDisplayNearestWindow(root_window).size());
   EXPECT_EQ(root_window->bounds().size(), wallpaper_view->bounds().size());
 }
 

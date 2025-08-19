@@ -107,7 +107,7 @@ base::RepeatingCallback<void(ui::TrackedElement*)> DefaultNextButtonCallback() {
 }
 
 int64_t GetPrimaryDisplayId() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  return display::Screen::Get()->GetPrimaryDisplay().id();
 }
 
 views::View* GetMatchingViewInPrimaryRootWindow(
@@ -125,7 +125,7 @@ views::TrackedElementViews* GetMatchingElementInPrimaryRootWindow(
 void LaunchExploreAppAsync(UserEducationPrivateApiKey key) {
   UserEducationController::Get()->LaunchSystemWebAppAsync(
       key, ash::SystemWebAppType::HELP, apps::LaunchSource::kFromWelcomeTour,
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      display::Screen::Get()->GetPrimaryDisplay().id());
 }
 
 user_education::TutorialDescription::NameElementsCallback
@@ -574,7 +574,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   // prevented provided that (a) the user is new, and (b) the device is not in
   // tablet mode. This is in keeping with existing first run behavior.
   absl::Cleanup maybe_launch_explore_app_async = [] {
-    if (!display::Screen::GetScreen()->InTabletMode()) {
+    if (!display::Screen::Get()->InTabletMode()) {
       LaunchExploreAppAsync(UserEducationPrivateApiKey());
     }
   };
@@ -588,7 +588,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   }
 
   // Welcome Tour is not supported in tablet mode.
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     welcome_tour_metrics::RecordTourPrevented(
         prefs, welcome_tour_metrics::PreventedReason::kTabletModeEnabled);
     return;
@@ -661,7 +661,7 @@ void WelcomeTourController::OnWelcomeTourStarted() {
   nudge_pause_ = SystemNudgePauseManager::Get()->CreateScopedPause();
   scrim_ = std::make_unique<WelcomeTourScrim>();
   shell_observation_.Observe(Shell::Get());
-  display_observation_.Observe(display::Screen::GetScreen());
+  display_observation_.Observe(display::Screen::Get());
   toast_pause_ = ToastManager::Get()->CreateScopedPause();
   window_minimizer_ = std::make_unique<WelcomeTourWindowMinimizer>();
 
@@ -725,7 +725,7 @@ void WelcomeTourController::OnWelcomeTourEnded(
   // Attempt to launch the Explore app regardless of tour completion so long as
   // the device is not in tablet mode. This is in keeping with existing first
   // run behavior.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     LaunchExploreAppAsync(UserEducationPrivateApiKey());
     SetCurrentStep(welcome_tour_metrics::Step::kExploreAppWindow);
   }

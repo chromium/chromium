@@ -105,7 +105,7 @@ TEST_F(WindowUtilTest, MoveWindowToDisplay) {
   UpdateDisplay("500x400, 600x400");
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(12, 20, 100, 100)));
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const int64_t original_display_id =
       screen->GetDisplayNearestWindow(window.get()).id();
   EXPECT_EQ(screen->GetPrimaryDisplay().id(), original_display_id);
@@ -133,7 +133,7 @@ TEST_F(WindowUtilTest, MoveWindowToDisplay) {
 TEST_F(WindowUtilTest, MoveWindowToDisplayAndLockScreen) {
   UpdateDisplay("500x400, 600x400");
   auto window = CreateTestWindow(gfx::Rect(12, 20, 100, 100));
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   ASSERT_EQ(2, screen->GetNumDisplays());
   const int64_t primary_display_id = screen->GetAllDisplays()[0].id();
   const int64_t secondary_display_id = screen->GetAllDisplays()[1].id();

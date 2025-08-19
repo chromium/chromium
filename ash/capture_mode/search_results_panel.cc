@@ -332,7 +332,7 @@ void SearchResultsPanel::RefreshPanelBounds() {
 
   // Adjust the preferred size and bounds based on the current display.
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
   const gfx::Rect work_area_in_screen(display.work_area());
   if (!work_area_in_screen.Contains(widget_bounds_in_screen)) {

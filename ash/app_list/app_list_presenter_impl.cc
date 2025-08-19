@@ -510,7 +510,7 @@ int64_t AppListPresenterImpl::GetDisplayId() const {
   views::Widget* widget = view_ ? view_->GetWidget() : nullptr;
   if (!widget)
     return display::kInvalidDisplayId;
-  return display::Screen::GetScreen()
+  return display::Screen::Get()
       ->GetDisplayNearestView(widget->GetNativeView())
       .id();
 }

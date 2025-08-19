@@ -171,9 +171,8 @@ void VerifySnappedBounds(aura::Window* window, float expected_snap_ratio) {
   // `window` must be in any snapped state to use this method.
   ASSERT_TRUE(window_state->IsSnapped());
 
-  const bool in_tablet = display::Screen::GetScreen()->InTabletMode();
-  const auto display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  const bool in_tablet = display::Screen::Get()->InTabletMode();
+  const auto display = display::Screen::Get()->GetDisplayNearestWindow(window);
   const gfx::Rect work_area = display.work_area();
   const auto rotation = display.rotation();
   const bool is_primary =
@@ -351,7 +350,7 @@ class ClientControlledStateTest : public AshTestBase {
     ASSERT_TRUE(WindowState::Get(window)->IsSnapped());
 
     ui::test::EventGenerator* const generator = GetEventGenerator();
-    const bool in_tablet = display::Screen::GetScreen()->InTabletMode();
+    const bool in_tablet = display::Screen::Get()->InTabletMode();
     if (in_tablet) {
       auto* split_view_controller = SplitViewController::Get(window);
       const gfx::Rect divider_bounds =
@@ -373,9 +372,8 @@ class ClientControlledStateTest : public AshTestBase {
     event_generator->set_current_screen_location(
         gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint()));
 
-    const gfx::Rect work_area = display::Screen::GetScreen()
-                                    ->GetDisplayNearestWindow(window)
-                                    .work_area();
+    const gfx::Rect work_area =
+        display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
     event_generator->DragMouseTo(to_left ? work_area.left_center()
                                          : work_area.right_center());
   }
@@ -593,7 +591,7 @@ TEST_F(ClientControlledStateTest, SetBounds) {
 }
 
 TEST_F(ClientControlledStateTest, CenterWindow) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const gfx::Rect bounds = screen->GetPrimaryDisplay().work_area();
 
   gfx::Rect center_bounds = bounds;
@@ -1104,7 +1102,7 @@ TEST_F(ClientControlledStateTest, SnapInSecondaryDisplay) {
   UpdateDisplay("800x600, 600x500");
   widget()->SetBounds(gfx::Rect(800, 0, 100, 200));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   const int64_t second_display_id = screen->GetAllDisplays()[1].id();
   EXPECT_EQ(second_display_id, screen->GetDisplayNearestWindow(window()).id());
@@ -1226,7 +1224,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, SnapMinimizeAndUnminimize) {
 // for ClientControlledState.
 TEST_F(ClientControlledStateTest, AutoSnap) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
 
   // Snap enabled.
   widget_delegate()->EnableSnap();
@@ -1291,7 +1289,7 @@ TEST_F(ClientControlledStateTest, AutoSnap) {
 TEST_F(ClientControlledStateTest, AutoPartialSnap) {
   UpdateDisplay("900x600");
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
 
   // Snap enabled.
   widget_delegate()->EnableSnap();
@@ -1453,7 +1451,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, SnapAndRotate) {
 TEST_F(ClientControlledStateTest, ResizeToDismissSplitView) {
   UpdateDisplay("900x600");
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   auto* const split_view_controller = SplitViewController::Get(window());
 
   widget_delegate()->EnableSnap();
@@ -1554,7 +1552,7 @@ TEST_F(ClientControlledStateTest, DragCaptionToSnap) {
 
     // Drag it to the left edge of the screen.
     const gfx::Rect work_area =
-        display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+        display::Screen::Get()->GetPrimaryDisplay().work_area();
     next_cursor_point = target_state == WindowStateType::kPrimarySnapped
                             ? work_area.left_center()
                             : work_area.right_center();
@@ -1624,7 +1622,7 @@ TEST_F(ClientControlledStateTest, DragCaptionToUnsnap) {
 
   // Drag it to the center of the screen.
   const auto work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   next_cursor_point = work_area.CenterPoint();
   event_generator->MoveMouseTo(next_cursor_point);
   delegate()->set_window_state_request_callback(
@@ -1650,7 +1648,7 @@ TEST_F(ClientControlledStateTest, DragCaptionToUnsnap) {
 // Tests that swapping snapped windows works for client-controlled windows
 TEST_F(ClientControlledStateTest, SwapSnappedWindows) {
   ShellTestApi().SetTabletModeEnabledForTest(true);
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   UpdateDisplay("900x600");
   auto* const split_view_controller = SplitViewController::Get(window());
 
@@ -1709,7 +1707,7 @@ TEST_F(ClientControlledStateTest, ClamshellTabletConversionWithSnappedWindow) {
 
   // The scenario starts in clamshell mode.
   ShellTestApi().SetTabletModeEnabledForTest(false);
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
 
   // Create a normal (non-client-controlled) window in addition to `window()`
   // (client-controlled window) to fill the one side of the split view.
@@ -1914,7 +1912,7 @@ TEST_F(ClientControlledStateTest, ClosePinned) {
 TEST_F(ClientControlledStateTest, MoveWindowToDisplay) {
   UpdateDisplay("600x500, 600x500");
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   const int64_t first_display_id = screen->GetAllDisplays()[0].id();
   const int64_t second_display_id = screen->GetAllDisplays()[1].id();
@@ -1938,7 +1936,7 @@ TEST_F(ClientControlledStateTest, MoveWindowToDisplayOutOfBounds) {
   EXPECT_EQ(gfx::Rect(700, 0, kWidth, 200),
             widget()->GetWindowBoundsInScreen());
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   const int64_t first_display_id = screen->GetAllDisplays()[0].id();
   const int64_t second_display_id = screen->GetAllDisplays()[1].id();
@@ -1961,7 +1959,7 @@ TEST_F(ClientControlledStateTest, MoveWindowToDisplayOutOfBounds) {
 TEST_F(ClientControlledStateTest, DisconnectPrimary) {
   UpdateDisplay("600x500,600x500");
   SwapPrimaryDisplay();
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   auto old_primary_id = screen->GetPrimaryDisplay().id();
   EXPECT_EQ(old_primary_id, window_state()->GetDisplay().id());
   gfx::Rect bounds = window()->bounds();
@@ -1975,7 +1973,7 @@ TEST_F(ClientControlledStateTest, DisconnectPrimary) {
 TEST_F(ClientControlledStateTest,
        WmEventNormalIsResolvedToMaximizeInTabletMode) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   window_state()->window()->SetProperty(
       aura::client::kResizeBehaviorKey,
       aura::client::kResizeBehaviorCanMaximize);
@@ -2035,10 +2033,8 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
 
   // Start drag-resizing from the center point of the work area.
   auto* const event_generator = GetEventGenerator();
-  gfx::Point next_cursor_point = display::Screen::GetScreen()
-                                     ->GetPrimaryDisplay()
-                                     .work_area()
-                                     .CenterPoint();
+  gfx::Point next_cursor_point =
+      display::Screen::Get()->GetPrimaryDisplay().work_area().CenterPoint();
   event_generator->set_current_screen_location(next_cursor_point);
   event_generator->PressLeftButton();
   // Test the requested bounds do not change.
@@ -2124,7 +2120,7 @@ TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {
 
   // Enter tablet mode
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
 
   // Float window.
   const WindowFloatWMEvent float_event(
@@ -2179,7 +2175,7 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
 
   // Enter tablet mode
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
 
   // Float window.
   const WindowFloatWMEvent float_event(
@@ -2224,7 +2220,7 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
 
   // Rotation should update the bounds.
   Shell::Get()->display_manager()->SetDisplayRotation(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      display::Screen::Get()->GetPrimaryDisplay().id(),
       display::Display::ROTATE_90, display::Display::RotationSource::USER);
   // Manually call the rotation animation callback here as the animator is only
   // used when a wallpaper is set, and there is no easy way to fake a wallpaper
@@ -2351,7 +2347,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
   // Test rotate.
   ASSERT_TRUE(chromeos::wm::IsLandscapeOrientationForWindow(window()));
   Shell::Get()->display_manager()->SetDisplayRotation(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      display::Screen::Get()->GetPrimaryDisplay().id(),
       display::Display::ROTATE_90, display::Display::RotationSource::USER);
   ASSERT_FALSE(chromeos::wm::IsLandscapeOrientationForWindow(window()));
   EXPECT_EQ(InTabletMode()

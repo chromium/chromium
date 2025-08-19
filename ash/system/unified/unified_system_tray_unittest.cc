@@ -301,7 +301,7 @@ TEST_P(UnifiedSystemTrayTest, SliderBubbleMovesOnShelfAutohide) {
   widget->Show();
 
   // Start off the mouse nowhere near the shelf; the shelf should be hidden.
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   auto center = display.bounds().CenterPoint();
   auto bottom_center = display.bounds().bottom_center();
   bottom_center.set_y(bottom_center.y() - 1);
@@ -358,7 +358,7 @@ TEST_P(UnifiedSystemTrayTest, SliderBubbleMovesOnShelfAutohide) {
 TEST_P(UnifiedSystemTrayTest, ShowBubble_MultipleDisplays_OpenedOnSameDisplay) {
   // Initialize two displays with 800x700 resolution.
   UpdateDisplay("400+400-800x600,1220+400-800x600");
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   EXPECT_EQ(2, screen->GetNumDisplays());
 
   // The tray bubble for each display should be opened on the same display.

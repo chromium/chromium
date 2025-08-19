@@ -98,15 +98,15 @@ TEST_F(AcceleratorCommandsTest, CycleSwapPrimaryDisplay) {
       display_manager()->GetConnectedDisplayIdList();
 
   ShiftPrimaryDisplay();
-  int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   EXPECT_EQ(id_list[1], primary_id);
 
   ShiftPrimaryDisplay();
-  primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   EXPECT_EQ(id_list[2], primary_id);
 
   ShiftPrimaryDisplay();
-  primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   EXPECT_EQ(id_list[0], primary_id);
 }
 
@@ -130,15 +130,15 @@ TEST_F(AcceleratorCommandsTest, CycleMixedMirrorModeSwapPrimaryDisplay) {
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
 
   ShiftPrimaryDisplay();
-  int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   EXPECT_EQ(id_list[2], primary_id);
 
   ShiftPrimaryDisplay();
-  primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   EXPECT_EQ(id_list[0], primary_id);
 
   ShiftPrimaryDisplay();
-  primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   EXPECT_EQ(id_list[2], primary_id);
 }
 

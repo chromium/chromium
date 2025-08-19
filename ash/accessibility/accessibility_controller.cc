@@ -585,7 +585,7 @@ void ShowAccessibilityNotification(
         IDS_ASH_STATUS_TRAY_TOUCHPAD_DISABLED_TURN_ON));
 
   } else {
-    bool is_tablet = display::Screen::GetScreen()->InTabletMode();
+    bool is_tablet = display::Screen::Get()->InTabletMode();
 
     title = l10n_util::GetStringUTF16(
         type == A11yNotificationType::kSpokenFeedbackBrailleEnabled
@@ -1176,7 +1176,7 @@ AccessibilityController::AccessibilityController()
   g_instance = this;
 
   Shell::Get()->session_controller()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
+  display::Screen::Get()->AddObserver(this);
   CreateAccessibilityFeatures();
 
   accessibility_notification_controller_ =
@@ -1606,7 +1606,7 @@ void AccessibilityController::Shutdown() {
     feature->LogDurationMetric();
   }
 
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 
   // Clean up any child windows and widgets that might be animating out.

@@ -1414,16 +1414,15 @@ RootWindowController::BuildBirchMenuModelAdapter(
       wallpaper_widget_controller()->GetWidget(), source_type,
       base::BindOnce(&RootWindowController::OnMenuClosed,
                      base::Unretained(this)),
-      display::Screen::GetScreen()->InTabletMode(), /*for_chip_menu=*/false);
+      display::Screen::Get()->InTabletMode(), /*for_chip_menu=*/false);
 }
 
 std::unique_ptr<AppMenuModelAdapter>
 RootWindowController::BuildShelfMenuModelAdapter(
     ui::mojom::MenuSourceType source_type) {
-  const bool tablet_mode = display::Screen::GetScreen()->InTabletMode();
-  const int64_t display_id = display::Screen::GetScreen()
-                                 ->GetDisplayNearestWindow(GetRootWindow())
-                                 .id();
+  const bool tablet_mode = display::Screen::Get()->InTabletMode();
+  const int64_t display_id =
+      display::Screen::Get()->GetDisplayNearestWindow(GetRootWindow()).id();
   auto shelf_menu_model_adapter = std::make_unique<ShelfMenuModelAdapter>(
       std::make_unique<ShelfContextMenuModel>(nullptr, display_id,
                                               /*menu_in_shelf=*/false),

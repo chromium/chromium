@@ -37,8 +37,7 @@
 namespace ash {
 
 NotificationCenterTestApi::NotificationCenterTestApi()
-    : primary_display_id_(
-          display::Screen::GetScreen()->GetPrimaryDisplay().id()) {}
+    : primary_display_id_(display::Screen::Get()->GetPrimaryDisplay().id()) {}
 
 void NotificationCenterTestApi::ToggleBubble() {
   ToggleBubbleOnDisplay(primary_display_id_);

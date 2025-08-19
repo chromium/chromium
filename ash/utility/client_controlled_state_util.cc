@@ -148,8 +148,8 @@ void ClientControlledStateUtil::ApplyWindowStateRequest(
     ClientControlledState* client_controlled_state,
     chromeos::WindowStateType next_state) {
   std::optional<gfx::Rect> bounds;
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
-      window_state->window());
+  auto display =
+      display::Screen::Get()->GetDisplayNearestWindow(window_state->window());
 
   switch (next_state) {
     case chromeos::WindowStateType::kDefault:
@@ -205,8 +205,8 @@ void ClientControlledStateUtil::ApplyBoundsRequest(
     const gfx::Rect& bounds_in_display,
     int64_t display_id) {
   display::Display target_display;
-  CHECK(display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
-                                                              &target_display));
+  CHECK(display::Screen::Get()->GetDisplayWithDisplayId(display_id,
+                                                        &target_display));
   auto target_bounds = bounds_in_display;
   target_bounds.Offset(target_display.bounds().origin().x(),
                        target_display.bounds().origin().y());

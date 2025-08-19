@@ -52,8 +52,8 @@ constexpr char kUmaMetricsPrefixManualRestore[] =
 constexpr char kLoginPerfHistogramNameSuffix[] = ".TotalDuration";
 
 std::string GetDeviceModeSuffix() {
-  return display::Screen::GetScreen()->InTabletMode() ? "TabletMode"
-                                                      : "ClamshellMode";
+  return display::Screen::Get()->InTabletMode() ? "TabletMode"
+                                                : "ClamshellMode";
 }
 
 void ReportLoginThroughputEvent(const std::string& event_name,
@@ -225,7 +225,7 @@ void PostLoginMetricsRecorder::OnAllBrowserWindowsPresented(
     const base::TimeDelta duration = ts - timestamp_origin_.value();
     // Headless units do not report presentation time, so we only report
     // the histogram if primary display is functional.
-    if (display::Screen::GetScreen()->GetPrimaryDisplay().detected()) {
+    if (display::Screen::Get()->GetPrimaryDisplay().detected()) {
       uma_login_perf_.ReportOrSchedule(
           std::make_unique<MetricTime>("AllBrowserWindowsPresented", duration));
     }

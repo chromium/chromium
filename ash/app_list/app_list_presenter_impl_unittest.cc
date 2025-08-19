@@ -35,7 +35,7 @@ namespace ash {
 namespace {
 
 int64_t GetPrimaryDisplayId() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  return display::Screen::Get()->GetPrimaryDisplay().id();
 }
 
 class AppListPresenterImplTest : public AshTestBase {

@@ -121,7 +121,7 @@ SearchModel* GetSearchModel() {
 }
 
 int64_t GetPrimaryDisplayId() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  return display::Screen::Get()->GetPrimaryDisplay().id();
 }
 
 void EnableTabletMode(bool enable) {
@@ -679,8 +679,7 @@ class PopulatedAppListTest : public AshTestBase {
   }
 
   void RotateScreen() {
-    display::Display display =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+    display::Display display = display::Screen::Get()->GetPrimaryDisplay();
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_90,
         display::Display::RotationSource::ACTIVE);
@@ -2250,7 +2249,7 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationSmoke) {
   EnableTabletMode(tablet_mode_param());
   EnsureLauncherShown();
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
@@ -2271,7 +2270,7 @@ TEST_P(AppListBubbleAndTabletTest, ShutdownDuringRotationAnimationSmoke) {
   EnableTabletMode(tablet_mode_param());
   EnsureLauncherShown();
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
@@ -2297,7 +2296,7 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationWithFolderSmoke) {
   GestureTapOn(apps_grid_view_->GetItemViewAt(1));
   ASSERT_TRUE(AppListIsInFolderView());
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
@@ -2336,7 +2335,7 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationInSearchSmoke) {
   // The result list is updated asynchronously.
   base::RunLoop().RunUntilIdle();
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())

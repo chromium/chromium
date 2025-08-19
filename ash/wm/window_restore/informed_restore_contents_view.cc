@@ -127,7 +127,7 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
   contents_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
 
   aura::Window* root = Shell::GetRootWindowForDisplayId(
-      display::Screen::GetScreen()->GetDisplayMatching(contents_bounds).id());
+      display::Screen::Get()->GetDisplayMatching(contents_bounds).id());
 
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -193,7 +193,7 @@ void InformedRestoreContentsView::UpdatePrimaryContainerPreferredWidth(
     aura::Window* root_window,
     std::optional<bool> is_landscape) {
   const bool landscape_mode =
-      is_landscape.value_or(display::Screen::GetScreen()
+      is_landscape.value_or(display::Screen::Get()
                                 ->GetDisplayNearestWindow(root_window)
                                 .is_landscape());
   const int preferred_width =
@@ -322,9 +322,8 @@ InformedRestoreContentsView::CreateButtonContainerBuilder() {
 
 void InformedRestoreContentsView::CreateChildViews() {
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  const bool landscape_mode = display::Screen::GetScreen()
-                                  ->GetDisplayNearestWindow(root)
-                                  .is_landscape();
+  const bool landscape_mode =
+      display::Screen::Get()->GetDisplayNearestWindow(root).is_landscape();
 
   SetOrientation(landscape_mode ? views::BoxLayout::Orientation::kHorizontal
                                 : views::BoxLayout::Orientation::kVertical);

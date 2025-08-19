@@ -168,7 +168,7 @@ bool PointScanController::IsPointScanEnabled() {
 
 void PointScanController::SetSpeedDipsPerSecond(int speed_dips_per_second) {
   const gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   float width = display_bounds.width();
   float height = display_bounds.height();
   horizontal_range_layer_info_.animation_rate = width / speed_dips_per_second;

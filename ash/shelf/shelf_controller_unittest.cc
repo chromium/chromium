@@ -45,7 +45,7 @@ TEST_F(ShelfControllerTest, Shutdown) {
   // rotation animation being canceled).
   Shell::Get()->shelf_controller()->Shutdown();
   display_manager()->SetDisplayRotation(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      display::Screen::Get()->GetPrimaryDisplay().id(),
       display::Display::ROTATE_90, display::Display::RotationSource::ACTIVE);
   // Ash does not crash during cleanup.
 }
@@ -414,7 +414,7 @@ TEST_P(ShelfControllerPrefsTest, ShelfSettingsBetweenClamshellAndTabletMode) {
 
   // Verify that screen rotation does not change alignment or auto-hide.
   display_manager()->SetDisplayRotation(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      display::Screen::Get()->GetPrimaryDisplay().id(),
       display::Display::ROTATE_90, display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   if (is_shelf_auto_hide_separation_enabled()) {
@@ -538,7 +538,7 @@ TEST_P(ShelfControllerAppModeTest, AutoHideBehavior) {
   EXPECT_EQ(ShelfAutoHideBehavior::kAlwaysHidden, shelf->auto_hide_behavior());
 
   display_manager()->SetDisplayRotation(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      display::Screen::Get()->GetPrimaryDisplay().id(),
       display::Display::ROTATE_90, display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(ShelfAutoHideBehavior::kAlwaysHidden, shelf->auto_hide_behavior());
 

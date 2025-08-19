@@ -91,7 +91,7 @@ void CaptureWindowObserver::SetSelectedWindow(aura::Window* window,
   if (!controller->is_recording_in_progress())
     controller->camera_controller()->MaybeReparentPreviewWidget();
   capture_mode_session_->MaybeUpdateCaptureUisOpacity(
-      display::Screen::GetScreen()->GetCursorScreenPoint());
+      display::Screen::Get()->GetCursorScreenPoint());
 }
 
 void CaptureWindowObserver::OnWindowBoundsChanged(

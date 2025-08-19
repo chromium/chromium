@@ -123,7 +123,7 @@ class InSessionAuthDialogContentsViewTest : public AshTestBase {
   void OnEndAuthentication() { end_authentication_notifications_++; }
 
   void CenterDialogOnDisplay() {
-    auto bounds = display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+    auto bounds = display::Screen::Get()->GetPrimaryDisplay().work_area();
     bounds.ClampToCenteredSize(dialog_->GetContentsView()->GetPreferredSize());
     dialog_->SetBounds(bounds);
   }

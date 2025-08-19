@@ -385,7 +385,7 @@ void TabletModeMultitaskMenu::OnDisplayMetricsChanged(
     return;
 
   // Ignore changes to displays that aren't showing the menu.
-  if (display.id() != display::Screen::GetScreen()
+  if (display.id() != display::Screen::Get()
                           ->GetDisplayNearestView(widget_->GetNativeWindow())
                           .id()) {
     return;

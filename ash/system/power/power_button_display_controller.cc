@@ -102,7 +102,7 @@ void PowerButtonDisplayController::OnKeyEvent(ui::KeyEvent* event) {
   if (event->key_code() == ui::VKEY_POWER)
     return;
 
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     SetBacklightsForcedOff(false);
   }
 }
@@ -111,7 +111,7 @@ void PowerButtonDisplayController::OnMouseEvent(ui::MouseEvent* event) {
   if (event->flags() & ui::EF_IS_SYNTHESIZED)
     return;
 
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     SetBacklightsForcedOff(false);
   }
 }

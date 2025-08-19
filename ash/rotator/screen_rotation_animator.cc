@@ -480,7 +480,7 @@ void ScreenRotationAnimator::Rotate(
   // determine the stale status.
   rotation_request_id_++;
   const int64_t display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window_).id();
+      display::Screen::Get()->GetDisplayNearestWindow(root_window_).id();
   std::unique_ptr<ScreenRotationRequest> rotation_request =
       std::make_unique<ScreenRotationRequest>(rotation_request_id_, display_id,
                                               new_rotation, source, mode);

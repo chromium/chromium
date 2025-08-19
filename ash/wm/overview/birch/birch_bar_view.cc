@@ -474,9 +474,8 @@ void BirchBarView::Clear() {
 }
 
 gfx::Size BirchBarView::GetChipSize(aura::Window* root_window) const {
-  const gfx::Rect display_bounds = display::Screen::GetScreen()
-                                       ->GetDisplayNearestWindow(root_window)
-                                       .bounds();
+  const gfx::Rect display_bounds =
+      display::Screen::Get()->GetDisplayNearestWindow(root_window).bounds();
   // Always use the longest side of the display to calculate the chip width.
   const int max_display_dim =
       std::max(display_bounds.width(), display_bounds.height());

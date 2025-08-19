@@ -73,7 +73,7 @@ void TestLauncherAlignment(aura::Window* root,
                            ShelfAlignment alignment,
                            const gfx::Rect& expected) {
   Shelf::ForWindow(root)->SetAlignment(alignment);
-  EXPECT_EQ(expected.ToString(), display::Screen::GetScreen()
+  EXPECT_EQ(expected.ToString(), display::Screen::Get()
                                      ->GetDisplayNearestWindow(root)
                                      .work_area()
                                      .ToString());
@@ -829,7 +829,7 @@ TEST_F(ShelfWidgetTest, NoAnimationAfterDragPastIdealBounds) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const gfx::Point end(display_bounds.top_center());
   const base::TimeDelta kTimeDelta = base::Milliseconds(100);

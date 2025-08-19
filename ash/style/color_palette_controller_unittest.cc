@@ -497,7 +497,7 @@ TEST_F(ColorPaletteControllerTest, WallpaperChanged_TurnsOffKMeans) {
   SetUseKMeansPref(true);
   UpdateWallpaperColor(celebi_color);
   gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel();
   SkBitmap bitmap;
   bitmap.allocN32Pixels(display_size.width(), display_size.height(),
                         /*isOpaque=*/true);

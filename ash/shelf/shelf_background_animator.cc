@@ -227,7 +227,7 @@ SkColor ShelfBackgroundAnimator::GetBackgroundColor(
       break;
     case ShelfBackgroundType::kOverview:
       shelf_target_color =
-          display::Screen::GetScreen()->InTabletMode()
+          display::Screen::Get()->InTabletMode()
               ? ShelfConfig::Get()->GetMaximizedShelfColor(shelf_widget)
               : ShelfConfig::Get()->GetDefaultShelfColor(shelf_widget);
       break;

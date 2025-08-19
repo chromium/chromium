@@ -320,7 +320,7 @@ class LockContentsView::LockContentsViewLayout : public views::LayoutManager {
       return gfx::Size();
     }
     const display::Display& display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(
+        display::Screen::Get()->GetDisplayNearestWindow(
             host_->GetWidget()->GetNativeWindow());
     gfx::Size preferred_size = display.size();
     preferred_size.set_height(preferred_size.height() -
@@ -1458,8 +1458,7 @@ void LockContentsView::OnDisplayMetricsChanged(const display::Display& display,
   // Set bounds here so that the lock screen widget always shows up on the
   // primary display. Sometimes the widget bounds are incorrect in the case
   // where multiple external displays are used. See crbug.com/1031571.
-  GetWidget()->SetBounds(
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
+  GetWidget()->SetBounds(display::Screen::Get()->GetPrimaryDisplay().bounds());
 }
 
 void LockContentsView::OnKeyboardVisibilityChanged(bool is_visible) {

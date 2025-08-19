@@ -530,9 +530,9 @@ TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   const display::Display landscape_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]);
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]);
   const display::Display portrait_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]);
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]);
   ToggleOverview();
   // Overview starts with no split view drag indicator.
   auto* indicators = overview_session_->GetGridWithRootWindow(root_windows[0])

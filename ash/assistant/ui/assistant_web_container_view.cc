@@ -90,7 +90,7 @@ gfx::Size AssistantWebContainerView::CalculatePreferredSize(
           .height();
 
   const gfx::Rect work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(GetWidget()->GetNativeWindow())
           .work_area();
 

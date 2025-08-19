@@ -37,7 +37,7 @@ TEST_F(WindowPositionerTest, OpenDefaultWindowOnSecondDisplay) {
 
   // The window should be in the 2nd display with the default size.
   EXPECT_EQ("300x300", bounds.size().ToString());
-  EXPECT_TRUE(display::Screen::GetScreen()
+  EXPECT_TRUE(display::Screen::Get()
                   ->GetDisplayNearestWindow(second_root_window)
                   .bounds()
                   .Contains(bounds));

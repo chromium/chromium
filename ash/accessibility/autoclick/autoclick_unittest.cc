@@ -294,9 +294,8 @@ TEST_F(AutoclickTest, MovementThreshold) {
       // location should never get a click.
       FastForwardBy(full_delay * 2);
       EXPECT_EQ(2u, GetMouseEvents().size());
-      gfx::Rect display_bounds = display::Screen::GetScreen()
-                                     ->GetDisplayNearestWindow(root_window)
-                                     .bounds();
+      gfx::Rect display_bounds =
+          display::Screen::Get()->GetDisplayNearestWindow(root_window).bounds();
       EXPECT_EQ(center - gfx::Vector2d(display_bounds.origin().x(),
                                        display_bounds.origin().y()),
                 GetMouseEvents()[0].location());

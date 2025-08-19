@@ -511,7 +511,7 @@ TEST_F(TrayBackgroundViewTest, AutoHideShelfWithContextMenu) {
   // Move mouse to display the shelf.
   ui::test::EventGenerator* generator = GetEventGenerator();
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   generator->MoveMouseTo(display_bounds.bottom_center());
   ASSERT_TRUE(TriggerAutoHideTimeout(layout_manager));
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());

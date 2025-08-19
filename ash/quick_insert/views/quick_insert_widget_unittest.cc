@@ -164,11 +164,9 @@ TEST_F(QuickInsertWidgetTest, CreatesCenteredWidget) {
       QuickInsertWidget::CreateCentered(&delegate, gfx::Rect(10, 10, 10, 10));
   widget->Show();
 
-  EXPECT_EQ(widget->GetWindowBoundsInScreen().CenterPoint(),
-            display::Screen::GetScreen()
-                ->GetPrimaryDisplay()
-                .work_area()
-                .CenterPoint());
+  EXPECT_EQ(
+      widget->GetWindowBoundsInScreen().CenterPoint(),
+      display::Screen::Get()->GetPrimaryDisplay().work_area().CenterPoint());
 }
 
 }  // namespace

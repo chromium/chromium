@@ -104,7 +104,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
   aura::Window* window =
       CreateTestWindowInShellWithBounds(gfx::Rect(10, 20, 200, 100));
   wm::ActivateWindow(window);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   ASSERT_EQ(display_manager()->GetDisplayAt(0).id(),
             screen->GetDisplayNearestWindow(window).id());
   WindowState* window_state = WindowState::Get(window);
@@ -162,7 +162,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
 
 // Tests that movement follows cycling through sorted display id list.
 TEST_F(DisplayMoveWindowUtilTest, FourDisplays) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   int64_t primary_id = screen->GetPrimaryDisplay().id();
   // Layout:
   // [3][2]
@@ -232,7 +232,7 @@ TEST_F(DisplayMoveWindowUtilTest, NoMovementIfNotInCycleWindowList) {
           .Build();
 
   wm::ActivateWindow(window.get());
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
             screen->GetDisplayNearestWindow(window.get()).id());
 
@@ -261,7 +261,7 @@ TEST_F(DisplayMoveWindowUtilTest, KeepWindowBoundsIfNotChangedByUser) {
   aura::Window* window =
       CreateTestWindowInShellWithBounds(gfx::Rect(410, 20, 200, 400));
   wm::ActivateWindow(window);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(display_manager()->GetDisplayAt(1).id(),
             screen->GetDisplayNearestWindow(window).id());
   // Move window to display [p]. Its window bounds is adjusted by available work
@@ -301,7 +301,7 @@ TEST_F(DisplayMoveWindowUtilTest, AutoManaged) {
   window1->Hide();
   window1->Show();
   EXPECT_EQ(gfx::Rect(100, 20, 200, 100), window1->GetBoundsInScreen());
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
             screen->GetDisplayNearestWindow(window1).id());
 
@@ -347,7 +347,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowWithTransientChild) {
   std::unique_ptr<aura::Window> child =
       ChildTestWindowBuilder(window, gfx::Rect(20, 30, 40, 50)).Build();
   ::wm::AddTransientChild(window, child.get());
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
             screen->GetDisplayNearestWindow(window).id());
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
@@ -377,7 +377,7 @@ TEST_F(DisplayMoveWindowUtilTest, ActiveTransientChildWindow) {
   std::unique_ptr<views::Widget> child(CreateTestWidgetWithParent(
       views::Widget::InitParams::TYPE_WINDOW, window->GetNativeView(),
       gfx::Rect(20, 30, 40, 50), false));
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
             screen->GetDisplayNearestWindow(window->GetNativeWindow()).id());
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
@@ -421,7 +421,7 @@ TEST_F(DisplayMoveWindowUtilTest, TransientParentNotInCycleWindowList) {
   std::unique_ptr<views::Widget> child(
       CreateTestWidgetWithParent(views::Widget::InitParams::TYPE_WINDOW,
                                  w2.get(), gfx::Rect(20, 30, 40, 50), false));
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
             screen->GetDisplayNearestWindow(w1).id());
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
