@@ -479,6 +479,7 @@ HeapVector<HighlightLayer> HighlightOverlay::ComputeLayers(
 
 Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
     const Node* node,
+    const LayoutObject* layout_object,
     bool is_generated_text_fragment,
     std::optional<TextOffsetRange> dom_offsets,
     const HeapVector<HighlightLayer>& layers,
@@ -523,8 +524,10 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
            target.empty() && search.empty())
         << "no marker can ever apply to fragment items with generated text";
   } else {
+    DCHECK(layout_object);
     DCHECK(dom_offsets);
-    MarkerRangeMappingContext mapping_context(*text_node, *dom_offsets);
+    MarkerRangeMappingContext mapping_context(*text_node, *layout_object,
+                                              *dom_offsets);
     for (const auto& marker : custom) {
       std::optional<TextOffsetRange> marker_offsets =
           mapping_context.GetTextContentOffsets(*marker);

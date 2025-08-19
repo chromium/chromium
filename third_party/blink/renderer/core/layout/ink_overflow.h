@@ -26,6 +26,7 @@ class Font;
 class FragmentItem;
 class InlineCursor;
 class InlinePaintContext;
+class LayoutObject;
 class ShadowList;
 class Text;
 struct LogicalRect;
@@ -212,6 +213,7 @@ class CORE_EXPORT InkOverflow {
       const FragmentItem* fragment_item,
       const TextOffsetRange& fragment_dom_offsets,
       Text* node,
+      const LayoutObject&,
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,
@@ -224,6 +226,7 @@ class CORE_EXPORT InkOverflow {
       const FragmentItem* fragment_item,
       const TextOffsetRange& fragment_dom_offsets,
       Text* text_node,
+      const LayoutObject& layout_object,
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,

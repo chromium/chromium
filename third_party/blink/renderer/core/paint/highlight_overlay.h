@@ -237,6 +237,7 @@ class CORE_EXPORT HighlightOverlay {
   // and end transitions (edges) of the layers, in offset and layer order.
   static Vector<HighlightEdge> ComputeEdges(
       const Node*,
+      const LayoutObject*,
       bool is_generated_text_fragment,
       std::optional<TextOffsetRange> dom_offsets,
       const HeapVector<HighlightLayer>& layers,

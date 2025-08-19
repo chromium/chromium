@@ -164,46 +164,46 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
   layers = HighlightOverlay::ComputeLayers(GetDocument(), text, text_style,
                                            paint_style, paint_info, nullptr,
                                            none, none, none, none, none);
-  EXPECT_EQ(
-      HighlightOverlay::ComputeEdges(text, false, originating, layers, nullptr,
-                                     none, none, none, none, none),
-      (Vector<HighlightEdge>{}))
+  EXPECT_EQ(HighlightOverlay::ComputeEdges(text, text->GetLayoutObject(), false,
+                                           originating, layers, nullptr, none,
+                                           none, none, none, none),
+            (Vector<HighlightEdge>{}))
       << "should return no edges when nothing is highlighted";
 
   layers = HighlightOverlay::ComputeLayers(GetDocument(), text, text_style,
                                            paint_style, paint_info, &selection,
                                            none, none, none, none, none);
-  EXPECT_EQ(
-      HighlightOverlay::ComputeEdges(nullptr, false, originating, layers,
-                                     &selection, none, none, none, none, none),
-      (Vector<HighlightEdge>{
-          HighlightEdge{{1, 3},
-                        HighlightLayerType::kSelection,
-                        1,
-                        HighlightEdgeType::kStart},
-          HighlightEdge{{1, 3},
-                        HighlightLayerType::kSelection,
-                        1,
-                        HighlightEdgeType::kEnd},
-      }))
+  EXPECT_EQ(HighlightOverlay::ComputeEdges(nullptr, nullptr, false, originating,
+                                           layers, &selection, none, none, none,
+                                           none, none),
+            (Vector<HighlightEdge>{
+                HighlightEdge{{1, 3},
+                              HighlightLayerType::kSelection,
+                              1,
+                              HighlightEdgeType::kStart},
+                HighlightEdge{{1, 3},
+                              HighlightLayerType::kSelection,
+                              1,
+                              HighlightEdgeType::kEnd},
+            }))
       << "should still return non-marker edges when node is nullptr";
 
   layers = HighlightOverlay::ComputeLayers(GetDocument(), br, br_style,
                                            paint_style, paint_info, &selection,
                                            none, none, none, none, none);
-  EXPECT_EQ(
-      HighlightOverlay::ComputeEdges(br, false, originating, layers, &selection,
-                                     none, none, none, none, none),
-      (Vector<HighlightEdge>{
-          HighlightEdge{{1, 3},
-                        HighlightLayerType::kSelection,
-                        1,
-                        HighlightEdgeType::kStart},
-          HighlightEdge{{1, 3},
-                        HighlightLayerType::kSelection,
-                        1,
-                        HighlightEdgeType::kEnd},
-      }))
+  EXPECT_EQ(HighlightOverlay::ComputeEdges(br, br->GetLayoutObject(), false,
+                                           originating, layers, &selection,
+                                           none, none, none, none, none),
+            (Vector<HighlightEdge>{
+                HighlightEdge{{1, 3},
+                              HighlightLayerType::kSelection,
+                              1,
+                              HighlightEdgeType::kStart},
+                HighlightEdge{{1, 3},
+                              HighlightLayerType::kSelection,
+                              1,
+                              HighlightEdgeType::kEnd},
+            }))
       << "should still return non-marker edges when node is <br>";
 
   DocumentMarkerVector grammar;
@@ -222,9 +222,9 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
       GetDocument(), text, text_style, paint_style, paint_info, &selection,
       none, grammar, spelling, target, search);
   EXPECT_EQ(
-      HighlightOverlay::ComputeEdges(text, false, originating, layers,
-                                     &selection, none, grammar, spelling,
-                                     target, search),
+      HighlightOverlay::ComputeEdges(text, text->GetLayoutObject(), false,
+                                     originating, layers, &selection, none,
+                                     grammar, spelling, target, search),
       (Vector<HighlightEdge>{
           HighlightEdge{{1, 2},
                         HighlightLayerType::kGrammar,
@@ -284,9 +284,9 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
   TextOffsetRange originating2{4, 5};
 
   EXPECT_EQ(
-      HighlightOverlay::ComputeEdges(text, false, originating2, layers,
-                                     &selection, none, grammar, spelling,
-                                     target, search),
+      HighlightOverlay::ComputeEdges(text, text->GetLayoutObject(), false,
+                                     originating2, layers, &selection, none,
+                                     grammar, spelling, target, search),
       (Vector<HighlightEdge>{
           HighlightEdge{{1, 3},
                         HighlightLayerType::kSelection,
@@ -454,8 +454,8 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   //                                  ::search-text, not active
 
   Vector<HighlightEdge> edges = HighlightOverlay::ComputeEdges(
-      text, false, originating_dom_offsets, layers, nullptr, none, none, none,
-      none, none);
+      text, text->GetLayoutObject(), false, originating_dom_offsets, layers,
+      nullptr, none, none, none, none, none);
 
   // clang-format off
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges),
@@ -476,7 +476,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   //                                  ::search-text, not active
 
   Vector<HighlightEdge> edges2 = HighlightOverlay::ComputeEdges(
-      text, false, originating_dom_offsets, layers, &selection, custom,
+      text, text->GetLayoutObject(), false, originating_dom_offsets, layers, &selection, custom,
       grammar, spelling, target, none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges2),
@@ -576,7 +576,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   registry->ValidateHighlightMarkers();
   custom = marker_controller.MarkersFor(*text, DocumentMarker::MarkerTypes::CustomHighlight());
   Vector<HighlightEdge> edges3 = HighlightOverlay::ComputeEdges(
-      text, false, originating_dom_offsets, layers, &selection, custom,
+      text, text->GetLayoutObject(), false, originating_dom_offsets, layers, &selection, custom,
       grammar, spelling, target, none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges3),
@@ -671,7 +671,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   TextFragmentPaintInfo originating2{"", 8, 18};
   TextOffsetRange originating2_dom_offsets{8, 18};
   Vector<HighlightEdge> edges4 = HighlightOverlay::ComputeEdges(
-      text, false, originating2_dom_offsets, layers, &selection, custom,
+      text, text->GetLayoutObject(), false, originating2_dom_offsets, layers, &selection, custom,
       grammar, spelling,target,none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating2, layers, edges4),
@@ -747,7 +747,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   //                                  ::search-text, not active
 
   Vector<HighlightEdge> edges5 = HighlightOverlay::ComputeEdges(
-      text, false, originating2_dom_offsets, layers, nullptr, none,none,
+      text, text->GetLayoutObject(), false, originating2_dom_offsets, layers, nullptr, none,none,
       spelling, none, none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating2, layers, edges5),
@@ -782,7 +782,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   TextFragmentPaintInfo originating3{"", 1, 4};
   TextOffsetRange originating3_dom_offsets{1, 4};
   Vector<HighlightEdge> edges6 = HighlightOverlay::ComputeEdges(
-      text, false, originating3_dom_offsets, layers, &selection, custom,
+      text, text->GetLayoutObject(), false, originating3_dom_offsets, layers, &selection, custom,
       grammar, spelling, target, none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating3, layers, edges6),
@@ -805,7 +805,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   TextFragmentPaintInfo originating4{"", 25, 28};
   TextOffsetRange originating4_dom_offsets{25, 28};
   Vector<HighlightEdge> edges7 = HighlightOverlay::ComputeEdges(
-      text, false, originating4_dom_offsets, layers, &selection, custom,
+      text, text->GetLayoutObject(), false, originating4_dom_offsets, layers, &selection, custom,
       grammar, spelling, target, none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating4, layers, edges7),
