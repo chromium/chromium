@@ -61,6 +61,7 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "net/base/apple/guarded_fd.h"
+#include "net/socket/socket_apple.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_MAC)
@@ -815,12 +816,26 @@ int UDPSocketPosix::InternalSendTo(IOBuffer* buf,
     }
   }
 
-  int result = HANDLE_EINTR(sendto(socket_, buf->data(), buf_len, sendto_flags_,
-                                   addr, storage.addr_len));
-  if (result < 0)
+#if !defined(WORK_AROUND_CRBUG_40064248)
+  ssize_t result = HANDLE_EINTR(sendto(socket_, buf->data(), buf_len,
+                                       sendto_flags_, addr, storage.addr_len));
+#else   // !WORK_AROUND_CRBUG_40064248
+  ssize_t result = HANDLE_EINTR(SendtoAndDetectBogusReturnValue(
+      socket_, buf->data(), buf_len, sendto_flags_, addr, storage.addr_len));
+  if (result == kSendBogusReturnValueDetected) {
+    // https://crbug.com/40064248 is known to occur as a result of certain
+    // network configuration changes.
+    result = ERR_NETWORK_CHANGED;
+  } else
+#endif  // !WORK_AROUND_CRBUG_40064248
+  if (result < 0) {
     result = MapSystemError(errno);
-  if (result != ERR_IO_PENDING)
+  } else {
+    CHECK_LE(result, buf_len);
+  }
+  if (result != ERR_IO_PENDING) {
     LogWrite(result, buf->data(), address);
+  }
   return result;
 }
 

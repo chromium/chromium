@@ -5,6 +5,7 @@
 #ifndef NET_SOCKET_SOCKET_APPLE_H_
 #define NET_SOCKET_SOCKET_APPLE_H_
 
+#include <sys/socket.h>
 #include <sys/types.h>
 
 // This is a workaround for https://crbug.com/40064248. See also: b/283787255,
@@ -12,16 +13,18 @@
 //
 // In this bug, the `sendto` and `write` system calls, and the `send` wrapper
 // around `sendto`, appear to return bogus values under certain conditions. This
-// has been observed when writing to established IPv6 (AF_INET6) sockets
-// following certain network reconfigurations on the system. It occurs when
-// bringing up a utun-based VPN, when data sent via the socket would become
-// subject to the tunnel. The bug occurs on macOS 13.3 22E252 (2023-03-27) and
-// later OS versions.
+// has been observed when writing to established IPv6 (AF_INET6) sockets, both
+// TCP (SOCK_STREAM) and UDP (SOCK_DGRAM), following certain network
+// reconfigurations on the system. It occurs when bringing up a utun-based VPN,
+// when data sent via the socket would become subject to the tunnel. The bug
+// occurs on macOS 13.3 22E252 (2023-03-27) and later OS versions.
 //
-// This discussion focuses on `send` but the bug is identical for `sendto`; for
+// This discussion focuses on `sendto` but the bug is identical for `send`, as
+// `send` is a thin C wrapper tail-calling the `sendto` system call; for
 // `write`, substitute SYS_write = 4 for SYS_sendto = 133.
 //
-// ssize_t send(int fd, void const* buffer, size_t size, int flags)
+// ssize_t sendto(int fd, void const* buffer, size_t size, int flags, sockaddr
+//                const* address, socklen_t address_size)
 //
 // `size` contains the number of bytes in `buffer` to be sent via the socket
 // whose file descriptor is `fd`.
@@ -34,14 +37,13 @@
 //    accepted, or it may be less than `size` if the kernel did not accept the
 //    entire buffer (a “short write”).
 //
-// When the bug occurs, `send` appears to return successfully (not -1) but
+// When the bug occurs, `sendto` appears to return successfully (not -1) but
 // reports a bogus value in place of the number of bytes accepted.
 //  - On arm64 (including x86_64-on-arm64 via Rosetta translation), the bogus
-//    return value is the value of `fd` passed to `send`.
+//    return value is the value of `fd` passed to `sendto`.
 //  - On x86_64 (without binary translation), the bogus return value is the
 //    system call class (SYSCALL_CLASS_UNIX = 2) and number (SYS_sendto = 133),
-//    packed into a single integer: 0x2000085. `send` is a thin C wrapper
-//    tail-calling the `sendto` system call.
+//    packed into a single integer: 0x2000085.
 //
 // The characteristics of the bogus return value impact how easy it is to detect
 // the bug’s occurrence with a defensive return value checking technique.
@@ -60,14 +62,14 @@
 // bit used to distinguish successful from error returns.
 //  - On arm64, the system call number (SYS_sendto = 133) is stored in x16.
 //    Arguments are presented in w0 (the low 32 bits of x0) = fd, x1 = buffer,
-//    x2 = size, and w3 = flags. x0 is used for the return value or error
-//    number. cpsr.c (the carry flag of “nzcv”) is set for an error return, and
-//    clear for a successful return.
+//    x2 = size, w3 = flags, x4 = address, and w5 = address_size. x0 is used for
+//    the return value or error number. cpsr.c (the carry flag of “nzcv”) is set
+//    for an error return, and clear for a successful return.
 //  - On x86_64, the system call class and number (0x2000085) is stored in eax
 //    (the low 32 bits of rax). Arguments are presented in edi = fd, rsi =
-//    buffer, rdx = size, and ecx = flags. rax is used for the return value or
-//    error number. rflags.cf (the carry flag) is set for an error return, and
-//    clear for a successful return.
+//    buffer, rdx = size, ecx = flags, r8 = address, and r9d = address_size. rax
+//    is used for the return value or error number. rflags.cf (the carry flag)
+//    is set for an error return, and clear for a successful return.
 //
 // The bug occurs when the EJUSTRETURN path is incorrectly taken in the kernel
 // on system call return. xnu source code references are to xnu-11417.121.6,
@@ -121,17 +123,30 @@
 //
 // For slightly different reasons on each architecture, it is possible for the
 // secondary return value mechanism to fail to detect the bug’s occurrence when
-// size == 0. The bug cannot occur for a `send` on a TCP socket with size == 0,
-// because sending 0 bytes via TCP is a no-op, and an early-return path is taken
-// in the kernel without the bogus return value appearing. Thus, for any TCP
-// socket, the secondary return value provides robust and unambiguous detection
-// of the bug’s occurrence.
+// size == 0. The bug cannot occur for a `sendto` on a TCP socket with size ==
+// 0, because sending 0 bytes via TCP is a no-op, and an early-return path is
+// taken in the kernel without the bogus return value appearing. Thus, for any
+// TCP socket, the secondary return value alone provides robust and unambiguous
+// detection of the bug’s occurrence.
 //
-// The workaround is implemented in a bug-detecting wrapper around `send`.
-// Substitute the SendAndDetectBogusReturnValue wrapper for a call to `send`,
-// and when the bug occurs and is detected, its return value will be
-// kSendBogusReturnValueDetected. In all other respects, it behaves identically
-// to `send`.
+// A 0-byte `sendto` on a UDP socket is valid (it sends or queues a packet with
+// no data payload beyond the UDP header), so for a 0-byte `sendto`, the
+// secondary return register does not indicate the bug’s occurrence. Leveraging
+// the fact that a 0-byte successful `sendto` can only validly return 0, the
+// primary return value being nonzero can provide unambiguous detection of the
+// bug’s occurrence on x86_64. On arm64, there’s a small amount of potential
+// confusion in that w0 = fd, and 0 is valid as a file descriptor. Fortunately,
+// as a file descriptor, 0 is STDIN_FILENO, and this code is not likely to
+// manipulate a socket on the standard input stream, and even less likely to
+// `sendto` via an input stream (although this is by convention, not strict
+// requirement).
+//
+// The workaround is implemented in a bug-detecting wrapper around `sendto`.
+// Substitute the SendtoAndDetectBogusReturnValue wrapper for a call to
+// `sendto`, or SendAndDetectBogusReturnValue wrapper for a call to `send`, and
+// when the bug occurs and is detected, its return value will be
+// kSendBogusReturnValueDetected. In all other respects, the wrappers behave
+// identically to `sendto` and `send`.
 //
 // Assuming that `send` tail-calls `sendto`, and a successful `sendto` returns
 // immediately from the system call to its caller without modifying any
@@ -141,9 +156,11 @@
 // versions. However, there’s no guarantee that it must hold into the future,
 // and it’s possible that a future OS version might invalidate these
 // assumptions. In that case, this technique of detecting the bug’s occurrence
-// via x1 and rdx might be jeopardized. The TODO below, and one in
-// socket_apple.cc, are intended to mitigate against this possibility as soon as
-// a macOS version with the fix for this bug is published.
+// via x1 and rdx might be jeopardized. The TODO below covering compile-time
+// disabling of the workaround, and a similar one in socket_apple.cc covering
+// run-time disabling of the workaround, are intended to mitigate against this
+// possibility as soon as a macOS version with the fix for this bug is
+// published.
 //
 // Note that these assumptions are not valid for an error return from the system
 // call, and the secondary return register is not set during an error return
@@ -152,16 +169,16 @@
 
 // The assumptions above aren’t valid for certain sanitizers. Under Address
 // Sanitizer, some system calls are intercepted via interposition, so
-// libclang_rt.asan_osx_dynamic.dylib’s `wrap_send`, which does pre- and
-// post-processing around a call to `send`, will appear when the program expects
-// to call `send` directly. ASan’s interceptors exist between the wrapping that
-// this workaround implements and the underlying system call; the basis of
-// implementation for the ones relevant to this workaround is llvm
+// libclang_rt.asan_osx_dynamic.dylib’s `wrap_sendto`, which does pre- and
+// post-processing around a call to `sendto`, will appear when the program
+// expects to call `sendto` directly. ASan’s interceptors exist between the
+// wrapping that this workaround implements and the underlying system call; the
+// basis of implementation for the ones relevant to this workaround is llvm
 // compiler-rt/lib/sanitizer_common/sanitizer_common_interceptors.inc. Unaware
 // of the normally hidden secondary system call return register, ASan’s
 // interceptors may clobber it before this workaround’s wrapper has an
 // opportunity to examine it. Address Sanitizer and Thread Sanitizer’s runtime
-// libraries both expose `wrap_send`, so don’t attempt this workaround in ASan
+// libraries both expose `wrap_sendto`, so don’t attempt this workaround in ASan
 // or TSan builds.
 //
 // TODO(mark): In the future, when a version of macOS with a fix for FB19384824
@@ -178,18 +195,28 @@ namespace net {
 // negative to avoid being confused with any possible successful return value,
 // and it must not be -1 to avoid being confused with a normal errno-setting
 // error return. In-band signaling makes things easier for callers, because
-// `send` can be swapped out easily in favor of its wrapper, which can be used
-// equally well with HANDLE_EINTR as appropriate.
+// `send` and `sendto` can be swapped out easily in favor of their wrappers,
+// which can be used equally well with HANDLE_EINTR as appropriate.
 inline constexpr ssize_t kSendBogusReturnValueDetected = -2;
 static_assert(kSendBogusReturnValueDetected < 0 &&
               kSendBogusReturnValueDetected != -1);
 
-// Wrap `send`, returning kSendBogusReturnValueDetected when the bug’s
+// Wrap `sendto`, returning kSendBogusReturnValueDetected when the bug’s
 // occurrence is detected.
-ssize_t SendAndDetectBogusReturnValue(int fd,
-                                      void const* buffer,
-                                      size_t size,
-                                      int flags);
+ssize_t SendtoAndDetectBogusReturnValue(int fd,
+                                        void const* buffer,
+                                        size_t size,
+                                        int flags,
+                                        sockaddr const* address,
+                                        socklen_t address_size);
+
+// `send` is the same as `sendto` with the final two arguments zeroed.
+inline ssize_t SendAndDetectBogusReturnValue(int const fd,
+                                             void const* const buffer,
+                                             size_t const size,
+                                             int const flags) {
+  return SendtoAndDetectBogusReturnValue(fd, buffer, size, flags, nullptr, 0);
+}
 
 }  // namespace net
 
