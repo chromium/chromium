@@ -318,7 +318,12 @@ export class WebviewController {
       if (wasResponsive) {
         this.persistentState.onCommitAfterConnect(url);
       }
-      this.delegate.webviewPageCommit('regular');
+
+      // This forces the page to reload after navigation.
+      // TODO(b/439718538): revisit overall logic, this may be buggy.
+      if (loadTimeData.getBoolean('reloadAfterNavigation')) {
+        this.delegate.webviewPageCommit('regular');
+      }
     }
   }
 

@@ -939,6 +939,9 @@ const char kGlicAllowedOrigins[] = "glic-webui-allowed-origins";
 const char kGlicAutomation[] = "glic-automation";
 // Dev mode for glic only exposed via command line flag.
 const char kGlicDev[] = "glic-dev";
+// If this flag is set, then the page navigating will not trigger a reload.
+const char kGlicSkipReloadAfterNavigation[] =
+    "glic-skip-reload-after-navigation";
 // Whether additional logging is enabled in the glic api host.
 const char kGlicHostLogging[] = "glic-host-logging";
 #endif

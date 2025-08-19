@@ -293,6 +293,7 @@ extern const char kGlicOpenOnStartup[];
 extern const char kGlicAllowedOrigins[];
 extern const char kGlicAutomation[];
 extern const char kGlicDev[];
+extern const char kGlicSkipReloadAfterNavigation[];
 extern const char kGlicHostLogging[];
 #endif
 

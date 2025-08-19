@@ -123,6 +123,10 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   }
   source->AddString("glicAllowedOrigins", allowed_origins);
 
+  bool reload_after_navigation =
+      !command_line->HasSwitch(::switches::kGlicSkipReloadAfterNavigation);
+  source->AddBoolean("reloadAfterNavigation", reload_after_navigation);
+
   source->AddBoolean("enableDebug",
                      base::FeatureList::IsEnabled(features::kGlicDebugWebview));
 
