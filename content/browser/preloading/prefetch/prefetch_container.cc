@@ -256,6 +256,7 @@ PrefetchContainer::PrefetchContainer(
     : PrefetchContainer(
           std::make_unique<PrefetchRequest>(
               prefetch_type,
+              std::move(no_vary_search_hint),
               referring_render_frame_host.GetLastCommittedOrigin(),
               PrefetchRendererInitiatorInfo(
                   referring_render_frame_host,
@@ -263,7 +264,6 @@ PrefetchContainer::PrefetchContainer(
           PrefetchContainer::Key(referring_document_token, url),
           referrer,
           std::move(speculation_rules_tags),
-          std::move(no_vary_search_hint),
           referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
           std::move(preload_pipeline_info),
           std::move(attempt),
@@ -294,6 +294,7 @@ PrefetchContainer::PrefetchContainer(
     : PrefetchContainer(
           std::make_unique<PrefetchRequest>(
               prefetch_type,
+              std::move(no_vary_search_hint),
               referring_origin,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
           PrefetchContainer::Key(
@@ -301,7 +302,6 @@ PrefetchContainer::PrefetchContainer(
               url),
           referrer,
           /*speculation_rules_tags=*/std::nullopt,
-          std::move(no_vary_search_hint),
           referring_web_contents.GetBrowserContext()->GetWeakPtr(),
           std::move(preload_pipeline_info),
           std::move(attempt),
@@ -334,6 +334,7 @@ PrefetchContainer::PrefetchContainer(
     : PrefetchContainer(
           std::make_unique<PrefetchRequest>(
               prefetch_type,
+              std::move(no_vary_search_hint),
               referring_origin,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
           PrefetchContainer::Key(
@@ -341,7 +342,6 @@ PrefetchContainer::PrefetchContainer(
               url),
           referrer,
           /*speculation_rules_tags=*/std::nullopt,
-          std::move(no_vary_search_hint),
           browser_context->GetWeakPtr(),
           PreloadPipelineInfo::Create(
               /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
@@ -360,7 +360,6 @@ PrefetchContainer::PrefetchContainer(
     const PrefetchContainer::Key& key,
     const blink::mojom::Referrer& referrer,
     std::optional<SpeculationRulesTags> speculation_rules_tags,
-    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<BrowserContext> browser_context,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
@@ -375,7 +374,6 @@ PrefetchContainer::PrefetchContainer(
     : request_(std::move(request)),
       key_(key),
       referrer_(referrer),
-      no_vary_search_hint_(std::move(no_vary_search_hint)),
       speculation_rules_tags_(std::move(speculation_rules_tags)),
       browser_context_(std::move(browser_context)),
       request_id_(base::UnguessableToken::Create().ToString()),
@@ -1513,6 +1511,11 @@ void PrefetchContainer::UpdateReferrer(
   referrer_.policy = new_referrer_policy;
 }
 
+const std::optional<net::HttpNoVarySearchData>&
+PrefetchContainer::GetNoVarySearchHint() const {
+  return request().no_vary_search_hint();
+}
+
 void PrefetchContainer::AddClientHintsHeaders(
     const url::Origin& origin,
     net::HttpRequestHeaders* request_headers) {
@@ -1671,7 +1674,7 @@ bool PrefetchContainer::IsNoVarySearchHeaderMatch(const GURL& url) const {
 
 bool PrefetchContainer::ShouldWaitForNoVarySearchHeader(const GURL& url) const {
   const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint =
-      GetNoVarySearchHint();
+      request().no_vary_search_hint();
   return !GetNonRedirectHead() && no_vary_search_hint &&
          no_vary_search_hint->AreEquivalent(url, GetURL());
 }

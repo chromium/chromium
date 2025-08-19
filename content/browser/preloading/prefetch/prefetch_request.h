@@ -12,6 +12,7 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "net/http/http_no_vary_search_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
@@ -105,13 +106,18 @@ class CONTENT_EXPORT PrefetchBrowserInitiatorInfo final {
 // callers to construct `PrefetchRequest` instead of `PrefetchContainer`.
 class CONTENT_EXPORT PrefetchRequest final {
  public:
-  PrefetchRequest(const PrefetchType& prefetch_type,
-                  const std::optional<url::Origin>& referring_origin,
-                  std::variant<PrefetchRendererInitiatorInfo,
-                               PrefetchBrowserInitiatorInfo> info);
+  PrefetchRequest(
+      const PrefetchType& prefetch_type,
+      const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      const std::optional<url::Origin>& referring_origin,
+      std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
+          info);
   ~PrefetchRequest();
 
   const PrefetchType& prefetch_type() const { return prefetch_type_; }
+  const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint() const {
+    return no_vary_search_hint_;
+  }
   const std::optional<url::Origin>& referring_origin() const {
     return referring_origin_;
   }
@@ -128,6 +134,11 @@ class CONTENT_EXPORT PrefetchRequest final {
   // not the preftch proxy is used, and whether or not subresources are
   // prefetched.
   const PrefetchType prefetch_type_;
+
+  // The No-Vary-Search hint of the prefetch, which is specified by the
+  // speculation rules and can be different from actual
+  // `PrefetchContainer::no_vary_search_data_`.
+  const std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
 
   // The origin and URL that initiates the prefetch request.
   // For renderer-initiated prefetch, this is calculated by referring

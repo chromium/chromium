@@ -310,9 +310,9 @@ class CONTENT_EXPORT PrefetchContainer {
       const GURL& new_referrer_url,
       const network::mojom::ReferrerPolicy& new_referrer_policy);
 
-  const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint() const {
-    return no_vary_search_hint_;
-  }
+  // Equivalent to `request().no_vary_search_hint()`.
+  // Exposed for `PrefetchMatchResolver`.
+  const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint() const;
 
   base::WeakPtr<PrefetchContainer> GetWeakPtr() {
     return weak_method_factory_.GetWeakPtr();
@@ -705,7 +705,6 @@ class CONTENT_EXPORT PrefetchContainer {
       const PrefetchContainer::Key& key,
       const blink::mojom::Referrer& referrer,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       base::WeakPtr<BrowserContext> browser_context,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
@@ -818,10 +817,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // Unless this is set, `no_vary_search` helpers don't perform No-Vary-Search
   // matching for `this`, even if `GetHead()` has No-Vary-Search headers.
   std::optional<net::HttpNoVarySearchData> no_vary_search_data_;
-
-  // The No-Vary-Search hint of the prefetch, which is specified by the
-  // speculation rules and can be different from actual `no_vary_search_data_`.
-  const std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
 
   // The tags of the speculation rules that triggered this prefetch, and this
   // field is non-null if and only if this is created by SpeculationRules

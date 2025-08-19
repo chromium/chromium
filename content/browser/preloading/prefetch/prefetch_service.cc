@@ -529,8 +529,8 @@ bool PrefetchService::IsPrefetchDuplicate(
     //
     // This approach optimizes for determinism over minimizing wasted
     // or redundant prefetches.
-    bool nvs_hints_match =
-        no_vary_search_hint == prefetch_container->GetNoVarySearchHint();
+    bool nvs_hints_match = no_vary_search_hint ==
+                           prefetch_container->request().no_vary_search_hint();
     if (!nvs_hints_match) {
       continue;
     }
