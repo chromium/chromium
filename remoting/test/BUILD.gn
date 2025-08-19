@@ -202,4 +202,19 @@ if (enable_me2me_host && is_linux) {
       "//services/network:network_service",
     ]
   }
+
+  # A binary for testing the  service.
+  executable("corp_messaging_playground") {
+    testonly = true
+    sources = [
+      "corp_messaging_playground.cc",
+      "corp_messaging_playground.h",
+      "corp_messaging_playground_main.cc",
+    ]
+    deps = [
+      "//mojo/core/embedder",
+      "//remoting/base",
+      "//services/network:network_service",
+    ]
+  }
 }
