@@ -13,6 +13,7 @@
 #include <optional>
 
 #include "base/containers/adapters.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decrypt_config.h"
@@ -72,14 +73,14 @@ void RemoveByte(uint8_t* buffer, int pos, int end_pos) {
 // the |subsamples| vector describing the resulting AU.
 // Returns the allocated buffer holding the adjusted copy, or NULL if no size
 // adjustment was necessary.
-std::unique_ptr<uint8_t[]> AdjustAUForSampleAES(
+base::HeapArray<uint8_t> AdjustAUForSampleAES(
     const uint8_t* au,
     int* au_size,
     const Ranges<int>& protected_blocks,
     std::vector<SubsampleEntry>* subsamples) {
   DCHECK(subsamples);
   DCHECK(au_size);
-  std::unique_ptr<uint8_t[]> result;
+  base::HeapArray<uint8_t> result;
   int& au_end_pos = *au_size;
 
   // 1. Considering each protected block in turn, find any emulation prevention
@@ -115,8 +116,8 @@ std::unique_ptr<uint8_t[]> AdjustAUForSampleAES(
   // 2. If we actually found any EP3Bs, make a copy of the AU and then remove
   // the EP3Bs in the copy (we can't modify the original).
   if (adjustment) {
-    result.reset(new uint8_t[au_end_pos]);
-    uint8_t* temp = result.get();
+    result = base::HeapArray<uint8_t>::Uninit(au_end_pos);
+    uint8_t* temp = result.data();
     memcpy(temp, au, au_end_pos);
     for (const auto& epb : base::Reversed(epbs)) {
       RemoveByte(temp, epb, au_end_pos);
@@ -438,14 +439,14 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
   if (get_decrypt_config_cb_)
     base_decrypt_config = get_decrypt_config_cb_.Run();
 
-  std::unique_ptr<uint8_t[]> adjusted_au;
+  base::HeapArray<uint8_t> adjusted_au;
   std::vector<SubsampleEntry> subsamples;
   if (base_decrypt_config) {
     adjusted_au = AdjustAUForSampleAES(es, &access_unit_size, protected_blocks_,
                                        &subsamples);
     protected_blocks_.clear();
-    if (adjusted_au)
-      es = adjusted_au.get();
+    if (!adjusted_au.empty())
+      es = adjusted_au.data();
   }
 
   // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
