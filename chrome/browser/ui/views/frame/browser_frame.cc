@@ -135,6 +135,7 @@ BrowserFrame::BrowserFrame(BrowserView* browser_view)
 }
 
 BrowserFrame::~BrowserFrame() {
+  set_widget_closed();
   // Window placement is expected to be saved when the window closes. Under the
   // CLIENT_OWNS_WIDGET ownership scheme this signal is received in the
   // Widget destructor. `SaveWindowPlacement()` must be called here as this

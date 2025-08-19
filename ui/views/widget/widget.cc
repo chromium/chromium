@@ -1709,6 +1709,12 @@ void Widget::OnParentShouldPaintAsActiveChanged() {
 }
 
 void Widget::NotifyPaintAsActiveChanged() {
+  // In the case the Widget has closed do not notify paint as active changes to
+  // mitigate the risk of UAFs and attempted accesses to torn-down Widget
+  // subclass state.
+  if (widget_closed_) {
+    return;
+  }
   paint_as_active_callbacks_.Notify();
   if (native_widget_) {
     native_widget_->PaintAsActiveChanged();

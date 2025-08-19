@@ -1512,6 +1512,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // ui::ColorProviderSource:
   ui::ColorProviderKey GetColorProviderKey() const override;
 
+  void set_widget_closed() { widget_closed_ = true; }
+
  private:
   // Type of ways to ignore activation changes.
   enum class DisableActivationChangeHandlingType {
