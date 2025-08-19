@@ -4716,6 +4716,10 @@
       status: "experimental",
     },
     {
+      name: "SystemDefaultAccentColors",
+      status: "stable",
+    },
+    {
       // This is used for emoji variation selectors support in system
       // fallback matching. This is a workaround solution that helps to
       // avoid incorrect font matching due to lack of cmap format 14
