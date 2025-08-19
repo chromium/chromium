@@ -153,7 +153,7 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
         steps += WaitForElementVisible(kNtpElementId, GetActionButtonPath());
         break;
       case Eligibility::kCompleted:
-        steps += WaitForActionIcon("ntp-promo:completed");
+        steps += WaitForActionIcon("cr:check");
         steps += EnsureNotVisible(kNtpElementId, GetActionButtonPath());
         break;
       case Eligibility::kIneligible:

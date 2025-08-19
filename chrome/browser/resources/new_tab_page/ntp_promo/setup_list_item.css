@@ -17,9 +17,9 @@
   --setup-list-action-button-foreground: var(--color-sys-on-surface);
   --setup-list-action-button-icon-size: 20px;
   --setup-list-action-button-size: 32px;
-  --setup-list-completed-foreground: var(--color-sys-on-surface-subtle);
+  --setup-list-completed-foreground: var(--color-sys-state-disabled);
   --setup-list-completed-icon-background: var(--color-sys-neutral-container);
-  --setup-list-completed-icon-foreground: var(--color-sys-tertiary);
+  --setup-list-completed-icon-foreground: var(--color-sys-on-surface-subtle);
   --setup-list-element-spacing: 24px;
   --setup-list-icon-background: var(--color-sys-tonal-container);
   --setup-list-icon-foreground: var(--color-sys-on-tonal-container);

@@ -3,7 +3,7 @@
      found in the LICENSE file. -->
 
   <cr-icon id="bodyIcon" class="${this.completed ? 'completed' : ''}"
-      icon="ntp-promo:${this.completed ? 'completed' : this.bodyIconName}">
+      icon="${this.completed ? 'cr:check' : 'ntp-promo:' + this.bodyIconName}">
   </cr-icon>
   <p id="bodyText" class="${this.completed ? 'completed' : ''}">
     ${this.bodyText}

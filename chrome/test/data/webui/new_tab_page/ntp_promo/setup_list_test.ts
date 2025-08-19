@@ -94,17 +94,18 @@ suite('SetupListTest', () => {
     assertDeepEquals(expected, actual);
     assertEquals(2, getPromoCount());
 
-    // Completed promos come first.
+    // Pending promos come first.
     let setupList = getPromoAt(0);
+    assertFalse(setupList.completed);
+    assertEquals(promos[0]!.bodyText, setupList.$.bodyText.innerText);
+    assertEquals(promos[0]!.buttonText, setupList.$.actionButton.ariaLabel);
+
+    // Then completed promos.
+    setupList = getPromoAt(1);
     assertTrue(setupList.completed);
     assertEquals(promos[1]!.bodyText, setupList.$.bodyText.innerText);
     assertNull(setupList.querySelector('#actionButton'));
 
-    // Then uncompleted promos.
-    setupList = getPromoAt(1);
-    assertFalse(setupList.completed);
-    assertEquals(promos[0]!.bodyText, setupList.$.bodyText.innerText);
-    assertEquals(promos[0]!.buttonText, setupList.$.actionButton.ariaLabel);
   });
 
   test('set too many promos', async () => {

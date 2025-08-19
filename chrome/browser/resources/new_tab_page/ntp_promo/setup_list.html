@@ -41,18 +41,18 @@
     @info-button-click="${this.onInfoButtonClick_}">
 </ntp-module-header-v2>
 <div id="promos" @ntp-promo-click="${this.onPromoClick_}">
-  ${this.completedPromos_.map(item => html`
-    <setup-list-item
-        completed="true"
-        body-text="${item.bodyText}"
-        promo-id="${item.id}">
-    </setup-list-item>
-  `)}
   ${this.eligiblePromos_.map(item => html`
     <setup-list-item
         body-icon-name="${item.iconName}"
         body-text="${item.bodyText}"
         action-button-text="${item.buttonText}"
+        promo-id="${item.id}">
+    </setup-list-item>
+  `)}
+  ${this.completedPromos_.map(item => html`
+    <setup-list-item
+        completed="true"
+        body-text="${item.bodyText}"
         promo-id="${item.id}">
     </setup-list-item>
   `)}
