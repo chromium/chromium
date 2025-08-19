@@ -600,7 +600,7 @@ TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
 }
 
 GURL GetUrlForAim(TemplateURLService* turl_service,
-                  const std::string& aim_entrypoint,
+                  omnibox::ChromeAimEntryPoint aim_entrypoint,
                   const base::Time& query_start_time,
                   const std::u16string& query_text) {
   const TemplateURLRef& url_ref =
@@ -611,8 +611,9 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
       search_term_args, turl_service->search_terms_data()));
   // This param triggers AI mode as opposed to traditional search.
   result_url = net::AppendOrReplaceQueryParameter(result_url, "udm", "50");
-  result_url =
-      net::AppendOrReplaceQueryParameter(result_url, "aep", aim_entrypoint);
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, "aep",
+      base::NumberToString(static_cast<int>(aim_entrypoint)));
   base::Time query_submission_time = base::Time::Now();
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kClientUploadDurationQueryParameter,
@@ -627,7 +628,7 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
 
 GURL GetUrlForMultimodalAim(
     TemplateURLService* turl_service,
-    const std::string& aim_entrypoint,
+    omnibox::ChromeAimEntryPoint aim_entrypoint,
     const base::Time& query_start_time,
     const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,

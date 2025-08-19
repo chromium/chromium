@@ -492,6 +492,7 @@ source_set("utils") {
     ":feature_flags",
     "//components/search_engines",
     "//ios/chrome/browser/first_run/ui_bundled:utils",
+    "//third_party/omnibox_proto",
   ]
   public_deps = [ "//base" ]
 }

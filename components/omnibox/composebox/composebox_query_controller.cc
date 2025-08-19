@@ -39,6 +39,7 @@
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/omnibox/composebox/composebox_image_helper.h"
@@ -59,7 +60,6 @@ constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
 // surface values.
-constexpr char kEntrypointParameterValue[] = "42";
 constexpr char kLnsSurfaceParameterValue[] = "47";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
@@ -217,7 +217,8 @@ GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
               lens::RequestIdUpdateMode::kSearchUrl);
       request_id->set_media_type(last_file->request_id_->media_type());
       return GetUrlForMultimodalAim(
-          template_url_service_, kEntrypointParameterValue, query_start_time,
+          template_url_service_,
+          omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT, query_start_time,
           cluster_info_->search_session_id(), std::move(request_id),
           last_file->mime_type_,
           send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
@@ -228,7 +229,8 @@ GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
   // not valid, as unimodal text queries.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
   // expiration.
-  return GetUrlForAim(template_url_service_, kEntrypointParameterValue,
+  return GetUrlForAim(template_url_service_,
+                      omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
                       query_start_time, base::UTF8ToUTF16(query_text));
 }
 

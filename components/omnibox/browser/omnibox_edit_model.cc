@@ -77,6 +77,7 @@
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -742,8 +743,6 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 }
 
 void OmniboxEditModel::OpenAiMode() {
-  constexpr char kEntrypointParameterValue[] = "48";
-
   std::u16string query_text;
   if (popup_selection_.line != OmniboxPopupSelection::kNoMatch) {
     query_text = autocomplete_controller()
@@ -754,7 +753,7 @@ void OmniboxEditModel::OpenAiMode() {
 
   GURL ai_mode_url =
       GetUrlForAim(controller_->client()->GetTemplateURLService(),
-                   kEntrypointParameterValue,
+                   omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
                    /*query_start_time=*/base::Time::Now(), query_text);
   controller_->client()->OpenUrl(ai_mode_url);
 }

@@ -33,6 +33,7 @@
 #include "components/search_engines/util.h"
 #include "components/search_provider_logos/switches.h"
 #include "net/base/url_util.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -43,9 +44,6 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
-// ANDROID_CHROME_NTP_FAKE_OMNIBOX_ENTRY_POINT = 43;
-const char kAdditionalAepFakeBoxValue[] = "43";
-
 TemplateURLData CreatePlayAPITemplateURLData(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jname,
@@ -317,8 +315,9 @@ TemplateUrlServiceAndroid::GetComposeplateUrl(
   }
 
   return url::GURLAndroid::FromNativeGURL(
-    env, GetUrlForAim(template_url_service_, kAdditionalAepFakeBoxValue,
-                      /*query_start_time=*/base::Time::Now()));
+      env, GetUrlForAim(template_url_service_,
+                        omnibox::ANDROID_CHROME_NTP_FAKE_OMNIBOX_ENTRY_POINT,
+                        /*query_start_time=*/base::Time::Now()));
 }
 
 base::android::ScopedJavaLocalRef<jobject>
