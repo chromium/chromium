@@ -318,7 +318,6 @@ bool IsDateFieldType(FieldType field_type) {
     case NATIONAL_ID_CARD_ISSUING_COUNTRY:
     case REDRESS_NUMBER:
     case KNOWN_TRAVELER_NUMBER:
-    case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
     case MAX_VALID_FIELD_TYPE:
       return false;
     case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
@@ -329,6 +328,7 @@ bool IsDateFieldType(FieldType field_type) {
     case DRIVERS_LICENSE_ISSUE_DATE:
     case NATIONAL_ID_CARD_EXPIRATION_DATE:
     case NATIONAL_ID_CARD_ISSUE_DATE:
+    case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
       return true;
   }
   NOTREACHED();
