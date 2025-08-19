@@ -780,8 +780,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_URL},
       {"glicTabAccessWhenOn1",
        IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_1},
-      {"glicTabAccessWhenOn2",
-       IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_2},
       {"glicTabAccessConsider1",
        IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1},
       {"glicTabAccessConsider1LearnMoreLabel",
