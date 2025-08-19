@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -86,7 +87,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
@@ -245,7 +245,7 @@ public class IdentityDiscControllerTest {
     @MediumTest
     // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
     // is the min version that supports the local UPM backend, to avoid
-    // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
+    // SyncError.UPM_BACKEND_OUTDATED.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testIdentityDiscSignedIn() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
@@ -277,7 +277,7 @@ public class IdentityDiscControllerTest {
     @MediumTest
     // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
     // is the min version that supports the local UPM backend, to avoid
-    // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
+    // SyncError.UPM_BACKEND_OUTDATED.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testIdentityDiscSignedIn_nonDisplayableEmail() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
@@ -421,12 +421,12 @@ public class IdentityDiscControllerTest {
                                     mActivityTestRule.getActivity(), profileSupplier);
 
                     Assert.assertEquals(
-                            UserActionableError.NONE, identityDiscController.getIdentityError());
+                            SyncError.NO_ERROR, identityDiscController.getIdentityError());
 
                     profileSupplier.set(ProfileManager.getLastUsedRegularProfile());
 
                     Assert.assertEquals(
-                            UserActionableError.NEEDS_CLIENT_UPGRADE,
+                            SyncError.CLIENT_OUT_OF_DATE,
                             identityDiscController.getIdentityError());
                 });
     }
@@ -472,7 +472,7 @@ public class IdentityDiscControllerTest {
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
     // is the min version that supports the local UPM backend, to avoid
-    // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
+    // SyncError.UPM_BACKEND_OUTDATED.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testIdentityDisc_signedIn(boolean nightModeEnabled) throws IOException {
         // Sign-in and wait for the user profile image to appear.
@@ -505,7 +505,7 @@ public class IdentityDiscControllerTest {
     @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
     // is the min version that supports the local UPM backend, to avoid
-    // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
+    // SyncError.UPM_BACKEND_OUTDATED.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testIdentityDisc_signedIn_unoPhase2FollowUpEnabled_noIdentityError(
             boolean nightModeEnabled) throws IOException {

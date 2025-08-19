@@ -75,7 +75,6 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
@@ -866,7 +865,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                 return false;
             }
             // Return true if there is any error.
-            return SyncSettingsUtils.getSyncError(profile) != UserActionableError.NONE;
+            return SyncSettingsUtils.getSyncError(profile) != SyncSettingsUtils.SyncError.NO_ERROR;
         }
         return false;
     }
@@ -882,7 +881,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             if (profile == null) {
                 return null;
             }
-            if (SyncSettingsUtils.getSyncError(profile) != UserActionableError.NONE) {
+            if (SyncSettingsUtils.getSyncError(profile) != SyncSettingsUtils.SyncError.NO_ERROR) {
                 return mContext.getString(R.string.menu_settings_account_error);
             }
         }

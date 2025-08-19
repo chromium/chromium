@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -64,7 +65,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
-import org.chromium.components.sync.UserActionableError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -353,16 +353,16 @@ public class SyncErrorMessageTest {
     @LargeTest
     public void testSyncErrorMessageNotShownForUpmBackendOutdatedSignedInUsers() {
         // Sign in.
-        mFakeSyncServiceImpl.setRequiresUpmBackendUpgrade(true);
+        doReturn(true).when(mPasswordManagerUtilBridgeJniMock).isGmsCoreUpdateRequired();
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        @UserActionableError
+        @SyncSettingsUtils.SyncError
         int syncError =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return SyncSettingsUtils.getSyncError(
                                     mSyncTestRule.getProfile(/* incognito= */ false));
                         });
-        Assert.assertEquals(UserActionableError.NEEDS_UPM_BACKEND_UPGRADE, syncError);
+        Assert.assertEquals(SyncSettingsUtils.SyncError.UPM_BACKEND_OUTDATED, syncError);
 
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         verifyHasNeverShownMessage();

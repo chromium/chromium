@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
@@ -40,7 +41,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
 
@@ -232,7 +232,7 @@ public class SignInPreference extends Preference
         setViewEnabledAndShowAlertIcon(
                 /* enabled= */ true,
                 /* alertIconVisible= */ SyncSettingsUtils.getSyncError(mProfile)
-                        != UserActionableError.NONE);
+                        != SyncError.NO_ERROR);
         setOnPreferenceClickListener(null);
 
         mWasGenericSigninPromoDisplayed = false;
