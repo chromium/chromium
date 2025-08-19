@@ -14,8 +14,7 @@ namespace {
 // by the RFHInitRoot() to at least the same as a spare renderer.
 // The renderer taken by RFHInitRoot() may benefit subsequent navigations
 // in that new frame.
-BASE_FEATURE(kTreatRFHInitRootAsForNavigation,
-             "TreatRFHInitRootAsForNavigation",
+BASE_FEATURE(TreatRFHInitRootAsForNavigation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 

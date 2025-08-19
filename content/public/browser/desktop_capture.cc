@@ -45,16 +45,13 @@ bool CGDisplayStreamCreateIsAvailable() {
 // Enabled-by-default, but exists as a kill-switch.
 // TODO(crbug.com/409473386): Remove this flag once it has been in stable for a
 // few milestones.
-BASE_FEATURE(kUseHeuristicForWindowsFullScreenPowerPoint,
-             "UseHeuristicForWindowsFullScreenPowerPoint",
+BASE_FEATURE(UseHeuristicForWindowsFullScreenPowerPoint,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the rollout of a finch experiment.
 // TODO(crbug.com/409473386): Remove this feature once it has been rolled out to
 // stable for a few milestones.
-BASE_FEATURE(kUseFullScreenHeuristicForWgc,
-             "UseFullScreenHeuristicForWgc",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(UseFullScreenHeuristicForWgc, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 namespace content::desktop_capture {
@@ -72,8 +69,7 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
 
   // TODO(crbug.com/webrtc/15045): Possibly remove this flag. Keeping for now
   // to force fallback to GDI.
-  static BASE_FEATURE(kDirectXCapturer, "DirectXCapturer",
-                      base::FEATURE_ENABLED_BY_DEFAULT);
+  static BASE_FEATURE(DirectXCapturer, base::FEATURE_ENABLED_BY_DEFAULT);
   if (base::FeatureList::IsEnabled(kDirectXCapturer)) {
     // Results in DirectX as main capture API and GDI as fallback solution.
     options.set_allow_directx_capturer(true);
