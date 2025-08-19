@@ -1615,6 +1615,20 @@ ExtensionFunction::ResponseAction DeveloperPrivatePackDirectoryFunction::Run() {
   base::FilePath key_file = base::FilePath::FromUTF8Unsafe(key_path_str_);
 
   developer::PackDirectoryResponse response;
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(b/433416481): Make SelectFileDialog return a virtual document path and
+  // remove this code.
+  std::optional<base::FilePath> virtual_path =
+      base::ResolveToVirtualDocumentPath(root_directory);
+  if (!virtual_path) {
+    response.message = "Failed to resolve (removed?)";
+    response.status = developer::PackStatus::kError;
+    return RespondNow(WithArguments(response.ToValue()));
+  }
+  root_directory = *virtual_path;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   if (root_directory.empty()) {
     if (item_path_str_.empty()) {
       response.message = l10n_util::GetStringUTF8(

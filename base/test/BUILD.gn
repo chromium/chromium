@@ -524,6 +524,7 @@ if (is_android) {
       "//base:base_java",
       "//base:content_uri_utils_java",
       "//base:process_launcher_java",
+      "//base:virtual_document_path_java",
       "//testing/android/native_test:native_main_runner_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/jni_zero:jni_zero_java",
