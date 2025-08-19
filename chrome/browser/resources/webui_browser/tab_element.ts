@@ -48,6 +48,7 @@ export class TabElement extends CrLitElement {
 
   override update(changedProperties: PropertyValues) {
     this.style.setProperty('--favicon-url', `url(${this.faviconUrl})`);
+    this.style.setProperty('z-index', this.active ? '1' : '0');
     super.update(changedProperties);
   }
 

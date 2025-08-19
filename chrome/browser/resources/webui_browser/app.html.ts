@@ -11,7 +11,7 @@ export function getHtml(this: WebuiBrowserAppElement) {
   return html`<!--_html_template_start_-->
 <div class="activeFrame" id="rootContainer">
   <div id="topContainer">
-    <div class="titlebarDiv">
+    <div class="titlebarDiv" @mousedown="${this.onTabDragMouseDown_}">
       <div class="tabstripDiv">
         <webui-browser-tabstrip id="tabstrip"
           @tab-click="${this.onTabClick_}"

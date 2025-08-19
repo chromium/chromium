@@ -18,7 +18,7 @@ import type {BookmarkBar} from './bookmark_bar.js';
 import {BookmarkBarController} from './bookmark_bar_controller.js';
 import {BrowserProxy} from './browser_proxy.js';
 import type {ContentRegion} from './content_region.js';
-import type {TabStrip} from './tab_strip.js';
+import {TabStrip} from './tab_strip.js';
 import type {LayoutManager} from './tab_strip_controller.js';
 import {TabStripController} from './tab_strip_controller.js';
 
@@ -160,6 +160,24 @@ export class WebuiBrowserAppElement extends CrLitElement implements
   protected onBookmarkButtonClick_(e: CustomEvent) {
     const bookmarkId = e.detail.bookmarkId;
     this.bookmarkBarController_.launchBookmark(bookmarkId);
+  }
+
+  protected onTabDragMouseDown_(e: MouseEvent) {
+    if (e.target instanceof TabStrip) {
+      this.$.tabstrip.dragMouseDown(e);
+      this.addEventListener('mouseup', this.onTabDragMouseUp_);
+      this.addEventListener('mousemove', this.onTabDragMouseMove_);
+    }
+  }
+
+  protected onTabDragMouseUp_(_: MouseEvent) {
+    this.$.tabstrip.closeDragElement();
+    this.removeEventListener('mouseup', this.onTabDragMouseUp_);
+    this.removeEventListener('mousemove', this.onTabDragMouseMove_);
+  }
+
+  protected onTabDragMouseMove_(e: MouseEvent) {
+    this.$.tabstrip.elementDrag(e);
   }
 }
 

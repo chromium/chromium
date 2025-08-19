@@ -80,7 +80,6 @@ cr-icon {
     height: 12px;
     position: absolute;
     bottom: 0;
-    z-index: 10;
 }
 
 #leftCorner {

@@ -27,10 +27,6 @@
     -webkit-app-region: no-drag;
 }
 
-.raised {
-    z-index: 3;
-}
-
 #newTabButton {
     margin: 3px 10px;
     --cr-icon-button-icon-size: 18px;

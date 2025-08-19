@@ -133,7 +133,6 @@ export class TabStrip extends CrLitElement {
       this.outOfBoundsDragX = e.clientX;
       this.outOfBoundsDragY = e.clientY;
       this.$.tabstrip.classList.add('nodrag');
-      this.tabElement.classList.add('raised');
       this.activateTab(this.tabElement.tabId);
       this.requestUpdate();
     }
@@ -150,7 +149,6 @@ export class TabStrip extends CrLitElement {
     this.tabOrderX = 0;
     this.tabInitialX = 0;
     this.$.tabstrip.classList.remove('nodrag');
-    this.tabElement.classList.remove('raised');
 
     // Reset the transform back to 0.
     this.tabs_.forEach(tabElement => {
