@@ -549,13 +549,16 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   model()->ConsumeCtrlKey();
 }
 
-void OmniboxViewViews::ApplyFocusRingToAimButton(bool force_focus) {
+PageActionIconView* OmniboxViewViews::GetAiModePageActionIconView() {
   if (!location_bar_view_) {
-    return;
+    return nullptr;
   }
-  auto* icon_view =
-      location_bar_view_->page_action_icon_controller()->GetIconView(
-          PageActionIconType::kAiMode);
+  return location_bar_view_->page_action_icon_controller()->GetIconView(
+      PageActionIconType::kAiMode);
+}
+
+void OmniboxViewViews::ApplyFocusRingToAimButton(bool force_focus) {
+  PageActionIconView* icon_view = GetAiModePageActionIconView();
   if (!icon_view) {
     return;
   }
@@ -577,6 +580,8 @@ void OmniboxViewViews::ApplyFocusRingToAimButton(bool force_focus) {
       },
       force_focus));
   focus_ring->SchedulePaint();
+
+  aim_page_action_icon_has_fake_focus_ = force_focus;
 }
 
 int OmniboxViewViews::GetTextWidth() const {
@@ -840,13 +845,57 @@ bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
     return false;
   }
 
-  if (!model()->PopupIsOpen()) {
+  if (model()->PopupIsOpen()) {
+    model()->OnTabPressed(event.IsShiftDown());
+    return true;
+  } else {
+    // When the popup is open, focus on the AI Mode page action icon is handled
+    // by `OmniboxPopupSelection` and `OmniboxEditModel`. And normally, when the
+    // popup is closed, the user can focus the AI Mode page action icon with
+    // standard keyboard navigation. However, when the popup is closed and the
+    // keyboard accessibility setting is disabled (which currently only is
+    // possible on Mac), tab traversal will move directly from the omnibox to
+    // the web contents. In order to keep the behavior of the AI Mode page
+    // action icon consistent with the popup open case, where it can always be
+    // focused with tab traversal, special logic is required. The approach used
+    // here is to retain focus in the omnibox but change the focus indicators to
+    // show the page action icon as focused. If the user attempts to activate
+    // the page action icon with <space> or <return>, these events will still be
+    // handled by the omnibox in `HandleKeyEvent`, which has a special cases for
+    // when the page action icon has this "fake" focus.
+    if (GetAiModePageActionIconView() &&
+        !GetFocusManager()->keyboard_accessible()) {
+      if (!event.IsShiftDown()) {
+        if (aim_page_action_icon_has_fake_focus_) {
+          // If the page action icon already has focus and the user presses
+          // <tab>, remove the focus ring from the page action and have the
+          // focus manager advance focus as normal.
+          ApplyFocusRingToAimButton(false);
+          GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+        } else {
+          // If the page action icon lacks focus and the user presses <tab>,
+          // remove focus indicators from the omnibox (the omnibox's focus ring
+          // is shown when the caret is visible) and add the focus ring to the
+          // icon to establish the "fake" focus.
+          model()->SetCaretVisibility(false);
+          ApplyFocusRingToAimButton(true);
+        }
+      } else {
+        if (aim_page_action_icon_has_fake_focus_) {
+          // In the <shift>-<tab> case, remove the focus ring from the page
+          // action icon and restore focus indicators to the omnibox.
+          ApplyFocusRingToAimButton(false);
+          model()->SetCaretVisibility(true);
+        } else {
+          // Normal case of using <shift>-<tab> to do reverse focus traversal
+          // out of the omnibox.
+          GetFocusManager()->AdvanceFocus(/*reverse=*/true);
+        }
+      }
+      return true;
+    }
     return false;
   }
-
-  model()->OnTabPressed(event.IsShiftDown());
-
-  return true;
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1449,10 +1498,23 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
 
 bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
     const ui::KeyEvent& event) {
-  if (views::FocusManager::IsTabTraversalKeyEvent(event) &&
-      ((model()->is_keyword_hint() && !event.IsShiftDown()) ||
-       model()->PopupIsOpen())) {
-    return true;
+  if (views::FocusManager::IsTabTraversalKeyEvent(event)) {
+    // There are three cases where <tab> traversal should be handled by the
+    // omnibox:
+    // 1. Entering keyword mode.
+    //    TODO(crbug.com/439564633): This case seems obsolete. Investigate
+    //    whether it can be removed.
+    // 2. The popup is open (in this case, <tab> events will be handled by
+    //    `OmniboxPopupSelection`.
+    // 3. The AIM page action icon is present and the keyboard accessibility
+    //    setting is disabled. See comments in `HandleEarlyTabActions` for more
+    //    details on this case.
+    if ((model()->is_keyword_hint() && !event.IsShiftDown()) ||
+        model()->PopupIsOpen() ||
+        (GetAiModePageActionIconView() &&
+         !GetFocusManager()->keyboard_accessible())) {
+      return true;
+    }
   }
   if (event.key_code() == ui::VKEY_ESCAPE && !event.IsShiftDown()) {
     return true;
@@ -1821,17 +1883,28 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       } else if (shift) {
         disposition = WindowOpenDisposition::NEW_WINDOW;
       }
-      // According to unit tests and comments, holding control when pressing
-      // enter has special behavior handled by `AcceptInput` so in this case
-      // the user is selecting their input (possibly with modification like
-      // appending ".com") and not the row match. This is indicated with an
-      // explicit `kNoMatch` line selection.
       if (model()->PopupIsOpen() && !control) {
+        // Normal case of pressing <return> when the popup is open.
         model()->OpenSelection(model()->GetPopupSelection(), event.time_stamp(),
                                disposition);
       } else {
+        // There are two cases handled here.
+        // 1. The popup is closed and the AIM page action icon has "fake" focus
+        //    (see comments in `HandleEarlyTabActions`). In this case, have
+        //    `OmniboxEditModel` open a `kNoMatch`/`FOCUSED_BUTTON_AIM`
+        //    selection.
+        // 2. The popup is open but <control> is down. This produces a special
+        //    behavior handled by `AcceptInput`. Instead of opening the selected
+        //    suggestion in the popup, the user is accepting their current
+        //    verbatim input, but with "www." prepended and ".com" appended (if
+        //    not already present in the input). This is triggered by having
+        //    `OmniboxEditModel` open a `kNoMatch`/`NORMAL` selection.
+        OmniboxPopupSelection::LineState line_state =
+            aim_page_action_icon_has_fake_focus_
+                ? OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM
+                : OmniboxPopupSelection::LineState::NORMAL;
         model()->OpenSelection(
-            OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
+            OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch, line_state),
             event.time_stamp(), disposition);
       }
       return true;
@@ -1935,7 +2008,19 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       break;
 
     case ui::VKEY_SPACE: {
-      if (model()->PopupIsOpen() && !control && !alt && !shift) {
+      if (!model()->PopupIsOpen()) {
+        // If the popup is not open and the page action icon has "fake" focus
+        // (see comments in `HandleEarlyTabActions`), have `OmniboxEditModel`
+        // open a `kNoMatch`/`FOCUSED_BUTTON_AIM` selection.
+        if (aim_page_action_icon_has_fake_focus_) {
+          model()->OpenSelection(
+              OmniboxPopupSelection(
+                  OmniboxPopupSelection::kNoMatch,
+                  OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM),
+              event.time_stamp(), WindowOpenDisposition::CURRENT_TAB);
+          return true;
+        }
+      } else if (!control && !alt && !shift) {
         if (model()->OnSpacePressed()) {
           return true;
         }
