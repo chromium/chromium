@@ -1377,7 +1377,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointsSlow) {
 
   FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
   ASSERT_EQ(manager->TcpBasedAttemptCount(), 2u);
-  ASSERT_EQ(manager->PendingRequestJobCount(), 0u);
   ASSERT_FALSE(request->completed());
 
   // FastForwardBy() executes non-delayed tasks so the request finishes
@@ -1602,7 +1601,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReachedGroupLimit) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
   ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
   ASSERT_EQ(manager->TcpBasedAttemptCount(), kMaxPerGroup);
-  ASSERT_EQ(manager->PendingRequestJobCount(), 0u);
 
   // This request should not start an attempt as the group reached its limit.
   StreamRequester stalled_requester;
@@ -1615,7 +1613,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReachedGroupLimit) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
   ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
   ASSERT_EQ(manager->TcpBasedAttemptCount(), kMaxPerGroup);
-  ASSERT_EQ(manager->PendingRequestJobCount(), 1u);
   ASSERT_EQ(stalled_request->GetLoadState(),
             LOAD_STATE_WAITING_FOR_AVAILABLE_SOCKET);
 
@@ -1624,7 +1621,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReachedGroupLimit) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
   ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
   ASSERT_EQ(manager->TcpBasedAttemptCount(), 0u);
-  ASSERT_EQ(manager->PendingRequestJobCount(), 1u);
 
   // Release one HttpStream and close it to make non-reusable.
   std::unique_ptr<StreamRequester> released_requester =
@@ -1649,14 +1645,12 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReachedGroupLimit) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
   ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
   ASSERT_EQ(manager->TcpBasedAttemptCount(), 1u);
-  ASSERT_EQ(manager->PendingRequestJobCount(), 0u);
 
   RunUntilIdle();
 
   ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
   ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
   ASSERT_EQ(manager->TcpBasedAttemptCount(), 0u);
-  ASSERT_EQ(manager->PendingRequestJobCount(), 0u);
   ASSERT_TRUE(stalled_request->completed());
   std::unique_ptr<HttpStream> stream = stalled_requester.ReleaseStream();
   ASSERT_TRUE(stream);
@@ -1734,8 +1728,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReachedPoolLimit) {
   ASSERT_TRUE(pool().IsPoolStalled());
   ASSERT_EQ(requester2.associated_attempt_manager()->TcpBasedAttemptCount(),
             0u);
-  ASSERT_EQ(requester2.associated_attempt_manager()->PendingRequestJobCount(),
-            1u);
 
   // Release one HttpStream from group A. It should unblock the in-flight
   // request in group B.
@@ -1745,8 +1737,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReachedPoolLimit) {
   requester2.WaitForResult();
 
   ASSERT_TRUE(request2->completed());
-  ASSERT_EQ(requester2.associated_attempt_manager()->PendingRequestJobCount(),
-            0u);
   ASSERT_TRUE(pool().ReachedMaxStreamLimit());
   ASSERT_FALSE(pool().IsPoolStalled());
 }
@@ -2150,9 +2140,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, UseIdleStreamSocketAfterRelease) {
   resolver()->AddFakeRequest();
   HttpStreamRequest* request = requester.RequestStream(pool());
   RunUntilIdle();
-  AttemptManager* manager = group.attempt_manager();
   ASSERT_FALSE(request->completed());
-  ASSERT_EQ(manager->PendingRequestJobCount(), 1u);
 
   // Release an active HttpStream. The underlying StreamSocket should be used
   // to the pending request.
@@ -2162,7 +2150,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, UseIdleStreamSocketAfterRelease) {
   released_stream.reset();
   requester.WaitForResult();
   ASSERT_TRUE(request->completed());
-  ASSERT_EQ(manager->PendingRequestJobCount(), 0u);
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
@@ -2805,9 +2792,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyReachedPoolLimit) {
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
-  Group& group_c =
-      pool().GetOrCreateGroupForTesting(requester_c.GetStreamKey());
-  ASSERT_EQ(group_c.attempt_manager()->PendingRequestJobCount(), 1u);
   ASSERT_TRUE(pool().ReachedMaxStreamLimit());
   ASSERT_TRUE(pool().IsPoolStalled());
 

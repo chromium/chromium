@@ -197,12 +197,6 @@ class HttpStreamPool::AttemptManager
   // Cancels the QuicAttempt if it exists.
   void CancelQuicAttempt(int error);
 
-  // Returns the number of pending requests/preconnects. The number is
-  // calculated by subtracting the number of in-flight attempts (excluding slow
-  // attempts) from the number of total jobs.
-  size_t PendingRequestJobCount() const;
-  size_t PendingPreconnectCount() const;
-
   // Returns the current load state.
   LoadState GetLoadState() const;
 
@@ -391,8 +385,12 @@ class HttpStreamPool::AttemptManager
   // Calculates the maximum streams counts requested by preconnects.
   size_t CalculateMaxPreconnectCount() const;
 
-  // Helper method to calculate pending jobs.
-  size_t PendingCountInternal(size_t pending_count) const;
+  // Calculates the number of TCP based attempts required to satisfy
+  // preconnects.
+  size_t CalculateRequiredTcpBasedAttemptForPreconnect() const;
+
+  // Returns the number of TCP based attempts that are not considered as slow.
+  size_t NonSlowTcpBasedAttemptCount() const;
 
   // Returns a QUIC endpoint to make a connection attempt. See the comments in
   // QuicSessionPool::SelectQuicVersion() for the criteria to select a QUIC

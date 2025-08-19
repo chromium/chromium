@@ -548,24 +548,6 @@ void HttpStreamPool::AttemptManager::CancelQuicAttempt(int error) {
   }
 }
 
-size_t HttpStreamPool::AttemptManager::PendingRequestJobCount() const {
-  return PendingCountInternal(request_jobs_.size());
-}
-
-size_t HttpStreamPool::AttemptManager::PendingPreconnectCount() const {
-  size_t num_streams = CalculateMaxPreconnectCount();
-  // Pending preconnect count is treated as zero when the maximum preconnect
-  // socket count is less than or equal to the active stream socket count.
-  // This behavior is for compatibility with the non-HEv3 code path. See
-  // TransportClientSocketPool::RequestSockets().
-  CHECK_GE(group_->ActiveStreamSocketCount(), slow_tcp_based_attempt_count_);
-  if (num_streams <=
-      group_->ActiveStreamSocketCount() - slow_tcp_based_attempt_count_) {
-    return 0;
-  }
-  return PendingCountInternal(num_streams);
-}
-
 const HttpStreamKey& HttpStreamPool::AttemptManager::stream_key() const {
   return group_->stream_key();
 }
@@ -673,7 +655,7 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
   }
 
   if (HasAvailableSpdySession()) {
-    CHECK_EQ(PendingPreconnectCount(), 0u);
+    CHECK(preconnect_jobs_.empty());
     return false;
   }
 
@@ -884,15 +866,11 @@ void HttpStreamPool::AttemptManager::OnQuicAttemptSlow() {
 
 base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
   base::Value::Dict dict;
-  dict.Set("request_job_count_all", static_cast<int>(request_jobs_.size()));
-  dict.Set("request_job_count_pending",
-           static_cast<int>(PendingRequestJobCount()));
+  dict.Set("request_job_count", static_cast<int>(request_jobs_.size()));
   dict.Set("job_count_limit_ignoring",
            static_cast<int>(limit_ignoring_jobs_.size()));
   dict.Set("job_count_notified", static_cast<int>(notified_jobs_.size()));
-  dict.Set("preconnect_count_all", static_cast<int>(preconnect_jobs_.size()));
-  dict.Set("preconnect_count_pending",
-           static_cast<int>(PendingPreconnectCount()));
+  dict.Set("preconnect_count", static_cast<int>(preconnect_jobs_.size()));
   dict.Set("tcp_based_attempt_count", static_cast<int>(TcpBasedAttemptCount()));
   dict.Set("slow_tcp_based_attempt_count",
            static_cast<int>(slow_tcp_based_attempt_count_));
@@ -1410,9 +1388,9 @@ bool HttpStreamPool::AttemptManager::IsTcpBasedAttemptReady() {
 
 HttpStreamPool::AttemptManager::CanAttemptResult
 HttpStreamPool::AttemptManager::CanAttemptConnection() const {
-  size_t pending_count =
-      std::max(PendingRequestJobCount(), PendingPreconnectCount());
-  if (pending_count == 0) {
+  const size_t required_attempt_count = std::max(
+      request_jobs_.size(), CalculateRequiredTcpBasedAttemptForPreconnect());
+  if (required_attempt_count <= NonSlowTcpBasedAttemptCount()) {
     return CanAttemptResult::kNoPendingJob;
   }
 
@@ -1462,8 +1440,7 @@ bool HttpStreamPool::AttemptManager::ShouldThrottleAttemptForSpdy() const {
   CHECK(UsingTls());
 
   // If there are no non-slow attempts, don't throttle new attempts.
-  CHECK_GE(tcp_based_attempts_.size(), slow_tcp_based_attempt_count_);
-  if (tcp_based_attempts_.size() - slow_tcp_based_attempt_count_ == 0) {
+  if (NonSlowTcpBasedAttemptCount() == 0) {
     return false;
   }
 
@@ -1483,18 +1460,23 @@ size_t HttpStreamPool::AttemptManager::CalculateMaxPreconnectCount() const {
   return num_streams;
 }
 
-size_t HttpStreamPool::AttemptManager::PendingCountInternal(
-    size_t pending_count) const {
-  CHECK_GE(tcp_based_attempts_.size(), slow_tcp_based_attempt_count_);
-  const size_t non_slow_count =
-      tcp_based_attempts_.size() - slow_tcp_based_attempt_count_;
-  // The number of in-flight, non-slow attempts could be larger than the number
-  // of jobs (e.g. a job was cancelled in the middle of an attempt).
-  if (pending_count <= non_slow_count) {
+size_t
+HttpStreamPool::AttemptManager::CalculateRequiredTcpBasedAttemptForPreconnect()
+    const {
+  const size_t max_preconnect_count = CalculateMaxPreconnectCount();
+  // Required preconnect count is treated as zero when the maximum preconnect
+  // count is less than or equals to the active stream socket count. This
+  // behavior is for compatibility with the non-HEv3 code path. See
+  // TransportClientSocketPool::RequestSockets().
+  if (max_preconnect_count <= group_->ActiveStreamSocketCount()) {
     return 0;
   }
+  return max_preconnect_count;
+}
 
-  return pending_count - non_slow_count;
+size_t HttpStreamPool::AttemptManager::NonSlowTcpBasedAttemptCount() const {
+  CHECK_GE(tcp_based_attempts_.size(), slow_tcp_based_attempt_count_);
+  return tcp_based_attempts_.size() - slow_tcp_based_attempt_count_;
 }
 
 std::optional<QuicEndpoint>
