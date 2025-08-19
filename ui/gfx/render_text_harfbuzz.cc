@@ -80,9 +80,12 @@ const size_t kMaxTextLength = 10000;
 // character to belong to more scripts.
 const size_t kMaxScripts = 32;
 
+// A kill switch to ignore (copy the previous value) of the script extension
+// property, in case problems occur by changes in ICU/CLDR.
+// Be aware that this feature is off-by-default, unlike other kill switches.
 BASE_FEATURE(kCombiningMarkScript,
              "CombiningMarkScript",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsCombiningMarkScriptEnabled() {
   static bool is_enabled = false;
