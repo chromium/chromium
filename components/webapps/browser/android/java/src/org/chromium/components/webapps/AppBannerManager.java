@@ -21,6 +21,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.concurrent.CopyOnWriteArraySet;
+
 /**
  * Manages an AppBannerInfoBar for a WebContents.
  *
@@ -45,6 +47,10 @@ public class AppBannerManager {
         }
     }
 
+    public static interface Observer {
+        public void onInstallabilityUpdated(AppBannerManager manager);
+    }
+
     public static final InstallStringPair PWA_PAIR =
             new InstallStringPair(R.string.menu_install_webapp, R.string.app_banner_install);
     public static final InstallStringPair NON_PWA_PAIR =
@@ -55,6 +61,8 @@ public class AppBannerManager {
 
     /** Pointer to the native side AppBannerManager. */
     private long mNativePointer;
+
+    private static final CopyOnWriteArraySet<Observer> sObservers = new CopyOnWriteArraySet<>();
 
     /** Whether add to home screen is permitted by the system. */
     private static @Nullable Boolean sIsSupported;
@@ -86,6 +94,14 @@ public class AppBannerManager {
     public static void setAppDetailsDelegate(AppDetailsDelegate delegate) {
         if (sAppDetailsDelegate != null) sAppDetailsDelegate.destroy();
         sAppDetailsDelegate = delegate;
+    }
+
+    public static void addObserver(Observer observer) {
+        sObservers.add(observer);
+    }
+
+    public static void removeObserver(Observer observer) {
+        sObservers.remove(observer);
     }
 
     /**
@@ -170,6 +186,11 @@ public class AppBannerManager {
         return null;
     }
 
+    /** Returns true if the web app can be promoted into an installable application. */
+    public static boolean isProbablyPromotable(WebContents webContents) {
+        return AppBannerManagerJni.get().isProbablyPromotable(webContents);
+    }
+
     /** Sets the app-banner-showing logic to ignore the Chrome channel. */
     public static void ignoreChromeChannelForTesting() {
         AppBannerManagerJni.get().ignoreChromeChannelForTesting();
@@ -215,7 +236,16 @@ public class AppBannerManager {
         return AppBannerManagerJni.get().getInstallableWebAppManifestId(contents);
     }
 
+    /** Called every time the web contents updates its installability status. */
+    @CalledByNative
+    private void onInstallabilityUpdated() {
+        for (Observer observer : sObservers) {
+            observer.onInstallabilityUpdated(this);
+        }
+    }
+
     @NativeMethods
+    @VisibleForTesting
     public interface Natives {
         AppBannerManager getJavaBannerManagerForWebContents(WebContents webContents);
 
@@ -243,5 +273,7 @@ public class AppBannerManager {
         void setTimeDeltaForTesting(int days);
 
         void setOverrideSegmentationResultForTesting(boolean show);
+
+        boolean isProbablyPromotable(WebContents contents);
     }
 }

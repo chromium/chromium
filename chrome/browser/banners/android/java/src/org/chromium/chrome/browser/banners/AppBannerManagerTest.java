@@ -242,6 +242,18 @@ public class AppBannerManagerTest {
                 });
     }
 
+    private void checkPromotabilityStatus(
+            ChromeActivityTestRule<? extends ChromeActivity> rule,
+            final boolean isProbablyPromotable) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            AppBannerManager.isProbablyPromotable(
+                                    rule.getActivity().getActivityTab().getWebContents()),
+                            isProbablyPromotable);
+                });
+    }
+
     private void waitUntilBottomSheetStatus(@BottomSheetController.SheetState int status) {
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -382,6 +394,10 @@ public class AppBannerManagerTest {
                         "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
+        // In most test environments, the install action will fail and a shortcut
+        // will be added instead. This does not affect the promotability status since
+        // a new APK was not installed.
+        checkPromotabilityStatus(mTabbedActivityTestRule.getActivityTestRule(), true);
         ThreadUtils.runOnUiThread(
                 () -> {
                     Assert.assertEquals(
@@ -416,6 +432,7 @@ public class AppBannerManagerTest {
                         "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mCustomTabActivityTestRule, true);
         ThreadUtils.runOnUiThread(
                 () -> {
                     Assert.assertEquals(
@@ -448,6 +465,7 @@ public class AppBannerManagerTest {
         new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mTabbedActivityTestRule.getActivityTestRule(), false);
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
@@ -470,6 +488,7 @@ public class AppBannerManagerTest {
         new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mTabbedActivityTestRule.getActivityTestRule(), false);
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
@@ -497,6 +516,7 @@ public class AppBannerManagerTest {
                         mCustomTabActivityTestRule.getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mCustomTabActivityTestRule, false);
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
@@ -518,6 +538,7 @@ public class AppBannerManagerTest {
         new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mTabbedActivityTestRule.getActivityTestRule(), true);
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
@@ -541,6 +562,7 @@ public class AppBannerManagerTest {
         new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mTabbedActivityTestRule.getActivityTestRule(), false);
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }

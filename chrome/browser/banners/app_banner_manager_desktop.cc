@@ -143,6 +143,8 @@ void AppBannerManagerDesktop::InvalidateWeakPtrsForThisNavigation() {
 }
 void AppBannerManagerDesktop::ResetCurrentPageData() {}
 
+void AppBannerManagerDesktop::InstallableWebAppStatusUpdate() {}
+
 bool AppBannerManagerDesktop::IsSupportedNonWebAppPlatform(
     const std::u16string& platform) const {
   if (base::EqualsASCII(platform, kPlatformChromeWebStore))

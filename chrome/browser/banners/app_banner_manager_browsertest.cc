@@ -230,6 +230,8 @@ class AppBannerManagerTest : public AppBannerManager {
                              "installed-extension-id");
   }
 
+  void InstallableWebAppStatusUpdate() override {}
+
   base::OnceClosure on_done_;
 
  private:

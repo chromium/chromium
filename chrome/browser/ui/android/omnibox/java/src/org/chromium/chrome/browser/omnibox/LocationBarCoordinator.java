@@ -110,6 +110,7 @@ public class LocationBarCoordinator
     private @Nullable View mLensButton;
     private @Nullable View mComposeplateButton;
     private @Nullable View mBookmarksButton;
+    private @Nullable View mInstallButton;
     private CallbackController mCallbackController = new CallbackController();
     private boolean mDestroyed;
 
@@ -245,7 +246,8 @@ public class LocationBarCoordinator
                         isToolbarMicEnabledSupplier,
                         mOmniboxDropdownEmbedderImpl,
                         tabModelSelectorSupplier,
-                        browserControlsStateProvider);
+                        browserControlsStateProvider,
+                        modalDialogManagerSupplier);
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }
@@ -315,6 +317,9 @@ public class LocationBarCoordinator
         if (ChromeFeatureList.sAndroidComposeplate.isEnabled()) {
             mComposeplateButton.setOnClickListener(mLocationBarMediator::composeplateButtonClicked);
         }
+
+        mInstallButton = mLocationBarLayout.findViewById(R.id.install_button);
+        mInstallButton.setOnClickListener(mLocationBarMediator::installButtonClicked);
 
         mUrlCoordinator.setTextChangeListener(mAutocompleteCoordinator::onTextChanged);
         mUrlCoordinator.setKeyDownListener(mLocationBarMediator);
@@ -387,6 +392,9 @@ public class LocationBarCoordinator
 
         mComposeplateButton.setOnClickListener(null);
         mComposeplateButton = null;
+
+        mInstallButton.setOnClickListener(null);
+        mInstallButton = null;
 
         if (mBookmarksButton != null) {
             mBookmarksButton.setOnClickListener(null);

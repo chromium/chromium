@@ -63,6 +63,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
@@ -101,11 +102,16 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.webapps.AddToHomescreenCoordinator;
+import org.chromium.components.webapps.AppBannerManager;
+import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.content_public.common.ResourceRequestBodyJni;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -189,6 +195,7 @@ public class LocationBarMediatorTest {
     @Mock private LocaleManager mLocaleManager;
     @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
     @Mock private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private AutocompleteCoordinator mAutocompleteCoordinator;
@@ -206,6 +213,8 @@ public class LocationBarMediatorTest {
     @Mock private AutocompleteLoadCallback mAutocompleteLoadCallback;
     @Mock private LoadUrlParams mLoadUrlParams;
     @Mock private LoadUrlResult mLoadUrlResult;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private AddToHomescreenCoordinator mAddToHomescreenCoordinator;
 
     @Mock private LensController mLensController;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
@@ -216,6 +225,8 @@ public class LocationBarMediatorTest {
     @Mock private OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
     @Mock private ResourceRequestBody.Natives mResourceRequestBodyJni;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private AppBannerManager mAppBannerManager;
+    @Mock private AppBannerManager.Natives mAppBannerManagerJni;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -240,6 +251,8 @@ public class LocationBarMediatorTest {
         doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
         SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
         doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mTabModelSelector).when(mTabModelSelectorSupplier).get();
         doReturn(mRootView).when(mLocationBarLayout).getRootView();
         doReturn(true).when(mLocationBarLayout).shouldClearTextOnFocus();
@@ -260,6 +273,11 @@ public class LocationBarMediatorTest {
         ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
         when(mMockComposeplateUtilsJni.isEnabledByPolicy(eq(mProfile))).thenReturn(true);
 
+        AppBannerManagerJni.setInstanceForTesting(mAppBannerManagerJni);
+        doReturn(mAppBannerManager)
+                .when(mAppBannerManagerJni)
+                .getJavaBannerManagerForWebContents(mWebContents);
+
         mMediator =
                 new LocationBarMediator(
                         mContext,
@@ -278,8 +296,10 @@ public class LocationBarMediatorTest {
                         () -> mIsToolbarMicEnabled,
                         mEmbedderImpl,
                         mTabModelSelectorSupplier,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        () -> mModalDialogManager);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
+        mMediator.setAddToHomescreenCoordinatorForTesting(mAddToHomescreenCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
 
         mTabletMediator =
@@ -300,7 +320,8 @@ public class LocationBarMediatorTest {
                         () -> mIsToolbarMicEnabled,
                         mEmbedderImpl,
                         mTabModelSelectorSupplier,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        () -> mModalDialogManager);
         mTabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ShadowUrlUtilities.sIsNtp = false;
@@ -613,6 +634,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testGetViewForUrlBackFocus() {
+        Mockito.reset(mLocationBarDataProvider);
         doReturn(mView).when(mTab).getView();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         assertEquals(mView, mMediator.getViewForUrlBackFocus());
@@ -1059,7 +1081,8 @@ public class LocationBarMediatorTest {
                         () -> mIsToolbarMicEnabled,
                         mEmbedderImpl,
                         mTabModelSelectorSupplier,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        () -> mModalDialogManager);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
@@ -1614,6 +1637,13 @@ public class LocationBarMediatorTest {
         histogramWatcher.assertExpected();
     }
 
+    @Test
+    public void testInstallButtonClicked() {
+        doReturn(new GURL(TEST_URL)).when(mWebContents).getVisibleUrl();
+        mMediator.installButtonClicked(null);
+        verify(mAddToHomescreenCoordinator).showForAppMenu(AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
+    }
+
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {
         return actual -> {
             UrlBarData expected = UrlBarData.forNonUrlText(query);
@@ -1686,5 +1716,38 @@ public class LocationBarMediatorTest {
                 LocationBarMediator.LocationBarState.from(previousTab);
         assertTrue(previousState.isUrlBarFocused);
         assertEquals(previousText, previousState.userText);
+    }
+
+    @Test
+    public void testInstallButton_visibleIfInstallable() {
+        doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        mMediator.onUrlFocusChange(false);
+        mMediator.setUrlFocusChangeInProgress(false);
+
+        Mockito.reset(mLocationBarLayout);
+
+        mMediator.onInstallabilityUpdated(mAppBannerManager);
+        verify(mLocationBarLayout).setInstallButtonVisibility(true);
+    }
+
+    @Test
+    public void testInstallButton_invisibleIfNotInstallable() {
+        doReturn(false).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        Mockito.reset(mLocationBarLayout);
+
+        mMediator.onInstallabilityUpdated(mAppBannerManager);
+        verify(mLocationBarLayout).setInstallButtonVisibility(false);
+    }
+
+    @Test
+    public void testInstallButton_invisibleOmniboxIsFocused() {
+        doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        mMediator.onUrlFocusChange(true);
+        mMediator.setUrlFocusChangeInProgress(false);
+
+        Mockito.reset(mLocationBarLayout);
+
+        mMediator.onInstallabilityUpdated(mAppBannerManager);
+        verify(mLocationBarLayout).setInstallButtonVisibility(false);
     }
 }

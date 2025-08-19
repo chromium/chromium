@@ -286,6 +286,10 @@ class AppBannerManager : public content::WebContentsObserver,
   // begun.
   virtual void ResetCurrentPageData() = 0;
 
+  // Called when the the installable web app check is done and the status
+  // changed.
+  virtual void InstallableWebAppStatusUpdate() = 0;
+
   // Virtual so the TestAppBannerManagerDesktop can reset its installability
   // state when called.
   virtual void RecheckInstallabilityForLoadedPage();

@@ -20,6 +20,7 @@
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "components/webapps/browser/android/webapps_utils.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "content/public/browser/web_contents.h"
@@ -116,6 +117,13 @@ void WebApkInstallService::OnFinishedInstall(
       shortcut_info.manifest_id, shortcut_info.url, shortcut_info.short_name,
       primary_icon, shortcut_info.is_primary_icon_maskable, result,
       webapk_package_name, show_failure_notification);
+
+  // If the app was successfully installed, we need to notify the app banner
+  // manager so that the installability status is reflected elsewhere in the UI.
+  if (result == webapps::WebApkInstallResult::SUCCESS && web_contents) {
+    webapps::AppBannerManager::FromWebContents(web_contents.get())
+        ->OnInstall(shortcut_info.display, true);
+  }
 
   if (show_failure_notification) {
     return;

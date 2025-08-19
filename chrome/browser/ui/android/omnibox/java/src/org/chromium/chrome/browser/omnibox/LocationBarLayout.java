@@ -46,6 +46,7 @@ public class LocationBarLayout extends ConstraintLayout {
     protected ImageButton mDeleteButton;
     protected ImageButton mMicButton;
     protected ImageButton mLensButton;
+    protected ImageButton mInstallButton;
     protected ImageButton mComposeplateButton;
     protected UrlBar mUrlBar;
 
@@ -86,6 +87,7 @@ public class LocationBarLayout extends ConstraintLayout {
         mUrlBar = findViewById(R.id.url_bar);
         mMicButton = findViewById(R.id.mic_button);
         mLensButton = findViewById(R.id.lens_camera_button);
+        mInstallButton = findViewById(R.id.install_button);
         mComposeplateButton = findViewById(R.id.composeplate_button);
         mUrlActionContainer = findViewById(R.id.url_action_container);
         mMinimumUrlBarWidthPx =
@@ -185,6 +187,10 @@ public class LocationBarLayout extends ConstraintLayout {
 
     /* package */ void setComposeplateButtonTint(ColorStateList colorStateList) {
         ImageViewCompat.setImageTintList(mComposeplateButton, colorStateList);
+    }
+
+    /* package */ void setInstallButtonTint(ColorStateList colorStateList) {
+        ImageViewCompat.setImageTintList(mInstallButton, colorStateList);
     }
 
     @Override
@@ -370,6 +376,11 @@ public class LocationBarLayout extends ConstraintLayout {
     /** Sets the visibility of the lens button. */
     /* package */ void setLensButtonVisibility(boolean shouldShow) {
         mLensButton.setVisibility(shouldShow ? VISIBLE : GONE);
+    }
+
+    /** Sets the visibility of the install button. */
+    /* package */ void setInstallButtonVisibility(boolean shouldShow) {
+        mInstallButton.setVisibility(shouldShow ? VISIBLE : GONE);
     }
 
     /** Sets the visibility of the composeplate button. */

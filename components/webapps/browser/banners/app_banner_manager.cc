@@ -584,6 +584,7 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
       break;
   }
 
+  InstallableWebAppStatusUpdate();
   for (Observer& observer : observer_list_) {
     observer.OnInstallableWebAppStatusUpdated(result, web_app_data_);
   }
