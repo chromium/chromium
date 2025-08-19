@@ -2335,7 +2335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FencedFrame.DisableUntrustedNetworkOutcome"
-    enum="FencedFrameDisableUntrustedNetworkOutcome" expires_after="2025-09-12">
+    enum="FencedFrameDisableUntrustedNetworkOutcome" expires_after="2026-09-12">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
@@ -2439,7 +2439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FencedFrame.NotifyEventOutcome"
-    enum="FencedFrameNotifyEventOutcome" expires_after="2025-09-12">
+    enum="FencedFrameNotifyEventOutcome" expires_after="2026-09-12">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
@@ -2451,7 +2451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FencedFrame.SharedStorageGetInFencedFrameOutcome"
-    enum="SharedStorageGetInFencedFrameOutcome" expires_after="2025-09-12">
+    enum="SharedStorageGetInFencedFrameOutcome" expires_after="2026-09-12">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
