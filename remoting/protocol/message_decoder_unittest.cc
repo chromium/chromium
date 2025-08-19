@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "remoting/proto/event.pb.h"
@@ -30,7 +31,7 @@ static void AppendMessage(const EventMessage& msg, std::string* buffer) {
 }
 
 // Construct and prepare data in the |output_stream|.
-static void PrepareData(uint8_t** buffer, int* size) {
+static base::HeapArray<uint8_t> PrepareData(int* size) {
   // Contains all encoded messages.
   std::string encoded_data;
 
@@ -44,8 +45,9 @@ static void PrepareData(uint8_t** buffer, int* size) {
   }
 
   *size = encoded_data.length();
-  *buffer = new uint8_t[*size];
-  UNSAFE_TODO(memcpy(*buffer, encoded_data.c_str(), *size));
+  auto buffer = base::HeapArray<uint8_t>::Uninit(*size);
+  UNSAFE_TODO(memcpy(buffer.data(), encoded_data.c_str(), *size));
+  return buffer;
 }
 
 void SimulateReadSequence(base::span<const int> read_sequence,
@@ -57,9 +59,7 @@ void SimulateReadSequence(base::span<const int> read_sequence,
         base::NotFatalUntil::M143);
   // Prepare encoded data for testing.
   int size;
-  uint8_t* test_data;
-  PrepareData(&test_data, &size);
-  std::unique_ptr<uint8_t[]> memory_deleter(test_data);
+  auto test_data = PrepareData(&size);
 
   // Then simulate using MessageDecoder to decode variable
   // size of encoded data.
@@ -80,7 +80,7 @@ void SimulateReadSequence(base::span<const int> read_sequence,
 
     // And then prepare an IOBuffer for feeding it.
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(read);
-    UNSAFE_TODO(memcpy(buffer->data(), test_data + pos, read));
+    UNSAFE_TODO(memcpy(buffer->data(), test_data.data() + pos, read));
     decoder.AddData(buffer, read);
     while (true) {
       std::unique_ptr<CompoundBuffer> message(decoder.GetNextMessage());
