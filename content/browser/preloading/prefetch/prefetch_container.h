@@ -193,14 +193,14 @@ class CONTENT_EXPORT PrefetchContainer {
 
   void OnWillBeDestroyed();
 
-  const PrefetchKey& key() const { return key_; }
+  const PrefetchKey& key() const;
 
   bool HasSameReferringURLForMetrics(const PrefetchContainer& other) const;
   bool HasSameReferringRenderFrameHostIdForMetrics(
       const PrefetchContainer& other) const;
 
   // The initial URL that was requested to be prefetched.
-  const GURL& GetURL() const { return key_.url(); }
+  const GURL& GetURL() const;
 
   // The current URL being fetched.
   GURL GetCurrentURL() const;
@@ -624,7 +624,6 @@ class CONTENT_EXPORT PrefetchContainer {
  private:
   PrefetchContainer(
       std::unique_ptr<PrefetchRequest> request,
-      const PrefetchKey& key,
       const blink::mojom::Referrer& referrer,
       base::WeakPtr<BrowserContext> browser_context,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
@@ -720,10 +719,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   PrefetchServiceWorkerState service_worker_state_ =
       PrefetchServiceWorkerState::kAllowed;
-
-  // The key used to match this PrefetchContainer, including the URL that was
-  // requested to prefetch.
-  const PrefetchKey key_;
 
   // The referrer to use for the request.
   blink::mojom::Referrer referrer_;

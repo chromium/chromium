@@ -254,13 +254,13 @@ PrefetchContainer::PrefetchContainer(
     : PrefetchContainer(
           std::make_unique<PrefetchRequest>(
               prefetch_type,
+              PrefetchKey(referring_document_token, url),
               std::move(no_vary_search_hint),
               referring_render_frame_host.GetLastCommittedOrigin(),
               std::move(speculation_rules_tags),
               PrefetchRendererInitiatorInfo(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
-          PrefetchKey(referring_document_token, url),
           referrer,
           referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
           std::move(preload_pipeline_info),
@@ -292,11 +292,12 @@ PrefetchContainer::PrefetchContainer(
     : PrefetchContainer(
           std::make_unique<PrefetchRequest>(
               prefetch_type,
+              PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt),
+                          url),
               std::move(no_vary_search_hint),
               referring_origin,
               /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
-          PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
           referrer,
           referring_web_contents.GetBrowserContext()->GetWeakPtr(),
           std::move(preload_pipeline_info),
@@ -330,11 +331,12 @@ PrefetchContainer::PrefetchContainer(
     : PrefetchContainer(
           std::make_unique<PrefetchRequest>(
               prefetch_type,
+              PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt),
+                          url),
               std::move(no_vary_search_hint),
               referring_origin,
               /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
-          PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
           referrer,
           browser_context->GetWeakPtr(),
           PreloadPipelineInfo::Create(
@@ -351,7 +353,6 @@ PrefetchContainer::PrefetchContainer(
 
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
-    const PrefetchKey& key,
     const blink::mojom::Referrer& referrer,
     base::WeakPtr<BrowserContext> browser_context,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
@@ -365,7 +366,6 @@ PrefetchContainer::PrefetchContainer(
     bool should_disable_block_until_head_timeout,
     std::optional<PrefetchPriority> priority)
     : request_(std::move(request)),
-      key_(key),
       referrer_(referrer),
       browser_context_(std::move(browser_context)),
       request_id_(base::UnguessableToken::Create().ToString()),
@@ -1471,6 +1471,14 @@ void PrefetchContainer::UpdateReferrer(
     const network::mojom::ReferrerPolicy& new_referrer_policy) {
   referrer_.url = new_referrer_url;
   referrer_.policy = new_referrer_policy;
+}
+
+const PrefetchKey& PrefetchContainer::key() const {
+  return request().key();
+}
+
+const GURL& PrefetchContainer::GetURL() const {
+  return request().key().url();
 }
 
 const std::optional<net::HttpNoVarySearchData>&

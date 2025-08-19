@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/memory/weak_ptr.h"
+#include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/common/content_export.h"
@@ -109,6 +110,7 @@ class CONTENT_EXPORT PrefetchRequest final {
  public:
   PrefetchRequest(
       const PrefetchType& prefetch_type,
+      const PrefetchKey& key,
       const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       const std::optional<url::Origin>& referring_origin,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
@@ -117,6 +119,7 @@ class CONTENT_EXPORT PrefetchRequest final {
   ~PrefetchRequest();
 
   const PrefetchType& prefetch_type() const { return prefetch_type_; }
+  const PrefetchKey& key() const { return key_; }
   const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint() const {
     return no_vary_search_hint_;
   }
@@ -140,6 +143,10 @@ class CONTENT_EXPORT PrefetchRequest final {
   // not the preftch proxy is used, and whether or not subresources are
   // prefetched.
   const PrefetchType prefetch_type_;
+
+  // The key used to match this PrefetchContainer, including the URL that was
+  // requested to prefetch.
+  const PrefetchKey key_;
 
   // The No-Vary-Search hint of the prefetch, which is specified by the
   // speculation rules and can be different from actual

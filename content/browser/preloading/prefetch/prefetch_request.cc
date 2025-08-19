@@ -54,12 +54,14 @@ PrefetchBrowserInitiatorInfo::PrefetchBrowserInitiatorInfo(
 
 PrefetchRequest::PrefetchRequest(
     const PrefetchType& prefetch_type,
+    const PrefetchKey& key,
     const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     const std::optional<url::Origin>& referring_origin,
     std::optional<SpeculationRulesTags> speculation_rules_tags,
     std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
         initiator_info)
     : prefetch_type_(prefetch_type),
+      key_(key),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
       referring_origin_(referring_origin),
       speculation_rules_tags_(std::move(speculation_rules_tags)),
