@@ -264,10 +264,10 @@ PrefetchContainer::PrefetchContainer(
               /*Must be empty: additional_headers=*/net::HttpRequestHeaders(),
               PrefetchContainerDefaultTtlInPrefetchService(),
               /*holdback_status_override=*/std::nullopt,
+              /*should_append_variations_header=*/true,
               PrefetchRendererInitiatorInfo(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
-          /*should_append_variations_header=*/true,
           /*should_disable_block_until_head_timeout=*/false) {}
 
 PrefetchContainer::PrefetchContainer(
@@ -302,10 +302,10 @@ PrefetchContainer::PrefetchContainer(
               ttl.has_value() ? ttl.value()
                               : PrefetchContainerDefaultTtlInPrefetchService(),
               std::move(holdback_status_override),
+              /*should_append_variations_header=*/true,
               PrefetchBrowserInitiatorInfo(
                   embedder_histogram_suffix,
                   /*request_status_listener=*/nullptr)),
-          /*should_append_variations_header=*/true,
           /*should_disable_block_until_head_timeout=*/false) {}
 
 PrefetchContainer::PrefetchContainer(
@@ -342,19 +342,17 @@ PrefetchContainer::PrefetchContainer(
               additional_headers,
               ttl,
               /*holdback_status_override=*/std::nullopt,
+              should_append_variations_header,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
                                            std::move(request_status_listener))),
-          should_append_variations_header,
           should_disable_block_until_head_timeout) {}
 
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
-    bool should_append_variations_header,
     bool should_disable_block_until_head_timeout)
     : request_(std::move(request)),
       referrer_(request_->initial_referrer()),
       request_id_(base::UnguessableToken::Create().ToString()),
-      should_append_variations_header_(should_append_variations_header),
       should_disable_block_until_head_timeout_(
           should_disable_block_until_head_timeout) {
   CHECK(request_);
@@ -1436,7 +1434,7 @@ void PrefetchContainer::MakeResourceRequest(
   resource_request->devtools_request_id = RequestId();
 
   AddClientHintsHeaders(origin, &resource_request->headers);
-  if (should_append_variations_header_) {
+  if (request().should_append_variations_header()) {
     AddXClientDataHeader(*resource_request.get());
   }
 

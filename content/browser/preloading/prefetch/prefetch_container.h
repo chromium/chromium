@@ -605,7 +605,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
  private:
   PrefetchContainer(std::unique_ptr<PrefetchRequest> request,
-                    bool should_append_variations_header,
                     bool should_disable_block_until_head_timeout);
 
   // Update |prefetch_status_| and report prefetch status to
@@ -810,12 +809,6 @@ class CONTENT_EXPORT PrefetchContainer {
   base::ObserverList<Observer> observers_;
 
   bool is_likely_ahead_of_prerender_ = false;
-
-  // Whether to add the X-Client-Data header with experiment IDs from field
-  // trials. This will not be applied to redirects. Currently, this is
-  // configured for browser-initiated prefetch that doesn't depend on web
-  // content.
-  const bool should_append_variations_header_ = true;
 
   // Whether the caller of prefetches requests to disable
   // `BlockUntilHeadTimeout`, which is currently calculated by

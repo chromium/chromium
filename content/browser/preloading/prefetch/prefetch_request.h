@@ -141,6 +141,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       const net::HttpRequestHeaders& additional_headers,
       base::TimeDelta ttl,
       std::optional<PreloadingHoldbackStatus> holdback_status_override,
+      bool should_append_variations_header,
       std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
           info);
   ~PrefetchRequest();
@@ -175,6 +176,9 @@ class CONTENT_EXPORT PrefetchRequest final {
   const std::optional<PreloadingHoldbackStatus>& holdback_status_override()
       const {
     return holdback_status_override_;
+  }
+  bool should_append_variations_header() const {
+    return should_append_variations_header_;
   }
 
   // Returns non-null if renderer-initiated/browser-initiated, respectively.
@@ -266,6 +270,12 @@ class CONTENT_EXPORT PrefetchRequest final {
   // normal process. It is set to `attempt_` on
   // PrefetchService::CheckAndSetPrefetchHoldbackStatus().
   const std::optional<PreloadingHoldbackStatus> holdback_status_override_;
+
+  // Whether to add the X-Client-Data header with experiment IDs from field
+  // trials. This will not be applied to redirects. Currently, this is
+  // configured for browser-initiated prefetch that doesn't depend on web
+  // content. Default value is `true`.
+  const bool should_append_variations_header_;
 
   const std::variant<PrefetchRendererInitiatorInfo,
                      PrefetchBrowserInitiatorInfo>

@@ -72,6 +72,7 @@ PrefetchRequest::PrefetchRequest(
     const net::HttpRequestHeaders& additional_headers,
     base::TimeDelta ttl,
     std::optional<PreloadingHoldbackStatus> holdback_status_override,
+    bool should_append_variations_header,
     std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
         initiator_info)
     : prefetch_type_(prefetch_type),
@@ -89,6 +90,7 @@ PrefetchRequest::PrefetchRequest(
       additional_headers_(additional_headers),
       ttl_(std::move(ttl)),
       holdback_status_override_(std::move(holdback_status_override)),
+      should_append_variations_header_(should_append_variations_header),
       initiator_info_(std::move(initiator_info)) {
   CHECK(preload_pipeline_info_);
   if (prefetch_type_.IsRendererInitiated()) {
@@ -97,6 +99,7 @@ PrefetchRequest::PrefetchRequest(
     CHECK(additional_headers_.IsEmpty());
     CHECK_EQ(ttl_, PrefetchContainerDefaultTtlInPrefetchService());
     CHECK(!holdback_status_override_);
+    CHECK(should_append_variations_header_);
   } else {
     CHECK(!GetRendererInitiatorInfo());
     CHECK(GetBrowserInitiatorInfo());
