@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ref.h"
@@ -166,10 +167,24 @@ class WebnnGraphLPMFuzzer {
     for (uint32_t id = 0; id < graph_info->operands.size(); ++id) {
       const auto& operand = graph_info->operands[id];
       if (operand->kind == webnn::mojom::Operand::Kind::kConstant) {
+        size_t tensor_length = operand->descriptor.PackedByteLength();
+        if (tensor_length > base::GiB(3).InBytes()) {
+          // Serialization of this Mojo call will fail if the tensor data is
+          // too big. We intentionally don't use ValidateTensor to ensure that
+          // the checks in the implementation of CreatePendingConstant are
+          // still exercised. The value is chosen to be larger than most
+          // context implementations support.
+          //
+          // This check can be removed if streaming constant uploads are
+          // implemented as the value will no longer be sent in a single
+          // message.
+          return;
+        }
+
         const blink::WebNNPendingConstantToken token;
         webnn_graph_builder_remote->CreatePendingConstant(
             token, operand->descriptor.data_type(),
-            GenerateBytes(operand->descriptor.PackedByteLength()));
+            GenerateBytes(tensor_length));
         graph_info->constant_operand_ids_to_handles.emplace(
             webnn::OperandId(id), token);
       }
