@@ -89,21 +89,35 @@ def get_github_issue_with_comments(issue_url: str) -> str:
         })
 
         # Get comments.
-        # TODO(vmpstr): This will not get all comments if there are multiple
-        # pages of comments. Need to parse the header and do further requests
-        # for all comments.
-        comments_response = requests.get(issue_api_url + "/comments",
-                                         headers=headers,
-                                         timeout=10)
-        comments_response.raise_for_status()
-        comments_data = comments_response.json()
+        comments_url = issue_api_url + "/comments"
+        while comments_url:
+            comments_response = requests.get(comments_url,
+                                             headers=headers,
+                                             timeout=10)
+            comments_response.raise_for_status()
+            comments_data = comments_response.json()
 
-        for comment in comments_data:
-            all_posts.append({
-                "author": comment['user']['login'],
-                "date": comment['created_at'],
-                "comment": comment['body'] or ""
-            })
+            for comment in comments_data:
+                all_posts.append({
+                    "author": comment['user']['login'],
+                    "date": comment['created_at'],
+                    "comment": comment['body'] or ""
+                })
+
+            # Handle pagination.
+            comments_url = None
+            link_header = comments_response.headers.get('link')
+            if not link_header:
+                break
+
+            # The format is <url>; rel="type", ...
+            link_pattern = re.compile(r'<([^>]+)>;\s*rel="([^"]+)"\s*(?=,|$)')
+            for match in link_pattern.finditer(link_header):
+                url, rel = match.groups()
+                if rel != 'next':
+                    continue
+                comments_url = url
+                break
     except requests.exceptions.HTTPError as e:
         response_json = e.response.json()
         api_message = response_json.get('message',
