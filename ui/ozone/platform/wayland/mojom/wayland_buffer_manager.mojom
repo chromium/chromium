@@ -9,7 +9,9 @@ import "mojo/public/mojom/base/version.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/accelerated_widget.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
+import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
+import "ui/gfx/mojom/hdr_metadata.mojom";
 import "ui/gfx/mojom/swap_result.mojom";
 import "ui/gfx/mojom/frame_data.mojom";
 import "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom";
@@ -45,6 +47,8 @@ interface WaylandBufferManagerHost {
                           array<uint64> modifiers,
                           uint32 format,
                           uint32 planes_count,
+                          gfx.mojom.ColorSpace color_space,
+                          gfx.mojom.HDRMetadata hdr_metadata,
                           uint32 buffer_id);
 
   // If software rendering path is used, this method can be used to ask

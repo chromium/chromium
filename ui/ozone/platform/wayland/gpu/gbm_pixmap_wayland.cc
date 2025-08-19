@@ -172,8 +172,9 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
     std::vector<gfx::GpuFence> release_fences) {
   DCHECK_NE(widget, gfx::kNullAcceleratedWidget);
 
-  if (!created_wl_buffer_)
-    CreateDmabufBasedWlBuffer();
+  if (!created_wl_buffer_) {
+    CreateDmabufBasedWlBuffer(overlay_plane_data);
+  }
 
   widget_ = widget;
 
@@ -216,7 +217,8 @@ gfx::NativePixmapHandle GbmPixmapWayland::ExportHandle() const {
   return handle;
 }
 
-void GbmPixmapWayland::CreateDmabufBasedWlBuffer() {
+void GbmPixmapWayland::CreateDmabufBasedWlBuffer(
+    const gfx::OverlayPlaneData& overlay_plane_data) {
   uint64_t modifier = gbm_bo_->GetFormatModifier();
 
   std::vector<uint32_t> strides;
@@ -241,7 +243,8 @@ void GbmPixmapWayland::CreateDmabufBasedWlBuffer() {
   // Asks Wayland to create a wl_buffer based on the |file| fd.
   buffer_manager_->CreateDmabufBasedBuffer(
       std::move(fd), visible_area_size_, strides, offsets, modifiers,
-      gbm_bo_->GetFormat(), plane_count, buffer_id_);
+      gbm_bo_->GetFormat(), plane_count, overlay_plane_data.color_space,
+      overlay_plane_data.hdr_metadata.value_or(gfx::HDRMetadata()), buffer_id_);
 }
 
 }  // namespace ui

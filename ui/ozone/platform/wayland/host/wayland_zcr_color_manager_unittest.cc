@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
+
 #include <chrome-color-management-client-protocol.h>
 
 #include "base/check.h"
@@ -12,13 +14,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_space.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_wayland_zcr_color_manager.h"
@@ -144,7 +146,8 @@ TEST_P(WaylandZcrColorManagerTest, DISABLED_CreateColorManagementSurface) {
   connection_->zcr_color_manager()->GetColorSpace(
       gfx::ColorSpace::CreateHDR10());
   connection_->RoundTripQueue();
-  surface->set_color_space(gfx::ColorSpace::CreateHDR10());
+  surface->SetImageDescription(gfx::ColorSpace::CreateHDR10(),
+                               gfx::HDRMetadata());
   surface->AttachBuffer(connection_->buffer_manager_host()->EnsureBufferHandle(
       surface, buffer_id));
   surface->ApplyPendingState();
@@ -195,7 +198,7 @@ TEST_P(WaylandZcrColorManagerTest, DISABLED_DoNotSetInvaliColorSpace) {
   // original default color space remains unchanged on the surface.
   connection_->zcr_color_manager()->GetColorSpace(invalid_space);
   connection_->RoundTripQueue();
-  surface->set_color_space(invalid_space);
+  surface->SetImageDescription(invalid_space, gfx::HDRMetadata());
   surface->AttachBuffer(connection_->buffer_manager_host()->EnsureBufferHandle(
       surface, buffer_id));
   surface->ApplyPendingState();

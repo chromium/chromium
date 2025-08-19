@@ -33,7 +33,8 @@ WaylandOverlayConfig::WaylandOverlayConfig(const gfx::OverlayPlaneData& data,
                                 : gfx::GpuFenceHandle()),
       color_space(data.color_space == gfx::ColorSpace::CreateSRGB()
                       ? std::nullopt
-                      : std::optional<gfx::ColorSpace>(data.color_space)) {}
+                      : std::optional<gfx::ColorSpace>(data.color_space)),
+      hdr_metadata(data.hdr_metadata) {}
 
 WaylandOverlayConfig& WaylandOverlayConfig::operator=(
     WaylandOverlayConfig&& other) = default;

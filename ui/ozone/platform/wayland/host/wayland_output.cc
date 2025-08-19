@@ -14,6 +14,8 @@
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_management_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/host/xdg_output.h"
@@ -135,6 +137,16 @@ void WaylandOutput::InitializeColorManagementOutput(
   color_management_output_ = std::make_unique<WaylandZcrColorManagementOutput>(
       this,
       zcr_color_manager->CreateColorManagementOutput(output_.get()).release());
+}
+
+void WaylandOutput::InitializeWpColorManagementOutput(
+    WaylandWpColorManager* wp_color_manager) {
+  DCHECK(!wp_color_management_output_);
+  wp_color_management_output_ =
+      std::make_unique<WaylandWpColorManagementOutput>(
+          wp_color_manager->CreateColorManagementOutput(output_.get())
+              .release(),
+          this, connection_);
 }
 
 void WaylandOutput::Initialize(Delegate* delegate) {

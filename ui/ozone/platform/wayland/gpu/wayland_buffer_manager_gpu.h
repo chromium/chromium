@@ -103,6 +103,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                                const std::vector<uint64_t>& modifiers,
                                uint32_t current_format,
                                uint32_t planes_count,
+                               const gfx::ColorSpace& color_space,
+                               const gfx::HDRMetadata& hdr_metadata,
                                uint32_t buffer_id);
 
   // Asks Wayland to create a shared memory based wl_buffer.
@@ -228,6 +230,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                                    const std::vector<uint64_t>& modifiers,
                                    uint32_t current_format,
                                    uint32_t planes_count,
+                                   const gfx::ColorSpace& color_space,
+                                   const gfx::HDRMetadata& hdr_metadata,
                                    uint32_t buffer_id);
   void CreateShmBasedBufferTask(base::ScopedFD shm_fd,
                                 size_t length,

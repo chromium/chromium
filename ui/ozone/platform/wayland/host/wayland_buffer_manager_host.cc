@@ -34,6 +34,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 
 namespace ui {
 
@@ -132,6 +133,8 @@ void WaylandBufferManagerHost::CreateDmabufBasedBuffer(
     const std::vector<uint64_t>& modifiers,
     uint32_t format,
     uint32_t planes_count,
+    const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     uint32_t buffer_id) {
   DCHECK(base::CurrentUIThread::IsSet());
   DCHECK(error_message_.empty());
@@ -151,6 +154,13 @@ void WaylandBufferManagerHost::CreateDmabufBasedBuffer(
 
   if (connection_->UseImplicitSyncInterop()) {
     dma_buffers_.emplace(buffer_id, dup(fd.get()));
+  }
+
+  if (auto* color_manager = connection_->wp_color_manager()) {
+    // Cache the image description early so it's available when the
+    // surface is initialized.
+    color_manager->GetImageDescription(color_space, hdr_metadata,
+                                       base::DoNothing());
   }
 
   // Check if any of the surfaces has already had a buffer with the same id.

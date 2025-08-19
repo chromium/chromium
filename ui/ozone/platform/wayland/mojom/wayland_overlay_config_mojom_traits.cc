@@ -65,6 +65,10 @@ bool StructTraits<wl::mojom::WaylandOverlayConfigDataView,
   if (!data.ReadColorSpace(&out->color_space))
     return false;
 
+  if (!data.ReadHdrMetadata(&out->hdr_metadata)) {
+    return false;
+  }
+
   if (!data.ReadTransform(&out->transform))
     return false;
 

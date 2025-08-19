@@ -11,6 +11,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
@@ -78,8 +79,9 @@ struct WaylandOverlayConfig {
   // compositing.
   gfx::GpuFenceHandle access_fence_handle;
 
-  // Specifies the color space data of the wayland config.
+  // Specifies the color space data and HDR metadata of the wayland config.
   std::optional<gfx::ColorSpace> color_space;
+  std::optional<gfx::HDRMetadata> hdr_metadata;
 };
 
 }  // namespace wl

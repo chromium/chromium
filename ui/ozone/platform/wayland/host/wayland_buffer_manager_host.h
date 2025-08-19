@@ -93,6 +93,8 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
                                const std::vector<uint64_t>& modifiers,
                                uint32_t format,
                                uint32_t planes_count,
+                               const gfx::ColorSpace& color_space,
+                               const gfx::HDRMetadata& hdr_metadata,
                                uint32_t buffer_id) override;
   // Called by the GPU and asks to import a wl_buffer based on a shared memory
   // file descriptor using wl_shm protocol. Check comments in the

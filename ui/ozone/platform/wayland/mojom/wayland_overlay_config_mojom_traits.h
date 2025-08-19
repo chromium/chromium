@@ -10,6 +10,7 @@
 #include "skia/public/mojom/skcolor4f_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/gpu_fence_handle_mojom_traits.h"
+#include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 #include "ui/gfx/mojom/overlay_priority_hint_mojom_traits.h"
 #include "ui/gfx/mojom/overlay_transform_mojom_traits.h"
 #include "ui/gfx/mojom/rrect_f_mojom_traits.h"
@@ -50,6 +51,11 @@ struct StructTraits<wl::mojom::WaylandOverlayConfigDataView,
   static const std::optional<gfx::ColorSpace>& color_space(
       const wl::WaylandOverlayConfig& input) {
     return input.color_space;
+  }
+
+  static const std::optional<gfx::HDRMetadata>& hdr_metadata(
+      const wl::WaylandOverlayConfig& input) {
+    return input.hdr_metadata;
   }
 
   static const std::variant<gfx::OverlayTransform, gfx::Transform>& transform(

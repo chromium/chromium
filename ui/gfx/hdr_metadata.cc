@@ -4,6 +4,7 @@
 
 #include "ui/gfx/hdr_metadata.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <sstream>
 
@@ -35,6 +36,17 @@ std::string HdrMetadataSmpteSt2086::ToString() const {
      << "minLum:" << luminance_min << ", "
      << "maxLum:" << luminance_max << "}";
   return ss.str();
+}
+
+std::partial_ordering HdrMetadataSmpteSt2086::operator<=>(
+    const HdrMetadataSmpteSt2086& rhs) const {
+  return std::tie(primaries.fRX, primaries.fRY, primaries.fGX, primaries.fGY,
+                  primaries.fBX, primaries.fBY, primaries.fWX, primaries.fWY,
+                  luminance_min, luminance_max) <=>
+         std::tie(rhs.primaries.fRX, rhs.primaries.fRY, rhs.primaries.fGX,
+                  rhs.primaries.fGY, rhs.primaries.fBX, rhs.primaries.fBY,
+                  rhs.primaries.fWX, rhs.primaries.fWY, rhs.luminance_min,
+                  rhs.luminance_max);
 }
 
 std::string HdrMetadataNdwl::ToString() const {
@@ -83,6 +95,22 @@ bool HdrMetadataAgtm::operator==(const HdrMetadataAgtm& rhs) const {
   return payload->equals(rhs.payload.get());
 }
 
+std::strong_ordering HdrMetadataAgtm::operator<=>(
+    const HdrMetadataAgtm& rhs) const {
+  if (!payload && !rhs.payload) {
+    return std::strong_ordering::equal;
+  }
+  if (!payload) {
+    return std::strong_ordering::less;
+  }
+  if (!rhs.payload) {
+    return std::strong_ordering::greater;
+  }
+  return std::lexicographical_compare_three_way(
+      payload->byteSpan().begin(), payload->byteSpan().end(),
+      rhs.payload->byteSpan().begin(), rhs.payload->byteSpan().end());
+}
+
 HDRMetadata::HDRMetadata() = default;
 HDRMetadata::HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086,
                          const HdrMetadataCta861_3& cta_861_3)
@@ -117,8 +145,9 @@ HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
   constexpr HdrMetadataSmpteSt2086 kDefaults2086(SkNamedPrimaries::kRec2020,
                                                  1000.f, 0.f);
 
-  if (!hdr_metadata)
+  if (!hdr_metadata) {
     return HDRMetadata(kDefaults2086);
+  }
 
   HDRMetadata result = *hdr_metadata;
   if (!result.smpte_st_2086) {

@@ -74,7 +74,8 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   ~GbmPixmapWayland() override;
 
   // Asks Wayland to create a dmabuf based wl_buffer.
-  void CreateDmabufBasedWlBuffer();
+  void CreateDmabufBasedWlBuffer(
+      const gfx::OverlayPlaneData& overlay_plane_data);
 
   // gbm_bo wrapper for struct gbm_bo.
   std::unique_ptr<GbmBuffer> gbm_bo_;

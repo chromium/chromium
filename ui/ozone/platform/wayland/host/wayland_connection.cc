@@ -57,6 +57,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_tablet_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
@@ -157,6 +158,8 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &SinglePixelBuffer::Instantiate);
   RegisterGlobalObjectFactory(ToplevelIconManager::kInterfaceName,
                               &ToplevelIconManager::Instantiate);
+  RegisterGlobalObjectFactory(WaylandCursorShape::kInterfaceName,
+                              &WaylandCursorShape::Instantiate);
   RegisterGlobalObjectFactory(WaylandDataDeviceManager::kInterfaceName,
                               &WaylandDataDeviceManager::Instantiate);
   RegisterGlobalObjectFactory(WaylandDrm::kInterfaceName,
@@ -169,8 +172,8 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &WaylandShm::Instantiate);
   RegisterGlobalObjectFactory(WaylandTabletManager::kInterfaceName,
                               &WaylandTabletManager::Instantiate);
-  RegisterGlobalObjectFactory(WaylandCursorShape::kInterfaceName,
-                              &WaylandCursorShape::Instantiate);
+  RegisterGlobalObjectFactory(WaylandWpColorManager::kInterfaceName,
+                              &WaylandWpColorManager::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpLinuxDmabuf::kInterfaceName,
                               &WaylandZwpLinuxDmabuf::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpPointerConstraints::kInterfaceName,
@@ -185,12 +188,12 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &XdgForeignWrapper::Instantiate);
   RegisterGlobalObjectFactory(XdgForeignWrapper::kInterfaceNameV2,
                               &XdgForeignWrapper::Instantiate);
+  RegisterGlobalObjectFactory(XdgSessionManager::kInterfaceName,
+                              &XdgSessionManager::Instantiate);
   RegisterGlobalObjectFactory(ZwpIdleInhibitManager::kInterfaceName,
                               &ZwpIdleInhibitManager::Instantiate);
   RegisterGlobalObjectFactory(ZwpPrimarySelectionDeviceManager::kInterfaceName,
                               &ZwpPrimarySelectionDeviceManager::Instantiate);
-  RegisterGlobalObjectFactory(XdgSessionManager::kInterfaceName,
-                              &XdgSessionManager::Instantiate);
 
   display_.reset(wl_display_connect(nullptr));
   if (!display_) {

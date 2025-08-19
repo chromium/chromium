@@ -11,6 +11,10 @@ wayland_protocol("alpha_compositing_protocol") {
   sources = [ "unstable/alpha-compositing/alpha-compositing-unstable-v1.xml" ]
 }
 
+wayland_protocol("color_management_protocol") {
+  sources = [ "src/staging/color-management/color-management-v1.xml" ]
+}
+
 wayland_protocol("content_type_protocol") {
   sources = [ "unstable/content-type/content-type-v1.xml" ]
 }

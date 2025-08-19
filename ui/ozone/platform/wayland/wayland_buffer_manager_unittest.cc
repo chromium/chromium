@@ -224,7 +224,7 @@ class WaylandBufferManagerTest : public WaylandTest {
     SetTerminateCallbackExpectationAndDestroyChannel(&callback_, fail);
     buffer_manager_gpu_->CreateDmabufBasedBuffer(
         std::move(fd), kDefaultSize, strides, offsets, modifiers, format,
-        planes_count, buffer_id);
+        planes_count, gfx::ColorSpace(), gfx::HDRMetadata(), buffer_id);
 
     base::RunLoop().RunUntilIdle();
   }
