@@ -43,32 +43,7 @@ namespace webnn {
 
 class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
-
-// Ensures the sequence is destroyed when this context is destroyed.
-// The sequence must be destroyed even if context creation fails,
-// because gpu::Scheduler will DCHECK if any sequences remain alive
-// when it is destroyed.
-// TODO(crbug.com/345352987): move out into seperate cpp.
-class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedSequence {
- public:
-  ScopedSequence(gpu::Scheduler& scheduler,
-                 scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                 gpu::CommandBufferId command_buffer_id);
-  ~ScopedSequence();
-
-  // Move and copy not allowed.
-  ScopedSequence(ScopedSequence&&) = delete;
-  ScopedSequence& operator=(ScopedSequence&&) = delete;
-
-  ScopedSequence(const ScopedSequence&) = delete;
-  ScopedSequence& operator=(const ScopedSequence&) = delete;
-
-  gpu::SequenceId sequence_id() const { return sequence_id_; }
-
- private:
-  raw_ref<gpu::Scheduler> scheduler_;
-  const gpu::SequenceId sequence_id_;
-};
+class ScopedSequence;
 
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     : public WebNNReceiverImpl<mojom::WebNNContext>,

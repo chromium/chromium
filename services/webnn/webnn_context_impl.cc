@@ -23,27 +23,13 @@
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
+#include "services/webnn/scoped_sequence.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_builder_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
 
 namespace webnn {
-
-ScopedSequence::ScopedSequence(
-    gpu::Scheduler& scheduler,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    gpu::CommandBufferId command_buffer_id)
-    : scheduler_(scheduler),
-      sequence_id_(scheduler_->CreateSequence(
-          gpu::SchedulingPriority::kNormal,
-          std::move(task_runner),
-          gpu::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE,
-          command_buffer_id)) {}
-
-ScopedSequence::~ScopedSequence() {
-  scheduler_->DestroySequence(sequence_id_);
-}
 
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
