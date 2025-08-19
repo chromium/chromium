@@ -30,7 +30,9 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/view.h"
 
 class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
  public:
@@ -46,11 +48,14 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
     group_ = browser()->tab_strip_model()->AddToNewGroup({0});
     browser()->tab_strip_model()->OpenTabGroupEditor(group_.value());
 
-    BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
-    TabGroupHeader* header =
-        browser_view->tabstrip()->group_header(group_.value());
-    ASSERT_NE(nullptr, header);
-    ASSERT_TRUE(header->editor_bubble_tracker_.is_open());
+    views::ElementTrackerViews::ViewList tab_group_editor_bubble =
+        views::ElementTrackerViews::GetInstance()
+            ->GetAllMatchingViewsInAnyContext(
+                TabGroupEditorBubbleView::kTabGroupEditorBubbleViewId);
+    CHECK_EQ(tab_group_editor_bubble.size(), 1u);
+
+    ASSERT_NE(nullptr, tab_group_editor_bubble[0]);
+    ASSERT_TRUE(tab_group_editor_bubble[0]->GetVisible());
   }
 
   static views::Widget* GetEditorBubbleWidget(const TabGroupHeader* header) {

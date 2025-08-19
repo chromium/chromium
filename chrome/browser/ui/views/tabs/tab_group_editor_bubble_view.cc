@@ -190,6 +190,9 @@ std::u16string GetAcceleratorText(int command_id, const Browser* browser) {
 namespace saved_tab_group_prefs = tab_groups::saved_tab_groups::prefs;
 namespace shared_tab_group_metrics = tab_groups::saved_tab_groups::metrics;
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupEditorBubbleView,
+                                      kTabGroupEditorBubbleViewId);
+
 // static
 views::Widget* TabGroupEditorBubbleView::Show(
     Browser* browser,
@@ -308,6 +311,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCloseCallback(base::BindOnce(&TabGroupEditorBubbleView::OnBubbleClose,
                                   base::Unretained(this)));
+  SetProperty(views::kElementIdentifierKey, kTabGroupEditorBubbleViewId);
 
   RebuildMenuContents();
 

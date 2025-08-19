@@ -446,7 +446,8 @@ std::string IDString(TabStripModel* model) {
 
 TabStrip* GetTabStripForBrowser(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  return browser_view->tabstrip();
+  return static_cast<TabStripRegionView*>(browser_view->tab_strip_view())
+      ->tab_strip();
 }
 
 TabDragController* GetTabDragController(TabStrip* tab_strip) {
@@ -968,7 +969,7 @@ class DetachToBrowserTabDragControllerTest
                                   int drag_x_offset = 0) {
     test::QuitDraggingObserver observer(tab_strip);
     // Move to the tab and drag it enough so that it detaches.
-    TabGroupHeader* group_header = tab_strip->group_header(group);
+    views::View* group_header = tab_strip->group_header(group);
     ASSERT_TRUE(PressInputAtCenter(group_header));
     ASSERT_TRUE(DragInputToCenterNotifyWhenDone(
         group_header, std::move(task),

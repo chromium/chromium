@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -39,6 +40,8 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   METADATA_HEADER(TabGroupEditorBubbleView, views::BubbleDialogDelegateView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabGroupEditorBubbleViewId);
+
   static constexpr int TAB_GROUP_HEADER_CXMENU_SAVE_GROUP = 1;
   static constexpr int TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP = 2;
   static constexpr int TAB_GROUP_HEADER_CXMENU_UNGROUP = 3;

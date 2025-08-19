@@ -10,6 +10,7 @@
 
 #include "base/byte_count.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,12 +18,14 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/data_sharing/public/features.h"
@@ -47,10 +50,19 @@ ui::MouseEvent GetDummyEvent() {
 // Integration tests for interactions between TabStripModel and TabStrip.
 class TabStripBrowsertest : public InProcessBrowserTest {
  public:
+  TabStripBrowsertest() {
+    // The TabStrip is not used in Vertical Tabs. Ensure this suite is not run
+    // which would end up testing behavior that is not part of the browser.
+    feature_list_.InitAndDisableFeature(tabs::kVerticalTabs);
+  }
+
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
 
   TabStrip* tab_strip() {
-    return BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
+    return static_cast<TabStripRegionView*>(
+               BrowserView::GetBrowserViewForBrowser(browser())
+                   ->tab_strip_region_view())
+        ->tab_strip();
   }
 
   void AppendTab() { chrome::AddTabAt(browser(), GURL(), -1, true); }
@@ -94,6 +106,9 @@ class TabStripBrowsertest : public InProcessBrowserTest {
 
     return collapsed_state;
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Regression test for crbug.com/983961.
