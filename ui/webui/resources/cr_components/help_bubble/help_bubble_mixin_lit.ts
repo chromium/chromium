@@ -20,12 +20,13 @@
 
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {debounceEnd} from '//resources/js/util.js';
 import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {InsetsF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {TrackedElementHandlerInterface} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 
 import type {HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
-import {debounceEnd, HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT} from './help_bubble.js';
+import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT} from './help_bubble.js';
 import type {HelpBubbleClientCallbackRouter, HelpBubbleHandlerInterface, HelpBubbleParams} from './help_bubble.mojom-webui.js';
 import {HelpBubbleClosedReason} from './help_bubble.mojom-webui.js';
 import type {Trackable} from './help_bubble_controller.js';

@@ -177,3 +177,19 @@ export function isUndoKeyboardEvent(event: KeyboardEvent): boolean {
 
   return targetModifier && !excludedModifiers.some(modifier => modifier);
 }
+
+/**
+ * Debounces the given function for the given time. The function is invoked at
+ * the end of the debounce period. This is useful for preventing an expensive
+ * function from being invoked repeatedly over short periods of time.
+ * @param fn The function to debounce.
+ * @param time The time in milliseconds to debounce for.
+ * @return A function that can be called to cancel the debounce.
+ */
+export function debounceEnd(fn: Function, time: number = 50): () => void {
+  let timerId: number|undefined;
+  return () => {
+    clearTimeout(timerId);
+    timerId = setTimeout(fn, time);
+  };
+}

@@ -21,6 +21,7 @@ build_webui_tests("build") {
     "static_types_test.ts",
     "store_test.ts",
     "test_suite_self_test.ts",
+    "tracked_element/tracked_element_test.ts",
     "util_test.ts",
   ]
   ts_definitions = [

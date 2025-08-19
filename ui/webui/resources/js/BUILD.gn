@@ -37,6 +37,8 @@ build_webui("build") {
     "search_highlight_utils.ts",
     "static_types.ts",
     "store.ts",
+    "tracked_element/tracked_element_manager.ts",
+    "tracked_element/tracked_element_proxy.ts",
     "test_loader.ts",
     "test_loader_util.ts",
     "util.ts",
