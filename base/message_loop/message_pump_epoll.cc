@@ -40,8 +40,7 @@ namespace base {
 namespace {
 
 // Under this feature native work is batched.
-BASE_FEATURE(kBatchNativeEventsInMessagePumpEpoll,
-             "BatchNativeEventsInMessagePumpEpoll",
+BASE_FEATURE(BatchNativeEventsInMessagePumpEpoll,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Caches the state of the "BatchNativeEventsInMessagePumpEpoll".

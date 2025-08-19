@@ -61,8 +61,7 @@ std::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
 
 }  // namespace internal
 
-BASE_FEATURE(kNumberOfCoresWithCpuSecurityMitigation,
-             "NumberOfCoresWithCpuSecurityMitigation",
+BASE_FEATURE(NumberOfCoresWithCpuSecurityMitigation,
              FEATURE_ENABLED_BY_DEFAULT);
 
 // static

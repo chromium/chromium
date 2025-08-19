@@ -21,8 +21,7 @@
 
 namespace base::ios {
 
-BASE_FEATURE(kScopedCriticalActionSkipOnShutdown,
-             "ScopedCriticalActionSkipOnShutdown",
+BASE_FEATURE(ScopedCriticalActionSkipOnShutdown,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

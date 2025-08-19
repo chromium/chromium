@@ -22,9 +22,7 @@
 namespace base {
 
 namespace features {
-BASE_FEATURE(kBackgroundThreadPoolFieldTrial,
-             "BackgroundThreadPoolFieldTrial",
-             FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(BackgroundThreadPoolFieldTrial, FEATURE_DISABLED_BY_DEFAULT);
 
 // |kBackgroundThreadPoolFieldTrialConfig| is queried only by the Java layer
 // using CachedFlags, so mark we mark it as unused to make the C++ compiler

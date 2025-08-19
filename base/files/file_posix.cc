@@ -62,9 +62,7 @@ namespace {
 // `F_BARRIERFSYNC` or `flush()` is used (depending on the
 // "MacEfficientFileFlushUseBarrier" param). See
 // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
-BASE_FEATURE(kMacEfficientFileFlush,
-             "MacEfficientFileFlush",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(MacEfficientFileFlush, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const FeatureParam<bool> kMacEfficientFileFlushUseBarrier{
     &kMacEfficientFileFlush, "MacEfficientFileFlushUseBarrier", true};

@@ -33,9 +33,7 @@ namespace {
 // rand_util_posix.cc.
 std::atomic<bool> g_use_boringssl;
 
-BASE_FEATURE(kUseBoringSSLForRandBytes,
-             "UseBoringSSLForRandBytes",
-             FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(UseBoringSSLForRandBytes, FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

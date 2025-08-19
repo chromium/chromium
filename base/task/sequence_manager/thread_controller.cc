@@ -26,8 +26,7 @@ namespace {
 // Enable sample metadata recording in this class, if it's currently disabled.
 // Note that even if `kThreadControllerSetsProfilerMetadata` is disabled, sample
 // metadata may still be recorded.
-BASE_FEATURE(kThreadControllerSetsProfilerMetadata,
-             "ThreadControllerSetsProfilerMetadata",
+BASE_FEATURE(ThreadControllerSetsProfilerMetadata,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Thread safe copy to be updated once feature list is available. This

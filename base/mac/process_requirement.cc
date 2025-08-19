@@ -569,8 +569,7 @@ bool ProcessRequirement::ValidateProcess(
 
 // static
 void ProcessRequirement::MaybeGatherMetrics() {
-  static BASE_FEATURE(kGatherProcessRequirementMetrics,
-                      "GatherProcessRequirementMetrics",
+  static BASE_FEATURE(GatherProcessRequirementMetrics,
                       base::FEATURE_ENABLED_BY_DEFAULT);
   if (base::FeatureList::IsEnabled(kGatherProcessRequirementMetrics)) {
     base::ThreadPool::PostTask(

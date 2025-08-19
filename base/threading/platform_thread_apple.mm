@@ -84,8 +84,7 @@ void PlatformThreadBase::SetName(const std::string& name) {
 }
 
 // Whether optimized real-time thread config should be used for audio.
-BASE_FEATURE(kOptimizedRealtimeThreadingMac,
-             "OptimizedRealtimeThreadingMac",
+BASE_FEATURE(OptimizedRealtimeThreadingMac,
 #if BUILDFLAG(IS_MAC)
              FEATURE_ENABLED_BY_DEFAULT
 #else

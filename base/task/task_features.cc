@@ -22,9 +22,7 @@ namespace base {
 // must be aware that all tests sharing a process will have the same state,
 // regardless of future ScopedFeatureList instances.
 
-BASE_FEATURE(kUseUtilityThreadGroup,
-             "UseUtilityThreadGroup",
-             FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(UseUtilityThreadGroup, FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAddTaskLeewayFeature,
              "AddTaskLeeway",
@@ -39,20 +37,15 @@ BASE_FEATURE_PARAM(TimeDelta,
                    "max_precise_delay",
                    kDefaultMaxPreciseDelay);
 
-BASE_FEATURE(kAlignWakeUps, "AlignWakeUps", FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(AlignWakeUps, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTimerSlackMac, "TimerSlackMac", FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(TimerSlackMac, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUIPumpImprovementsWin,
-             "UIPumpImprovementsWin",
-             FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(UIPumpImprovementsWin, FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPumpFastToSleepAndroid,
-             "PumpFastToSleepAndroid",
-             FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(PumpFastToSleepAndroid, FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRunTasksByBatches,
-             "RunTasksByBatches",
+BASE_FEATURE(RunTasksByBatches,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
              FEATURE_ENABLED_BY_DEFAULT);
 #else

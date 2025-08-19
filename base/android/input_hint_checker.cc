@@ -41,9 +41,7 @@ InputHintChecker* g_test_instance;
 // Whether to fetch the input hint from the system. When disabled, pretends
 // that no input is ever queued.
 BASE_EXPORT
-BASE_FEATURE(kYieldWithInputHint,
-             "YieldWithInputHint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(YieldWithInputHint, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Min time delta between checks for the input hint. Must be a smaller than
 // time to produce a frame, but a bit longer than the time it takes to retrieve

@@ -24,9 +24,7 @@ namespace base {
 
 namespace {
 
-BASE_FEATURE(kHeapProfilerMultiKeyHashSet,
-             "HeapProfilerMultiKeyHashSet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(HeapProfilerMultiKeyHashSet, base::FEATURE_DISABLED_BY_DEFAULT);
 
 using ::base::allocator::dispatcher::ReentryGuard;
 

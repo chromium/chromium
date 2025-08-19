@@ -67,8 +67,7 @@
 // base/metrics/field_trial.cc
 namespace base {
 
-BASE_FEATURE(kPassHistogramSharedMemoryOnLaunch,
-             "PassHistogramSharedMemoryOnLaunch",
+BASE_FEATURE(PassHistogramSharedMemoryOnLaunch,
 #if BUILDFLAG(IS_ANDROID)
              FEATURE_DISABLED_BY_DEFAULT
 #else

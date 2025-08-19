@@ -46,13 +46,9 @@
 namespace base {
 
 #if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kOneGroupPerRenderer,
-             "OneGroupPerRenderer",
-             FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(OneGroupPerRenderer, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFlattenCpuCgroups,
-             "FlattenCpuCgroups",
-             FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(FlattenCpuCgroups, FEATURE_ENABLED_BY_DEFAULT);
 
 // If FlattenCpuCgroupsUnified parameter is enabled, foreground renderer
 // processes uses /sys/fs/cgroup/cpu/ui cgroup instead of

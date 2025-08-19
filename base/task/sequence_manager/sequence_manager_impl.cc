@@ -52,9 +52,7 @@ namespace {
 
 // Whether SequenceManagerImpl records crash keys. Enable via Finch when needed
 // for an investigation. Disabled by default to avoid unnecessary overhead.
-BASE_FEATURE(kRecordSequenceManagerCrashKeys,
-             "RecordSequenceManagerCrashKeys",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(RecordSequenceManagerCrashKeys, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constinit thread_local internal::SequenceManagerImpl*
     thread_local_sequence_manager = nullptr;

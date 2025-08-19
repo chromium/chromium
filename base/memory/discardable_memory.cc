@@ -21,15 +21,11 @@ namespace features {
 #if BUILDFLAG(IS_POSIX)
 // Feature flag allowing the use of MADV_FREE discardable memory when there are
 // multiple supported discardable memory backings.
-BASE_FEATURE(kMadvFreeDiscardableMemory,
-             "MadvFreeDiscardableMemory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(MadvFreeDiscardableMemory, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kDiscardableMemoryBackingTrial,
-             "DiscardableMemoryBackingTrial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(DiscardableMemoryBackingTrial, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_ENUM_PARAM(DiscardableMemoryTrialGroup,
                         kDiscardableMemoryBackingParam,
