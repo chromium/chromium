@@ -27,6 +27,10 @@ namespace {
 constexpr int kTestLayerId = 101;
 constexpr int kTestLayerMemberId = 201;
 
+// The entropy limits, in bits, to use for various tests.
+constexpr double kEntropyLimit_10bits = 10.0;
+constexpr double kEntropyLimit_2bits = 2.0;
+
 // Hard code the enum bucket values, and use these in tests so that any
 // renumbering can be detected.
 // LimitedEntropySeedRejectionReason::kHighEntropyUsage
@@ -199,8 +203,8 @@ TEST_F(LimitedEntropyRandomizationTest,
                        CreateLayerMemberReference(2, {kTestLayerMemberId})),
        CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
                        CreateLayerMemberReference(2, {kTestLayerMemberId}))});
-  const MisconfiguredEntropyResult result =
-      SeedHasMisconfiguredEntropy(client_state_, test_seed, 10);
+  const MisconfiguredEntropyResult result = SeedHasMisconfiguredEntropy(
+      client_state_, test_seed, kEntropyLimit_10bits);
   EXPECT_FALSE(result.is_misconfigured);
   EXPECT_TRUE(result.seed_has_active_limited_layer.value());
   histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
@@ -219,7 +223,8 @@ TEST_F(LimitedEntropyRandomizationTest,
   auto test_seed = CreateTestSeed(
       {test_layer}, {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
                                       layer_member_reference)});
-  EXPECT_FALSE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10)
+  EXPECT_FALSE(SeedHasMisconfiguredEntropy(client_state_, test_seed,
+                                           kEntropyLimit_10bits)
                    .is_misconfigured);
   histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
 }
@@ -237,8 +242,8 @@ TEST_F(LimitedEntropyRandomizationTest,
                                      CreateLayerMemberReference(
                                          kTestLayerId, {kTestLayerMemberId}))});
   // Seed should not be rejected since it's not using LIMITED entropy mode.
-  const MisconfiguredEntropyResult result =
-      SeedHasMisconfiguredEntropy(client_state_, test_seed, 10);
+  const MisconfiguredEntropyResult result = SeedHasMisconfiguredEntropy(
+      client_state_, test_seed, kEntropyLimit_10bits);
   EXPECT_FALSE(result.is_misconfigured);
   EXPECT_FALSE(result.seed_has_active_limited_layer.value());
 
@@ -261,8 +266,9 @@ TEST_F(LimitedEntropyRandomizationTest, SessionConsistency) {
   auto test_seed = CreateTestSeed({test_layer}, {test_study});
   // Seed should not be rejected since the study is session consistency, which
   // does not consume entropy.
-  EXPECT_FALSE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2)
-                   .is_misconfigured);
+  EXPECT_FALSE(
+      SeedHasMisconfiguredEntropy(client_state_, test_seed, kEntropyLimit_2bits)
+          .is_misconfigured);
   histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
 }
 
@@ -278,8 +284,9 @@ TEST_F(LimitedEntropyRandomizationTest, SeedRejection_EntropyOveruse) {
                                      CreateLayerMemberReference(
                                          kTestLayerId, {kTestLayerMemberId}))});
   // The total entropy used should be 3 bits which is over the limit.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2)
-                  .is_misconfigured);
+  EXPECT_TRUE(
+      SeedHasMisconfiguredEntropy(client_state_, test_seed, kEntropyLimit_2bits)
+          .is_misconfigured);
   histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
                                        kHighEntropyUsageBucket, 1);
 }
@@ -296,8 +303,9 @@ TEST_F(LimitedEntropyRandomizationTest, SeedRejection_InvalidLayerId) {
       /*layers=*/{test_layer},
       /*studies=*/{});
   // Rejected because of invalid layer id.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2)
-                  .is_misconfigured);
+  EXPECT_TRUE(
+      SeedHasMisconfiguredEntropy(client_state_, test_seed, kEntropyLimit_2bits)
+          .is_misconfigured);
   histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
                                        kInvalidLayerIdBucket, 1);
 }
@@ -315,8 +323,9 @@ TEST_F(LimitedEntropyRandomizationTest, SeedRejection_DuplicatedLayerId) {
           CreateExperimentsWithTwoBitsOfEntropy(),
           CreateLayerMemberReference(kTestLayerId, {kTestLayerMemberId}))});
   // Rejected because of duplicated layer id.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2)
-                  .is_misconfigured);
+  EXPECT_TRUE(
+      SeedHasMisconfiguredEntropy(client_state_, test_seed, kEntropyLimit_2bits)
+          .is_misconfigured);
   histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
                                        kDuplicatedLayerIdBucket, 1);
 }
@@ -334,8 +343,9 @@ TEST_F(LimitedEntropyRandomizationTest, SeedRejection_InvalidLayerReference) {
                        CreateLayerMemberReference(0,  // Invalid layer id.
                                                   {kTestLayerMemberId}))});
   // Rejected because of duplicated layer id.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2)
-                  .is_misconfigured);
+  EXPECT_TRUE(
+      SeedHasMisconfiguredEntropy(client_state_, test_seed, kEntropyLimit_2bits)
+          .is_misconfigured);
   histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
                                        kInvalidLayerReferenceBucket, 1);
 }
@@ -353,8 +363,9 @@ TEST_F(LimitedEntropyRandomizationTest, SeedRejection_EmptyLayerReference) {
                                          kTestLayerId,
                                          /*layer_member_ids=*/{}))});  // Empty.
   // Rejected because of empty layer member reference.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2)
-                  .is_misconfigured);
+  EXPECT_TRUE(
+      SeedHasMisconfiguredEntropy(client_state_, test_seed, kEntropyLimit_2bits)
+          .is_misconfigured);
   histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
                                        kEmptyLayerReferenceBucket, 1);
 }
@@ -374,8 +385,9 @@ TEST_F(LimitedEntropyRandomizationTest, SeedRejection_DanglingLayerReference) {
               kTestLayerId + 1,  // Layer id + 1 is not defined above.
               {kTestLayerMemberId}))});
   // Rejected because of dangling layer member reference.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2)
-                  .is_misconfigured);
+  EXPECT_TRUE(
+      SeedHasMisconfiguredEntropy(client_state_, test_seed, kEntropyLimit_2bits)
+          .is_misconfigured);
   histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
                                        kDanglingLayerReferenceBucket, 1);
 }
@@ -396,8 +408,9 @@ TEST_F(LimitedEntropyRandomizationTest,
               kTestLayerId, {kTestLayerMemberId +
                              1}))});  // Layer member id + 1 is not defined.
   // Rejected because of dangling layer member reference.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2)
-                  .is_misconfigured);
+  EXPECT_TRUE(
+      SeedHasMisconfiguredEntropy(client_state_, test_seed, kEntropyLimit_2bits)
+          .is_misconfigured);
   histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
                                        kDanglingLayerMemberReferenceBucket, 1);
 }
@@ -417,7 +430,8 @@ TEST_F(LimitedEntropyRandomizationTest,
                        CreateLayerMemberReference(2, {kTestLayerMemberId})),
        CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
                        CreateLayerMemberReference(3, {kTestLayerMemberId}))});
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10)
+  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed,
+                                          kEntropyLimit_10bits)
                   .is_misconfigured);
   histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
                                        kMoreThenOneLimitedLayerBucket, 1);
@@ -459,7 +473,8 @@ TEST_F(LimitedEntropyRandomizationTest,
   study2.mutable_filter()->set_min_version(study2_min_version.GetString());
 
   auto test_seed = CreateTestSeed(test_layers, {study1, study2});
-  EXPECT_FALSE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10)
+  EXPECT_FALSE(SeedHasMisconfiguredEntropy(client_state_, test_seed,
+                                           kEntropyLimit_10bits)
                    .is_misconfigured);
   histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
 }
@@ -475,7 +490,8 @@ TEST_F(LimitedEntropyRandomizationTest, SeedRejection_InvalidSlotBounds) {
                                          kTestLayerId, {kTestLayerMemberId}))});
   // Seed should be rejected since the actively referenced LIMITED layer is
   // invalid.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10)
+  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed,
+                                          kEntropyLimit_10bits)
                   .is_misconfigured);
   histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
                                        kLayerHasInvalidSlotBoundsBucket, 1);
@@ -490,7 +506,8 @@ TEST_F(LimitedEntropyRandomizationTest, SeedRejection_NoSlots) {
                                      CreateLayerMemberReference(
                                          kTestLayerId, {kTestLayerMemberId}))});
   // Seed should be rejected since the LIMITED layer is invalid.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10)
+  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed,
+                                          kEntropyLimit_10bits)
                   .is_misconfigured);
   histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
                                        kLayerDoesNotContainSlotsBucket, 1);
