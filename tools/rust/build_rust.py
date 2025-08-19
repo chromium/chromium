@@ -55,8 +55,9 @@ sys.path.append(
                  'scripts'))
 
 from build import (AddCMakeToPath, AddZlibToPath, CheckoutGitRepo, CopyFile,
-                   DownloadDebianSysroot, GetLibXml2Dirs, GitCherryPick, LLVM_DIR,
-                   IsGitAncestorToHead, LLVM_BUILD_TOOLS_DIR, RunCommand)
+                   DownloadDebianSysroot, GetLibXml2Dirs, GitCherryPick,
+                   LLVM_DIR, IsGitAncestorToHead, LLVM_BUILD_TOOLS_DIR,
+                   RunCommand)
 from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
                     GetDefaultHostOs, RmTree, UpdatePackage)
 
@@ -521,7 +522,7 @@ def RustTargetTriple():
 
 
 # Build the LLVM libraries and install them .
-def BuildLLVMLibraries(skip_build):
+def BuildLLVMLibraries(skip_build, llvm_force_head_revision):
     if not skip_build:
         print(f'Building the host LLVM in {RUST_HOST_LLVM_BUILD_DIR}...')
         build_cmd = [
@@ -536,6 +537,8 @@ def BuildLLVMLibraries(skip_build):
             # Not using this in Rust yet, see also crbug.com/1476464.
             '--without-zstd',
         ]
+        if llvm_force_head_revision:
+            build_cmd.append('--llvm-force-head-revision')
         if sys.platform.startswith('linux'):
             build_cmd.append('--without-android')
             build_cmd.append('--without-fuchsia')
@@ -653,6 +656,11 @@ def main():
         'running specified command, skipping all normal build steps. For '
         'debugging. Running x.py directly will not set the appropriate env '
         'variables nor update config.toml')
+    parser.add_argument(
+        '--llvm-force-head-revision',
+        action='store_true',
+        help='Checkout and build against the most recent llvm revision,'
+        'rather than the one specified in tools/clang/scripts/update.py')
     if sys.platform == 'win32':
         parser.add_argument('--sh', help='path to the sh.exe to use')
     args, rest = parser.parse_known_args()
@@ -787,7 +795,7 @@ def main():
         # the hash is valid.
         return 0
 
-    BuildLLVMLibraries(args.skip_llvm_build)
+    BuildLLVMLibraries(args.skip_llvm_build, args.llvm_force_head_revision)
 
     AddCMakeToPath()
 
