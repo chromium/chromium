@@ -17,6 +17,8 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
+
 namespace {
 
 constexpr WCHAR kMachineNamePolicyVarName[] = L"${machine_name}";
@@ -65,8 +67,9 @@ struct ScopedFunctionHelper {
   }
 
   ~ScopedFunctionHelper() {
-    if (library_)
+    if (library_) {
       FreeLibrary(library_);
+    }
   }
 
   template <class... Args>
@@ -93,8 +96,9 @@ namespace install_static {
 // should only be used after DllMain() has run.
 std::wstring ExpandPathVariables(const std::wstring& untranslated_string) {
   std::wstring result(untranslated_string);
-  if (result.length() == 0)
+  if (result.length() == 0) {
     return result;
+  }
   // Sanitize quotes in case of any around the whole string.
   if (result.length() > 1 &&
       ((result.front() == L'"' && result.back() == L'"') ||
@@ -135,9 +139,9 @@ std::wstring ExpandPathVariables(const std::wstring& untranslated_string) {
     DWORD return_length = 0;
     get_user_name(nullptr, &return_length);
     if (return_length != 0) {
-      std::unique_ptr<WCHAR[]> username(new WCHAR[return_length]);
-      get_user_name(username.get(), &return_length);
-      std::wstring username_string(username.get());
+      auto username = base::HeapArray<WCHAR>::Uninit(return_length);
+      get_user_name(username.data(), &return_length);
+      std::wstring username_string(username.data());
       result.replace(position, wcslen(kUserNamePolicyVarName), username_string);
     }
   }
@@ -147,10 +151,10 @@ std::wstring ExpandPathVariables(const std::wstring& untranslated_string) {
     ::GetComputerNameEx(ComputerNamePhysicalDnsHostname, nullptr,
                         &return_length);
     if (return_length != 0) {
-      std::unique_ptr<WCHAR[]> machinename(new WCHAR[return_length]);
-      ::GetComputerNameEx(ComputerNamePhysicalDnsHostname, machinename.get(),
+      auto machinename = base::HeapArray<WCHAR>::Uninit(return_length);
+      ::GetComputerNameEx(ComputerNamePhysicalDnsHostname, machinename.data(),
                           &return_length);
-      std::wstring machinename_string(machinename.get());
+      std::wstring machinename_string(machinename.data());
       result.replace(position, wcslen(kMachineNamePolicyVarName),
                      machinename_string);
     }
