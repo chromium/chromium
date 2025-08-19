@@ -20,7 +20,6 @@ import androidx.annotation.StringRes;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
@@ -35,6 +34,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.KeyboardUtils;
@@ -620,21 +621,20 @@ public class KeyboardShortcuts {
                 R.string.keyboard_shortcut_chrome_feature_group_header);
 
         // Developer tools.
-        if (DeviceInfo.isDesktop()) {
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND)) {
             new KeyboardShortcutDefinition(
                     KeyboardShortcutsSemanticMeaning.DEV_TOOLS,
                     new KeyCombo(
                             KeyEvent.KEYCODE_I, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
                     R.string.keyboard_shortcut_developer_tools,
                     R.string.keyboard_shortcut_developer_group_header);
-
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_CLANK)) {
-                new KeyboardShortcutDefinition(
-                        KeyboardShortcutsSemanticMeaning.TASK_MANAGER,
-                        new KeyCombo(KeyEvent.KEYCODE_ESCAPE, KeyEvent.META_CTRL_ON),
-                        R.string.keyboard_shortcut_task_manager,
-                        R.string.keyboard_shortcut_developer_group_header);
-            }
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_CLANK)) {
+            new KeyboardShortcutDefinition(
+                    KeyboardShortcutsSemanticMeaning.TASK_MANAGER,
+                    new KeyCombo(KeyEvent.KEYCODE_ESCAPE, KeyEvent.META_CTRL_ON),
+                    R.string.keyboard_shortcut_task_manager,
+                    R.string.keyboard_shortcut_developer_group_header);
         }
 
         // Webpage shortcuts (keyboard_shortcut_webpage_group_header).

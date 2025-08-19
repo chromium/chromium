@@ -173,6 +173,9 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(b/432367402): Use a new Android API to replace this hack with a proper
   // solution.
   feature_overrides.EnableFeature(features::kAndroidCaptureKeyEvents);
+  // TODO(crbug.com/438369690): Remove when we enable DevTools frontend for all
+  // clank users.
+  feature_overrides.EnableFeature(features::kAndroidDevToolsFrontend);
   // TODO(crbug.com/430304112): Remove when rollout is complete to all form
   // factors.
   feature_overrides.EnableFeature(

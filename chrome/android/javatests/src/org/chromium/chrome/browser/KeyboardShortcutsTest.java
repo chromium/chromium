@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardUtils;
 
@@ -54,6 +55,7 @@ import java.util.Set;
 @Batch(Batch.UNIT_TESTS)
 @Features.EnableFeatures({
     ChromeFeatureList.TASK_MANAGER_CLANK,
+    ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND,
 })
 public class KeyboardShortcutsTest {
 

@@ -36,6 +36,8 @@ public class ContentFeatureList {
 
     public static final String ANDROID_CAPTURE_KEY_EVENTS = "AndroidCaptureKeyEvents";
 
+    public static final String ANDROID_DEV_TOOLS_FRONTEND = "AndroidDevToolsFrontend";
+
     public static final String ANDROID_OPEN_PDF_INLINE = "AndroidOpenPdfInline";
 
     public static final String HIDE_PASTE_POPUP_ON_GSB = "HidePastePopupOnGSB";

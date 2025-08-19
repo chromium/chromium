@@ -26,3 +26,18 @@ void JNI_DevToolsWindowAndroid_OpenDevTools(
   NOTREACHED();
 #endif
 }
+
+jboolean JNI_DevToolsWindowAndroid_IsDevToolsAllowedFor(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& java_profile,
+    const jni_zero::JavaParamRef<jobject>& java_web_contents) {
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
+  Profile* profile = Profile::FromJavaObject(java_profile);
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(java_web_contents);
+  return DevToolsWindow::AllowDevToolsFor(profile, web_contents) ? JNI_TRUE
+                                                                 : JNI_FALSE;
+#else
+  return JNI_FALSE;
+#endif
+}
