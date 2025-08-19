@@ -1028,7 +1028,9 @@ public class ToolbarManager
                                 homeButton,
                                 this::onHomePageButtonClick,
                                 this::onHomeButtonMenuClick,
-                                HomepagePolicyManager::isHomepageLocationManaged);
+                                HomepagePolicyManager::isHomepageLocationManaged,
+                                browsingModeThemeColorProvider,
+                                mIncognitoStateProvider);
             }
         } else {
             View homePageButtonsContainer =
@@ -2537,6 +2539,10 @@ public class ToolbarManager
 
         if (mBackButtonCoordinator != null) {
             mBackButtonCoordinator.destroy();
+        }
+
+        if (mHomeButtonCoordinator != null) {
+            mHomeButtonCoordinator.destroy();
         }
 
         if (mOverviewModeMenuButtonCoordinator != null) {

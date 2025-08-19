@@ -18,9 +18,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.HomeButtonDisplay;
+import org.chromium.chrome.browser.toolbar.top.ToolbarChild;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -35,7 +38,7 @@ import org.chromium.ui.widget.RectProvider;
  */
 // TODO(crbug.com/40676825): Fix the visibility bug on NTP.
 @NullMarked
-public class HomeButtonCoordinator implements HomeButtonDisplay {
+public class HomeButtonCoordinator extends ToolbarChild implements HomeButtonDisplay {
     private static final int ID_SETTINGS = 0;
 
     private final Context mContext;
@@ -52,13 +55,18 @@ public class HomeButtonCoordinator implements HomeButtonDisplay {
      * @param onClickListener Listener invoked when button is clicked.
      * @param onMenuClickCallback Callback when home button menu item is clicked.
      * @param isHomepageMenuDisabledSupplier Supplier for whether the home button menu is enabled.
+     * @param themeColorProvider a provider that notifies about theme changes.
+     * @param incognitoStateProvider a provider that notifies about incognito state changes.
      */
     public HomeButtonCoordinator(
             Context context,
             View homeButton,
             OnClickListener onClickListener,
             Callback<Context> onMenuClickCallback,
-            Supplier<Boolean> isHomepageMenuDisabledSupplier) {
+            Supplier<Boolean> isHomepageMenuDisabledSupplier,
+            ThemeColorProvider themeColorProvider,
+            IncognitoStateProvider incognitoStateProvider) {
+        super(themeColorProvider, incognitoStateProvider);
         mContext = context;
         mHomeButton = (HomeButton) homeButton;
         mOnMenuClickCallback = onMenuClickCallback;

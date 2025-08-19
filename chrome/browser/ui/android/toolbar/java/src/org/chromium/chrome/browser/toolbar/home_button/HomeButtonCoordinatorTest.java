@@ -26,6 +26,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 
@@ -38,6 +40,8 @@ public class HomeButtonCoordinatorTest {
     @Mock private HomeButton mHomeButton;
     @Mock private android.content.res.Resources mResources;
     @Mock private View.OnKeyListener mOnKeyListener;
+    @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private IncognitoStateProvider mIncognitoStateProvider;
 
     private boolean mIsHomeButtonMenuDisabled;
     private HomeButtonCoordinator mHomeButtonCoordinator;
@@ -56,7 +60,9 @@ public class HomeButtonCoordinatorTest {
                         mHomeButton,
                         (view) -> {},
                         (context) -> {},
-                        () -> mIsHomeButtonMenuDisabled);
+                        () -> mIsHomeButtonMenuDisabled,
+                        mThemeColorProvider,
+                        mIncognitoStateProvider);
     }
 
     @Test
