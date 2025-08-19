@@ -74,6 +74,11 @@ class MockTestClient : public PdfCaretClient {
     invalidated_rect_ = rect;
   }
 
+  MOCK_METHOD(bool,
+              IsSynthesizedNewline,
+              (const PageCharacterIndex& index),
+              (const override));
+
   MOCK_METHOD(bool, PageIndexInBounds, (int index), (const override));
 
  private:

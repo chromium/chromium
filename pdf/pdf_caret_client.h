@@ -34,6 +34,10 @@ class PdfCaretClient {
   // Notifies the client to invalidate `rect` for the caret.
   virtual void InvalidateRect(const gfx::Rect& rect) {}
 
+  // Returns whether the char at `index` is a synthesized newline (i.e. '\r' or
+  // '\n'). `index` must be a valid char on a page, otherwise crashes.
+  virtual bool IsSynthesizedNewline(const PageCharacterIndex& index) const = 0;
+
   // Returns whether `index` is a valid 0-based page index.
   virtual bool PageIndexInBounds(int index) const = 0;
 };

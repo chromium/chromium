@@ -504,6 +504,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   std::vector<gfx::Rect> GetScreenRectsForCaret(
       const PageCharacterIndex& index) const override;
   void InvalidateRect(const gfx::Rect& rect) override;
+  bool IsSynthesizedNewline(const PageCharacterIndex& index) const override;
   bool PageIndexInBounds(int index) const override;
 
   // `PdfAnnotationAgent::Container`:
