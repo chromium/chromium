@@ -33,6 +33,7 @@
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
@@ -336,12 +337,18 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
       PermissionInfoList permissions_list;
       for (ContentSettingsType content_type :
            PageInfo::GetAllPermissionsForTesting()) {
+        if (content_type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS &&
+            !base::FeatureList::IsEnabled(
+                content_settings::features::
+                    kApproximateGeolocationPermission)) {
+          continue;
+        }
         PageInfo::PermissionInfo info;
         info.type = content_type;
         info.setting = (name == kAllowAllPermissions) ? CONTENT_SETTING_ALLOW
                                                       : CONTENT_SETTING_BLOCK;
         info.default_setting =
-            content_settings::ContentSettingsRegistry::GetInstance()
+            content_settings::PermissionSettingsRegistry::GetInstance()
                 ->Get(info.type)
                 ->GetInitialDefaultSetting();
         info.source = content_settings::SettingSource::kUser;

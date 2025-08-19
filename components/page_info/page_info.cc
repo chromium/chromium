@@ -108,6 +108,7 @@ namespace {
 // propose changing it, email security-dev@chromium.org.
 ContentSettingsType kPermissionType[] = {
     ContentSettingsType::GEOLOCATION,
+    ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
     ContentSettingsType::MEDIASTREAM_CAMERA,
     ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
     ContentSettingsType::MEDIASTREAM_MIC,
@@ -1299,7 +1300,7 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
 
   auto* page_specific_content_settings = GetPageSpecificContentSettings();
   if (page_specific_content_settings &&
-      setting_info->delegate().IsAnyPermissionAllowed(CONTENT_SETTING_ALLOW)) {
+      setting_info->delegate().IsAnyPermissionAllowed(setting)) {
     permission_info.is_in_use =
         page_specific_content_settings->IsInUse(permission_info.type);
 
@@ -1345,6 +1346,7 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
              content::PermissionStatusSource::MULTIPLE_DISMISSALS ||
          permission_result.source ==
              content::PermissionStatusSource::MULTIPLE_IGNORES)) {
+      // TODO(crbug.com/439550565): Support embargoed PermissionSettings.
       permission_info.setting =
           permissions::PermissionUtil::PermissionStatusToContentSetting(
               permission_result.status);
@@ -1389,6 +1391,20 @@ bool PageInfo::ShouldShowPermission(
     return delegate_->IsSubresourceFilterActivated(site_url_);
   }
 
+  if (info.type == ContentSettingsType::GEOLOCATION) {
+    if (base::FeatureList::IsEnabled(
+            content_settings::features::kApproximateGeolocationPermission)) {
+      return false;
+    }
+  }
+
+  if (info.type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+    if (!base::FeatureList::IsEnabled(
+            content_settings::features::kApproximateGeolocationPermission)) {
+      return false;
+    }
+  }
+
   if (info.type == ContentSettingsType::SOUND) {
     // The sound content setting should always show up when the tab has played
     // audio.
@@ -1426,7 +1442,8 @@ bool PageInfo::ShouldShowPermission(
   // Special geolocation DSE settings apply only on Android, so make sure it
   // gets checked there regardless of default setting on Desktop.
   // DSE settings don't apply to incognito mode.
-  if (info.type == ContentSettingsType::GEOLOCATION && !is_incognito) {
+  if (info.type == permissions::PermissionUtil::GetGeolocationType() &&
+      !is_incognito) {
     return true;
   }
 #else
@@ -1495,7 +1512,7 @@ void PageInfo::PresentSitePermissions() {
     permission_info.type = type;
 
     content_settings::SettingInfo info;
-    ContentSetting setting = content_settings->GetContentSetting(
+    PermissionSetting setting = content_settings->GetPermissionSetting(
         site_url_, site_url_, permission_info.type, &info);
     PopulatePermissionInfo(permission_info, content_settings, info, setting);
     if (ShouldShowPermission(permission_info)) {

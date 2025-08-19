@@ -1038,16 +1038,23 @@ TEST_F(HostContentSettingsMapTest, SetPermissionSettingWithContentSetting) {
   // Set to allow.
   map->SetPermissionSettingDefaultScope(
       url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
+  content_settings::SettingInfo info;
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             std::get<ContentSetting>(map->GetPermissionSetting(
-                url, url, ContentSettingsType::GEOLOCATION)));
+                url, url, ContentSettingsType::GEOLOCATION, &info)));
+  EXPECT_EQ(info.source, content_settings::SettingSource::kUser);
+  EXPECT_EQ(info.primary_pattern.ToString(), "https://example.com:443");
+  EXPECT_EQ(info.secondary_pattern.ToString(), "*");
 
   // Reset with nullopt.
   map->SetPermissionSettingDefaultScope(
       url, url, ContentSettingsType::GEOLOCATION, std::nullopt);
   EXPECT_EQ(CONTENT_SETTING_ASK,
             std::get<ContentSetting>(map->GetPermissionSetting(
-                url, url, ContentSettingsType::GEOLOCATION)));
+                url, url, ContentSettingsType::GEOLOCATION, &info)));
+  EXPECT_EQ(info.source, content_settings::SettingSource::kUser);
+  EXPECT_EQ(info.primary_pattern.ToString(), "*");
+  EXPECT_EQ(info.secondary_pattern.ToString(), "*");
 
   // Set to block
   map->SetPermissionSettingDefaultScope(
@@ -1079,17 +1086,26 @@ TEST_F(HostContentSettingsMapTest, SetPermissionSettingWithGeolocationSetting) {
       url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
       GeolocationSetting(PermissionOption::kAllowed,
                          PermissionOption::kDenied));
+
+  content_settings::SettingInfo info;
   EXPECT_EQ(
       GeolocationSetting(PermissionOption::kAllowed, PermissionOption::kDenied),
       std::get<GeolocationSetting>(map->GetPermissionSetting(
-          url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS)));
+          url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS, &info)));
+  EXPECT_EQ(info.source, content_settings::SettingSource::kUser);
+  EXPECT_EQ(info.primary_pattern.ToString(), "https://example.com:443");
+  EXPECT_EQ(info.secondary_pattern.ToString(), "*");
 
   // Reset with nullopt.
   map->SetPermissionSettingDefaultScope(
       url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS, std::nullopt);
-  EXPECT_EQ(GeolocationSetting(PermissionOption::kAsk, PermissionOption::kAsk),
-            std::get<GeolocationSetting>(map->GetPermissionSetting(
-                url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS)));
+  EXPECT_EQ(
+      GeolocationSetting(PermissionOption::kAsk, PermissionOption::kAsk),
+      std::get<GeolocationSetting>(map->GetPermissionSetting(
+          url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS, &info)));
+  EXPECT_EQ(info.source, content_settings::SettingSource::kUser);
+  EXPECT_EQ(info.primary_pattern.ToString(), "*");
+  EXPECT_EQ(info.secondary_pattern.ToString(), "*");
 }
 
 TEST_F(HostContentSettingsMapTest,

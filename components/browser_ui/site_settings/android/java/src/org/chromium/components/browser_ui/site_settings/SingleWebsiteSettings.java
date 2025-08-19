@@ -1146,13 +1146,26 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     private boolean showWarningFor(@SiteSettingsCategory.Type int type) {
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
-        @ContentSettingValues
-        Integer permission =
-                mSite.getContentSetting(
-                        browserContextHandle, SiteSettingsCategory.contentSettingsType(type));
 
-        if (permission == null || permission == ContentSettingValues.BLOCK) {
-            return false;
+        var content_settings_type = SiteSettingsCategory.contentSettingsType(type);
+
+        if (content_settings_type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+            PermissionInfo info = mSite.getPermissionInfo(type);
+            if (info == null) return false;
+
+            GeolocationSetting permission = info.getGeolocationSetting(browserContextHandle);
+
+            if (permission.mApproximate == ContentSettingValues.BLOCK) {
+                return false;
+            }
+        } else {
+            @ContentSettingValues
+            Integer permission =
+                    mSite.getContentSetting(browserContextHandle, content_settings_type);
+
+            if (permission == null || permission == ContentSettingValues.BLOCK) {
+                return false;
+            }
         }
         return SiteSettingsCategory.createFromType(browserContextHandle, type)
                 .showPermissionBlockedMessage(getContext());

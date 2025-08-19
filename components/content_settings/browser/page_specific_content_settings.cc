@@ -25,6 +25,7 @@
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -875,6 +876,7 @@ bool PageSpecificContentSettings::IsContentBlocked(
       content_type == ContentSettingsType::CLIPBOARD_READ_WRITE ||
       content_type == ContentSettingsType::SENSORS ||
       content_type == ContentSettingsType::GEOLOCATION ||
+      content_type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS ||
 #if BUILDFLAG(IS_WIN)
       content_type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER ||
 #endif
@@ -904,6 +906,7 @@ bool PageSpecificContentSettings::IsContentAllowed(
       content_type != ContentSettingsType::CLIPBOARD_READ_WRITE &&
       content_type != ContentSettingsType::SENSORS &&
       content_type != ContentSettingsType::GEOLOCATION &&
+      content_type != ContentSettingsType::GEOLOCATION_WITH_OPTIONS &&
 #if BUILDFLAG(IS_WIN)
       content_type != ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER &&
 #endif
@@ -1373,6 +1376,8 @@ void PageSpecificContentSettings::OnContentSettingChanged(
   }
 
   ContentSettingsStatus& status = content_settings_status_[content_type];
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(content_type);
+
   switch (content_type) {
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::MEDIASTREAM_CAMERA: {
@@ -1394,12 +1399,13 @@ void PageSpecificContentSettings::OnContentSettingChanged(
       status.blocked = setting == CONTENT_SETTING_BLOCK;
       break;
     }
-    case ContentSettingsType::GEOLOCATION: {
-      ContentSetting geolocation_setting =
-          map_->GetContentSetting(current_url, current_url, content_type);
-      if (geolocation_setting == CONTENT_SETTING_ALLOW) {
+    case ContentSettingsType::GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION_WITH_OPTIONS: {
+      PermissionSetting geolocation_setting =
+          map_->GetPermissionSetting(current_url, current_url, content_type);
+      if (info->delegate().IsAnyPermissionAllowed(geolocation_setting)) {
         geolocation_was_just_granted_on_site_level_ = true;
-      } else if (geolocation_setting == CONTENT_SETTING_ASK) {
+      } else if (info->delegate().IsUndecided(geolocation_setting)) {
         // On manual permission revocation as well as automatic permission
         // revocation (e.g. due to content setting expiry), the content setting
         // icon for the permission needs to be hidden, hence a location bar
@@ -1425,15 +1431,17 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
 #endif
     case ContentSettingsType::SENSORS: {
-      ContentSetting setting =
-          map_->GetContentSetting(current_url, current_url, content_type);
+      // Geolocation and Notification falls through to this logic.
+      PermissionSetting setting =
+          map_->GetPermissionSetting(current_url, current_url, content_type);
       // If an indicator is shown and the content settings has changed, swap the
       // indicator for the one with the opposite meaning (allowed <=> blocked).
-      if (setting == CONTENT_SETTING_BLOCK && status.allowed) {
+      if (info->delegate().IsBlocked(setting) && status.allowed) {
         status.blocked = false;
         status.allowed = false;
         OnContentBlocked(content_type);
-      } else if (setting == CONTENT_SETTING_ALLOW && status.blocked) {
+      } else if (info->delegate().IsAnyPermissionAllowed(setting) &&
+                 status.blocked) {
         status.blocked = false;
         status.allowed = false;
         OnContentAllowed(content_type);
@@ -1703,8 +1711,9 @@ const base::Time PageSpecificContentSettings::GetLastUsedTime(
   }
 
   content_settings::SettingInfo info;
-  map_->GetContentSetting(GetWebContents()->GetLastCommittedURL(),
-                          GetWebContents()->GetLastCommittedURL(), type, &info);
+  map_->GetPermissionSetting(GetWebContents()->GetLastCommittedURL(),
+                             GetWebContents()->GetLastCommittedURL(), type,
+                             &info);
 
   return info.metadata.last_used();
 }

@@ -24,6 +24,7 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -255,7 +256,7 @@ content::WebContents* PageSpecificContentSettingsDelegate::
 
 void PageSpecificContentSettingsDelegate::OnContentAllowed(
     ContentSettingsType type) {
-  if (!(type == ContentSettingsType::GEOLOCATION ||
+  if (!(type == permissions::PermissionUtil::GetGeolocationType() ||
         type == ContentSettingsType::MEDIASTREAM_CAMERA ||
         type == ContentSettingsType::MEDIASTREAM_MIC)) {
     return;

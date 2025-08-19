@@ -116,6 +116,8 @@ import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoAdPersonalizationController;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoCookiesController;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -451,12 +453,24 @@ public class PageInfoViewTest {
         GURL url = new GURL(urlString);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    WebsitePreferenceBridge.setContentSettingDefaultScope(
-                            ProfileManager.getLastUsedRegularProfile(),
-                            ContentSettingsType.GEOLOCATION,
-                            url,
-                            url,
-                            ContentSettingValues.ALLOW);
+                    if (PermissionsAndroidFeatureMap.isEnabled(
+                            PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {
+                        WebsitePreferenceBridgeJni.get()
+                                .setGeolocationSettingForOrigin(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
+                                        urlString,
+                                        urlString,
+                                        ContentSettingValues.ALLOW,
+                                        ContentSettingValues.ALLOW);
+                    } else {
+                        WebsitePreferenceBridge.setContentSettingDefaultScope(
+                                ProfileManager.getLastUsedRegularProfile(),
+                                ContentSettingsType.GEOLOCATION,
+                                url,
+                                url,
+                                ContentSettingValues.ALLOW);
+                    }
                     WebsitePreferenceBridge.setContentSettingDefaultScope(
                             ProfileManager.getLastUsedRegularProfile(),
                             ContentSettingsType.NOTIFICATIONS,

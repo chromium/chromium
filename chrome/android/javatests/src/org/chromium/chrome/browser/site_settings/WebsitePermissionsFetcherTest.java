@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
 import static java.util.Map.entry;
 
@@ -437,7 +438,7 @@ public class WebsitePermissionsFetcherTest {
                         WebsitePreferenceBridgeJni.get()
                                 .setPermissionSettingForOrigin(
                                         profile,
-                                        ContentSettingsType.GEOLOCATION,
+                                        ContentSettingsType.HAND_TRACKING,
                                         url,
                                         url,
                                         ContentSettingValues.BLOCK);
@@ -640,7 +641,7 @@ public class WebsitePermissionsFetcherTest {
                         SessionModel.DURABLE));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         ORIGIN,
                         SITE_WILDCARD,
                         /* isEmbargoed= */ false,
@@ -886,7 +887,7 @@ public class WebsitePermissionsFetcherTest {
                     Assert.assertTrue(site.getAddress().matches(ORIGIN));
 
                     // Check permission info types for |site|.
-                    Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.GEOLOCATION));
+                    Assert.assertNotNull(site.getPermissionInfo(getGeolocationType()));
                     Assert.assertNotNull(
                             site.getPermissionInfo(ContentSettingsType.IDLE_DETECTION));
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.MIDI_SYSEX));
@@ -1027,14 +1028,14 @@ public class WebsitePermissionsFetcherTest {
 
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         ORIGIN,
                         SITE_WILDCARD,
                         /* isEmbargoed= */ false,
                         SessionModel.DURABLE));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         chromiumOrigin,
                         SITE_WILDCARD,
                         /* isEmbargoed= */ false,
@@ -1061,8 +1062,7 @@ public class WebsitePermissionsFetcherTest {
                             containsChromiumOriginPermission = true;
                         }
 
-                        Assert.assertNotNull(
-                                site.getPermissionInfo(ContentSettingsType.GEOLOCATION));
+                        Assert.assertNotNull(site.getPermissionInfo(getGeolocationType()));
                     }
 
                     Assert.assertTrue(containsOriginPermission);
@@ -1071,7 +1071,7 @@ public class WebsitePermissionsFetcherTest {
 
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         exampleOrigin,
                         SITE_WILDCARD,
                         /* isEmbargoed= */ false,
@@ -1097,8 +1097,7 @@ public class WebsitePermissionsFetcherTest {
                             containsExampleOriginPermission = true;
                         }
 
-                        Assert.assertNotNull(
-                                site.getPermissionInfo(ContentSettingsType.GEOLOCATION));
+                        Assert.assertNotNull(site.getPermissionInfo(getGeolocationType()));
                     }
 
                     Assert.assertTrue(containsOriginPermission);
@@ -1134,7 +1133,7 @@ public class WebsitePermissionsFetcherTest {
                                 ContentSettingsType.AR,
                                 ContentSettingsType.MEDIASTREAM_CAMERA,
                                 ContentSettingsType.CLIPBOARD_READ_WRITE,
-                                ContentSettingsType.GEOLOCATION,
+                                getGeolocationType(),
                                 ContentSettingsType.HAND_TRACKING,
                                 ContentSettingsType.IDLE_DETECTION,
                                 ContentSettingsType.MEDIASTREAM_MIC,
@@ -1613,14 +1612,14 @@ public class WebsitePermissionsFetcherTest {
 
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         ORIGIN,
                         SITE_WILDCARD,
                         /* isEmbargoed= */ false,
                         SessionModel.DURABLE));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.GEOLOCATION,
+                        getGeolocationType(),
                         EMBEDDER,
                         SITE_WILDCARD,
                         /* isEmbargoed= */ false,
@@ -1692,8 +1691,7 @@ public class WebsitePermissionsFetcherTest {
                                             .isEmbargoed());
                         }
 
-                        Assert.assertNotNull(
-                                site.getPermissionInfo(ContentSettingsType.GEOLOCATION));
+                        Assert.assertNotNull(site.getPermissionInfo(getGeolocationType()));
                     }
 
                     Assert.assertTrue(containsOriginPermission);

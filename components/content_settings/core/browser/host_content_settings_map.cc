@@ -1156,6 +1156,10 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
 
     if (!current_value.is_none()) {
       if (!found_value && info) {
+        // Apply metadata for the first found setting.
+        primary_pattern = nullptr;
+        secondary_pattern = nullptr;
+        metadata = nullptr;
         info->source = content_settings::GetSettingSourceFromProviderType(
             current_provider_type);
       }
