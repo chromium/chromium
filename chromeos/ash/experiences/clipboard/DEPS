@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/clipboard/clipboard_history_controller_delegate.h",
+  "+ash/public/cpp",
   "+content/public/browser",
   "+services/data_decoder/public/cpp/decode_image.h",
 ]

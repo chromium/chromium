@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ui/ash/clipboard/clipboard_image_model_request.h"
+#include "chromeos/ash/experiences/clipboard/clipboard_image_model_request.h"
 
 // Implements the singleton ClipboardImageModelFactory.
 class ClipboardImageModelFactoryImpl : public ash::ClipboardImageModelFactory {

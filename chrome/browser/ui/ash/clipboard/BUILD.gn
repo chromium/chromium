@@ -10,8 +10,6 @@ static_library("clipboard") {
   sources = [
     "clipboard_image_model_factory_impl.cc",
     "clipboard_image_model_factory_impl.h",
-    "clipboard_image_model_request.cc",
-    "clipboard_image_model_request.h",
   ]
 
   public_deps = [
@@ -26,6 +24,7 @@ static_library("clipboard") {
   deps = [
     "//ash/constants",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/clipboard",
     "//components/user_manager",
     "//services/data_decoder/public/cpp",
     "//ui/aura",
@@ -52,7 +51,10 @@ static_library("test_support") {
     "//base",
   ]
 
-  deps = [ "//testing/gtest" ]
+  deps = [
+    "//chromeos/ash/experiences/clipboard",
+    "//testing/gtest",
+  ]
 }
 
 if (!is_chromeos_device) {
@@ -70,6 +72,7 @@ if (!is_chromeos_device) {
       "//base",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
+      "//chromeos/ash/experiences/clipboard",
       "//content/test:test_support",
       "//net:test_support",
       "//ui/events:test_support",

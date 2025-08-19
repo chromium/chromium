@@ -10,13 +10,17 @@ static_library("clipboard") {
   sources = [
     "clipboard_history_controller_delegate_impl.cc",
     "clipboard_history_controller_delegate_impl.h",
+    "clipboard_image_model_request.cc",
+    "clipboard_image_model_request.h",
     "clipboard_util.cc",
     "clipboard_util.h",
   ]
 
   deps = [
     "//ash",
+    "//ash/public/cpp",
     "//base",
+    "//chromeos/ash/components/browser_context_helper",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
     "//ui/aura",
@@ -24,5 +28,7 @@ static_library("clipboard") {
     "//ui/base/clipboard",
     "//ui/base/clipboard:clipboard_types",
     "//ui/gfx",
+    "//ui/views",
+    "//ui/views/controls/webview",
   ]
 }

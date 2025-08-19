@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/ash/clipboard/clipboard_image_model_request.h"
+#include "chromeos/ash/experiences/clipboard/clipboard_image_model_request.h"
 
 namespace clipboard_history {
 
