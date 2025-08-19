@@ -4801,6 +4801,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "QLEtVmyw80ugnJ3q1cK0UGdNayod",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveyAddressBubbleSignin"
                     ]
@@ -4818,6 +4822,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "xEt7e5g7R0ugnJ3q1cK0VZ7N4MUU",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveyDiceWebSigninAccepted"
                     ]
@@ -4835,6 +4843,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "2LBpsLxW40ugnJ3q1cK0YRjYGpmV",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveyDiceWebSigninDeclined"
                     ]
@@ -4852,6 +4864,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "RyaBY3Nkt0ugnJ3q1cK0NsYdHNN6",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveyFirstRunSignin"
                     ]
@@ -4869,6 +4885,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "Y6Y4fzSar0ugnJ3q1cK0WNKdFDWW",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveyPasswordBubbleSignin"
                     ]
@@ -4886,6 +4906,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "AHS3hpM2h0ugnJ3q1cK0TTUsr4mM",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveyProfileMenuDismissed"
                     ]
@@ -4903,6 +4927,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "5BV1ygFHd0ugnJ3q1cK0WVqeKyud",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveyProfileMenuSignin"
                     ]
@@ -4920,6 +4948,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "dQhvVytAT0ugnJ3q1cK0WmcCsZxn",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveyProfilePickerAddProfileSignin"
                     ]
@@ -4937,6 +4969,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "EpkbgSho80ugnJ3q1cK0XfvvYoum",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveySigninInterceptProfileSeparation"
                     ]
@@ -4954,6 +4990,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "LSwnpVNg60ugnJ3q1cK0Uj5JGisJ",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveySigninPromoBubbleDismissed"
                     ]
@@ -4971,6 +5011,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "buPSkStWM0ugnJ3q1cK0RmiQgzK1",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveySwitchProfileFromProfileMenu"
                     ]
@@ -4988,6 +5032,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "en_site_id": "b5zoUGRaf0ugnJ3q1cK0RaxK8yrp",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ChromeIdentitySurveySwitchProfileFromProfilePicker"
                     ]
