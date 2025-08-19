@@ -2548,7 +2548,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
-            "gpu": "10de:2783-32.0.15.6070",
+            "gpu": "10de:2783-32.0.15.6070|10de:2783-32.0.15.8088",
             "os": "Windows-11",
             "pool": "chromium.tests.gpu",
         },
