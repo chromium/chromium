@@ -256,6 +256,7 @@ PrefetchContainer::PrefetchContainer(
               prefetch_type,
               PrefetchKey(referring_document_token, url),
               std::move(no_vary_search_hint),
+              std::move(preload_pipeline_info),
               referring_render_frame_host.GetLastCommittedOrigin(),
               referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
               std::move(speculation_rules_tags),
@@ -263,7 +264,6 @@ PrefetchContainer::PrefetchContainer(
                   referring_render_frame_host,
                   std::move(prefetch_document_manager))),
           referrer,
-          std::move(preload_pipeline_info),
           std::move(attempt),
           /*holdback_status_override=*/std::nullopt,
           /*Must be empty: additional_headers=*/{},
@@ -295,12 +295,12 @@ PrefetchContainer::PrefetchContainer(
               PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt),
                           url),
               std::move(no_vary_search_hint),
+              std::move(preload_pipeline_info),
               referring_origin,
               referring_web_contents.GetBrowserContext()->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
           referrer,
-          std::move(preload_pipeline_info),
           std::move(attempt),
           holdback_status_override,
           /*Must be empty: additional_headers=*/{},
@@ -334,13 +334,13 @@ PrefetchContainer::PrefetchContainer(
               PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt),
                           url),
               std::move(no_vary_search_hint),
+              PreloadPipelineInfo::Create(
+                  /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
               referring_origin,
               browser_context->GetWeakPtr(),
               /*speculation_rules_tags=*/std::nullopt,
               PrefetchBrowserInitiatorInfo(embedder_histogram_suffix)),
           referrer,
-          PreloadPipelineInfo::Create(
-              /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
           std::move(attempt),
           /*holdback_status_override=*/std::nullopt,
           additional_headers,
@@ -354,7 +354,6 @@ PrefetchContainer::PrefetchContainer(
 PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrefetchRequest> request,
     const blink::mojom::Referrer& referrer,
-    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<PreloadingHoldbackStatus> holdback_status_override,
     const net::HttpRequestHeaders& additional_headers,
@@ -367,8 +366,6 @@ PrefetchContainer::PrefetchContainer(
     : request_(std::move(request)),
       referrer_(referrer),
       request_id_(base::UnguessableToken::Create().ToString()),
-      preload_pipeline_info_(base::WrapRefCounted(
-          static_cast<PreloadPipelineInfoImpl*>(preload_pipeline_info.get()))),
       attempt_(std::move(attempt)),
       holdback_status_override_(holdback_status_override),
       additional_headers_(additional_headers),
@@ -382,7 +379,7 @@ PrefetchContainer::PrefetchContainer(
   CHECK(request_);
 
   is_likely_ahead_of_prerender_ =
-      CalculateIsLikelyAheadOfPrerender(*preload_pipeline_info_);
+      CalculateIsLikelyAheadOfPrerender(request_->preload_pipeline_info());
 
   redirect_chain_.push_back(std::make_unique<PrefetchSingleRedirectHop>(
       *this, GetURL(), IsCrossSiteRequest(url::Origin::Create(GetURL()))));
@@ -602,7 +599,7 @@ void PrefetchContainer::SetTriggeringOutcomeAndFailureReasonFromStatus(
 void PrefetchContainer::SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
     PrefetchStatus prefetch_status) {
   prefetch_status_ = prefetch_status;
-  preload_pipeline_info_->SetPrefetchStatus(prefetch_status);
+  request().preload_pipeline_info().SetPrefetchStatus(prefetch_status);
   for (auto& preload_pipeline_info : inherited_preload_pipeline_infos_) {
     preload_pipeline_info->SetPrefetchStatus(prefetch_status);
   }
@@ -617,7 +614,7 @@ void PrefetchContainer::SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
       devtools_instrumentation::DidUpdatePrefetchStatus(
           FrameTreeNode::From(renderer_initiator_info->GetRenderFrameHost()),
           renderer_initiator_info->devtools_navigation_token().value(),
-          GetURL(), preload_pipeline_info_->id(),
+          GetURL(), request().preload_pipeline_info().id(),
           preloading_trigger_outcome.value(), prefetch_status, RequestId());
     }
   }
@@ -743,7 +740,7 @@ void PrefetchContainer::OnAddedToPrefetchService() {
 
 void PrefetchContainer::OnEligibilityCheckComplete(
     PreloadingEligibility eligibility) {
-  preload_pipeline_info_->SetPrefetchEligibility(eligibility);
+  request().preload_pipeline_info().SetPrefetchEligibility(eligibility);
   for (auto& preload_pipeline_info : inherited_preload_pipeline_infos_) {
     preload_pipeline_info->SetPrefetchEligibility(eligibility);
   }
@@ -1567,7 +1564,7 @@ std::ostream& operator<<(std::ostream& ostream,
 
 const char* PrefetchContainer::GetSecPurposeHeaderValue(
     const GURL& request_url) const {
-  switch (preload_pipeline_info_->planned_max_preloading_type()) {
+  switch (request().preload_pipeline_info().planned_max_preloading_type()) {
     case PreloadingType::kPrefetch:
       if (IsProxyRequiredForURL(request_url)) {
         return blink::kSecPurposePrefetchAnonymousClientIpHeaderValue;
@@ -1716,15 +1713,19 @@ void PrefetchContainer::MigrateNewlyAdded(
   // `PrerendererImplBrowserTestPrefetchAhead.PrefetchMigratedPrefetchFailurePrerenderFailure`.
   //
   // To make things simple, we propagate both eligibility and status.
-  added->preload_pipeline_info_->SetPrefetchEligibility(
-      preload_pipeline_info_->prefetch_eligibility());
-  if (preload_pipeline_info_->prefetch_status().has_value()) {
-    added->preload_pipeline_info_->SetPrefetchStatus(
-        preload_pipeline_info_->prefetch_status().value());
+  scoped_refptr<PreloadPipelineInfoImpl> added_preload_pipeline_info =
+      base::WrapRefCounted(&added->request().preload_pipeline_info());
+
+  added_preload_pipeline_info->SetPrefetchEligibility(
+      request().preload_pipeline_info().prefetch_eligibility());
+  if (auto prefetch_status =
+          request().preload_pipeline_info().prefetch_status()) {
+    added_preload_pipeline_info->SetPrefetchStatus(*prefetch_status);
   }
 
   inherited_preload_pipeline_infos_.push_back(
-      std::move(added->preload_pipeline_info_));
+      std::move(added_preload_pipeline_info));
+
   is_likely_ahead_of_prerender_ |= added->is_likely_ahead_of_prerender_;
 }
 

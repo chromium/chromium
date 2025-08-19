@@ -22,6 +22,8 @@ namespace content {
 
 class BrowserContext;
 class PrefetchDocumentManager;
+class PreloadPipelineInfo;
+class PreloadPipelineInfoImpl;
 class RenderFrameHostImpl;
 
 // `PrefetchRendererInitiatorInfo` or `PrefetchBrowserInitiatorInfo` is created
@@ -113,6 +115,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       const PrefetchType& prefetch_type,
       const PrefetchKey& key,
       const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       const std::optional<url::Origin>& referring_origin,
       base::WeakPtr<BrowserContext> browser_context,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
@@ -124,6 +127,9 @@ class CONTENT_EXPORT PrefetchRequest final {
   const PrefetchKey& key() const { return key_; }
   const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint() const {
     return no_vary_search_hint_;
+  }
+  PreloadPipelineInfoImpl& preload_pipeline_info() const {
+    return *preload_pipeline_info_;
   }
   const std::optional<url::Origin>& referring_origin() const {
     return referring_origin_;
@@ -155,6 +161,15 @@ class CONTENT_EXPORT PrefetchRequest final {
   // speculation rules and can be different from actual
   // `PrefetchContainer::no_vary_search_data_`.
   const std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
+
+  // The primary `PreloadPipelineInfo`, i.e. that of the first initiator.
+  // Subsequent requests' `PreloadPipelineInfo`s are tracked by
+  // `PrefetchContainer::inherited_preload_pipeline_infos_`.
+  // The pointer is immutable (i.e. pointing to the same
+  // `PreloadPipelineInfoImpl` throughout the lifetime) while the pointed
+  // PreloadPipelineInfoImpl is mutable as we'll update/notify the
+  // PreloadPipelineInfoImpl.
+  const scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info_;
 
   // The origin and URL that initiates the prefetch request.
   // For renderer-initiated prefetch, this is calculated by referring

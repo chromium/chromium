@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "url/gurl.h"
@@ -56,6 +57,7 @@ PrefetchRequest::PrefetchRequest(
     const PrefetchType& prefetch_type,
     const PrefetchKey& key,
     const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     const std::optional<url::Origin>& referring_origin,
     base::WeakPtr<BrowserContext> browser_context,
     std::optional<SpeculationRulesTags> speculation_rules_tags,
@@ -64,10 +66,13 @@ PrefetchRequest::PrefetchRequest(
     : prefetch_type_(prefetch_type),
       key_(key),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
+      preload_pipeline_info_(base::WrapRefCounted(
+          static_cast<PreloadPipelineInfoImpl*>(preload_pipeline_info.get()))),
       referring_origin_(referring_origin),
       browser_context_(std::move(browser_context)),
       speculation_rules_tags_(std::move(speculation_rules_tags)),
       initiator_info_(std::move(initiator_info)) {
+  CHECK(preload_pipeline_info_);
   if (prefetch_type_.IsRendererInitiated()) {
     CHECK(GetRendererInitiatorInfo());
     CHECK(!GetBrowserInitiatorInfo());

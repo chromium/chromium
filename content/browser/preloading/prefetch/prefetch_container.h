@@ -625,7 +625,6 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer(
       std::unique_ptr<PrefetchRequest> request,
       const blink::mojom::Referrer& referrer,
-      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
       std::optional<PreloadingHoldbackStatus> holdback_status_override,
       const net::HttpRequestHeaders& additional_headers,
@@ -814,9 +813,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // A new pipeline info added when another prefetch is migrated into it. See
   // `MigrateNewlyAdded()`.
   //
-  // Note that we distinguish the primary one and inherited ones because we send
-  // CDP events with id of `preload_pipeline_info_`.
-  scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info_;
+  // Note that we distinguish the primary one
+  // (`request().preload_pipeline_info()`) and inherited ones
+  // (`inherited_preload_pipeline_infos_`) because we send CDP events with id of
+  // the primary one.
   std::vector<scoped_refptr<PreloadPipelineInfoImpl>>
       inherited_preload_pipeline_infos_;
 
