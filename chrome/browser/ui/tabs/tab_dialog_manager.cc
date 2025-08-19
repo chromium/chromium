@@ -307,7 +307,11 @@ void TabDialogManager::ShowDialog(views::Widget* widget,
   browser_window_widget_observer_ =
       std::make_unique<BrowserWindowWidgetObserver>(this, tab_interface_,
                                                     widget_.get());
-  widget_->Show();
+  if (params_->should_show_inactive) {
+    widget_->ShowInactive();
+  } else {
+    widget_->Show();
+  }
   UpdateDialogVisibility();
 }
 
@@ -419,12 +423,17 @@ void TabDialogManager::UpdateModalDialogBounds() {
 
 bool TabDialogManager::UpdateDialogVisibility(
     std::optional<bool> requested_visibility) {
-  if (widget_) {
-    widget_->SetVisible(GetDialogWidgetVisibility() &&
-                        requested_visibility.value_or(true));
-    return widget_->IsVisible();
+  if (!widget_) {
+    return false;
   }
-  return false;
+  const bool should_be_visible =
+      GetDialogWidgetVisibility() && requested_visibility.value_or(true);
+  if (should_be_visible) {
+    params_->should_show_inactive ? widget_->ShowInactive() : widget_->Show();
+  } else {
+    widget_->Hide();
+  }
+  return widget_->IsVisible();
 }
 
 void TabDialogManager::DidFinishNavigation(
