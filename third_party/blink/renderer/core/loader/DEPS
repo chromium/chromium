@@ -7,6 +7,9 @@ specific_include_rules = {
     "empty_clients.cc" : [
         "+components/viz/common/surfaces/local_surface_id.h"
     ],
+    "progress_tracker.cc": [
+        "+components/viz/common/features.h"
+    ],
     "progress_tracker_test.cc" : [
         "+base/run_loop.h"
     ],

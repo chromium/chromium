@@ -1450,6 +1450,15 @@ void LayerTreeHost::SetBrowserControlsShownRatio(float top_ratio,
   SetNeedsCommit();
 }
 
+void LayerTreeHost::SetLoadProgress(float progress) {
+  if (pending_commit_state()->load_progress == progress) {
+    return;
+  }
+
+  pending_commit_state()->load_progress = progress;
+  SetNeedsCommit();
+}
+
 void LayerTreeHost::SetOverscrollBehavior(const OverscrollBehavior& behavior) {
   if (pending_commit_state()->overscroll_behavior == behavior)
     return;

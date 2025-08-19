@@ -2164,6 +2164,10 @@ void WebFrameWidgetImpl::SetBrowserControlsParams(
   widget_base_->LayerTreeHost()->SetBrowserControlsParams(params);
 }
 
+void WebFrameWidgetImpl::SetLoadProgress(float progress) {
+  widget_base_->LayerTreeHost()->SetLoadProgress(progress);
+}
+
 void WebFrameWidgetImpl::SetMaxSafeAreaInsets(
     const gfx::InsetsF& max_safe_area_insets) {
   widget_base_->LayerTreeHost()->SetMaxSafeAreaInsets(max_safe_area_insets);

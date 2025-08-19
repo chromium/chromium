@@ -857,11 +857,16 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
       frame.origin_begin_main_frame_args = begin_frame_args;
       DoComposite(&frame);
     }
+  }
 
     // DoComposite could abort, but because this is a synchronous composite
     // another draw will never be scheduled, so break remaining promises.
+  {
+    DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
     host_impl_->active_tree()->BreakSwapPromises(SwapPromise::SWAP_FAILS);
-
+  }
+  {
+    DebugScopedSetImplThread impl(task_runner_provider_);
     DidFinishImplFrame(begin_frame_args);
   }
   if (callback) {

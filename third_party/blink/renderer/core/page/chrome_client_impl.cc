@@ -1424,6 +1424,10 @@ void ChromeClientImpl::DidUpdateBrowserControls() const {
   web_view_->DidUpdateBrowserControls();
 }
 
+void ChromeClientImpl::DidUpdateLoadProgress(float progress) {
+  web_view_->DidUpdateLoadProgress(progress);
+}
+
 void ChromeClientImpl::DidUpdateMaxSafeAreaInsets(
     const gfx::InsetsF& max_safe_area_insets) const {
   DCHECK(web_view_);

@@ -23,6 +23,7 @@ CommitState::CommitState(const CommitState& prev)
       bottom_controls_shown_ratio(prev.bottom_controls_shown_ratio),
       device_scale_factor(prev.device_scale_factor),
       external_page_scale_factor(prev.external_page_scale_factor),
+      load_progress(prev.load_progress),
       max_page_scale_factor(prev.max_page_scale_factor),
       min_page_scale_factor(prev.min_page_scale_factor),
       page_scale_factor(prev.page_scale_factor),

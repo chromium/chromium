@@ -522,6 +522,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   browser_controls_offset_manager_ = BrowserControlsOffsetManager::Create(
       this, settings.top_controls_show_threshold,
       settings.top_controls_hide_threshold);
+  progress_bar_offset_manager_ =
+      base::WrapUnique(new ProgressBarOffsetManager());
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableLayerTreeHostMemoryPressure)) {

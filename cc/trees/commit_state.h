@@ -91,6 +91,7 @@ struct CC_EXPORT CommitState {
   float bottom_controls_shown_ratio = 0.f;
   float device_scale_factor = 1.f;
   float external_page_scale_factor = 1.f;
+  float load_progress = 0.f;
   float max_page_scale_factor = 1.f;
   float min_page_scale_factor = 1.f;
   float page_scale_factor = 1.f;

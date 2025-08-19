@@ -1347,6 +1347,16 @@ void WebViewImpl::DidUpdateBrowserControls() {
   }
 }
 
+void WebViewImpl::DidUpdateLoadProgress(float progress) {
+  WebLocalFrameImpl* main_frame = MainFrameImpl();
+  if (!main_frame) {
+    return;
+  }
+
+  WebFrameWidgetImpl* widget = main_frame->LocalRootFrameWidget();
+  widget->SetLoadProgress(progress);
+}
+
 void WebViewImpl::DidUpdateMaxSafeAreaInsets(
     const gfx::InsetsF& max_safe_area_insets) {
   WebLocalFrameImpl* main_frame = MainFrameImpl();

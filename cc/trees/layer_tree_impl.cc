@@ -826,6 +826,7 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
                               commit_state.max_page_scale_factor);
 
   SetBrowserControlsParams(commit_state.browser_controls_params);
+  SetLoadProgress(commit_state.load_progress);
   set_overscroll_behavior(commit_state.overscroll_behavior);
   PushBrowserControlsFromMainThread(commit_state.top_controls_shown_ratio,
                                     commit_state.bottom_controls_shown_ratio);
@@ -939,6 +940,7 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
 
   target_tree->SetBrowserControlsParams(browser_controls_params_);
   target_tree->PushBrowserControls(nullptr, nullptr);
+  target_tree->SetLoadProgress(load_progress_);
 
   target_tree->set_overscroll_behavior(overscroll_behavior_);
 
@@ -1368,6 +1370,18 @@ void LayerTreeImpl::SetBrowserControlsParams(
   if (IsActiveTree()) {
     host_impl_->browser_controls_manager()->OnBrowserControlsParamsChanged(
         params.animate_browser_controls_height_changes);
+  }
+}
+
+void LayerTreeImpl::SetLoadProgress(float progress) {
+  if (load_progress_ == progress) {
+    return;
+  }
+
+  load_progress_ = progress;
+
+  if (IsActiveTree()) {
+    host_impl_->progress_bar_manager()->OnLoadProgressChanged(progress);
   }
 }
 

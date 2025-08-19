@@ -73,6 +73,8 @@ cc_component("cc") {
     "input/overscroll_behavior.h",
     "input/page_scale_animation.cc",
     "input/page_scale_animation.h",
+    "input/progress_bar_offset_manager.cc",
+    "input/progress_bar_offset_manager.h",
     "input/scroll_elasticity_helper.cc",
     "input/scroll_elasticity_helper.h",
     "input/scroll_snap_data.cc",

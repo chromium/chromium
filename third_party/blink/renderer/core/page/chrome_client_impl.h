@@ -288,6 +288,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
 
   void OnMouseDown(Node&) override;
   void DidUpdateBrowserControls() const override;
+  void DidUpdateLoadProgress(float) override;
 
   void DidUpdateMaxSafeAreaInsets(
       const gfx::InsetsF& max_safe_area_insets) const override;

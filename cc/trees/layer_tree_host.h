@@ -557,6 +557,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void SetBrowserControlsParams(const BrowserControlsParams& params);
   void SetBrowserControlsShownRatio(float top_ratio, float bottom_ratio);
+  void SetLoadProgress(float progress);
 
   void SetOverscrollBehavior(const OverscrollBehavior& overscroll_behavior);
   const OverscrollBehavior& overscroll_behavior() const {

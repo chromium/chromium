@@ -554,6 +554,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void OnMouseDown(Node&) {}
 
   virtual void DidUpdateBrowserControls() const {}
+  virtual void DidUpdateLoadProgress(float) {}
 
   virtual void DidUpdateMaxSafeAreaInsets(
       const gfx::InsetsF& max_safe_area_insets) const {}
