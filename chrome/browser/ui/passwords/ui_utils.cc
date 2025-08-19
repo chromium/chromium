@@ -50,7 +50,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
-#include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #endif
 
 namespace {
