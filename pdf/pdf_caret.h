@@ -90,9 +90,10 @@ class PdfCaret {
   // a valid page or char.
   void MoveToNextChar(bool move_right);
 
-  // Returns whether moving the caret will cause it to exit the current page or
-  // not. Does not consider whether there are any adjacent pages.
-  bool WillCaretExitPage(bool move_right) const;
+  // Returns whether moving the caret from `index` will cause it to exit the
+  // page or not. Does not consider whether there are any adjacent pages.
+  bool WillCaretExitPage(const PageCharacterIndex& index,
+                         bool move_right) const;
 
   // Client must outlive `this`.
   const raw_ptr<PdfCaretClient> client_;

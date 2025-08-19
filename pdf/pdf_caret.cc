@@ -193,10 +193,22 @@ void PdfCaret::Draw(const RegionData& region, const gfx::Rect& rect) const {
 }
 
 void PdfCaret::MoveToNextChar(bool move_right) {
-  if (!WillCaretExitPage(move_right)) {
+  if (!WillCaretExitPage(index_, move_right)) {
     const int delta = move_right ? 1 : -1;
-    // TODO(crbug.com/427139500): Skip newlines.
-    SetChar({index_.page_index, index_.char_index + delta});
+    PageCharacterIndex next_char = {index_.page_index,
+                                    index_.char_index + delta};
+    // Newlines synthetically created by PDFium have empty screen rects.
+    // Skip consecutive newlines.
+    if (next_char.char_index < client_->GetCharCount(next_char.page_index) &&
+        client_->IsSynthesizedNewline(index_) &&
+        client_->IsSynthesizedNewline(next_char)) {
+      // Synthetic newlines cannot be the first or last char on a page.
+      CHECK(!WillCaretExitPage(next_char, move_right));
+
+      // There cannot be more than two consecutive synthetic newlines.
+      next_char.char_index += delta;
+    }
+    SetChar(next_char);
     return;
   }
 
@@ -223,11 +235,12 @@ void PdfCaret::MoveToNextChar(bool move_right) {
   SetChar({page_index, client_->GetCharCount(page_index)});
 }
 
-bool PdfCaret::WillCaretExitPage(bool move_right) const {
+bool PdfCaret::WillCaretExitPage(const PageCharacterIndex& index,
+                                 bool move_right) const {
   if (move_right) {
-    return index_.char_index == client_->GetCharCount(index_.page_index);
+    return index.char_index == client_->GetCharCount(index.page_index);
   }
-  return index_.char_index == 0;
+  return index.char_index == 0;
 }
 
 }  // namespace chrome_pdf
