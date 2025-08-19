@@ -55,10 +55,6 @@ class PrefRegistrySyncable;
 // This property returns the time ticks when the instance was created.
 @property(nonatomic, readonly, assign) base::TimeTicks creationTimeTicks;
 
-// Whether crbug.com/395959814 may affects the view. So we expect authentication
-// to be shown to users but can’t be certain.
-@property(nonatomic, readonly) BOOL viewWillPersist;
-
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                               contextStyle:(SigninContextStyle)contextStyle

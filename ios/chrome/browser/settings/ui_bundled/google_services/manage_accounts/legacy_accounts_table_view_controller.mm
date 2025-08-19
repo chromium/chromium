@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
@@ -437,11 +438,9 @@ typedef NS_ENUM(NSInteger, AccountsItemType) {
 #pragma mark - Authentication operations
 
 - (void)showAddAccount {
-  // In case of double-tap, we must stop the first coordinator. This may occur
-  // because, up to iOS 18, the view may have disappeared without calling the
-  // signin completion. See crbug.com/395959814 This also mean we can’t prevent
-  // user interaction as it may simply block the coordinator..
-  [_signinCoordinator stop];
+  if (_signinCoordinator.viewWillPersist) {
+    return;
+  }
   if (@available(iOS 26, *)) {
     [self preventUserInteraction];
   }

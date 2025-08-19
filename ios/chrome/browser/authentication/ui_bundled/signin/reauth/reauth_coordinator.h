@@ -39,14 +39,10 @@ enum class ReauthResult : int {
 // Once started and up to iOS 18, the view may be removed by UIKit without the
 // signoutCompletion being called. Use `viewWillPersist` to
 // check whether it currently is possible. See crbug.com/395959814.
-@interface ReauthCoordinator : ChromeCoordinator
+@interface ReauthCoordinator : ChromeCoordinator <BuggyAuthenticationViewOwner>
 
 // The delegate to get notified after the flow has completed.
 @property(nonatomic, weak) id<ReauthCoordinatorDelegate> delegate;
-
-// Whether crbug.com/395959814 may affects the view. So we expect authentication
-// to be shown to users but can’t be certain.
-@property(nonatomic, readonly) BOOL viewWillPersist;
 
 // Designated initializer for ReauthCoordinator started from an explicit
 // reauthentication UI.

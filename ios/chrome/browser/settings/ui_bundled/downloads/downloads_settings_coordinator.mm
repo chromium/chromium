@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_settings_mediator.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
@@ -164,9 +165,9 @@
 #pragma mark - SaveToPhotosSettingsAccountSelectionViewControllerActionDelegate
 
 - (void)saveToPhotosSettingsAccountSelectionViewControllerAddAccount {
-  // In case of double-tap, we must stop the first coordinator. This may occur
-  // because, up to iOS 18, the view may have disappeared without calling the
-  // signin completion. See crbug.com/395959814
+  if (_signinCoordinator.viewWillPersist) {
+    return;
+  }
   [_signinCoordinator stop];
   SigninContextStyle contextStyle = SigninContextStyle::kDefault;
   signin_metrics::AccessPoint accessPoint =

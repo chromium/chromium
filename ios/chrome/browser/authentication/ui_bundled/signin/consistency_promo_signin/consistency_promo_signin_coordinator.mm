@@ -294,6 +294,14 @@
   CoreAccountInfo account;
   account.gaia = GaiaId(identity.gaiaID);
   account.email = base::SysNSStringToUTF8(identity.userEmail);
+  if (self.reauthCoordinator) {
+    if (self.reauthCoordinator.viewWillPersist) {
+      [self.reauthCoordinator stop];
+    } else {
+      // In case of double tap, let the first reauth proceed.
+      return;
+    }
+  }
   self.reauthCoordinator = [[ReauthCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
@@ -372,9 +380,9 @@
 // If `hasAccounts == NO`, the added account will be used to sign in to Chrome
 // directly after the AddAccountSigninCoordinator finishes.
 - (void)openAddAccountCoordinatorWithHasAccounts:(BOOL)hasAccounts {
-  // In case of double-tap, we must stop the first coordinator. This may occur
-  // because, up to iOS 18, the view may have disappeared without calling the
-  // signin completion. See crbug.com/395959814
+  // In case of double-tap, we must stop the already started coordinator. This
+  // may occur because, up to iOS 18, the view may have disappeared without
+  // calling the signin completion. See crbug.com/395959814
   [self.addAccountCoordinator stop];
   if (hasAccounts) {
     RecordConsistencyPromoUserAction(

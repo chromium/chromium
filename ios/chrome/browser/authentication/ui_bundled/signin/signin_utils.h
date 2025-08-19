@@ -36,6 +36,8 @@ namespace syncer {
 class SyncService;
 }
 
+@protocol BuggyAuthenticationViewOwner;
+
 namespace signin {
 
 class IdentityManager;

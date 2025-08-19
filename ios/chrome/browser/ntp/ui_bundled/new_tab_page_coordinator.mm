@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_coordinator.h"
@@ -912,10 +913,14 @@
 }
 
 - (void)identityDiscWasTapped:(UIView*)identityDisc {
-  if (_accountMenuCoordinator || _signinCoordinator) {
+  if (_accountMenuCoordinator) {
     // Double tap, or tap before dismissing of the previous one is complete.
     return;
   }
+  if (_signinCoordinator.viewWillPersist) {
+    return;
+  }
+  [_signinCoordinator stop];
   [self dismissCustomizationMenu];
   [self.NTPMetricsRecorder recordIdentityDiscTapped];
   BOOL isSignedIn =
@@ -978,6 +983,7 @@
 
 #pragma mark - SigninPromoViewMediatorDelegate
 
+// This also belongs to #pragma mark - SigninPromoViewMediatorDelegate
 - (void)showSigninWithCommand:(ShowSigninCommand*)command {
   if (_signinCoordinator) {
     SigninCoordinatorCompletionCallback completion = command.completion;
@@ -1158,9 +1164,13 @@
                                   feed::FeedSyncPromo::kShowDisableToast];
     return;
   }
-  if (_accountMenuCoordinator || _signinCoordinator) {
+  if (_accountMenuCoordinator) {
     return;
   }
+  if (_signinCoordinator.viewWillPersist) {
+    return;
+  }
+  [_signinCoordinator stop];
   BOOL hasUserIdentities = [self hasIdentitiesOnDevice];
 
   signin_metrics::AccessPoint accessPoint =

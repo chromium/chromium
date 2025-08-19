@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator_delegate.h"
@@ -333,9 +334,9 @@ void maybeShowSettingsIPH(Browser* browser) {
 - (void)didTapAddAccount {
   auto style = SigninContextStyle::kDefault;
   auto accessPoint = signin_metrics::AccessPoint::kAccountMenu;
-  // In case of double-tap, we must stop the first coordinator. This may occur
-  // because, up to iOS 18, the view may have disappeared without calling the
-  // signin completion. See crbug.com/395959814
+  if (_addAccountSigninCoordinator.viewWillPersist) {
+    return;
+  }
   [_addAccountSigninCoordinator stop];
   _addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:_navigationController
@@ -480,30 +481,38 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 - (void)openPrimaryAccountReauthDialog {
   if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
-    // In case of double-tap, we must stop the first coordinator. This may occur
-    // because, up to iOS 18, the view may have disappeared without calling the
-    // signin completion. See crbug.com/395959814
-    [self stopReauthCoordinator];
+    [self openReauthCoordinator];
+  } else {
+    [self openAddAccountReauthCoordinator];
+  }
+}
 
-    CoreAccountInfo account =
-        _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    if (account.IsEmpty()) {
-      // A sign-out was triggered in the meantime, don't do anything.
-      return;
-    }
-    _reauthCoordinator = [[ReauthCoordinator alloc]
-        initWithBaseViewController:_navigationController
-                           browser:self.browser
-                           account:account
-                 reauthAccessPoint:signin_metrics::ReauthAccessPoint::
-                                       kAccountMenu];
-    _reauthCoordinator.delegate = self;
-    [_reauthCoordinator start];
+- (void)openReauthCoordinator {
+  if (_reauthCoordinator.viewWillPersist) {
     return;
   }
-  // In case of double-tap, we must stop the first coordinator. This may occur
-  // because, up to iOS 18, the view may have disappeared without calling the
-  // signin completion. See crbug.com/395959814
+  [_reauthCoordinator stop];
+
+  CoreAccountInfo account =
+      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (account.IsEmpty()) {
+    // A sign-out was triggered in the meantime, don't do anything.
+    return;
+  }
+  _reauthCoordinator = [[ReauthCoordinator alloc]
+      initWithBaseViewController:_navigationController
+                         browser:self.browser
+                         account:account
+               reauthAccessPoint:signin_metrics::ReauthAccessPoint::
+                                     kAccountMenu];
+  _reauthCoordinator.delegate = self;
+  [_reauthCoordinator start];
+}
+
+- (void)openAddAccountReauthCoordinator {
+  if (_addAccountSigninCoordinator.viewWillPersist) {
+    return;
+  }
   [_addAccountSigninCoordinator stop];
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kAccountMenu;

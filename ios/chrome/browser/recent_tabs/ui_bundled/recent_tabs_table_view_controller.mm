@@ -1564,6 +1564,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                                  id<SystemIdentity>) {
     [weakSelf signinDidCompleteWithResult:result];
   }];
+  if (_signinCoordinator.viewWillPersist) {
+    return;
+  }
+  [_signinCoordinator stop];
   _signinCoordinator = [SigninCoordinator signinCoordinatorWithCommand:command
                                                                browser:_browser
                                                     baseViewController:self];
