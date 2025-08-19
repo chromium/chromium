@@ -241,7 +241,8 @@ void ContentVerifyJob::StartWithContentHash(
 
   // If the hash and the verify jobs' roots don't match then the hash comparison
   // done later will match against the wrong files.
-  if (GetCurrentChannel() == version_info::Channel::CANARY &&
+  if ((GetCurrentChannel() == version_info::Channel::CANARY ||
+       GetCurrentChannel() == version_info::Channel::DEV) &&
       content_hash->extension_root() != extension_root_) {
     debug::ScopedContentVerifyJobCrashKey crash_keys(
         content_hash->extension_root(), extension_root_,
