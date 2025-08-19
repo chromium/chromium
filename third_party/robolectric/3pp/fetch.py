@@ -10,8 +10,12 @@ import pathlib
 
 # All instrumented jars + latest non-instrumented one.
 _ROBO_URL_FILES = {
+    'android-all-15-robolectric-12714715.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all/15-robolectric-12714715/android-all-15-robolectric-12714715.jar',
     'android-all-15-robolectric-12650502.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all/15-robolectric-12650502/android-all-15-robolectric-12650502.jar',
+    'android-all-instrumented-15-robolectric-12714715-i7.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/15-robolectric-12714715-i7/android-all-instrumented-15-robolectric-12714715-i7.jar',
     'android-all-instrumented-15-robolectric-12650502-i7.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/15-robolectric-12650502-i7/android-all-instrumented-15-robolectric-12650502-i7.jar',
     'android-all-instrumented-14-robolectric-10818077-i7.jar':
