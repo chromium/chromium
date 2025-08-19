@@ -356,9 +356,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
     VerifyFetchWasBlockedByCors(console_observer);
   }
 
-  content::WebContents* active_web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
+  content::WebContents* active_web_contents() { return GetActiveWebContents(); }
 
   const Extension* InstallExtensionWithManifest(std::string_view manifest) {
     dir_.WriteManifest(manifest);
@@ -596,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
     // Navigate to a fetch-initiator.com page - this should trigger execution of
     // the |content_script| declared in the extension manifest.
     GURL page_url = GetTestPageUrl("fetch-initiator.com");
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+    ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
     EXPECT_EQ(
         page_url,
         active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -651,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -684,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -780,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -837,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -948,7 +946,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -995,7 +993,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(url::kFileScheme, same_dir_resource.scheme());
 
   // Navigate to a file:// test page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1062,7 +1060,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1101,7 +1099,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1136,7 +1134,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1167,7 +1165,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1205,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1235,7 +1233,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1288,7 +1286,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(InstallExtension());
 
   GURL page_url = https_server.GetURL("/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
 
   // This doesn't need to exist; we expect the fetch to fail during precondition
   // checking.
@@ -1345,7 +1343,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1384,7 +1382,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1416,7 +1414,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1699,11 +1697,9 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate a tab to the extension origin.
   GURL extension_resource = GetExtensionResource("page.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_resource));
-  content::RenderFrameHost* test_frame = browser()
-                                             ->tab_strip_model()
-                                             ->GetActiveWebContents()
-                                             ->GetPrimaryMainFrame();
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), extension_resource));
+  content::RenderFrameHost* test_frame =
+      active_web_contents()->GetPrimaryMainFrame();
   ASSERT_EQ(GetExtensionOrigin(), test_frame->GetLastCommittedOrigin());
 
   // Perform a cross-origin fetch from an extension frame and verify that it got
@@ -1764,7 +1760,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // Open an extension frame both in the regular window and in a new incognito
   // window.
   GURL extension_resource = GetExtensionResource("page.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_resource));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), extension_resource));
   content::WebContents* incognito_contents = nullptr;
   {
     GURL http_test_page = GetTestPageUrl("fetch-initiator.com");
@@ -1792,10 +1788,8 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
       ASSERT_EQ(extension_resource, navigation_observer.last_navigation_url());
     }
   }
-  content::RenderFrameHost* regular_frame = browser()
-                                                ->tab_strip_model()
-                                                ->GetActiveWebContents()
-                                                ->GetPrimaryMainFrame();
+  content::RenderFrameHost* regular_frame =
+      active_web_contents()->GetPrimaryMainFrame();
   ASSERT_EQ(GetExtensionOrigin(), regular_frame->GetLastCommittedOrigin());
   content::RenderFrameHost* incognito_frame =
       content::ChildFrameAt(incognito_contents->GetPrimaryMainFrame(), 0);
@@ -1871,10 +1865,9 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // Open an extension tab both in the regular window and in a new incognito
   // window.
   GURL extension_page = extension->GetResourceURL("page.html");
-  content::WebContents* regular_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* regular_contents = active_web_contents();
   Browser* incognito_browser = OpenURLOffTheRecord(profile(), extension_page);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_page));
+  ASSERT_TRUE(NavigateToURL(regular_contents, extension_page));
   content::WebContents* incognito_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(extension->origin(),
@@ -1945,8 +1938,8 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   ASSERT_TRUE(RegisterServiceWorkerForExtension(kServiceWorkerScript));
 
   // Navigate a tab to an extension page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GetExtensionResource("page.html")));
+  ASSERT_TRUE(
+      NavigateToURL(active_web_contents(), GetExtensionResource("page.html")));
   ASSERT_EQ(
       GetExtensionOrigin(),
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
@@ -2042,8 +2035,8 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate a foreground tab to an extension URL, so that from this tab we can
   // ask the background service worker to initiate test fetches.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("page.html")));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(),
+                            extension->GetResourceURL("page.html")));
   const char kFetchTemplate[] = R"(
       chrome.runtime.sendMessage({url: $1}, function(response) {
           domAutomationController.send(response);
@@ -2314,7 +2307,7 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -2364,7 +2357,7 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -2411,7 +2404,7 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
 
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -2463,7 +2456,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to https test page.
   GURL page_url = https_server.GetURL("/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -2506,7 +2499,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Navigate to https test page.
   GURL page_url = https_server.GetURL("/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -2546,7 +2539,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest, CorsFromContentScript) {
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   url::Origin page_origin = url::Origin::Create(page_url);
   std::string page_origin_string = page_origin.Serialize();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));
   ASSERT_EQ(
       page_url,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -2629,7 +2622,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
       embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
   GURL cross_site_resource(
       embedded_test_server()->GetURL(kActiveTabHost, "/nosniff.xml"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_document_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), original_document_url));
 
   // Open an incognito window.  Since the extension is not enabled for
   // incognito, OriginAccessList should not be sent to the incognito-related
@@ -2682,7 +2675,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   EXPECT_NE(another_document_url, original_document_url);
   EXPECT_EQ(url::Origin::Create(another_document_url),
             url::Origin::Create(original_document_url));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), another_document_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), another_document_url));
   {
     SCOPED_TRACE(
         "TEST STEP 4: After navigating the tab cross-document, "
@@ -2698,7 +2691,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
       embedded_test_server()->GetURL("other.com", "/title1.html");
   EXPECT_NE(url::Origin::Create(cross_origin_url),
             url::Origin::Create(original_document_url));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cross_origin_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), cross_origin_url));
   {
     SCOPED_TRACE("TEST STEP 5: After navigating the tab cross-origin.");
     std::string fetch_result =
@@ -2852,7 +2845,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
       embedded_test_server()->GetURL(kRegularHost, "/nosniff.xml");
   Browser* incognito_browser =
       OpenURLOffTheRecord(profile(), incognito_page_url);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), regular_page_url));
+  ASSERT_TRUE(NavigateToURL(active_web_contents(), regular_page_url));
 
   // No CORS exception for `kIncognitoHost` should be initially granted based on
   // ActiveTab.
@@ -2898,8 +2891,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // `kRegularHost`) should not affect how CORS behaved in the previous step
   // (unless there is a bug and we leak incognito permissions to the regular
   // background page).
-  content::WebContents* regular_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* regular_contents = active_web_contents();
   EXPECT_EQ(
       kRegularHost,
       regular_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().host());

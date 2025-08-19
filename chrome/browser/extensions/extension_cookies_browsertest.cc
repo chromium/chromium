@@ -136,9 +136,10 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
   // Navigates to the extension page in the main frame. Returns a pointer to the
   // RenderFrameHost of the main frame.
   content::RenderFrameHost* NavigateMainFrameToExtensionPage() {
+    auto* web_contents = GetActiveWebContents();
     EXPECT_TRUE(content::NavigateToURL(
-        GetActiveWebContents(), extension_->GetResourceURL("empty.html")));
-    return GetActiveWebContents()->GetPrimaryMainFrame();
+        web_contents, extension_->GetResourceURL("empty.html")));
+    return web_contents->GetPrimaryMainFrame();
   }
 
   // Appends a child iframe via JS and waits for it to load. Returns a pointer
@@ -649,7 +650,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   constexpr char kActiveTabHost[] = "active-tab.example";
   GURL original_document_url =
       test_server()->GetURL(kActiveTabHost, "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_document_url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, original_document_url));
   SetCookies(kActiveTabHost);
 
   // Based on activeTab, the extension shouldn't be initially granted access to
@@ -662,7 +664,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Do one pass of BrowserAction without granting activeTab permission,
   // extension still shouldn't have access to `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
+  ExtensionActionRunner::GetForWebContents(web_contents)
       ->RunAction(extension, false);
   {
     SCOPED_TRACE("TEST STEP 2: After BrowserAction without granting access.");
@@ -672,7 +674,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Granting activeTab permission to the extension should give it access to
   // `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
+  ExtensionActionRunner::GetForWebContents(web_contents)
       ->RunAction(extension, true);
   {
     // ActiveTab access (just like OOR-CORS access) extends to the background
@@ -694,7 +696,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   EXPECT_NE(another_document_url, original_document_url);
   EXPECT_EQ(url::Origin::Create(another_document_url),
             url::Origin::Create(original_document_url));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), another_document_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, another_document_url));
   {
     SCOPED_TRACE(
         "TEST STEP 4: After navigating the tab cross-document, "
@@ -708,7 +710,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   GURL cross_origin_url = test_server()->GetURL("other.com", "/title1.html");
   EXPECT_NE(url::Origin::Create(cross_origin_url),
             url::Origin::Create(original_document_url));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cross_origin_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, cross_origin_url));
   {
     SCOPED_TRACE("TEST STEP 5: After navigating the tab cross-origin.");
     std::string cookies = FetchCookies(background_page, kActiveTabHost);
@@ -740,26 +742,26 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   // - top-level frame: kActiveTabHost
   // - subframe: extension
   constexpr char kActiveTabHost[] = "active-tab.example";
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), test_server()->GetURL(kActiveTabHost, "/title1.html")));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents, test_server()->GetURL(kActiveTabHost, "/title1.html")));
   CookieSettingsFactory::GetForProfile(profile())->SetCookieSetting(
       test_server()->GetURL(kActiveTabHost, "/"), CONTENT_SETTING_ALLOW);
   SetCookies(kActiveTabHost);
   content::RenderFrameHost* extension_subframe = nullptr;
   {
-    content::TestNavigationObserver subframe_nav_observer(
-        GetActiveWebContents());
+    content::TestNavigationObserver subframe_nav_observer(web_contents);
     constexpr char kSubframeInjectionScriptTemplate[] = R"(
         var f = document.createElement('iframe');
         f.src = $1;
         document.body.appendChild(f);
     )";
     ASSERT_TRUE(content::ExecJs(
-        GetActiveWebContents(),
+        web_contents,
         content::JsReplace(kSubframeInjectionScriptTemplate,
                            extension->GetResourceURL("subframe.html"))));
     subframe_nav_observer.Wait();
-    extension_subframe = ChildFrameAt(GetActiveWebContents(), 0);
+    extension_subframe = ChildFrameAt(web_contents, 0);
     ASSERT_TRUE(extension_subframe);
     ASSERT_EQ(extension->origin(),
               extension_subframe->GetLastCommittedOrigin());
@@ -775,7 +777,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Do one pass of BrowserAction without granting activeTab permission,
   // extension still shouldn't have access to `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
+  ExtensionActionRunner::GetForWebContents(web_contents)
       ->RunAction(extension, false);
   {
     SCOPED_TRACE("TEST STEP 2: After BrowserAction without granting access.");
@@ -785,7 +787,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Granting activeTab permission to the extension should give it access to
   // `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
+  ExtensionActionRunner::GetForWebContents(web_contents)
       ->RunAction(extension, true);
   {
     // ActiveTab should grant access to SameSite cookies to the
@@ -870,11 +872,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   constexpr char kActiveTabHost[] = "active-tab.example";
   GURL original_document_url =
       test_server()->GetURL(kActiveTabHost, "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_document_url));
-  EXPECT_EQ(kActiveTabHost, GetActiveWebContents()
-                                ->GetPrimaryMainFrame()
-                                ->GetLastCommittedURL()
-                                .host());
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, original_document_url));
+  EXPECT_EQ(kActiveTabHost,
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedURL().host());
   SetCookies(kActiveTabHost);
   GURL extension_frame_url = extension->GetResourceURL("frame.html");
   ui_test_utils::NavigateToURLWithDisposition(
@@ -896,7 +897,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Do one pass of BrowserAction without granting activeTab permission,
   // extension still shouldn't have access to `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
+  ExtensionActionRunner::GetForWebContents(web_contents)
       ->RunAction(extension, false);
   {
     SCOPED_TRACE("TEST STEP 2: After BrowserAction without granting access.");
@@ -907,7 +908,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Granting activeTab permission to the extension should give it access to
   // `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
+  ExtensionActionRunner::GetForWebContents(web_contents)
       ->RunAction(extension, true);
   {
     // ActiveTab access (just like OOR-CORS access) extends to the service
@@ -930,7 +931,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   EXPECT_NE(another_document_url, original_document_url);
   EXPECT_EQ(url::Origin::Create(another_document_url),
             url::Origin::Create(original_document_url));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), another_document_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, another_document_url));
   {
     SCOPED_TRACE(
         "TEST STEP 4: After navigating the tab cross-document, "
@@ -945,7 +946,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   GURL cross_origin_url = test_server()->GetURL("other.com", "/title1.html");
   EXPECT_NE(url::Origin::Create(cross_origin_url),
             url::Origin::Create(original_document_url));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cross_origin_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, cross_origin_url));
   {
     SCOPED_TRACE("TEST STEP 5: After navigating the tab cross-origin.");
     std::string cookies =
