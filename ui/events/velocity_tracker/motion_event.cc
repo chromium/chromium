@@ -64,6 +64,10 @@ int MotionEvent::FindPointerIndexOfId(int id) const {
   return -1;
 }
 
+int MotionEvent::GetSource() const {
+  return 0;
+}
+
 int MotionEvent::GetSourceDeviceId(size_t pointer_index) const {
   NOTIMPLEMENTED();
   return 0;

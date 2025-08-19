@@ -103,6 +103,9 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   virtual float GetHistoricalY(size_t pointer_index,
                                size_t historical_index) const;
 
+  // Returns 0 (SOURCE_UNKNOWN) on non-android platforms.
+  virtual int GetSource() const;
+
   // Get the id of the device which created the event. Currently Aura only.
   virtual int GetSourceDeviceId(size_t pointer_index) const;
 
