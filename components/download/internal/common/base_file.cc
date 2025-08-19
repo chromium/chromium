@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
@@ -26,6 +27,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/services/quarantine/quarantine.h"
+#include "crypto/hash.h"
 #include "crypto/secure_hash.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -356,28 +358,33 @@ DownloadInterruptReason BaseFile::CalculatePartialHash(
   // - at most kMaxBufferSize so that there's a reasonable bound.
   // - not larger than |bytes_so_far_| unless bytes_so_far_ is less than the
   //   hash size.
-  std::vector<char> buffer(std::max<int64_t>(
+  std::vector<uint8_t> buffer(std::max<int64_t>(
       kMinBufferSize, std::min<int64_t>(kMaxBufferSize, bytes_so_far_)));
 
   int64_t current_position = 0;
   while (current_position < bytes_so_far_) {
     // While std::min needs to work with int64_t, the result is always at most
     // kMaxBufferSize, which fits on an int.
-    int bytes_to_read =
-        std::min<int64_t>(buffer.size(), bytes_so_far_ - current_position);
-    int length =
-        UNSAFE_TODO(file_.ReadAtCurrentPos(&buffer.front(), bytes_to_read));
-    if (length == -1) {
+    size_t bytes_to_read =
+        // checked_cast is safe here because buffer.size() is always >= 0 and
+        // bytes_so_far_ >= current_position (the while loop condition) so the
+        // minimum of these two values is >= 0.
+        base::checked_cast<size_t>(
+            std::min<int64_t>(buffer.size(), bytes_so_far_ - current_position));
+    std::optional<size_t> length =
+        file_.ReadAtCurrentPos(base::span(buffer).first(bytes_to_read));
+    if (!length.has_value()) {
       return LogInterruptReason("Reading partial file",
                                 logging::GetLastSystemErrorCode(),
                                 DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT);
     }
 
-    if (length == 0)
+    if (*length == 0) {
       break;
+    }
 
-    secure_hash_->Update(&buffer.front(), length);
-    current_position += length;
+    secure_hash_->Update(base::span(buffer).first(*length));
+    current_position += *length;
   }
 
   if (current_position != bytes_so_far_) {
@@ -386,13 +393,12 @@ DownloadInterruptReason BaseFile::CalculatePartialHash(
   }
 
   if (!hash_to_expect.empty()) {
-    DCHECK_EQ(secure_hash_->GetHashLength(), hash_to_expect.size());
-    DCHECK(buffer.size() >= secure_hash_->GetHashLength());
+    std::array<uint8_t, crypto::hash::kSha256Size> result;
+    CHECK_EQ(secure_hash_->GetHashLength(), result.size());
     std::unique_ptr<crypto::SecureHash> partial_hash(secure_hash_->Clone());
-    partial_hash->Finish(&buffer.front(), buffer.size());
+    partial_hash->Finish(result);
 
-    if (UNSAFE_TODO(memcmp(&buffer.front(), hash_to_expect.c_str(),
-                           partial_hash->GetHashLength()))) {
+    if (base::span(result) != base::as_byte_span(hash_to_expect)) {
       return LogInterruptReason("Verifying prefix hash", 0,
                                 DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH);
     }
