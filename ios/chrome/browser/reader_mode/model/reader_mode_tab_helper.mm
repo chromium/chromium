@@ -230,6 +230,12 @@ void ReaderModeTabHelper::DidStartNavigation(
 void ReaderModeTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
+  // PageLoaded may not be called for fragment navigations or
+  // pushState/replaceState. Do not reset eligibility state pre-emptively.
+  if (navigation_context->IsSameDocument()) {
+    return;
+  }
+
   if (!navigation_context->IsSameDocument() ||
       navigation_context->HasUserGesture()) {
     DeactivateReader(ReaderModeDeactivationReason::kNavigationDeactivated);
