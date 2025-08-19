@@ -102,7 +102,10 @@
              cell.mutator = weakSelf.mutator;
            }];
 
-  if (IsNTPBackgroundCustomizationEnabled()) {
+  // TODO(crbug.com/439549295): Update the UI to show a message when NTP
+  // customization is blocked by enterprise policy.
+  if (IsNTPBackgroundCustomizationEnabled() &&
+      self.isNTPCustomBackgroundEnabledByPolicy) {
     _backgroundCellRegistration = [UICollectionViewCellRegistration
         registrationWithCellClass:[HomeCustomizationBackgroundCell class]
              configurationHandler:^(HomeCustomizationBackgroundCell* cell,
@@ -130,7 +133,8 @@
   NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
 
-  if (IsNTPBackgroundCustomizationEnabled()) {
+  if (IsNTPBackgroundCustomizationEnabled() &&
+      self.isNTPCustomBackgroundEnabledByPolicy) {
     // Create background customization section and add items to it.
     [snapshot
         appendSectionsWithIdentifiers:@[ kCustomizationSectionBackground ]];

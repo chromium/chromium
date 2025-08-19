@@ -39,6 +39,9 @@
 @property(nonatomic, weak) id<HomeCustomizationColorPaletteProvider>
     colorPaletteProvider;
 
+// Whether the NTP custom background is enabled by enterprise policy.
+@property(nonatomic, assign) BOOL isNTPCustomBackgroundEnabledByPolicy;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_MAIN_VIEW_CONTROLLER_H_

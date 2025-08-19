@@ -83,7 +83,8 @@
   }
   [self.mainPageConsumer populateToggles:toggleMap];
 
-  if (IsNTPBackgroundCustomizationEnabled()) {
+  if (IsNTPBackgroundCustomizationEnabled() &&
+      _prefService->GetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy)) {
     NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*
         backgroundCustomizationConfigurationMap =
             [NSMutableDictionary dictionary];
