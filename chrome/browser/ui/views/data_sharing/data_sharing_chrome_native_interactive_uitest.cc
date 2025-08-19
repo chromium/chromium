@@ -22,8 +22,7 @@
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab_group_header.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -40,6 +39,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/view.h"
 #include "url/url_constants.h"
 
 namespace tab_groups {
@@ -101,8 +101,9 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
                 [&](views::BubbleDialogDelegateView* bubble) {
                   const auto* const browser_view =
                       BrowserView::GetBrowserViewForBrowser(browser());
-                  const TabGroupHeader* const group_header =
-                      browser_view->tabstrip()->group_header(group_id);
+                  const views::View* const group_header =
+                      browser_view->tab_strip_view()->GetTabGroupAnchorView(
+                          group_id);
                   return group_header &&
                          bubble->GetAnchorView() == group_header;
                 }));

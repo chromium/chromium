@@ -9,8 +9,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
 
 namespace tab_groups {
 
@@ -37,15 +39,17 @@ ui::TrackedElement* MostRecentSharedTabUpdateStore::GetIPHAnchor(
     tabs::TabInterface* tab = SavedTabGroupUtils::GetGroupedTab(
         last_updated_tab_->first, last_updated_tab_->second.value());
     int index = tab_strip_model->GetIndexOfTab(tab);
-    Tab* tab_view = browser_view->tabstrip()->tab_at(index);
+    views::View* tab_view =
+        browser_view->tab_strip_view()->GetTabAnchorViewAt(index);
     return tab_view
                ? views::ElementTrackerViews::GetInstance()->GetElementForView(
                      tab_view)
                : nullptr;
   } else {
     // Last update was removing a tab. Anchor to the tab group header.
-    TabGroupHeader* tab_group_header =
-        browser_view->tabstrip()->group_header(last_updated_tab_->first);
+    views::View* tab_group_header =
+        browser_view->tab_strip_view()->GetTabGroupAnchorView(
+            last_updated_tab_->first);
     return tab_group_header
                ? views::ElementTrackerViews::GetInstance()->GetElementForView(
                      tab_group_header)

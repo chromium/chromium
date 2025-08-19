@@ -107,6 +107,7 @@ source_set("impl") {
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/common",

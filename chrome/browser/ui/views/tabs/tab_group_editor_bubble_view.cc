@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/tabs/color_picker_view.h"
 #include "chrome/browser/ui/views/tabs/groups/avatar_container_view.h"
@@ -864,9 +865,10 @@ void TabGroupEditorBubbleView::ShareOrManagePressed() {
 }
 
 void TabGroupEditorBubbleView::RecentActivityPressed() {
-  auto* tab_group_header =
-      BrowserView::GetBrowserViewForBrowser(browser_)->tabstrip()->group_header(
-          group_);
+  views::View* tab_group_header =
+      BrowserView::GetBrowserViewForBrowser(browser_)
+          ->tab_strip_view()
+          ->GetTabGroupAnchorView(group_);
 
   auto* bubble_coordinator = RecentActivityBubbleCoordinator::From(browser_);
   CHECK(bubble_coordinator);

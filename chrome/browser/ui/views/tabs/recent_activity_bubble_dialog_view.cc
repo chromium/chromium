@@ -30,8 +30,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/collaboration_messaging_page_action_icon_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
-#include "chrome/browser/ui/views/tabs/tab_group_header.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/collaboration/public/collaboration_flow_entry_point.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -629,9 +627,10 @@ void RecentActivityRowView::OpenTabGroupEditDialog() {
     return;
   }
 
-  if (auto* tab_group_header = BrowserView::GetBrowserViewForBrowser(browser)
-                                   ->tabstrip()
-                                   ->group_header(group_id.value())) {
+  if (views::View* tab_group_header =
+          BrowserView::GetBrowserViewForBrowser(browser)
+              ->tab_strip_view()
+              ->GetTabGroupAnchorView(group_id.value())) {
     TabGroupEditorBubbleView::Show(browser, group_id.value(), tab_group_header,
                                    /*anchor_rect=*/std::nullopt,
                                    /*stop_context_menu_propagation=*/false);
