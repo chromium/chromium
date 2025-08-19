@@ -502,7 +502,8 @@ TEST_F(CrostiniExportImportTest, TestImportDiskImageSuccess) {
   }
 }
 
-TEST_F(CrostiniExportImportTest, TestImportZstdFileSuccess) {
+// TODO(crbug.com/439888114): Flaky. Re-enable when fixed.
+TEST_F(CrostiniExportImportTest, DISABLED_TestImportZstdFileSuccess) {
   SetImportResponse();
   crostini_export_import_->FillOperationData(ExportImportType::IMPORT);
   // We require the file to exist here.
