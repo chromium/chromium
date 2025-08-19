@@ -3853,20 +3853,6 @@ static_library("ui") {
       "views/location_bar/ai_mode_page_action_icon_view.h",
       "views/location_bar/content_setting_image_view.cc",
       "views/location_bar/content_setting_image_view.h",
-      "views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.cc",
-      "views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h",
-      "views/location_bar/cookie_controls/cookie_controls_bubble_view.cc",
-      "views/location_bar/cookie_controls/cookie_controls_bubble_view.h",
-      "views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.cc",
-      "views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h",
-      "views/location_bar/cookie_controls/cookie_controls_bubble_view_impl.cc",
-      "views/location_bar/cookie_controls/cookie_controls_bubble_view_impl.h",
-      "views/location_bar/cookie_controls/cookie_controls_content_view.cc",
-      "views/location_bar/cookie_controls/cookie_controls_content_view.h",
-      "views/location_bar/cookie_controls/cookie_controls_icon_view.cc",
-      "views/location_bar/cookie_controls/cookie_controls_icon_view.h",
-      "views/location_bar/cookie_controls/cookie_controls_page_action_controller.cc",
-      "views/location_bar/cookie_controls/cookie_controls_page_action_controller.h",
       "views/location_bar/custom_tab_bar_view.cc",
       "views/location_bar/custom_tab_bar_view.h",
       "views/location_bar/find_bar_icon.cc",
@@ -4650,6 +4636,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/intent_picker:intent_picker_page_action",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/location_bar:impl",
+      "//chrome/browser/ui/views/location_bar/cookie_controls",
+      "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/page_info:impl",
@@ -4737,6 +4725,15 @@ static_library("ui") {
       "//chrome/browser/ui/views/permissions/chip:impl",
       "//chrome/browser/ui/views/page_info:impl",
       "//chrome/browser/ui/window_name_prompt",
+
+      # TODO(crbug.com/408801109): Remove this circular dependency when the following
+      # headers get componentized:
+      # c/b/ui/browser.h, browser_finder.h, browser_window.h
+      # c/b/ui/views/chrome_layout_provider.h
+      # c/b/ui/views/accessibility/non_accessible_image_view.h
+      # c/b/ui/views/controls/rich_controls_container_view.h, rich_hover_button.h
+      # c/b/ui/views/frame/browser_view.h
+      "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the following
       # headers get componentized:
