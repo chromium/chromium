@@ -438,42 +438,6 @@ class SessionManagerClientImpl : public SessionManagerClient {
         login_manager::kSessionManagerHandleLockScreenDismissed);
   }
 
-  bool BlockingRequestBrowserDataMigration(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& mode) override {
-    dbus::MethodCall method_call(
-        login_manager::kSessionManagerInterface,
-        login_manager::kSessionManagerStartBrowserDataMigration);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString(cryptohome_id.account_id());
-    writer.AppendString(mode);
-    auto result = blocking_method_caller_->CallMethodAndBlock(&method_call);
-    if (!result.has_value()) {
-      LOG(ERROR) << "BlockingRequestBrowserDataMigration failed :"
-                 << result.error().name() << ":" << result.error().message();
-      return false;
-    }
-
-    return true;
-  }
-
-  bool BlockingRequestBrowserDataBackwardMigration(
-      const cryptohome::AccountIdentifier& cryptohome_id) override {
-    dbus::MethodCall method_call(
-        login_manager::kSessionManagerInterface,
-        login_manager::kSessionManagerStartBrowserDataBackwardMigration);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString(cryptohome_id.account_id());
-    auto result = blocking_method_caller_->CallMethodAndBlock(&method_call);
-    if (!result.has_value()) {
-      LOG(ERROR) << "BlockingRequestBrowserDataBackwardMigration failed :"
-                 << result.error().name() << ":" << result.error().message();
-      return false;
-    }
-
-    return true;
-  }
-
   void RetrieveActiveSessions(ActiveSessionsCallback callback) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
