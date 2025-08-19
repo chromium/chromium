@@ -1491,8 +1491,8 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
       // disallowed.
       wgpu::FeatureName::DawnMultiPlanarFormats,
 
-      // Require platform-specific SharedTextureMemory features for use by
-      // the relevant SharedImage backings. These features should always be
+      // Require platform-specific SharedTextureMemory features for use by the
+      // relevant SharedImage backings. These features should always be
       // supported when running on the corresponding backend.
       wgpu::FeatureName::SharedTextureMemoryIOSurface,
       wgpu::FeatureName::SharedFenceMTLSharedEvent,
@@ -1505,6 +1505,11 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
       wgpu::FeatureName::SharedTextureMemoryD3D11Texture2D,
       wgpu::FeatureName::SharedTextureMemoryDXGISharedHandle,
       wgpu::FeatureName::SharedFenceDXGISharedHandle,
+
+      // Require SharedBufferMemoryD3D12Resource feature for use by the
+      // D3DImageBacking. This feature should always be supported when
+      // running on the D3D12 backend.
+      wgpu::FeatureName::SharedBufferMemoryD3D12Resource,
   };
   for (const wgpu::FeatureName& feature : kOptionalFeatures) {
     if (adapter_obj.HasFeature(feature)) {

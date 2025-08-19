@@ -259,6 +259,9 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
       wgpu::FeatureName::SharedTextureMemoryDXGISharedHandle,
       wgpu::FeatureName::SharedFenceDXGISharedHandle,
 
+      // The following feature is always supported by the the D3D12 backend.
+      wgpu::FeatureName::SharedBufferMemoryD3D12Resource,
+
       wgpu::FeatureName::TransientAttachments,
 
       wgpu::FeatureName::DawnLoadResolveTexture,
