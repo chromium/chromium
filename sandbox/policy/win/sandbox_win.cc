@@ -1096,16 +1096,13 @@ std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
 
   if (sandbox_type == Sandbox::kGpu ||
       sandbox_type == Sandbox::kOnDeviceModelExecution) {
-    // Allow the GPU process's sandbox to access more physical memory if it's
-    // available on the system.
-    //
-    // GPU processes are allowed to access up to 64 GB.
+    // Allow the GPU and ODML process sandboxes to access more physical memory
+    // if it's available on the system, up to 64GB.
     const base::ByteCount physical_memory =
         base::SysInfo::AmountOfPhysicalMemory();
-    if (sandbox_type == Sandbox::kGpu && physical_memory > base::GiB(64)) {
+    if (physical_memory > base::GiB(64)) {
       memory_limit = 64 * GB;
-    } else if (sandbox_type == Sandbox::kGpu &&
-               physical_memory > base::GiB(32)) {
+    } else if (physical_memory > base::GiB(32)) {
       memory_limit = 32 * GB;
     } else if (physical_memory > base::GiB(16)) {
       memory_limit = 16 * GB;
