@@ -294,6 +294,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/drive_file_picker/coordinator:unit_tests",
     "//ios/chrome/browser/enterprise/connectors:unit_tests",
     "//ios/chrome/browser/enterprise/connectors/reporting:unit_tests",
+    "//ios/chrome/browser/enterprise/data_controls:unit_tests",
     "//ios/chrome/browser/enterprise/identifiers:unit_tests",
     "//ios/chrome/browser/enterprise/model/idle:unit_tests",
     "//ios/chrome/browser/external_files/model:unit_tests",

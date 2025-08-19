@@ -14,11 +14,26 @@ source_set("data_control") {
   sources = [
     "clipboard_utils.h",
     "clipboard_utils.mm",
+    "data_controls_tab_helper.h",
+    "data_controls_tab_helper.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
     "//ui/base/clipboard",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "data_controls_tab_helper_unittest.mm" ]
+  deps = [
+    ":data_control",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
   ]
 }
