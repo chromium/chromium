@@ -7,6 +7,7 @@ found in the LICENSE file.
 <shape
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:shape="rectangle">
+    <solid android:color="@android:color/transparent" />
     <stroke
         android:width="@dimen/focused_outline_stroke_width"
         android:color="@color/baseline_primary_20"/>

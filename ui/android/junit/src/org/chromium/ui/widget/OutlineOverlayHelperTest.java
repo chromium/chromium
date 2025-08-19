@@ -144,4 +144,23 @@ public class OutlineOverlayHelperTest {
         verify(mHost).setOnFocusChangeListener(null);
         verify(mHost).removeOnLayoutChangeListener(mHelper);
     }
+
+    @Test
+    public void testAttach() {
+        // Detach the host from the parent to test the attach functionality.
+        mParent.removeView(mHost);
+
+        OutlineOverlayHelper.attach(mHost, mOutlineDrawable);
+        assertFalse(
+                "Outline should not be visible when host view is not attached.",
+                mHelper.isOutlineAttachedForTesting());
+
+        // Re-attach the host to the parent. This should trigger the creation of the helper.
+        mParent.addView(mHost);
+        doReturn(true).when(mHost).hasFocus();
+        mHelper.onFocusChange(mHost, true);
+        assertTrue(
+                "Outline should be visible when host view is attached and has focus.",
+                mHelper.isOutlineAttachedForTesting());
+    }
 }
