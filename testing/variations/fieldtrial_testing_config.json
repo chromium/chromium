@@ -6889,21 +6889,6 @@
             ]
         }
     ],
-    "ContextualPageActionTabGrouping": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContextualPageActionTabGrouping"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextualSearchBox": [
         {
             "platforms": [
@@ -24545,7 +24530,7 @@
             ]
         }
     ],
-    "TabGroupSuggestionMetricsOnly": [
+    "TabGroupSuggestions": [
         {
             "platforms": [
                 "android"
@@ -24561,7 +24546,9 @@
                         "group_suggestion_trigger_calculation_on_page_load": "false"
                     },
                     "enable_features": [
-                        "GroupSuggestionService"
+                        "ContextualPageActionTabGrouping",
+                        "GroupSuggestionService",
+                        "TabSwitcherGroupSuggestionsAndroid"
                     ]
                 }
             ]
