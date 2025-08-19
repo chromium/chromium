@@ -496,7 +496,6 @@ TestPrefetchService::~TestPrefetchService() = default;
 
 void TestPrefetchService::PrefetchUrl(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  prefetch_container->DisablePrecogLoggingForTest();
   prefetches_.push_back(prefetch_container);
 }
 

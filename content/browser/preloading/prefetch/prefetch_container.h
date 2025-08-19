@@ -484,8 +484,6 @@ class CONTENT_EXPORT PrefetchContainer {
   void SimulatePrefetchFailedIneligibleForTest(
       PreloadingEligibility eligibility);
 
-  void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
-
   // Set a callback for waiting for prefetch completion in tests.
   using PrefetchResponseCompletedCallbackForTesting =
       base::RepeatingCallback<void(base::WeakPtr<PrefetchContainer>)>;
