@@ -309,7 +309,7 @@ MemoryMeasurement* ConvertResult(const WebMemoryMeasurementPtr& measurement) {
   // Randomize the order of the entries as required by the spec.
   std::shuffle(breakdown.begin(), breakdown.end(), RandomBitGenerator{});
   size_t bytes = 0;
-  for (auto entry : breakdown) {
+  for (const auto& entry : breakdown) {
     bytes += entry->bytes();
   }
   auto* result = MemoryMeasurement::Create();

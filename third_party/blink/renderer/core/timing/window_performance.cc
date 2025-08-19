@@ -206,7 +206,7 @@ bool IsEventTypeForInteractionId(const AtomicString& type) {
 base::TimeDelta TotalNonOverlappingProcessingDuration(
     HeapVector<Member<PerformanceEventTiming>> event_timing_entries) {
   base::TimeDelta processing_duration;
-  for (auto entry : event_timing_entries) {
+  for (const auto& entry : event_timing_entries) {
     const auto& processing_start_time =
         entry->GetEventTimingReportingInfo()->processing_start_time;
     const auto& processing_end_time =
@@ -725,7 +725,7 @@ void WindowPerformance::EventTimingProcessingEnd(
 
 void WindowPerformance::SetCommitFinishTimeStampForPendingEvents(
     base::TimeTicks commit_finish_time) {
-  for (auto entry : event_timing_entries_) {
+  for (const auto& entry : event_timing_entries_) {
     // Skip events that already have a commit time
     if (!entry->GetEventTimingReportingInfo()->commit_finish_time.is_null()) {
       continue;
@@ -746,7 +746,7 @@ void WindowPerformance::SetCommitFinishTimeStampForPendingEvents(
 
 void WindowPerformance::SetRenderStartTimeForPendingEvents(
     base::TimeTicks render_start_time) {
-  for (auto entry : event_timing_entries_) {
+  for (const auto& entry : event_timing_entries_) {
     // Skip events that already have a render start time.
     if (!entry->GetEventTimingReportingInfo()->render_start_time.is_null()) {
       continue;
@@ -802,7 +802,7 @@ void WindowPerformance::OnPresentationPromiseResolved(
     }
   }
 
-  for (auto entry : event_timing_entries_) {
+  for (const auto& entry : event_timing_entries_) {
     auto* timing = entry->GetEventTimingReportingInfo();
     if (timing->presentation_index == presentation_index) {
       timing->presentation_time =
@@ -868,7 +868,7 @@ void WindowPerformance::OnPresentationPromiseResolved(
 
 void WindowPerformance::ReportEventTimingsWithoutNextPaint(
     base::TimeTicks fallback_time) {
-  for (auto event_timing_entry : event_timing_entries_) {
+  for (const auto& event_timing_entry : event_timing_entries_) {
     if (event_timing_entry->GetEventTimingReportingInfo()->presentation_index ==
         event_presentation_promise_count_) {
       event_timing_entry->UpdateFallbackTime(
@@ -913,7 +913,7 @@ void WindowPerformance::ReportAllPendingEventTimingsOnPageHidden() {
   // Ideally the fallback time could be the last_hidden_timestamp_, but we don't
   // actually have an accurate value for that (it would need to come from
   // browser IPC).
-  for (auto event_timing_entry : event_timing_entries_) {
+  for (const auto& event_timing_entry : event_timing_entries_) {
     auto* entryInfo = event_timing_entry->GetEventTimingReportingInfo();
     bool has_no_known_end_time = !event_timing_entry->HasKnownEndTime();
     bool has_processing_end_time = !entryInfo->processing_end_time.is_null();
