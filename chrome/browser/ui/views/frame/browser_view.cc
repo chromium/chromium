@@ -1866,7 +1866,10 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   }
 
   UpdateUIForContents(new_contents);
-  RevealTabStripIfNeeded();
+
+  if (!IsFullscreen() || !tab_change_in_split_view) {
+    RevealTabStripIfNeeded();
+  }
 
   if (change_tab_contents) {
     // When the location bar or other UI focus will be restored, first focus the

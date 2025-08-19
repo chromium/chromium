@@ -929,6 +929,35 @@ IN_PROC_BROWSER_TEST_F(MacSideBySideBrowserViewTest,
   // Verify top_container is re-parented to browser_view after fullscreen exit
   EXPECT_EQ(browser_view(), top_container->parent());
 }
+
+IN_PROC_BROWSER_TEST_F(MacSideBySideBrowserViewTest,
+                       SplitViewTabRevealFullscreen) {
+  // Disable always show toolbar in fullscreen
+  chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), false);
+
+  // Create tabs and add to split
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  ASSERT_TRUE(browser()->tab_strip_model()->selection_model().IsSelected(0));
+  ASSERT_TRUE(browser()->tab_strip_model()->selection_model().IsSelected(1));
+
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ASSERT_FALSE(browser()->window()->IsToolbarShowing());
+
+  // Switching between split tabs does not reveal top container.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  ASSERT_FALSE(browser()->window()->IsToolbarShowing());
+
+  // Switching to tab not in split should reveal top container.
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  ASSERT_TRUE(browser()->window()->IsToolbarShowing());
+}
 #endif
 
 namespace {
