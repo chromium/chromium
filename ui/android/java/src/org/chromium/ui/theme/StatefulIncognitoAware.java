@@ -13,7 +13,8 @@ public interface StatefulIncognitoAware extends IncognitoAware {
     /**
      * Called when incognito state is updated.
      *
+     * @param source The source of the theme resource change.
      * @param isIncognito Whether the new state is incognito.
      */
-    void onIncognitoStateChanged(boolean isIncognito);
+    void onIncognitoStateChanged(ThemeResourceWrapper source, boolean isIncognito);
 }

@@ -53,7 +53,7 @@ public class ThemeResourceWrapperUnitTest {
     @Test
     public void testThemeWrapper() {
         mThemeWrapper.setIsUsingOverlay(true);
-        Mockito.verify(mThemeObserver).onThemeResourceChanged();
+        Mockito.verify(mThemeObserver).onThemeResourceChanged(mThemeWrapper);
 
         int colorPrimary = MaterialColors.getColor(mActivity, R.attr.colorPrimary, "TAG");
         int wrapperColorPrimary =

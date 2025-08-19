@@ -32,8 +32,10 @@ public class ThemeResourceWrapper {
     /** Observe the theme resource changes provided by the wrapper. */
     public interface ThemeObserver {
 
-        /** Called when the theme / resource is changed. */
-        void onThemeResourceChanged();
+        /**
+         * Called when the theme / resource is changed from the source.
+         * */
+        void onThemeResourceChanged(ThemeResourceWrapper source);
     }
 
     private final Context mBaseContext;
@@ -153,7 +155,7 @@ public class ThemeResourceWrapper {
         mThemedContext =
                 mIsUsingOverlay ? new ContextThemeWrapper(mBaseContext, mResourceId) : mBaseContext;
         for (ThemeObserver observer : mObservers) {
-            observer.onThemeResourceChanged();
+            observer.onThemeResourceChanged(this);
         }
     }
 

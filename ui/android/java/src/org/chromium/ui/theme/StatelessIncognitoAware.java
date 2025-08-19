@@ -12,7 +12,8 @@ import org.chromium.build.annotations.NullMarked;
 public interface StatelessIncognitoAware extends IncognitoAware, Destroyable {
 
     @Override
-    default void onThemeResourceChanged() {
+    default void onThemeResourceChanged(ThemeResourceWrapper source) {
         destroy();
+        source.removeObserver(this);
     }
 }
