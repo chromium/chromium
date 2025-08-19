@@ -233,46 +233,6 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   mixer[kColorNewTabPageDoodleShareButtonIcon] = primary_foreground_color;
 }
 
-// Dialog colors currently track the native theme and not the browser theme.
-void AddNewTabPageDialogColors(ui::ColorMixer& mixer, bool dark_mode) {
-  // TODO(crbug.com/40061402): Colors defined below should come from core color
-  // mixer definitions to be inline with how other browser surfaces look. For
-  // now, until 'Customize Chrome' UI is refined, we rely on colors that match
-  // other WebUI surfaces.
-  const SkColor accent_color =
-      dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
-  const SkColor background_inverse =
-      dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey900;
-  const SkColor border_color =
-      dark_mode ? gfx::kGoogleGrey700 : gfx::kGoogleGrey300;
-
-  mixer[kColorNewTabPageActionButtonBorder] = {border_color};
-  mixer[kColorNewTabPageActionButtonBorderHovered] = {
-      dark_mode ? gfx::kGoogleGrey700 : gfx::kGoogleBlue100};
-  mixer[kColorNewTabPageControlBackgroundSelected] =
-      ui::SetAlpha(accent_color,
-                   /* 24% opacity */ 0.24 * SK_AlphaOPAQUE);
-  mixer[kColorNewTabPageDialogBackgroundActive] =
-      ui::SetAlpha(background_inverse,
-                   /* 16% opacity */ 0.16 * SK_AlphaOPAQUE);
-  mixer[kColorNewTabPageDialogBackground] = {
-      kColorNewTabPageBackgroundOverride};
-  mixer[kColorNewTabPageDialogBorder] = {border_color};
-  mixer[kColorNewTabPageDialogBorderSelected] = {accent_color};
-  mixer[kColorNewTabPageDialogControlBackgroundHovered] =
-      ui::SetAlpha(background_inverse,
-                   /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
-  mixer[kColorNewTabPageDialogForeground] = {dark_mode ? gfx::kGoogleGrey200
-                                                       : gfx::kGoogleGrey900};
-  mixer[kColorNewTabPageDialogSecondaryForeground] = {
-      dark_mode ? gfx::kGoogleGrey500 : gfx::kGoogleGrey700};
-  mixer[kColorNewTabPageSelectedBackground] =
-      ui::SetAlpha(dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue700,
-                   /* 16% opacity */ 0.16 * SK_AlphaOPAQUE);
-  mixer[kColorNewTabPageSelectedForeground] = {dark_mode ? gfx::kGoogleBlue300
-                                                         : gfx::kGoogleBlue700};
-}
-
 }  // namespace
 
 void AddNewTabPageColorMixer(ui::ColorProvider* provider,
@@ -540,7 +500,6 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
   mixer[kColorNewTabPageOverlayForeground] = {primary_foreground_color};
   mixer[kColorNewTabPageOverlaySecondaryForeground] = {
       secondary_foreground_color};
-  mixer[kColorNewTabPageSelectedBorder] = {accent_color};
   mixer[kColorNewTabPageTagBackground] =
       ui::SetAlpha(kColorNewTabPageBackgroundOverride,
                    /* 90% opacity */ 0.9 * SK_AlphaOPAQUE);
@@ -548,6 +507,4 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
       kColorNewTabPageBackgroundOverride};
   mixer[kColorNewTabPageDoodleShareButtonIcon] = {primary_foreground_color};
   // LINT.ThenChange(chrome/browser/ui/color/material_new_tab_page_color_mixer.cc)
-
-  AddNewTabPageDialogColors(mixer, dark_mode);
 }
