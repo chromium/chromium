@@ -175,8 +175,7 @@ public class ScreenshotCaptureTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         int currentNavIndex =
                 mActivityTestRule
-                        .getActivity()
-                        .getCurrentWebContents()
+                        .getWebContents()
                         .getNavigationController()
                         .getNavigationHistory()
                         .getCurrentEntryIndex();
@@ -216,8 +215,7 @@ public class ScreenshotCaptureTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         int currentNavIndex =
                 mActivityTestRule
-                        .getActivity()
-                        .getCurrentWebContents()
+                        .getWebContents()
                         .getNavigationController()
                         .getNavigationHistory()
                         .getCurrentEntryIndex();
@@ -257,8 +255,7 @@ public class ScreenshotCaptureTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         int currentNavIndex =
                 mActivityTestRule
-                        .getActivity()
-                        .getCurrentWebContents()
+                        .getWebContents()
                         .getNavigationController()
                         .getNavigationHistory()
                         .getCurrentEntryIndex();
@@ -383,8 +380,7 @@ public class ScreenshotCaptureTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         int currentNavIndex =
                 mActivityTestRule
-                        .getActivity()
-                        .getCurrentWebContents()
+                        .getWebContents()
                         .getNavigationController()
                         .getNavigationHistory()
                         .getCurrentEntryIndex();
@@ -421,8 +417,7 @@ public class ScreenshotCaptureTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         int currentNavIndex =
                 mActivityTestRule
-                        .getActivity()
-                        .getCurrentWebContents()
+                        .getWebContents()
                         .getNavigationController()
                         .getNavigationHistory()
                         .getCurrentEntryIndex();
