@@ -67,7 +67,7 @@ ScopedStyleResolver* ScopedStyleResolver::Parent() const {
 void ScopedStyleResolver::AddKeyframeRules(const RuleSet& rule_set) {
   const HeapVector<Member<StyleRuleKeyframes>> keyframes_rules =
       rule_set.KeyframesRules();
-  for (auto rule : keyframes_rules) {
+  for (const auto& rule : keyframes_rules) {
     AddKeyframeStyle(rule);
   }
 }
@@ -156,7 +156,7 @@ void ScopedStyleResolver::CollectFeaturesTo(
         visited_shared_style_sheet_contents) const {
   features.MutableMediaQueryResultFlags().Add(media_query_result_flags_);
 
-  for (auto [sheet, rule_set] : active_style_sheets_) {
+  for (const auto& [sheet, rule_set] : active_style_sheets_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     StyleSheetContents* contents = sheet->Contents();
     if (contents->HasOneClient() ||
@@ -280,7 +280,7 @@ void ScopedStyleResolver::ForAllStylesheets(ElementRuleCollector& collector,
   // Verify that all the cached rule_set_groups_ have the right bits
   // and RuleSets.
   HeapVector<RuleSetGroup> ref_groups;
-  for (auto [sheet, rule_set] : active_style_sheets_) {
+  for (const auto& [sheet, rule_set] : active_style_sheets_) {
     AddRuleSetToRuleSetGroupList(rule_set, ref_groups);
   }
   DCHECK_EQ(ref_groups.size(), rule_set_groups_.size())
@@ -336,7 +336,7 @@ void ScopedStyleResolver::CollectMatchingPartPseudoRules(
 void ScopedStyleResolver::MatchPageRules(PageRuleCollector& collector) {
   // Currently, only @page rules in the document scope apply.
   DCHECK(scope_->RootNode().IsDocumentNode());
-  for (auto [sheet, rule_set] : active_style_sheets_) {
+  for (const auto& [sheet, rule_set] : active_style_sheets_) {
     collector.MatchPageRules(rule_set.Get(), CascadeOrigin::kAuthor, scope_,
                              GetCascadeLayerMap());
   }
@@ -471,7 +471,7 @@ void ScopedStyleResolver::AddImplicitScopeTrigger(
 }
 
 void ScopedStyleResolver::RemoveImplicitScopeTriggers() {
-  for (auto [sheet, rule_set] : active_style_sheets_) {
+  for (const auto& [sheet, rule_set] : active_style_sheets_) {
     RemoveImplicitScopeTriggers(*sheet, *rule_set);
   }
 }

@@ -1462,7 +1462,7 @@ void ElementRuleCollector::SortMatchedRules() {
 
 void ElementRuleCollector::AddMatchedRulesToTracker(
     StyleRuleUsageTracker* tracker) const {
-  for (auto matched_rule : matched_rules_) {
+  for (const auto& matched_rule : matched_rules_) {
     const StyleRule* rule = matched_rule.Rule();
     tracker->Track(FindStyleSheet(current_matching_tree_scope_,
                                   context_.GetElement().GetDocument(), rule),

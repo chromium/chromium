@@ -1756,7 +1756,7 @@ StyleRuleFontFeatureValues* CSSParserImpl::ConsumeFontFeatureValuesRule(
   }
 
   Vector<AtomicString> families;
-  for (const auto family_entry : *family_list) {
+  for (const auto& family_entry : *family_list) {
     const CSSFontFamilyValue* family_value =
         DynamicTo<CSSFontFamilyValue>(*family_entry);
     if (!family_value) {

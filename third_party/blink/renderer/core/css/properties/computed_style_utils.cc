@@ -1247,7 +1247,7 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantAlternates(
 
   if (!variant_alternates->Styleset().empty()) {
     CSSValueList* aliases_list = CSSValueList::CreateCommaSeparated();
-    for (auto alias : variant_alternates->Styleset()) {
+    for (const auto& alias : variant_alternates->Styleset()) {
       aliases_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(alias));
     }
     value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
@@ -1256,7 +1256,7 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantAlternates(
   }
   if (!variant_alternates->CharacterVariant().empty()) {
     CSSValueList* aliases_list = CSSValueList::CreateCommaSeparated();
-    for (auto alias : variant_alternates->CharacterVariant()) {
+    for (const auto& alias : variant_alternates->CharacterVariant()) {
       aliases_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(alias));
     }
     value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
@@ -1703,7 +1703,7 @@ void OrderedNamedLinesCollector::AppendLines(
     return;
   }
 
-  for (auto named_grid_line : iter->value) {
+  for (const auto& named_grid_line : iter->value) {
     // For layout grids, insert all values. For non-layout grids, in order to
     // round-trip repeaters, we need to prevent inserting certain line names.
     // In particular, don't insert lines from repeaters if we're not in a

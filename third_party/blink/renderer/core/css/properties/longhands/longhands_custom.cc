@@ -1044,7 +1044,7 @@ void BackgroundClip::ApplyValue(StyleResolverState& state,
     // Walk each value and put it into a layer, creating new layers as needed.
     // As per https://w3c.github.io/csswg-drafts/css-backgrounds/#layering
     while (curr_child) {
-      for (auto curr_val : *value_list) {
+      for (const auto& curr_val : *value_list) {
         if (!curr_child) {
           curr_child = prev_child->EnsureNext();
         }
@@ -2516,7 +2516,7 @@ const CSSValue* ColorScheme::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  for (auto ident : style.ColorScheme()) {
+  for (const auto& ident : style.ColorScheme()) {
     list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(ident));
   }
   return list;

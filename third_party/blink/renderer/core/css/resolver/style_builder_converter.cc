@@ -138,7 +138,7 @@ Length ConvertGridTrackBreadth(const StyleResolverState& state,
 Vector<AtomicString> ValueListToAtomicStringVector(
     const CSSValueList& value_list) {
   Vector<AtomicString> ret;
-  for (auto list_entry : value_list) {
+  for (const auto& list_entry : value_list) {
     const CSSCustomIdentValue& ident = To<CSSCustomIdentValue>(*list_entry);
     ret.push_back(ident.Value());
   }

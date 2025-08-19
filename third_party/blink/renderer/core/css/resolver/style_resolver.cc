@@ -3104,7 +3104,7 @@ void StyleResolver::ApplyCallbackSelectors(StyleResolverState& state) {
   if (!rules) {
     return;
   }
-  for (auto rule : *rules) {
+  for (const auto& rule : *rules) {
     state.StyleBuilder().AddCallbackSelector(rule->SelectorsText());
   }
 }
@@ -3117,7 +3117,7 @@ void StyleResolver::ApplyDocumentRulesSelectors(StyleResolverState& state,
   if (!rules) {
     return;
   }
-  for (auto rule : *rules) {
+  for (const auto& rule : *rules) {
     state.StyleBuilder().AddDocumentRulesSelector(rule);
   }
 }

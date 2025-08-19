@@ -243,7 +243,7 @@ void CSSStyleSheet::DidMutate(Mutation mutation) {
         ownerNode()->GetTreeScope());
     invalidate_matched_properties_cache = true;
   } else if (!adopted_tree_scopes_.empty()) {
-    for (auto tree_scope : adopted_tree_scopes_.Keys()) {
+    for (const auto& tree_scope : adopted_tree_scopes_.Keys()) {
       // It is currently required that adopted sheets can not be moved between
       // documents.
       DCHECK(tree_scope->GetDocument() == document);
