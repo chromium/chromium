@@ -89,7 +89,7 @@ bool StringToVersionNumbers(std::string_view version,
     LOG(ERROR) << "version has unexpected format";
     return false;
   }
-  if (!base::StringToInt(version.substr(0, first_dot), major)) {
+  if (!base::StringToInt(std::string_view(&version[0], first_dot), major)) {
     LOG(ERROR) << "version has unexpected format";
     return false;
   }
@@ -101,14 +101,19 @@ bool StringToVersionNumbers(std::string_view version,
   if (second_dot == std::string::npos) {
     second_dot = version.length();
   }
+
   if (!base::StringToInt(
-          version.substr(first_dot + 1, second_dot - first_dot - 1), minor)) {
+          std::string_view(&version[first_dot + 1], second_dot - first_dot - 1),
+          minor)) {
     LOG(ERROR) << "version has unexpected format";
     return false;
   }
   if (second_dot == version.length()) {
     *bugfix = 0;
-  } else if (!base::StringToInt(version.substr(second_dot + 1), bugfix)) {
+  } else if (!base::StringToInt(
+                 std::string_view(&version[second_dot + 1],
+                                  version.length() - second_dot - 1),
+                 bugfix)) {
     LOG(ERROR) << "version has unexpected format";
     return false;
   }

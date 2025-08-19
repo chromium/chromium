@@ -27,7 +27,6 @@
 
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
-
 #include "build/build_config.h"
 #include "util/synchronization/scoped_spin_guard.h"
 

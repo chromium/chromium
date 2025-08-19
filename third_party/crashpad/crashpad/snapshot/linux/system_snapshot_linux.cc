@@ -121,14 +121,35 @@ bool ReadFreqFile(const std::string& filename, uint64_t* hz) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+struct ReadPropertyData {
+  std::string* value;
+  bool read = false;
+};
+
+void ReadPropertyCallback(void* cookie,
+                          const char* name,
+                          const char* value,
+                          uint32_t serial) {
+  auto* data = static_cast<ReadPropertyData*>(cookie);
+  data->value->assign(value);
+  data->read = true;
+}
+
 bool ReadProperty(const char* property, std::string* value) {
-  char value_buffer[PROP_VALUE_MAX];
-  int length = __system_property_get(property, value_buffer);
-  if (length <= 0) {
+  const prop_info* prop = __system_property_find(property);
+  if (!prop) {
     LOG(ERROR) << "Couldn't read property " << property;
     return false;
   }
-  *value = value_buffer;
+
+  ReadPropertyData data;
+  data.value = value;
+  __system_property_read_callback(prop, ReadPropertyCallback, &data);
+
+  if (!data.read) {
+    LOG(ERROR) << "Couldn't read property " << property;
+    return false;
+  }
   return true;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
