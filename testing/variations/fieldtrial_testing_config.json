@@ -27881,6 +27881,21 @@
             ]
         }
     ],
+    "WebViewUseBackgroundThreadForGms": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewUseBackgroundThreadForGms"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewUseMetricsUploadServiceOnlySdkRuntime": [
         {
             "platforms": [
