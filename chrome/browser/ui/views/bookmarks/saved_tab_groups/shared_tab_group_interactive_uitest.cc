@@ -8,6 +8,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
@@ -527,10 +528,8 @@ IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest, GroupCloseLastTab) {
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
       Do([&]() {
-        BrowserView* browser_view =
-            static_cast<BrowserView*>(browser()->window());
-        browser_view->tabstrip()->CloseTab(browser_view->tabstrip()->tab_at(0),
-                                           CloseTabSource::kFromMouse);
+        browser()->tab_strip_model()->ActivateTabAt(0);
+        chrome::CloseTab(browser());
       }),
       WaitForShow(kDataSharingSigninPromptDialogCancelButtonElementId),
       PressButton(kDataSharingSigninPromptDialogCancelButtonElementId),
