@@ -28,6 +28,9 @@ void CheckDecrement(size_t& num) {
 
 }  // namespace
 
+LoadingScenarioCounts::LoadingScenarioCounts() = default;
+LoadingScenarioCounts::LoadingScenarioCounts(LoadingScenarioCounts&&) = default;
+
 void LoadingScenarioCounts::IncrementLoadingPageCounts(bool visible,
                                                        bool focused) {
   CheckIncrement(loading_pages_);

@@ -8,6 +8,9 @@
 
 namespace performance_manager {
 
+PageLoadTrackerDecoratorData::PageLoadTrackerDecoratorData() = default;
+PageLoadTrackerDecoratorData::~PageLoadTrackerDecoratorData() = default;
+
 namespace {
 
 const char* ToString(PageLoadTrackerDecoratorData::LoadIdleState state) {

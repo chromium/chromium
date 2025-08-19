@@ -13,6 +13,8 @@ namespace performance_manager {
 
 class FrozenData : public NodeInlineData<FrozenData> {
  public:
+  FrozenData();
+
   // Returns the current "is_frozen" state. A collection of frames is considered
   // frozen if its non-empty, and all of the frames are frozen.
   bool IsFrozen() const;

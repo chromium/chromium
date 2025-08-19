@@ -17,6 +17,9 @@ class PageNodeImpl;
 class PageLoadTrackerDecoratorData
     : public SparseNodeInlineData<PageLoadTrackerDecoratorData> {
  public:
+  PageLoadTrackerDecoratorData();
+  ~PageLoadTrackerDecoratorData();
+
   // The state transitions associated with a load. This is more granular than
   // the publicly exposed PageNode::LoadingState, to provide the required
   // details to implement state transitions.
