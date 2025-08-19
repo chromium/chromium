@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/attempt_login_tool.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor.mojom.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -42,7 +44,11 @@ class MockExecutionEngine : public ExecutionEngine {
 
 class ActorAttemptLoginToolTest : public ActorToolsTest {
  public:
-  ActorAttemptLoginToolTest() = default;
+  ActorAttemptLoginToolTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        password_manager::features::kActorLogin);
+  }
+
   ~ActorAttemptLoginToolTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -73,8 +79,9 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
     return static_cast<MockExecutionEngine&>(execution_engine());
   }
 
- protected:
+ private:
   MockActorLoginService mock_login_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, Basic) {

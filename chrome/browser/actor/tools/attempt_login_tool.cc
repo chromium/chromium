@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/web_contents.h"
 
 namespace actor {
@@ -64,6 +65,12 @@ AttemptLoginTool::AttemptLoginTool(TaskId task_id,
 AttemptLoginTool::~AttemptLoginTool() = default;
 
 void AttemptLoginTool::Validate(ValidateCallback callback) {
+  if (!base::FeatureList::IsEnabled(password_manager::features::kActorLogin)) {
+    PostResponseTask(std::move(callback),
+                     MakeResult(mojom::ActionResultCode::kToolUnknown));
+    return;
+  }
+
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
