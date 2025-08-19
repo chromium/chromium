@@ -142,6 +142,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       base::TimeDelta ttl,
       std::optional<PreloadingHoldbackStatus> holdback_status_override,
       bool should_append_variations_header,
+      bool should_disable_block_until_head_timeout,
       std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
           info);
   ~PrefetchRequest();
@@ -179,6 +180,9 @@ class CONTENT_EXPORT PrefetchRequest final {
   }
   bool should_append_variations_header() const {
     return should_append_variations_header_;
+  }
+  bool should_disable_block_until_head_timeout() const {
+    return should_disable_block_until_head_timeout_;
   }
 
   // Returns non-null if renderer-initiated/browser-initiated, respectively.
@@ -276,6 +280,12 @@ class CONTENT_EXPORT PrefetchRequest final {
   // configured for browser-initiated prefetch that doesn't depend on web
   // content. Default value is `true`.
   const bool should_append_variations_header_;
+
+  // Whether the caller of prefetches requests to disable
+  // `BlockUntilHeadTimeout`, which is currently calculated by
+  // `PrefetchBlockUntilHeadTimeout()` as a `prefetch_params`.
+  // Default value is `false`.
+  const bool should_disable_block_until_head_timeout_;
 
   const std::variant<PrefetchRendererInitiatorInfo,
                      PrefetchBrowserInitiatorInfo>

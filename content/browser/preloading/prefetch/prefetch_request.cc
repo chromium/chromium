@@ -73,6 +73,7 @@ PrefetchRequest::PrefetchRequest(
     base::TimeDelta ttl,
     std::optional<PreloadingHoldbackStatus> holdback_status_override,
     bool should_append_variations_header,
+    bool should_disable_block_until_head_timeout,
     std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
         initiator_info)
     : prefetch_type_(prefetch_type),
@@ -91,6 +92,8 @@ PrefetchRequest::PrefetchRequest(
       ttl_(std::move(ttl)),
       holdback_status_override_(std::move(holdback_status_override)),
       should_append_variations_header_(should_append_variations_header),
+      should_disable_block_until_head_timeout_(
+          should_disable_block_until_head_timeout),
       initiator_info_(std::move(initiator_info)) {
   CHECK(preload_pipeline_info_);
   if (prefetch_type_.IsRendererInitiated()) {
@@ -100,6 +103,7 @@ PrefetchRequest::PrefetchRequest(
     CHECK_EQ(ttl_, PrefetchContainerDefaultTtlInPrefetchService());
     CHECK(!holdback_status_override_);
     CHECK(should_append_variations_header_);
+    CHECK(!should_disable_block_until_head_timeout_);
   } else {
     CHECK(!GetRendererInitiatorInfo());
     CHECK(GetBrowserInitiatorInfo());

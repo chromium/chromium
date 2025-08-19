@@ -584,10 +584,6 @@ class CONTENT_EXPORT PrefetchContainer {
     return service_worker_state_;
   }
 
-  bool ShouldDisableBlockUntilHeadTimeout() const {
-    return should_disable_block_until_head_timeout_;
-  }
-
   // Methods only exposed for `PrefetchServingHandle`.
   const std::vector<std::unique_ptr<PrefetchSingleRedirectHop>>& redirect_chain(
       base::PassKey<PrefetchServingHandle>) const;
@@ -604,8 +600,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const network::mojom::URLResponseHead* head);
 
  private:
-  PrefetchContainer(std::unique_ptr<PrefetchRequest> request,
-                    bool should_disable_block_until_head_timeout);
+  explicit PrefetchContainer(std::unique_ptr<PrefetchRequest> request);
 
   // Update |prefetch_status_| and report prefetch status to
   // DevTools without updating TriggeringOutcome.
@@ -809,11 +804,6 @@ class CONTENT_EXPORT PrefetchContainer {
   base::ObserverList<Observer> observers_;
 
   bool is_likely_ahead_of_prerender_ = false;
-
-  // Whether the caller of prefetches requests to disable
-  // `BlockUntilHeadTimeout`, which is currently calculated by
-  // `PrefetchBlockUntilHeadTimeout()` as a `prefetch_params`.
-  const bool should_disable_block_until_head_timeout_ = false;
 
   // Timing information for metrics
   //

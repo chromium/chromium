@@ -217,7 +217,7 @@ void PrefetchMatchResolver::StartWaitFor(const PrefetchKey& prefetch_key,
   // write tests.
   base::TimeDelta timeout = PrefetchBlockUntilHeadTimeout(
       prefetch_container.request().prefetch_type(),
-      prefetch_container.ShouldDisableBlockUntilHeadTimeout(),
+      prefetch_container.request().should_disable_block_until_head_timeout(),
       is_nav_prerender_);
   if (timeout.is_positive()) {
     candidate_data->timeout_timer = std::make_unique<base::OneShotTimer>();
