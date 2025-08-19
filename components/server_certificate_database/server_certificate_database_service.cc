@@ -121,9 +121,6 @@ void ServerCertificateDatabaseService::NSSMigrationComplete(
   }
   base::UmaHistogramEnumeration("Net.CertVerifier.NSSCertMigrationResult",
                                 result_for_histogram);
-  base::UmaHistogramCounts100(
-      "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished",
-      get_certificates_pending_migration_.size());
 
   prefs_->SetInteger(
       prefs::kNSSCertsMigratedToServerCertDb,

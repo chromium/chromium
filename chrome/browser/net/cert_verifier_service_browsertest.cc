@@ -781,8 +781,6 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest,
                                  NSSMigrationResultPref::kNotMigrated));
   histogram_tester_.ExpectTotalCount("Net.CertVerifier.NSSCertMigrationResult",
                                      0);
-  histogram_tester_.ExpectTotalCount(
-      "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished", 0);
 }
 
 // Tests that NSS cert migration is done on initialization and that the
@@ -821,12 +819,6 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, PRE_TestNSSCertMigration) {
                                       net::ServerCertificateDatabaseService::
                                           NSSMigrationResultHistogram::kSuccess,
                                       1);
-  // The Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished histogram
-  // should have been recorded too, but it may not be possible to predict what
-  // the buckets will be, so only verify that it was recorded at all.
-  EXPECT_GT(histogram_tester_.GetTotalSum(
-                "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished"),
-            0);
 
   // Set root cert in NSS to distrusted. This ensures that when the next phase
   // of the test runs it's actually the trust from the server cert db causing
@@ -874,8 +866,6 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, TestNSSCertMigration) {
 
   histogram_tester_.ExpectTotalCount("Net.CertVerifier.NSSCertMigrationResult",
                                      0);
-  histogram_tester_.ExpectTotalCount(
-      "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished", 0);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
