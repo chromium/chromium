@@ -120,77 +120,6 @@ const char kHTMLBodyServerError[] = R"(
 </html>
 )";
 
-// Param for parametrized tests for rearchitecturing/refactoring of
-// `PrefetchService`.
-//
-// Do not remove and keep it even if there is no param to make it easy to add
-// another param in the future.
-struct PrefetchServiceRearchParam {
- public:
-  using Arg = int;
-
-  static std::vector<PrefetchServiceRearchParam::Arg> Params();
-  static PrefetchServiceRearchParam CreateFromIndex(int index);
-
-  bool prefetch_scheduler;
-  bool prefetch_scheduler_progress_sync_best_effort;
-};
-
-// static
-std::vector<int> PrefetchServiceRearchParam::Params() {
-  return {0, 1, 2};
-}
-
-// static
-PrefetchServiceRearchParam PrefetchServiceRearchParam::CreateFromIndex(
-    int index) {
-  std::vector<PrefetchServiceRearchParam> params = {
-      PrefetchServiceRearchParam{
-          .prefetch_scheduler = false,
-          .prefetch_scheduler_progress_sync_best_effort = false,
-      },
-      PrefetchServiceRearchParam{
-          .prefetch_scheduler = true,
-          .prefetch_scheduler_progress_sync_best_effort = false,
-      },
-      PrefetchServiceRearchParam{
-          .prefetch_scheduler = true,
-          .prefetch_scheduler_progress_sync_best_effort = true,
-      },
-  };
-  return params[index];
-}
-
-class WithPrefetchServiceRearchParam {
- public:
-  explicit WithPrefetchServiceRearchParam(int index)
-      : param_(PrefetchServiceRearchParam::CreateFromIndex(index)) {}
-  virtual ~WithPrefetchServiceRearchParam() = default;
-
-  void InitRearchFeatures();
-
-  const PrefetchServiceRearchParam& rearch_param() { return param_; }
-
- private:
-  PrefetchServiceRearchParam param_;
-  base::test::ScopedFeatureList feature_list_prefetch_scheduler_;
-};
-
-void WithPrefetchServiceRearchParam::InitRearchFeatures() {
-  if (param_.prefetch_scheduler) {
-    feature_list_prefetch_scheduler_.InitWithFeaturesAndParameters(
-        {{
-            features::kPrefetchScheduler,
-            {
-                {"kPrefetchSchedulerProgressSyncBestEffort",
-                 param_.prefetch_scheduler_progress_sync_best_effort ? "true"
-                                                                     : "false"},
-            },
-        }},
-        {});
-  }
-}
-
 class ScopedPrefetchServiceContentBrowserClient
     : public TestContentBrowserClient {
  public:
@@ -1254,10 +1183,10 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
 
 class PrefetchServiceTest
     : public PrefetchServiceTestBase,
-      public WithPrefetchServiceRearchParam,
-      public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
  public:
-  PrefetchServiceTest() : WithPrefetchServiceRearchParam(GetParam()) {}
+  PrefetchServiceTest() : WithPrefetchRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
     InitBaseParams();
@@ -1265,10 +1194,9 @@ class PrefetchServiceTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ParametrizedTests,
-    PrefetchServiceTest,
-    testing::ValuesIn(PrefetchServiceRearchParam::Params()));
+INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
+                         PrefetchServiceTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
 
 TEST_P(PrefetchServiceTest, SuccessCase) {
   base::HistogramTester histogram_tester;
@@ -1857,11 +1785,10 @@ TEST_P(PrefetchServiceTest, NoPrefetchingDomainNotInAllowList) {
 
 class PrefetchServiceAllowAllDomainsTest
     : public PrefetchServiceTestBase,
-      public WithPrefetchServiceRearchParam,
-      public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
  public:
-  PrefetchServiceAllowAllDomainsTest()
-      : WithPrefetchServiceRearchParam(GetParam()) {}
+  PrefetchServiceAllowAllDomainsTest() : WithPrefetchRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
     InitBaseParams();
@@ -1879,10 +1806,9 @@ class PrefetchServiceAllowAllDomainsTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ParametrizedTests,
-    PrefetchServiceAllowAllDomainsTest,
-    testing::ValuesIn(PrefetchServiceRearchParam::Params()));
+INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
+                         PrefetchServiceAllowAllDomainsTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
 
 TEST_P(PrefetchServiceAllowAllDomainsTest, AllowAllDomains) {
   base::HistogramTester histogram_tester;
@@ -1920,11 +1846,11 @@ TEST_P(PrefetchServiceAllowAllDomainsTest, AllowAllDomains) {
 
 class PrefetchServiceAllowAllDomainsForExtendedPreloadingTest
     : public PrefetchServiceTestBase,
-      public WithPrefetchServiceRearchParam,
-      public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
  public:
   PrefetchServiceAllowAllDomainsForExtendedPreloadingTest()
-      : WithPrefetchServiceRearchParam(GetParam()) {}
+      : WithPrefetchRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
     InitBaseParams();
@@ -1945,7 +1871,7 @@ class PrefetchServiceAllowAllDomainsForExtendedPreloadingTest
 INSTANTIATE_TEST_SUITE_P(
     ParametrizedTests,
     PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
-    testing::ValuesIn(PrefetchServiceRearchParam::Params()));
+    testing::ValuesIn(PrefetchRearchParam::Params()));
 
 TEST_P(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
        ExtendedPreloadingEnabled) {
@@ -3066,11 +2992,10 @@ TEST_P(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
 
 class PrefetchServiceWithHTMLOnlyTest
     : public PrefetchServiceTestBase,
-      public WithPrefetchServiceRearchParam,
-      public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
  public:
-  PrefetchServiceWithHTMLOnlyTest()
-      : WithPrefetchServiceRearchParam(GetParam()) {}
+  PrefetchServiceWithHTMLOnlyTest() : WithPrefetchRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
     InitBaseParams();
@@ -3088,10 +3013,9 @@ class PrefetchServiceWithHTMLOnlyTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ParametrizedTests,
-    PrefetchServiceWithHTMLOnlyTest,
-    testing::ValuesIn(PrefetchServiceRearchParam::Params()));
+INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
+                         PrefetchServiceWithHTMLOnlyTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
 
 TEST_P(PrefetchServiceWithHTMLOnlyTest, FailedNonHTMLWithHTMLOnly) {
   base::HistogramTester histogram_tester;
@@ -3126,11 +3050,11 @@ TEST_P(PrefetchServiceWithHTMLOnlyTest, FailedNonHTMLWithHTMLOnly) {
 
 class PrefetchServiceAlwaysMakeDecoyRequestTest
     : public PrefetchServiceTestBase,
-      public WithPrefetchServiceRearchParam,
-      public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
  public:
   PrefetchServiceAlwaysMakeDecoyRequestTest()
-      : WithPrefetchServiceRearchParam(GetParam()) {}
+      : WithPrefetchRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
     InitBaseParams();
@@ -3147,10 +3071,9 @@ class PrefetchServiceAlwaysMakeDecoyRequestTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ParametrizedTests,
-    PrefetchServiceAlwaysMakeDecoyRequestTest,
-    testing::ValuesIn(PrefetchServiceRearchParam::Params()));
+INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
+                         PrefetchServiceAlwaysMakeDecoyRequestTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
 
 TEST_P(PrefetchServiceAlwaysMakeDecoyRequestTest, DecoyRequest) {
   base::HistogramTester histogram_tester;
@@ -3295,10 +3218,10 @@ TEST_P(PrefetchServiceAlwaysMakeDecoyRequestTest,
 
 class PrefetchServiceIncognitoTest
     : public PrefetchServiceTestBase,
-      public WithPrefetchServiceRearchParam,
-      public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
  public:
-  PrefetchServiceIncognitoTest() : WithPrefetchServiceRearchParam(GetParam()) {}
+  PrefetchServiceIncognitoTest() : WithPrefetchRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
     InitBaseParams();
@@ -3313,10 +3236,9 @@ class PrefetchServiceIncognitoTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ParametrizedTests,
-    PrefetchServiceIncognitoTest,
-    testing::ValuesIn(PrefetchServiceRearchParam::Params()));
+INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
+                         PrefetchServiceIncognitoTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
 
 TEST_P(PrefetchServiceIncognitoTest, OffTheRecordEligible) {
   base::HistogramTester histogram_tester;
@@ -4168,13 +4090,12 @@ TEST_P(PrefetchServiceTest,
 
 class PrefetchServiceAlwaysBlockUntilHeadTest
     : public PrefetchServiceTestBase,
-      public WithPrefetchServiceRearchParam,
+      public WithPrefetchRearchParam,
       public ::testing::WithParamInterface<
-          std::tuple<PrefetchServiceRearchParam::Arg,
-                     blink::mojom::SpeculationEagerness>> {
+          std::tuple<PrefetchRearchParam, blink::mojom::SpeculationEagerness>> {
  public:
   PrefetchServiceAlwaysBlockUntilHeadTest()
-      : WithPrefetchServiceRearchParam(std::get<0>(GetParam())) {}
+      : WithPrefetchRearchParam(std::get<0>(GetParam())) {}
 
   const int kPrefetchTimeout = 10000;
   const int kBlockUntilHeadTimeout = 1000;
@@ -4209,7 +4130,7 @@ INSTANTIATE_TEST_SUITE_P(
     ParametrizedTests,
     PrefetchServiceAlwaysBlockUntilHeadTest,
     testing::Combine(
-        testing::ValuesIn(PrefetchServiceRearchParam::Params()),
+        testing::ValuesIn(PrefetchRearchParam::Params()),
         testing::Values(blink::mojom::SpeculationEagerness::kModerate,
                         blink::mojom::SpeculationEagerness::kConservative)));
 
@@ -5516,11 +5437,11 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 
 class PrefetchServiceDisableBlockUntilHeadTimeoutTest
     : public PrefetchServiceTestBase,
-      public WithPrefetchServiceRearchParam,
-      public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
  public:
   PrefetchServiceDisableBlockUntilHeadTimeoutTest()
-      : WithPrefetchServiceRearchParam(GetParam()) {}
+      : WithPrefetchRearchParam(GetParam()) {}
 
   static constexpr int kBlockUntilHeadTimeout = 1000;
 
@@ -5545,10 +5466,9 @@ class PrefetchServiceDisableBlockUntilHeadTimeoutTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ParametrizedTests,
-    PrefetchServiceDisableBlockUntilHeadTimeoutTest,
-    testing::ValuesIn(PrefetchServiceRearchParam::Params()));
+INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
+                         PrefetchServiceDisableBlockUntilHeadTimeoutTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
 
 // Tests that the default `BlockUntilHeadTimeout` is used if
 // `should_disable_block_until_head_timeout` is false.
@@ -5976,10 +5896,10 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionWhenHoldback) {
 
 class PrefetchServiceLimitsTest
     : public PrefetchServiceTestBase,
-      public WithPrefetchServiceRearchParam,
-      public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
  public:
-  PrefetchServiceLimitsTest() : WithPrefetchServiceRearchParam(GetParam()) {}
+  PrefetchServiceLimitsTest() : WithPrefetchRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
     InitBaseParams();
@@ -6011,10 +5931,9 @@ class PrefetchServiceLimitsTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ParametrizedTests,
-    PrefetchServiceLimitsTest,
-    testing::ValuesIn(PrefetchServiceRearchParam::Params()));
+INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
+                         PrefetchServiceLimitsTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
 
 TEST_P(PrefetchServiceLimitsTest,
        NonImmediatePrefetchAllowedWhenImmediateLimitIsReached) {
@@ -6845,11 +6764,10 @@ blink::UserAgentMetadata GetFakeUserAgentMetadata() {
 
 class PrefetchServiceClientHintsTest
     : public PrefetchServiceTestBase,
-      public WithPrefetchServiceRearchParam,
-      public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
  public:
-  PrefetchServiceClientHintsTest()
-      : WithPrefetchServiceRearchParam(GetParam()) {}
+  PrefetchServiceClientHintsTest() : WithPrefetchRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
     InitBaseParams();
@@ -6873,10 +6791,9 @@ class PrefetchServiceClientHintsTest
       GetFakeUserAgentMetadata()};
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ParametrizedTests,
-    PrefetchServiceClientHintsTest,
-    testing::ValuesIn(PrefetchServiceRearchParam::Params()));
+INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
+                         PrefetchServiceClientHintsTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
 
 TEST_P(PrefetchServiceClientHintsTest, NoClientHintsWhenDisabled) {
   base::test::ScopedFeatureList disable_prefetch_ch;
@@ -7751,11 +7668,11 @@ TEST_P(PrefetchServiceTest,
 // added.
 class PrefetchServiceAddPrefetchContainerTest
     : public PrefetchServiceTestBase,
-      public WithPrefetchServiceRearchParam,
-      public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
  public:
   PrefetchServiceAddPrefetchContainerTest()
-      : WithPrefetchServiceRearchParam(GetParam()) {}
+      : WithPrefetchRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
     InitBaseParams();
@@ -7814,10 +7731,9 @@ class PrefetchServiceAddPrefetchContainerTest
   base::test::ScopedFeatureList scoped_feature_list_for_prerender2_fallback_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ParametrizedTests,
-    PrefetchServiceAddPrefetchContainerTest,
-    testing::ValuesIn(PrefetchServiceRearchParam::Params()));
+INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
+                         PrefetchServiceAddPrefetchContainerTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
 
 TEST_P(PrefetchServiceAddPrefetchContainerTest, ReplacesOldWithNewByDefault) {
   blink::DocumentToken document_token;

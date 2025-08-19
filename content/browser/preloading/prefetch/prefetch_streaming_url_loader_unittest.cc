@@ -164,9 +164,16 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
 class PrefetchStreamingURLLoaderTest
     : public ::testing::Test,
-      public ::testing::WithParamInterface<bool> {
+      public WithPrefetchRearchParam,
+      // bool: `ShouldWaitForHeadReceived()`.
+      public ::testing::WithParamInterface<
+          std::tuple<PrefetchRearchParam, bool>> {
  public:
+  PrefetchStreamingURLLoaderTest()
+      : WithPrefetchRearchParam(std::get<0>(GetParam())) {}
+
   void SetUp() override {
+    InitRearchFeatures();
     task_environment_ = std::make_unique<base::test::TaskEnvironment>(
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     test_url_loader_factory_ = std::make_unique<TestURLLoaderFactory>();
@@ -188,15 +195,19 @@ class PrefetchStreamingURLLoaderTest
         test_url_loader_factory());
   }
 
+  bool ShouldWaitForHeadReceived() const { return std::get<1>(GetParam()); }
+
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::unique_ptr<TestURLLoaderFactory> test_url_loader_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// The parameter should determine if the test should call
-// SetOnReceivedHeadCallback and check that callback is later called.
-INSTANTIATE_TEST_SUITE_P(All, PrefetchStreamingURLLoaderTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrefetchStreamingURLLoaderTest,
+    testing::Combine(testing::ValuesIn(PrefetchRearchParam::Params()),
+                     ::testing::Bool()));
 
 TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   base::HistogramTester histogram_tester;
@@ -223,7 +234,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
-  if (GetParam()) {
+  if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
 
@@ -317,7 +328,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   test_url_loader_factory()->SimulateReceiveHead(
       net::HTTP_OK, kBodyContent1.size() + kBodyContent2.size());
   on_response_received_loop.Run();
-  if (GetParam()) {
+  if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
 
@@ -418,7 +429,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
-  if (GetParam()) {
+  if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
 
@@ -466,7 +477,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
   // servable.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_NOT_FOUND, 0);
   on_response_received_loop.Run();
-  if (GetParam()) {
+  if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
 
@@ -511,7 +522,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
-  if (GetParam()) {
+  if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
 
@@ -564,7 +575,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(streaming_loader);
 
-  if (GetParam()) {
+  if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
 
@@ -604,7 +615,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
-  if (GetParam()) {
+  if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
 
@@ -728,7 +739,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
-  if (GetParam()) {
+  if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
 
@@ -863,7 +874,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(streaming_loader);
 
-  if (GetParam()) {
+  if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
 
@@ -998,7 +1009,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   test_url_loader_factory()->DisconnectMojoPipes();
   on_deletion_scheduled_loop.Run();
   ASSERT_TRUE(streaming_loader);
-  if (GetParam()) {
+  if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
   task_environment()->RunUntilIdle();
@@ -1138,7 +1149,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Timeout) {
 
   task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(on_complete.Take().error_code, net::ERR_TIMED_OUT);
-  if (GetParam()) {
+  if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
 

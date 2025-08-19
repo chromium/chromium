@@ -43,14 +43,17 @@
 
 namespace content {
 
-class PrefetchContainerTestBase : public RenderViewHostTestHarness {
+class PrefetchContainerTestBase : public RenderViewHostTestHarness,
+                                  public WithPrefetchRearchParam {
  public:
-  PrefetchContainerTestBase()
+  explicit PrefetchContainerTestBase(PrefetchRearchParam param)
       : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        WithPrefetchRearchParam(param) {}
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
+    InitRearchFeatures();
 
     browser_context()
         ->GetDefaultStoragePartition()
@@ -180,7 +183,12 @@ void AddRedirectHop(PrefetchContainer* container, const GURL& url) {
 
 }  // namespace
 
-class PrefetchContainerTest : public PrefetchContainerTestBase {
+class PrefetchContainerTest
+    : public PrefetchContainerTestBase,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
+ public:
+  PrefetchContainerTest() : PrefetchContainerTestBase(GetParam()) {}
+
  private:
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kIgnoreSignedInState};
@@ -188,21 +196,22 @@ class PrefetchContainerTest : public PrefetchContainerTestBase {
 
 class PrefetchContainerXClientDataHeaderTest
     : public PrefetchContainerTestBase,
-      // In incognito or not.
-      public ::testing::WithParamInterface<bool> {
- private:
-  void SetUp() override {
-    PrefetchContainerTestBase::SetUp();
-  }
+      // bool: In incognito or not.
+      public ::testing::WithParamInterface<
+          std::tuple<PrefetchRearchParam, bool>> {
+ public:
+  PrefetchContainerXClientDataHeaderTest()
+      : PrefetchContainerTestBase(std::get<0>(GetParam())) {}
 
+ private:
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kIgnoreSignedInState};
 
  protected:
+  bool IsIncognito() const { return std::get<1>(GetParam()); }
   std::unique_ptr<BrowserContext> CreateBrowserContext() override {
     auto browser_context = std::make_unique<TestBrowserContext>();
-    auto is_incognito = GetParam();
-    browser_context->set_is_off_the_record(is_incognito);
+    browser_context->set_is_off_the_record(IsIncognito());
     return browser_context;
   }
 };
@@ -218,11 +227,10 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
 
   prefetch_container->MakeResourceRequest({});
   auto* request = prefetch_container->GetResourceRequest();
-  bool is_incognito = GetParam();
   // Don't add the header when in incognito mode.
   EXPECT_EQ(
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader),
-      !is_incognito);
+      !IsIncognito());
 }
 
 TEST_P(PrefetchContainerXClientDataHeaderTest,
@@ -258,10 +266,9 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader));
 
   AddRedirectHop(prefetch_container.get(), kTestEligibleUrl);
-  bool is_incognito = GetParam();
   EXPECT_EQ(
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader),
-      !is_incognito);
+      !IsIncognito());
 }
 
 TEST_P(PrefetchContainerXClientDataHeaderTest,
@@ -309,11 +316,13 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
             "test_client_data");
 }
 
-INSTANTIATE_TEST_SUITE_P(PrefetchContainerXClientDataTests,
-                         PrefetchContainerXClientDataHeaderTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    PrefetchContainerXClientDataTests,
+    PrefetchContainerXClientDataHeaderTest,
+    testing::Combine(testing::ValuesIn(PrefetchRearchParam::Params()),
+                     ::testing::Bool()));
 
-TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
+TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
   blink::DocumentToken document_token;
   PrefetchContainer prefetch_container(
       *main_rfhi(), document_token, GURL("https://test.com"),
@@ -346,7 +355,7 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
   EXPECT_FALSE(prefetch_container.GetNonRedirectHead());
 }
 
-TEST_F(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
+TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
   PrefetchContainer prefetch_container(
       *web_contents(), GURL("https://test.com"),
       PrefetchType(PreloadingTriggerType::kEmbedder,
@@ -375,7 +384,7 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
   EXPECT_FALSE(prefetch_container.request().speculation_rules_tags());
 }
 
-TEST_F(PrefetchContainerTest, PrefetchStatus) {
+TEST_P(PrefetchContainerTest, PrefetchStatus) {
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
 
@@ -388,7 +397,7 @@ TEST_F(PrefetchContainerTest, PrefetchStatus) {
             PrefetchStatus::kPrefetchNotStarted);
 }
 
-TEST_F(PrefetchContainerTest, IsDecoy) {
+TEST_P(PrefetchContainerTest, IsDecoy) {
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
 
@@ -398,7 +407,7 @@ TEST_F(PrefetchContainerTest, IsDecoy) {
   EXPECT_TRUE(prefetch_container->IsDecoy());
 }
 
-TEST_F(PrefetchContainerTest, Servable) {
+TEST_P(PrefetchContainerTest, Servable) {
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
 
@@ -416,7 +425,7 @@ TEST_F(PrefetchContainerTest, Servable) {
   EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 }
 
-TEST_F(PrefetchContainerTest, CookieListener) {
+TEST_P(PrefetchContainerTest, CookieListener) {
   const GURL kTestUrl1 = GURL("https://test1.com");
   const GURL kTestUrl2 = GURL("https://test2.com");
   const GURL kTestUrl3 = GURL("https://test3.com");
@@ -488,7 +497,7 @@ TEST_F(PrefetchContainerTest, CookieListener) {
   }
 }
 
-TEST_F(PrefetchContainerTest, CookieCopy) {
+TEST_P(PrefetchContainerTest, CookieCopy) {
   const GURL kTestUrl = GURL("https://test.com");
   base::HistogramTester histogram_tester;
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl);
@@ -542,7 +551,7 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
       base::Milliseconds(70), 1);
 }
 
-TEST_F(PrefetchContainerTest, CookieCopyWithRedirects) {
+TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   const GURL kTestUrl = GURL("https://test.com");
   const GURL kRedirectUrl1 = GURL("https://redirect1.com");
   const GURL kRedirectUrl2 = GURL("https://redirect2.com");
@@ -666,7 +675,7 @@ TEST_F(PrefetchContainerTest, CookieCopyWithRedirects) {
       base::Milliseconds(70), 3);
 }
 
-TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
+TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   auto prefetch_container =
@@ -783,7 +792,7 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
       ukm_metrics.end());
 }
 
-TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm_NothingSet) {
+TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm_NothingSet) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
@@ -842,7 +851,7 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm_NothingSet) {
               ukm_metrics.end());
 }
 
-TEST_F(PrefetchContainerTest, EligibilityCheck) {
+TEST_P(PrefetchContainerTest, EligibilityCheck) {
   const GURL kTestUrl1 = GURL("https://test1.com");
   const GURL kTestUrl2 = GURL("https://test2.com");
 
@@ -878,7 +887,7 @@ TEST_F(PrefetchContainerTest, EligibilityCheck) {
             1);
 }
 
-TEST_F(PrefetchContainerTest, IneligibleRedirect) {
+TEST_P(PrefetchContainerTest, IneligibleRedirect) {
   const GURL kTestUrl1 = GURL("https://test1.com");
   const GURL kTestUrl2 = GURL("https://test2.com");
 
@@ -916,7 +925,7 @@ TEST_F(PrefetchContainerTest, IneligibleRedirect) {
             PrefetchStatus::kPrefetchFailedIneligibleRedirect);
 }
 
-TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms) {
+TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
   struct TestCase {
     PrefetchType prefetch_type;
     bool is_served;
@@ -1180,7 +1189,7 @@ TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms) {
       0);
 }
 
-TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms_Prerender) {
+TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms_Prerender) {
   struct TestCase {
     PrefetchType prefetch_type;
     bool is_served;
@@ -1258,7 +1267,7 @@ TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms_Prerender) {
       0);
 }
 
-TEST_F(PrefetchContainerTest, RecordRedirectChainSize) {
+TEST_P(PrefetchContainerTest, RecordRedirectChainSize) {
   base::HistogramTester histogram_tester;
 
   auto prefetch_container =
@@ -1277,7 +1286,7 @@ TEST_F(PrefetchContainerTest, RecordRedirectChainSize) {
       "PrefetchProxy.Prefetch.RedirectChainSize", 3, 1);
 }
 
-TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequired) {
+TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://test.com/referrer"));
   auto prefetch_container_same_origin = CreateSpeculationRulesPrefetchContainer(
@@ -1296,7 +1305,7 @@ TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequired) {
                   ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 }
 
-TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequired_Embedder) {
+TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired_Embedder) {
   auto prefetch_container_default = CreateEmbedderPrefetchContainer(
       GURL("https://test.com/prefetch"), std::nullopt);
   prefetch_container_default->MakeResourceRequest({});
@@ -1318,7 +1327,7 @@ TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequired_Embedder) {
                   ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 }
 
-TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequiredWithRedirect) {
+TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequiredWithRedirect) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://test.com/referrer"));
 
@@ -1359,7 +1368,7 @@ TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequiredWithRedirect) {
                   ->IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
 }
 
-TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
+TEST_P(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   const GURL kTestUrl1 = GURL("https://test1.com");
   const GURL kTestUrl2 = GURL("https://test2.com");
 
@@ -1452,7 +1461,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   EXPECT_FALSE(weak_second_response_reader);
 }
 
-TEST_F(PrefetchContainerTest, CancelAndClearStreamingLoader) {
+TEST_P(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   const GURL kTestUrl1 = GURL("https://test1.com");
   const GURL kTestUrl2 = GURL("https://test2.com");
 
@@ -1561,7 +1570,11 @@ std::ostream& operator<<(std::ostream& ostream, BodySize body_size) {
 class PrefetchContainerLifetimeTest
     : public PrefetchContainerTestBase,
       public ::testing::WithParamInterface<
-          std::tuple<std::vector<Event>, BodySize>> {};
+          std::tuple<PrefetchRearchParam, std::vector<Event>, BodySize>> {
+ public:
+  PrefetchContainerLifetimeTest()
+      : PrefetchContainerTestBase(std::get<0>(GetParam())) {}
+};
 
 TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
   auto prefetch_container =
@@ -1575,7 +1588,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
   const auto producer_pipe_capacity = network::GetDataPipeDefaultAllocationSize(
       network::DataPipeAllocationSize::kLargerSizeIfPossible);
 
-  const BodySize body_size = std::get<1>(GetParam());
+  const BodySize body_size = std::get<2>(GetParam());
   std::string content;
   switch (body_size) {
     case BodySize::kSmall:
@@ -1666,7 +1679,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
 
   std::set<Event> done;
 
-  for (const Event event : std::get<0>(GetParam())) {
+  for (const Event event : std::get<1>(GetParam())) {
     switch (event) {
       case Event::kPrefetchOnComplete:
         pending_request.client->OnComplete(
@@ -1799,7 +1812,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
   }
 }
 
-TEST_F(PrefetchContainerTest, SpeculationRulesTagsAddedToRequestHeader) {
+TEST_P(PrefetchContainerTest, SpeculationRulesTagsAddedToRequestHeader) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://test.com/referrer"));
 
@@ -1816,7 +1829,7 @@ TEST_F(PrefetchContainerTest, SpeculationRulesTagsAddedToRequestHeader) {
             "\"tag1\", \"tag2\"");
 }
 
-TEST_F(PrefetchContainerTest, CrossSitePrefetchContainerNoSpeculationTag) {
+TEST_P(PrefetchContainerTest, CrossSitePrefetchContainerNoSpeculationTag) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://other.com/referrer"));
 
@@ -1833,7 +1846,7 @@ TEST_F(PrefetchContainerTest, CrossSitePrefetchContainerNoSpeculationTag) {
                    .has_value());
 }
 
-TEST_F(PrefetchContainerTest, SpeculationRulesNoTagAddedToRequestHeader) {
+TEST_P(PrefetchContainerTest, SpeculationRulesNoTagAddedToRequestHeader) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://test.com/referrer"));
   auto prefetch_container =
@@ -1847,6 +1860,10 @@ TEST_F(PrefetchContainerTest, SpeculationRulesNoTagAddedToRequestHeader) {
                 .value(),
             "null");
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PrefetchContainerTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
 
 std::vector<std::vector<Event>> ValidEventPermutations(bool has_second_client) {
   std::vector<Event> events({
@@ -1963,13 +1980,15 @@ std::vector<std::vector<Event>> ValidEventPermutations(bool has_second_client) {
 INSTANTIATE_TEST_SUITE_P(
     SingleClient,
     PrefetchContainerLifetimeTest,
-    testing::Combine(testing::ValuesIn(ValidEventPermutations(false)),
+    testing::Combine(testing::ValuesIn(PrefetchRearchParam::Params()),
+                     testing::ValuesIn(ValidEventPermutations(false)),
                      testing::Values(BodySize::kSmall, BodySize::kLarge)));
 
 INSTANTIATE_TEST_SUITE_P(
     TwoClients,
     PrefetchContainerLifetimeTest,
-    testing::Combine(testing::ValuesIn(ValidEventPermutations(true)),
+    testing::Combine(testing::ValuesIn(PrefetchRearchParam::Params()),
+                     testing::ValuesIn(ValidEventPermutations(true)),
                      testing::Values(BodySize::kSmall)));
 
 }  // namespace content

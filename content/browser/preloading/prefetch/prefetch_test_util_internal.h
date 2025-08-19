@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/public/test/preloading_test_util.h"
@@ -305,6 +306,47 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
       attempt_entry_builder_;
+};
+
+// Helpers for parametrized tests for rearchitecturing/refactoring of the core
+// classes of `preloading/prefetch` like `PrefetchService`, `PrefetchContainer`,
+// etc.
+// Although some features/parameters might be unrelated to some of the target
+// classes/unit tests, we anyway apply the same sets of parameters to all the
+// target unit tests, for uniformity, comprehensiveness and convenience.
+//
+// Usage:
+// - Make *Test classes inherit
+//   - `public WithPrefetchRearchParam` and
+//   - `public ::testing::WithParamInterface<PrefetchRearchParam>`
+//     (or its tuple etc. if other parameters are needed)
+// - Call `InitRearchFeatures()` upon setup.
+// - `INSTANTIATE_TEST_SUITE_P()` with
+//   `testing::ValuesIn(PrefetchRearchParam::Params())`.
+//
+// Do not remove these classes and keep using them, even if there is no param to
+// make it easy to add another param in the future.
+
+struct PrefetchRearchParam final {
+ public:
+  static std::vector<PrefetchRearchParam> Params();
+
+  bool prefetch_scheduler;
+  bool prefetch_scheduler_progress_sync_best_effort;
+};
+
+class WithPrefetchRearchParam {
+ public:
+  explicit WithPrefetchRearchParam(PrefetchRearchParam param);
+  virtual ~WithPrefetchRearchParam();
+
+  void InitRearchFeatures();
+
+  const PrefetchRearchParam& rearch_param() { return param_; }
+
+ private:
+  PrefetchRearchParam param_;
+  base::test::ScopedFeatureList feature_list_prefetch_scheduler_;
 };
 
 }  // namespace content

@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
@@ -736,6 +737,41 @@ void PrefetchingMetricsTestBase::ExpectCorrectUkmLogs(
                                                   expected_attempts);
   // We do not test the `PreloadingPrediction` as it is added in
   // `PreloadingDecider`.
+}
+
+WithPrefetchRearchParam::WithPrefetchRearchParam(PrefetchRearchParam param)
+    : param_(param) {}
+WithPrefetchRearchParam::~WithPrefetchRearchParam() = default;
+
+// static
+std::vector<PrefetchRearchParam> PrefetchRearchParam::Params() {
+  return {PrefetchRearchParam{
+              .prefetch_scheduler = false,
+              .prefetch_scheduler_progress_sync_best_effort = false,
+          },
+          PrefetchRearchParam{
+              .prefetch_scheduler = true,
+              .prefetch_scheduler_progress_sync_best_effort = false,
+          },
+          PrefetchRearchParam{
+              .prefetch_scheduler = true,
+              .prefetch_scheduler_progress_sync_best_effort = true,
+          }};
+}
+
+void WithPrefetchRearchParam::InitRearchFeatures() {
+  if (param_.prefetch_scheduler) {
+    feature_list_prefetch_scheduler_.InitWithFeaturesAndParameters(
+        {{
+            features::kPrefetchScheduler,
+            {
+                {"kPrefetchSchedulerProgressSyncBestEffort",
+                 param_.prefetch_scheduler_progress_sync_best_effort ? "true"
+                                                                     : "false"},
+            },
+        }},
+        {});
+  }
 }
 
 }  // namespace content
