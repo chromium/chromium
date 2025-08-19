@@ -86,7 +86,7 @@ public class BookmarkTestRule implements TestRule {
                     "Bookmark page never loaded",
                     CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL,
                     CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-            Tab tab = chromeActivity.getActivityTab();
+            Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> chromeActivity.getActivityTab());
             assert tab != null;
             mCoordinator = ((BookmarkPage) tab.getNativePage()).getManagerForTesting();
         } else {

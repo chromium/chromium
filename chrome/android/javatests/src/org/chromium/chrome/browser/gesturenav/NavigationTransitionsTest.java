@@ -178,8 +178,7 @@ public class NavigationTransitionsTest {
         }
 
         public void waitForPageLoad() {
-            ChromeTabUtils.waitForTabPageLoaded(
-                    mActivityTestRule.getActivity().getActivityTab(), mExpectedUrl);
+            ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivityTab(), mExpectedUrl);
         }
     }
 
@@ -222,12 +221,11 @@ public class NavigationTransitionsTest {
     }
 
     private WebContents getWebContents() {
-        return mActivityTestRule.getActivity().getActivityTab().getWebContents();
+        return mActivityTestRule.getWebContents();
     }
 
     private String getCurrentUrl() {
-        return ChromeTabUtils.getUrlStringOnUiThread(
-                mActivityTestRule.getActivity().getActivityTab());
+        return ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab());
     }
 
     private void invokeNavigateGesture(@BackGestureEventSwipeEdge int edge) {
@@ -339,7 +337,7 @@ public class NavigationTransitionsTest {
 
     private void performNavigationTransition(
             String expectedUrl, @BackGestureEventSwipeEdge int edge) {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ChromeTabUtils.waitForTabPageLoaded(
                 tab,
                 expectedUrl,
@@ -626,8 +624,7 @@ public class NavigationTransitionsTest {
         // it forwards touches to the main thread.
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
 
-        TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().getActivityTab().getContentView());
+        TouchCommon.singleClickView(mActivityTestRule.getActivityTab().getContentView());
 
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
 
@@ -928,7 +925,7 @@ public class NavigationTransitionsTest {
                     manager.getCallback().handleOnBackPressed();
                 });
 
-        ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(), url1);
+        ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivityTab(), url1);
 
         helper.waitForNext();
     }
@@ -1017,7 +1014,7 @@ public class NavigationTransitionsTest {
 
         final String url = mTestServer.getURL("/chrome/test/data/android/blue.html");
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivityTab());
         mActivityTestRule.loadUrl(url);
 
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
@@ -1053,11 +1050,11 @@ public class NavigationTransitionsTest {
     public void testSwipeBackFromNTPWithoutTransition() throws InterruptedException {
         final String url = mTestServer.getURL("/chrome/test/data/android/blue.html");
 
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         mActivityTestRule.loadUrl(url);
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
@@ -1089,7 +1086,7 @@ public class NavigationTransitionsTest {
                     + "/transition_to_native_pages/true")
     @DisabledTest(message = "crbug.com/398140569")
     public void testSwipeBackToNativeBookmarksPageWithTransition() throws InterruptedException {
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
         mActivityTestRule.loadUrl("chrome-native://bookmarks/folder/0");
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         mActivityTestRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/blue.html"));
