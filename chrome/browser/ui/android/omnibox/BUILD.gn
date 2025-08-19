@@ -319,6 +319,8 @@ android_resources("java_resources") {
     "java/res/drawable/north_east_24dp.xml",
     "java/res/drawable/north_west_24dp.xml",
     "java/res/drawable/search_spark_black_24dp.xml",
+    "java/res/drawable/search_spark_rainbow.xml",
+    "java/res/drawable/search_spark_rainbow_background.xml",
     "java/res/drawable/south_east_24dp.xml",
     "java/res/drawable/south_west_24dp.xml",
     "java/res/drawable/switch_to_tab.xml",

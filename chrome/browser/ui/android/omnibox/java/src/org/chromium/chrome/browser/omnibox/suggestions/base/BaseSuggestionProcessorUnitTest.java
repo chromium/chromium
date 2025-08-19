@@ -456,7 +456,7 @@ public class BaseSuggestionProcessorUnitTest {
 
             Assert.assertEquals("accessibility2", action.accessibilityDescription);
             Assert.assertEquals(
-                    R.drawable.search_spark_black_24dp,
+                    R.drawable.search_spark_rainbow,
                     shadowOf(action.icon.drawable).getCreatedFromResId());
         }
     }

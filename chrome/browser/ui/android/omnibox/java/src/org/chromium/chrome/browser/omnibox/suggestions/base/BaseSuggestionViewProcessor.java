@@ -276,7 +276,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                     List.of(
                             new Action(
                                     OmniboxDrawableState.forSmallIcon(
-                                            mContext, action.icon.iconRes, true),
+                                            mContext, action.icon.iconRes, /* allowTint= */ false),
                                     action.accessibilityHint,
                                     () -> {
                                         mSuggestionHost.onOmniboxActionClicked(action, position);
