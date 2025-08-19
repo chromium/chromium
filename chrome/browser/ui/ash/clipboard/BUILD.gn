@@ -14,8 +14,6 @@ static_library("clipboard") {
     "clipboard_image_model_factory_impl.h",
     "clipboard_image_model_request.cc",
     "clipboard_image_model_request.h",
-    "clipboard_util.cc",
-    "clipboard_util.h",
   ]
 
   public_deps = [

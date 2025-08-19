@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_UTIL_H_
-#define CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_UTIL_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_CLIPBOARD_CLIPBOARD_UTIL_H_
+#define CHROMEOS_ASH_EXPERIENCES_CLIPBOARD_CLIPBOARD_UTIL_H_
 
 #include "base/functional/callback_forward.h"
 
@@ -30,4 +30,4 @@ void ReadFileAndCopyToClipboard(const base::FilePath& local_file,
 
 }  // namespace clipboard_util
 
-#endif  // CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_UTIL_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_CLIPBOARD_CLIPBOARD_UTIL_H_
