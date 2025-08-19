@@ -22,6 +22,7 @@
 #include <sstream>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
@@ -627,18 +628,18 @@ void GetExecutableVersionDetails(const std::wstring& exe_path,
   DWORD dummy = 0;
   DWORD length = ::GetFileVersionInfoSize(exe_path.c_str(), &dummy);
   if (length) {
-    std::unique_ptr<char[]> data(new char[length]);
-    if (::GetFileVersionInfo(exe_path.c_str(), dummy, length, data.get())) {
-      GetValueFromVersionResource(data.get(), L"ProductVersion", version);
+    auto data = base::HeapArray<char>::Uninit(length);
+    if (::GetFileVersionInfo(exe_path.c_str(), dummy, length, data.data())) {
+      GetValueFromVersionResource(data.data(), L"ProductVersion", version);
 
       std::wstring official_build;
-      GetValueFromVersionResource(data.get(), L"Official Build",
+      GetValueFromVersionResource(data.data(), L"Official Build",
                                   &official_build);
       if (official_build != L"1")
         version->append(L"-devel");
-      GetValueFromVersionResource(data.get(), L"ProductShortName",
+      GetValueFromVersionResource(data.data(), L"ProductShortName",
                                   product_name);
-      GetValueFromVersionResource(data.get(), L"SpecialBuild", special_build);
+      GetValueFromVersionResource(data.data(), L"SpecialBuild", special_build);
     }
   }
   *channel_name = GetChromeChannelName(/*with_extended_stable=*/true);

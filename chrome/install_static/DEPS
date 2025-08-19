@@ -4,6 +4,8 @@ include_rules = [
   # This header contains macros and such that abstract away non-standard
   # compiler features. It does not bring a dependency on the base library.
   "+base/compiler_specific.h",
+  # For base::HeapArray.
+  "+base/containers/heap_array.h",
   # For the version_info::Channel enum.
   "+base/version_info/channel.h",
   # For the compile-time PRODUCT_VERSION macro.
