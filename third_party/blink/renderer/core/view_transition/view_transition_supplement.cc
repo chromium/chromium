@@ -109,6 +109,18 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
       exception_state);
 }
 
+// static
+DOMViewTransition* ViewTransitionSupplement::activeViewTransition(
+    Document& document) {
+  auto* supplement = FromIfExists(document);
+  if (!supplement) {
+    return nullptr;
+  }
+  return supplement->document_transition_
+             ? supplement->document_transition_->GetScriptDelegate()
+             : nullptr;
+}
+
 DOMViewTransition* ViewTransitionSupplement::StartTransition(
     Element& element,
     V8ViewTransitionCallback* callback,

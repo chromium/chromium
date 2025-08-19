@@ -256,17 +256,6 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   if (IsTerminalState(state_))
     return;
 
-  // TODO(khushalsagar): Figure out the promise handling when this is on the
-  // old Document for a cross-document navigation.
-
-  // Cleanup logic which is tied to ViewTransition objects created using the
-  // script API. script_delegate_ is cleared when the Document is being torn
-  // down and script specific callbacks don't need to be dispatched in that
-  // case.
-  if (script_delegate_) {
-    script_delegate_->DidSkipTransition(response);
-  }
-
   // If we already started processing the transition (i.e. we're beyond capture
   // tag discovery), then send a release directive. We don't do this, if we're
   // capturing this for a snapshot. The only way that transition is skipped is
@@ -295,6 +284,17 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
 
   if (delegate_) {
     delegate_->OnTransitionFinished(this);
+  }
+
+  // TODO(khushalsagar): Figure out the promise handling when this is on the
+  // old Document for a cross-document navigation.
+
+  // Cleanup logic which is tied to ViewTransition objects created using the
+  // script API. script_delegate_ is cleared when the Document is being torn
+  // down and script specific callbacks don't need to be dispatched in that
+  // case.
+  if (script_delegate_) {
+    script_delegate_->DidSkipTransition(response);
   }
 
   // This should be the last call in this function to avoid erroneously checking
