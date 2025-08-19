@@ -749,7 +749,7 @@ interface WebClientHandler {
   // web client, such as toggle controls.
   OnViewChanged(ViewChangedNotification notification);
 
-  // Subscribe to be notified when meta tags change.  Sends the current state on
+  // Subscribe to be notified when meta tags change. Sends the current state on
   // first call, and then notifies when the state changes. Call with an empty
   // names array to stop receiving notifications.
   SubscribeToPageMetadata(int32 tab_id, array<string> names)

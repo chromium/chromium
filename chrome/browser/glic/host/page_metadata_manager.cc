@@ -4,10 +4,12 @@
 
 #include "chrome/browser/glic/host/page_metadata_manager.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 
@@ -15,8 +17,7 @@ namespace glic {
 
 struct PageMetadataManager::PageMetadataSubscription {
   PageMetadataSubscription(
-      std::unique_ptr<optimization_guide::PageContentMetadataObserver>
-          observer,
+      std::unique_ptr<optimization_guide::PageContentMetadataObserver> observer,
       base::CallbackListSubscription will_detach_subscription,
       base::CallbackListSubscription will_discard_contents_subscription,
       const std::vector<std::string>& names);
@@ -101,11 +102,9 @@ void PageMetadataManager::SubscribeToPageMetadata(
                           base::Unretained(this)));
 
   tab_id_to_page_metadata_subscriptions_.emplace(
-      tab_id,
-      PageMetadataSubscription{std::move(observer),
-                               std::move(will_detach_subscription),
-                               std::move(will_discard_contents_subscription),
-                               names});
+      tab_id, PageMetadataSubscription{
+                  std::move(observer), std::move(will_detach_subscription),
+                  std::move(will_discard_contents_subscription), names});
 
   std::move(callback).Run(true);
 }
@@ -116,10 +115,10 @@ void PageMetadataManager::SetPaused(bool paused) {
     return;
   }
 
-  for (auto& [tab_id, metadata] : tab_id_to_cached_page_metadata_) {
+  for (auto& [tab_id, metadata] :
+       std::exchange(tab_id_to_cached_page_metadata_, {})) {
     web_client_->get()->NotifyPageMetadataChanged(tab_id, std::move(metadata));
   }
-  tab_id_to_cached_page_metadata_.clear();
 }
 
 void PageMetadataManager::OnTabWillDiscardContents(
@@ -135,9 +134,10 @@ void PageMetadataManager::OnTabWillDiscardContents(
 
   auto& subscription = it->second;
   if (!new_contents || new_contents->IsBeingDestroyed()) {
-    // The observer is tied to the old web contents and will be destroyed.
-    // Since there's no new web contents, we can't create a new observer.
-    // The subscription will be removed by OnTabWillDetach.
+    // The observer is tied to the old web contents, which is being destroyed.
+    // Explicitly reset the observer, rather than waiting for the
+    // subscription to be removed when the tab is
+    // detached (OnTabWillDetach).
     subscription.observer.reset();
     return;
   }
@@ -176,7 +176,8 @@ void PageMetadataManager::NotifyPageMetadataChanged(
     // indicates completion and should be sent immediately.
     tab_id_to_cached_page_metadata_[tab_id] = std::move(page_metadata);
   } else {
-    web_client_->get()->NotifyPageMetadataChanged(tab_id, std::move(page_metadata));
+    web_client_->get()->NotifyPageMetadataChanged(tab_id,
+                                                  std::move(page_metadata));
   }
 }
 
