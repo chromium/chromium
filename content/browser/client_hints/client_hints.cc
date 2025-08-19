@@ -522,8 +522,7 @@ const std::string SerializeHeaderString(const T& value) {
 struct ClientHintsExtendedData {
   ClientHintsExtendedData(const url::Origin& origin,
                           FrameTreeNode* frame_tree_node,
-                          ClientHintsControllerDelegate* delegate,
-                          const std::optional<GURL>& maybe_request_url)
+                          ClientHintsControllerDelegate* delegate)
       : resource_origin(origin) {
     // If the current frame is the outermost main frame, the URL wasn't
     // committed yet, so in order to get the main frame URL, we should use the
@@ -679,7 +678,6 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     ClientUaHeaderCallType call_type,
     net::HttpRequestHeaders* headers,
     const network::ParsedPermissionsPolicy& container_policy,
-    const std::optional<GURL>& request_url,
     const ClientHintsExtendedData& data) {
   std::optional<blink::UserAgentMetadata> ua_metadata;
   bool disable_due_to_custom_ua = false;
@@ -825,10 +823,10 @@ void UpdateNavigationRequestClientUaHeaders(
     return;
   }
 
-  ClientHintsExtendedData data(origin, frame_tree_node, delegate, request_url);
+  ClientHintsExtendedData data(origin, frame_tree_node, delegate);
   UpdateNavigationRequestClientUaHeadersImpl(
       delegate, override_ua, frame_tree_node,
-      ClientUaHeaderCallType::kAfterCreated, headers, {}, request_url, data);
+      ClientUaHeaderCallType::kAfterCreated, headers, {}, data);
 }
 
 namespace {
@@ -840,9 +838,8 @@ void AddRequestClientHintsHeaders(
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
     FrameTreeNode* frame_tree_node,
-    const network::ParsedPermissionsPolicy& container_policy,
-    const std::optional<GURL>& request_url) {
-  ClientHintsExtendedData data(origin, frame_tree_node, delegate, request_url);
+    const network::ParsedPermissionsPolicy& container_policy) {
+  ClientHintsExtendedData data(origin, frame_tree_node, delegate);
   UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
       data, container_policy);
 
@@ -887,8 +884,7 @@ void AddRequestClientHintsHeaders(
 
   UpdateNavigationRequestClientUaHeadersImpl(
       delegate, is_ua_override_on, frame_tree_node,
-      ClientUaHeaderCallType::kDuringCreation, headers, container_policy,
-      request_url, data);
+      ClientUaHeaderCallType::kDuringCreation, headers, container_policy, data);
 
   if (ShouldAddClientHint(data, WebClientHintsType::kPrefersColorScheme)) {
     AddPrefersColorSchemeHeader(headers, frame_tree_node);
@@ -937,7 +933,7 @@ void AddPrefetchNavigationRequestClientHintsHeaders(
   }
 
   AddRequestClientHintsHeaders(origin, headers, context, delegate,
-                               is_ua_override_on, nullptr, {}, std::nullopt);
+                               is_ua_override_on, nullptr, {});
 }
 
 void AddNavigationRequestClientHintsHeaders(
@@ -958,7 +954,7 @@ void AddNavigationRequestClientHintsHeaders(
 
   AddRequestClientHintsHeaders(origin, headers, context, delegate,
                                is_ua_override_on, frame_tree_node,
-                               container_policy, request_url);
+                               container_policy);
 }
 
 std::optional<std::vector<WebClientHintsType>>
@@ -1037,8 +1033,7 @@ std::vector<WebClientHintsType> LookupAcceptCHForCommit(
     return result;
   }
 
-  const ClientHintsExtendedData data(origin, frame_tree_node, delegate,
-                                     request_url);
+  const ClientHintsExtendedData data(origin, frame_tree_node, delegate);
   return data.hints.GetEnabledHints();
 }
 
@@ -1047,10 +1042,10 @@ bool AreCriticalHintsMissing(
     FrameTreeNode* frame_tree_node,
     ClientHintsControllerDelegate* delegate,
     const std::vector<WebClientHintsType>& critical_hints) {
-  ClientHintsExtendedData data(origin, frame_tree_node, delegate, std::nullopt);
+  ClientHintsExtendedData data(origin, frame_tree_node, delegate);
 
   // Note: these only check for per-hint origin/permissions policy settings, not
-  // origin-level or "browser-level" policies like disabiling JS or other
+  // origin-level or "browser-level" policies like disabling JS or other
   // features.
   for (auto hint : critical_hints) {
     if (IsClientHintAllowed(data, hint) && !IsClientHintEnabled(data, hint)) {
@@ -1065,14 +1060,14 @@ network::ResourceRequest::TrustedParams::EnabledClientHints
 GetEnabledClientHints(const url::Origin& origin,
                       FrameTreeNode* frame_tree_node,
                       ClientHintsControllerDelegate* delegate) {
-  ClientHintsExtendedData data(origin, frame_tree_node, delegate, std::nullopt);
+  ClientHintsExtendedData data(origin, frame_tree_node, delegate);
 
   network::ResourceRequest::TrustedParams::EnabledClientHints
       enabled_client_hints;
   enabled_client_hints.is_outermost_main_frame = data.is_outermost_main_frame;
   const auto& client_hints_map = network::GetClientHintToNameMap();
   // Note: these only check for per-hint origin/permissions policy settings, not
-  // origin-level or "browser-level" policies like disabiling JS or other
+  // origin-level or "browser-level" policies like disabling JS or other
   // features.
   for (const auto& [hint, _] : client_hints_map) {
     if (ShouldAddClientHint(data, hint)) {
