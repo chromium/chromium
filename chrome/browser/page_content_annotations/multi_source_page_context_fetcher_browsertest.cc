@@ -90,8 +90,9 @@ INSTANTIATE_TEST_SUITE_P(,
                          MultiSourcePageContextFetcherBrowserTest,
                          testing::Bool());
 
+// TODO(crbug.com/439215082): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_P(MultiSourcePageContextFetcherBrowserTest,
-                       TakesScreenshot) {
+                       DISABLED_TakesScreenshot) {
   GURL url = embedded_https_test_server().GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
