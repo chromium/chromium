@@ -621,15 +621,32 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   }
 
   void MakeSingleRedirectAndWait(
-      const net::RedirectInfo& redirect_info,
-      network::mojom::URLResponseHeadPtr redirect_head) {
+      const GURL& url,
+      net::HttpStatusCode http_status = net::HTTP_PERMANENT_REDIRECT,
+      net::ReferrerPolicy referrer_policy =
+          net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN) {
     network::TestURLLoaderFactory::PendingRequest* request =
         test_url_loader_factory_.GetPendingRequest(0);
     ASSERT_TRUE(request);
     ASSERT_TRUE(request->client);
 
-    request->client->OnReceiveRedirect(redirect_info, redirect_head.Clone());
+    net::RedirectInfo redirect_info;
+    redirect_info.new_method = "GET";
+    redirect_info.new_referrer_policy = referrer_policy;
+    redirect_info.new_url = url;
+    request->client->OnReceiveRedirect(
+        redirect_info,
+        CreateURLResponseHeadForPrefetch(http_status, kHTMLMimeType,
+                                         /*use_prefetch_proxy=*/true, {}, url));
     task_environment()->RunUntilIdle();
+  }
+
+  void Disconnect() {
+    network::TestURLLoaderFactory::PendingRequest* request =
+        test_url_loader_factory_.GetPendingRequest(0);
+    ASSERT_TRUE(request);
+    ASSERT_TRUE(request->client);
+    request->client.reset();
   }
 
   void VerifyFollowRedirectParams(size_t expected_follow_redirect_params_size) {
@@ -3188,19 +3205,9 @@ TEST_P(PrefetchServiceAlwaysMakeDecoyRequestTest,
                            {.use_prefetch_proxy = true});
   VerifyFollowRedirectParams(0);
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://redirect.com");
-  MakeSingleRedirectAndWait(
-      redirect_info,
-      CreateURLResponseHeadForPrefetch(
-          net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-          /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com")));
-
   // The redirect is ineligible, but will be followed since the prefetch is now
   // a decoy.
+  MakeSingleRedirectAndWait(GURL("https://redirect.com"));
   VerifyFollowRedirectParams(1);
 
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
@@ -3462,16 +3469,7 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(PrefetchEligibleRedirect)) {
                            {.use_prefetch_proxy = true});
   VerifyFollowRedirectParams(0);
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://redirect.com");
-  MakeSingleRedirectAndWait(
-      redirect_info,
-      CreateURLResponseHeadForPrefetch(
-          net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-          /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com")));
+  MakeSingleRedirectAndWait(GURL("https://redirect.com"));
   VerifyFollowRedirectParams(1);
 
   histogram_tester.ExpectUniqueSample(
@@ -3519,20 +3517,10 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(IneligibleRedirectCookies)) {
   base::test::TestFuture<PrefetchServingHandle> future;
   GetPrefetchToServe(future, GURL("https://example.com"), MainDocumentToken());
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://redirect.com");
-  MakeSingleRedirectAndWait(
-      redirect_info,
-      CreateURLResponseHeadForPrefetch(
-          net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-          /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com")));
-
   // Since the redirect URL has cookies, it is ineligible for prefetching and
   // causes the prefetch to fail. Also since checking if the URL has cookies
   // requires mojo, the eligibility check will not complete immediately.
+  MakeSingleRedirectAndWait(GURL("https://redirect.com"));
   VerifyFollowRedirectParams(0);
 
   // Falls back to normal navigation.
@@ -3582,20 +3570,10 @@ TEST_P(PrefetchServiceTest,
                            {.use_prefetch_proxy = true});
   VerifyFollowRedirectParams(0);
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://redirect.com");
-  MakeSingleRedirectAndWait(
-      redirect_info,
-      CreateURLResponseHeadForPrefetch(
-          net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-          /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com")));
-
   // Since the redirect URL has cookies, it is ineligible for prefetching and
   // causes the prefetch to fail. Also the eligibility check should fail
   // immediately.
+  MakeSingleRedirectAndWait(GURL("https://redirect.com"));
   VerifyFollowRedirectParams(0);
 
   histogram_tester.ExpectUniqueSample("PrefetchProxy.Redirect.Result",
@@ -3635,15 +3613,7 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(InvalidRedirect)) {
   VerifyFollowRedirectParams(0);
 
   // The redirect is considered invalid because it has a non-3XX HTTP code.
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://redirect.com");
-  MakeSingleRedirectAndWait(redirect_info, CreateURLResponseHeadForPrefetch(
-                                               net::HTTP_OK, kHTMLMimeType,
-                                               /*use_prefetch_proxy=*/true, {},
-                                               GURL("https://redirect.com")));
+  MakeSingleRedirectAndWait(GURL("https://redirect.com"), net::HTTP_OK);
   VerifyFollowRedirectParams(0);
 
   histogram_tester.ExpectUniqueSample(
@@ -3684,16 +3654,7 @@ TEST_P(PrefetchServiceTest,
   VerifyCommonRequestState(GURL("https://example.com"));
   VerifyFollowRedirectParams(0);
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://example.com/redirect");
-  MakeSingleRedirectAndWait(redirect_info,
-                            CreateURLResponseHeadForPrefetch(
-                                net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-                                /*use_prefetch_proxy=*/true, {},
-                                GURL("https://example.com/redirect")));
+  MakeSingleRedirectAndWait(GURL("https://example.com/redirect"));
   VerifyFollowRedirectParams(1);
 
   histogram_tester.ExpectUniqueSample(
@@ -3746,16 +3707,7 @@ TEST_P(PrefetchServiceTest,
   // apply to this URL, and result in the redirect being marked as ineligible,
   // because we cannot make same-site cross-origin requests that require the
   // proxy.
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://other.example.com/redirect");
-  MakeSingleRedirectAndWait(redirect_info,
-                            CreateURLResponseHeadForPrefetch(
-                                net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-                                /*use_prefetch_proxy=*/true, {},
-                                GURL("https://example.com/redirect")));
+  MakeSingleRedirectAndWait(GURL("https://other.example.com/redirect"));
   VerifyFollowRedirectParams(0);
 
   histogram_tester.ExpectUniqueSample("PrefetchProxy.Redirect.Result",
@@ -3795,17 +3747,7 @@ TEST_P(PrefetchServiceTest,
   VerifyCommonRequestState(GURL("https://example.com"));
   VerifyFollowRedirectParams(0);
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://redirect.com");
-  MakeSingleRedirectAndWait(
-      redirect_info,
-      CreateURLResponseHeadForPrefetch(
-          net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-          /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com")));
-  task_environment()->RunUntilIdle();
+  MakeSingleRedirectAndWait(GURL("https://redirect.com"));
 
   // Since the redirect is cross-site compared to the referrer. A new request
   // will be started in an isolated network context, and the redirect will not
@@ -3858,17 +3800,7 @@ TEST_P(PrefetchServiceTest,
                            {.use_prefetch_proxy = false});
   VerifyFollowRedirectParams(0);
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://redirect.com");
-  MakeSingleRedirectAndWait(
-      redirect_info,
-      CreateURLResponseHeadForPrefetch(
-          net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-          /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com")));
-  task_environment()->RunUntilIdle();
+  MakeSingleRedirectAndWait(GURL("https://redirect.com"));
 
   // Since the redirect is cross-site compared to the referrer. A new request
   // will be started in an isolated network context, and the redirect will not
@@ -3920,17 +3852,7 @@ TEST_P(PrefetchServiceTest,
                            {.use_prefetch_proxy = false});
   VerifyFollowRedirectParams(0);
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://example.com/redirect");
-  MakeSingleRedirectAndWait(redirect_info,
-                            CreateURLResponseHeadForPrefetch(
-                                net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-                                /*use_prefetch_proxy=*/true, {},
-                                GURL("https://example.com/redirect")));
-  task_environment()->RunUntilIdle();
+  MakeSingleRedirectAndWait(GURL("https://example.com/redirect"));
 
   // Since the redirect is same-site compared to the referrer. A new request
   // will be started in the default network context, and the redirect will not
@@ -3989,17 +3911,7 @@ TEST_P(PrefetchServiceTest,
   GetPrefetchToServe(future, GURL("https://example.com"), MainDocumentToken());
   EXPECT_FALSE(future.IsReady());
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://redirect.com");
-  MakeSingleRedirectAndWait(
-      redirect_info,
-      CreateURLResponseHeadForPrefetch(
-          net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-          /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com")));
-  task_environment()->RunUntilIdle();
+  MakeSingleRedirectAndWait(GURL("https://redirect.com"));
 
   // Since the redirect is cross-site compared to the referrer. A new request
   // will be started in an isolated network context, and the redirect will not
@@ -4060,15 +3972,9 @@ TEST_P(PrefetchServiceTest,
 
   // Redirect to a different site. This will check the referrer policy, but
   // since it is not sufficiently strict, the redirect should fail.
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy = net::ReferrerPolicy::NEVER_CLEAR;
-  redirect_info.new_url = GURL("https://redirect.com");
-  MakeSingleRedirectAndWait(
-      redirect_info,
-      CreateURLResponseHeadForPrefetch(
-          net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-          /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com")));
+  MakeSingleRedirectAndWait(GURL("https://redirect.com"),
+                            net::HTTP_PERMANENT_REDIRECT,
+                            net::ReferrerPolicy::NEVER_CLEAR);
   VerifyFollowRedirectParams(0);
 
   histogram_tester.ExpectUniqueSample(
@@ -7043,21 +6949,7 @@ TEST_P(
       },
       base::Unretained(&redirect_eligibility_check_callback_future)));
 
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://redirect.com");
-  network::TestURLLoaderFactory::PendingRequest* request =
-      test_url_loader_factory_.GetPendingRequest(0);
-  ASSERT_TRUE(request);
-  ASSERT_TRUE(request->client);
-  auto redirect_head = CreateURLResponseHeadForPrefetch(
-      net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-      /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com"));
-
-  request->client->OnReceiveRedirect(redirect_info, redirect_head.Clone());
-  task_environment()->RunUntilIdle();
+  MakeSingleRedirectAndWait(GURL("https://redirect.com"));
 
   // Now the redirect handling is paused right before
   // `PrefetchService::OnPrefetchRedirect.`
@@ -7071,7 +6963,7 @@ TEST_P(
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
   prefetch_container->GetStreamingURLLoader()->SetOnDeletionScheduledForTests(
       disconnect_future.GetCallback());
-  request->client.reset();
+  Disconnect();
   ASSERT_TRUE(disconnect_future.Wait());
 
   // Resume the eligibility check.
@@ -7140,21 +7032,7 @@ TEST_P(
       base::Unretained(&redirect_eligibility_check_callback_future)));
 
   // Start redirecting.
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://redirect.com");
-  network::TestURLLoaderFactory::PendingRequest* request =
-      test_url_loader_factory_.GetPendingRequest(0);
-  ASSERT_TRUE(request);
-  ASSERT_TRUE(request->client);
-  auto redirect_head = CreateURLResponseHeadForPrefetch(
-      net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-      /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com"));
-
-  request->client->OnReceiveRedirect(redirect_info, redirect_head.Clone());
-  task_environment()->RunUntilIdle();
+  MakeSingleRedirectAndWait(GURL("https://redirect.com"));
 
   // Now the redirect handling is paused right before
   // `PrefetchService::OnPrefetchRedirect.`
@@ -7168,7 +7046,7 @@ TEST_P(
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
   prefetch_container->GetStreamingURLLoader()->SetOnDeletionScheduledForTests(
       disconnect_future.GetCallback());
-  request->client.reset();
+  Disconnect();
   ASSERT_TRUE(disconnect_future.Wait());
   // `PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo` will directly
   // invoke `PrefetchMatchResolver::OnHeadDetermine`. At this point the
