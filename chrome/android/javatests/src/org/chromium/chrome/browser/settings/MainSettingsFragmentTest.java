@@ -402,6 +402,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/439859530")
     public void testSignInRowLaunchesSignInFlowForSignedOutAccounts() {
         mSyncTestRule.addTestAccount();
         startSettings();
