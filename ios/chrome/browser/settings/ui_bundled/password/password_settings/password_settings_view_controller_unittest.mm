@@ -99,6 +99,10 @@ class PasswordSettingsViewControllerTest : public PlatformTest {
 };
 
 TEST_F(PasswordSettingsViewControllerTest, OrdersSectionsCorrectly) {
+  // TODO(crbug.com/355666571): Clean up after launch.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kCredentialProviderAutomaticPasskeyUpgrade);
+
   // Ensure all sections are visible.
   [controller() setCanBulkMove:YES localPasswordsCount:2];
   [controller() setSavingPasswordsEnabled:YES managedByPolicy:NO];
@@ -113,10 +117,12 @@ TEST_F(PasswordSettingsViewControllerTest, OrdersSectionsCorrectly) {
   EXPECT_EQ(GetSectionIndex(SectionIdentifierSavePasswordsSwitch), 0);
   EXPECT_EQ(GetSectionIndex(SectionIdentifierBulkMovePasswordsToAccount), 1);
   EXPECT_EQ(GetSectionIndex(SectionIdentifierPasswordsInOtherApps), 2);
-  EXPECT_EQ(GetSectionIndex(SectionIdentifierGooglePasswordManagerPin), 3);
-  EXPECT_EQ(GetSectionIndex(SectionIdentifierOnDeviceEncryption), 4);
-  EXPECT_EQ(GetSectionIndex(SectionIdentifierExportPasswordsButton), 5);
-  EXPECT_EQ(GetSectionIndex(SectionIdentifierDeleteCredentialsButton), 6);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierAutomaticPasskeyUpgradesSwitch),
+            3);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierGooglePasswordManagerPin), 4);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierOnDeviceEncryption), 5);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierExportPasswordsButton), 6);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierDeleteCredentialsButton), 7);
 }
 
 TEST_F(PasswordSettingsViewControllerTest, DisplaysOfferToSavePasswords) {
