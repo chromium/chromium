@@ -581,14 +581,20 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
   LoadPage(http_server_.GetURL("a.com", "/title2.html"));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PaintPreviewBrowserTest,
-                         testing::Values(RecordingPersistence::kFileSystem,
-                                         RecordingPersistence::kMemoryBuffer),
-                         PersistenceParamToString);
-INSTANTIATE_TEST_SUITE_P(All,
-                         PaintPreviewFencedFrameBrowserTest,
-                         testing::Values(RecordingPersistence::kFileSystem,
-                                         RecordingPersistence::kMemoryBuffer),
-                         PersistenceParamToString);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PaintPreviewBrowserTest,
+    testing::Values(RecordingPersistence::kFileSystem,
+                    RecordingPersistence::kMemoryBuffer),
+    [](const testing::TestParamInfo<RecordingPersistence>& info) {
+      return std::string(PersistenceToString(info.param));
+    });
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PaintPreviewFencedFrameBrowserTest,
+    testing::Values(RecordingPersistence::kFileSystem,
+                    RecordingPersistence::kMemoryBuffer),
+    [](const testing::TestParamInfo<RecordingPersistence>& info) {
+      return std::string(PersistenceToString(info.param));
+    });
 }  // namespace paint_preview

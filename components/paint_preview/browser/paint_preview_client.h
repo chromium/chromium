@@ -59,6 +59,14 @@ class PaintPreviewClient
     base::FilePath root_dir;
 
     RecordingParams inner;
+
+    static PaintPreviewParams CreateForTesting(
+        RecordingPersistence persistence,
+        base::UnguessableToken document_guid);
+
+   private:
+    PaintPreviewParams(RecordingPersistence persistence,
+                       base::UnguessableToken document_guid);
   };
 
   ~PaintPreviewClient() override;

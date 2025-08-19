@@ -358,10 +358,13 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureDisallowed) {
   loop.Run();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PaintPreviewBaseServiceTest,
-                         testing::Values(RecordingPersistence::kFileSystem,
-                                         RecordingPersistence::kMemoryBuffer),
-                         PersistenceParamToString);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PaintPreviewBaseServiceTest,
+    testing::Values(RecordingPersistence::kFileSystem,
+                    RecordingPersistence::kMemoryBuffer),
+    [](const testing::TestParamInfo<RecordingPersistence>& info) {
+      return std::string(PersistenceToString(info.param));
+    });
 
 }  // namespace paint_preview

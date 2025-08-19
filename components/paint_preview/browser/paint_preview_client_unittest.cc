@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "base/version.h"
@@ -37,6 +38,7 @@
 
 namespace paint_preview {
 
+using base::test::EqualsProto;
 using testing::AnyOf;
 
 using CaptureResultFuture =
@@ -131,6 +133,19 @@ mojom::PaintPreviewCaptureParamsPtr ToMojoParams(
   return params_ptr;
 }
 
+void VerifyFilePath(std::string_view raw_path,
+                    const base::Location& location = FROM_HERE) {
+  base::ScopedAllowBlockingForTesting scope;
+  base::FilePath path(
+#if BUILDFLAG(IS_WIN)
+      base::UTF8ToWide(raw_path)
+#else
+      raw_path
+#endif
+  );
+  EXPECT_TRUE(base::PathExists(path)) << "Expected at " << location.ToString();
+}
+
 }  // namespace
 
 class PaintPreviewClientRenderViewHostTestBase
@@ -160,9 +175,11 @@ class PaintPreviewClientRenderViewHostTestBase
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  void OverrideInterface(MockPaintPreviewRecorder* service) {
+  void OverrideInterface(content::RenderFrameHost* rfh,
+                         MockPaintPreviewRecorder* service) {
+    ASSERT_TRUE(rfh);
     blink::AssociatedInterfaceProvider* remote_interfaces =
-        web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
+        rfh->GetRemoteAssociatedInterfaces();
     remote_interfaces->OverrideBinderForTesting(
         mojom::PaintPreviewRecorder::Name_,
         base::BindRepeating(&MockPaintPreviewRecorder::BindRequest,
@@ -240,7 +257,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   MockPaintPreviewRecorder service;
   service.SetExpectedParams(ToMojoParams(params));
   service.SetResponse(mojom::PaintPreviewStatus::kOk, std::move(response));
-  OverrideInterface(&service);
+  OverrideInterface(rfh, &service);
   PaintPreviewClient::CreateForWebContents(web_contents());
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
   ASSERT_NE(client, nullptr);
@@ -272,17 +289,9 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   EXPECT_THAT(result->proto, EqualsProto(expected_proto));
 
   switch (GetParam()) {
-    case RecordingPersistence::kFileSystem: {
-      base::ScopedAllowBlockingForTesting scope;
-#if BUILDFLAG(IS_WIN)
-      base::FilePath path = base::FilePath(
-          base::UTF8ToWide(result->proto.root_frame().file_path()));
-#else
-      base::FilePath path =
-          base::FilePath(result->proto.root_frame().file_path());
-#endif
-      EXPECT_TRUE(base::PathExists(path));
-    } break;
+    case RecordingPersistence::kFileSystem:
+      VerifyFilePath(result->proto.root_frame().file_path());
+      break;
 
     case RecordingPersistence::kMemoryBuffer: {
       EXPECT_EQ(result->serialized_skps.size(), 1u);
@@ -306,7 +315,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureFailureMock) {
   recorder.SetExpectedParams(ToMojoParams(params));
   recorder.SetResponse(mojom::PaintPreviewStatus::kCaptureFailed,
                        std::move(response));
-  OverrideInterface(&recorder);
+  OverrideInterface(main_rfh(), &recorder);
   PaintPreviewClient::CreateForWebContents(web_contents());
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
   ASSERT_NE(client, nullptr);
@@ -338,7 +347,7 @@ TEST_F(PaintPreviewClientRenderViewHostTestBase, SubframeFileCreationFails) {
   recorder.SetExpectedParams(ToMojoParams(params));
   recorder.SetResponse(mojom::PaintPreviewStatus::kCaptureFailed,
                        std::move(response));
-  OverrideInterface(&recorder);
+  OverrideInterface(main_rfh(), &recorder);
 
   PaintPreviewClient::CreateForWebContents(web_contents());
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
@@ -397,7 +406,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, RenderFrameDeletedDuringCapture) {
   MockPaintPreviewRecorder service;
   service.SetExpectedParams(ToMojoParams(params));
   service.SetResponse(mojom::PaintPreviewStatus::kOk, std::move(response));
-  OverrideInterface(&service);
+  OverrideInterface(rfh, &service);
   PaintPreviewClient::CreateForWebContents(web_contents());
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
   ASSERT_NE(client, nullptr);
@@ -418,10 +427,157 @@ TEST_P(PaintPreviewClientRenderViewHostTest, RenderFrameDeletedDuringCapture) {
   EXPECT_EQ(result, nullptr);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PaintPreviewClientRenderViewHostTest,
-                         testing::Values(RecordingPersistence::kFileSystem,
-                                         RecordingPersistence::kMemoryBuffer),
-                         PersistenceParamToString);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PaintPreviewClientRenderViewHostTest,
+    testing::Values(RecordingPersistence::kFileSystem,
+                    RecordingPersistence::kMemoryBuffer),
+    [](const testing::TestParamInfo<RecordingPersistence>& info) {
+      return std::string(PersistenceToString(info.param));
+    });
+
+enum class ResponseOrdering { kMainFrameThenSubframe, kSubframeThenMainFrame };
+
+std::string_view OrderingToString(ResponseOrdering ordering) {
+  switch (ordering) {
+    case ResponseOrdering::kMainFrameThenSubframe:
+      return "kMainFrameThenSubframe";
+    case ResponseOrdering::kSubframeThenMainFrame:
+      return "kSubframeThenMainFrame";
+  }
+  NOTREACHED();
+}
+
+class PaintPreviewClientRenderViewHostResponseOrderingTest
+    : public PaintPreviewClientRenderViewHostTestBase,
+      public testing::WithParamInterface<
+          std::tuple<RecordingPersistence, ResponseOrdering>> {
+ public:
+  mojo::StructPtr<mojom::PaintPreviewCaptureResponse>
+  NewMockPaintPreviewCaptureResponse() {
+    auto response = mojom::PaintPreviewCaptureResponse::New();
+    if (persistence() == RecordingPersistence::kMemoryBuffer) {
+      response->skp = {mojo_base::BigBuffer()};
+    }
+    return response;
+  }
+
+  RecordingPersistence persistence() const { return std::get<0>(GetParam()); }
+
+  ResponseOrdering ordering() const { return std::get<1>(GetParam()); }
+
+ private:
+};
+
+TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
+       CaptureMainFrameWithSubframe) {
+  content::RenderFrameHost* rfh = main_rfh();
+  content::RenderFrameHost* subframe =
+      AddChildRFH(rfh, "https://www.chromium.org");
+
+  GURL expected_url = rfh->GetLastCommittedURL();
+
+  PaintPreviewClient::PaintPreviewParams main_frame_params(persistence());
+  main_frame_params.root_dir = temp_dir_.GetPath();
+  main_frame_params.inner.is_main_frame = true;
+
+  auto main_frame_response = NewMockPaintPreviewCaptureResponse();
+  main_frame_response->embedding_token = std::nullopt;
+  main_frame_response->scroll_offsets = gfx::Point(5, 10);
+  main_frame_response->frame_offsets = gfx::Point(20, 30);
+
+  auto subframe_response = NewMockPaintPreviewCaptureResponse();
+  subframe_response->embedding_token = std::nullopt;
+  subframe_response->scroll_offsets = gfx::Point(5, 10);
+  subframe_response->frame_offsets = gfx::Point(20, 30);
+
+  MockPaintPreviewRecorder main_frame_recorder;
+  main_frame_recorder.SetExpectedParams(ToMojoParams(main_frame_params));
+  main_frame_recorder.SetResponse(mojom::PaintPreviewStatus::kOk,
+                                  std::move(main_frame_response));
+  base::test::TestFuture<void> main_frame_req;
+  main_frame_recorder.SetReceivedRequestClosure(main_frame_req.GetCallback());
+  OverrideInterface(rfh, &main_frame_recorder);
+
+  PaintPreviewClient::PaintPreviewParams expected_subframe_params =
+      PaintPreviewClient::PaintPreviewParams::CreateForTesting(
+          persistence(), main_frame_params.inner.document_guid);
+  expected_subframe_params.root_dir = temp_dir_.GetPath();
+  expected_subframe_params.inner.is_main_frame = false;
+  MockPaintPreviewRecorder subframe_recorder;
+  subframe_recorder.SetExpectedParams(ToMojoParams(expected_subframe_params));
+  subframe_recorder.SetResponse(mojom::PaintPreviewStatus::kOk,
+                                std::move(subframe_response));
+  base::test::TestFuture<void> subframe_req;
+  subframe_recorder.SetReceivedRequestClosure(subframe_req.GetCallback());
+  OverrideInterface(subframe, &subframe_recorder);
+
+  PaintPreviewClient::CreateForWebContents(web_contents());
+  auto* client = PaintPreviewClient::FromWebContents(web_contents());
+  ASSERT_NE(client, nullptr);
+
+  CaptureResultFuture main_capture_future;
+  client->CapturePaintPreview(main_frame_params, rfh,
+                              main_capture_future.GetCallback());
+  ASSERT_TRUE(main_frame_req.Wait());
+
+  client->CaptureSubframePaintPreview(main_frame_params.inner.document_guid,
+                                      gfx::Rect(), subframe);
+  ASSERT_TRUE(subframe_req.Wait());
+
+  switch (ordering()) {
+    case ResponseOrdering::kMainFrameThenSubframe:
+      main_frame_recorder.SendResponse();
+      subframe_recorder.SendResponse();
+      break;
+    case ResponseOrdering::kSubframeThenMainFrame:
+      subframe_recorder.SendResponse();
+      main_frame_recorder.SendResponse();
+      break;
+  }
+
+  auto [main_guid, main_status, result] = main_capture_future.Take();
+  EXPECT_EQ(main_guid, main_frame_params.inner.document_guid);
+  EXPECT_EQ(main_status, mojom::PaintPreviewStatus::kOk);
+
+  auto token = base::UnguessableToken::Deserialize(
+                   result->proto.root_frame().embedding_token_high(),
+                   result->proto.root_frame().embedding_token_low())
+                   .value();
+  EXPECT_NE(token, base::UnguessableToken::Null());
+
+  switch (persistence()) {
+    case RecordingPersistence::kFileSystem:
+      VerifyFilePath(result->proto.root_frame().file_path());
+      ASSERT_EQ(result->proto.subframes().size(), 1);
+      VerifyFilePath(result->proto.subframes()[0].file_path());
+      break;
+
+    case RecordingPersistence::kMemoryBuffer:
+      EXPECT_EQ(result->serialized_skps.size(), 2u);
+      EXPECT_TRUE(result->serialized_skps.contains(token));
+      break;
+
+    default:
+      NOTREACHED();
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PaintPreviewClientRenderViewHostResponseOrderingTest,
+    testing::Combine(testing::Values(RecordingPersistence::kFileSystem,
+                                     RecordingPersistence::kMemoryBuffer),
+                     testing::Values(ResponseOrdering::kMainFrameThenSubframe,
+                                     ResponseOrdering::kSubframeThenMainFrame)),
+    [](const testing::TestParamInfo<
+        std::tuple<paint_preview::RecordingPersistence, ResponseOrdering>>&
+           param) {
+      return base::StrCat({
+          PersistenceToString(std::get<0>(param.param)),
+          "_",
+          OrderingToString(std::get<1>(param.param)),
+      });
+    });
 
 }  // namespace paint_preview

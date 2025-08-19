@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/test_utils.h"
@@ -23,6 +24,8 @@
 #include "url/gurl.h"
 
 namespace paint_preview {
+
+using base::test::EqualsProto;
 
 class FileManagerTest : public ::testing::Test {
  public:

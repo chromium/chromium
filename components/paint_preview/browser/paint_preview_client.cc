@@ -178,10 +178,26 @@ void OnSerializedRecordingFileCreated(
 
 PaintPreviewClient::PaintPreviewParams::PaintPreviewParams(
     RecordingPersistence persistence)
+    : PaintPreviewClient::PaintPreviewParams(persistence,
+                                             base::UnguessableToken::Create()) {
+}
+
+PaintPreviewClient::PaintPreviewParams::PaintPreviewParams(
+    RecordingPersistence persistence,
+    base::UnguessableToken document_guid)
     : persistence(persistence),
-      inner(RecordingParams(base::UnguessableToken::Create())) {}
+      inner(RecordingParams(std::move(document_guid))) {}
 
 PaintPreviewClient::PaintPreviewParams::~PaintPreviewParams() = default;
+
+// static
+PaintPreviewClient::PaintPreviewParams
+PaintPreviewClient::PaintPreviewParams::CreateForTesting(
+    RecordingPersistence persistence,
+    base::UnguessableToken document_guid) {
+  return PaintPreviewClient::PaintPreviewParams(persistence,
+                                                std::move(document_guid));
+}
 
 PaintPreviewClient::InProgressDocumentCaptureState::
     InProgressDocumentCaptureState() = default;
