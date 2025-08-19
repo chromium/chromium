@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/clipboard/clipboard_history_controller_delegate_impl.h"
+#include "chromeos/ash/experiences/clipboard/clipboard_history_controller_delegate_impl.h"
 
 #include <set>
 
-#include "chrome/browser/ui/ash/clipboard/clipboard_image_model_factory_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"

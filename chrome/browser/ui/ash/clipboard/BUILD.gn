@@ -8,8 +8,6 @@ assert(is_chromeos)
 
 static_library("clipboard") {
   sources = [
-    "clipboard_history_controller_delegate_impl.cc",
-    "clipboard_history_controller_delegate_impl.h",
     "clipboard_image_model_factory_impl.cc",
     "clipboard_image_model_factory_impl.h",
     "clipboard_image_model_request.cc",

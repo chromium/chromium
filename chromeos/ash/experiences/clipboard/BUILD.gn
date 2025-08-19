@@ -8,13 +8,18 @@ assert(is_chromeos)
 
 static_library("clipboard") {
   sources = [
+    "clipboard_history_controller_delegate_impl.cc",
+    "clipboard_history_controller_delegate_impl.h",
     "clipboard_util.cc",
     "clipboard_util.h",
   ]
 
   deps = [
+    "//ash",
     "//base",
+    "//content/public/browser",
     "//services/data_decoder/public/cpp",
+    "//ui/aura",
     "//ui/base",
     "//ui/base/clipboard",
     "//ui/base/clipboard:clipboard_types",

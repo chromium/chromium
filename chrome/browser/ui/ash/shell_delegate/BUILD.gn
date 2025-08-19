@@ -62,6 +62,7 @@ static_library("shell_delegate") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/specialized_features",
+    "//chromeos/ash/experiences/clipboard",
     "//chromeos/ash/services/multidevice_setup",
     "//components/ui_devtools",
     "//components/ui_devtools/views",
