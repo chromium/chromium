@@ -423,6 +423,12 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
                       size_t current_frame,
                       double sample_rate) const;
 
+  // Clamp times to current time, if needed for any new events.  Note,
+  // this method can mutate `events_`, so do call this only in safe
+  // places.
+  void ClampNewEventsToCurrentTime(double current_time)
+      EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
+
   // Handle the case where the last event in the timeline is in the
   // past.  Returns false if any event is not in the past. Otherwise,
   // return true and also fill in `values` with `default_value`.
@@ -592,6 +598,14 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // Vector of all automation events for the AudioParam.
   Vector<std::unique_ptr<ParamEvent>> events_ GUARDED_BY(events_lock_);
+
+  // Vector of raw pointers to the actual ParamEvent that was
+  // inserted.  As new events are added, `new_events_` is updated with
+  // the new event.  When the timline is processed, these events are
+  // clamped to current time by `ClampNewEventsToCurrentTime`. Access
+  // must be locked via `events_lock_`.  Must be maintained together
+  // with `events_`.
+  HashSet<ParamEvent*> new_events_ GUARDED_BY(events_lock_);
 
   mutable base::Lock events_lock_;
 

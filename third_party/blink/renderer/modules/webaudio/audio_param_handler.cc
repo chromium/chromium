@@ -873,10 +873,12 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
     events_.insert(
         0, AudioParamHandler::ParamEvent::CreateSetValueEvent(
                event->InitialValue(), DestinationHandler().CurrentTime()));
+    new_events_.insert(events_[0].get());
   }
 
   if (events_.empty()) {
     events_.insert(0, std::move(event));
+    new_events_.insert(events_[0].get());
     return true;
   }
 
@@ -982,6 +984,7 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
   }
 
   events_.insert(insertion_idx, std::move(event));
+  new_events_.insert(events_[insertion_idx].get());
   return true;
 }
 
@@ -1315,6 +1318,17 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
 
   int number_of_events = events_.size();
 
+  // MUST clamp event before `events_` is possibly mutated because
+  // `new_events_` has raw pointers to objects in `events_`.  Clamping
+  // will clear out all of these pointers before `events_` is
+  // potentially modified.
+  //
+  // TODO(rtoy): Consider making `events_` be scoped_refptr instead of
+  // unique_ptr.
+  if (new_events_.size() > 0) {
+    ClampNewEventsToCurrentTime(start_frame / sample_rate);
+  }
+
   if (number_of_events > 0) {
     double current_time = start_frame / sample_rate;
 
@@ -1469,6 +1483,10 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
   // running with the m_events lock so we can safely modify the m_events
   // array.)
   if (last_skipped_event_index > 0) {
+    // `new_events_` should be empty here so we don't have to
+    // do any updates due to this mutation of `events_`.
+    DCHECK_EQ(new_events_.size(), 0u);
+
     RemoveOldEvents(last_skipped_event_index - 1);
   }
 
@@ -1552,6 +1570,25 @@ bool AudioParamHandler::IsEventCurrent(const ParamEvent* event,
   return true;
 }
 
+void AudioParamHandler::ClampNewEventsToCurrentTime(double current_time) {
+  bool clamped_some_event_time = false;
+
+  for (auto* event : new_events_) {
+    if (event->Time() < current_time) {
+      event->SetTime(current_time);
+      clamped_some_event_time = true;
+    }
+  }
+
+  if (clamped_some_event_time) {
+    // If we clamped some event time to current time, we need to sort
+    // the event list in time order again, but it must be stable!
+    std::stable_sort(events_.begin(), events_.end(), ParamEvent::EventPrecedes);
+  }
+
+  new_events_.clear();
+}
+
 bool AudioParamHandler::HandleAllEventsInThePast(
     double current_time,
     double sample_rate,
@@ -1584,6 +1621,10 @@ bool AudioParamHandler::HandleAllEventsInThePast(
         return false;
       }
     }
+
+    // `events_` is being mutated.  `new_events_` better be empty because
+    // there are raw pointers there.
+    DCHECK_EQ(new_events_.size(), 0U);
 
     // The event has finished, so just copy the default value out.
     // Since all events are now also in the past, we can just remove all
@@ -2261,6 +2302,14 @@ std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessCancelValues(
 
 void AudioParamHandler::RemoveCancelledEvents(
     wtf_size_t first_event_to_remove) {
+  // For all the events that are being removed, also remove that event
+  // from `new_events_`.
+  if (new_events_.size() > 0) {
+    for (wtf_size_t k = first_event_to_remove; k < events_.size(); ++k) {
+      new_events_.erase(events_[k].get());
+    }
+  }
+
   // Remove the cancelled events from the list.
   events_.EraseAt(first_event_to_remove,
                   events_.size() - first_event_to_remove);
