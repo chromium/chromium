@@ -181,6 +181,17 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryDeclarativeNetRequestActionSignal);
 // specified in the --load-extension commandline switch in telemetry reports.
 BASE_DECLARE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions);
 
+// Enables the search hijacking signal in extension telemetry.
+BASE_DECLARE_FEATURE(kExtensionTelemetrySearchHijackingSignal);
+
+// The default interval between heuristic checks.
+extern const base::FeatureParam<int>
+    kExtensionTelemetrySearchHijackingSignalHeuristicCheckIntervalSeconds;
+// The default threshold value (omnibox searches - SERP landings) that
+// results in a heuristic match.
+extern const base::FeatureParam<int>
+    kExtensionTelemetrySearchHijackingSignalHeuristicThreshold;
+
 // Enables reporting of external app redirects
 BASE_DECLARE_FEATURE(kExternalAppRedirectTelemetry);
 

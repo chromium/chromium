@@ -50,6 +50,7 @@ class ExtensionTelemetryReportRequest_ExtensionInfo_FileInfo;
 class ExtensionTelemetryReportResponse;
 class ExtensionTelemetryUploader;
 class SafeBrowsingTokenFetcher;
+class SearchHijackingDetector;
 
 // This class processes extension signals and reports telemetry for a given
 // profile (regular profile only). It is used exclusively on the UI thread.
@@ -135,6 +136,10 @@ class ExtensionTelemetryService : public KeyedService {
 
   base::TimeDelta GetOffstoreFileDataCollectionStartupDelaySeconds();
   base::TimeDelta GetOffstoreFileDataCollectionIntervalSeconds();
+
+  SearchHijackingDetector* search_hijacking_detector_for_testing() {
+    return search_hijacking_detector_.get();
+  }
 
  private:
   using SignalProcessors =
@@ -387,6 +392,9 @@ class ExtensionTelemetryService : public KeyedService {
   std::unique_ptr<ExtensionTelemetryReportRequest> active_report_;
   // The current uploader instance uploading the active report.
   std::unique_ptr<ExtensionTelemetryUploader> active_uploader_;
+
+  // Generates a potential search hijacking signal.
+  std::unique_ptr<SearchHijackingDetector> search_hijacking_detector_;
 
   // Enterprise-specific reporting variables:
   // Keeps track of the state of the service for enterprise telemetry reporting.
