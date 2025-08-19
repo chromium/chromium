@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 

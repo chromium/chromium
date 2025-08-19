@@ -28,6 +28,7 @@
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

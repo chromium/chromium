@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"

@@ -13,6 +13,7 @@
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/metrics_helper.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 
 // static

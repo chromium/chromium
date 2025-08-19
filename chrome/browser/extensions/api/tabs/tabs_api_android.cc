@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "url/gurl.h"

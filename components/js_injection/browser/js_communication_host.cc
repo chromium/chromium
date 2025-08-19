@@ -13,6 +13,7 @@
 #include "components/js_injection/browser/web_message_host_factory.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"

@@ -74,6 +74,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"

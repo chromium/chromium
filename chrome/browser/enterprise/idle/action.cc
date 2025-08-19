@@ -23,6 +23,7 @@
 #include "components/enterprise/idle/metrics.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_ANDROID)

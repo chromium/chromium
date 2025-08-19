@@ -9,6 +9,7 @@
 #include "components/sessions/content/session_tab_helper_delegate.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_user_agent_override.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
 

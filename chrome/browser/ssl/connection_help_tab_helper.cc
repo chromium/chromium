@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/security_interstitials/content/urls.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"

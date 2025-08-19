@@ -12,6 +12,7 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/navigation_simulator.h"

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"

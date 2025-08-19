@@ -17,6 +17,7 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 
 namespace performance_manager::policies {

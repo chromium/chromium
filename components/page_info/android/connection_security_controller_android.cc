@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/x509_certificate.h"

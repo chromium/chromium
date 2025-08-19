@@ -59,6 +59,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/test/browser_task_environment.h"

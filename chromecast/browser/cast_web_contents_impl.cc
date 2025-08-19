@@ -34,6 +34,7 @@
 #include "components/media_control/browser/media_blocker.h"
 #include "components/media_control/mojom/media_playback_options.mojom.h"
 #include "content/public/browser/message_port_provider.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"

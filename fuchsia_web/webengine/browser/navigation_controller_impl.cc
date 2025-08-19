@@ -20,6 +20,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/favicon_status.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"

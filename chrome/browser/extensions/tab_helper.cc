@@ -19,6 +19,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"

@@ -23,6 +23,7 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/safe_browsing_loud_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 

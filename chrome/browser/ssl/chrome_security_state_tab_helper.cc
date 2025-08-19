@@ -32,6 +32,7 @@
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/content/content_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"

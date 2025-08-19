@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "content/public/browser/navigation_controller.h"
 
 namespace commerce {
 

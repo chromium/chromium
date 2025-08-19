@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/update_client/update_query_params.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_registrar.h"

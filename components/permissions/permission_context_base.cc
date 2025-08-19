@@ -48,6 +48,7 @@
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"

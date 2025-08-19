@@ -13,6 +13,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/new_tab_page_instant_resources.h"
 #include "components/search/ntp_features.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/resource/resource_bundle.h"

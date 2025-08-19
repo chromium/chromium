@@ -10,6 +10,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/favicon_status.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"

@@ -6,6 +6,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"

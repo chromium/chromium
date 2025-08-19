@@ -29,6 +29,7 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"  // nogncheck
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"

@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/security_state/core/security_state.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/page_visibility_state.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

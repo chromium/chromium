@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
