@@ -54,9 +54,9 @@ namespace {
 using PermissionStatus = blink::mojom::PermissionStatus;
 
 void StorePermissionStatus(PermissionStatus* out_permission_status,
-                           PermissionStatus permission_status) {
+                           content::PermissionResult permission_result) {
   DCHECK(out_permission_status);
-  *out_permission_status = permission_status;
+  *out_permission_status = permission_result.status;
 }
 
 class TestNotificationPermissionContext : public NotificationPermissionContext {

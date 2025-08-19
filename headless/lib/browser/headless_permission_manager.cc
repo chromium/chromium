@@ -20,13 +20,14 @@ HeadlessPermissionManager::~HeadlessPermissionManager() = default;
 void HeadlessPermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
         callback) {
-  // In headless mode we just pretent the user "closes" any permission prompt,
+  // In headless mode we just pretend the user "closes" any permission prompt,
   // without accepting or denying.
-  std::vector<blink::mojom::PermissionStatus> result(
+  std::vector<content::PermissionResult> result(
       request_description.permissions.size(),
-      blink::mojom::PermissionStatus::ASK);
+      content::PermissionResult(blink::mojom::PermissionStatus::ASK,
+                                content::PermissionStatusSource::UNSPECIFIED));
   std::move(callback).Run(result);
 }
 
@@ -38,13 +39,14 @@ void HeadlessPermissionManager::ResetPermission(
 void HeadlessPermissionManager::RequestPermissionsFromCurrentDocument(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
         callback) {
   // In headless mode we just pretent the user "closes" any permission prompt,
   // without accepting or denying.
-  std::vector<blink::mojom::PermissionStatus> result(
+  std::vector<content::PermissionResult> result(
       request_description.permissions.size(),
-      blink::mojom::PermissionStatus::ASK);
+      content::PermissionResult(blink::mojom::PermissionStatus::ASK,
+                                content::PermissionStatusSource::UNSPECIFIED));
   std::move(callback).Run(result);
 }
 

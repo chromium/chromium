@@ -39,6 +39,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -196,7 +197,9 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
   if (install_target == current_url) {
     OnPermissionDecided(
         std::move(callback_with_metrics),
-        std::vector<PermissionStatus>({PermissionStatus::GRANTED}));
+        std::vector<content::PermissionResult>({content::PermissionResult(
+            PermissionStatus::GRANTED,
+            content::PermissionStatusSource::UNSPECIFIED)}));
     return;
   }
 
@@ -359,12 +362,15 @@ void WebInstallServiceImpl::OnDidRetrieveManifestForCurrentDocumentInstall(
 }
 
 void WebInstallServiceImpl::RequestWebInstallPermission(
-    base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+        callback) {
   content::BrowserContext* const browser_context =
       render_frame_host().GetBrowserContext();
   if (!browser_context) {
     std::move(callback).Run(
-        std::vector<PermissionStatus>({PermissionStatus::DENIED}));
+        std::vector<content::PermissionResult>({content::PermissionResult(
+            PermissionStatus::DENIED,
+            content::PermissionStatusSource::UNSPECIFIED)}));
     return;
   }
 
@@ -372,7 +378,9 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
       browser_context->GetPermissionController();
   if (!permission_controller) {
     std::move(callback).Run(
-        std::vector<PermissionStatus>({PermissionStatus::DENIED}));
+        std::vector<content::PermissionResult>({content::PermissionResult(
+            PermissionStatus::DENIED,
+            content::PermissionStatusSource::UNSPECIFIED)}));
     return;
   }
 
@@ -386,12 +394,16 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
   switch (permission_status.status) {
     case PermissionStatus::GRANTED:
       std::move(callback).Run(
-          std::vector<PermissionStatus>({PermissionStatus::GRANTED}));
+          std::vector<content::PermissionResult>({content::PermissionResult(
+              PermissionStatus::GRANTED,
+              content::PermissionStatusSource::UNSPECIFIED)}));
       return;
     case PermissionStatus::DENIED:
     case blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS:
       std::move(callback).Run(
-          std::vector<PermissionStatus>({PermissionStatus::DENIED}));
+          std::vector<content::PermissionResult>({content::PermissionResult(
+              PermissionStatus::DENIED,
+              content::PermissionStatusSource::UNSPECIFIED)}));
       return;
     case PermissionStatus::ASK:
       break;
@@ -411,9 +423,9 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
 
 void WebInstallServiceImpl::OnPermissionDecided(
     InstallCallbackWithMetrics callback_with_metrics,
-    const std::vector<PermissionStatus>& permission_status) {
-  CHECK_EQ(permission_status.size(), 1u);
-  if (permission_status[0] != PermissionStatus::GRANTED) {
+    const std::vector<content::PermissionResult>& permission_result) {
+  CHECK_EQ(permission_result.size(), 1u);
+  if (permission_result[0].status != PermissionStatus::GRANTED) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallApiResult::kPermissionDenied,
              blink::mojom::WebInstallServiceResult::kAbortError,

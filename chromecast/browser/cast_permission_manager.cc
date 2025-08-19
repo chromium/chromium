@@ -11,6 +11,7 @@
 #include "chromecast/common/activity_url_filter.h"
 #include "components/cast_receiver/browser/public/permissions_manager.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
@@ -139,14 +140,16 @@ CastPermissionManager::~CastPermissionManager() {}
 void CastPermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
         callback) {
-  std::vector<blink::mojom::PermissionStatus> permission_statuses;
+  std::vector<content::PermissionResult> permission_results;
   for (const auto& permission : request_description.permissions) {
-    permission_statuses.push_back(GetPermissionStatusInternal(
-        permission, render_frame_host, request_description.requesting_origin));
+    permission_results.emplace_back(
+        GetPermissionStatusInternal(permission, render_frame_host,
+                                    request_description.requesting_origin),
+        content::PermissionStatusSource::UNSPECIFIED);
   }
-  std::move(callback).Run(permission_statuses);
+  std::move(callback).Run(permission_results);
 }
 
 void CastPermissionManager::ResetPermission(blink::PermissionType permission,
@@ -156,15 +159,17 @@ void CastPermissionManager::ResetPermission(blink::PermissionType permission,
 void CastPermissionManager::RequestPermissionsFromCurrentDocument(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
         callback) {
-  std::vector<blink::mojom::PermissionStatus> permission_statuses;
+  std::vector<content::PermissionResult> permission_results;
   for (const auto& permission : request_description.permissions) {
-    permission_statuses.push_back(GetPermissionStatusInternal(
-        permission, render_frame_host,
-        render_frame_host->GetLastCommittedOrigin().GetURL()));
+    permission_results.emplace_back(
+        GetPermissionStatusInternal(
+            permission, render_frame_host,
+            render_frame_host->GetLastCommittedOrigin().GetURL()),
+        content::PermissionStatusSource::UNSPECIFIED);
   }
-  std::move(callback).Run(permission_statuses);
+  std::move(callback).Run(permission_results);
 }
 
 blink::mojom::PermissionStatus CastPermissionManager::GetPermissionStatus(

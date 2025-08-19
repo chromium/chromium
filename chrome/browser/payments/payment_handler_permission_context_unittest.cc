@@ -17,6 +17,7 @@
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -45,9 +46,9 @@ class TestPermissionContext : public payments::PaymentHandlerPermissionContext {
 
   bool permission_set() { return permission_set_; }
 
-  void TrackPermissionDecision(PermissionStatus permission_status) {
+  void TrackPermissionDecision(content::PermissionResult permission_result) {
     permission_set_ = true;
-    permission_granted_ = permission_status == PermissionStatus::GRANTED;
+    permission_granted_ = permission_result.status == PermissionStatus::GRANTED;
   }
 
  private:

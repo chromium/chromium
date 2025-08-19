@@ -10,6 +10,7 @@
 #include "base/containers/map_util.h"
 #include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
@@ -93,7 +94,7 @@ void PermissionOverrides::Set(
   }
 }
 
-std::optional<PermissionStatus> PermissionOverrides::Get(
+std::optional<PermissionResult> PermissionOverrides::Get(
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin,
     blink::PermissionType permission) const {
@@ -104,7 +105,9 @@ std::optional<PermissionStatus> PermissionOverrides::Get(
     status = base::FindOrNull(overrides_, PermissionKey(permission));
   }
 
-  return base::OptionalFromPtr(status);
+  return status ? std::make_optional(PermissionResult(
+                      *status, PermissionStatusSource::UNSPECIFIED))
+                : std::nullopt;
 }
 
 void PermissionOverrides::GrantPermissions(

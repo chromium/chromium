@@ -16,7 +16,7 @@ namespace content {
 // Surface Control API. Objects of this class live on the IO thread.
 class CONTENT_EXPORT CapturedSurfaceControlPermissionManager {
  public:
-  enum class PermissionResult {
+  enum class CapturedSurfaceControlPermissionStatus {
     kGranted,
     kDenied,
     kError,
@@ -41,7 +41,8 @@ class CONTENT_EXPORT CapturedSurfaceControlPermissionManager {
   // is granted for. This is an extremely rare case, and would be
   // harmless if it does happen.
   virtual void CheckPermission(
-      base::OnceCallback<void(PermissionResult)> callback);
+      base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)>
+          callback);
 
  private:
   // This static method normally just forwards the call to `manager`, but if
@@ -51,16 +52,17 @@ class CONTENT_EXPORT CapturedSurfaceControlPermissionManager {
   // pending. This method runs on the IO thread.
   static void OnCheckResultStatic(
       base::WeakPtr<CapturedSurfaceControlPermissionManager> manager,
-      base::OnceCallback<void(PermissionResult)> callback,
-      PermissionResult result);
+      base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)> callback,
+      CapturedSurfaceControlPermissionStatus status);
 
   // This method is invoked on the IO thread as a callback after the user is
   // prompted to approve the use of Captured Surface Control APIs. This method
   // receives the user's choice, updates this object's state accordingly, and
   // invokes `callback` to inform the original caller of CheckPermission() of
   // the result.
-  void OnCheckResult(base::OnceCallback<void(PermissionResult)> callback,
-                     PermissionResult result);
+  void OnCheckResult(
+      base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)> callback,
+      CapturedSurfaceControlPermissionStatus status);
 
   const GlobalRenderFrameHostId capturer_rfh_id_;
 

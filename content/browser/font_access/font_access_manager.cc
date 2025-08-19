@@ -25,6 +25,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/common/features.h"
@@ -76,8 +77,10 @@ void FontAccessManager::EnumerateLocalFonts(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (skip_privacy_checks_for_testing_) {
-    DidRequestPermission(std::move(callback),
-                         blink::mojom::PermissionStatus::GRANTED);
+    DidRequestPermission(
+        std::move(callback),
+        PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                         PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -111,7 +114,9 @@ void FontAccessManager::EnumerateLocalFonts(
 
   if (status != blink::mojom::PermissionStatus::ASK) {
     // Permission has been requested before.
-    DidRequestPermission(std::move(callback), std::move(status));
+    DidRequestPermission(
+        std::move(callback),
+        PermissionResult(status, PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -140,10 +145,10 @@ void FontAccessManager::EnumerateLocalFonts(
 
 void FontAccessManager::DidRequestPermission(
     EnumerateLocalFontsCallback callback,
-    blink::mojom::PermissionStatus status) {
+    PermissionResult permission_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != blink::mojom::PermissionStatus::GRANTED) {
+  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
     std::move(callback).Run(
         blink::mojom::FontEnumerationStatus::kPermissionDenied,
         base::ReadOnlySharedMemoryRegion());

@@ -46,6 +46,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -224,7 +225,7 @@ std::optional<blink::PermissionType> FidlPermissionTypeToContentPermissionType(
 void HandleMediaPermissionsRequestResult(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,
-    const std::vector<blink::mojom::PermissionStatus>& result) {
+    const std::vector<content::PermissionResult>& result) {
   // TODO(crbug.com/40216442): Generalize to multiple streams.
   blink::mojom::StreamDevicesPtr devices = blink::mojom::StreamDevices::New();
 
@@ -232,7 +233,7 @@ void HandleMediaPermissionsRequestResult(
 
   if (request.audio_type ==
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-    if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
+    if (result[result_pos].status == blink::mojom::PermissionStatus::GRANTED) {
       devices->audio_device = blink::MediaStreamDevice(
           request.audio_type,
           request.requested_audio_device_ids.empty()
@@ -245,7 +246,7 @@ void HandleMediaPermissionsRequestResult(
 
   if (request.video_type ==
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-    if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
+    if (result[result_pos].status == blink::mojom::PermissionStatus::GRANTED) {
       devices->video_device = blink::MediaStreamDevice(
           request.video_type,
           request.requested_video_device_ids.empty()

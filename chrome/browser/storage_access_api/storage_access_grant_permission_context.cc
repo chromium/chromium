@@ -42,6 +42,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/btm_service.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/storage_partition.h"
@@ -294,8 +295,9 @@ void StorageAccessGrantPermissionContext::RequestPermission(
       std::move(request_data),
       base::BindOnce(
           [](content::GlobalRenderFrameHostId frame_host_id,
-             blink::mojom::PermissionStatus permission_status) {
-            if (permission_status == blink::mojom::PermissionStatus::GRANTED) {
+             content::PermissionResult permission_result) {
+            if (permission_result.status ==
+                blink::mojom::PermissionStatus::GRANTED) {
               content::RenderFrameHost* rfh =
                   content::RenderFrameHost::FromID(frame_host_id);
               if (rfh) {
@@ -304,7 +306,7 @@ void StorageAccessGrantPermissionContext::RequestPermission(
               }
             }
 
-            return permission_status;
+            return permission_result;
           },
           frame_host_id)
           .Then(std::move(callback)));
@@ -344,7 +346,9 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     mojo::ReportBadMessage(
         "requestStorageAccess: Must not be called by a fenced frame, iframe "
         "with an opaque origin, credentialless iframe, or sandboxed iframe");
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::FENCED_FRAME));
     return;
   }
 
@@ -360,7 +364,9 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   if (setting == CONTENT_SETTING_BLOCK) {
     RecordOutcomeSample(RequestOutcome::kDeniedByCookieSettings,
                         requesting_site);
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -381,7 +387,9 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     // A(B(A)) contexts, for example, which do not create explicit permission
     // grants.  Since the caller has already requested permission previously, we
     // treat this call as a no-op.
-    std::move(callback).Run(blink::mojom::PermissionStatus::GRANTED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::GRANTED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -391,7 +399,9 @@ void StorageAccessGrantPermissionContext::DecidePermission(
           rfh->GetStorageKey().ToCookiePartitionKey())) {
     RecordOutcomeSample(RequestOutcome::kAllowedByCookieSettings,
                         requesting_site);
-    std::move(callback).Run(blink::mojom::PermissionStatus::GRANTED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::GRANTED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -401,7 +411,9 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   // with the top-level frame.
   if (requesting_site == embedding_site) {
     RecordOutcomeSample(RequestOutcome::kAllowedBySameSite, requesting_site);
-    std::move(callback).Run(blink::mojom::PermissionStatus::GRANTED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::GRANTED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -438,7 +450,9 @@ void StorageAccessGrantPermissionContext::DecidePermission(
         /*relying_party_embedder=*/embedding_site,
         /*identity_provider=*/requesting_site,
         base::BindOnce(std::move(callback),
-                       blink::mojom::PermissionStatus::GRANTED));
+                       content::PermissionResult(
+                           blink::mojom::PermissionStatus::GRANTED,
+                           content::PermissionStatusSource::UNSPECIFIED)));
     return;
   }
 
@@ -448,7 +462,9 @@ void StorageAccessGrantPermissionContext::DecidePermission(
         "requestStorageAccess: Must be handling a user gesture to use.");
     RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites,
                         requesting_site);
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -543,7 +559,9 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
     // alive.
     RecordOutcomeSample(RequestOutcome::kDeniedAborted,
                         net::SchemefulSite(request_data->requesting_origin));
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -678,8 +696,9 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   }
 
   if (!persist) {
-    std::move(callback).Run(
-        request_data.resolver->DeterminePermissionStatus(content_setting));
+    std::move(callback).Run(content::PermissionResult(
+        request_data.resolver->DeterminePermissionStatus(content_setting),
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -724,8 +743,10 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
       ->SetContentSettings(
           ContentSettingsType::STORAGE_ACCESS, grants,
           base::BindOnce(std::move(callback),
-                         request_data.resolver->DeterminePermissionStatus(
-                             content_setting)));
+                         content::PermissionResult(
+                             request_data.resolver->DeterminePermissionStatus(
+                                 content_setting),
+                             content::PermissionStatusSource::UNSPECIFIED)));
 }
 
 void StorageAccessGrantPermissionContext::UpdateContentSetting(

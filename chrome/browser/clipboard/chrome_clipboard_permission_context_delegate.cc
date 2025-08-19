@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
@@ -44,9 +45,13 @@ bool ChromeClipboardPermissionContextDelegate::DecidePermission(
   // make clipboard actions if user has revoked the permission.
   if (IsPermissionGrantedToWebView(rfh, web_view_permission_helper)) {
     if (IsEmbedderPermissionGranted(web_view_permission_helper)) {
-      std::move(callback).Run(blink::mojom::PermissionStatus::GRANTED);
+      std::move(callback).Run(content::PermissionResult(
+          blink::mojom::PermissionStatus::GRANTED,
+          content::PermissionStatusSource::UNSPECIFIED));
     } else {
-      std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+      std::move(callback).Run(content::PermissionResult(
+          blink::mojom::PermissionStatus::DENIED,
+          content::PermissionStatusSource::UNSPECIFIED));
     }
 
   } else {
@@ -141,8 +146,10 @@ void ChromeClipboardPermissionContextDelegate::OnWebViewPermissionResult(
     granted_permissions_[embedder_origin].insert(requesting_origin);
   }
 
-  std::move(callback).Run(allowed ? blink::mojom::PermissionStatus::GRANTED
-                                  : blink::mojom::PermissionStatus::DENIED);
+  std::move(callback).Run(content::PermissionResult(
+      allowed ? blink::mojom::PermissionStatus::GRANTED
+              : blink::mojom::PermissionStatus::DENIED,
+      content::PermissionStatusSource::UNSPECIFIED));
 }
 
 bool ChromeClipboardPermissionContextDelegate::IsPermissionGrantedToWebView(

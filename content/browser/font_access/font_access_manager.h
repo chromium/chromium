@@ -17,6 +17,7 @@
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/permission_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
@@ -83,7 +84,7 @@ class CONTENT_EXPORT FontAccessManager
   };
 
   void DidRequestPermission(EnumerateLocalFontsCallback callback,
-                            blink::mojom::PermissionStatus status);
+                            PermissionResult permission_result);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

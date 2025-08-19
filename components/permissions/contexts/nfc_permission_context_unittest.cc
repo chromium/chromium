@@ -52,7 +52,7 @@ class NfcPermissionContextTests : public content::RenderViewHostTestHarness {
                             bool user_gesture);
 
   void PermissionResponse(const PermissionRequestID& id,
-                          blink::mojom::PermissionStatus permission_status);
+                          content::PermissionResult permission_result);
   void CheckPermissionMessageSent(int request_id, bool allowed);
   void CheckPermissionMessageSentInternal(MockRenderProcessHost* process,
                                           int request_id,
@@ -104,10 +104,10 @@ void NfcPermissionContextTests::RequestNfcPermission(
 
 void NfcPermissionContextTests::PermissionResponse(
     const PermissionRequestID& id,
-    PermissionStatus permission_status) {
+    content::PermissionResult permission_result) {
   responses_[id.global_render_frame_host_id().child_id] =
       std::make_pair(id.request_local_id_for_testing(),
-                     permission_status == PermissionStatus::GRANTED);
+                     permission_result.status == PermissionStatus::GRANTED);
 }
 
 void NfcPermissionContextTests::CheckPermissionMessageSent(int request_id,

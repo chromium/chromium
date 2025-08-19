@@ -24,6 +24,7 @@
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/schemeful_site.h"
@@ -77,7 +78,9 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
                              "primary top-level browsing contexts.");
     RecordOutcomeSample(
         TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -91,7 +94,9 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     }
     RecordOutcomeSample(
         TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -222,7 +227,8 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
                    ? blink::mojom::PermissionStatus::GRANTED
                    : blink::mojom::PermissionStatus::DENIED;
     }
-    std::move(callback).Run(status);
+    std::move(callback).Run(content::PermissionResult(
+        status, content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
@@ -275,7 +281,9 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
                              ->GetCookieManagerForBrowserProcess();
   auto barrier = base::BarrierClosure(
       2, base::BindOnce(std::move(callback),
-                        blink::mojom::PermissionStatus::GRANTED));
+                        content::PermissionResult(
+                            blink::mojom::PermissionStatus::GRANTED,
+                            content::PermissionStatusSource::UNSPECIFIED)));
   cookie_manager->SetContentSettings(ContentSettingsType::STORAGE_ACCESS,
                                      storage_access_grants, barrier);
   cookie_manager->SetContentSettings(

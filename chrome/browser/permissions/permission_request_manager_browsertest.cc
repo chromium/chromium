@@ -41,6 +41,7 @@
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -1394,8 +1395,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
       fenced_frame_host->GetOutermostMainFrame()));
   console_observer.SetPattern(kExpectedConsolePattern);
 
-  base::MockOnceCallback<void(blink::mojom::PermissionStatus)> callback;
-  EXPECT_CALL(callback, Run(blink::mojom::PermissionStatus::DENIED));
+  base::MockOnceCallback<void(content::PermissionResult)> callback;
+  EXPECT_CALL(callback, Run(content::PermissionResult(
+                            blink::mojom::PermissionStatus::DENIED,
+                            content::PermissionStatusSource::FENCED_FRAME)));
 
   content::PermissionController* permission_controller =
       browser()->profile()->GetPermissionController();

@@ -453,7 +453,7 @@ bool MediaStreamDevicesController::PermissionIsBlockedForReason(
 }
 
 void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
-    const std::vector<blink::mojom::PermissionStatus>& permissions_status) {
+    const std::vector<content::PermissionResult>& permission_result) {
   if (content::RenderFrameHost::FromID(request_.render_process_id,
                                        request_.render_frame_id) == nullptr) {
     // The frame requesting media devices was removed while we were waiting for
@@ -463,8 +463,12 @@ void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
 
   std::vector<ContentSetting> responses;
   std::ranges::transform(
-      permissions_status, back_inserter(responses),
-      permissions::PermissionUtil::PermissionStatusToContentSetting);
+      permission_result, back_inserter(responses),
+
+      [](content::PermissionResult result) {
+        return permissions::PermissionUtil::PermissionStatusToContentSetting(
+            result.status);
+      });
 
   bool need_audio = ShouldRequestAudio();
   bool need_video = ShouldRequestVideo();
