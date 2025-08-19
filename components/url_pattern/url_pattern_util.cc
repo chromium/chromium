@@ -22,20 +22,28 @@ std::string StdStringFromCanonOutput(const url::CanonOutput& output,
                      component.len);
 }
 
-bool ContainsForbiddenHostnameCodePoint(std::string_view input) {
+}  // namespace
+
+bool ContainsForbiddenHostnameCodePoint(std::string_view input,
+                                        const bool allow_ipv6_delimiters) {
   // The full list of forbidden code points is defined at:
   //
   //  https://url.spec.whatwg.org/#forbidden-host-code-point
   //
   // We only check the code points the chromium URL parser incorrectly permits.
   // See: crbug.com/1065667#c18
-  return std::ranges::any_of(input, [](char c) {
-    return c == ' ' || c == '#' || c == ':' || c == '<' || c == '>' ||
-           c == '@' || c == '[' || c == ']' || c == '|';
-  });
+  if (!allow_ipv6_delimiters) {
+    return std::ranges::any_of(input, [](char c) {
+      return c == ' ' || c == '#' || c == ':' || c == '<' || c == '>' ||
+             c == '@' || c == '[' || c == ']' || c == '|';
+    });
+  } else {
+    return std::ranges::any_of(input, [](char c) {
+      return c == ' ' || c == '#' || c == '<' || c == '>' || c == '@' ||
+             c == '|';
+    });
+  }
 }
-
-}  // namespace
 
 base::expected<std::string, absl::Status> ProtocolEncodeCallback(
     std::string_view input) {

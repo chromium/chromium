@@ -13,6 +13,10 @@
 
 namespace url_pattern {
 
+bool ContainsForbiddenHostnameCodePoint(
+    std::string_view input,
+    const bool allow_ipv6_delimiters = false);
+
 // The following functions are callbacks that may be passed to the
 // liburlpattern::Parse() method.  Each performs validation and encoding for
 // a different URL component.
