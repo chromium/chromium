@@ -193,18 +193,16 @@ namespace shared_tab_group_metrics = tab_groups::saved_tab_groups::metrics;
 views::Widget* TabGroupEditorBubbleView::Show(
     Browser* browser,
     const tab_groups::TabGroupId& group,
-    TabGroupHeader* header_view,
-    std::optional<gfx::Rect> anchor_rect,
     views::View* anchor_view,
+    std::optional<gfx::Rect> anchor_rect,
     bool stop_context_menu_propagation) {
   feature_engagement::TrackerFactory::GetForBrowserContext(browser->profile())
       ->NotifyEvent("tab_group_editor_shown");
 
   // If `header_view` is not null, use `header_view` as the `anchor_view`.
   TabGroupEditorBubbleView* tab_group_editor_bubble_view =
-      new TabGroupEditorBubbleView(browser, group,
-                                   header_view ? header_view : anchor_view,
-                                   anchor_rect, stop_context_menu_propagation);
+      new TabGroupEditorBubbleView(browser, group, anchor_view, anchor_rect,
+                                   stop_context_menu_propagation);
   views::Widget* const widget =
       BubbleDialogDelegateView::CreateBubble(tab_group_editor_bubble_view);
   tab_group_editor_bubble_view->set_adjust_if_offscreen(true);

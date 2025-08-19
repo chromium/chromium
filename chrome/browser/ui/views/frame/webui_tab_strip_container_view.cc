@@ -788,7 +788,8 @@ void WebUITabStripContainerView::ShowEditDialogForGroupAtPoint(
   ConvertPointToScreen(this, &point);
   rect.set_origin(point);
   editor_bubble_widget_ = TabGroupEditorBubbleView::Show(
-      browser_view_->browser(), group, nullptr, rect, this);
+      browser_view_->browser(), group, /*anchor_view=*/this,
+      /*anchor_rect=*/rect, /*stop_context_menu_propagation=*/false);
   scoped_widget_observation_.Observe(editor_bubble_widget_.get());
 }
 

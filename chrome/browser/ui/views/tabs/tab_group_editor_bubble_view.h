@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -32,7 +31,6 @@ class Separator;
 }  // namespace views
 
 class ColorPickerView;
-class TabGroupHeader;
 class ManageSharingRow;
 
 // A dialog for changing a tab group's visual parameters.
@@ -58,14 +56,11 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
 
   // Shows the editor for `group`. Returns a *non-owning* pointer to the
   // bubble's widget.
-  static views::Widget* Show(
-      Browser* browser,
-      const tab_groups::TabGroupId& group,
-      TabGroupHeader* header_view,
-      std::optional<gfx::Rect> anchor_rect = std::nullopt,
-      // If not provided, will be set to `header_view`.
-      views::View* anchor_view = nullptr,
-      bool stop_context_menu_propagation = false);
+  static views::Widget* Show(Browser* browser,
+                             const tab_groups::TabGroupId& group,
+                             views::View* anchor_view,
+                             std::optional<gfx::Rect> anchor_rect,
+                             bool stop_context_menu_propagation);
 
   // views::BubbleDialogDelegateView:
   views::View* GetInitiallyFocusedView() override;

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 
+#include <optional>
+
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
@@ -630,7 +632,9 @@ void RecentActivityRowView::OpenTabGroupEditDialog() {
   if (auto* tab_group_header = BrowserView::GetBrowserViewForBrowser(browser)
                                    ->tabstrip()
                                    ->group_header(group_id.value())) {
-    TabGroupEditorBubbleView::Show(browser, group_id.value(), tab_group_header);
+    TabGroupEditorBubbleView::Show(browser, group_id.value(), tab_group_header,
+                                   /*anchor_rect=*/std::nullopt,
+                                   /*stop_context_menu_propagation=*/false);
   }
 }
 

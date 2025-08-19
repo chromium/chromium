@@ -248,7 +248,9 @@ void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
 
     if (open_editor_bubble) {
       editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
-          tab_slot_controller_->GetBrowser(), group().value(), this));
+          tab_slot_controller_->GetBrowser(), group().value(),
+          /*anchor_view=*/this, /*anchor_rect=*/std::nullopt,
+          /*stop_context_menu_propagation=*/false));
     } else if (toggle_collapse) {
       tab_slot_controller_->ToggleTabGroupCollapsedState(
           group().value(), ToggleTabGroupCollapsedStateOrigin::kMouse);
@@ -280,7 +282,9 @@ void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::EventType::kGestureLongTap: {
       editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
-          tab_slot_controller_->GetBrowser(), group().value(), this));
+          tab_slot_controller_->GetBrowser(), group().value(),
+          /*anchor_view=*/this, /*anchor_rect=*/std::nullopt,
+          /*stop_context_menu_propagation=*/false));
       break;
     }
     case ui::EventType::kGestureScrollBegin: {
@@ -394,7 +398,7 @@ void TabGroupHeader::ShowContextMenuForViewImpl(
 
   editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
       tab_slot_controller_->GetBrowser(), group().value(), this, std::nullopt,
-      nullptr, kStopContextMenuPropagation));
+      kStopContextMenuPropagation));
 }
 
 bool TabGroupHeader::DoesIntersectRect(const views::View* target,
