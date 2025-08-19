@@ -22,8 +22,9 @@
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/chrome_test_utils.h"
 #include "components/crx_file/crx_verifier.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -703,24 +704,22 @@ void ExtensionBrowserTest::ReloadExtension(
   test_notification_observer_->WaitForExtensionViewsToLoad();
 }
 
-content::WebContents* ExtensionBrowserTest::GetActiveWebContents() const {
-#if !BUILDFLAG(IS_ANDROID)
-  // Some tests may not immediately open a browser. Handle this gracefully.
-  if (!browser()) {
+content::WebContents* ExtensionBrowserTest::GetActiveWebContents() {
+  if (!browser_window_interface()) {
     return nullptr;
   }
-#endif
-  return chrome_test_utils::GetActiveWebContents(this);
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser_window_interface())->GetActiveTab();
+  return active_tab ? active_tab->GetContents() : nullptr;
 }
 
-content::WebContents* ExtensionBrowserTest::GetWebContentsAt(int index) const {
-#if !BUILDFLAG(IS_ANDROID)
-  // Some tests may not immediately open a browser. Handle this gracefully.
-  if (!browser()) {
+content::WebContents* ExtensionBrowserTest::GetWebContentsAt(int index) {
+  if (!browser_window_interface()) {
     return nullptr;
   }
-#endif
-  return chrome_test_utils::GetWebContentsAt(this, index);
+  return TabListInterface::From(browser_window_interface())
+      ->GetTab(index)
+      ->GetContents();
 }
 
 base::FilePath ExtensionBrowserTest::PackExtension(
@@ -937,23 +936,12 @@ content::ServiceWorkerContext* ExtensionBrowserTest::GetServiceWorkerContext(
 }
 
 int ExtensionBrowserTest::GetTabCount() {
-#if BUILDFLAG(IS_ANDROID)
-  TabModel* tab_model =
-      TabModelList::GetTabModelForWebContents(GetActiveWebContents());
-  return tab_model->GetTabCount();
-#else
-  return browser()->tab_strip_model()->count();
-#endif
+  return TabListInterface::From(browser_window_interface())->GetTabCount();
 }
 
 bool ExtensionBrowserTest::IsTabSelected(int index) {
-#if BUILDFLAG(IS_ANDROID)
-  TabModel* tab_model =
-      TabModelList::GetTabModelForWebContents(GetActiveWebContents());
-  return tab_model->GetActiveIndex() == index;
-#else
-  return browser()->tab_strip_model()->IsTabSelected(index);
-#endif
+  return TabListInterface::From(browser_window_interface())->GetActiveIndex() ==
+         index;
 }
 
 void ExtensionBrowserTest::CloseTabForWebContents(
@@ -1051,7 +1039,9 @@ content::WebContents* ExtensionBrowserTest::web_contents() {
 
 BrowserWindowInterface* ExtensionBrowserTest::browser_window_interface() {
 #if BUILDFLAG(IS_ANDROID)
-  return nullptr;
+  std::vector<BrowserWindowInterface*> all_browsers =
+      GetAllBrowserWindowInterfaces();
+  return all_browsers.empty() ? nullptr : all_browsers.front();
 #else
   return browser();
 #endif

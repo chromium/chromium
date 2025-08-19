@@ -362,11 +362,11 @@ class DeclarativeNetRequestBrowserTest
     ruleset_manager_observer()->WaitForExtensionsWithRulesetsCount(count);
   }
 
-  content::RenderFrameHost* GetPrimaryMainFrame() const {
+  content::RenderFrameHost* GetPrimaryMainFrame() {
     return GetActiveWebContents()->GetPrimaryMainFrame();
   }
 
-  content::RenderFrameHost* GetFrameByName(const std::string& name) const {
+  content::RenderFrameHost* GetFrameByName(const std::string& name) {
     return content::FrameMatchingPredicate(
         GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameMatchesName, name));
@@ -389,16 +389,16 @@ class DeclarativeNetRequestBrowserTest
         last_loaded_extension_id());
   }
 
-  content::PageType GetPageType() const {
+  content::PageType GetPageType() {
     return GetPageType(GetActiveWebContents());
   }
 
-  std::string GetPageBody() const {
+  std::string GetPageBody() {
     const char* script = "document.body.innerText.trim()";
     return content::EvalJs(GetActiveWebContents(), script).ExtractString();
   }
 
-  std::string GetPageCookie() const {
+  std::string GetPageCookie() {
     const char* script = "document.cookie";
     return content::EvalJs(GetActiveWebContents(), script).ExtractString();
   }

@@ -275,7 +275,7 @@ class MultiActionAPITest
   }
 
   // Returns the id of the currently-active tab.
-  int GetActiveTabId() const {
+  int GetActiveTabId() {
     content::WebContents* web_contents = GetActiveWebContents();
     return sessions::SessionTabHelper::IdForTab(web_contents).id();
   }

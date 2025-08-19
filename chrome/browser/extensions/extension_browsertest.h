@@ -213,11 +213,11 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   // default tab's web_contents(). However, if the test creates new tabs and
   // switches the active tab, this will return the WebContents of the new active
   // tab.
-  content::WebContents* GetActiveWebContents() const;
+  content::WebContents* GetActiveWebContents();
 
   // Returns the WebContents at the specified index, or nullptr if there is
   // none.
-  content::WebContents* GetWebContentsAt(int index) const;
+  content::WebContents* GetWebContentsAt(int index);
 
   // Pack the extension in `dir_path` into a crx file and return its path.
   // Return an empty FilePath if there were errors.
@@ -360,7 +360,6 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   content::WebContents* web_contents();
 
   // Returns the BrowserWindowInterface for the initially-created browser.
-  // NOTE: Only supported on Win/Mac/Linux/ChromeOS. Returns nullptr on Android.
   // TODO(crbug.com/434990953): Convert callers of NavigateToURL() to use this
   // method.
   BrowserWindowInterface* browser_window_interface();

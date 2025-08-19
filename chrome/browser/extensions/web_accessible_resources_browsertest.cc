@@ -889,7 +889,7 @@ class DynamicOriginBrowserTest : public ExtensionBrowserTest {
  protected:
   const Extension* GetExtension() { return extension_; }
 
-  content::RenderFrameHost* GetPrimaryMainFrame() const {
+  content::RenderFrameHost* GetPrimaryMainFrame() {
     return GetActiveWebContents()->GetPrimaryMainFrame();
   }
 

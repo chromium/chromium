@@ -361,7 +361,11 @@ static_library("test_support") {
       sources += [ "../browser/extensions/extension_browsertest_platform_delegate_non_android.cc" ]
     }
 
-    deps += [ "//chrome/browser/extensions" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_list_interface",
+    ]
   }
 
   if (enable_desktop_android_extensions) {
@@ -11543,6 +11547,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/omnibox",
         "//chrome/browser/ui/exclusive_access:test_support",
+        "//chrome/browser/ui/tabs:tab_list_interface",
         "//extensions/browser/api:extensions_api_client",
       ]
 
