@@ -11,6 +11,8 @@ namespace data_sharing::personal_collaboration_data {
 
 namespace {
 
+const char kSeparator[] = "|";
+
 std::string CreateStorageKeyWithType(
     PersonalCollaborationDataService::SpecificsType specifics_type,
     const std::string& storage_key) {
@@ -24,7 +26,44 @@ std::string CreateStorageKeyWithType(
   }
 
   int type_as_int = static_cast<int>(specifics_type);
-  return base::NumberToString(type_as_int) + "|" + storage_key;
+  return base::NumberToString(type_as_int) + kSeparator + storage_key;
+}
+
+std::string GetStorageKeyWithoutType(
+    PersonalCollaborationDataService::SpecificsType specifics_type,
+    const std::string& storage_key) {
+  size_t separator_pos = storage_key.find(kSeparator);
+  if (separator_pos == std::string::npos) {
+    return storage_key;
+  }
+
+  // Extract the string representations of the type and the storage key.
+  std::string type_str = storage_key.substr(0, separator_pos);
+  std::string new_storage_key = storage_key.substr(separator_pos + 1);
+
+  // Convert the type string back to an integer.
+  int type_as_int;
+  if (!base::StringToInt(type_str, &type_as_int)) {
+    return storage_key;
+  }
+
+  if (type_as_int < 0 ||
+      type_as_int >
+          static_cast<int>(
+              PersonalCollaborationDataService::SpecificsType::kMaxValue)) {
+    return storage_key;
+  }
+
+  // Cast the integer back to the enum type.
+  PersonalCollaborationDataService::SpecificsType storage_specifics_type =
+      static_cast<PersonalCollaborationDataService::SpecificsType>(type_as_int);
+
+  if (storage_specifics_type != specifics_type) {
+    return storage_key;
+  }
+
+  // Return the parsed values as a pair.
+  return new_storage_key;
 }
 
 }  // namespace
@@ -98,10 +137,28 @@ bool PersonalCollaborationDataServiceImpl::IsInitialized() const {
   return bridge_->IsInitialized();
 }
 
+void PersonalCollaborationDataServiceImpl::OnInitialized() {
+  for (auto& observer : observers_) {
+    observer.OnInitialized();
+  }
+}
+
 void PersonalCollaborationDataServiceImpl::OnEntityAddedOrUpdatedFromSync(
+    const std::string& storage_key,
     const sync_pb::SharedTabGroupAccountDataSpecifics& data) {
-  // TODO(haileywang): Implement actual logic to update tab group details.
-  NOTREACHED();
+  SpecificsType type = SpecificsType::kUnknown;
+  if (data.has_shared_tab_details()) {
+    type = SpecificsType::kSharedTabSpecifics;
+  } else if (data.has_shared_tab_group_details()) {
+    type = SpecificsType::kSharedTabGroupSpecifics;
+  } else {
+    NOTREACHED();
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnSpecificsUpdated(
+        type, GetStorageKeyWithoutType(type, storage_key), data);
+  }
 }
 
 }  // namespace data_sharing::personal_collaboration_data

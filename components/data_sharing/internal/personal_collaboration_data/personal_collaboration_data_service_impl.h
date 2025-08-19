@@ -50,7 +50,9 @@ class PersonalCollaborationDataServiceImpl
   bool IsInitialized() const override;
 
   // PersonalCollaborationDataSyncBridge::Observer implementation.
+  void OnInitialized() override;
   void OnEntityAddedOrUpdatedFromSync(
+      const std::string& storage_key,
       const sync_pb::SharedTabGroupAccountDataSpecifics& data) override;
 
  private:

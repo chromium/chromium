@@ -32,9 +32,17 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
     Observer& operator=(const Observer&) = delete;
     ~Observer() override = default;
 
+    // Called when the bridge(database) has been loaded. Will be called
+    // immediately if the bridge has already initialized.
+    virtual void OnInitialized() {}
+
     // Called when specifics have changed.
     virtual void OnEntityAddedOrUpdatedFromSync(
+        const std::string& storage_key,
         const sync_pb::SharedTabGroupAccountDataSpecifics& data) {}
+
+    // Called when specifics have been removed.
+    virtual void OnEntityRemovedFromSync(const std::string& storage_key) {}
   };
 
   void AddObserver(Observer* observer);
