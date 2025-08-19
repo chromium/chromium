@@ -339,6 +339,12 @@ bool Display::EqualExceptForHdrHeadroom(const Display& lhs,
          lhs.label_ == rhs.label_;
 }
 
+Display::DisplayColorSpacesRef::DisplayColorSpacesRef() = default;
+
+Display::DisplayColorSpacesRef::DisplayColorSpacesRef(
+    const gfx::DisplayColorSpaces& color_spaces)
+    : color_spaces_(color_spaces) {}
+
 void Display::SetDisplayColorSpacesRef(
     scoped_refptr<const DisplayColorSpacesRef> color_spaces) {
   color_spaces_ = std::move(color_spaces);

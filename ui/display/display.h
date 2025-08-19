@@ -295,9 +295,8 @@ class DISPLAY_EXPORT Display final {
   class DisplayColorSpacesRef
       : public base::RefCountedThreadSafe<DisplayColorSpacesRef> {
    public:
-    DisplayColorSpacesRef() = default;
-    explicit DisplayColorSpacesRef(const gfx::DisplayColorSpaces& color_spaces)
-        : color_spaces_(color_spaces) {}
+    DisplayColorSpacesRef();
+    explicit DisplayColorSpacesRef(const gfx::DisplayColorSpaces& color_spaces);
     DisplayColorSpacesRef(const DisplayColorSpacesRef& color_spaces) = delete;
     const DisplayColorSpacesRef& operator=(const DisplayColorSpacesRef) =
         delete;
