@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "pdf/page_orientation.h"
+#include "pdf/pdf_rect.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -46,11 +47,15 @@ class PDFiumRange {
   int char_index() const { return char_index_; }
   int char_count() const { return char_count_; }
 
-  // Gets bounding rectangles of range in screen coordinates.
+  // Gets bounding rectangles of this range in screen coordinates, based on the
+  // input params.
   const std::vector<gfx::Rect>& GetScreenRects(
       const gfx::Point& point,
       double zoom,
       PageOrientation orientation) const;
+
+  // Gets bounding rectangles of this range in PDF coordinates.
+  std::vector<PdfRect> GetRects() const;
 
   // Gets the string of characters in this range.
   std::u16string GetText() const;

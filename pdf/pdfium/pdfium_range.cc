@@ -28,18 +28,18 @@ void AdjustForBackwardsRange(int& index, int& count) {
   }
 }
 
-// Struct with only the text run info needed for PDFiumRange::GetScreenRects().
-struct ScreenRectTextRunInfo {
-  gfx::Rect screen_rect;
+// Struct with only the text run info needed for PDFiumRange::GetRects().
+struct PdfRectTextRunInfo {
+  PdfRect pdf_rect;
   size_t char_count;
 };
 
 // Returns a ratio between [0, 1].
-float GetVerticalOverlap(const gfx::Rect& rect1, const gfx::Rect& rect2) {
+float GetVerticalOverlap(const PdfRect& rect1, const PdfRect& rect2) {
   CHECK(!rect1.IsEmpty());
   CHECK(!rect2.IsEmpty());
 
-  gfx::Rect union_rect = rect1;
+  PdfRect union_rect = rect1;
   union_rect.Union(rect2);
 
   if (union_rect.height() == rect1.height() ||
@@ -47,17 +47,17 @@ float GetVerticalOverlap(const gfx::Rect& rect1, const gfx::Rect& rect2) {
     return 1.0f;
   }
 
-  gfx::Rect intersect_rect = rect1;
+  PdfRect intersect_rect = rect1;
   intersect_rect.Intersect(rect2);
-  return static_cast<float>(intersect_rect.height()) / union_rect.height();
+  return intersect_rect.height() / union_rect.height();
 }
 
 // Returns true if there is sufficient horizontal and vertical overlap.
-bool ShouldMergeHorizontalRects(const ScreenRectTextRunInfo& text_run1,
-                                const ScreenRectTextRunInfo& text_run2) {
+bool ShouldMergeHorizontalRects(const PdfRectTextRunInfo& text_run1,
+                                const PdfRectTextRunInfo& text_run2) {
   static constexpr float kVerticalOverlapThreshold = 0.8f;
-  const gfx::Rect& rect1 = text_run1.screen_rect;
-  const gfx::Rect& rect2 = text_run2.screen_rect;
+  const PdfRect& rect1 = text_run1.pdf_rect;
+  const PdfRect& rect2 = text_run2.pdf_rect;
   if (GetVerticalOverlap(rect1, rect2) < kVerticalOverlapThreshold) {
     return false;
   }
@@ -67,20 +67,20 @@ bool ShouldMergeHorizontalRects(const ScreenRectTextRunInfo& text_run1,
       kHorizontalWidthFactor * rect1.width() / text_run1.char_count;
   const float average_width2 =
       kHorizontalWidthFactor * rect2.width() / text_run2.char_count;
-  const float rect1_left = rect1.x() - average_width1;
+  const float rect1_left = rect1.left() - average_width1;
   const float rect1_right = rect1.right() + average_width1;
-  const float rect2_left = rect2.x() - average_width2;
+  const float rect2_left = rect2.left() - average_width2;
   const float rect2_right = rect2.right() + average_width2;
   return rect1_left < rect2_right && rect1_right > rect2_left;
 }
 
 // Since PDFiumPage::GetTextRunInfo() can end a text run for a variety of
 // reasons, post-process the collected text run data and merge rectangles.
-std::vector<gfx::Rect> MergeAdjacentRects(
-    base::span<ScreenRectTextRunInfo> text_runs) {
-  std::vector<gfx::Rect> results;
-  const ScreenRectTextRunInfo* previous_text_run = nullptr;
-  gfx::Rect current_screen_rect;
+std::vector<PdfRect> MergeAdjacentRects(
+    base::span<PdfRectTextRunInfo> text_runs) {
+  std::vector<PdfRect> results;
+  const PdfRectTextRunInfo* previous_text_run = nullptr;
+  PdfRect current_pdf_rect;
   for (const auto& text_run : text_runs) {
     if (previous_text_run) {
       // TODO(crbug.com/40448046): Improve vertical text handling.
@@ -88,19 +88,19 @@ std::vector<gfx::Rect> MergeAdjacentRects(
       // text. Also, PDFiumPage::GetTextPage() has bugs in its heuristics where
       // it mistakenly reports horizontal text as vertical.
       if (ShouldMergeHorizontalRects(*previous_text_run, text_run)) {
-        current_screen_rect.Union(text_run.screen_rect);
+        current_pdf_rect.Union(text_run.pdf_rect);
       } else {
-        results.push_back(current_screen_rect);
-        current_screen_rect = text_run.screen_rect;
+        results.push_back(current_pdf_rect);
+        current_pdf_rect = text_run.pdf_rect;
       }
     } else {
-      current_screen_rect = text_run.screen_rect;
+      current_pdf_rect = text_run.pdf_rect;
     }
     previous_text_run = &text_run;
   }
 
-  if (!current_screen_rect.IsEmpty()) {
-    results.push_back(current_screen_rect);
+  if (!current_pdf_rect.IsEmpty()) {
+    results.push_back(current_pdf_rect);
   }
   return results;
 }
@@ -171,13 +171,23 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
   cached_screen_rects_point_ = point;
   cached_screen_rects_zoom_ = zoom;
 
+  std::vector<PdfRect> rects = GetRects();
+  cached_screen_rects_.reserve(rects.size());
+  for (const auto& rect : rects) {
+    cached_screen_rects_.push_back(
+        page_->PageToScreen(point, zoom, rect, orientation));
+  }
+  return cached_screen_rects_;
+}
+
+std::vector<PdfRect> PDFiumRange::GetRects() const {
   if (char_count_ == 0) {
-    return cached_screen_rects_;
+    return {};
   }
 
   FPDF_TEXTPAGE text_page = page_->GetTextPage();
   if (!text_page) {
-    return cached_screen_rects_;
+    return {};
   }
 
   int char_index = char_index_;
@@ -189,7 +199,7 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
   DCHECK_LT(char_index, FPDFText_CountChars(text_page))
       << " start: " << char_index_ << " count: " << char_count_;
 
-  std::vector<ScreenRectTextRunInfo> text_runs;
+  std::vector<PdfRectTextRunInfo> text_runs;
   const int end_char_index = char_index + char_count;
   bool reached_end = false;
   while (!reached_end) {
@@ -209,7 +219,7 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
 
     // Do not use the bounds from `text_run_info`, as those are in the wrong
     // coordinate system. Calculate it here instead.
-    gfx::Rect text_run_rect;
+    PdfRect text_run_rect;
     for (int i = char_index; i < next_char_index; ++i) {
       // Use the loose rectangle, which gives the selection a bit more padding.
       // In comparison, the rectangle from FPDFText_GetCharBox() surrounds the
@@ -221,17 +231,7 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
       bool got_rect =
           FPDFText_GetLooseCharBox(text_page, i, &FsRectFFromPdfRect(rect));
       CHECK(got_rect);
-
-      // Check for empty `rect` and skip. PDFiumPage::PageToScreen() may round
-      // an empty `rect` to a 1x1 `screen_rect`, which is hard to distinguish
-      // from an actual 1x1 `rect`.
-      if (rect.IsEmpty()) {
-        continue;
-      }
-
-      gfx::Rect screen_rect =
-          page_->PageToScreen(point, zoom, rect, orientation);
-      text_run_rect.Union(screen_rect);
+      text_run_rect.Union(rect);
     }
     if (!text_run_rect.IsEmpty()) {
       text_runs.emplace_back(text_run_rect, next_char_index - char_index);
@@ -240,8 +240,7 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
     char_index = next_char_index;
   }
 
-  cached_screen_rects_ = MergeAdjacentRects(text_runs);
-  return cached_screen_rects_;
+  return MergeAdjacentRects(text_runs);
 }
 
 std::u16string PDFiumRange::GetText() const {
