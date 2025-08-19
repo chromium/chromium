@@ -148,7 +148,7 @@ many of the data classes.
 
 import 'chrome://foo-bar/foo_bar.js';
 
-import {FooBarSearchBoxElement} from 'chrome://foo-bar/foo_bar.js';
+import type {FooBarSearchBoxElement} from 'chrome://foo-bar/foo_bar.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -157,13 +157,13 @@ suite('SearchNonEmpty', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const searchBox = document.createElement('foo-bar-search-box');
+    searchBox = document.createElement('foo-bar-search-box');
     document.body.appendChild(searchBox);
 
     // More setup goes here
   });
 
-  test('search abc', async() {
+  test('search abc', async function () {
     const search = searchBox.shadowRoot!.querySelector('input');
     assertTrue(!!search);
     search.value = 'abc';
@@ -172,7 +172,7 @@ suite('SearchNonEmpty', function() {
     // Do some assertions
   });
 
-  test('search def', async () => {
+  test('search def', async function () => {
     // etc
   });
 });
