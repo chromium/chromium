@@ -21,6 +21,7 @@
 #include "services/webnn/coreml/utils_coreml.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/resource_task.h"
 
@@ -178,7 +179,8 @@ TensorImplCoreml::Create(
           std::move(buffer_content));
   return base::MakeRefCounted<TensorImplCoreml>(
       std::move(receiver), std::move(context), std::move(tensor_info),
-      std::move(buffer_state), base::PassKey<TensorImplCoreml>());
+      std::move(buffer_state), /*representation_access=*/nullptr,
+      base::PassKey<TensorImplCoreml>());
 }
 
 // static
@@ -188,6 +190,13 @@ TensorImplCoreml::Create(
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
     std::unique_ptr<gpu::WebNNTensorRepresentation> representation) {
+  auto representation_access = representation->BeginScopedAccess();
+  if (!representation_access) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to begin access to tensor."));
+  }
+
   if (tensor_info->descriptor.data_type() != OperandDataType::kFloat16) {
     return base::unexpected(
         mojom::Error::New(mojom::Error::Code::kUnknownError,
@@ -245,7 +254,8 @@ TensorImplCoreml::Create(
           std::move(buffer_content));
   return base::MakeRefCounted<TensorImplCoreml>(
       std::move(receiver), std::move(context), std::move(tensor_info),
-      std::move(buffer_state), base::PassKey<TensorImplCoreml>());
+      std::move(buffer_state), std::move(representation_access),
+      base::PassKey<TensorImplCoreml>());
 }
 
 TensorImplCoreml::TensorImplCoreml(
@@ -253,11 +263,15 @@ TensorImplCoreml::TensorImplCoreml(
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
     scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
+    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
+        representation_access,
     base::PassKey<TensorImplCoreml> /*pass_key*/)
     : WebNNTensorImpl(std::move(receiver),
                       std::move(context),
                       std::move(tensor_info)),
-      buffer_state_(std::move(buffer_state)) {}
+      buffer_state_(std::move(buffer_state)) {
+  representation_access_ = std::move(representation_access);
+}
 
 TensorImplCoreml::~TensorImplCoreml() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

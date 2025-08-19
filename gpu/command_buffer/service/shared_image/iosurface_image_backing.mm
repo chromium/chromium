@@ -259,12 +259,11 @@ IOSurfaceRef WebNNIOSurfaceTensorRepresentation::GetIOSurface() const {
 }
 
 bool WebNNIOSurfaceTensorRepresentation::BeginAccess() {
-  NOTIMPLEMENTED();
-  return false;
+  return static_cast<IOSurfaceImageBacking*>(backing())->BeginAccessWebNN();
 }
 
 void WebNNIOSurfaceTensorRepresentation::EndAccess() {
-  NOTIMPLEMENTED();
+  static_cast<IOSurfaceImageBacking*>(backing())->EndAccessWebNN();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1695,6 +1694,20 @@ IOSurfaceImageBacking::ProduceWebNNTensor(SharedImageManager* manager,
   CHECK(usage() & SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR);
   return std::make_unique<WebNNIOSurfaceTensorRepresentation>(manager, this,
                                                               tracker);
+}
+
+bool IOSurfaceImageBacking::BeginAccessWebNN() {
+  AutoLock auto_lock(this);
+  if (!BeginAccess(/*readonly=*/false)) {
+    return false;
+  }
+  WaitForCommandsToBeScheduled();
+  return true;
+}
+
+void IOSurfaceImageBacking::EndAccessWebNN() {
+  AutoLock auto_lock(this);
+  EndAccess(/*readonly=*/false);
 }
 
 bool IOSurfaceImageBacking::BeginAccess(bool readonly) {

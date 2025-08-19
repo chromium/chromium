@@ -8,14 +8,11 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_tensor_impl.h"
-
-namespace gpu {
-class WebNNTensorRepresentation;
-}  // namespace gpu
 
 namespace webnn {
 
@@ -44,6 +41,8 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
       base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info,
       scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
+          representation_access,
       base::PassKey<TensorImplCoreml> pass_key);
 
   TensorImplCoreml(const TensorImplCoreml&) = delete;

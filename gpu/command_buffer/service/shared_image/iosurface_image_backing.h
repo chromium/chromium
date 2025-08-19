@@ -175,6 +175,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   IOSurfaceRef GetIOSurface();
 
+  bool BeginAccessWebNN();
+  void EndAccessWebNN();
+
  private:
   class GLTextureIRepresentation;
   class DawnRepresentation;
