@@ -571,8 +571,8 @@ if (is_android) {
       "android/java/res/drawable/action_call.xml",
       "android/java/res/drawable/action_directions.xml",
       "android/java/res/drawable/action_reviews.xml",
+      "android/java/res/drawable/ic_settings_tune_24dp.xml",
       "android/java/res/drawable/omnibox_dangerous.xml",
-      "android/java/res/drawable/omnibox_https_valid_page_info.xml",
       "android/java/res/values/colors.xml",
       "android/java/res/values/drawables.xml",
     ]

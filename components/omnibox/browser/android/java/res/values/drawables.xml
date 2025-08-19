@@ -7,4 +7,7 @@ found in the LICENSE file.
 <resources>
     <drawable name="action_default">@drawable/fre_product_logo</drawable>
     <drawable name="action_dino_game">@drawable/ic_dino</drawable>
+    <drawable name="omnibox_https_valid_page_info">
+        @drawable/ic_settings_tune_24dp
+    </drawable>
 </resources>
