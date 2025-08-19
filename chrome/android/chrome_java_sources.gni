@@ -911,6 +911,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/policy/PolicyAuditorBridge.java",
   "java/src/org/chromium/chrome/browser/privacy/settings/DoNotTrackSettings.java",
   "java/src/org/chromium/chrome/browser/privacy/settings/IncognitoLockSettings.java",
+  "java/src/org/chromium/chrome/browser/privacy/settings/PasswordEchoSettingHandler.java",
+  "java/src/org/chromium/chrome/browser/privacy/settings/PasswordEchoSettingHandlerFactory.java",
   "java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImpl.java",
   "java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettings.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/CctHandler.java",

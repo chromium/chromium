@@ -1076,6 +1076,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.privacy") {
 
   sources = [
     "src/org/chromium/chrome/browser/privacy/settings/HttpsFirstModeLegacySettingTest.java",
+    "src/org/chromium/chrome/browser/privacy/settings/PasswordEchoSettingHandlerTest.java",
     "src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImplNativeTest.java",
     "src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsFragmentTest.java",
   ]
