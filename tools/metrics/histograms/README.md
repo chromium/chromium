@@ -184,8 +184,8 @@ There are two substitute approaches people have taken here:
     covering a minute, whereas client who used Chrome for 23 hours straight will
     have a single data point covering 23 hours of hours usage.
 
-    Reminder: also, it's possible that an active client with doesn't emit the
-    histogram in a day.
+    Reminder: it's possible that an active client doesn't emit the histogram in
+    a day.
 
 #### Discouraged: Emit when Chrome is conceptually opened
 
