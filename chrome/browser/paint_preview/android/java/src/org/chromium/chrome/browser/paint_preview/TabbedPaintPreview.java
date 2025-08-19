@@ -221,6 +221,8 @@ public class TabbedPaintPreview implements UserData {
             matchScrollAndScale(webContents, scrollPosition, scale);
         }
         View view = assumeNonNull(mTabbedPaintPreviewViewProvider.getView());
+        final boolean tabViewIsFocused = view.isFocused();
+
         view.animate()
                 .alpha(0f)
                 .setDuration(animate ? CROSS_FADE_DURATION_MS : 0)
@@ -237,7 +239,7 @@ public class TabbedPaintPreview implements UserData {
                                 }
                                 // WebContentsAccessibilityImpl gets its focus stuck on the root ID.
                                 // Clear focus here to solve this problem.
-                                if (supportsAccessibility) clearFocus();
+                                if (supportsAccessibility && tabViewIsFocused) clearFocus();
 
                                 mIsAttachedToTab = false;
                                 mFadingOut = false;
@@ -258,8 +260,7 @@ public class TabbedPaintPreview implements UserData {
         // Clear input focus. This is required due to a bug where the root view is treated as
         // focused for input on exit causing talkback to attempt to return focus to the root view.
         // TODO(crbug.com/40760302): this approach could cause loss of focus in a menu, omnibox,
-        // etc.
-        // is there a less heavy-handed option here?
+        // etc. tabViewIsFocused attempts to prevent such cases.
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         Activity activity = window != null ? window.getActivity().get() : null;
         View v = activity != null ? activity.getCurrentFocus() : null;
