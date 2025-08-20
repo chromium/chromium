@@ -1437,6 +1437,10 @@ void TapTabGridEditButton() {
 
 // Tests opening a tab from the group view.
 - (void)testOpenTabFromGroupView {
+  // TODO(crbug.com/429593547): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
   std::string URL1 = "chrome://version";
   std::string URL2 = "chrome://about";
   std::string content1 = "Revision";

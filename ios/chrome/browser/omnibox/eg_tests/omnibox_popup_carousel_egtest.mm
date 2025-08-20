@@ -104,6 +104,10 @@ id<GREYMatcher> CarouselMatcher() {
 
 // Tests tapping the first tile and scroll to tap the last tile.
 - (void)testTappingAndScrollingMostVisitedTiles {
+  // TODO(crbug.com/439976807): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
   [self addNumberOfMostVisitedTiles:kCarouselCapacity];
 
   // Test tapping the first tile.
