@@ -140,6 +140,8 @@ void HomeBackgroundCustomizationService::RestoreCurrentTheme() {
   } else if (uploadedImage) {
     SetCurrentUserUploadedBackground(uploadedImage->image_path,
                                      uploadedImage->framing_coordinates);
+  } else {
+    ClearCurrentBackground();
   }
 }
 
