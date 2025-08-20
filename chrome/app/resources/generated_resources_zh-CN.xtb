@@ -285,7 +285,7 @@
 <translation id="1184037892196730210">无法投放屏幕</translation>
 <translation id="1185924365081634987">您也可以尝试<ph name="GUEST_SIGNIN_LINK_START" />以访客身份浏览<ph name="GUEST_SIGNIN_LINK_END" />，以便修复该网络错误。</translation>
 <translation id="1187214683155615962">性能问题提醒</translation>
-<translation id="1187722533808055681">闲置状态唤醒</translation>
+<translation id="1187722533808055681">空闲唤醒</translation>
 <translation id="1188807932851744811">未上传日志。</translation>
 <translation id="1190086046506744802">非常宽松</translation>
 <translation id="1190155014618058972">创建自定义组合键</translation>
@@ -2247,7 +2247,7 @@
 <translation id="2533649878691950253">已禁止此网站获取您的精确位置信息，因为您通常不会授予这种权限</translation>
 <translation id="253434972992662860">暂停(&amp;P)</translation>
 <translation id="253498598929009420">该网站将能看到您屏幕上的内容</translation>
-<translation id="253557089021624350">正在使用相应扩展程序的活动数</translation>
+<translation id="253557089021624350">保活计数</translation>
 <translation id="2535799430745250929">无移动网络</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> 可查看和修改以下文件和文件夹</translation>
 <translation id="2537927931785713436">正在检查虚拟机映像</translation>
@@ -5625,7 +5625,7 @@
 <translation id="4907129260985716018">选择此扩展程序何时可以读取和更改您的网站数据</translation>
 <translation id="4908811072292128752">只需打开一个新标签页，即可同时浏览两个网站</translation>
 <translation id="4910241725741323970">应用已安装</translation>
-<translation id="4912643508233590958">闲置状态唤醒</translation>
+<translation id="4912643508233590958">空闲唤醒</translation>
 <translation id="4913209098186576320">这可能是个危险文件<ph name="LINE_BREAK" />此项检查的用时比平时长…</translation>
 <translation id="4913695564084524048">找不到应用数据</translation>
 <translation id="4915961947098019832">允许显示图片</translation>
@@ -7558,7 +7558,7 @@
 <translation id="6325191661371220117">停用自动启动</translation>
 <translation id="632524945411480350">往底部调整窗口大小</translation>
 <translation id="6326175484149238433">从 Chrome 中移除</translation>
-<translation id="6326855256003666642">正在使用相应扩展程序的活动数</translation>
+<translation id="6326855256003666642">保活计数</translation>
 <translation id="6327065839080961103">“<ph name="FEATURE_NAME" />”功能的流量使用设置</translation>
 <translation id="6327785803543103246">网络代理自动发现</translation>
 <translation id="6329916384047371874">您将使用 <ph name="DOMAIN" /> 上的 <ph name="PASSWORD_DOMAIN" /> 密码。除非您信任 <ph name="DOMAIN" />，否则请不要使用此密码。</translation>

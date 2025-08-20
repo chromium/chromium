@@ -52,7 +52,7 @@
 <translation id="5307600278924710095">יש להזין חלק ואחריו '<ph name="ATSIGN" />'‏. השדה '<ph name="INVALIDADDRESS" />' אינו מלא.</translation>
 <translation id="5334352251556557839">לא ניתן להפעיל את המדיה.</translation>
 <translation id="537648784377940524">התאריך המוקדם ביותר (<ph name="MIN_DATE_OR_TIME" />) חייב לחול לפני התאריך המאוחר ביותר (<ph name="MAX_DATE_OR_TIME" />).</translation>
-<translation id="5466621249238537318">יש לבחור קובץ אחד או יותר.</translation>
+<translation id="5466621249238537318">צריך לבחור קובץ אחד או יותר.</translation>
 <translation id="5514612371225420585">קובץ במכשיר שלך</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">‏הפעלת Cast</translation>

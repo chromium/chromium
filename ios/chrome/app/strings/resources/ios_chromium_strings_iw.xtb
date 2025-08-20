@@ -132,7 +132,7 @@
 הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה. כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך להזין אותו.</translation>
 <translation id="4118287192800900567">‏טיפ ל-Chromium: כדאי להיכנס לחשבון ב-Chromium</translation>
 <translation id="4195557071150719219">‏הצגת הכרטיסיות האחרונות ב-Chromium</translation>
-<translation id="420541179527342563">‏כדי להשבית את האפשרות 'ללא 'ביטול נעילה עם טביעת אצבע'' ב-Chromium, צריך להשבית אותה ב-iPad.</translation>
+<translation id="420541179527342563">‏כדי להשבית את האפשרות "פתיחה בטביעת אצבע" ב-Chromium, צריך להשבית אותה ב-iPad.</translation>
 <translation id="4272892696084633551">‏עזרה בשיפור התכונות והביצועים של Chromium</translation>
 <translation id="4302397443352897529">‏ההגדרות של Chromium</translation>
 <translation id="4408912345039114853">‏הפעלת 'טיימר לדיווח על מצב מסוכן' ב-Chromium</translation>
@@ -226,7 +226,7 @@
 <translation id="6301717043141881464">‏אפשר לבחור ב-Chromium למילוי אוטומטי כדי לגשת בקלות לסיסמאות השמורות שלך באפליקציות אחרות</translation>
 <translation id="6324041800010509197">‏ביקור בתצוגת הכרטיסיות ב-Chromium</translation>
 <translation id="6325378625795868881">‏שימוש ב-Chromium בכל פעם שלוחצים על קישורים בהודעות ובאפליקציות אחרות.</translation>
-<translation id="6387994184698195448">‏מתעדכנים בטיפים שימושיים ל-Chromium ועוד.</translation>
+<translation id="6387994184698195448">‏ניתן לך טיפים שימושיים ל-Chromium ועוד.</translation>
 <translation id="6424492062988593837">‏‫Chromium ממשיך להשתפר! קיימת גרסה חדשה.</translation>
 <translation id="6433172051771630690">‏טיפים שיעזרו לך ליהנות מהמיטב של Chromium.</translation>
 <translation id="65045991564554105">‏הצגת הסימניות ב-Chromium</translation>
@@ -299,7 +299,7 @@
 <translation id="8254729934443216898">‏יש לך הזדמנות לגלות תכונות חדשות שיעזרו לך להפיק את המירב מ-Chromium.</translation>
 <translation id="8293572045658095405">‏במצב פרטי ב-Chromium</translation>
 <translation id="830951810931292870">‏פתיחת כתובות ה-URL שהוזנו ב-Chromium במצב פרטי.</translation>
-<translation id="8390323835464055390">‏רוצה להיכנס לחשבון באמצעות הסיסמאות ומפתחות הגישה השמורים שלך מכל אפליקציה באמצעות Chromium למילוי אוטומטי?</translation>
+<translation id="8390323835464055390">‏רוצה להתחבר בכל אפליקציה באמצעות הסיסמאות ומפתחות הגישה השמורים שלך, בעזרת המילוי האוטומטי של Chromium?</translation>
 <translation id="8409374867500149834">‏האבטחה החזקה ביותר של Chromium מגינה עליך מפני אתרים מזיקים</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך דקה ({THRESHOLD}). נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}one{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}two{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}other{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}}</translation>
 <translation id="858114650497379505">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות באפליקציות אחרות ב-iPhone.</translation>
@@ -307,7 +307,7 @@
 <translation id="8602103377623855616">‏דף Chromium</translation>
 <translation id="865600487977764604">‏מגן עליך ב‑Chromium ועשוי לשפר את רמת האבטחה באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="8663480472502753423">‏Chromium יתעדכן באופן קבוע</translation>
-<translation id="8685813584220679697">‏יש להיכנס לאתר הזה ול-Chromium.</translation>
+<translation id="8685813584220679697">‏רוצה להתחבר לאתר הזה ול-Chromium?</translation>
 <translation id="8698780336333802489">‏ייבוא אל Chromium</translation>
 <translation id="8730503818204408000">‏פתיחה של הגדרות Chromium כדי להגדיר את Chromium כדפדפן ברירת המחדל.</translation>
 <translation id="8754966941001340678">‏ההמלצה של Chromium היא הגנה משופרת</translation>

@@ -134,7 +134,7 @@
 <translation id="2570922361219980984">‏גם הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">מורחב - יש ללחוץ כדי לכווץ.</translation>
 <translation id="2586657967955657006">לוח</translation>
-<translation id="2588271083332682494">קבוצות של כרטיסיות עוזרות לשמור על סדר</translation>
+<translation id="2588271083332682494">קבוצות של כרטיסיות יעזרו לך לשמור על הסדר</translation>
 <translation id="2597457036804169544">אין להחיל עיצוב כהה על אתרים</translation>
 <translation id="2606760465469169465">אימות אוטומטי</translation>
 <translation id="2621115761605608342">‏אישור JavaScript לאתר ספציפי.</translation>
@@ -227,7 +227,7 @@
 <translation id="3678318839615834650">הגיליון התחתון של הכרטיסים בדף "כרטיסייה חדשה" נפתח בגובה מלא</translation>
 <translation id="3697164069658504920">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש בהתקני USB. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש בהתקני USB.</translation>
 <translation id="3703430731944883733">ניהול הפיד</translation>
-<translation id="3707034683772193706">‏אתר כלשהו שמבקרים בו יכול לשמור כמות נתונים קטנה ב-Chrome, בעיקר כדי לאמת שלא מדובר בבוט.</translation>
+<translation id="3707034683772193706">‏כשאתם מבקרים באתר, הוא יכול להעביר ל-Chrome נתונים מסוימים לאחסון, בעיקר כדי לוודא שאתם לא רובוטים.</translation>
 <translation id="3708684582558000260">לא לאפשר לאתרים סגורים לסיים שליחה או קבלה של נתונים</translation>
 <translation id="3709818294139939629">הוסרה הגישה של האתר לקובץ</translation>
 <translation id="3721953990244350188">סגירה והצגת הפעולה הזמינה הבאה</translation>
@@ -433,7 +433,7 @@
 <translation id="6042308850641462728">עוד</translation>
 <translation id="6064125863973209585">הורדות שהושלמו</translation>
 <translation id="6071501408666570960">יכול להיות שתבוצע יציאה מהחשבון באתר הזה</translation>
-<translation id="6085954183010297841">למחוק את ההרשאה לעריכת הקובץ? <ph name="FILE" /></translation>
+<translation id="6085954183010297841">מחיקת ההרשאה לעריכת הקובץ? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לדעת מתי משתמשים במכשיר הזה בפועל. כשהאפשרות מושבתת, אתרים לא יכולים לדעת מתי משתמשים במכשיר הזה בפועל.</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6171020522141473435">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במכשירי Bluetooth. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במכשירי Bluetooth.</translation>
@@ -447,7 +447,7 @@
 <translation id="6207207788774442484">מחיקת הנתונים ואיפוס ההרשאות</translation>
 <translation id="6231752747840485235">להסיר את '<ph name="APP_NAME" />'?</translation>
 <translation id="6234351944623978659">‏לוחצים על אפליקציית הדפדפן &gt; Chrome</translation>
-<translation id="6262191102408817757">על סמך הכרטיסייה האחרונה שלך</translation>
+<translation id="6262191102408817757">לפי הכרטיסייה האחרונה</translation>
 <translation id="6262279340360821358">ההרשאות <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /> חסומות</translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
@@ -534,7 +534,7 @@
 <translation id="7423538860840206698">הגישה לקריאה מלוח העריכה נחסמה</translation>
 <translation id="7425915948813553151">עיצוב כהה באתרים</translation>
 <translation id="7478658909253570368">אין לאפשר לאתרים להתחבר ליציאות טוריות</translation>
-<translation id="7488573225650545859">הסתרת הכרטיסיות "צפייה" ברשימת האפליקציות</translation>
+<translation id="7488573225650545859">הסתרת כרטיסיות ה-"צפייה" ברשימת האפליקציות</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">כשהאפשרות מופעלת, אתרים יכולים להציג בקשות כניסה. כשהאפשרות מושבתת, אתרים לא יכולים להציג בקשות כניסה.</translation>
 <translation id="7553211568594248088">יציאה מהחיפוש ברכזת</translation>
