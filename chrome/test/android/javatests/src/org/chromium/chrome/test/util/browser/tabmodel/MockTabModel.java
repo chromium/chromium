@@ -67,6 +67,11 @@ public class MockTabModel extends EmptyTabModel {
         public Tab getTabAt(int index) {
             return mAllTabs.get(index);
         }
+
+        @Override
+        public Iterator<Tab> iterator() {
+            return mAllTabs.iterator();
+        }
     }
 
     private int mIndex = TabModel.INVALID_TAB_INDEX;

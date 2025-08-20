@@ -14,6 +14,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
@@ -250,15 +251,16 @@ public class UrlSimilarityScorer {
     public MatchResult findTabWithMostSimilarUrl(TabList tabList) {
         int bestIndex = TabList.INVALID_TAB_INDEX;
         int bestScore = MISMATCHED;
-        int count = tabList.getCount();
-        for (int i = 0; i < count; ++i) {
-            int score = scoreSimilarity(assumeNonNull(tabList.getTabAt(i)).getUrl());
+        int i = 0;
+        for (Tab tab : tabList) {
+            int score = scoreSimilarity(assumeNonNull(tab).getUrl());
             if (score != MISMATCHED && bestScore < score) {
                 bestScore = score;
                 bestIndex = i;
                 // Early-exit on finding identical match.
                 if (bestScore == EXACT) break;
             }
+            ++i;
         }
         return new MatchResult(bestIndex, bestScore);
     }

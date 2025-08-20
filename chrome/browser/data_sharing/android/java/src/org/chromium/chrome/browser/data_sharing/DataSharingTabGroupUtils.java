@@ -165,8 +165,7 @@ public class DataSharingTabGroupUtils {
             tabGroupIds.add(localTabGroupId.tabGroupId);
         }
         HashMap<Token, Tab> parentTabMap = new HashMap<>();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAtChecked(i);
+        for (Tab tab : tabModel) {
             @Nullable Token tabGroupId = tab.getTabGroupId();
 
             // The parent tab should be the last tab in the tab group. Tab groups are contiguous.
@@ -242,8 +241,7 @@ public class DataSharingTabGroupUtils {
 
     private static @TabPresence int getTabPresence(TabModel tabModel, int tabId) {
         TabList tabList = tabModel.getComprehensiveModel();
-        for (int i = 0; i < tabList.getCount(); i++) {
-            Tab tab = tabList.getTabAt(i);
+        for (Tab tab : tabList) {
             assumeNonNull(tab);
             if (tab.getId() == tabId) {
                 return tab.isClosing() ? TabPresence.IN_WINDOW_CLOSING : TabPresence.IN_WINDOW;

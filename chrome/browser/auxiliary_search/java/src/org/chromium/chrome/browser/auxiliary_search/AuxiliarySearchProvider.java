@@ -279,8 +279,7 @@ public class AuxiliarySearchProvider {
         TabList allTabs = mTabModelSelector.getModel(false).getComprehensiveModel();
         List<Tab> recentAccessedTabs = new ArrayList<>();
 
-        for (int i = 0; i < allTabs.getCount(); i++) {
-            Tab tab = allTabs.getTabAtChecked(i);
+        for (Tab tab : allTabs) {
             if (tab.getTimestampMillis() >= minAccessTime) {
                 recentAccessedTabs.add(tab);
             }

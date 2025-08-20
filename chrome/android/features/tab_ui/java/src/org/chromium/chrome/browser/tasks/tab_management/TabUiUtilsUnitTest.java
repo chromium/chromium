@@ -531,6 +531,8 @@ public class TabUiUtilsUnitTest {
     public void testUpdateViewContentSensitivityForTabList() {
         final String histogram = "SensitiveContent.TabSwitching.BottomTabStripGroupUI.Sensitivity";
 
+        List<Tab> tabList = List.of(mTab);
+        when(mTabModel.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTabModel.getCount()).thenAnswer(invocation -> 1);
         when(mTabModel.getTabAtChecked(0)).thenAnswer(invocation -> mTab);
 

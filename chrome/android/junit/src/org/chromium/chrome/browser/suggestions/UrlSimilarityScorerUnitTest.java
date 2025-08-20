@@ -446,13 +446,16 @@ public class UrlSimilarityScorerUnitTest {
 
     private TabList createTabList(List<GURL> urlList) {
         TabList tabList = mock(TabList.class);
+        List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < urlList.size(); ++i) {
             Tab tab = mock(Tab.class);
             // Use lenient() since some of these might not get called, findTabWithMostSimilarUrl()'s
             // early-exit path executes.
             lenient().doReturn(urlList.get(i)).when(tab).getUrl();
             lenient().doReturn(tab).when(tabList).getTabAt(i);
+            tabs.add(tab);
         }
+        lenient().doAnswer(invocation -> tabs.iterator()).when(tabList).iterator();
         doReturn(urlList.size()).when(tabList).getCount();
         return tabList;
     }

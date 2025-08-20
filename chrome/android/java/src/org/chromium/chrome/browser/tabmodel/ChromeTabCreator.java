@@ -609,8 +609,8 @@ public class ChromeTabCreator extends TabCreator
             appId = TabModelImpl.UNKNOWN_APP_ID;
         }
         // Let's try to find an existing tab that was started by that app.
-        for (int i = 0; i < mTabModel.getCount(); i++) {
-            Tab tab = mTabModel.getTabAtChecked(i);
+        int i = 0;
+        for (Tab tab : mTabModel) {
             if (appId.equals(TabAssociatedApp.getAppId(tab))) {
                 // We don't reuse the tab, we create a new one at the same index instead.
                 // Reusing a tab would require clearing the navigation history and clearing the
@@ -633,6 +633,7 @@ public class ChromeTabCreator extends TabCreator
                                 /* allowDialog= */ false);
                 return newTab;
             }
+            ++i;
         }
 
         // No tab for that app, we'll have to create a new one.

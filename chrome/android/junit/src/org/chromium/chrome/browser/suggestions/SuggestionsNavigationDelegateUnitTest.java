@@ -41,6 +41,7 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -160,11 +161,14 @@ public class SuggestionsNavigationDelegateUnitTest {
 
     private TabModel createTabModelFromList(List<GURL> urlList) {
         TabModel tabModel = mock(TabModel.class);
+        List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < urlList.size(); ++i) {
             Tab tab = mock(Tab.class);
             lenient().doReturn(urlList.get(i)).when(tab).getUrl();
             lenient().doReturn(tab).when(tabModel).getTabAt(i);
+            tabs.add(tab);
         }
+        lenient().doAnswer(invocation -> tabs.iterator()).when(tabModel).iterator();
         lenient().doReturn(urlList.size()).when(tabModel).getCount();
         TabRemover tabRemover = mock(TabRemover.class);
         lenient().doReturn(tabRemover).when(tabModel).getTabRemover();

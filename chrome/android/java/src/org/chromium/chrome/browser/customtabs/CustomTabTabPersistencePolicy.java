@@ -21,6 +21,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -207,8 +208,8 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
         List<TabModel> models = selector.getModels();
         for (int i = 0; i < models.size(); i++) {
             TabModel model = models.get(i);
-            for (int j = 0; j < model.getCount(); j++) {
-                tabIds.add(model.getTabAt(j).getId());
+            for (Tab tab : model) {
+                tabIds.add(tab.getId());
             }
         }
     }

@@ -424,8 +424,8 @@ public class TabUiTestHelper {
                 () -> {
                     List<Tab> tabGroup = new ArrayList<>();
                     TabModel tabModel = cta.getTabModelSelector().getModel(isIncognito);
-                    for (int i = 0; i < tabModel.getCount(); i++) {
-                        tabGroup.add(tabModel.getTabAt(i));
+                    for (Tab tab : tabModel) {
+                        tabGroup.add(tab);
                     }
                     createTabGroup(cta, isIncognito, tabGroup);
                     TabGroupModelFilter filter =
@@ -556,9 +556,8 @@ public class TabUiTestHelper {
     private static void verifyAllTabsHaveUrl(TabModel tabModel, String url) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    int tabCount = tabModel.getCount();
-                    for (int i = 0; i < tabCount; i++) {
-                        String tabUrl = tabModel.getTabAt(i).getUrl().getSpec();
+                    for (Tab tab : tabModel) {
+                        String tabUrl = tab.getUrl().getSpec();
                         assertEquals(url, tabUrl);
                     }
                 });

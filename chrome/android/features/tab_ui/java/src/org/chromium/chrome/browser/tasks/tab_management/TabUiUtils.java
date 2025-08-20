@@ -422,8 +422,8 @@ public class TabUiUtils {
             return;
         }
 
-        for (int i = 0; i < tabList.getCount(); i++) {
-            if (tabList.getTabAtChecked(i).getTabHasSensitiveContent()) {
+        for (Tab tab : tabList) {
+            if (tab.getTabHasSensitiveContent()) {
                 contentSensitivitySetter.onResult(/* result= */ true);
                 RecordHistogram.recordBooleanHistogram(histogram, /* sample= */ true);
                 return;
