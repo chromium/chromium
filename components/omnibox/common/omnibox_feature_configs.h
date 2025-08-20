@@ -163,6 +163,14 @@ struct AiMode : Config<AiMode> {
   bool check_ai_eligibility_gws_side = false;
 };
 
+// If enabled, show the AIM entrypoint in the omnibox.
+struct AiModeOmniboxEntryPoint : Config<AiModeOmniboxEntryPoint> {
+  AiModeOmniboxEntryPoint();
+  bool enabled;
+  // Whether to hide the AIM hint text on NTP open.
+  bool hide_aim_hint_text_on_ntp_open;
+};
+
 // A config struct for features related to contextual search in omnibox.
 struct ContextualSearch : Config<ContextualSearch> {
   ContextualSearch();

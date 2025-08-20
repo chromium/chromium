@@ -75,6 +75,14 @@ AiMode::AiMode() {
           .Get();
 }
 
+AiModeOmniboxEntryPoint::AiModeOmniboxEntryPoint() {
+  enabled = base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
+  hide_aim_hint_text_on_ntp_open =
+      base::FeatureParam<bool>(&omnibox::kAiModeOmniboxEntryPoint,
+                              "HideAimHintTextOnNtpOpen", false)
+          .Get();
+}
+
 BASE_FEATURE(ContextualSearch::kContextualSuggestionsAblateOthersWhenPresent,
              "ContextualSuggestionsAblateOthersWhenPresent",
              base::FEATURE_DISABLED_BY_DEFAULT);
