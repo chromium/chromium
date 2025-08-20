@@ -241,6 +241,8 @@ const CGFloat kOpacityAnimationDuration = 0.4;
         [weakSelf
             handlePresentationAnimationCompletedWithCompletion:completion];
       }];
+
+  _resultViewController.view.userInteractionEnabled = NO;
 }
 
 // Sets up the layout guide that defines the area not obstructed by the results
