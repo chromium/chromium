@@ -2196,6 +2196,7 @@ Called by update_net_error_codes.py.-->
   <int value="-202" label="CERT_AUTHORITY_INVALID"/>
   <int value="-201" label="CERT_DATE_INVALID"/>
   <int value="-200" label="CERT_COMMON_NAME_INVALID"/>
+  <int value="-186" label="PROXY_UNABLE_TO_CONNECT_TO_DESTINATION"/>
   <int value="-185" label="PROXY_TUNNEL_REQUEST_FAILED"/>
   <int value="-184" label="ECH_FALLBACK_CERTIFICATE_INVALID"/>
   <int value="-183" label="ECH_NOT_NEGOTIATED"/>
@@ -20904,6 +20905,7 @@ Called by update_net_error_codes.py.-->
   <int value="183" label="ECH_NOT_NEGOTIATED"/>
   <int value="184" label="ECH_FALLBACK_CERTIFICATE_INVALID"/>
   <int value="185" label="PROXY_TUNNEL_REQUEST_FAILED"/>
+  <int value="186" label="PROXY_UNABLE_TO_CONNECT_TO_DESTINATION"/>
   <int value="200" label="CERT_COMMON_NAME_INVALID"/>
   <int value="201" label="CERT_DATE_INVALID"/>
   <int value="202" label="CERT_AUTHORITY_INVALID"/>

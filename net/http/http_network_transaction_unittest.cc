@@ -27811,17 +27811,6 @@ class IpProtectionProxyDelegate : public TestProxyDelegate {
     result->set_prt_header_value(":serializedPRT:");
   }
 
-  net::Error OnTunnelHeadersReceived(
-      const net::ProxyChain& proxy_chain,
-      size_t chain_index,
-      const net::HttpResponseHeaders& response_headers) override {
-    if (response_headers.response_code() == 200) {
-      return net::OK;
-    }
-
-    return net::ERR_PROXY_TUNNEL_REQUEST_FAILED;
-  }
-
   static std::string GetAuthorizationHeaderValue(
       const ProxyServer& proxy_server) {
     return GetExtraHeaderValue(proxy_server);

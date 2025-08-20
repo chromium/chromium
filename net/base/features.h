@@ -593,6 +593,9 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools;
 NET_EXPORT extern const base::FeatureParam<bool>
     kIpPrivacyEnableIppPanelInDevTools;
 
+// Enables more advanced handling of IP Protection proxy request failures.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableIpPrivacyProxyAdvancedFallbackLogic);
+
 // Maximum report body size (KB) to include in serialized reports. Bodies
 // exceeding this are omitted when kExcludeLargeBodyReports is enabled.  Use
 // Reporting.ReportBodySize UMA histogram to monitor report body sizes and

@@ -474,6 +474,9 @@ const base::FeatureParam<bool> kIpPrivacyEnableIppPanelInDevTools{
     /*name=*/"kIpPrivacyEnableIppPanelInDevTools",
     /*default_value=*/false};
 
+BASE_FEATURE(EnableIpPrivacyProxyAdvancedFallbackLogic,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExcludeLargeBodyReports,
              "ExcludeLargeReportBodies",
              base::FEATURE_ENABLED_BY_DEFAULT);
