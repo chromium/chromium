@@ -1225,7 +1225,12 @@ TEST_F(AssociatedInterfaceTest, CloseSerializedAssociatedEndpoints) {
 class TestSyncImpl : public TestSync {
  public:
   void Ping(PingCallback) override { NOTREACHED(); }
-  void Echo(int32_t value, EchoCallback) override { NOTREACHED(); }
+  void NoInterruptPing(NoInterruptPingCallback callback) override {
+    std::move(callback).Run();
+  }
+  void Echo(int32_t value, EchoCallback callback) override {
+    std::move(callback).Run(value);
+  }
   void AsyncEcho(int32_t, AsyncEchoCallback) override { NOTREACHED(); }
 };
 
@@ -1238,26 +1243,41 @@ class TestSyncPrimaryImpl : public TestSyncPrimary, public TestSync {
   static constexpr int32_t kReceivedPing = 0b001;
   static constexpr int32_t kSyncCallWasAborted = 0b010;
   static constexpr int32_t kSyncCall2WasAborted = 0b100;
+  static constexpr int32_t kNoInterruptPingReplied = 0b1000;
 
   void Ping(PingCallback callback) override {
     result_ |= kReceivedPing;
     std::move(callback).Run();
   }
+  void NoInterruptPing(NoInterruptPingCallback) override { NOTREACHED(); }
   void Echo(int32_t value, EchoCallback callback) override {
     std::move(callback).Run(result_);
   }
   void AsyncEcho(int32_t, AsyncEchoCallback) override { NOTREACHED(); }
 
   void SendRemote(PendingAssociatedRemote<TestSync> remote) override {
-    test_sync_remote_.Bind(std::move(remote));
+    if (!test_sync_remote_.is_bound()) {
+      test_sync_remote_.Bind(std::move(remote));
+    } else {
+      test_sync_remote2_.Bind(std::move(remote));
+    }
     CHECK(!test_sync_receiver_.is_bound());
   }
+
   void SendReceiver(PendingAssociatedReceiver<TestSync> receiver) override {
     test_sync_receiver_.Bind(std::move(receiver));
     CHECK(test_sync_remote_.is_bound());
     {
       base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync;
       int reply = -1;
+      // If we got a second test sync remote, make the first sync call on that
+      // remote to verify behavior when the peer closed event comes in while
+      // we're blocked on a different interface.
+      if (test_sync_remote2_.is_bound()) {
+        if (test_sync_remote2_->NoInterruptPing()) {
+          result_ |= kNoInterruptPingReplied;
+        }
+      }
       bool call_result = test_sync_remote_->Echo(123, &reply);
       if (!call_result) {
         result_ |= kSyncCallWasAborted;
@@ -1274,6 +1294,7 @@ class TestSyncPrimaryImpl : public TestSyncPrimary, public TestSync {
  private:
   Receiver<TestSyncPrimary> receiver_;
   AssociatedRemote<TestSync> test_sync_remote_;
+  AssociatedRemote<TestSync> test_sync_remote2_;
   AssociatedReceiver<TestSync> test_sync_receiver_;
   int32_t result_ = 0;
 };
@@ -1304,6 +1325,39 @@ TEST_F(AssociatedInterfaceTest, TestHangOnDisconnect) {
   EXPECT_EQ(TestSyncPrimaryImpl::kReceivedPing |
                 TestSyncPrimaryImpl::kSyncCallWasAborted |
                 TestSyncPrimaryImpl::kSyncCall2WasAborted,
+            result.Get());
+
+  primary_impl.SynchronouslyResetForTest();
+}
+
+// Slight variation of the above test, where the peer disconnect happens while
+// blocked on a different interface than the one being disconnected.
+// Additionally this test makes sure the disconnect event arrives while blocked
+// on a NoInterrupt sync call, since that code path is slightly more
+// complicated.
+TEST_F(AssociatedInterfaceTest, TestHangOnDisconnectDifferentEndpoint) {
+  Remote<TestSyncPrimary> primary_remote;
+  base::SequenceBound<TestSyncPrimaryImpl> primary_impl(
+      base::ThreadPool::CreateSequencedTaskRunner({}),
+      primary_remote.BindNewPipeAndPassReceiver());
+
+  TestSyncImpl sync_impl;
+  AssociatedReceiver<TestSync> sync_receiver(&sync_impl);
+  AssociatedReceiver<TestSync> sync_receiver2(&sync_impl);
+  AssociatedRemote<TestSync> sync_remote;
+  primary_remote->SendRemote(sync_receiver.BindNewEndpointAndPassRemote());
+  primary_remote->SendRemote(sync_receiver2.BindNewEndpointAndPassRemote());
+  primary_remote->SendReceiver(sync_remote.BindNewEndpointAndPassReceiver());
+
+  sync_remote.reset();
+
+  sync_receiver.reset();
+
+  base::test::TestFuture<int32_t> result;
+  primary_remote->Echo(0, result.GetCallback());
+  EXPECT_EQ(TestSyncPrimaryImpl::kSyncCallWasAborted |
+                TestSyncPrimaryImpl::kSyncCall2WasAborted |
+                TestSyncPrimaryImpl::kNoInterruptPingReplied,
             result.Get());
 
   primary_impl.SynchronouslyResetForTest();

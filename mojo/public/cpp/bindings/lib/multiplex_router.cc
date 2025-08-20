@@ -117,10 +117,6 @@ class MultiplexRouter::InterfaceEndpoint
     return requests_with_external_sync_waiter_.erase(request_id) != 0;
   }
 
-  bool IsWatchingForSyncReply() {
-    return is_watching_.load(std::memory_order_acquire);
-  }
-
   base::flat_set<uint64_t> UnregisterAllExternalSyncWaiters() {
     router_->AssertLockAcquired();
     base::flat_set<uint64_t> request_ids;
@@ -168,7 +164,6 @@ class MultiplexRouter::InterfaceEndpoint
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
     EnsureSyncWatcherExists();
-    is_watching_.store(true, std::memory_order_release);
     // SyncWatch may delete `this`.
     return sync_watcher_->SyncWatch(&should_stop);
   }
@@ -198,8 +193,6 @@ class MultiplexRouter::InterfaceEndpoint
 
     MayAutoLock locker(&router_->lock_);
     scoped_refptr<InterfaceEndpoint> self_protector(this);
-
-    is_watching_.store(false, std::memory_order_release);
 
     bool more_to_process = router_->ProcessFirstSyncMessageForEndpoint(id_);
 
@@ -265,7 +258,6 @@ class MultiplexRouter::InterfaceEndpoint
   // Guarded by the router's lock. Used to synchronously wait on replies.
   std::unique_ptr<SequenceLocalSyncEventWatcher> sync_watcher_;
   base::flat_set<uint64_t> requests_with_external_sync_waiter_;
-  std::atomic<bool> is_watching_;
 };
 
 // MessageWrapper objects are always destroyed under the router's lock. On
@@ -730,9 +722,11 @@ bool MultiplexRouter::Accept(Message* message) {
           ? ALLOW_DIRECT_CLIENT_CALLS_FOR_SYNC_MESSAGES
           : ALLOW_DIRECT_CLIENT_CALLS;
 
-  bool can_process;
+  bool can_process = false;
+  bool finishes_exclusive_sync_wait = false;
   if (exclusive_sync_wait_) {
-    can_process = CanUnblockExclusiveSameThreadSyncWait(*message);
+    finishes_exclusive_sync_wait = can_process =
+        CanUnblockExclusiveSameThreadSyncWait(*message);
   } else {
     can_process = tasks_.empty() || CanUnblockExternalSyncWait(*message);
   }
@@ -742,12 +736,14 @@ bool MultiplexRouter::Accept(Message* message) {
     if (std::optional<InterfaceId> interface_id =
             PipeControlMessageHandler::IsPeerAssociatedEndpointClosedEvent(
                 *message)) {
-      if (exclusive_sync_wait_ &&
-          exclusive_sync_wait_->interface_id == *interface_id) {
-        can_process = true;
-      } else if (InterfaceEndpoint* endpoint = FindEndpoint(*interface_id)) {
-        can_process = endpoint->IsWatchingForSyncReply();
-      }
+      // Even if we're not currently waiting for a sync reply on the specific
+      // interface that was closed, we still need to handle the closed event
+      // right away, since we might get a sync call on the interface being
+      // closed before we get a chance to process tasks.
+      can_process = true;
+      finishes_exclusive_sync_wait =
+          exclusive_sync_wait_ &&
+          exclusive_sync_wait_->interface_id == interface_id;
     }
   }
 
@@ -757,7 +753,7 @@ bool MultiplexRouter::Accept(Message* message) {
       ProcessIncomingMessage(&message_wrapper, client_call_behavior,
                              connector_.task_runner());
 
-  if (exclusive_sync_wait_ && can_process) {
+  if (finishes_exclusive_sync_wait) {
     DCHECK(processed);
     exclusive_sync_wait_->finished = true;
   }
@@ -791,7 +787,17 @@ bool MultiplexRouter::OnPeerAssociatedEndpointClosed(
     InterfaceId id,
     const std::optional<DisconnectReason>& reason) {
   MayAutoLock locker(&lock_);
-  InterfaceEndpoint* endpoint = FindOrInsertEndpoint(id, nullptr);
+  InterfaceEndpoint* endpoint = FindEndpoint(id);
+
+  if (!endpoint) {
+    // The only legit way to get a OnPeerAssociatedEndpointClosed message for
+    // an unknown endpoint is if the remote MultiplexRouter discarded the
+    // message that would make this endpoint known to us without ever sending
+    // it. In that case ignoring the EndpointClosed message and especially not
+    // creating an Endpoint instance for it is the right thing to do, to make
+    // sure we're not accidentally leaking Endpoint instances.
+    return true;
+  }
 
   if (reason)
     endpoint->set_disconnect_reason(reason);

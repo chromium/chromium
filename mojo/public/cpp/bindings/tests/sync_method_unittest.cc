@@ -139,6 +139,9 @@ class TestSyncImpl : public TestSync, public TestSyncCommonImpl {
 
   // TestSync implementation:
   void Ping(PingCallback callback) override { PingImpl(std::move(callback)); }
+  void NoInterruptPing(NoInterruptPingCallback callback) override {
+    PingImpl(std::move(callback));
+  }
   void Echo(int32_t value, EchoCallback callback) override {
     EchoImpl(value, std::move(callback));
   }
@@ -191,6 +194,9 @@ class TestSyncAssociatedImpl : public TestSync, public TestSyncCommonImpl {
 
   // TestSync implementation:
   void Ping(PingCallback callback) override { PingImpl(std::move(callback)); }
+  void NoInterruptPing(NoInterruptPingCallback callback) override {
+    PingImpl(std::move(callback));
+  }
   void Echo(int32_t value, EchoCallback callback) override {
     EchoImpl(value, std::move(callback));
   }
