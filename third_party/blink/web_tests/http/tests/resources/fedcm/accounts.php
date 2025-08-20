@@ -11,14 +11,14 @@ if (isset($_COOKIE["noaccounts"])) {
    "given_name": "John",
    "name": "John Doe",
    "email": "john_doe@idp.example",
-   "picture": "https://idp.example/profile/123",
+   "picture": "https://127.0.0.1:8443/profile/123",
    "approved_clients": ["123", "456", "789"]
   }, {
    "id": "5678",
    "given_name": "Aisha",
    "name": "Aisha Ahmad",
    "email": "aisha@idp.example",
-   "picture": "https://idp.example/profile/567",
+   "picture": "https://127.0.0.1:8443/profile/567",
    "approved_clients": []
   }]
 }
