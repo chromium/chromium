@@ -65,13 +65,12 @@ class TabAlertControllerTest : public testing::Test {
         browser_window_interface_.get());
     tab_strip_model_ = std::make_unique<TabStripModel>(
         tab_strip_model_delegate_.get(), profile_);
-
+    EXPECT_CALL(*browser_window_interface_, GetTabStripModel())
+        .WillRepeatedly(testing::Return(tab_strip_model_.get()));
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
     tab_model_ = std::make_unique<TabModel>(std::move(web_contents),
                                             tab_strip_model_.get());
-    EXPECT_CALL(*browser_window_interface_, GetTabStripModel())
-        .WillRepeatedly(testing::Return(tab_strip_model_.get()));
   }
 
   void TearDown() override {
@@ -219,6 +218,29 @@ TEST_F(TabAlertControllerTest, AudioStateUpdatesAlertController) {
 
   // The tab alert should go away after 2 seconds of consistently not playing
   // audio.
+  task_environment()->FastForwardBy(base::Seconds(2));
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+}
+
+TEST_F(TabAlertControllerTest, MutedStateReliesOnRecentlyAudible) {
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+  tab_interface()->GetContents()->SetAudioMuted(true);
+  // Even though the tab is muted, since it wasn't recently audible, the muted
+  // tab alert shouldn't be active.
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+
+  // Simulating the tab to be audible should trigger the muted alert to be
+  // active since the tab was already muted.
+  SimulateAudioState(true);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::AUDIO_MUTING);
+
+  // Turning off the audio state shouldn't immediately deactivate the muted
+  // alert since the tab is still recently audible.
+  SimulateAudioState(false);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::AUDIO_MUTING);
+
+  // After waiting until the tab is no longer recently audible, the muted alert
+  // state should go away.
   task_environment()->FastForwardBy(base::Seconds(2));
   EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
 }
