@@ -168,6 +168,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
   // In that case we add the Allow Once setting in this provider, but also
   // have to clear the Allow setting in the pref provider. By returning false
   // here, we let the control flow trickle down to the pref provider.
+  value = base::Value();
   return false;
 }
 

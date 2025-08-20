@@ -76,6 +76,7 @@ using content_settings::PermissionSettingsRegistry;
 using content_settings::SettingSource;
 using content_settings::WebsiteSettingsInfo;
 using content_settings::WebsiteSettingsRegistry;
+using content_settings::mojom::SessionModel;
 
 namespace {
 typedef std::vector<content_settings::Rule> Rules;
@@ -489,7 +490,7 @@ PermissionSetting HostContentSettingsMap::GetPermissionSetting(
 
 ContentSettingsForOneType HostContentSettingsMap::GetSettingsForOneType(
     ContentSettingsType content_type,
-    std::optional<content_settings::mojom::SessionModel> session_model) const {
+    std::optional<SessionModel> session_model) const {
   ContentSettingsForOneType settings;
   UsedContentSettingsProviders();
 
@@ -578,7 +579,11 @@ void HostContentSettingsMap::SetWebsiteSettingCustomScope(
 
     // Ensure that the value is unmodified until accepted by a provider.
 #if DCHECK_IS_ON()
-    DCHECK_EQ(value, clone);
+    if (!(value.is_none() &&
+          constraints.session_model() == SessionModel::ONE_TIME &&
+          provider_pair.first == ProviderType::kOneTimePermissionProvider)) {
+      DCHECK_EQ(value, clone) << provider_pair.first;
+    }
 #endif
   }
   NOTREACHED();
@@ -1022,7 +1027,7 @@ void HostContentSettingsMap::AddSettingsForOneType(
     ContentSettingsType content_type,
     ContentSettingsForOneType* settings,
     bool incognito,
-    std::optional<content_settings::mojom::SessionModel> session_model) const {
+    std::optional<SessionModel> session_model) const {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
       provider->GetRuleIterator(
           content_type, incognito,
