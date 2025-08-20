@@ -107,10 +107,6 @@
   flex-wrap: var(--toolbar-flex-wrap);
 }
 
-#more {
-  display: none;
-}
-
 /*
  * Based on styling for cr-icon-button.
  * The rate menu needs to use a text-based button instead of an icon-based
