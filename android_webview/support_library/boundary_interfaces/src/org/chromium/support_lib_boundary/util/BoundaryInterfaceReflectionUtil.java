@@ -172,7 +172,7 @@ public class BoundaryInterfaceReflectionUtil {
     }
 
     /**
-     * Check if this is a debuggable build of Android. Note: we copy BuildInfo's method because we
+     * Check if this is a debuggable build of Android. Note: we copy ApkInfo's method because we
      * cannot depend on the base-layer here (this folder is mirrored into Android).
      */
     private static boolean isDebuggable() {

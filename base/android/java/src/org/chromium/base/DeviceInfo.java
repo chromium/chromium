@@ -128,7 +128,7 @@ public final class DeviceInfo {
     }
 
     private static DeviceInfo getInstance() {
-        // Some tests mock out things BuildInfo is based on, so disable caching in tests to ensure
+        // Some tests mock out things DeviceInfo is based on, so disable caching in tests to ensure
         // such mocking is not defeated by caching.
         if (BuildConfig.IS_FOR_TEST) {
             return new DeviceInfo();

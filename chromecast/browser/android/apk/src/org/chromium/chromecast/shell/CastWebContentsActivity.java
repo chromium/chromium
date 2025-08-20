@@ -27,7 +27,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.chromecast.base.Both;
 import org.chromium.chromecast.base.CastSwitches;
@@ -465,7 +465,7 @@ public class CastWebContentsActivity extends Activity {
     private boolean canUsePictureInPicture() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
-                && !BuildInfo.getInstance().isTV;
+                && !DeviceInfo.isTV();
     }
 
     // Sends the specified visibility change event to the current app (as reported by getIntent()).

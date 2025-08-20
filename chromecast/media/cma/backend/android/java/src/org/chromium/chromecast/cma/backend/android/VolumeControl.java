@@ -17,8 +17,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.chromecast.media.AudioContentType;
 
@@ -153,7 +153,7 @@ class VolumeControl {
     private static boolean isSingleVolumeDevice() {
         // Android TV devices map all stream types to STREAM_MUSIC, so they functionally have only
         // one volume stream.
-        return BuildInfo.getInstance().isTV;
+        return DeviceInfo.isTV();
     }
 
     /** Construction */

@@ -393,10 +393,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             ctx = ClassLoaderContextWrapperFactory.get(ctx);
             ContextUtils.initApplicationContext(ctx);
 
-            // Ensuring we set this before we might read it in any future calls to BuildInfo.
-            // BuildInfo requires ContextUtils' application context, so this has to happen after.
+            // Ensuring we set this before we might read it in any future calls to ApkInfo.
+            // ApkInfo requires ContextUtils' application context, so this has to happen after.
             ApkInfo.setBrowserPackageInfo(packageInfo);
-            // Trigger the creation of the BuildInfo singleton to avoid potential issues reading
+            // Trigger the creation of the ApkInfo singleton to avoid potential issues reading
             // the command line if this happens on another thread.
 
             // Find the package ID for the package that WebView's resources come from.
