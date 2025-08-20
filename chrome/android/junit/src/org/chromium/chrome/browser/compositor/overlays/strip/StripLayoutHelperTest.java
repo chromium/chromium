@@ -6578,6 +6578,169 @@ public class StripLayoutHelperTest {
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
+    @Test
+    @Feature("Pinned Tabs")
+    public void testTabsDrawXAndWidth_PinnedTabs() {
+        final int numTabs = 5;
+        initializeTest(false, false, 0, numTabs);
+
+        // Trigger a size change so the strip layout tab heights and widths get set.
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+
+        // Set the initial scroll offset to trigger an update to draw X positions.
+        mStripLayoutHelper.setScrollOffsetForTesting(0);
+
+        // Setup tab model and pin first tab.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        tabModel.addTab(0);
+        tabModel.addTab(1);
+        tabModel.addTab(2);
+        tabModel.addTab(3);
+        tabModel.addTab(4);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW);
+        tabModel.setActive(true);
+        tabModel.getTabAt(0).setIsPinned(true);
+        tabs[0].setIsPinned(true);
+
+        // Trigger an update to re-compute tabs widths.
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, true);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        float expectedDrawXWithPinnedTab = PADDING_LEFT;
+
+        // 183.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
+        // 80(pinnedTabWidth) + 28(overlapWidth) * 3) / 4(numTab).
+        float expectedTabWidthWithPinnedTab = 183.5f;
+
+        // Verify the tabs are resized and positioned correctly after pinning.
+        for (int i = 0; i < tabs.length; i++) {
+            assertEquals(
+                    "The tab's drawX is incorrect",
+                    expectedDrawXWithPinnedTab,
+                    tabs[i].getDrawX(),
+                    0.1f);
+            if (i == 0) {
+                assertTrue("The tab should be pinned", tabs[i].getIsPinned());
+                assertEquals(
+                        "The tab's width is incorrect", MIN_TAB_WIDTH_DP, tabs[i].getWidth(), 0.1f);
+            } else {
+                assertFalse("The tab should not be pinned", tabs[i].getIsPinned());
+                assertEquals(
+                        "The tab's width is incorrect",
+                        expectedTabWidthWithPinnedTab,
+                        tabs[i].getWidth(),
+                        0.1f);
+            }
+            expectedDrawXWithPinnedTab += tabs[i].getWidth() - TAB_OVERLAP_WIDTH_DP;
+        }
+
+        // Unpin first tab and trigger an update.
+        tabModel.getTabAt(0).setIsPinned(false);
+        tabs[0].setIsPinned(false);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(new StripLayoutTab[0]);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        float expectedDrawXNoPinnedTab = PADDING_LEFT;
+        // 168.4(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) +
+        // 28(overlapWidth) * 4) / 5(numTab).
+        float expectedWidthNoPinnedTab = 168.4f;
+
+        // Verify the tabs are resized and positioned correctly after unpinning.
+        tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        expectedDrawXNoPinnedTab = PADDING_LEFT;
+        for (StripLayoutTab tab : tabs) {
+            assertEquals(
+                    "The tab's drawX is incorrect", expectedDrawXNoPinnedTab, tab.getDrawX(), 0.1f);
+            assertEquals(
+                    "The tab's width is incorrect", expectedWidthNoPinnedTab, tab.getWidth(), 0.1f);
+            expectedDrawXNoPinnedTab += tab.getWidth() - TAB_OVERLAP_WIDTH_DP;
+        }
+    }
+
+    @Test
+    @Feature("Pinned Tabs")
+    public void testTabsDrawXAndWidth_PinnedTabs_Rtl() {
+        LocalizationUtils.setRtlForTesting(true);
+        final int numTabs = 5;
+        initializeTest(true, false, 0, numTabs);
+
+        // Trigger a size change so the strip layout tab heights and widths get set.
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_RIGHT, PADDING_LEFT, 0f);
+
+        // Set the initial scroll offset to trigger an update to draw X positions.
+        mStripLayoutHelper.setScrollOffsetForTesting(0);
+
+        // Setup tab model and pin first tab.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        tabModel.addTab(0);
+        tabModel.addTab(1);
+        tabModel.addTab(2);
+        tabModel.addTab(3);
+        tabModel.addTab(4);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW);
+        tabModel.setActive(true);
+        tabModel.getTabAt(0).setIsPinned(true);
+        tabs[0].setIsPinned(true);
+
+        // Trigger an update to re-compute tabs widths.
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, true);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        float expectedDrawXWithPinnedTab = SCREEN_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP;
+
+        // 183.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
+        // 80(pinnedTabWidth) + 28(overlapWidth) * 3) / 4(numTab).
+        float expectedTabWidthWithPinnedTab = 183.5f;
+
+        // Verify the tabs are resized and positioned correctly after pinning.
+        for (int i = 0; i < tabs.length; i++) {
+            if (i == 0) {
+                assertTrue("The tab should be pinned", tabs[i].getIsPinned());
+                assertEquals(
+                        "The tab's width is incorrect", MIN_TAB_WIDTH_DP, tabs[i].getWidth(), 0.1f);
+            } else {
+                assertFalse("The tab should not be pinned", tabs[i].getIsPinned());
+                assertEquals(
+                        "The tab's width is incorrect",
+                        expectedTabWidthWithPinnedTab,
+                        tabs[i].getWidth(),
+                        0.1f);
+            }
+            expectedDrawXWithPinnedTab -= (tabs[i].getWidth() - TAB_OVERLAP_WIDTH_DP);
+            assertEquals(
+                    "The tab's drawX is incorrect",
+                    expectedDrawXWithPinnedTab,
+                    tabs[i].getDrawX(),
+                    0.1f);
+        }
+
+        // Unpin first tab and trigger an update.
+        tabModel.getTabAt(0).setIsPinned(false);
+        tabs[0].setIsPinned(false);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(new StripLayoutTab[0]);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        float expectedDrawXNoPinnedTab = SCREEN_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP;
+        // 168.4(tabWidth) = (800(screenWidth) - 60(leftPadding) - 10(rightPadding) +
+        // 28(overlapWidth) * 4) / 5(numTab).
+        float expectedWidthNoPinnedTab = 168.4f;
+
+        // Verify the tabs are resized and positioned correctly after unpinning.
+        tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        expectedDrawXNoPinnedTab = SCREEN_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP;
+        for (StripLayoutTab tab : tabs) {
+            assertEquals(
+                    "The tab's width is incorrect", expectedWidthNoPinnedTab, tab.getWidth(), 0.1f);
+            expectedDrawXNoPinnedTab -= (tab.getWidth() - TAB_OVERLAP_WIDTH_DP);
+            assertEquals(
+                    "The tab's drawX is incorrect", expectedDrawXNoPinnedTab, tab.getDrawX(), 0.1f);
+        }
+    }
+
     private float getClickCoordinateForTabAtIndex(StripLayoutView[] stripViews, int i) {
         return stripViews[i].getTouchTargetBounds().left
                 + (stripViews[i].getTouchTargetBounds().right

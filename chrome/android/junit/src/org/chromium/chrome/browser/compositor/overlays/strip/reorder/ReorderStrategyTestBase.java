@@ -114,7 +114,8 @@ public abstract class ReorderStrategyTestBase {
     }
 
     protected StripLayoutTab buildStripTab(int id, int x) {
-        StripLayoutTab tab = new StripLayoutTab(mActivity, id, null, null, null, null, false);
+        StripLayoutTab tab =
+                new StripLayoutTab(mActivity, id, null, null, null, null, false, false);
         setDrawProperties(tab, x);
         return tab;
     }

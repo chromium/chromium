@@ -390,6 +390,21 @@ public class StripLayoutHelper
                     }
                     mUpdateHost.requestUpdate();
                 }
+
+                @Override
+                public void didChangePinState(Tab tab) {
+                    boolean isPinned = tab.getIsPinned();
+                    StripLayoutTab stripTab = findTabById(tab.getId());
+                    assumeNonNull(stripTab);
+                    stripTab.setIsPinned(isPinned);
+                    mPinnedTabCount += isPinned ? 1 : -1;
+
+                    // TODO(crbug.com/436264203) Add animation.
+                    computeAndUpdateTabWidth(
+                            /* animate= */ false,
+                            /* deferAnimations= */ false,
+                            /* closedTab= */ null);
+                }
             };
 
     // External influences
@@ -582,6 +597,9 @@ public class StripLayoutHelper
     private final List<QueuedIph> mQueuedIphList = new ArrayList<>();
 
     private final StripLayoutTabDelegate mTabDelegate;
+
+    // Pinned tabs.
+    private int mPinnedTabCount;
 
     @FunctionalInterface
     interface QueuedIph {
@@ -895,7 +913,7 @@ public class StripLayoutHelper
      * @return The total effective width of pinned tabs.
      */
     private float getTotalPinnedTabsWidth() {
-        return getEffectiveTabWidth(/* isPinned= */ true) * getNumOfPinnedTabs();
+        return getEffectiveTabWidth(/* isPinned= */ true) * mPinnedTabCount;
     }
 
     /**
@@ -1156,7 +1174,13 @@ public class StripLayoutHelper
         if (mPlaceholderStripReady) {
             int numLeftoverPlaceholders = 0;
             for (int i = 0; i < mStripTabs.length; i++) {
-                if (mStripTabs[i].getIsPlaceholder()) numLeftoverPlaceholders++;
+                StripLayoutTab stripTab = mStripTabs[i];
+                if (stripTab.getIsPlaceholder()) numLeftoverPlaceholders++;
+                assumeNonNull(mModel);
+                Tab tab = mModel.getTabById(stripTab.getTabId());
+                if (tab != null) {
+                    stripTab.setIsPinned(tab.getIsPinned());
+                }
             }
 
             RecordHistogram.recordCount1000Histogram(
@@ -3502,7 +3526,6 @@ public class StripLayoutHelper
         }
     }
 
-    // TODO(crbug.com/436263003): Update to account for pinned tabs.
     @VisibleForTesting
     void updateScrollOffsetLimits() {
         mScrollDelegate.updateScrollOffsetLimits(
@@ -3529,11 +3552,15 @@ public class StripLayoutHelper
         final int count = mModel.getCount();
         StripLayoutTab[] tabs = new StripLayoutTab[count];
 
+        int oldPinnedTabCount = mPinnedTabCount;
+        mPinnedTabCount = 0;
         for (int i = 0; i < count; i++) {
             final Tab tab = assumeNonNull(mModel.getTabAt(i));
             final int id = tab.getId();
             final StripLayoutTab oldTab = findTabById(id);
-            tabs[i] = oldTab != null ? oldTab : createStripTab(id);
+            boolean isPinned = tab.getIsPinned();
+            tabs[i] = oldTab != null ? oldTab : createStripTab(id, isPinned);
+            mPinnedTabCount += isPinned ? 1 : 0;
             setAccessibilityDescription(tabs[i], tab);
         }
 
@@ -3544,9 +3571,10 @@ public class StripLayoutHelper
 
         // If the number of tabs did not change, no action is required. If a tab close is animating,
         // the resize may be handled elsewhere.
-        if (mStripTabs.length == oldTabsLength
-                || mMultiStepTabCloseAnimRunning
-                || mPendingMouseTabClosure) {
+        if (mPinnedTabCount == oldPinnedTabCount
+                && (mStripTabs.length == oldTabsLength
+                        || mMultiStepTabCloseAnimRunning
+                        || mPendingMouseTabClosure)) {
             return null;
         }
 
@@ -3805,7 +3833,7 @@ public class StripLayoutHelper
         // Moving a tab into/out-of a group may cause the orders of views (i.e. the
         // group indicator) to change. The bottom indicator width may also change.
         // Rebuild views to address this.
-        rebuildStripTabs(/* deferAnimations= */ false);
+        rebuildStripViews();
         // Since views may have swapped, re-calculate ideal positions here.
         computeIdealViewPositions();
     }
@@ -4154,7 +4182,8 @@ public class StripLayoutHelper
                         /* keyboardFocusHandler= */ this,
                         mTabLoadTrackerHost,
                         mUpdateHost,
-                        mIncognito);
+                        mIncognito,
+                        /* isPinned= */ false);
         mTabDelegate.setIsTabPlaceholder(tab, true);
 
         // TODO(crbug.com/40942588): Added placeholder a11y descriptions to prevent crash due
@@ -4169,7 +4198,7 @@ public class StripLayoutHelper
     }
 
     @VisibleForTesting
-    StripLayoutTab createStripTab(int id) {
+    StripLayoutTab createStripTab(int id, boolean isPinned) {
         // TODO: Cache these
         StripLayoutTab tab =
                 new StripLayoutTab(
@@ -4179,7 +4208,8 @@ public class StripLayoutHelper
                         /* keyboardFocusHandler= */ this,
                         mTabLoadTrackerHost,
                         mUpdateHost,
-                        mIncognito);
+                        mIncognito,
+                        isPinned);
 
         if (isSelectedTab(id)) {
             StripLayoutTabDelegate.setTabVisibility(tab, /* isVisible= */ true);
@@ -4256,18 +4286,10 @@ public class StripLayoutHelper
     }
 
     /**
-     * @return The total number of pinned tabs.
+     * @return The total number of unpinned tabs.
      */
-    // TODO(crbug.com/436263003): Precompute and cache this if possible.
-    private int getNumOfPinnedTabs() {
-        int cnt = 0;
-        for (StripLayoutTab tab : mStripTabs) {
-            if (!tab.getIsPinned()) {
-                break;
-            }
-            cnt++;
-        }
-        return cnt;
+    private int getNumOfUnpinnedTabs() {
+        return getNumLiveTabs() - mPinnedTabCount;
     }
 
     /**
@@ -4316,12 +4338,28 @@ public class StripLayoutHelper
      */
     private float getAvailableTabWidthForResizing() {
         // TODO(crbug.com/419015257): Move to separate file/delegate and add tests.
-        float availableWidth = getStripWidthForResizing();
+        float stripWidth = getStripWidthForResizing();
         for (int i = 0; i < mStripGroupTitles.length; i++) {
             final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
-            availableWidth -= (groupTitle.getWidth() - mGroupTitleOverlapWidth);
+            stripWidth -= (groupTitle.getWidth() - mGroupTitleOverlapWidth);
         }
-        return availableWidth;
+        return stripWidth - getTotalPinnedTabsWidth();
+    }
+
+    private void computeCachedTabWidth() {
+        // 1. Compute the number of unpinned tabs and the available width for them.
+        int numTabs = Math.max(getNumOfUnpinnedTabs(), 1);
+        float stripWidth = getAvailableTabWidthForResizing();
+
+        // 2. Compute additional width we gain from overlapping the tabs.
+        float overlapWidth = TAB_OVERLAP_WIDTH_DP * (numTabs - 1);
+
+        // 3. Calculate the optimal tab width.
+        float optimalTabWidth = (stripWidth + overlapWidth) / numTabs;
+
+        // 4. Calculate the realistic tab width.
+        mCachedTabWidthSupplier.set(
+                MathUtils.clamp(optimalTabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP));
     }
 
     /**
@@ -4348,23 +4386,13 @@ public class StripLayoutHelper
                         && mPendingMouseTabClosure
                         && mClosingEndMostTabDrawX == null
                         && mClosingEndMostTabWidth == null;
+
+        // 1. Recompute cached tab width.
         if (!delayingResizeForMouseClose) {
-            // 1. Compute the number of live tabs and the available width for them.
-            int numTabs = Math.max(getNumLiveTabs(), 1);
-            float stripWidth = getAvailableTabWidthForResizing();
-
-            // 2. Compute additional width we gain from overlapping the tabs.
-            float overlapWidth = TAB_OVERLAP_WIDTH_DP * (numTabs - 1);
-
-            // 3. Calculate the optimal tab width.
-            float optimalTabWidth = (stripWidth + overlapWidth) / numTabs;
-
-            // 4. Calculate the realistic tab width.
-            mCachedTabWidthSupplier.set(
-                    MathUtils.clamp(optimalTabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP));
+            computeCachedTabWidth();
         }
 
-        // 5. Prepare animations and propagate width to all tabs.
+        // 2. Prepare animations and propagate width to all tabs.
         ArrayList<Animator> resizeAnimationList = null;
         if (animate) resizeAnimationList = new ArrayList<>();
         for (int i = 0; i < mStripTabs.length; i++) {
@@ -4423,7 +4451,7 @@ public class StripLayoutHelper
             return null;
         }
 
-        // 6. Animate bottom indicator when tab width change.
+        // 3. Animate bottom indicator when tab width change.
         for (int i = 0; i < mStripGroupTitles.length; i++) {
             StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
             if (groupTitle == null) {
@@ -4539,13 +4567,10 @@ public class StripLayoutHelper
         // Shift all of the strip views over by the the left margin because we're
         // no longer base lined at 0
         if (!LocalizationUtils.isLayoutRtl()) {
-            return mScrollDelegate.getScrollOffset()
-                    + mLeftMargin
-                    + mScrollDelegate.getReorderStartMargin();
+            return mLeftMargin + mScrollDelegate.getReorderStartMargin();
         } else {
             return mWidth
                     - TAB_OVERLAP_WIDTH_DP
-                    - mScrollDelegate.getScrollOffset()
                     - mRightMargin
                     - mScrollDelegate.getReorderStartMargin();
         }
@@ -4553,8 +4578,17 @@ public class StripLayoutHelper
 
     private void computeIdealViewPositions() {
         float startX = getStartPositionForStripViews();
+        boolean scrollOffsetAdded = false;
+        boolean rtl = LocalizationUtils.isLayoutRtl();
         for (int i = 0; i < mStripViews.length; i++) {
             final StripLayoutView view = mStripViews[i];
+
+            if (!scrollOffsetAdded
+                    && (!(view instanceof StripLayoutTab)
+                            || !((StripLayoutTab) view).getIsPinned())) {
+                startX += MathUtils.flipSignIf(mScrollDelegate.getScrollOffset(), rtl);
+                scrollOffsetAdded = true;
+            }
 
             float delta;
             if (view instanceof StripLayoutTab tab) {
@@ -4570,9 +4604,7 @@ public class StripLayoutHelper
             } else if (view instanceof StripLayoutGroupTitle groupTitle) {
                 // Offset to "undo" the tab overlap width as that doesn't apply to non-tab views.
                 // Also applies the desired overlap with the previous tab.
-                float drawXOffset =
-                        MathUtils.flipSignIf(
-                                mGroupTitleDrawXOffset, LocalizationUtils.isLayoutRtl());
+                float drawXOffset = MathUtils.flipSignIf(mGroupTitleDrawXOffset, rtl);
                 setGroupTitleIdealX(groupTitle, startX + drawXOffset);
 
                 delta = (view.getWidth() - mGroupTitleOverlapWidth) * view.getWidthWeight();
@@ -4582,7 +4614,7 @@ public class StripLayoutHelper
             }
             // Trailing margins will only be nonzero during reorder mode.
             delta += view.getTrailingMargin();
-            delta = MathUtils.flipSignIf(delta, LocalizationUtils.isLayoutRtl());
+            delta = MathUtils.flipSignIf(delta, rtl);
             startX += delta;
         }
     }
@@ -4665,11 +4697,13 @@ public class StripLayoutHelper
         return offset;
     }
 
-    // TODO(crbug.com/436263003): Update to account for pinned tabs.
     private CompositorAnimator getLastTabClosedNtbAnimator() {
         // TODO(crbug.com/338332428): Unify with the stacker methods.
+        // Use cachedTabWidth, because the tab width and drawX animation might not have completed
+        // yet.
         float viewsWidth =
-                (getNumLiveTabs() * getEffectiveTabWidth(/* isPinned= */ false))
+                (getNumOfUnpinnedTabs() * getEffectiveTabWidth(/* isPinned= */ false))
+                        + getTotalPinnedTabsWidth()
                         + TAB_OVERLAP_WIDTH_DP;
         for (int i = 0; i < mStripViews.length; ++i) {
             final StripLayoutView view = mStripViews[i];
@@ -4679,7 +4713,10 @@ public class StripLayoutHelper
         }
 
         boolean rtl = LocalizationUtils.isLayoutRtl();
-        float offset = getStartPositionForStripViews() + MathUtils.flipSignIf(viewsWidth, rtl);
+        float offset =
+                getStartPositionForStripViews()
+                        + MathUtils.flipSignIf(viewsWidth, rtl)
+                        + MathUtils.flipSignIf(mScrollDelegate.getScrollOffset(), rtl);
         if (rtl) offset += TAB_OVERLAP_WIDTH_DP - mNewTabButtonWidth;
         offset = adjustNewTabButtonOffsetIfNotFull(offset);
 

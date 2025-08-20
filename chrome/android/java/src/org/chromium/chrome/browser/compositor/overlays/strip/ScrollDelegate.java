@@ -204,7 +204,9 @@ public class ScrollDelegate {
                 // Need to use real width (which gets animated to effectively 0) to smoothly scroll
                 // when (collapsing) or (using updated animations) near the end of a full tab strip.
                 boolean useRealWidth =
-                        tab.isCollapsed() || ChromeFeatureList.sTabletTabStripAnimation.isEnabled();
+                        tab.isCollapsed()
+                                || ChromeFeatureList.sTabletTabStripAnimation.isEnabled()
+                                || tab.getIsPinned();
                 float tabWidth = useRealWidth ? tab.getWidth() : cachedTabWidth;
 
                 totalViewWidth += (tabWidth - tabOverlapWidth);

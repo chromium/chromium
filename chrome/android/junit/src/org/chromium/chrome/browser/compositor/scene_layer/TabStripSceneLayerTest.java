@@ -137,6 +137,7 @@ public class TabStripSceneLayerTest {
                                 mKeyboardFocusHandler,
                                 mTabLoadTrackerCallback,
                                 mLayoutUpdateHost,
+                                false,
                                 false));
         mTabStripSceneLayer.initializeNativeForTesting();
         mStripLayoutTabs = new StripLayoutTab[] {mStripLayoutTab};

@@ -213,9 +213,11 @@ public class StripLayoutTab extends StripLayoutView {
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             TabLoadTrackerCallback loadTrackerCallback,
             LayoutUpdateHost updateHost,
-            boolean incognito) {
+            boolean incognito,
+            boolean isPinned) {
         super(incognito, clickHandler, keyboardFocusHandler, context);
         mTabId = id;
+        mIsPinned = isPinned;
         mLoadTracker = new TabLoadTracker(id, loadTrackerCallback);
         mUpdateHost = updateHost;
         mCloseButton =
