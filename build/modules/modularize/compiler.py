@@ -25,6 +25,7 @@ _FRAMEWORK = ' (framework directory)'
 # Foo.framework/Versions/A/headers/Bar.h -> Foo/Bar.h
 _FRAMEWORK_HEADER = re.compile(
     r'([^/]+)\.framework/(?:Versions/[^/]+/)?(?:Headers|Modules)/(.*)')
+_LIBCXXABI = '../../third_party/libc++abi/src/include'
 
 
 # Some of these steps are quite slow (O(minutes)).
@@ -187,7 +188,7 @@ class Compiler:
         '-o',
         '/dev/null',
     ]
-    cmd.remove('-c')
+    cmd.remove('/c' if self.os == 'win' else '-c')
     # include dir lines both start and end with whitespace
     lines = [
         line.strip() for line in subprocess.run(
@@ -207,7 +208,8 @@ class Compiler:
     # We don't care about these.
     dirs.remove('../..')
     dirs.remove('gen')
-    dirs.remove('../../third_party/libc++abi/src/include')
+    if _LIBCXXABI in dirs:
+      dirs.remove(_LIBCXXABI)
 
     out = []
     for d in dirs:

@@ -43,14 +43,16 @@ SYSROOT_PRECOMPILED_HEADERS = [
 def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
   """Applies manual augmentation of the header graph."""
 
-  def add_dep(frm, to):
-    assert to not in frm.deps
-    frm.deps.append(to)
+  def add_dep(frm, to, check=True):
+    if check:
+      assert to not in frm.deps
+    if to not in frm.deps:
+      frm.deps.append(to)
 
   # We made the assumption that the deps of something we couldn't compile is
   # the intersection of the deps of all users of it.
   # This does not hold true for stddef.h because of __need_size_t
-  add_dep(graph['stddef.h'].next, graph['__stddef_size_t.h'])
+  add_dep(graph['stddef.h'].next, graph['__stddef_size_t.h'], check=False)
 
   if compiler.os == 'android':
     # include_next behaves differently in module builds and non-module builds.
