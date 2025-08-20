@@ -103,7 +103,7 @@ void HandleSignoutForSnackbar(
   base::RecordAction(
       base::UserMetricsAction("Mobile.Signin.SnackbarUndoTapped"));
 
-  ProfileIOS* profile = browser->GetProfile();
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile);
   if (!auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
