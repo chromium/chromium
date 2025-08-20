@@ -50,10 +50,12 @@ void LogBoolean(password_manager::PasswordManagerClient* client,
 LoginStateChecker::LoginStateChecker(
     content::WebContents* web_contents,
     password_manager::PasswordManagerClient* client,
-    LoginStateResultCallback callback)
+    InitialLoginCheckFailedCallback first_check_callback,
+    LoginStateResultCallback final_check_callback)
     : content::WebContentsObserver(web_contents),
       client_(client),
-      callback_(std::move(callback)) {
+      first_check_callback_(std::move(first_check_callback)),
+      final_check_callback_(std::move(final_check_callback)) {
   CheckLoginState();
 }
 
@@ -65,15 +67,20 @@ void LoginStateChecker::DidFinishNavigation(
   CheckLoginState();
 }
 
+void LoginStateChecker::TerminateLoginChecks() {
+  std::move(final_check_callback_).Run(false);
+}
+
 void LoginStateChecker::CheckLoginState() {
-  CHECK(callback_);
+  CHECK(final_check_callback_);
+
   LogMessage(client_,
              SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_STARTED);
   // Checks if the maximum number of attempts has been reached.
   if (state_checks_count_ >= LoginStateChecker::kMaxLoginChecks) {
     LogMessage(client_, SavePasswordProgressLogger::
                             STRING_LOGIN_STATE_CHECK_MAX_ATTEMPTS_REACHED);
-    std::move(callback_).Run(false);
+    TerminateLoginChecks();
     return;
   }
 
@@ -96,7 +103,7 @@ void LoginStateChecker::OnPageContentReceived(
   if (!content) {
     LogMessage(client_,
                SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_NO_CONTENT);
-    std::move(callback_).Run(false);
+    TerminateLoginChecks();
     return;
   }
 
@@ -121,14 +128,14 @@ void LoginStateChecker::OnExecutionResponseCallback(
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
         logging_data) {
-  CHECK(callback_);
+  CHECK(final_check_callback_);
   LogMessage(
       client_,
       SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESPONSE_RECEIVED);
   if (!execution_result.response.has_value()) {
     LogMessage(client_,
                SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_FAILURE);
-    std::move(callback_).Run(false);
+    TerminateLoginChecks();
     return;
   }
 
@@ -139,7 +146,7 @@ void LoginStateChecker::OnExecutionResponseCallback(
   if (!response) {
     LogMessage(client_,
                SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_FAILURE);
-    std::move(callback_).Run(false);
+    TerminateLoginChecks();
     return;
   }
 
@@ -148,6 +155,8 @@ void LoginStateChecker::OnExecutionResponseCallback(
              SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESULT,
              is_logged_in);
   if (is_logged_in) {
-    std::move(callback_).Run(true);
+    std::move(final_check_callback_).Run(true);
+  } else if (first_check_callback_) {
+    std::move(first_check_callback_).Run();
   }
 }

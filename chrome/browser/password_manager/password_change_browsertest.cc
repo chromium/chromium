@@ -1501,6 +1501,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
+  static_cast<PasswordChangeDelegateImpl*>(delegate)
+      ->login_checker()
+      ->ResponseWithLoginStatusFirstCheck();
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kLoginFormDetected);
   // Verify that password change fails if the user is not logged in.
   static_cast<PasswordChangeDelegateImpl*>(delegate)
       ->login_checker()

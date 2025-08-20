@@ -31,22 +31,31 @@ class LoginStateChecker : public content::WebContentsObserver {
  public:
   // Maximum amount of login state checks.
   static constexpr int kMaxLoginChecks = 5;
+  using InitialLoginCheckFailedCallback = base::OnceCallback<void()>;
   using LoginStateResultCallback = base::OnceCallback<void(bool)>;
 
   LoginStateChecker(content::WebContents* web_contents,
                     password_manager::PasswordManagerClient* client,
-                    LoginStateResultCallback callback);
+                    InitialLoginCheckFailedCallback first_check_callback,
+                    LoginStateResultCallback final_check_callback);
 
   ~LoginStateChecker() override;
 
 #if defined(UNIT_TEST)
   AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
   void RespondWithLoginStatus(bool is_logged_in) {
-    std::move(callback_).Run(is_logged_in);
+    std::move(final_check_callback_).Run(is_logged_in);
+  }
+  void ResponseWithLoginStatusFirstCheck() {
+    std::move(first_check_callback_).Run();
   }
 #endif
 
  private:
+  // To be called when the login checks should be terminated due
+  // to max retries or an unexpected state.
+  void TerminateLoginChecks();
+
   OptimizationGuideKeyedService* GetOptimizationService();
 
   // Checks if the user is fully signed in on the site.
@@ -72,7 +81,8 @@ class LoginStateChecker : public content::WebContentsObserver {
 
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
-  LoginStateResultCallback callback_;
+  InitialLoginCheckFailedCallback first_check_callback_;
+  LoginStateResultCallback final_check_callback_;
 
   // The number of login state checks performed.
   int state_checks_count_ = 0;

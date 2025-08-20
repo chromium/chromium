@@ -302,6 +302,11 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
     login_state_checker_ = std::make_unique<LoginStateChecker>(
         originator_.get(),
         ChromePasswordManagerClient::FromWebContents(originator_),
+        // Callback for the first check's result.
+        base::BindOnce(&PasswordChangeDelegateImpl::UpdateState,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       State::kLoginFormDetected),
+        // Callback for the final, definitive result.
         base::BindOnce(&PasswordChangeDelegateImpl::OnLoginStateCheckResult,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -315,6 +320,7 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
     UpdateState(State::kChangePasswordFormNotFound);
     return;
   }
+  UpdateState(State::kWaitingForChangePasswordForm);
   StartBackgroundTab();
 }
 
