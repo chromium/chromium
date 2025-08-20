@@ -891,6 +891,19 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 - (void)lensOverlayResultsPagePresenter:
+            (id<LensOverlayResultsPagePresenting>)presenter
+        updateHorizontalOcclusionOffset:(CGFloat)horizontalOffset {
+  // The top and bottom insets are set to zero when the side panel is
+  // displayed since there is no Chrome UI intersecting the lens overlay.
+  // The horizontal inset is just used as layout padding.
+  UIEdgeInsets horizontalOcclusionInsets =
+      UIEdgeInsetsMake(0, horizontalOffset, 0, horizontalOffset);
+  [_selectionViewController setOcclusionInsets:horizontalOcclusionInsets
+                                    reposition:YES
+                                      animated:YES];
+}
+
+- (void)lensOverlayResultsPagePresenter:
             (LensOverlayResultsPagePresenter*)presenter
         didAdjustVisibleAreaLayoutGuide:(UILayoutGuide*)visibleAreaLayoutGuide {
   _selectionViewController.visibleAreaLayoutGuide = visibleAreaLayoutGuide;

@@ -108,6 +108,10 @@
   return CGSizeZero;
 }
 
+- (void)zoomImageToCenter:(UIEdgeInsets)insets {
+  // NO-OP
+}
+
 #pragma mark - Public
 
 - (void)simulateSelectionUpdate {

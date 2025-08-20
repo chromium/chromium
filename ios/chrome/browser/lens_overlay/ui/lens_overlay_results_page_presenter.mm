@@ -37,6 +37,9 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 // The duration of the opacity transition in the results page.
 const CGFloat kOpacityAnimationDuration = 0.4;
 
+// The horizontal occlusion inset to apply when the side panel is displayed.
+const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
+
 }  // namespace
 
 // Animator responsible for handling the hiding and showing fading transition of
@@ -427,6 +430,14 @@ const CGFloat kOpacityAnimationDuration = 0.4;
 }
 
 - (void)adjustSelectionOcclusionInsets {
+  // Update the horizontal padding for side panel display.
+  if (_baseViewController.sidePanelPresented) {
+    [_delegate
+        lensOverlayResultsPagePresenter:self
+        updateHorizontalOcclusionOffset:kSidePanelHorizontalOcclusionInset];
+    return;
+  }
+
   // Pad the offset by a small ammount to avoid having the bottom edge of the
   // selection overlapped over the sheet.
   CGFloat estimatedMediumDetentHeight =
