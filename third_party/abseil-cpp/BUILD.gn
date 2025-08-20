@@ -49,6 +49,15 @@ component("absl") {
       }
     }
   }
+  if (is_win) {
+    all_dependent_configs = [ "//tools/win/DebugVisualizers:absl" ]
+    inputs = [
+      # absl.natvis listed as an input here instead of in
+      # //tools/win/DebugVisualizers:absl to prevent unnecessary size increase
+      # in generated build files.
+      "//tools/win/DebugVisualizers/absl.natvis",
+    ]
+  }
 }
 
 group("absl_component_deps") {
