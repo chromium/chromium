@@ -6,10 +6,10 @@
 
   .results-pane {
     border: none;
-     /* Viewport height minus the searchbox height and margin. */
+    /* Viewport height minus the searchbox height and margin. */
     height: calc(100vh - 76px);
     inset-inline-start: 0;
-     /*
+    /*
       * We need to offset by the searchbox height and margin since we are in a
       * fixed position.
       */
@@ -25,7 +25,7 @@
   }
 
   :host([dark-mode]) .results-pane {
-    background-color: #1F1F1F;
+    background-color: #1f1f1f;
   }
 
   :host([enable-aim-searchbox]) .results-pane {
@@ -48,7 +48,7 @@
   }
 
   :host([dark-mode]) #ghostLoader {
-    background-color: #1F1F1F;
+    background-color: #1f1f1f;
   }
 
   :host(:not([is-loading-results])) #ghostLoader,
@@ -77,8 +77,8 @@
     width: 100%;
     --color-searchbox-results-background: #ffffffff;
     /* Colors for searchbox ghost loader */
-    --color-searchbox-ghost-loader-loading-bar-1: #F1F3F4;
-    --color-searchbox-ghost-loader-loading-bar-2: #ECEDEF;
+    --color-searchbox-ghost-loader-loading-bar-1: #f1f3f4;
+    --color-searchbox-ghost-loader-loading-bar-2: #ecedef;
   }
 
   /* Hide the old searchbox when the AIM searchbox is enabled. */
@@ -87,7 +87,7 @@
   }
 
   :host([dark-mode]) #searchboxContainer {
-    background-color: #1F1F1F;
+    background-color: #1f1f1f;
     /* Colors used in the cr-searchbox results dropdown */
     --color-searchbox-answer-icon-background: #004a77ff;
     --color-searchbox-answer-icon-foreground: #c2e7ffff;
@@ -95,34 +95,34 @@
     --color-searchbox-results-action-chip: #047db7ff;
     --color-searchbox-results-action-chip-icon: #a8c7faff;
     --color-searchbox-results-action-chip-focus-outline: #669df6ff;
-    --color-searchbox-results-background: #28292A;
-    --color-searchbox-results-background-hovered: #3C4043;
+    --color-searchbox-results-background: #28292a;
+    --color-searchbox-results-background-hovered: #3c4043;
     --color-searchbox-results-button-hover: #fdfcfb1a;
     --color-searchbox-results-dim-selected: #c7c7c7ff;
-    --color-searchbox-results-focus-indicator: #3C4043;
-    --color-searchbox-results-foreground: #E8EAED;
+    --color-searchbox-results-focus-indicator: #3c4043;
+    --color-searchbox-results-foreground: #e8eaed;
     --color-searchbox-results-foreground-dimmed: #c7c7c7ff;
-    --color-searchbox-results-icon: #9DA3A9;
-    --color-searchbox-results-icon-container-background: #3C4043;
+    --color-searchbox-results-icon: #9da3a9;
+    --color-searchbox-results-icon-container-background: #3c4043;
     --color-searchbox-results-icon-focused-outline: #a8c7faff;
-    --color-searchbox-results-icon-selected: #9DA3A9;
-    --color-searchbox-results-typed-prefix: #9DA3A9;
+    --color-searchbox-results-icon-selected: #9da3a9;
+    --color-searchbox-results-typed-prefix: #9da3a9;
     --color-searchbox-results-url: #a8c7faff;
     --color-searchbox-results-url-selected: #a8c7faff;
-    --color-searchbox-search-icon-background: #9DA3A9;
-    --color-searchbox-thumbnail-overlay: #8CB7FA66;
-    --color-searchbox-thumbnail-outline: #8CB7FA;
+    --color-searchbox-search-icon-background: #9da3a9;
+    --color-searchbox-thumbnail-overlay: #8cb7fa66;
+    --color-searchbox-thumbnail-outline: #8cb7fa;
     /* Colors specific to the cr-searchbox input */
     --color-searchbox-background-hovered: #303134;
     --color-searchbox-background: #303134;
     --color-searchbox-border: #dadce0ff;
-    --color-searchbox-foreground: #BDC1C6;
-    --color-searchbox-placeholder: #9E9E9E;
+    --color-searchbox-foreground: #bdc1c6;
+    --color-searchbox-placeholder: #9e9e9e;
     --color-searchbox-shadow: #20212451;
     /* Colors for searchbox ghost loader */
-    --color-searchbox-ghost-loader-spinner: #70757A;
-    --color-searchbox-ghost-loader-loading-bar-1: #3C4043;
-    --color-searchbox-ghost-loader-loading-bar-2: #4D5156;
+    --color-searchbox-ghost-loader-spinner: #70757a;
+    --color-searchbox-ghost-loader-loading-bar-1: #3c4043;
+    --color-searchbox-ghost-loader-loading-bar-2: #4d5156;
     /* Colors for logo in searchbox. */
     --color-searchbox-google-g-background: white;
   }
@@ -136,14 +136,14 @@
   }
 
   cr-icon-button.icon-arrow-back {
-    --cr-icon-button-fill-color:  #80868B;
+    --cr-icon-button-fill-color: #80868b;
     margin-block-start: 26px;
     margin-inline-start: 8px;
     margin-inline-end: 8px;
   }
 
   :host([dark-mode]) cr-icon-button.icon-arrow-back {
-     --cr-icon-button-fill-color: #70757A;
+    --cr-icon-button-fill-color: #70757a;
   }
 
   cr-searchbox-ghost-loader {
@@ -166,13 +166,13 @@
   }
 
   #uploadProgressBar {
-    background-color: #4E8FF8;
+    background-color: #4e8ff8;
     height: 100%;
     width: 0; /* Starts at 0% width and animates to 100% width via JS. */
   }
 
   #uploadProgressBarContainer {
-    background-color: #D0E4FF;
+    background-color: #d0e4ff;
     height: 3px;
     inset-block-start: 76px;
     inset-inline-start: 0;
@@ -182,9 +182,8 @@
     z-index: 2; /* Ensure that the progress bar is above the ghost loader. */
   }
 
+  /* Composebox default colors are for light mode on AIM results. */
   #composeboxContainer {
-    /* Temporary CSS to make the composebox visible. */
-    --ntp-composebox-background-color: #F0F2F5;
     display: none;
     inset-block-end: 0;
     position: absolute;
@@ -192,9 +191,39 @@
     z-index: 2;
   }
 
+  :host([is-on-aim-results]) #composeboxContainer {
+    /* Only set this transition for AIM results so it only applies when going
+      * from All tab to AIM results and not the reverse. */
+    transition: --color-new-tab-page-composebox-scrim-background 0.5s ease-in-out;
+  }
+
+  /* Light mode not on AIM results */
+  :host(:not([is-on-aim-results])) #composeboxContainer {
+    --color-new-tab-page-composebox-scrim-background: white;
+    --ntp-composebox-background-color: #f3f5f6;
+  }
+
+  /* Dark mode not on AIM results */
+  :host(:not([is-on-aim-results])[dark-mode]) #composeboxContainer {
+    --ntp-composebox-background-color: #28292a;
+    --color-new-tab-page-composebox-cancel-button: #bfbfbf;
+    --color-new-tab-page-composebox-hover: #3e3f43;
+    --color-new-tab-page-composebox-scrim-background: #1f1f1f;
+  }
+
+  /* Dark mode on AIM results */
+  :host([is-on-aim-results][dark-mode]) #composeboxContainer {
+    --ntp-composebox-background-color: #1d1e26;
+    --color-new-tab-page-composebox-scrim-background: #101218;
+  }
+
   #composeboxContainer::before {
-    content: '';
-    background: linear-gradient(180deg, transparent 1%, white 52px);
+    content: "";
+    background: linear-gradient(
+      180deg,
+      transparent 1%,
+      var(--color-new-tab-page-composebox-scrim-background) 52px
+    );
     inset: -66px 0 0;
     pointer-events: none;
     position: absolute;
@@ -224,7 +253,9 @@
    * dropdown isn't showing (no results available). Only show for contextual
    * searchboxes.
    */
-  :host([show-ghost-loader]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
+  :host([show-ghost-loader])
+    #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible]))
+    cr-searchbox-ghost-loader {
     display: block;
   }
 
@@ -232,7 +263,7 @@
    * When CSB motion tweaks are enabled, show the ghost loader when the
    * searchbox is focused.
    */
-   :host([enable-csb-motion-tweaks][show-ghost-loader]) cr-searchbox-ghost-loader {
+  :host([enable-csb-motion-tweaks][show-ghost-loader]) cr-searchbox-ghost-loader {
     display: block;
   }
 
@@ -262,32 +293,40 @@
 
   /* Fade in the searchbox dropdown once the dropdown becomes visible. */
   :host([enable-csb-motion-tweaks][show-ghost-loader])
-    #searchboxContainer:has(cr-searchbox[dropdown-is-visible]) cr-searchbox::part(searchbox-dropdown) {
+    #searchboxContainer:has(cr-searchbox[dropdown-is-visible])
+    cr-searchbox::part(searchbox-dropdown) {
     transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 1;
   }
 </style>
-<div id="searchboxContainer"
-     on-escape-searchbox="handleEscapeSearchbox"
-     on-focusout="onSearchboxFocusOut_">
+<div
+  id="searchboxContainer"
+  on-escape-searchbox="handleEscapeSearchbox"
+  on-focusout="onSearchboxFocusOut_"
+>
   <template is="dom-if" if="[[isBackArrowVisible]]">
-    <cr-icon-button id="backButton" class="action-icon icon-arrow-back"
-        on-click="onBackArrowClick" aria-label="$i18n{backButton}">
+    <cr-icon-button
+      id="backButton"
+      class="action-icon icon-arrow-back"
+      on-click="onBackArrowClick"
+      aria-label="$i18n{backButton}"
+    >
     </cr-icon-button>
   </template>
-    <cr-searchbox
+  <cr-searchbox
     id="searchbox"
     placeholder-text="{{placeholderText}}"
     searchbox-aria-description="[[getSearchboxAriaDescription(showErrorState, showGhostLoader)]]"
     on-focusin="onSearchboxFocusIn_"
-    >
+  >
   </cr-searchbox>
   <cr-searchbox-ghost-loader
-      id="searchboxGhostLoader"
-      show-error-state="{{showErrorState}}"
-      page-content-type="[[pageContentType]]"
-      suggestion-count="[[searchboxSuggestionCount]]"
-      tabindex="-1">
+    id="searchboxGhostLoader"
+    show-error-state="{{showErrorState}}"
+    page-content-type="[[pageContentType]]"
+    suggestion-count="[[searchboxSuggestionCount]]"
+    tabindex="-1"
+  >
   </cr-searchbox-ghost-loader>
 </div>
 
@@ -303,13 +342,16 @@
   ></div>
 </div>
 
-<side-panel-ghost-loader id="ghostLoader"
-    class="results-pane"></side-panel-ghost-loader>
+<side-panel-ghost-loader id="ghostLoader" class="results-pane"></side-panel-ghost-loader>
 
-<iframe name="results" id="results" class="results-pane"
-    allow="cross-origin-isolated; display-capture; geolocation; microphone;
+<iframe
+  name="results"
+  id="results"
+  class="results-pane"
+  allow="cross-origin-isolated; display-capture; geolocation; microphone;
            clipboard-read; clipboard-write;"
-    frameBorder="0">
+  frameborder="0"
+>
 </iframe>
 <feedback-toast id="feedbackToast"></feedback-toast>
 
@@ -321,6 +363,5 @@
 </cr-toast>
 
 <div id="composeboxContainer">
-  <ntp-composebox id="composebox" is-collapsible hide-file-inputs>
-  </ntp-composebox>
+  <ntp-composebox id="composebox" is-collapsible hide-file-inputs> </ntp-composebox>
 </div>

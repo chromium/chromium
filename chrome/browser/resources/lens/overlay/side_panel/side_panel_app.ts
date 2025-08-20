@@ -187,6 +187,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         type: Number,
         value: 0,
       },
+      isOnAimResults: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -247,6 +252,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   declare private toastMessage: string;
   // The number of suggestions currently being shown to the user.
   declare private searchboxSuggestionCount: number;
+  // Whether the results in the iframe are currently on the AIM UI.
+  declare private isOnAimResults: boolean;
   private eventTracker_: EventTracker = new EventTracker();
 
   private searchboxBoundingClientRectObserver: ResizeObserver =
@@ -292,6 +299,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
           this.pageContentTypeChanged.bind(this)),
       this.browserProxy.callbackRouter.showToast.addListener(
           this.showMessageToast.bind(this)),
+      this.browserProxy.callbackRouter.aimResultsChanged.addListener(
+          this.onAimResultsChanged.bind(this)),
     ];
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
@@ -552,6 +561,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     }
   }
 
+  private onAimResultsChanged(onAim: boolean) {
+    this.isOnAimResults = onAim;
+  }
+
   private async showToast(toast: CrToastElement, message?: string) {
     if (toast.open) {
       // If toast already open, wait after hiding so that animation is
@@ -589,5 +602,17 @@ declare global {
     'lens-side-panel-app': LensSidePanelAppElement;
   }
 }
+
+// Register the custom property for the composebox gradient color.
+// Custom properties are ignored by the browser in shadow DOMs, so need to
+// register them globally here. Additionally, the property can only by
+// registered once per document, so this must be done in the main window, rather
+// than in the class itself.
+window.CSS.registerProperty({
+  name: '--color-new-tab-page-composebox-scrim-background',
+  syntax: '<color>',
+  inherits: true,
+  initialValue: 'white',
+});
 
 customElements.define(LensSidePanelAppElement.is, LensSidePanelAppElement);
