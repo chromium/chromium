@@ -5,7 +5,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
-#include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <fractional-scale-v1-client-protocol.h>
 #include <linux-drm-syncobj-v1-client-protocol.h>
@@ -45,9 +44,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_wp_color_management_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_surface.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
 
 namespace ui {
 
@@ -202,25 +198,6 @@ bool WaylandSurface::Initialize() {
     if (!log_once) {
       log_once = true;
       LOG(WARNING) << "Server doesn't support wp_content_type_v1";
-    }
-  }
-
-  if (auto* zcr_color_manager = connection_->zcr_color_manager()) {
-    zcr_color_management_surface_ =
-        std::make_unique<WaylandZcrColorManagementSurface>(
-            zcr_color_manager->CreateColorManagementSurface(surface())
-                .release(),
-            connection_);
-    if (!zcr_color_management_surface_) {
-      LOG(ERROR) << "Failed to create zcr_color_management_surface.";
-      return false;
-    }
-    zcr_color_management_surface_->SetDefaultColorSpace();
-  } else {
-    static bool log_once = false;
-    if (!log_once) {
-      log_once = true;
-      LOG(WARNING) << "Server doesn't support zcr_color_management_surface.";
     }
   }
 
@@ -568,14 +545,6 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
   // Setting Color Space of surface.
   // Should be called infrequently: only when color space is changing to a
   // different one.
-  if (zcr_color_management_surface_ &&
-      pending_state_.color_space != state_.color_space) {
-    auto* color_manager = connection_->zcr_color_manager();
-    auto wayland_color_space =
-        color_manager->GetColorSpace(pending_state_.color_space);
-    zcr_color_management_surface_->SetColorSpace(wayland_color_space);
-    needs_commit = true;
-  }
   if (wp_color_management_surface_ &&
       (pending_state_.color_space != state_.color_space ||
        pending_state_.hdr_metadata != state_.hdr_metadata)) {

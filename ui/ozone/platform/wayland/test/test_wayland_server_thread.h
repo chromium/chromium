@@ -18,7 +18,6 @@
 #include "base/threading/thread_checker.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
-#include "ui/ozone/platform/wayland/test/mock_wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/test/mock_wp_presentation.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_activation_v1.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_shell.h"
@@ -152,10 +151,6 @@ class TestWaylandServerThread : public base::Thread,
 
   TestWpPointerGestures& wp_pointer_gestures() { return wp_pointer_gestures_; }
 
-  MockZcrColorManagerV1* zcr_color_manager_v1() {
-    return &zcr_color_manager_v1_;
-  }
-
   MockXdgActivationV1* xdg_activation_v1() { return &xdg_activation_v1_; }
 
   MockXdgToplevelIconManagerV1* xdg_toplevel_icon_manager_v1() {
@@ -217,7 +212,6 @@ class TestWaylandServerThread : public base::Thread,
   TestSeat seat_;
   TestZXdgOutputManager zxdg_output_manager_;
   MockXdgShell xdg_shell_;
-  ::testing::NiceMock<MockZcrColorManagerV1> zcr_color_manager_v1_;
   TestZwpTextInputManagerV1 zwp_text_input_manager_v1_;
   TestZwpTextInputManagerV3 zwp_text_input_manager_v3_;
   TestWpLinuxDrmSyncobjManagerV1 wp_linux_drm_syncobj_manager_v1_;

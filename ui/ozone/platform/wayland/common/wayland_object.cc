@@ -6,7 +6,6 @@
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <appmenu-client-protocol.h>
-#include <chrome-color-management-client-protocol.h>
 #include <color-management-v1-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <cursor-shape-v1-client-protocol.h>
@@ -212,11 +211,6 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(xx_session_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xx_toplevel_session_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_alpha_compositing_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_blending_v1)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_output_v1)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_surface_v1)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_manager_v1)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_space_creator_v1)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_space_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_offer_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_source_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_v1)

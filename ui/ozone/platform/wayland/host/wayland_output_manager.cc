@@ -50,11 +50,6 @@ void WaylandOutputManager::AddWaylandOutput(WaylandOutput::Id output_id,
     wayland_output->InitializeXdgOutput(connection_->xdg_output_manager_v1());
   }
 
-  if (connection_->zcr_color_manager()) {
-    wayland_output->InitializeColorManagementOutput(
-        connection_->zcr_color_manager());
-  }
-
   if (auto* wp_color_manager = connection_->wp_color_manager();
       wp_color_manager && wp_color_manager->ready()) {
     wayland_output->InitializeWpColorManagementOutput(wp_color_manager);
@@ -89,13 +84,6 @@ void WaylandOutputManager::InitializeAllXdgOutputs() {
   DCHECK(connection_->xdg_output_manager_v1());
   for (const auto& output : output_list_)
     output.second->InitializeXdgOutput(connection_->xdg_output_manager_v1());
-}
-
-void WaylandOutputManager::InitializeAllColorManagementOutputs() {
-  DCHECK(connection_->zcr_color_manager());
-  for (const auto& output : output_list_)
-    output.second->InitializeColorManagementOutput(
-        connection_->zcr_color_manager());
 }
 
 void WaylandOutputManager::InitializeAllWpColorManagementOutputs() {

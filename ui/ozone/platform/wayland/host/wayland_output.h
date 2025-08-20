@@ -21,8 +21,6 @@ namespace ui {
 class WaylandConnection;
 class WaylandWpColorManagementOutput;
 class WaylandWpColorManager;
-class WaylandZcrColorManagementOutput;
-class WaylandZcrColorManager;
 class XDGOutput;
 
 // WaylandOutput objects keep track of wl_output information received through
@@ -107,7 +105,6 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
 
   void Initialize(Delegate* delegate);
   void InitializeXdgOutput(zxdg_output_manager_v1* manager);
-  void InitializeColorManagementOutput(WaylandZcrColorManager* manager);
   void InitializeWpColorManagementOutput(WaylandWpColorManager* manager);
 
   const Metrics& GetMetrics() const;
@@ -117,9 +114,6 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   // with calls to GetMetrics().
   Id output_id() const { return output_id_; }
   float scale_factor() const;
-  WaylandZcrColorManagementOutput* color_management_output() const {
-    return color_management_output_.get();
-  }
   WaylandWpColorManagementOutput* wp_color_management_output() const {
     return wp_color_management_output_.get();
   }
@@ -189,7 +183,6 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   const Id output_id_ = 0;
   wl::Object<wl_output> output_;
   std::unique_ptr<XDGOutput> xdg_output_;
-  std::unique_ptr<WaylandZcrColorManagementOutput> color_management_output_;
   std::unique_ptr<WaylandWpColorManagementOutput> wp_color_management_output_;
 
   float scale_factor_ = kDefaultScaleFactor;

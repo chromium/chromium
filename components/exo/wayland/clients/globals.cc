@@ -65,7 +65,6 @@ void RegistryHandler(void* data,
   BIND(zaura_output_manager_v2, aura_output_manager_v2)
   BIND(zwp_linux_dmabuf_v1, linux_dmabuf)
   BIND(wl_subcompositor, subcompositor)
-  BIND(zcr_color_manager_v1, color_manager)
   BIND(zwp_input_timestamps_manager_v1, input_timestamps_manager)
   BIND(zwp_fullscreen_shell_v1, fullscreen_shell)
   BIND_VECTOR(wl_output, outputs)
