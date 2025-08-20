@@ -35,7 +35,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/background/background_contents.h"
@@ -454,16 +454,6 @@ base::FunctionRef<bool(const Browser*)> MaybeLazyIsFullscreen(
   // In the control branch, eagerly evaluate ShouldHideUIForFullscreen.
   return browser->ShouldHideUIForFullscreen() ? &AlwaysReturnTrue
                                               : &AlwaysReturnFalse;
-}
-
-bool IsActorOperatingOnWebContents(Profile* profile, content::WebContents* wc) {
-  auto* actor_service = actor::ActorKeyedService::Get(profile);
-  if (!actor_service) {
-    return false;
-  }
-
-  const auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(wc);
-  return tab_interface && actor_service->IsAnyTaskActingOnTab(*tab_interface);
 }
 
 }  // namespace
@@ -2394,7 +2384,7 @@ bool Browser::IsWebContentsCreationOverridden(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url) {
-  if (IsActorOperatingOnWebContents(
+  if (actor::IsActorOperatingOnWebContents(
           profile(), content::WebContents::FromRenderFrameHost(opener))) {
     // If an ExecutionEngine is acting on the opener, prevent it from creating
     // a new WebContents. We'll instead force the navigation to happen in the
@@ -2418,7 +2408,7 @@ WebContents* Browser::CreateCustomWebContents(
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
   if (auto* opener_contents = content::WebContents::FromRenderFrameHost(opener);
-      IsActorOperatingOnWebContents(profile(), opener_contents)) {
+      actor::IsActorOperatingOnWebContents(profile(), opener_contents)) {
     // If an ExecutionEngine is acting on the opener, we force the navigation
     // to happen in the same tab.
     content::NavigationController::LoadURLParams params(target_url);
