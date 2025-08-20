@@ -14,9 +14,10 @@ namespace {
 const CGFloat kDisabledButtonAlpha = 0.5;
 
 // Updates `configuration` with the configuration shared with all buttons, and
-// sets its `font`.
+// sets its `font` and `color`.
 void CommonSetupButtonConfiguration(UIButtonConfiguration* configuration,
-                                    UIFont* font) {
+                                    UIFont* font,
+                                    UIColor* foregroundColor) {
   configuration.contentInsets = NSDirectionalEdgeInsetsMake(
       kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
 
@@ -36,6 +37,7 @@ void CommonSetupButtonConfiguration(UIButtonConfiguration* configuration,
     NSMutableDictionary<NSAttributedStringKey, id>* outgoing =
         [incoming mutableCopy];
     outgoing[NSFontAttributeName] = font;
+    outgoing[NSForegroundColorAttributeName] = foregroundColor;
     return outgoing;
   };
 }
@@ -83,10 +85,11 @@ UIButtonConfigurationUpdateHandler PrimaryActionConfigurationUpdateHandler() {
 #endif
 
     UIColor* background_color = [UIColor colorNamed:kBlueColor];
+    CGFloat alpha = 1;
     if (button.state & UIControlStateTunedDown) {
       background_color = [UIColor colorNamed:kBlue100Color];
     } else if (!button.enabled) {
-      background_color = [UIColor colorNamed:kGrey100Color];
+      alpha = kDisabledButtonAlpha;
     }
 
     UIButtonConfiguration* configuration = button.configuration;
@@ -96,11 +99,13 @@ UIButtonConfigurationUpdateHandler PrimaryActionConfigurationUpdateHandler() {
     } else {
       configuration.background.backgroundColor = background_color;
     }
+    button.alpha = alpha;
     button.configuration = configuration;
   };
 }
 
-// Returns a configuration update handler to be used for primary action.
+// Returns a configuration update handler to be used for destructive primary
+// action.
 UIButtonConfigurationUpdateHandler
 PrimaryDestructiveActionConfigurationUpdateHandler() {
   return ^(UIButton* button) {
@@ -116,11 +121,11 @@ PrimaryDestructiveActionConfigurationUpdateHandler() {
 #endif
 
     UIColor* background_color = [UIColor colorNamed:kRedColor];
+    CGFloat alpha = 1;
     if (button.state & UIControlStateTunedDown) {
       background_color = [UIColor colorNamed:kRed100Color];
     } else if (!button.enabled) {
-      background_color =
-          [background_color colorWithAlphaComponent:kDisabledButtonAlpha];
+      alpha = kDisabledButtonAlpha;
     }
 
     UIButtonConfiguration* configuration = button.configuration;
@@ -130,7 +135,16 @@ PrimaryDestructiveActionConfigurationUpdateHandler() {
     } else {
       configuration.background.backgroundColor = background_color;
     }
+    button.alpha = alpha;
     button.configuration = configuration;
+  };
+}
+
+// Returns a configuration update handler to be used for non-primary action.
+UIButtonConfigurationUpdateHandler
+NonPrimaryActionConfigurationUpdateHandler() {
+  return ^(UIButton* button) {
+    button.alpha = button.enabled ? 1 : kDisabledButtonAlpha;
   };
 }
 
@@ -142,12 +156,11 @@ const CGFloat kButtonVerticalInsets = 14.5;
 const CGFloat kPrimaryButtonCornerRadius = 15;
 
 void UpdateButtonToMatchPrimaryAction(ChromeButton* button) {
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  UIColor* foregroundColor = [UIColor colorNamed:kSolidButtonTextColor];
   UIButtonConfiguration* configuration = button.configuration;
-  CommonSetupButtonConfiguration(
-      configuration,
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
-  configuration.baseForegroundColor =
-      [UIColor colorNamed:kSolidButtonTextColor];
+  CommonSetupButtonConfiguration(configuration, font, foregroundColor);
+  configuration.baseForegroundColor = foregroundColor;
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     button.tintColor = [UIColor colorNamed:kBlueColor];
@@ -163,11 +176,11 @@ void UpdateButtonToMatchPrimaryAction(ChromeButton* button) {
 
 void UpdateButtonToMatchPrimaryDestructiveAction(ChromeButton* button) {
   UIButtonConfiguration* configuration = button.configuration;
+  UIColor* foregroundColor = [UIColor colorNamed:kSolidButtonTextColor];
   CommonSetupButtonConfiguration(
-      configuration,
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
-  configuration.baseForegroundColor =
-      [UIColor colorNamed:kSolidButtonTextColor];
+      configuration, [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline],
+      foregroundColor);
+  configuration.baseForegroundColor = foregroundColor;
   configuration.background.backgroundColor = [UIColor colorNamed:kRedColor];
   button.configuration = configuration;
   button.configurationUpdateHandler =
@@ -176,39 +189,34 @@ void UpdateButtonToMatchPrimaryDestructiveAction(ChromeButton* button) {
 
 void UpdateButtonToMatchSecondaryAction(ChromeButton* button) {
   UIButtonConfiguration* configuration = button.configuration;
+  UIColor* foregroundColor;
+  UIFont* font;
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
-    CommonSetupButtonConfiguration(
-        configuration,
-        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
-  } else {
-#endif
-    CommonSetupButtonConfiguration(
-        configuration, [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-  }
-#endif
-
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-  if (@available(iOS 26, *)) {
+    foregroundColor = [UIColor colorNamed:kSolidBlackColor];
+    font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     button.tintColor = [UIColor colorNamed:kSolidWhiteColor];
-    configuration.baseForegroundColor = [UIColor colorNamed:kSolidBlackColor];
   } else {
 #endif
+    foregroundColor = [UIColor colorNamed:kBlueColor];
+    font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     configuration.background.backgroundColor = [UIColor clearColor];
-    configuration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
 #endif
+  CommonSetupButtonConfiguration(configuration, font, foregroundColor);
+  configuration.baseForegroundColor = foregroundColor;
   button.configuration = configuration;
-  button.configurationUpdateHandler = nil;
+  button.configurationUpdateHandler =
+      NonPrimaryActionConfigurationUpdateHandler();
 }
 
 void UpdateButtonToMatchEqualWeightAction(ChromeButton* button) {
   UIButtonConfiguration* configuration = button.configuration;
+  UIColor* foregroundColor = [UIColor colorNamed:kBlueColor];
   CommonSetupButtonConfiguration(
-      configuration,
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
+      configuration, [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline],
+      foregroundColor);
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     button.tintColor = [UIColor colorNamed:kBlueHaloColor];
@@ -219,8 +227,10 @@ void UpdateButtonToMatchEqualWeightAction(ChromeButton* button) {
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
 #endif
-  configuration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+  configuration.baseForegroundColor = foregroundColor;
   button.configuration = configuration;
+  button.configurationUpdateHandler =
+      NonPrimaryActionConfigurationUpdateHandler();
 }
 
 ChromeButton* PrimaryActionButton() {

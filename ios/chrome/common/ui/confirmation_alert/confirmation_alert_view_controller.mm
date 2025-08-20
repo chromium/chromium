@@ -959,33 +959,6 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 // Checks which trait has been changed and adapts the UI to reflect this new
 // environment.
 - (void)updateRegisteredTraits:(UITraitCollection*)previousTraitCollection {
-  // Update fonts for specific content sizes.
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    SetConfigurationFont(_primaryButton,
-                         PreferredFontForTextStyleWithMaxCategory(
-                             UIFontTextStyleHeadline,
-                             self.traitCollection.preferredContentSizeCategory,
-                             UIContentSizeCategoryExtraExtraExtraLarge));
-
-    UIFont* newFont;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-    if (@available(iOS 26, *)) {
-      newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    } else {
-#endif
-      newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-    }
-#endif
-    if (self.secondaryActionString) {
-      SetConfigurationFont(self.secondaryActionButton, newFont);
-    }
-    if (self.tertiaryActionString) {
-      SetConfigurationFont(self.tertiaryActionButton, newFont);
-    }
-  }
-
   // Update constraints for different size classes.
   BOOL hasNewHorizontalSizeClass =
       previousTraitCollection.horizontalSizeClass !=

@@ -857,7 +857,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
                    forControlEvents:UIControlEventTouchUpInside];
-    _primaryActionButton.configurationUpdateHandler = self.updateHandler;
     _primaryActionButton.enabled = _primaryButtonEnabled;
     _primaryActionButton.hidden =
         (self.actionButtonsVisibility == ActionButtonsVisibility::kHidden);
@@ -1082,20 +1081,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
             bannerImageView.image = resizedBannerImage;
           },
           self.bannerImageView));
-}
-
-- (void)setPrimaryActionButtonColor:(UIButton*)button {
-  UIButtonConfiguration* buttonConfiguration = button.configuration;
-  BOOL useEquallyWeightedButtons =
-      (self.actionButtonsVisibility ==
-       ActionButtonsVisibility::kEquallyWeightedButtonShown);
-  buttonConfiguration.background.backgroundColor =
-      useEquallyWeightedButtons ? [UIColor colorNamed:kBlueHaloColor]
-                                : [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.baseForegroundColor =
-      useEquallyWeightedButtons ? [UIColor colorNamed:kBlueColor]
-                                : [UIColor colorNamed:kSolidButtonTextColor];
-  button.configuration = buttonConfiguration;
 }
 
 // Sets or resets the "Read More" text label when the bottom hasn't been

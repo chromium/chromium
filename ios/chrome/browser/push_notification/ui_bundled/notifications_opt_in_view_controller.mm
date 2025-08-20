@@ -106,7 +106,6 @@ bool TooNarrowForBanner(UIView* view) {
                                               .bottomAnchor],
   ]];
   [self loadModel];
-  [self setPrimaryButtonConfiguration];
   [self updatePrimaryButtonState];
   [super viewDidLoad];
 
@@ -330,34 +329,6 @@ bool TooNarrowForBanner(UIView* view) {
 - (void)updateTableViewHeightConstraint {
   [_tableView layoutIfNeeded];
   _tableViewHeightConstraint.constant = _tableView.contentSize.height;
-}
-
-// Sets the configurationUpdateHandler for the primaryActionButton to handle the
-// button's state changes. The button is blue when enabled, and grayed out when
-// disabled.
-- (void)setPrimaryButtonConfiguration {
-  self.updateHandler = ^(UIButton* incomingButton) {
-    UIButtonConfiguration* updatedConfig = incomingButton.configuration;
-    switch (incomingButton.state) {
-      case UIControlStateDisabled: {
-        updatedConfig.background.backgroundColor =
-            [UIColor colorNamed:kTertiaryBackgroundColor];
-        updatedConfig.baseForegroundColor =
-            [UIColor colorNamed:kTextTertiaryColor];
-        break;
-      }
-      case UIControlStateNormal: {
-        updatedConfig.background.backgroundColor =
-            [UIColor colorNamed:kBlueColor];
-        updatedConfig.baseForegroundColor =
-            [UIColor colorNamed:kBackgroundColor];
-        break;
-      }
-      default:
-        break;
-    }
-    incomingButton.configuration = updatedConfig;
-  };
 }
 
 // Enables the primary action button if any one of the toggles are on. Disables
