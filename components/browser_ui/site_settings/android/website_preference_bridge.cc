@@ -532,15 +532,20 @@ static void JNI_WebsitePreferenceBridge_SetEphemeralGrantForTesting(  // IN-TEST
     const JavaParamRef<jobject>& jprimary_url,
     const JavaParamRef<jobject>& jsecondary_url) {
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
+  auto type = static_cast<ContentSettingsType>(content_settings_type);
+  PermissionSetting setting = CONTENT_SETTING_ALLOW;
+  if (type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+    setting = GeolocationSetting{PermissionOption::kAllowed,
+                                 PermissionOption::kAllowed};
+  }
   content_settings::ContentSettingConstraints constraints;
   constraints.set_session_model(
       content_settings::mojom::SessionModel::ONE_TIME);
   GetHostContentSettingsMap(browser_context)
-      ->SetContentSettingDefaultScope(
+      ->SetPermissionSettingDefaultScope(
           url::GURLAndroid::ToNativeGURL(env, jprimary_url),
-          url::GURLAndroid::ToNativeGURL(env, jsecondary_url),
-          static_cast<ContentSettingsType>(content_settings_type),
-          CONTENT_SETTING_ALLOW, constraints);
+          url::GURLAndroid::ToNativeGURL(env, jsecondary_url), type, setting,
+          constraints);
 }
 
 static void JNI_WebsitePreferenceBridge_GetOriginsForPermission(
