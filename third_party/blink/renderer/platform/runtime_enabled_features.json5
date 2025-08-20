@@ -2998,7 +2998,7 @@
     },
     {
       name: "MaskDeserializationTimeForCrossOriginMessages",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Enables mirroring for stretchy and large MathML operators when
