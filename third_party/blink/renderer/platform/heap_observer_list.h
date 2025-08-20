@@ -31,7 +31,9 @@ class PLATFORM_EXPORT HeapObserverList final {
     DCHECK(!HasObserver(observer));
     DCHECK_EQ(observers_to_indices_.size(), observers_.size());
     // `push_back()` may trigger GC which results in `observers_to_indices_`
-    // missing the to-be-added observer.
+    // missing the to-be-added observer. This is okay in general as `observer`
+    // is alive and in particular for `CleanupDeadObservers()` which is aware of
+    // this fact.
     observers_.push_back(observer);
     observers_to_indices_.insert(observer, observers_.size() - 1);
     if (check_capacity_) [[unlikely]] {
@@ -54,17 +56,21 @@ class PLATFORM_EXPORT HeapObserverList final {
       return;
     }
     const wtf_size_t index = it->value;
-    // `erase()` may trigger GC which results in `observers_to_indices_` already
-    // missing the to-be-deleted observer.
-    observers_to_indices_.erase(it);
-
     const wtf_size_t last_observer_index = observers_.size() - 1;
+    CHECK_LT(index, observers_.size());
     if (index != last_observer_index) {
       auto* last_observer = observers_[last_observer_index].Get();
       observers_[index] = last_observer;
       observers_to_indices_.find(last_observer)->value = index;
     }
+    // `pop_back()` cannot invoke GC.
     observers_.pop_back();
+
+    // `erase()` may trigger GC which is not a problem at this point as
+    // `observers_` is already clean. It may just mean that more observer may be
+    // removed from the data structure.
+    observers_to_indices_.erase(it);
+
     observers_.ShrinkToReasonableCapacity();
     // observers_to_indices_ did already shrink if necessary due to erase().
     check_capacity_ = false;
