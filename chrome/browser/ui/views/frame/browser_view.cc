@@ -6122,6 +6122,9 @@ void BrowserView::OnImmersiveRevealStarted() {
 }
 
 void BrowserView::OnImmersiveRevealEnded() {
+#if BUILDFLAG(IS_CHROMEOS)
+  ReparentTopContainerForEndOfImmersive();
+#endif
   InvalidateLayout();
   GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
 
