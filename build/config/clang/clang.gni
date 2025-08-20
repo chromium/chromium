@@ -61,7 +61,7 @@ declare_args() {
       # pipeline http://b/436082487.
       !enable_kythe_annotations && !is_official_build && is_clang &&
       host_os == "linux" && host_cpu == "x64" && target_os == "linux" &&
-      target_cpu == "x64" &&
+      target_cpu == "x64" && current_os == "linux" && current_cpu == "x64" &&
       # reclient doesn't handle headers in modulemap config.
       !use_reclient
 }
