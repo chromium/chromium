@@ -480,7 +480,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_core_core_java") {
-    aar_path = "../androidx/cipd/libs/androidx_core_core/core-1.17.0.aar"
+    aar_path =
+        "../androidx/cipd/libs/androidx_core_core/core-1.18.0-SNAPSHOT.aar"
     info_path =
         "../androidx/committed/libs/androidx_core_core/androidx_core_core.info"
     enable_bytecode_checks = false
@@ -2334,8 +2335,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_core_core_ktx_java") {
-    aar_path =
-        "../androidx/cipd/libs/androidx_core_core_ktx/core-ktx-1.17.0.aar"
+    aar_path = "../androidx/cipd/libs/androidx_core_core_ktx/core-ktx-1.18.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_core_core_ktx/androidx_core_core_ktx.info"
     enable_bytecode_checks = false
 

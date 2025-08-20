@@ -1,7 +1,7 @@
 Name: Core Kotlin Extensions
 Short Name: core-ktx
-URL: https://developer.android.com/jetpack/androidx/releases/core#1.17.0
-Version: 1.17.0
+URL: https://developer.android.com/jetpack/androidx/releases/core#1.18.0-SNAPSHOT
+Version: 1.18.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
