@@ -10,6 +10,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -18,9 +19,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,18 +31,20 @@ import java.io.FileOutputStream;
 
 /** Tests whether TabState can be restored from disk properly. */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class WebContentsStateBridgeTest {
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
     private TestTabModelDirectory mTestTabModelDirectory;
+    private Profile mProfile;
 
     @Before
     public void setUp() {
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mTestTabModelDirectory =
                 new TestTabModelDirectory(
                         ApplicationProvider.getApplicationContext(),
                         "WebContentsStateBridgeTest",
                         null);
+        mProfile = ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
     }
 
     @After
@@ -88,7 +93,7 @@ public class WebContentsStateBridgeTest {
                     // Return a null contents state but don't crash.
                     Assert.assertNull(
                             WebContentsStateBridge.restoreContentsFromByteBuffer(
-                                    tabState.contentsState, false));
+                                    tabState.contentsState, mProfile, false));
                 });
     }
 }

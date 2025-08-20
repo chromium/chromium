@@ -833,14 +833,14 @@ class TabImpl implements Tab {
         Referrer referrer = params.getReferrer();
         mWebContentsState =
                 WebContentsStateBridge.appendPendingNavigation(
+                        mProfile,
                         assumeNonNull(mWebContentsState),
                         title,
                         params.getUrl(),
                         referrer != null ? referrer.getUrl() : null,
                         // Policy will be ignored for null referrer url, 0 is just a placeholder.
                         referrer != null ? referrer.getPolicy() : 0,
-                        params.getInitiatorOrigin(),
-                        isOffTheRecord());
+                        params.getInitiatorOrigin());
 
         // The only reason this should still be null is if we failed to allocate a byte buffer,
         // which probably means we are close to an OOM.
@@ -2207,7 +2207,7 @@ class TabImpl implements Tab {
 
             WebContents webContents =
                     WebContentsStateBridge.restoreContentsFromByteBuffer(
-                            mWebContentsState, isHidden());
+                            mWebContentsState, getProfile(), isHidden());
 
             String failedRestoreUrl = UrlConstants.NTP_URL;
             if (webContents == null) {

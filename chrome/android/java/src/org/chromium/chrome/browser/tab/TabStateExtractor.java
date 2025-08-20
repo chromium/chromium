@@ -84,13 +84,13 @@ public class TabStateExtractor {
         } else {
             Referrer referrer = pendingLoadParams.getReferrer();
             return WebContentsStateBridge.createSingleNavigationStateAsByteBuffer(
+                    tab.getProfile(),
                     tab.getTitle(),
                     pendingLoadParams.getUrl(),
                     referrer != null ? referrer.getUrl() : null,
                     // Policy will be ignored for null referrer url, 0 is just a placeholder.
                     referrer != null ? referrer.getPolicy() : 0,
-                    pendingLoadParams.getInitiatorOrigin(),
-                    tab.isIncognito());
+                    pendingLoadParams.getInitiatorOrigin());
         }
     }
 

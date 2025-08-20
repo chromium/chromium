@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
@@ -91,6 +92,7 @@ public class BrowsingDataBridgeTest {
     private BrowsingDataBridge.OnClearBrowsingDataListener mListener;
     private UserActionTester mActionTester;
     private EmbeddedTestServer mTestServer;
+    private Profile mProfile;
 
     @Before
     public void setUp() throws Exception {
@@ -98,6 +100,7 @@ public class BrowsingDataBridgeTest {
         mListener = mCallbackHelper::notifyCalled;
         mTestServer = mActivityTestRule.getTestServer();
         mActionTester = new UserActionTester();
+        mProfile = ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
     }
 
     @After
@@ -311,7 +314,9 @@ public class BrowsingDataBridgeTest {
                                     .createFrozenTab(state, tab.getId(), 1);
                     restored[0] =
                             WebContentsStateBridge.restoreContentsFromByteBuffer(
-                                    TabStateExtractor.from(frozen[0]).contentsState, false);
+                                    TabStateExtractor.from(frozen[0]).contentsState,
+                                    mProfile,
+                                    false);
                 });
 
         // Check content of frozen state.
@@ -338,7 +343,9 @@ public class BrowsingDataBridgeTest {
                 () -> {
                     restored[0] =
                             WebContentsStateBridge.restoreContentsFromByteBuffer(
-                                    TabStateExtractor.from(frozen[0]).contentsState, false);
+                                    TabStateExtractor.from(frozen[0]).contentsState,
+                                    mProfile,
+                                    false);
                 });
 
         controller = restored[0].getNavigationController();
@@ -498,7 +505,7 @@ public class BrowsingDataBridgeTest {
 
         // Survey should be triggered on the first activity.
         WebContents firstWebContents =
-                ThreadUtils.runOnUiThreadBlocking(() -> firstActivity.getCurrentWebContents());
+                ThreadUtils.runOnUiThreadBlocking(firstActivity::getCurrentWebContents);
         verify(mBrowsingDataBridgeJniMock, times(1))
                 .triggerHatsSurvey(any(), eq(firstWebContents), eq(false));
 
