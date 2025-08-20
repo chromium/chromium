@@ -620,10 +620,6 @@ ChromeAutocompleteProviderClient::GetLensSuggestInputsWhenReady(
   return {};
 }
 
-bool ChromeAutocompleteProviderClient::IsAimEligible() const {
-  return GetAimEligibilityService()->IsAimEligible();
-}
-
 base::WeakPtr<AutocompleteProviderClient>
 ChromeAutocompleteProviderClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

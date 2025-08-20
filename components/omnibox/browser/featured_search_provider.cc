@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -302,7 +303,7 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
       // Skip @aimode if feature disabled.
       if (turl->starter_pack_id() == template_url_starter_pack_data::kAiMode &&
           (!omnibox_feature_configs::Toolbelt::Get().enabled ||
-           !client_->IsAimEligible())) {
+           !client_->GetAimEligibilityService()->IsAimEligible())) {
         continue;
       }
       // The history starter pack engine is disabled in incognito mode.
