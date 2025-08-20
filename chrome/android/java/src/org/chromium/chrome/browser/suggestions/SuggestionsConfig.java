@@ -53,9 +53,7 @@ public final class SuggestionsConfig {
                 : TileStyle.MODERN;
     }
 
-    /**
-     * @return The value of referrer URL to use with content suggestions.
-     */
+    /** Returns the value of referrer URL to use with content suggestions. */
     public static String getReferrerUrl() {
         return DEFAULT_CONTENT_SUGGESTIONS_REFERRER_URL;
     }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.suggestions.tile;
 
 import android.text.TextUtils;
+import android.view.KeyEvent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -83,5 +84,16 @@ public class TileUtils {
             }
         }
         return numCustomTiles < SuggestionsConfig.MAX_NUM_CUSTOM_LINKS;
+    }
+
+    /**
+     * Returns whether {@param keyCode} and {@param event} from an onKey() event is the combo for
+     * reorder a Custom Tile by swapping it with a neighbor. Implementation: Ctrl+Shift+{Page Up,
+     * Page Down} swaps with the {previous, next} Custom Tile.
+     */
+    public static boolean isCustomTileSwapKeyCombo(int keyCode, KeyEvent event) {
+        return (keyCode == KeyEvent.KEYCODE_PAGE_UP || keyCode == KeyEvent.KEYCODE_PAGE_DOWN)
+                && event.isShiftPressed()
+                && event.isCtrlPressed();
     }
 }

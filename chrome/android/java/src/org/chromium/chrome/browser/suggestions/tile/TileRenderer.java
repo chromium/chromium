@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorStateListDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -179,9 +180,22 @@ public class TileRenderer {
             // Map the old tile views by url so they can be reused later.
             SuggestionsTileViewCache oldTileViews = new SuggestionsTileViewCache();
             int tileCount = parent.getTileCount();
+            String focusedUrl = null;
             for (int i = 0; i < tileCount; i++) {
                 SuggestionsTileView tileView = (SuggestionsTileView) parent.getTileAt(i);
+                // Remember if a tile has focus, so focus can be reapplied.
+                if (tileView.hasFocus()) {
+                    focusedUrl = tileView.getUrl().getSpec();
+                }
                 oldTileViews.put(tileView.getData(), tileView);
+            }
+
+            // If a tile had focus, move focus to the parent to prevent it from wandering off
+            // during the view removal/re-addition process. This is important for accessibility.
+            boolean parentWasFocusable = parent.isFocusable();
+            if (focusedUrl != null) {
+                parent.setFocusable(true);
+                parent.requestFocus();
             }
 
             // Remove all views from the layout because even if they are reused later they'll have
@@ -201,7 +215,15 @@ public class TileRenderer {
                     parent.addNonTileViewWithWidth(buildDivider(parent), mDividerWidthDp);
                 }
                 parent.addTile(tileView);
+                if (focusedUrl != null && focusedUrl.equals(tile.getUrl().getSpec())) {
+                    tileView.requestFocus();
+                }
                 prevTile = tile;
+            }
+
+            // Restore parent's original focusability.
+            if (focusedUrl != null) {
+                parent.setFocusable(parentWasFocusable);
             }
 
             if (shouldShowAddNewButton(sectionTiles)) {
@@ -305,9 +327,6 @@ public class TileRenderer {
                     });
         }
 
-        tileView.setOnClickListener(delegate);
-        tileView.setOnLongClickListener(delegate);
-
         return tileView;
     }
 
@@ -357,6 +376,11 @@ public class TileRenderer {
                     RecordUserAction.record("Suggestions.Button.AddItem");
                     setupDelegate.getCustomTileModificationDelegate().add();
                 });
+        // Prevent Custom Tile swap key from  propagating (i.e., suppress scrolls) to make the
+        // button's behavior more similar to Custom Tiles.
+        tileView.setOnKeyListener(
+                (View view, int keyCode, KeyEvent event) ->
+                        TileUtils.isCustomTileSwapKeyCombo(keyCode, event));
         return tileView;
     }
 
