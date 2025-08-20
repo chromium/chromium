@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/suggestions/identity_credential_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/identity_credential_suggestion_utils.h"
 
 namespace autofill {
 

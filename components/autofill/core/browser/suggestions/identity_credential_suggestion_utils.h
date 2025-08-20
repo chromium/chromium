@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_IDENTITY_CREDENTIAL_SUGGESTION_GENERATOR_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_IDENTITY_CREDENTIAL_SUGGESTION_GENERATOR_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_IDENTITY_CREDENTIAL_SUGGESTION_UTILS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_IDENTITY_CREDENTIAL_SUGGESTION_UTILS_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -23,9 +23,6 @@ std::vector<Suggestion> GetIdentityCredentialSuggestionsForType(
     const AutofillClient& autofill_client,
     const FieldType& field_type);
 
-// TODO(crbug.com/409962888): Add a `SuggestionGenerator` implementation for
-// identity credentials.
-
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_IDENTITY_CREDENTIAL_SUGGESTION_GENERATOR_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_IDENTITY_CREDENTIAL_SUGGESTION_UTILS_H_
