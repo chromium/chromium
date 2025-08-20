@@ -66,6 +66,8 @@ class OtpFormManagerTest : public testing::Test {
     field_info_manager_ = std::make_unique<FieldInfoManager>(task_runner_);
     ON_CALL(client_, GetFieldInfoManager)
         .WillByDefault(Return(field_info_manager_.get()));
+    ON_CALL(client_, GetLastCommittedURL)
+        .WillByDefault(ReturnRef(test_otp_url_));
   }
 
  protected:
@@ -142,6 +144,49 @@ TEST_F(OtpFormManagerTest, OtpSourceNotRemovedOnceDataGetsStale) {
   EXPECT_EQ(OtpSource::kSms, form_manager.otp_source());
 }
 
+TEST_F(OtpFormManagerTest, GetFillDataForOtpSuggestion) {
+  FieldGlobalId field_id1 = autofill::test::MakeFieldGlobalId();
+  FieldGlobalId field_id2 = autofill::test::MakeFieldGlobalId();
+  FieldGlobalId field_id3 = autofill::test::MakeFieldGlobalId();
+  FieldGlobalId field_id4 = autofill::test::MakeFieldGlobalId();
+  std::vector<FieldGlobalId> otp_fields = {field_id1, field_id2, field_id3,
+                                           field_id4};
+  OtpFormManager form_manager(form_data_, otp_fields, &client_);
+
+  // Case 1: OTP value is longer than the number of detected fields.
+  autofill::OtpFillData fill_data =
+      form_manager.GetFillDataForOtpSuggestion(field_id1, u"12345");
+  EXPECT_EQ(1u, fill_data.size());
+  EXPECT_EQ(u"12345", fill_data.at(field_id1));
+
+  // Case 2: OTP value matches the count of deceted otp fields.
+  fill_data = form_manager.GetFillDataForOtpSuggestion(field_id1, u"1234");
+  EXPECT_EQ(4u, fill_data.size());
+  EXPECT_EQ(u"1", fill_data.at(field_id1));
+  EXPECT_EQ(u"2", fill_data.at(field_id2));
+  EXPECT_EQ(u"3", fill_data.at(field_id3));
+  EXPECT_EQ(u"4", fill_data.at(field_id4));
+
+  // Case 3: OTP value is shorter than the number of detected fields and there
+  // are enough fields to fill the value starting from the middle.
+  fill_data = form_manager.GetFillDataForOtpSuggestion(field_id1, u"12");
+  EXPECT_EQ(2u, fill_data.size());
+  EXPECT_EQ(u"1", fill_data.at(field_id1));
+  EXPECT_EQ(u"2", fill_data.at(field_id2));
+
+  // Case 4: OTP value is shorter than the number of detected fields and there
+  // are NOT enough fields to fill the value starting from the middle.
+  fill_data = form_manager.GetFillDataForOtpSuggestion(field_id4, u"12");
+  EXPECT_EQ(1u, fill_data.size());
+  EXPECT_EQ(u"12", fill_data.at(field_id4));
+
+  // Case 5: OTP field is not among currently detected OTP fields.
+  FieldGlobalId field_id5 = autofill::test::MakeFieldGlobalId();
+  fill_data = form_manager.GetFillDataForOtpSuggestion(field_id5, u"1234");
+  EXPECT_EQ(1u, fill_data.size());
+  EXPECT_EQ(u"1234", fill_data.at(field_id5));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 class MockSmsOtpBackend : public SmsOtpBackend {
  public:
@@ -157,8 +202,6 @@ class OtpFormManagerTestWithSmsBackend : public OtpFormManagerTest {
  public:
   void SetUp() override {
     OtpFormManagerTest::SetUp();
-    ON_CALL(client_, GetLastCommittedURL)
-        .WillByDefault(ReturnRef(test_otp_url_));
     ON_CALL(client_, GetSmsOtpBackend).WillByDefault(Return(&sms_otp_backend_));
   }
 
