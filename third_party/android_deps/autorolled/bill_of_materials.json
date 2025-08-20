@@ -347,7 +347,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.17.0"
+        "version": "1.18.0-SNAPSHOT"
     },
     {
         "name": "core-animation",
@@ -362,12 +362,12 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.17.0"
+        "version": "1.18.0-SNAPSHOT"
     },
     {
         "name": "core-viewtree",
         "group": "androidx.core",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "registry-provider",
@@ -1332,7 +1332,7 @@
     {
         "name": "material",
         "group": "com.google.android.material",
-        "version": "1.14.0-alpha03"
+        "version": "1.14.0-alpha04"
     },
     {
         "name": "core-common",
