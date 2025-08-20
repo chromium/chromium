@@ -1039,16 +1039,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.FlexInstalledViaFlexor" units="installed"
-    expires_after="2026-01-31">
+<histogram name="Platform.FlexInstalleMethod" enum="FlexInstallMethod"
+    expires_after="2026-03-30">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
-    Sent once when a ChromeOS Flex device sees that it was installed via Flexor.
+    Sent once when a ChromeOS Flex device sees what method was used for install.
 
-    When a ChromeOS Flex device is installed via Flexor, a file is created on
-    the stateful partition. If the file exists at boot, we delete it and emit
-    this metric. (If we fail to delete the file, we don't emit the metric.)
+    When a ChromeOS Flex device is installed via Flexor (we expect to add more
+    methods in the future), a file is created on the stateful partition. If the
+    file exists at boot, we delete it and emit this metric. (If we fail to
+    delete the file, we don't emit the metric.)
   </summary>
 </histogram>
 
