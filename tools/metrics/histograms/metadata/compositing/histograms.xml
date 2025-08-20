@@ -97,6 +97,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Browser.BeginFrame.Produced.Duration.Subsampled"
+    units="microseconds" expires_after="2026-01-04">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the duration of LayerTreeImpl::BeginFrame on cc/slim, when the frame
+    is produced. Subsampled to 1/100.
+
+    Only reported on systems which have high resolution timers.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Browser.LayersUpdateTime" units="microseconds"
     expires_after="2026-01-18">
   <owner>pdr@chromium.org</owner>
@@ -738,6 +751,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Report the scheduler deadline mode when it changes, which may be multiple
     times (but at least once per frame). This histogram is subsampled.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.Slim.BeginFrameResult" enum="SlimBeginFrameResult"
+    expires_after="2025-10-26">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the outcome of a LayerTreeImpl::BeginFrame call in cc/slim. This is
+    used to compare the number of times a frame is produced versus the number of
+    times the call exits early because no draw was needed. Recorded every 100th
+    call.
   </summary>
 </histogram>
 
