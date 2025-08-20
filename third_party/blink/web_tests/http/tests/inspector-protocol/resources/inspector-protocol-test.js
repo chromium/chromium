@@ -785,4 +785,6 @@ TestRunner.wrapPromiseWithTimeout = (promise, timeout, label) => {
   ]);
 };
 
-exports.TestRunner = TestRunner;
+if (self.exports !== undefined) {
+  exports.TestRunner = TestRunner;
+}
