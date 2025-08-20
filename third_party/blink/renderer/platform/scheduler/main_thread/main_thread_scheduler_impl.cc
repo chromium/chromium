@@ -1479,7 +1479,8 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   new_policy.should_prioritize_ipc_tasks =
       num_pending_urgent_ipc_messages_.load(std::memory_order_relaxed) > 0;
 
-  new_policy.should_freeze_compositor_task_queue = AllPagesFrozen();
+  const bool are_all_pages_frozen = AllPagesFrozen();
+  new_policy.should_freeze_compositor_task_queue = are_all_pages_frozen;
 
   // Tracing is done before the early out check, because it's quite possible we
   // will otherwise miss this information in traces.
@@ -1511,6 +1512,16 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   main_thread_only().current_policy = new_policy;
 
   UpdateStateForAllTaskQueues(old_policy);
+
+  if (are_all_pages_frozen) {
+    if (!main_thread_only().renderer_frozen_metadata.has_value()) {
+      main_thread_only().renderer_frozen_metadata.emplace(
+          "MainThreadSchedulerImpl.RendererFrozen2", /* is_frozen */ 1,
+          base::SampleMetadataScope::kProcess);
+    }
+  } else {
+    main_thread_only().renderer_frozen_metadata.reset();
+  }
 }
 
 RAILMode MainThreadSchedulerImpl::ComputeCurrentRAILMode(
@@ -2293,13 +2304,9 @@ void MainThreadSchedulerImpl::OnPageFrozen(
 #endif
   memory_purge_manager_.OnPageFrozen(called_from);
   UpdatePolicy();
-  main_thread_only().renderer_frozen_metadata.emplace(
-      "MainThreadSchedulerImpl.RendererFrozen", /* is_frozen */ 1,
-      base::SampleMetadataScope::kProcess);
 }
 
 void MainThreadSchedulerImpl::OnPageResumed() {
-  main_thread_only().renderer_frozen_metadata.reset();
   memory_purge_manager_.OnPageResumed();
   UpdatePolicy();
 }
