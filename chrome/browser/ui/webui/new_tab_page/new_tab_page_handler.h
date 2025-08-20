@@ -56,10 +56,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace customize_chrome {
-class SidePanelController;
-}  // namespace customize_chrome
-
 namespace new_tab_footer {
 class NewTabFooterController;
 }
@@ -181,9 +177,6 @@ class NewTabPageHandler
                       const std::optional<std::string>& share_id) override;
   void OnPromoLinkClicked() override;
   void IncrementComposeButtonShownCount() override;
-
-  void SetCustomizeChromeSidePanelControllerForTesting(
-      customize_chrome::SidePanelController* side_panel_controller);
 
  private:
   // ui::NativeThemeObserver:
@@ -313,11 +306,6 @@ class NewTabPageHandler
   base::Value::Dict interaction_module_id_trigger_dict_;
   // Notifies this when the browser window context changes.
   base::CallbackListSubscription browser_window_changed_subscription_;
-
-  // TODO(crbug.com/378475391): Make this const once the TabModel is guaranteed
-  // to be present during load and fixed for the NTP's lifetime.
-  raw_ptr<customize_chrome::SidePanelController>
-      customize_chrome_side_panel_controller_;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.
