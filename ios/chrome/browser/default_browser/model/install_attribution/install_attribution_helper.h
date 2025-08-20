@@ -14,8 +14,9 @@ namespace install_attribution {
 //
 // LINT.IfChange(InstallAttributionType)
 enum InstallAttributionType {
-  Within24Hours = 0,
-  Within15Days = 1,
+  None = 0,
+  Within24Hours = 1,
+  Within15Days = 2,
   kMaxValue = Within15Days,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSInstallAttributionType)
