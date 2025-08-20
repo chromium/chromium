@@ -91,6 +91,20 @@ TEST_F(PageNodeImplTest, RemoveFrame) {
   EXPECT_EQ(0u, GraphImplOperations::GetFrameNodes(page_node.get()).size());
 }
 
+TEST_F(PageNodeImplTest, IsClosing) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto* page_node = mock_graph.page.get();
+
+  // The property should be initialized to false by default.
+  EXPECT_FALSE(page_node->IsClosing());
+
+  page_node->SetIsClosing(true);
+  EXPECT_TRUE(page_node->IsClosing());
+
+  page_node->SetIsClosing(false);
+  EXPECT_FALSE(page_node->IsClosing());
+}
+
 TEST_F(PageNodeImplTest, GetLastVisibilityChangeTime) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
 
@@ -329,6 +343,11 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   EXPECT_CALL(obs, OnIsVisibleChanged(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
   page_node->SetIsVisible(true);
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
+  EXPECT_CALL(obs, OnIsClosingChanged(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  page_node->SetIsClosing(true);
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
   EXPECT_CALL(obs, OnIsAudibleChanged(_))

@@ -115,6 +115,11 @@ bool PageNodeImpl::IsVisible() const {
   return is_visible_.value();
 }
 
+bool PageNodeImpl::IsClosing() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_closing_.value();
+}
+
 base::TimeTicks PageNodeImpl::GetLastVisibilityChangeTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return visibility_change_time_;
@@ -331,6 +336,11 @@ void PageNodeImpl::SetIsVisible(bool is_visible) {
     // NowTicks.
     visibility_change_time_ = base::TimeTicks::Now();
   }
+}
+
+void PageNodeImpl::SetIsClosing(bool is_closing) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_closing_.SetAndMaybeNotify(this, is_closing);
 }
 
 void PageNodeImpl::SetIsAudible(bool is_audible) {

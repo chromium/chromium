@@ -112,6 +112,10 @@ class PageNode : public TypedNode<PageNode> {
   // See PageNodeObserver::OnIsVisibleChanged.
   virtual bool IsVisible() const = 0;
 
+  // Returns true if this page is in the process of being closed.
+  // See PageNodeObserver::OnIsClosingChanged.
+  virtual bool IsClosing() const = 0;
+
   // Returns the time of the last visibility change. It is always well defined
   // as the visibility property is set at node creation.
   virtual base::TimeTicks GetLastVisibilityChangeTime() const = 0;
@@ -300,6 +304,9 @@ class PageNodeObserver : public base::CheckedObserver {
   // IsVisible change. After all observers have fired it will return the time of
   // this property change.
   virtual void OnIsVisibleChanged(const PageNode* page_node) {}
+
+  // Invoked when the IsClosing property changes.
+  virtual void OnIsClosingChanged(const PageNode* page_node) {}
 
   // Invoked when the IsAudible property changes.
   //
