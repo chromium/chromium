@@ -135,7 +135,7 @@ void ForEachSupportedPseudo(const Element* element, Functor& func) {
   ViewTransitionUtils::ForEachDirectTransitionPseudo(element, func);
   if (const ColumnPseudoElementsVector* column_pseudo_elements =
       element->GetColumnPseudoElements()) {
-    for (auto column_pseudo_element : *column_pseudo_elements) {
+    for (const auto& column_pseudo_element : *column_pseudo_elements) {
       func(column_pseudo_element.Get());
     }
   }
@@ -977,8 +977,8 @@ protocol::Response InspectorDOMAgent::getTopLayerElements(
     return protocol::Response::ServerError("DOM agent hasn't been enabled");
 
   *result = std::make_unique<protocol::Array<int>>();
-  for (auto document : Documents()) {
-    for (auto element : document->TopLayerElements()) {
+  for (const auto& document : Documents()) {
+    for (const auto& element : document->TopLayerElements()) {
       int node_id = PushNodePathToFrontend(element);
       if (node_id)
         (*result)->emplace_back(node_id);

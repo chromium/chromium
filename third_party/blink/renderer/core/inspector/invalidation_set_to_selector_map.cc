@@ -230,13 +230,13 @@ void InvalidationSetToSelectorMap::BeginInvalidationSetCombine(
             .stored_value->value.Get();
     auto source_entry_it = instance->invalidation_set_map_->find(source);
     CHECK(source_entry_it != instance->invalidation_set_map_->end());
-    for (auto source_selector_list_it : *(source_entry_it->value)) {
+    for (const auto& source_selector_list_it : *(source_entry_it->value)) {
       IndexedSelectorList* target_selector_list =
           target_entry_map
               ->insert(source_selector_list_it.key,
                        MakeGarbageCollected<IndexedSelectorList>())
               .stored_value->value.Get();
-      for (auto source_selector : *(source_selector_list_it.value)) {
+      for (const auto& source_selector : *(source_selector_list_it.value)) {
         target_selector_list->insert(source_selector);
       }
     }

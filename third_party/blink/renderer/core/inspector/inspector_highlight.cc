@@ -1230,10 +1230,10 @@ Vector<String> GetAuthoredGridTrackSizes(const CSSValue* value,
 
   result.reserve(track_count);
 
-  for (auto list_value : *value_list) {
+  for (const auto& list_value : *value_list) {
     if (IsA<cssvalue::CSSGridAutoRepeatValue>(list_value.Get())) {
       Vector<String> repeated_track_sizes;
-      for (auto auto_repeat_value : To<CSSValueList>(*list_value)) {
+      for (const auto& auto_repeat_value : To<CSSValueList>(*list_value)) {
         if (!auto_repeat_value->IsGridLineNamesValue())
           repeated_track_sizes.push_back(auto_repeat_value->CssText());
       }
@@ -1250,7 +1250,7 @@ Vector<String> GetAuthoredGridTrackSizes(const CSSValue* value,
           repeated_values->GetRepetitionsIfKnown();
       if (repetitions.has_value()) {
         for (size_t i = 0; i < *repetitions; ++i) {
-          for (auto repeated_value : *repeated_values) {
+          for (const auto& repeated_value : *repeated_values) {
             if (repeated_value->IsGridLineNamesValue()) {
               continue;
             }

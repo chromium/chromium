@@ -1280,7 +1280,7 @@ protocol::Response InspectorCSSAgent::getLocationForSelector(
   *ranges = std::make_unique<protocol::Array<protocol::CSS::SourceRange>>();
 
   const CSSRuleVector& css_rules = style_sheet->FlatRules();
-  for (auto css_rule : css_rules) {
+  for (const auto& css_rule : css_rules) {
     CSSStyleRule* css_style_rule = DynamicTo<CSSStyleRule>(css_rule.Get());
     if (css_style_rule == nullptr) {
       continue;
@@ -2393,7 +2393,7 @@ protocol::Response InspectorCSSAgent::getLonghandProperties(
 
   *longhand_properties =
       std::make_unique<protocol::Array<protocol::CSS::CSSProperty>>();
-  for (auto longhand_property : css_longhand_properties) {
+  for (const auto& longhand_property : css_longhand_properties) {
     std::unique_ptr<protocol::CSS::CSSProperty> protocol_longhand =
         protocol::CSS::CSSProperty::create()
             .setName(longhand_property.Name().ToAtomicString())
@@ -4650,7 +4650,7 @@ void InspectorCSSAgent::BuildRulesMap(
     HeapHashMap<Member<const StyleRule>, Member<CSSStyleRule>>*
         rule_to_css_rule) {
   const CSSRuleVector& css_rules = style_sheet->FlatRules();
-  for (auto css_rule : css_rules) {
+  for (const auto& css_rule : css_rules) {
     if (css_rule->GetType() == CSSRule::kStyleRule) {
       CSSStyleRule* css_style_rule = DynamicTo<CSSStyleRule>(css_rule.Get());
       rule_to_css_rule->Set(css_style_rule->GetStyleRule(), css_style_rule);
@@ -4696,7 +4696,7 @@ protocol::Response InspectorCSSAgent::takeCoverageDelta(
     HeapHashMap<Member<const StyleRule>, Member<CSSStyleRule>> rule_to_css_rule;
     BuildRulesMap(style_sheet, &rule_to_css_rule);
 
-    for (auto used_rule : *entry.value) {
+    for (const auto& used_rule : *entry.value) {
       auto rule_to_css_rule_it = rule_to_css_rule.find(used_rule);
       if (rule_to_css_rule_it == rule_to_css_rule.end())
         continue;

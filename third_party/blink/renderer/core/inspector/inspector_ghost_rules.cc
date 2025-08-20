@@ -149,7 +149,7 @@ InspectorGhostRules::~InspectorGhostRules() {
     DepopulateSheet(*style_sheet);
   }
   // Restore original active stylesheets.
-  for (auto [tree_scope, active_stylesheet_vector] : affected_tree_scopes) {
+  for (auto& [tree_scope, active_stylesheet_vector] : affected_tree_scopes) {
     tree_scope->GetScopedStyleResolver()->QuietlySwapActiveStyleSheets(
         active_stylesheet_vector);
   }
