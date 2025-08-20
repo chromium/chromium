@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -35,7 +36,7 @@ public class ScreenshotShareSheetDialogCoordinator {
             Activity activity,
             ScreenshotShareSheetDialog dialog,
             Bitmap screenshot,
-            WindowAndroid windowAndroid,
+            @Nullable WindowAndroid windowAndroid,
             String shareUrl,
             ChromeOptionShareCallback shareCallback) {
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();

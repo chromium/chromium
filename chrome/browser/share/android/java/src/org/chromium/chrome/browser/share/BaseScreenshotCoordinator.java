@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.screenshot.EditorScreenshotSource;
 import org.chromium.chrome.browser.share.screenshot.EditorScreenshotTask;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -22,6 +24,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
  * Base coordinator for Sharing Hub features that require taking a browser screenshot. Handles
  * taking the screenshot after the bottom sheet is dismissed.
  */
+@NullMarked
 public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
     protected final Activity mActivity;
     protected final String mShareUrl;
@@ -29,7 +32,7 @@ public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
     protected final BottomSheetController mBottomSheetController;
 
     private final EditorScreenshotSource mScreenshotSource;
-    protected Bitmap mScreenshot;
+    protected @Nullable Bitmap mScreenshot;
 
     /**
      * Constructs a new BaseScreenshotCoordinator that takes a screenshot when the content of the
@@ -108,5 +111,5 @@ public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
     }
 
     @Override
-    public void onSheetContentChanged(BottomSheetContent newContent) {}
+    public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}
 }

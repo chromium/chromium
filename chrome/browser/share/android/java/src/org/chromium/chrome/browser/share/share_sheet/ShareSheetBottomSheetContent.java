@@ -4,6 +4,7 @@
 //
 package org.chromium.chrome.browser.share.share_sheet;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -300,7 +301,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             subtitle = mParams.getText();
             setSubtitleMaxLines(2);
         } else {
-            fetchFavicon(mParams.getUrl());
+            fetchFavicon(assertNonNull(mParams.getUrl()));
         }
 
         if (shareSheetLinkToggleCoordinator.shouldShowToggle()) {

@@ -158,7 +158,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                     params.getText(), renderFrameHost, shareCallback);
             return;
         }
-        if (type == ShareContentType.LINK && !params.getUrl().isEmpty()) {
+        if (type == ShareContentType.LINK && !TextUtils.isEmpty(params.getUrl())) {
             DataProtectionBridge.verifyShareUrlIsAllowedByPolicy(
                     params.getUrl(), renderFrameHost, shareCallback);
             return;

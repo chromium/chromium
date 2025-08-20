@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share.screenshot;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -24,7 +26,7 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class ScreenshotShareSheetDialog extends DialogFragment {
     private Bitmap mScreenshot;
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
     private String mShareUrl;
     private ChromeOptionShareCallback mChromeOptionShareCallback;
 
@@ -42,7 +44,7 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
     @Initializer
     public void init(
             Bitmap screenshot,
-            WindowAndroid windowAndroid,
+            @Nullable WindowAndroid windowAndroid,
             String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback) {
         mScreenshot = screenshot;
@@ -81,7 +83,7 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
                 mScreenshot,
                 this::dismissAllowingStateLoss,
                 screenshotShareSheetView,
-                mWindowAndroid,
+                assertNonNull(mWindowAndroid),
                 mShareUrl,
                 mChromeOptionShareCallback);
         return builder.create();

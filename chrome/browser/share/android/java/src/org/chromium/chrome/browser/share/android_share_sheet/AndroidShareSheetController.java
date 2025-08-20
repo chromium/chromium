@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share.android_share_sheet;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -159,7 +160,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         String urlToShare = getUrlToShare(params, chromeShareExtras);
         // If an URL is not provided along with the image, use the content URL if it is provided.
         if (chromeShareExtras.isImage()
-                && params.getUrl().isEmpty()
+                && TextUtils.isEmpty(params.getUrl())
                 && (chromeShareExtras.getDetailedContentType() != DetailedContentType.WEB_SHARE)) {
             params.setUrl(chromeShareExtras.getContentUrl().getSpec());
         }
@@ -225,7 +226,8 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             return;
         }
 
-        preparePreviewFavicon(activity, profile, params.getUrl(), shareWithPreviewUri);
+        preparePreviewFavicon(
+                activity, profile, assertNonNull(params.getUrl()), shareWithPreviewUri);
     }
 
     /**
@@ -252,12 +254,12 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         assert mLinkToTextCoordinator == null : "LinkToTextCoordinator is already created!";
         mLinkToTextCoordinator =
                 new LinkToTextCoordinator(
-                        mTabProvider.get(),
+                        assertNonNull(mTabProvider.get()),
                         this,
                         chromeShareExtras,
                         SystemClock.elapsedRealtime(),
-                        params.getUrl(),
-                        assumeNonNull(params.getText()),
+                        assertNonNull(params.getUrl()),
+                        assertNonNull(params.getText()),
                         /* includeOriginInTitle= */ true);
         mLinkToTextCoordinator.shareLinkToText();
         return true;

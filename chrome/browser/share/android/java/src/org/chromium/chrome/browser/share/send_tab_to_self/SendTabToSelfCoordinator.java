@@ -10,6 +10,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -138,7 +139,7 @@ public class SendTabToSelfCoordinator {
     }
 
     private final Context mContext;
-    private final WindowAndroid mWindowAndroid;
+    private final @Nullable WindowAndroid mWindowAndroid;
     private final String mUrl;
     private final String mTitle;
     private final BottomSheetController mController;
@@ -147,7 +148,7 @@ public class SendTabToSelfCoordinator {
 
     public SendTabToSelfCoordinator(
             Context context,
-            WindowAndroid windowAndroid,
+            @Nullable WindowAndroid windowAndroid,
             String url,
             String title,
             BottomSheetController controller,
@@ -196,7 +197,7 @@ public class SendTabToSelfCoordinator {
                             IdentityServicesProvider.get().getIdentityManager(mProfile);
                     var signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
                     new AccountPickerBottomSheetCoordinator(
-                            mWindowAndroid,
+                            assertNonNull(mWindowAndroid),
                             assertNonNull(identityManager),
                             assertNonNull(signinManager),
                             mController,
