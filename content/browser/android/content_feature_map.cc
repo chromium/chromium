@@ -40,7 +40,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAndroidOpenPdfInline,
     &features::kStrictHighRankProcessLRU,
     &features::kFedCm,
-    &features::kGroupRebindingForGroupImportance,
     &features::kHidePastePopupOnGSB,
     &features::kReduceGpuPriorityOnBackground,
     &features::kContinueGestureOnLosingFocus,

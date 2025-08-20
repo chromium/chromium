@@ -444,12 +444,7 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
             ConnectionWithRank connection = mRankings.get(i);
             if (!connection.shouldBeInLowRankGroup()) break;
             if (connection.connection.updateGroupImportance(LOW_RANK_GROUP, importance)) {
-                if (ContentFeatureList.sGroupRebindingForGroupImportance.isEnabled()) {
-                    lastUpdatedConnection = connection;
-                } else {
-                    // Rebind a service binding to apply the group importance change.
-                    connection.connection.rebind();
-                }
+                lastUpdatedConnection = connection;
             }
             importance -= FROM_RIGHT;
         }

@@ -1099,10 +1099,6 @@ public final class ProductionSupportedFlagList {
                 BaseFeatures.UPDATE_STATE_BEFORE_UNBINDING,
                 "Update child process binding state before unbinding."),
         Flag.baseFeature(
-                ContentFeatures.GROUP_REBINDING_FOR_GROUP_IMPORTANCE,
-                "Apply consecutive service group importance changes with a single service rebind"
-                        + " call."),
-        Flag.baseFeature(
                 BaseFeatures.USE_SHARED_REBIND_SERVICE_CONNECTION,
                 "Use a shared service connection to apply service group importance changes."),
         Flag.baseFeature(

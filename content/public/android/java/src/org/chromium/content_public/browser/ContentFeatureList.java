@@ -80,12 +80,6 @@ public class ContentFeatureList {
                     ContentInternalFeatures.STRICT_HIGH_RANK_PROCESS_LRU,
                     false);
 
-    public static final MutableFlagWithSafeDefault sGroupRebindingForGroupImportance =
-            new MutableFlagWithSafeDefault(
-                    ContentFeatureMap.getInstance(),
-                    ContentFeatures.GROUP_REBINDING_FOR_GROUP_IMPORTANCE,
-                    false);
-
     public static final MutableFlagWithSafeDefault sSpareRendererProcessPriority =
             new MutableFlagWithSafeDefault(
                     ContentFeatureMap.getInstance(),
