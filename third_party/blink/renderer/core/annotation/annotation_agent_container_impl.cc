@@ -259,15 +259,22 @@ void AnnotationAgentContainerImpl::RemoveAgentsOfType(
     mojom::blink::AnnotationType type) {
   TRACE_EVENT("blink", "AnnotationAgentContainerImpl::RemoveAgentsOfType",
               "type", ToString(type));
-  auto it = std::remove_if(agents_.begin(), agents_.end(),
-                           [type](AnnotationAgentImpl* agent) {
-                             if (agent->GetType() != type) {
-                               return false;
-                             }
-                             agent->Reset(PassKey());
-                             return true;
-                           });
-  agents_.erase(it, agents_.end());
+  HeapVector<Member<AnnotationAgentImpl>> agents_to_reset;
+  EraseIf(agents_,[type, &agents_to_reset](AnnotationAgentImpl* agent) {
+    if (agent->GetType() == type) {
+      agents_to_reset.push_back(agent);
+      return true;
+    }
+    return false;
+  });
+
+  // Note: We cannot call Reset() directly inside the EraseIf predicate above
+  // because Reset() can result in PerformInitialAttachments() being called,
+  // which will iterate over `agents_` in the middle of the EraseIf operation
+  // (which is not safe).
+  for (AnnotationAgentImpl* agent : agents_to_reset) {
+    agent->Reset(PassKey());
+  }
 }
 
 // TODO(cheickcisse@): Move shared highlighting enums, also used in user note to

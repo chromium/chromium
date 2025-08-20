@@ -797,6 +797,12 @@ TEST_F(AnnotationAgentContainerImplTest, RemoveAgentsOfType) {
                                "MockAnnotationSelector"));
   }
 
+  // Make sure the agents are attached.
+  Compositor().BeginFrame();
+  ASSERT_TRUE(GetAgentAt(*container, 0)->IsAttached());
+  ASSERT_TRUE(GetAgentAt(*container, 1)->IsAttached());
+  ASSERT_TRUE(GetAgentAt(*container, 2)->IsAttached());
+
   remote->RemoveAgentsOfType(mojom::AnnotationType::kGlic);
   remote.FlushForTesting();
 
