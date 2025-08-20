@@ -45,12 +45,11 @@
 }
 
 - (void)stop {
+  [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController.delegate = nil;
   _viewController = nil;
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
 }
 
 #pragma mark - Private
