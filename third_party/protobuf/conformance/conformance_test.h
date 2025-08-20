@@ -14,6 +14,8 @@
 #ifndef GOOGLE_PROTOBUF_CONFORMANCE_CONFORMANCE_TEST_H__
 #define GOOGLE_PROTOBUF_CONFORMANCE_CONFORMANCE_TEST_H__
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -24,7 +26,6 @@
 #include "absl/container/flat_hash_set.h"
 #include "conformance/conformance.pb.h"
 #include "failure_list_trie_node.h"
-#include "test_runner.h"
 #include "google/protobuf/descriptor.h"
 
 namespace conformance {
@@ -43,8 +44,61 @@ namespace protobuf {
 
 class ConformanceTestSuite;
 
-int RunConformanceTests(int argc, char* argv[],
-                        const std::vector<ConformanceTestSuite*>& suites);
+class ConformanceTestRunner {
+ public:
+  virtual ~ConformanceTestRunner() = default;
+
+  // Call to run a single conformance test.
+  //
+  // "len" is the byte length of a serialized conformance.ConformanceRequest.
+  // "input" is a serialized conformance.ConformanceRequest.
+  // "output" should be set to a serialized conformance.ConformanceResponse.
+  //
+  // If there is any error in running the test itself, set "runtime_error" in
+  // the response.
+  virtual void RunTest(const std::string& test_name, uint32_t len,
+                       const std::string& input, std::string* output) = 0;
+};
+
+// Test runner that spawns the process being tested and communicates with it
+// over a pipe.
+class ForkPipeRunner : public ConformanceTestRunner {
+ public:
+  // Note: Run() doesn't take ownership of the pointers inside suites.
+  static int Run(int argc, char* argv[],
+                 const std::vector<ConformanceTestSuite*>& suites);
+
+  ForkPipeRunner(const std::string& executable,
+                 const std::vector<std::string>& executable_args,
+                 bool performance)
+      : child_pid_(-1),
+        executable_(executable),
+        executable_args_(executable_args),
+        performance_(performance) {}
+
+  explicit ForkPipeRunner(const std::string& executable)
+      : child_pid_(-1), executable_(executable) {}
+
+  ~ForkPipeRunner() override = default;
+
+  void RunTest(const std::string& test_name, uint32_t len,
+               const std::string& request, std::string* response) override;
+
+ private:
+  void SpawnTestProgram();
+
+  void CheckedWrite(int fd, const void* buf, size_t len);
+  bool TryRead(int fd, void* buf, size_t len);
+  void CheckedRead(int fd, void* buf, size_t len);
+
+  int write_fd_;
+  int read_fd_;
+  pid_t child_pid_;
+  std::string executable_;
+  const std::vector<std::string> executable_args_;
+  bool performance_;
+  std::string current_test_name_;
+};
 
 // Class representing the test suite itself.  To run it, implement your own
 // class derived from ConformanceTestRunner, class derived from

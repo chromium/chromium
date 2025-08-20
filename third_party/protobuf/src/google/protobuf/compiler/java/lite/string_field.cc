@@ -650,8 +650,7 @@ void RepeatedImmutableStringFieldLiteGenerator::GenerateMembers(
                  "      values, $name$_);\n"
                  "}\n");
   WriteFieldAccessorDocComment(printer, descriptor_, CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "private void clear$capitalized_name$() {\n"
                  "  $name$_ = $empty_list$;\n"

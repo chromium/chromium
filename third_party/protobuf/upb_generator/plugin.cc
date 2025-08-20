@@ -26,20 +26,17 @@
 namespace upb {
 namespace generator {
 
-namespace {
 absl::string_view ToStringView(upb_StringView str) {
   return absl::string_view(str.data, str.size);
 }
-}  // namespace
 
-template <typename DefPoolType>
-void PopulateDefPoolImpl(const google::protobuf::FileDescriptor* file, upb::Arena* arena,
-                         DefPoolType* pool,
-                         absl::flat_hash_set<std::string>* files_seen) {
+void PopulateDefPool(const google::protobuf::FileDescriptor* file, upb::Arena* arena,
+                     DefPoolPair* pools,
+                     absl::flat_hash_set<std::string>* files_seen) {
   bool new_file = files_seen->insert(std::string(file->name())).second;
   if (new_file) {
     for (int i = 0; i < file->dependency_count(); ++i) {
-      PopulateDefPool(file->dependency(i), arena, pool, files_seen);
+      PopulateDefPool(file->dependency(i), arena, pools, files_seen);
     }
     google::protobuf::FileDescriptorProto raw_proto;
     file->CopyTo(&raw_proto);
@@ -47,7 +44,7 @@ void PopulateDefPoolImpl(const google::protobuf::FileDescriptor* file, upb::Aren
     auto* file_proto = UPB_DESC(FileDescriptorProto_parse)(
         serialized.data(), serialized.size(), arena->ptr());
     upb::Status status;
-    upb::FileDefPtr upb_file = pool->AddFile(file_proto, &status);
+    upb::FileDefPtr upb_file = pools->AddFile(file_proto, &status);
     if (!upb_file) {
       absl::string_view name =
           ToStringView(UPB_DESC(FileDescriptorProto_name)(file_proto));
@@ -55,18 +52,6 @@ void PopulateDefPoolImpl(const google::protobuf::FileDescriptor* file, upb::Aren
                       << " to DefPool: " << status.error_message();
     }
   }
-}
-
-void PopulateDefPool(const google::protobuf::FileDescriptor* file, upb::Arena* arena,
-                     DefPool* pool,
-                     absl::flat_hash_set<std::string>* files_seen) {
-  PopulateDefPoolImpl(file, arena, pool, files_seen);
-}
-
-void PopulateDefPool(const google::protobuf::FileDescriptor* file, upb::Arena* arena,
-                     DefPoolPair* pools,
-                     absl::flat_hash_set<std::string>* files_seen) {
-  PopulateDefPoolImpl(file, arena, pools, files_seen);
 }
 
 }  // namespace generator

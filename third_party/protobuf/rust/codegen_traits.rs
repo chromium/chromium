@@ -73,7 +73,6 @@ pub(crate) mod create {
     use super::SealedInternal;
     pub trait Parse: SealedInternal + Sized {
         fn parse(serialized: &[u8]) -> Result<Self, crate::ParseError>;
-        fn parse_dont_enforce_required(serialized: &[u8]) -> Result<Self, crate::ParseError>;
     }
 }
 
@@ -101,10 +100,6 @@ pub(crate) mod write {
 
     pub trait ClearAndParse: SealedInternal {
         fn clear_and_parse(&mut self, data: &[u8]) -> Result<(), crate::ParseError>;
-        fn clear_and_parse_dont_enforce_required(
-            &mut self,
-            data: &[u8],
-        ) -> Result<(), crate::ParseError>;
     }
 
     /// Copies the contents from `src` into `self`.

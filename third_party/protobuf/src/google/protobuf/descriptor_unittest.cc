@@ -62,7 +62,6 @@
 #include "google/protobuf/descriptor_legacy.h"
 #include "google/protobuf/dynamic_message.h"
 #include "google/protobuf/feature_resolver.h"
-#include "google/protobuf/internal_feature_helper.h"
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/io/tokenizer.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
@@ -83,10 +82,10 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-using ::google::protobuf::internal::cpp::GetFieldHasbitModeWithoutProfile;
+using ::google::protobuf::internal::cpp::GetFieldHasbitMode;
 using ::google::protobuf::internal::cpp::GetUtf8CheckMode;
 using ::google::protobuf::internal::cpp::HasbitMode;
-using ::google::protobuf::internal::cpp::HasHasbitWithoutProfile;
+using ::google::protobuf::internal::cpp::HasHasbit;
 using ::google::protobuf::internal::cpp::HasPreservingUnknownEnumSemantics;
 using ::google::protobuf::internal::cpp::Utf8CheckMode;
 using ::testing::AnyOf;
@@ -287,7 +286,6 @@ class FileDescriptorTest : public testing::Test {
     //   // in "bar.proto"
     //   import "foo.proto";
     //   import option "custom_option.proto";
-    //   edition = "2024";
     //   package bar_package;
     //   message BarMessage { extensions 1; }
     //   enum BarEnum {BAR_ENUM_VALUE = 1;}
@@ -317,13 +315,10 @@ class FileDescriptorTest : public testing::Test {
     FileDescriptorProto bar_file;
     bar_file.set_name("bar.proto");
     bar_file.set_package("bar_package");
-    bar_file.set_edition(google::protobuf::Edition::EDITION_2024);
     bar_file.add_dependency("foo.proto");
     bar_file.add_option_dependency("custom_option.proto");
     AddExtensionRange(AddMessage(&bar_file, "BarMessage"), 1, 2);
-    EnumDescriptorProto* bar_enum = AddEnum(&bar_file, "BarEnum");
-    AddEnumValue(bar_enum, "BAR_ENUM_UNKNOWN", 0);
-    AddEnumValue(bar_enum, "BAR_ENUM_VALUE", 1);
+    AddEnumValue(AddEnum(&bar_file, "BarEnum"), "BAR_ENUM_VALUE", 1);
     AddService(&bar_file, "BarService");
     AddExtension(&bar_file, "bar_package.BarMessage", "bar_extension", 1,
                  FieldDescriptorProto::LABEL_OPTIONAL,
@@ -364,8 +359,8 @@ class FileDescriptorTest : public testing::Test {
     bar_message_ = bar_file_->message_type(0);
     ASSERT_EQ(1, bar_file_->enum_type_count());
     bar_enum_ = bar_file_->enum_type(0);
-    ASSERT_EQ(2, bar_enum_->value_count());
-    bar_enum_value_ = bar_enum_->value(1);
+    ASSERT_EQ(1, bar_enum_->value_count());
+    bar_enum_value_ = bar_enum_->value(0);
     ASSERT_EQ(1, bar_file_->service_count());
     bar_service_ = bar_file_->service(0);
     ASSERT_EQ(1, bar_file_->extension_count());
@@ -1260,15 +1255,15 @@ TEST_F(DescriptorTest, FieldLabel) {
   EXPECT_EQ(FieldDescriptor::LABEL_OPTIONAL, moo_->label());
 
   EXPECT_TRUE(foo_->is_required());
-  EXPECT_FALSE((!foo_->is_repeated() && !foo_->is_required()));
+  EXPECT_FALSE(foo_->is_optional());
   EXPECT_FALSE(foo_->is_repeated());
 
   EXPECT_FALSE(bar_->is_required());
-  EXPECT_TRUE(!bar_->is_repeated() && !bar_->is_required());
+  EXPECT_TRUE(bar_->is_optional());
   EXPECT_FALSE(bar_->is_repeated());
 
   EXPECT_FALSE(baz_->is_required());
-  EXPECT_FALSE((!baz_->is_repeated() && !baz_->is_required()));
+  EXPECT_FALSE(baz_->is_optional());
   EXPECT_TRUE(baz_->is_repeated());
 }
 
@@ -3252,9 +3247,9 @@ class HasHasbitTest : public testing::TestWithParam<HasHasbitTestParam> {
 TEST_P(HasHasbitTest, TestHasHasbitExplicitPresence) {
   EXPECT_EQ(GetField()->has_presence(),
             GetParam().expected_output.expected_has_presence);
-  EXPECT_EQ(GetFieldHasbitModeWithoutProfile(GetField()),
+  EXPECT_EQ(GetFieldHasbitMode(GetField()),
             GetParam().expected_output.expected_hasbitmode);
-  EXPECT_EQ(HasHasbitWithoutProfile(GetField()),
+  EXPECT_EQ(HasHasbit(GetField()),
             GetParam().expected_output.expected_has_hasbit);
 }
 
@@ -4119,7 +4114,6 @@ TEST(CustomOptions, OptionsFromOptionDependency) {
 
   ASSERT_TRUE(TextFormat::ParseFromString(
       R"pb(name: "custom_options_import.proto"
-           edition: EDITION_2024
            package: "proto2_unittest"
            option_dependency: "google/protobuf/unittest_custom_options.proto"
            options {
@@ -4213,7 +4207,6 @@ TEST(CustomOptions, MessageOptionThreeFieldsSet) {
   //   }
   ASSERT_TRUE(TextFormat::ParseFromString(
       "name: \"custom_options_import.proto\" "
-      "edition: EDITION_2024 "
       "package: \"proto2_unittest\" "
       "option_dependency: "
       "\"google/protobuf/unittest_custom_options.proto\" "
@@ -4299,7 +4292,6 @@ TEST(CustomOptions, MessageOptionRepeatedLeafFieldSet) {
   //   }
   ASSERT_TRUE(TextFormat::ParseFromString(
       "name: \"custom_options_import.proto\" "
-      "edition: EDITION_2024 "
       "package: \"proto2_unittest\" "
       "option_dependency: "
       "\"google/protobuf/unittest_custom_options.proto\" "
@@ -4388,7 +4380,6 @@ TEST(CustomOptions, MessageOptionRepeatedMsgFieldSet) {
   //   }
   ASSERT_TRUE(TextFormat::ParseFromString(
       "name: \"custom_options_import.proto\" "
-      "edition: EDITION_2024 "
       "package: \"proto2_unittest\" "
       "option_dependency: "
       "\"google/protobuf/unittest_custom_options.proto\" "
@@ -4550,7 +4541,6 @@ TEST(CustomOptions, UnusedOptionImportError) {
   ASSERT_TRUE(TextFormat::ParseFromString(
       R"pb(
         name: "custom_options_import.proto"
-        edition: EDITION_2024
         package: "proto2_unittest"
         option_dependency: "google/protobuf/unittest_custom_options.proto"
       )pb",
@@ -6141,7 +6131,7 @@ TEST_F(ImportOptionValidationErrorTest,
       "foo.proto: Foo.foo: OPTION_NAME: Option \"(bar)\" unknown. Ensure that "
       "your proto "
       "definition file imports the proto which defines the option (i.e. via "
-      "import option after edition 2024).\n");
+      "import option).\n");
 }
 
 TEST_F(ImportOptionValidationErrorTest,
@@ -6229,30 +6219,6 @@ TEST_F(ImportOptionValidationErrorTest,
       "foo.proto: Foo.foo: TYPE: \"Bar\" seems to be defined in \"bar.proto\", "
       "which is not imported by \"foo.proto\".  To use it here, please add the "
       "necessary import.\n");
-}
-
-TEST_F(ImportOptionValidationErrorTest,
-       InvalidOptionDependencyBeforeEdition2024) {
-  BuildDescriptorMessagesInTestPool();
-  ParseAndBuildFile("bar.proto",
-                    R"schema(
-      syntax = "proto2";
-      import "google/protobuf/descriptor.proto";
-      enum Bar {
-        BAR = 1;
-      }
-      extend google.protobuf.FieldOptions {
-        optional Bar bar = 5000;
-      })schema");
-
-  BuildFileWithErrors(
-      R"pb(
-        name: 'foo.proto'
-        edition: EDITION_2023
-        option_dependency: "bar.proto"
-      )pb",
-      "foo.proto: option: IMPORT: option imports are not supported before "
-      "edition 2024.\n");
 }
 
 
@@ -6396,7 +6362,6 @@ TEST_F(ValidationErrorTest,
   BuildFile(
       R"pb(
         name: "baz.proto"
-        edition: EDITION_2024
         package: "foo"
         option_dependency: "bar.proto"
         options {
@@ -6799,7 +6764,7 @@ TEST_F(ValidationErrorTest, UnknownOption) {
       "moo.proto: moo.proto: OPTION_NAME: Option \"(baaz.bar)\" unknown. "
       "Ensure "
       "that your proto definition file imports the proto which defines the "
-      "option (i.e. via import option after edition 2024).\n");
+      "option (i.e. via import option).\n");
 }
 
 TEST_F(ValidationErrorTest, CustomOptionConflictingFieldNumber) {
@@ -14249,7 +14214,7 @@ TEST_F(DatabaseBackedPoolTest, FeatureLifetimeErrorUnknownDependencies) {
             "use_option.proto: FooMessage: OPTION_NAME: Option "
             "\"(foo_extension)\" unknown. Ensure that your proto definition "
             "file imports the proto which defines the option (i.e. via import "
-            "option after edition 2024).\n");
+            "option).\n");
 
   // Verify that the extension does trigger a lifetime error.
   error_collector.text_.clear();

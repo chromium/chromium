@@ -75,8 +75,7 @@ def _IsMessageSetExtension(field):
           field.containing_type.has_options and
           field.containing_type.GetOptions().message_set_wire_format and
           field.type == descriptor.FieldDescriptor.TYPE_MESSAGE and
-          not field.is_required and
-          not field.is_repeated)
+          field.label == descriptor.FieldDescriptor.LABEL_OPTIONAL)
 
 _edition_defaults_lock = threading.Lock()
 
@@ -86,9 +85,9 @@ class DescriptorPool(object):
 
   if _USE_C_DESCRIPTORS:
 
-     def __new__(cls, descriptor_db=None):
-       # pylint: disable=protected-access
-       return descriptor._message.DescriptorPool(descriptor_db)
+   def __new__(cls, descriptor_db=None):
+     # pylint: disable=protected-access
+     return descriptor._message.DescriptorPool(descriptor_db)
 
   def __init__(
       self, descriptor_db=None, use_deprecated_legacy_json_field_conflicts=False

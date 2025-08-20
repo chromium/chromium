@@ -399,8 +399,7 @@ public class UnknownFieldSetTest {
             .mergeFrom(source)
             .build();
 
-    assertThat(TextFormat.printer().printToString(destination))
-        .isEqualTo("1: 1\n2: 2\n3: 3\n3: 4\n");
+    assertThat(destination.toString()).isEqualTo("1: 1\n2: 2\n3: 3\n3: 4\n");
   }
 
   @Test

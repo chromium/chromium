@@ -13,8 +13,8 @@
 #include <cstring>
 
 #include "absl/strings/string_view.h"
-#include "hpb/internal/internal.h"
-#include "hpb/ptr.h"
+#include "google/protobuf/hpb/internal/internal.h"
+#include "google/protobuf/hpb/ptr.h"
 #include "upb/base/string_view.h"
 #include "upb/mem/arena.h"
 #include "upb/message/message.h"
@@ -33,7 +33,7 @@ namespace hpb::interop::upb {
 // TODO: b/365824801 - consider rename to OwnMessage
 template <typename T>
 T MoveMessage(upb_Message* msg, upb_Arena* arena) {
-  return internal::PrivateAccess::InvokeConstructor<T>(msg, arena);
+  return T(msg, arena);
 }
 
 template <typename T>
@@ -48,22 +48,17 @@ const upb_MiniTable* GetMiniTable(Ptr<T>) {
 
 template <typename T>
 auto* GetMessage(T&& message) {
-  return internal::PrivateAccess::GetInternalMsg(std::forward<T>(message));
+  return hpb::internal::PrivateAccess::GetInternalMsg(std::forward<T>(message));
 }
 
 template <typename T>
 upb_Arena* GetArena(Ptr<T> message) {
-  return internal::PrivateAccess::GetInternalArena(message);
+  return hpb::internal::PrivateAccess::GetInternalArena(message);
 }
 
 template <typename T>
 upb_Arena* GetArena(T* message) {
-  return internal::PrivateAccess::GetInternalArena(message);
-}
-
-template <typename T>
-upb_Arena* UnwrapArena(T&& arena) {
-  return internal::PrivateAccess::GetInternalUPBArena(std::forward<T>(arena));
+  return hpb::internal::PrivateAccess::GetInternalArena(message);
 }
 
 /**
@@ -87,7 +82,7 @@ upb_Arena* UnwrapArena(T&& arena) {
  */
 template <typename T>
 typename T::CProxy MakeCHandle(const upb_Message* msg, upb_Arena* arena) {
-  return internal::PrivateAccess::CProxy<T>(msg, arena);
+  return hpb::internal::PrivateAccess::CProxy<T>(msg, arena);
 }
 
 /**
@@ -111,7 +106,7 @@ typename T::Proxy MakeHandle(upb_Message* msg, upb_Arena* arena) {
  */
 template <typename T>
 typename T::Proxy CreateMessage(upb_Arena* arena) {
-  return internal::PrivateAccess::CreateMessage<T>(arena);
+  return hpb::internal::PrivateAccess::CreateMessage<T>(arena);
 }
 
 inline absl::string_view FromUpbStringView(upb_StringView str) {

@@ -5,9 +5,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "python/descriptor_containers.h"
-
+#include "base/notimplemented.h"
 #include "python/descriptor.h"
+#include "python/descriptor_containers.h"
 #include "python/protobuf.h"
 #include "upb/reflection/def.h"
 
@@ -24,10 +24,6 @@ err:
   return ret;
 }
 
-#define CHECK_TYPE(obj, state_member)                                   \
-  assert(PyUpb_ModuleState_MaybeGet() == NULL || /* During shutdown. */ \
-         Py_TYPE(obj) == PyUpb_ModuleState_Get()->state_member)
-
 // -----------------------------------------------------------------------------
 // ByNameIterator
 // -----------------------------------------------------------------------------
@@ -43,7 +39,7 @@ typedef struct {
 } PyUpb_ByNameIterator;
 
 static PyUpb_ByNameIterator* PyUpb_ByNameIterator_Self(PyObject* obj) {
-  CHECK_TYPE(obj, by_name_iterator_type);
+  assert(Py_TYPE(obj) == PyUpb_ModuleState_Get()->by_name_iterator_type);
   return (PyUpb_ByNameIterator*)obj;
 }
 
@@ -105,7 +101,7 @@ typedef struct {
 } PyUpb_ByNumberIterator;
 
 static PyUpb_ByNumberIterator* PyUpb_ByNumberIterator_Self(PyObject* obj) {
-  CHECK_TYPE(obj, by_number_iterator_type);
+  assert(Py_TYPE(obj) == PyUpb_ModuleState_Get()->by_number_iterator_type);
   return (PyUpb_ByNumberIterator*)obj;
 }
 
@@ -166,7 +162,7 @@ typedef struct {
 } PyUpb_GenericSequence;
 
 PyUpb_GenericSequence* PyUpb_GenericSequence_Self(PyObject* obj) {
-  CHECK_TYPE(obj, generic_sequence_type);
+  assert(Py_TYPE(obj) == PyUpb_ModuleState_Get()->generic_sequence_type);
   return (PyUpb_GenericSequence*)obj;
 }
 
@@ -361,7 +357,7 @@ typedef struct {
 } PyUpb_ByNameMap;
 
 PyUpb_ByNameMap* PyUpb_ByNameMap_Self(PyObject* obj) {
-  CHECK_TYPE(obj, by_name_map_type);
+  assert(Py_TYPE(obj) == PyUpb_ModuleState_Get()->by_name_map_type);
   return (PyUpb_ByNameMap*)obj;
 }
 
@@ -577,7 +573,7 @@ typedef struct {
 } PyUpb_ByNumberMap;
 
 PyUpb_ByNumberMap* PyUpb_ByNumberMap_Self(PyObject* obj) {
-  CHECK_TYPE(obj, by_number_map_type);
+  assert(Py_TYPE(obj) == PyUpb_ModuleState_Get()->by_number_map_type);
   return (PyUpb_ByNumberMap*)obj;
 }
 

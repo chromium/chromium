@@ -766,6 +766,9 @@ class NoFieldPresenceMapSerializeTest : public testing::Test {
 
 using SerializableOutputTypes = ::testing::Types<std::string, absl::Cord>;
 
+// TODO: b/358616816 - `if constexpr` can be used here once C++17 is baseline.
+// https://google.github.io/googletest/reference/testing.html#TYPED_TEST_SUITE
+#ifdef __cpp_if_constexpr
 // Providing the NameGenerator produces slightly more readable output in the
 // test invocation summary (type names are displayed instead of numbers).
 class NameGenerator {
@@ -786,6 +789,9 @@ class NameGenerator {
 
 TYPED_TEST_SUITE(NoFieldPresenceMapSerializeTest, SerializableOutputTypes,
                  NameGenerator);
+#else
+TYPED_TEST_SUITE(NoFieldPresenceMapSerializeTest, SerializableOutputTypes);
+#endif
 
 TYPED_TEST(NoFieldPresenceMapSerializeTest,
            MapRoundTripNonZeroKeyNonZeroString) {

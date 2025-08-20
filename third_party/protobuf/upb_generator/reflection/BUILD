@@ -5,8 +5,6 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
-load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("//bazel/toolchains:proto_lang_toolchain.bzl", "proto_lang_toolchain")
 load("//upb/bazel:build_defs.bzl", "UPB_DEFAULT_CPPOPTS")
 
@@ -19,7 +17,7 @@ cc_library(
     srcs = ["names.cc"],
     hdrs = ["names.h"],
     deps = [
-        "//upb/port",
+        "//upb:port",
         "//upb_generator/common:names",
         "@abseil-cpp//absl/strings",
     ],
@@ -47,9 +45,9 @@ cc_binary(
         "//src/google/protobuf/compiler:plugin",
         "//src/google/protobuf/io",
         "//src/google/protobuf/io:printer",
-        "//upb/mem",
-        "//upb/port",
-        "//upb/reflection",
+        "//upb:mem",
+        "//upb:port",
+        "//upb:reflection",
         "//upb/util:def_to_proto",
         "//upb_generator:common",
         "//upb_generator:file_layout",
@@ -74,6 +72,6 @@ proto_lang_toolchain(
     plugin = ":protoc-gen-upbdefs",
     plugin_format_flag = "--plugin=protoc-gen-upbdefs=%s",
     progress_message = "Generating upb protos",
-    runtime = "//upb/reflection:generated_reflection_support",
+    runtime = "//upb:generated_reflection_support",
     visibility = ["//bazel:__pkg__"],
 )

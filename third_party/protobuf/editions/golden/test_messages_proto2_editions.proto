@@ -354,10 +354,6 @@ message TestAllTypesProto2 {
       ExtensionWithOneof extension_with_oneof = 123456789;
     }
   }
-
-  reserved reserved_field;
-
-  reserved 999999;
 }
 
 message ForeignMessageProto2 {

@@ -30,9 +30,6 @@ upb_MiniTableExtension_CType(const upb_MiniTableExtension* e);
 UPB_API_INLINE uint32_t
 upb_MiniTableExtension_Number(const upb_MiniTableExtension* e);
 
-UPB_API_INLINE const upb_MiniTable* upb_MiniTableExtension_Extendee(
-    const upb_MiniTableExtension* e);
-
 UPB_API_INLINE const upb_MiniTable* upb_MiniTableExtension_GetSubMessage(
     const upb_MiniTableExtension* e);
 

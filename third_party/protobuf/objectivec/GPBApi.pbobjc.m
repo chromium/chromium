@@ -54,7 +54,6 @@ static GPBFilePackageAndPrefix GPBApiRoot_FileDescription = {
 @dynamic hasSourceContext, sourceContext;
 @dynamic mixinsArray, mixinsArray_Count;
 @dynamic syntax;
-@dynamic edition;
 
 typedef struct GPBApi__storage_ {
   uint32_t _has_storage_[1];
@@ -65,7 +64,6 @@ typedef struct GPBApi__storage_ {
   NSString *version;
   GPBSourceContext *sourceContext;
   NSMutableArray *mixinsArray;
-  NSString *edition;
 } GPBApi__storage_;
 
 // This method is threadsafe because it is initially called
@@ -137,15 +135,6 @@ typedef struct GPBApi__storage_ {
         .flags = GPBFieldClearHasIvarOnZero,
         .dataType = GPBDataTypeEnum,
       },
-      {
-        .name = "edition",
-        .dataTypeSpecific.clazz = Nil,
-        .number = GPBApi_FieldNumber_Edition,
-        .hasIndex = 4,
-        .offset = (uint32_t)offsetof(GPBApi__storage_, edition),
-        .flags = GPBFieldClearHasIvarOnZero,
-        .dataType = GPBDataTypeString,
-      },
     };
     GPBDescriptor *localDescriptor =
         [GPBDescriptor allocDescriptorForClass:GPBObjCClass(GPBApi)
@@ -189,7 +178,6 @@ void SetGPBApi_Syntax_RawValue(GPBApi *message, int32_t value) {
 @dynamic responseStreaming;
 @dynamic optionsArray, optionsArray_Count;
 @dynamic syntax;
-@dynamic edition;
 
 typedef struct GPBMethod__storage_ {
   uint32_t _has_storage_[1];
@@ -198,7 +186,6 @@ typedef struct GPBMethod__storage_ {
   NSString *requestTypeURL;
   NSString *responseTypeURL;
   NSMutableArray *optionsArray;
-  NSString *edition;
 } GPBMethod__storage_;
 
 // This method is threadsafe because it is initially called
@@ -269,15 +256,6 @@ typedef struct GPBMethod__storage_ {
         .offset = (uint32_t)offsetof(GPBMethod__storage_, syntax),
         .flags = GPBFieldClearHasIvarOnZero,
         .dataType = GPBDataTypeEnum,
-      },
-      {
-        .name = "edition",
-        .dataTypeSpecific.clazz = Nil,
-        .number = GPBMethod_FieldNumber_Edition,
-        .hasIndex = 8,
-        .offset = (uint32_t)offsetof(GPBMethod__storage_, edition),
-        .flags = GPBFieldClearHasIvarOnZero,
-        .dataType = GPBDataTypeString,
       },
     };
     GPBDescriptor *localDescriptor =

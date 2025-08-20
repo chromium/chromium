@@ -13,39 +13,59 @@
 #include "absl/base/attributes.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
-#include "hpb/arena.h"
-#include "hpb/extension.h"
-#include "hpb/internal/template_help.h"
-#include "hpb/multibackend.h"
-#include "hpb/ptr.h"
-#include "hpb/status.h"
-
-#if HPB_INTERNAL_BACKEND == HPB_INTERNAL_BACKEND_UPB
-#include "hpb/backend/upb/interop.h"
-#include "hpb/backend/upb/upb.h"
+#include "google/protobuf/hpb/arena.h"
+#include "google/protobuf/hpb/backend/upb/interop.h"
+#include "google/protobuf/hpb/extension.h"
+#include "google/protobuf/hpb/internal/internal.h"
+#include "google/protobuf/hpb/internal/message_lock.h"
+#include "google/protobuf/hpb/internal/template_help.h"
+#include "google/protobuf/hpb/ptr.h"
+#include "google/protobuf/hpb/status.h"
 #include "upb/wire/decode.h"
-#elif HPB_INTERNAL_BACKEND == HPB_INTERNAL_BACKEND_CPP
-#include "hpb/backend/cpp/cpp.h"
+
+#ifdef HPB_BACKEND_UPB
+#include "google/protobuf/hpb/backend/upb/upb.h"
 #else
-#error hpb backend unknown
+#error hpb backend must be specified
 #endif
 
 namespace hpb {
 
+#ifdef HPB_BACKEND_UPB
+namespace backend = internal::backend::upb;
+#endif
+
 template <typename T>
 typename T::Proxy CreateMessage(Arena& arena) {
-  return backend::CreateMessage<T>(arena);
+  return typename T::Proxy(upb_Message_New(T::minitable(), arena.ptr()),
+                           arena.ptr());
 }
 
 template <typename T>
 typename T::Proxy CloneMessage(Ptr<T> message, Arena& arena) {
-  return backend::CloneMessage<T>(message, arena);
+  return internal::PrivateAccess::Proxy<T>(
+      internal::DeepClone(interop::upb::GetMessage(message), T::minitable(),
+                          arena.ptr()),
+      arena.ptr());
+}
+
+// Deprecated; do not use. There is one extant caller which we plan to migrate.
+// Tracking deletion TODO: b/385138477
+template <typename T>
+[[deprecated("Use CloneMessage(Ptr<T>, hpb::Arena&) instead.")]]
+typename T::Proxy CloneMessage(Ptr<T> message, upb_Arena* arena) {
+  return internal::PrivateAccess::Proxy<T>(
+      internal::DeepClone(interop::upb::GetMessage(message), T::minitable(),
+                          arena),
+      arena);
 }
 
 template <typename T>
 void DeepCopy(Ptr<const T> source_message, Ptr<T> target_message) {
   static_assert(!std::is_const_v<T>);
-  backend::DeepCopy(source_message, target_message);
+  internal::DeepCopy(interop::upb::GetMessage(target_message),
+                     interop::upb::GetMessage(source_message), T::minitable(),
+                     interop::upb::GetArena(target_message));
 }
 
 template <typename T>
@@ -70,14 +90,32 @@ ABSL_MUST_USE_RESULT bool Parse(internal::PtrOrRaw<T> message,
                                 absl::string_view bytes,
                                 const ExtensionRegistry& extension_registry =
                                     ExtensionRegistry::EmptyRegistry()) {
-  return backend::Parse(message, bytes, extension_registry);
+  static_assert(!std::is_const_v<T>);
+  upb_Message_Clear(interop::upb::GetMessage(message),
+                    interop::upb::GetMiniTable(message));
+  auto* arena = interop::upb::GetArena(message);
+  return upb_Decode(bytes.data(), bytes.size(),
+                    interop::upb::GetMessage(message),
+                    interop::upb::GetMiniTable(message),
+                    internal::GetUpbExtensions(extension_registry),
+                    /* options= */ 0, arena) == kUpb_DecodeStatus_Ok;
 }
 
 template <typename T>
 absl::StatusOr<T> Parse(absl::string_view bytes,
                         const ExtensionRegistry& extension_registry =
                             ExtensionRegistry::EmptyRegistry()) {
-  return backend::Parse<T>(bytes, extension_registry);
+  T message;
+  auto* arena = interop::upb::GetArena(&message);
+  upb_DecodeStatus status =
+      upb_Decode(bytes.data(), bytes.size(), message.msg(),
+                 interop::upb::GetMiniTable(&message),
+                 internal::GetUpbExtensions(extension_registry),
+                 /* options= */ 0, arena);
+  if (status == kUpb_DecodeStatus_Ok) {
+    return message;
+  }
+  return MessageDecodeError(status);
 }
 
 template <typename T>

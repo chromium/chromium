@@ -65,6 +65,7 @@
 #include "absl/strings/strip.h"
 #include "absl/strings/substitute.h"
 #include "absl/synchronization/mutex.h"
+#include "absl/types/optional.h"
 #include "absl/types/span.h"
 #include "google/protobuf/any.h"
 #include "google/protobuf/cpp_edition_defaults.h"
@@ -76,7 +77,6 @@
 #include "google/protobuf/dynamic_message.h"
 #include "google/protobuf/feature_resolver.h"
 #include "google/protobuf/generated_message_util.h"
-#include "google/protobuf/internal_feature_helper.h"
 #include "google/protobuf/io/strtod.h"
 #include "google/protobuf/io/tokenizer.h"
 #include "google/protobuf/message.h"
@@ -3938,7 +3938,7 @@ void FieldDescriptor::DebugString(
 
   // Label is omitted for maps, oneof, and plain proto3 fields.
   if (is_map() || real_containing_oneof() ||
-      (!is_required() && !is_repeated() && !has_presence())) {
+      (!is_required() && !is_repeated() && !has_optional_keyword())) {
     label.clear();
   }
   // Label is omitted for optional and required fields under editions.
@@ -4260,13 +4260,14 @@ bool FieldDescriptor::legacy_enum_field_treated_as_closed() const {
           enum_type()->is_closed());
 }
 
+ABSL_DEPRECATED("Use !is_required() && !is_repeated() instead.")
 bool FieldDescriptor::has_optional_keyword() const {
   return proto3_optional_ ||
          (file()->edition() == Edition::EDITION_PROTO2 && !is_required() &&
           !is_repeated() && !containing_oneof());
 }
 
-FieldDescriptor::CppStringType FieldDescriptor::CalculateCppStringType() const {
+FieldDescriptor::CppStringType FieldDescriptor::cpp_string_type() const {
   ABSL_DCHECK(cpp_type() == FieldDescriptor::CPPTYPE_STRING);
 
   if (internal::cpp::IsStringFieldWithPrivatizedAccessors(*this)) {
@@ -4489,7 +4490,7 @@ class DescriptorBuilder {
   DescriptorPool::DeferredValidation& deferred_validation_;
   DescriptorPool::ErrorCollector* error_collector_;
 
-  std::optional<FeatureResolver> feature_resolver_ = std::nullopt;
+  absl::optional<FeatureResolver> feature_resolver_ = absl::nullopt;
 
   // As we build descriptors we store copies of the options messages in
   // them. We put pointers to those copies in this vector, as we build, so we
@@ -4818,28 +4819,6 @@ class DescriptorBuilder {
   void CheckVisibilityRulesVisit(const EnumDescriptor& enm,
                                  const EnumDescriptorProto& proto,
                                  VisibilityCheckerState& state);
-  void CheckVisibilityRulesVisit(const FileDescriptor&,
-                                 const FileDescriptorProto& proto,
-                                 VisibilityCheckerState& state) {}
-  void CheckVisibilityRulesVisit(const FieldDescriptor&,
-                                 const FieldDescriptorProto& proto,
-                                 VisibilityCheckerState& state) {}
-  void CheckVisibilityRulesVisit(const EnumValueDescriptor&,
-                                 const EnumValueDescriptorProto& proto,
-                                 VisibilityCheckerState& state) {}
-  void CheckVisibilityRulesVisit(const OneofDescriptor&,
-                                 const OneofDescriptorProto& proto,
-                                 VisibilityCheckerState& state) {}
-  void CheckVisibilityRulesVisit(const Descriptor::ExtensionRange&,
-                                 const DescriptorProto::ExtensionRange& proto,
-                                 VisibilityCheckerState& state) {}
-  void CheckVisibilityRulesVisit(const MethodDescriptor&,
-                                 const MethodDescriptorProto& proto,
-                                 VisibilityCheckerState& state) {}
-  void CheckVisibilityRulesVisit(const ServiceDescriptor&,
-                                 const ServiceDescriptorProto& proto,
-                                 VisibilityCheckerState& state) {}
-
   bool IsEnumNamespaceMessage(const EnumDescriptor& enm) const;
 
 
@@ -5166,21 +5145,6 @@ absl::Status DescriptorPool::SetFeatureSetDefaults(FeatureSetDefaults spec) {
   return absl::OkStatus();
 }
 
-bool DescriptorPool::ShouldEnforceExtensionDeclaration(
-    const FieldDescriptor& field) const {
-  ABSL_DCHECK(field.is_extension());
-  const Descriptor* containing_type = field.containing_type();
-  switch (enforce_extension_declarations_) {
-    case ExtDeclEnforcementLevel::kCustomExtensions:
-      return containing_type->file()->name() !=
-             "google/protobuf/descriptor.proto";
-    case ExtDeclEnforcementLevel::kAllExtensions:
-      return true;
-    default:
-      return false;
-  }
-}
-
 const FeatureSetDefaults& DescriptorPool::GetFeatureSetDefaults() const {
   if (feature_set_defaults_spec_ != nullptr) return *feature_set_defaults_spec_;
   static const FeatureSetDefaults* cpp_default_spec =
@@ -5418,7 +5382,7 @@ Symbol DescriptorBuilder::FindSymbol(const absl::string_view name,
       if (dep != nullptr && IsInPackage(dep, name)) return result;
     }
     for (const auto* dep : option_dependencies_) {
-      // Note:  A dependency may be nullptr if it was not found or had errors.
+      // Note:  An dependency may be nullptr if it was not found or had errors.
       if (dep != nullptr && IsInPackage(dep, name)) return result;
     }
   }
@@ -6040,13 +6004,6 @@ void DescriptorBuilder::PostProcessFieldFeatures(
         !type.descriptor()->options().map_entry()) {
       field.type_ = FieldDescriptor::TYPE_GROUP;
     }
-  }
-
-  if (field.cpp_type() == FieldDescriptor::CPPTYPE_STRING) {
-    auto string_type = field.CalculateCppStringType();
-    field.cpp_string_type_ = static_cast<uint8_t>(string_type);
-    // Check that there was no narrowing.
-    ABSL_DCHECK_EQ(field.cpp_string_type_, static_cast<uint8_t>(string_type));
   }
 
   if (field.options_->has_ctype()) {
@@ -7064,13 +7021,8 @@ void DescriptorBuilder::BuildFieldOrExtension(const FieldDescriptorProto& proto,
   result->is_extension_ = is_extension;
   result->is_oneof_ = false;
   result->in_real_oneof_ = false;
-  result->is_map_ = false;
   result->proto3_optional_ = proto.proto3_optional();
   result->legacy_proto_ctype_ = FieldOptions::CType_MAX + 1;
-  // We initialize to STRING because descriptor.proto needs it for
-  // bootstrapping.
-  result->cpp_string_type_ =
-      static_cast<uint8_t>(FieldDescriptor::CppStringType::kString);
 
   if (proto.proto3_optional() && file_->edition() != Edition::EDITION_PROTO3) {
     AddError(result->full_name(), proto, DescriptorPool::ErrorCollector::TYPE,
@@ -7449,7 +7401,7 @@ void DescriptorBuilder::CheckEnumValueUniqueness(
     const EnumValueDescriptor* value = result->value(i);
     std::string stripped =
         EnumValueToPascalCase(remover.MaybeRemove(value->name()));
-    auto insert_result = values.try_emplace(std::move(stripped), value);
+    auto insert_result = values.try_emplace(stripped, value);
     bool inserted = insert_result.second;
 
     // We don't throw the error if the two conflicting symbols are identical, or
@@ -8012,13 +7964,6 @@ void DescriptorBuilder::CrossLinkField(FieldDescriptor* field,
       }
     }
 
-    // Map entries must be in the same file, so we can populate it directly if
-    // the descriptor is already known. If it is not known, then it must not be
-    // a map entry.
-    if (auto* sub_message = type.descriptor()) {
-      field->is_map_ = sub_message->options().map_entry();
-    }
-
     if (!type.IsVisibleFrom(file_)) {
       AddError(field->full_name(), proto, DescriptorPool::ErrorCollector::TYPE,
                [&] { return type.GetVisibilityError(file_); });
@@ -8425,13 +8370,15 @@ void DescriptorBuilder::CheckVisibilityRules(FileDescriptor* file,
 
   // Build our state object so we can apply rules based on type.
   internal::VisitDescriptors(
-      *file, proto, [&](const auto& descriptor, const auto& proto) {
+      *file, proto,
+      [&](const auto& descriptor, const auto& proto)
+          -> decltype(CheckVisibilityRulesVisit(descriptor, proto, state)) {
         CheckVisibilityRulesVisit(descriptor, proto, state);
       });
 
-  // In edition 2024 we only enforce STRICT visibility rules. There are possibly
+  // In edition 2024 we only enforce STRICT visibilty rules. There are possibly
   // more rules to come in future editions, but for now just apply the rule for
-  // enforcing nested symbol local visibility. There is a single caveat for,
+  // enforcing nested symbol local visibilty. There is a single caveat for,
   // allowing nested enums to have visibility set only when
   //
   // local msg { export enum {} reserved 1 to max; }
@@ -8516,12 +8463,6 @@ void DescriptorBuilder::ValidateOptions(const FileDescriptor* file,
     ValidateProto3(file, proto);
   }
 
-  if (file->edition() < Edition::EDITION_2024 &&
-      file->option_dependency_count() > 0) {
-    AddError("option", proto, DescriptorPool::ErrorCollector::IMPORT,
-             "option imports are not supported before edition 2024.");
-  }
-
   if (file->edition() >= Edition::EDITION_2024) {
     if (file->options().has_java_multiple_files()) {
       AddError(file->name(), proto, DescriptorPool::ErrorCollector::OPTION_NAME,
@@ -8529,10 +8470,6 @@ void DescriptorBuilder::ValidateOptions(const FileDescriptor* file,
                "editions 2024 and above, which defaults to the feature value of"
                " `nest_in_file_class = NO` (equivalent to "
                "`java_multiple_files = true`).");
-    }
-    if (file->weak_dependency_count() > 0) {
-      AddError("weak", proto, DescriptorPool::ErrorCollector::IMPORT,
-               "weak imports are not allowed under edition 2024 and beyond.");
     }
   }
 }
@@ -8622,7 +8559,6 @@ void DescriptorBuilder::ValidateOptions(const FieldDescriptor* field,
   }
 
   ValidateFieldFeatures(field, proto);
-
 
   if (field->file()->edition() >= Edition::EDITION_2024 &&
       field->has_legacy_proto_ctype()) {
@@ -8725,9 +8661,7 @@ void DescriptorBuilder::ValidateOptions(const FieldDescriptor* field,
       return;
     }
 
-    // TODO: b/396020109 - Check for MessageSet extensions in separate .txtpb
-    // file.
-    if (pool_->ShouldEnforceExtensionDeclaration(*field)) {
+    if (pool_->EnforceCustomExtensionDeclarations()) {
       for (const auto& declaration : extension_range->options_->declaration()) {
         if (declaration.number() != field->number()) continue;
         if (declaration.reserved()) {
@@ -8961,7 +8895,7 @@ void DescriptorBuilder::ValidateOptions(
 namespace {
 // Validates that a fully-qualified symbol for extension declaration must
 // have a leading dot and valid identifiers.
-std::optional<std::string> ValidateSymbolForDeclaration(
+absl::optional<std::string> ValidateSymbolForDeclaration(
     absl::string_view symbol) {
   if (!absl::StartsWith(symbol, ".")) {
     return absl::StrCat("\"", symbol,
@@ -8971,7 +8905,7 @@ std::optional<std::string> ValidateSymbolForDeclaration(
   if (!ValidateQualifiedName(symbol)) {
     return absl::StrCat("\"", symbol, "\" contains invalid identifiers.");
   }
-  return std::nullopt;
+  return absl::nullopt;
 }
 }  // namespace
 
@@ -9025,7 +8959,7 @@ void DescriptorBuilder::ValidateExtensionDeclaration(
             });
         return;
       }
-      std::optional<std::string> err =
+      absl::optional<std::string> err =
           ValidateSymbolForDeclaration(declaration.full_name());
       if (err.has_value()) {
         AddError(full_name, proto, DescriptorPool::ErrorCollector::NAME,
@@ -9694,8 +9628,7 @@ bool DescriptorBuilder::OptionInterpreter::InterpretSingleOption(
           return absl::StrCat("Option \"", debug_msg_name,
                               "\" unknown. Ensure that your proto",
                               " definition file imports the proto which "
-                              "defines the option (i.e. via import option "
-                              "after edition 2024).");
+                              "defines the option (i.e. via import option).");
         });
       }
     } else if (field->containing_type() != descriptor) {
@@ -10673,7 +10606,7 @@ bool HasPreservingUnknownEnumSemantics(const FieldDescriptor* field) {
   return field->enum_type() != nullptr && !field->enum_type()->is_closed();
 }
 
-HasbitMode GetFieldHasbitModeWithoutProfile(const FieldDescriptor* field) {
+HasbitMode GetFieldHasbitMode(const FieldDescriptor* field) {
   // Do not generate hasbits for "real-oneof", weak, or extension fields.
   if (field->real_containing_oneof() || field->options().weak() ||
       field->is_extension()) {
@@ -10693,8 +10626,8 @@ HasbitMode GetFieldHasbitModeWithoutProfile(const FieldDescriptor* field) {
   return HasbitMode::kNoHasbit;
 }
 
-bool HasHasbitWithoutProfile(const FieldDescriptor* field) {
-  return GetFieldHasbitModeWithoutProfile(field) != HasbitMode::kNoHasbit;
+bool HasHasbit(const FieldDescriptor* field) {
+  return GetFieldHasbitMode(field) != HasbitMode::kNoHasbit;
 }
 
 static bool IsVerifyUtf8(const FieldDescriptor* field, bool is_lite) {
@@ -10742,10 +10675,6 @@ bool IsLazilyInitializedFile(absl::string_view filename) {
       filename == "google/protobuf/cpp_features.proto") {
     return true;
   }
-  if (filename == "third_party/protobuf/internal_options.proto" ||
-      filename == "google/protobuf/internal_options.proto") {
-    return true;
-  }
   return filename == "net/proto2/proto/descriptor.proto" ||
          filename == "google/protobuf/descriptor.proto";
 }
@@ -10774,6 +10703,9 @@ Edition FileDescriptor::edition() const { return edition_; }
 namespace internal {
 absl::string_view ShortEditionName(Edition edition) {
   return absl::StripPrefix(Edition_Name(edition), "EDITION_");
+}
+Edition InternalFeatureHelper::GetEdition(const FileDescriptor& desc) {
+  return desc.edition();
 }
 }  // namespace internal
 

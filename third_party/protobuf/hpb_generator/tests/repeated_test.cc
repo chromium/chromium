@@ -7,10 +7,10 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include "hpb_generator/tests/child_model.hpb.h"
-#include "hpb_generator/tests/test_extension.hpb.h"
-#include "hpb_generator/tests/test_model.hpb.h"
-#include "hpb/requires.h"
+#include "google/protobuf/compiler/hpb/tests/child_model.hpb.h"
+#include "google/protobuf/compiler/hpb/tests/test_extension.hpb.h"
+#include "google/protobuf/compiler/hpb/tests/test_model.hpb.h"
+#include "google/protobuf/hpb/requires.h"
 
 namespace {
 

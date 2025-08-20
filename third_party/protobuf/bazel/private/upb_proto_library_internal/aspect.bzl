@@ -118,20 +118,16 @@ def _generate_srcs_list(ctx, generator, proto_info):
         hdrs = hdrs,
     )
 
-def _enable_implicit_weak(ctx, generator, feature_configuration):
-    if generator != "upb_minitable":
-        return False
-
-    return cc_common.is_enabled(
+def _generate_upb_protos(ctx, generator, proto_info, feature_configuration):
+    implicit_weak = generator == "upb_minitable" and cc_common.is_enabled(
         feature_configuration = feature_configuration,
         feature_name = "proto_one_output_per_message",
     )
 
-def _generate_upb_protos(ctx, generator, proto_info, feature_configuration):
     srcs = _generate_srcs_list(ctx, generator, proto_info)
     additional_args = ctx.actions.args()
 
-    if _enable_implicit_weak(ctx, generator, feature_configuration):
+    if implicit_weak:
         srcs.srcs.extend(_get_implicit_weak_field_sources(ctx, proto_info))
         additional_args.add("--upb_minitable_opt=one_output_per_message")
 
@@ -149,11 +145,8 @@ def _generate_upb_protos(ctx, generator, proto_info, feature_configuration):
 def _generate_name(ctx, generator):
     return ctx.rule.attr.name + "." + generator
 
-def _get_proto_deps(ctx):
-    return [dep for dep in ctx.rule.attr.deps if ProtoInfo in dep]
-
 def _get_dep_cc_infos(target, ctx, generator, cc_provider, dep_cc_provider):
-    rule_deps = _get_proto_deps(ctx)
+    rule_deps = ctx.rule.attr.deps
     dep_ccinfos = [dep[cc_provider].cc_info for dep in rule_deps]
     if dep_cc_provider:
         # This gives access to our direct sibling.  eg. foo.upb.h can #include "foo.upb_minitable.h"
@@ -236,7 +229,7 @@ def upb_proto_aspect_impl(
         # This target doesn't declare any sources, reexport all its deps instead.
         # This is known as an "alias library":
         # https://bazel.build/versions/6.4.0/reference/be/protocol-buffer#proto_library.srcs
-        files = _merge_generated_srcs([dep[file_provider].srcs for dep in _get_proto_deps(ctx)])
+        files = _merge_generated_srcs([dep[file_provider].srcs for dep in ctx.rule.attr.deps])
         wrapped_cc_info = cc_provider(
             cc_info = cc_common.merge_cc_infos(direct_cc_infos = dep_ccinfos),
         )

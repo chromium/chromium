@@ -33,6 +33,7 @@ namespace protobuf {
 namespace compiler {
 namespace cpp {
 namespace {
+using ::google::protobuf::internal::cpp::HasHasbit;
 using ::google::protobuf::io::AnnotationCollector;
 using Sub = ::google::protobuf::io::Printer::Sub;
 
@@ -325,7 +326,7 @@ void SingularString::ReleaseImpl(io::Printer* p) const {
     return;
   }
 
-  if (!HasHasbit(field_, options_)) {
+  if (!HasHasbit(field_)) {
     p->Emit(R"cc(
       return $field_$.Release();
     )cc");
@@ -381,7 +382,7 @@ void SingularString::SetAllocatedImpl(io::Printer* p) const {
     return;
   }
 
-  if (HasHasbit(field_, options_)) {
+  if (HasHasbit(field_)) {
     p->Emit(R"cc(
       if (value != nullptr) {
         $set_hasbit$
@@ -550,7 +551,7 @@ void SingularString::GenerateMessageClearingCode(io::Printer* p) const {
   // will have checked that this field is set.  If so, we can avoid redundant
   // checks against the default variable.
 
-  if (is_inlined() && HasHasbit(field_, options_)) {
+  if (is_inlined() && HasHasbit(field_)) {
     // Calling mutable_$name$() gives us a string reference and sets the has bit
     // for $name$ (in proto2).  We may get here when the string field is inlined
     // but the string's contents have not been changed by the user, so we cannot
@@ -573,8 +574,8 @@ void SingularString::GenerateMessageClearingCode(io::Printer* p) const {
     return;
   }
 
-  p->Emit({{"Clear", HasHasbit(field_, options_) ? "ClearNonDefaultToEmpty"
-                                                 : "ClearToEmpty"}},
+  p->Emit({{"Clear",
+            HasHasbit(field_) ? "ClearNonDefaultToEmpty" : "ClearToEmpty"}},
           R"cc(
             $field_$.$Clear$();
           )cc");
@@ -634,7 +635,7 @@ void SingularString::GenerateCopyConstructorCode(io::Printer* p) const {
   p->Emit(
       {{"hazzer",
         [&] {
-          if (HasHasbit(field_, options_)) {
+          if (HasHasbit(field_)) {
             p->Emit(R"cc((from.$has_hasbit$) != 0)cc");
           } else {
             p->Emit(R"cc(!from._internal_$name$().empty())cc");
@@ -690,7 +691,6 @@ void SingularString::GenerateSerializeWithCachedSizesToArray(
             target = stream->Write$DeclaredType$MaybeAliased($number$, _s, target);
           )cc");
 }
-
 
 void SingularString::GenerateConstexprAggregateInitializer(
     io::Printer* p) const {
@@ -974,7 +974,6 @@ void RepeatedString::GenerateSerializeWithCachedSizesToArray(
             }
           )cc");
 }
-
 }  // namespace
 
 std::unique_ptr<FieldGeneratorBase> MakeSinguarStringGenerator(

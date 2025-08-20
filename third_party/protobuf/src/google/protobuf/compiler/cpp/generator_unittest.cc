@@ -14,7 +14,6 @@
 #include "google/protobuf/compiler/command_line_interface_tester.h"
 #include "google/protobuf/cpp_features.pb.h"
 
-
 namespace google {
 namespace protobuf {
 namespace compiler {
@@ -311,8 +310,6 @@ TEST_F(CppGeneratorTest, CtypeOnExtensionTest) {
       "Extension bar specifies CORD string type which is not supported for "
       "extensions");
 }
-
-
 }  // namespace
 }  // namespace cpp
 }  // namespace compiler

@@ -5,10 +5,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "hpb/internal/template_help.h"
+#include "google/protobuf/hpb/internal/template_help.h"
 
 #include <gtest/gtest.h>
-#include "hpb_generator/tests/test_model.hpb.h"
+#include "google/protobuf/compiler/hpb/tests/test_model.hpb.h"
 
 namespace hpb_unittest::protos {
 

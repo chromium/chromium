@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "hpb/extension.h"
+#include "google/protobuf/hpb/extension.h"
 
 #include <cstdint>
 #include <type_traits>
@@ -13,14 +13,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include "absl/strings/string_view.h"
-#include "hpb_generator/tests/child_model.hpb.h"
-#include "hpb_generator/tests/test_extension.hpb.h"
-#include "hpb_generator/tests/test_model.hpb.h"
-#include "hpb/arena.h"
-#include "hpb/backend/upb/interop.h"
-#include "hpb/hpb.h"
-#include "hpb/requires.h"
-#include "upb/mem/arena.h"
+#include "google/protobuf/compiler/hpb/tests/child_model.hpb.h"
+#include "google/protobuf/compiler/hpb/tests/test_extension.hpb.h"
+#include "google/protobuf/compiler/hpb/tests/test_model.hpb.h"
+#include "google/protobuf/hpb/arena.h"
+#include "google/protobuf/hpb/requires.h"
 
 namespace {
 using ::hpb::internal::Requires;
@@ -230,8 +227,8 @@ TEST(CppGeneratedCode, SetExtensionFusingFailureShouldCopy) {
 
   ThemeExtension extension1;
   extension1.set_ext_name("Hello World");
-  ASSERT_FALSE(upb_Arena_Fuse(hpb::interop::upb::UnwrapArena(arena),
-                              hpb::interop::upb::GetArena(&extension1)));
+  ASSERT_FALSE(
+      upb_Arena_Fuse(arena.ptr(), hpb::interop::upb::GetArena(&extension1)));
   EXPECT_FALSE(::hpb::HasExtension(model, theme));
   auto status = ::hpb::SetExtension(model, theme, std::move(extension1));
   EXPECT_TRUE(status.ok());
@@ -430,8 +427,8 @@ TEST(CppGeneratedCode, Parse) {
   ThemeExtension extension1;
   extension1.set_ext_name("Hello World");
   EXPECT_EQ(true, ::hpb::SetExtension(&model, theme, extension1).ok());
-  hpb::Arena arena;
-  auto bytes = hpb::Serialize(&model, arena);
+  ::upb::Arena arena;
+  auto bytes = ::hpb::Serialize(&model, arena);
   EXPECT_EQ(true, bytes.ok());
   TestModel parsed_model = ::hpb::Parse<TestModel>(bytes.value()).value();
   EXPECT_EQ("Test123", parsed_model.str1());
@@ -444,7 +441,7 @@ TEST(CppGeneratedCode, ParseIntoPtrToModel) {
   ThemeExtension extension1;
   extension1.set_ext_name("Hello World");
   EXPECT_EQ(true, ::hpb::SetExtension(&model, theme, extension1).ok());
-  hpb::Arena arena;
+  ::upb::Arena arena;
   auto bytes = ::hpb::Serialize(&model, arena);
   EXPECT_EQ(true, bytes.ok());
   ::hpb::Ptr<TestModel> parsed_model = ::hpb::CreateMessage<TestModel>(arena);
@@ -464,7 +461,7 @@ TEST(CppGeneratedCode, ParseWithExtensionRegistry) {
   EXPECT_EQ(true, ::hpb::SetExtension(&model, ThemeExtension::theme_extension,
                                       extension1)
                       .ok());
-  hpb::Arena arena;
+  ::upb::Arena arena;
   auto bytes = ::hpb::Serialize(&model, arena);
   EXPECT_EQ(true, bytes.ok());
 
@@ -567,7 +564,7 @@ TEST(CppGeneratedCode, ExtensionFieldNumberConstant) {
 
 TEST(CppGeneratedCode, GetExtensionRepeatedi32) {
   TestModel model;
-  hpb::Arena arena;
+  upb::Arena arena;
   hpb::ExtensionRegistry extensions(arena);
   extensions.AddExtension(repeated_int32_ext);
   // These bytes are the serialized form of a repeated int32 field
@@ -583,7 +580,7 @@ TEST(CppGeneratedCode, GetExtensionRepeatedi32) {
 
 TEST(CppGeneratedCode, GetExtensionRepeatedi64) {
   TestModel model;
-  hpb::Arena arena;
+  upb::Arena arena;
   hpb::ExtensionRegistry extensions(arena);
   extensions.AddExtension(repeated_int64_ext);
   // These bytes represent a repeated int64 field with one element: [322].
@@ -609,7 +606,7 @@ TEST(CppGeneratedCode, GetExtensionSingularString) {
 
 TEST(CppGeneratedCode, GetExtensionRepeatedString) {
   TestModel model;
-  hpb::Arena arena;
+  upb::Arena arena;
   hpb::ExtensionRegistry extensions(arena);
   extensions.AddExtension(repeated_string_ext);
   // These bytes represent a repeated string field with two elements:

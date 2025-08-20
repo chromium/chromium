@@ -7,13 +7,11 @@
 #include "google/protobuf/testing/file.h"
 #include "google/protobuf/testing/path.h"
 #include "google/protobuf/compiler/profile.pb.h"
-#include <gmock/gmock.h>
 #include "google/protobuf/testing/googletest.h"
 #include <gtest/gtest.h>
 #include "absl/log/absl_check.h"
 #include "google/protobuf/compiler/cpp/tools/analyze_profile_proto_test.pb.h"
 #include "google/protobuf/descriptor.h"
-#include "google/protobuf/port.h"
 #include "google/protobuf/test_textproto.h"
 
 namespace google {
@@ -21,8 +19,6 @@ namespace protobuf {
 namespace compiler {
 namespace tools {
 namespace {
-
-using ::testing::HasSubstr;
 
 std::string AnalyzeToText(const AccessInfo& info,
                           AnalyzeProfileProtoOptions options) {
@@ -44,9 +40,6 @@ TEST(AnalyzeProfileProtoTest, EmptyProfileToText) {
 }
 
 TEST(AnalyzeProfileProtoTest, UnlikelyStringPresence) {
-  if (google::protobuf::internal::ForceInlineStringInProtoc()) {
-    GTEST_SKIP() << "Forced layout invalidates the test.";
-  }
   AccessInfo info = ParseTextOrDie(R"pb(
     language: "cpp"
     message {
@@ -73,9 +66,9 @@ TEST(AnalyzeProfileProtoTest, LikelyStringPresence) {
   AnalyzeProfileProtoOptions options;
   options.print_unused_threshold = false;
   options.pool = DescriptorPool::generated_pool();
-  EXPECT_THAT(AnalyzeToText(info, options).c_str(),
-              HasSubstr("Message google::protobuf::compiler::tools::AnalyzeThis\n"
-                        "  string optional_string: INLINE\n"));
+  EXPECT_STREQ(AnalyzeToText(info, options).c_str(),
+               "Message google::protobuf::compiler::tools::AnalyzeThis\n"
+               "  string optional_string: INLINE\n");
 }
 
 TEST(AnalyzeProfileProtoTest, ChildLikelyPresentAndUsed) {
@@ -97,15 +90,12 @@ TEST(AnalyzeProfileProtoTest, ChildLikelyPresentAndUsed) {
   AnalyzeProfileProtoOptions options;
   options.print_unused_threshold = false;
   options.pool = DescriptorPool::generated_pool();
-  EXPECT_THAT(AnalyzeToText(info, options).c_str(),
-              HasSubstr("Message google::protobuf::compiler::tools::AnalyzeThis\n"
-                        "  string optional_string: INLINE\n"));
+  EXPECT_STREQ(AnalyzeToText(info, options).c_str(),
+               "Message google::protobuf::compiler::tools::AnalyzeThis\n"
+               "  string optional_string: INLINE\n");
 }
 
 TEST(AnalyzeProfileProtoTest, UnlikelyPresent) {
-  if (google::protobuf::internal::ForceInlineStringInProtoc()) {
-    GTEST_SKIP() << "Forced layout invalidates the test.";
-  }
   AccessInfo info = ParseTextOrDie(R"pb(
     language: "cpp"
     message {
@@ -132,9 +122,6 @@ TEST(AnalyzeProfileProtoTest, UnlikelyPresent) {
 }
 
 TEST(AnalyzeProfileProtoTest, ChildLikelyPresentAndRarelyUsed) {
-  if (google::protobuf::internal::ForceInlineStringInProtoc()) {
-    GTEST_SKIP() << "Forced layout invalidates the test.";
-  }
   // Note that the logic pics a 50th percentile threshold which we need to
   // exceed, making testing slightly awkward
   AccessInfo info = ParseTextOrDie(R"pb(
@@ -177,9 +164,6 @@ TEST(AnalyzeProfileProtoTest, NestedCppNameMatchedToPoolName) {
 }
 
 TEST(AnalyzeProfileProtoTest, PrintStatistics) {
-  if (google::protobuf::internal::ForceInlineStringInProtoc()) {
-    GTEST_SKIP() << "Forced layout invalidates the test.";
-  }
   AccessInfo info = ParseTextOrDie(R"pb(
     language: "cpp"
     message {
@@ -236,9 +220,6 @@ repeated_num_elements_stdev=1.5
 }
 
 TEST(AnalyzeProfileProtoTest, PrintStatisticsAll) {
-  if (google::protobuf::internal::ForceInlineStringInProtoc()) {
-    GTEST_SKIP() << "Forced layout invalidates the test.";
-  }
   AccessInfo info = ParseTextOrDie(R"pb(
     language: "cpp"
     message {

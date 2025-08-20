@@ -1,7 +1,5 @@
 """Macros that implement bootstrapping for the upb code generator."""
 
-load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load(
     "//bazel:upb_minitable_proto_library.bzl",
     "upb_minitable_proto_library",
@@ -16,15 +14,14 @@ load(
 )
 
 _stages = ["_stage0", "_stage1", ""]
-_protoc = "//src/google/protobuf/compiler/release:protoc_minimal"
+
+_protoc = "//:protoc_stage0"
 
 _extra_proto_path = "-I$$(dirname $(location //:descriptor_proto_srcs))/../.. "
 
 # This visibility is used automatically for anything used by the bootstrapping process.
 _bootstrap_visibility = [
-    # TODO: b/396430482 - Remove protoc from bootstrap visibility.
     "//src/google/protobuf/compiler:__pkg__",
-    "//src/google/protobuf/compiler/rust:__pkg__",
     "//third_party/upb/github:__pkg__",
     "//upb_generator:__subpackages__",
     "//upb/reflection:__pkg__",
@@ -59,7 +56,7 @@ def bootstrap_cc_library(name, visibility = [], deps = [], bootstrap_deps = [], 
           upb_proto_library().
     """
     for stage in _stages:
-        cc_library(
+        native.cc_library(
             name = name + stage,
             deps = deps + [dep + stage for dep in bootstrap_deps],
             visibility = _stage_visibility(stage, visibility),
@@ -83,9 +80,8 @@ def bootstrap_cc_binary(name, visibility = [], deps = [], bootstrap_deps = [], *
           upb_proto_library().
     """
     for stage in _stages:
-        cc_binary(
+        native.cc_binary(
             name = name + stage,
-            malloc = "@bazel_tools//tools/cpp:malloc",
             deps = deps + [dep + stage for dep in bootstrap_deps],
             visibility = _stage_visibility(stage, visibility),
             **kwargs
@@ -216,7 +212,7 @@ def bootstrap_upb_proto_library(
     _stage0_proto_staleness_test(name, src_files, src_rules, strip_prefix)
 
     # stage0 uses checked-in protos, and has no MiniTable.
-    cc_library(
+    native.cc_library(
         name = name + "_stage0",
         srcs = _generated_hdrs_and_srcs(src_files, "stage0", "upb"),
         hdrs = [bootstrap_hdr],
@@ -224,7 +220,7 @@ def bootstrap_upb_proto_library(
         defines = ["UPB_BOOTSTRAP_STAGE=0"],
         deps = [
             "//upb:generated_code_support",
-            "//upb/mini_table",
+            "//upb:mini_table",
         ] + [dep + "_stage0" for dep in deps],
         **kwargs
     )
@@ -232,7 +228,8 @@ def bootstrap_upb_proto_library(
     # Generate stage1 protos (C API and MiniTables) using stage0 compiler.
     _generate_stage1_proto(name, src_files, src_rules, "upb", kwargs)
     _generate_stage1_proto(name, src_files, src_rules, "upb_minitable", kwargs)
-    cc_library(
+
+    native.cc_library(
         name = name + "_minitable_stage1",
         srcs = _generated_files(src_files, "stage1", "upb_minitable", "c"),
         hdrs = _generated_files(src_files, "stage1", "upb_minitable", "h"),
@@ -243,7 +240,7 @@ def bootstrap_upb_proto_library(
         ] + [dep + "_minitable_stage1" for dep in deps],
         **kwargs
     )
-    cc_library(
+    native.cc_library(
         name = name + "_stage1",
         srcs = _generated_files(src_files, "stage1", "upb", "h"),
         hdrs = [bootstrap_hdr],
@@ -262,7 +259,7 @@ def bootstrap_upb_proto_library(
         deps = proto_lib_deps,
         **kwargs
     )
-    cc_library(
+    native.cc_library(
         name = name,
         hdrs = [bootstrap_hdr],
         deps = [name + "_upb_proto"],

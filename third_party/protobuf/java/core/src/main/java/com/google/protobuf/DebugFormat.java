@@ -10,16 +10,6 @@ public final class DebugFormat {
 
   private final boolean isSingleLine;
 
-  private TextFormat.Printer getPrinter() {
-    // This assumes that `debugFormatPrinter()` is multi-line by default.
-    TextFormat.Printer printer = TextFormat.debugFormatPrinter();
-    if (isSingleLine) {
-      return printer.emittingSingleLine(true);
-    } else {
-      return printer;
-    }
-  }
-
   private DebugFormat(boolean singleLine) {
     isSingleLine = singleLine;
   }
@@ -33,19 +23,31 @@ public final class DebugFormat {
   }
 
   public String toString(MessageOrBuilder message) {
-    TextFormat.Printer.FieldReporterLevel fieldReporterLevel =
-        isSingleLine
-            ? TextFormat.Printer.FieldReporterLevel.DEBUG_SINGLE_LINE
-            : TextFormat.Printer.FieldReporterLevel.DEBUG_MULTILINE;
-    return getPrinter().printToString(message, fieldReporterLevel);
+    if (!this.isSingleLine) {
+      return TextFormat.debugFormatPrinter()
+          .printToString(message, TextFormat.Printer.FieldReporterLevel.DEBUG_MULTILINE);
+    }
+    return TextFormat.debugFormatPrinter()
+        .emittingSingleLine(this.isSingleLine)
+        .printToString(message, TextFormat.Printer.FieldReporterLevel.DEBUG_SINGLE_LINE);
   }
 
   public String toString(FieldDescriptor field, Object value) {
-    return getPrinter().printFieldToString(field, value);
+    if (!this.isSingleLine) {
+      return TextFormat.debugFormatPrinter().printFieldToString(field, value);
+    }
+    return TextFormat.debugFormatPrinter()
+        .emittingSingleLine(this.isSingleLine)
+        .printFieldToString(field, value);
   }
 
   public String toString(UnknownFieldSet fields) {
-    return getPrinter().printToString(fields);
+    if (!this.isSingleLine) {
+      return TextFormat.debugFormatPrinter().printToString(fields);
+    }
+    return TextFormat.debugFormatPrinter()
+        .emittingSingleLine(this.isSingleLine)
+        .printToString(fields);
   }
 
   public Object lazyToString(MessageOrBuilder message) {

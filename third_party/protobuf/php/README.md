@@ -24,8 +24,12 @@ PHP versions will change over time, see
 
 #### Prerequirements
 
-To install the c extension, the following tools are needed: * gcc * libtool *
-make * pear * pecl * phpize
+To install the c extension, the following tools are needed:
+* libtool
+* make
+* gcc
+* pear
+* pecl
 
 On Ubuntu, you can install them with:
 ```

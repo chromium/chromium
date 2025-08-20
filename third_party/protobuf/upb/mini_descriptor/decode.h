@@ -8,13 +8,9 @@
 #ifndef UPB_MINI_TABLE_DECODE_H_
 #define UPB_MINI_TABLE_DECODE_H_
 
-#include <stddef.h>
-
 #include "upb/base/status.h"
 #include "upb/mem/arena.h"
-#include "upb/mini_table/enum.h"
 #include "upb/mini_table/extension.h"
-#include "upb/mini_table/message.h"
 #include "upb/mini_table/sub.h"
 
 // Export the newer headers, for legacy users.  New users should include the
@@ -85,7 +81,7 @@ UPB_API_INLINE upb_MiniTableExtension* upb_MiniTableExtension_Build(
 
 UPB_API_INLINE upb_MiniTableExtension* upb_MiniTableExtension_BuildMessage(
     const char* data, size_t len, const upb_MiniTable* extendee,
-    const upb_MiniTable* submsg, upb_Arena* arena, upb_Status* status) {
+    upb_MiniTable* submsg, upb_Arena* arena, upb_Status* status) {
   upb_MiniTableSub sub = upb_MiniTableSub_FromMessage(submsg);
   return _upb_MiniTableExtension_Build(
       data, len, extendee, sub, kUpb_MiniTablePlatform_Native, arena, status);
@@ -93,7 +89,7 @@ UPB_API_INLINE upb_MiniTableExtension* upb_MiniTableExtension_BuildMessage(
 
 UPB_API_INLINE upb_MiniTableExtension* upb_MiniTableExtension_BuildEnum(
     const char* data, size_t len, const upb_MiniTable* extendee,
-    const upb_MiniTableEnum* subenum, upb_Arena* arena, upb_Status* status) {
+    upb_MiniTableEnum* subenum, upb_Arena* arena, upb_Status* status) {
   upb_MiniTableSub sub = upb_MiniTableSub_FromEnum(subenum);
   return _upb_MiniTableExtension_Build(
       data, len, extendee, sub, kUpb_MiniTablePlatform_Native, arena, status);

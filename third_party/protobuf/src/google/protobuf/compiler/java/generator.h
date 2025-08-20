@@ -49,9 +49,7 @@ class PROTOC_EXPORT JavaGenerator : public CodeGenerator {
   uint64_t GetSupportedFeatures() const override;
 
   Edition GetMinimumEdition() const override { return Edition::EDITION_PROTO2; }
-  Edition GetMaximumEdition() const override {
-    return Edition::EDITION_2024;
-  }
+  Edition GetMaximumEdition() const override { return Edition::EDITION_2023; }
 
   std::vector<const FieldDescriptor*> GetFeatureExtensions() const override {
     return {GetExtensionReflection(pb::java)};
@@ -62,7 +60,6 @@ class PROTOC_EXPORT JavaGenerator : public CodeGenerator {
   }
 
   using CodeGenerator::GetEdition;
-  using CodeGenerator::GetResolvedSourceFeatureExtension;
   using CodeGenerator::GetResolvedSourceFeatures;
   using CodeGenerator::GetUnresolvedSourceFeatures;
 

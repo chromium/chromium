@@ -362,18 +362,12 @@ static upb_benchmark_FileDescriptorProto* UpbParseDescriptor(upb_Arena* arena) {
   return set;
 }
 
-template <ArenaMode AMode>
 static void BM_SerializeDescriptor_Upb(benchmark::State& state) {
   int64_t total = 0;
   upb_Arena* arena = upb_Arena_New();
   upb_benchmark_FileDescriptorProto* set = UpbParseDescriptor(arena);
   for (auto _ : state) {
-    upb_Arena* enc_arena;
-    if (AMode == InitBlock) {
-      enc_arena = upb_Arena_Init(buf, sizeof(buf), nullptr);
-    } else {
-      enc_arena = upb_Arena_New();
-    }
+    upb_Arena* enc_arena = upb_Arena_Init(buf, sizeof(buf), nullptr);
     size_t size;
     char* data =
         upb_benchmark_FileDescriptorProto_serialize(set, enc_arena, &size);
@@ -382,12 +376,10 @@ static void BM_SerializeDescriptor_Upb(benchmark::State& state) {
       exit(1);
     }
     total += size;
-    upb_Arena_Free(enc_arena);
   }
   state.SetBytesProcessed(total);
 }
-BENCHMARK_TEMPLATE(BM_SerializeDescriptor_Upb, UseArena);
-BENCHMARK_TEMPLATE(BM_SerializeDescriptor_Upb, InitBlock);
+BENCHMARK(BM_SerializeDescriptor_Upb);
 
 static absl::string_view UpbJsonEncode(upb_benchmark_FileDescriptorProto* proto,
                                        const upb_MessageDef* md,

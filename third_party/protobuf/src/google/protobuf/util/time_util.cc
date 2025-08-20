@@ -19,7 +19,6 @@
 #include "absl/strings/string_view.h"
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
-#include "google/protobuf/util/internal_timeval.h"  // IWYU pragma: keep for timeval
 
 // Must go after other includes.
 #include "google/protobuf/port_def.inc"
@@ -390,25 +389,25 @@ time_t TimeUtil::TimestampToTimeT(const Timestamp& value) {
   return static_cast<time_t>(value.seconds());
 }
 
-Timestamp TimeUtil::TimevalToTimestamp(const struct timeval& value) {
+Timestamp TimeUtil::TimevalToTimestamp(const timeval& value) {
   return CreateNormalized<Timestamp>(value.tv_sec,
                                      value.tv_usec * kNanosPerMicrosecond);
 }
 
-struct timeval TimeUtil::TimestampToTimeval(const Timestamp& value) {
-  struct timeval result;
+timeval TimeUtil::TimestampToTimeval(const Timestamp& value) {
+  timeval result;
   result.tv_sec = value.seconds();
   result.tv_usec = RoundTowardZero(value.nanos(), kNanosPerMicrosecond);
   return result;
 }
 
-Duration TimeUtil::TimevalToDuration(const struct timeval& value) {
+Duration TimeUtil::TimevalToDuration(const timeval& value) {
   return CreateNormalized<Duration>(value.tv_sec,
                                     value.tv_usec * kNanosPerMicrosecond);
 }
 
-struct timeval TimeUtil::DurationToTimeval(const Duration& value) {
-  struct timeval result;
+timeval TimeUtil::DurationToTimeval(const Duration& value) {
+  timeval result;
   result.tv_sec = value.seconds();
   result.tv_usec = RoundTowardZero(value.nanos(), kNanosPerMicrosecond);
   // timeval.tv_usec's range is [0, 1000000)

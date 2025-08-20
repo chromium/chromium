@@ -236,15 +236,10 @@ static VALUE Map_merge_into_self(VALUE _self, VALUE hashmap) {
   return _self;
 }
 
-/**
- * ruby-doc: Map
- *
- * This class represents a Protobuf Map. It is largely automatically transformed
- * to and from a Ruby hash.
- */
-
 /*
- * ruby-doc: Map#initialize
+ * call-seq:
+ *     Map.new(key_type, value_type, value_typeclass = nil, init_hashmap = {})
+ *     => new map
  *
  * Allocates a new Map container. This constructor may be called with 2, 3, or 4
  * arguments. The first two arguments are always present and are symbols (taking
@@ -270,13 +265,6 @@ static VALUE Map_merge_into_self(VALUE _self, VALUE hashmap) {
  * shallow-copied into the new Map: the original map is unmodified, but
  * references to underlying objects will be shared if the value type is a
  * message type.
- *
- * @param key_type [Symbol]
- * @param value_type [Symbol]
- * @param value_typeclass [Class<AbstractMessage>,Module]
- * @paramdefault value_typeclass nil
- * @param init_hashmap [Hash,Map]
- * @paramdefault init_hashmap {}
  */
 static VALUE Map_init(int argc, VALUE* argv, VALUE _self) {
   Map* self = ruby_to_Map(_self);
@@ -323,14 +311,12 @@ static VALUE Map_init(int argc, VALUE* argv, VALUE _self) {
 }
 
 /*
- * ruby-doc: Map#each
+ * call-seq:
+ *     Map.each(&block)
  *
  * Invokes &block on each |key, value| pair in the map, in unspecified order.
  * Note that Map also includes Enumerable; map thus acts like a normal Ruby
  * sequence.
- *
- * @yield [Object, Object]
- * @return [nil]
  */
 static VALUE Map_each(VALUE _self) {
   Map* self = ruby_to_Map(_self);
@@ -347,11 +333,10 @@ static VALUE Map_each(VALUE _self) {
 }
 
 /*
- * ruby-doc: Map#keys
+ * call-seq:
+ *     Map.keys => [list_of_keys]
  *
  * Returns the list of keys contained in the map, in unspecified order.
- *
- * @return [Array<Object>]
  */
 static VALUE Map_keys(VALUE _self) {
   Map* self = ruby_to_Map(_self);
@@ -368,11 +353,10 @@ static VALUE Map_keys(VALUE _self) {
 }
 
 /*
- * ruby-doc: Map#values
+ * call-seq:
+ *     Map.values => [list_of_values]
  *
  * Returns the list of values contained in the map, in unspecified order.
- *
- * @return [Array<Object>]
  */
 static VALUE Map_values(VALUE _self) {
   Map* self = ruby_to_Map(_self);
@@ -389,13 +373,11 @@ static VALUE Map_values(VALUE _self) {
 }
 
 /*
- * ruby-doc: Map#[]
+ * call-seq:
+ *     Map.[](key) => value
  *
  * Accesses the element at the given key. Throws an exception if the key type is
  * incorrect. Returns nil when the key is not present in the map.
- *
- * @param key [Object]
- * @return [Object]
  */
 static VALUE Map_index(VALUE _self, VALUE key) {
   Map* self = ruby_to_Map(_self);
@@ -411,15 +393,12 @@ static VALUE Map_index(VALUE _self, VALUE key) {
 }
 
 /*
- * ruby-doc: Map#[]=
+ * call-seq:
+ *     Map.[]=(key, value) => value
  *
  * Inserts or overwrites the value at the given key with the given new value.
  * Throws an exception if the key type is incorrect. Returns the new value that
  * was just inserted.
- *
- * @param key [Object]
- * @param value [Object]
- * @return [Object]
  */
 static VALUE Map_index_set(VALUE _self, VALUE key, VALUE val) {
   Map* self = ruby_to_Map(_self);
@@ -435,13 +414,11 @@ static VALUE Map_index_set(VALUE _self, VALUE key, VALUE val) {
 }
 
 /*
- * ruby-doc: Map#has_key?
+ * call-seq:
+ *     Map.has_key?(key) => bool
  *
  * Returns true if the given key is present in the map. Throws an exception if
  * the key has the wrong type.
- *
- * @param key [Object]
- * @return [Boolean]
  */
 static VALUE Map_has_key(VALUE _self, VALUE key) {
   Map* self = ruby_to_Map(_self);
@@ -456,13 +433,11 @@ static VALUE Map_has_key(VALUE _self, VALUE key) {
 }
 
 /*
- * ruby-doc: Map#delete
+ * call-seq:
+ *     Map.delete(key) => old_value
  *
  * Deletes the value at the given key, if any, returning either the old value or
  * nil if none was present. Throws an exception if the key is of the wrong type.
- *
- * @param key [Object]
- * @return [Object]
  */
 static VALUE Map_delete(VALUE _self, VALUE key) {
   upb_Map* map = Map_GetMutable(_self);
@@ -480,11 +455,10 @@ static VALUE Map_delete(VALUE _self, VALUE key) {
 }
 
 /*
- * ruby-doc: Map#clear
+ * call-seq:
+ *     Map.clear
  *
  * Removes all entries from the map.
- *
- * @return [nil]
  */
 static VALUE Map_clear(VALUE _self) {
   upb_Map_Clear(Map_GetMutable(_self));
@@ -492,11 +466,10 @@ static VALUE Map_clear(VALUE _self) {
 }
 
 /*
- * ruby-doc: Map#length
+ * call-seq:
+ *     Map.length
  *
  * Returns the number of entries (key-value pairs) in the map.
- *
- * @return [Integer]
  */
 static VALUE Map_length(VALUE _self) {
   Map* self = ruby_to_Map(_self);
@@ -504,12 +477,11 @@ static VALUE Map_length(VALUE _self) {
 }
 
 /*
- * ruby-doc: Map#dup
+ * call-seq:
+ *     Map.dup => new_map
  *
  * Duplicates this map with a shallow copy. References to all non-primitive
  * element objects (e.g., submessages) are shared.
- *
- * @return [Map]
  */
 static VALUE Map_dup(VALUE _self) {
   Map* self = ruby_to_Map(_self);
@@ -530,7 +502,8 @@ static VALUE Map_dup(VALUE _self) {
 }
 
 /*
- * ruby-doc: Map#==
+ * call-seq:
+ *     Map.==(other) => boolean
  *
  * Compares this map to another. Maps are equal if they have identical key sets,
  * and for each key, the values in both maps compare equal. Elements are
@@ -540,9 +513,6 @@ static VALUE Map_dup(VALUE _self) {
  * Maps with dissimilar key types or value types/typeclasses are never equal,
  * even if value comparison (for example, between integers and floats) would
  * have otherwise indicated that every element has equal value.
- *
- * @param other [Map]
- * @return [Boolean]
  */
 VALUE Map_eq(VALUE _self, VALUE _other) {
   Map* self = ruby_to_Map(_self);
@@ -590,13 +560,12 @@ VALUE Map_eq(VALUE _self, VALUE _other) {
 }
 
 /*
- * ruby-doc: Map#frozen?
+ * call-seq:
+ *     Map.frozen? => bool
  *
  * Returns true if the map is frozen in either Ruby or the underlying
  * representation. Freezes the Ruby map object if it is not already frozen in
  * Ruby but it is frozen in the underlying representation.
- *
- * @return [Boolean]
  */
 VALUE Map_frozen(VALUE _self) {
   Map* self = ruby_to_Map(_self);
@@ -611,12 +580,11 @@ VALUE Map_frozen(VALUE _self) {
 }
 
 /*
- * ruby-doc: Map#freeze
+ * call-seq:
+ *     Map.freeze => self
  *
  * Freezes the map object. We have to intercept this so we can freeze the
  * underlying representation, not just the Ruby wrapper.
- *
- * @return [self]
  */
 VALUE Map_freeze(VALUE _self) {
   Map* self = ruby_to_Map(_self);
@@ -669,11 +637,10 @@ VALUE Map_EmptyFrozen(const upb_FieldDef* f) {
 }
 
 /*
- * ruby-doc: Map#hash
+ * call-seq:
+ *     Map.hash => hash_value
  *
  * Returns a hash value based on this map's contents.
- *
- * @return [Integer]
  */
 VALUE Map_hash(VALUE _self) {
   Map* self = ruby_to_Map(_self);
@@ -691,11 +658,10 @@ VALUE Map_hash(VALUE _self) {
 }
 
 /*
- * ruby-doc: Map#to_h
+ * call-seq:
+ *     Map.to_h => {}
  *
  * Returns a Ruby Hash object containing all the values within the map
- *
- * @return [Hash]
  */
 VALUE Map_to_h(VALUE _self) {
   Map* self = ruby_to_Map(_self);
@@ -703,13 +669,12 @@ VALUE Map_to_h(VALUE _self) {
 }
 
 /*
- * ruby-doc: Map#inspect
+ * call-seq:
+ *     Map.inspect => string
  *
  * Returns a string representing this map's elements. It will be formatted as
  * "{key => value, key => value, ...}", with each key and value string
  * representation computed by its own #inspect method.
- *
- * @return [String]
  */
 VALUE Map_inspect(VALUE _self) {
   Map* self = ruby_to_Map(_self);
@@ -722,15 +687,13 @@ VALUE Map_inspect(VALUE _self) {
 }
 
 /*
- * ruby-doc: Map#merge
+ * call-seq:
+ *     Map.merge(other_map) => map
  *
  * Copies key/value pairs from other_map into a copy of this map. If a key is
  * set in other_map and this map, the value from other_map overwrites the value
  * in the new copy of this map. Returns the new copy of this map with merged
  * contents.
- *
- * @param other_map [Map]
- * @return [Map]
  */
 static VALUE Map_merge(VALUE _self, VALUE hashmap) {
   VALUE dupped = Map_dup(_self);

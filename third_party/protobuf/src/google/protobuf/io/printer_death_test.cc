@@ -9,7 +9,6 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
-#include <optional>
 #include <ostream>
 #include <string>
 #include <tuple>
@@ -44,7 +43,7 @@ class PrinterDeathTest : public testing::Test {
   }
 
   std::string out_;
-  std::optional<StringOutputStream> stream_{&out_};
+  absl::optional<StringOutputStream> stream_{&out_};
 };
 
 // FakeDescriptorFile defines only those members that Printer uses to write out

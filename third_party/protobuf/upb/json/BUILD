@@ -1,7 +1,5 @@
 # TODO: describe this package.
 
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
-load("@rules_cc//cc:cc_test.bzl", "cc_test")
 load("//bazel:proto_library.bzl", "proto_library")
 load(
     "//bazel:upb_proto_library.bzl",
@@ -25,14 +23,14 @@ cc_library(
     copts = UPB_DEFAULT_COPTS,
     visibility = ["//visibility:public"],
     deps = [
-        "//upb/base",
+        "//upb:base",
+        "//upb:mem",
+        "//upb:message",
+        "//upb:mini_table",
+        "//upb:port",
+        "//upb:reflection",
+        "//upb:wire",
         "//upb/lex",
-        "//upb/mem",
-        "//upb/message",
-        "//upb/mini_table",
-        "//upb/port",
-        "//upb/reflection",
-        "//upb/wire",
     ],
 )
 
@@ -44,9 +42,9 @@ cc_test(
         ":test_upb_proto",
         ":test_upb_proto_reflection",
         "//:struct_upb_proto",
-        "//upb/base",
-        "//upb/mem",
-        "//upb/reflection",
+        "//upb:base",
+        "//upb:mem",
+        "//upb:reflection",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -60,9 +58,9 @@ cc_test(
         ":test_upb_proto",
         ":test_upb_proto_reflection",
         "//:struct_upb_proto",
-        "//upb/base",
-        "//upb/mem",
-        "//upb/reflection",
+        "//upb:base",
+        "//upb:mem",
+        "//upb:reflection",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],

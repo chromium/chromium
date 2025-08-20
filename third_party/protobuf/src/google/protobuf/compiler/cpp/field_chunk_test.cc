@@ -1,6 +1,5 @@
 #include "google/protobuf/compiler/cpp/field_chunk.h"
 
-#include <cstddef>
 #include <cstdint>
 #include <vector>
 
@@ -177,7 +176,6 @@ TEST(GenChunkMaskTest, ValidMaskFromChunks) {
   uint32_t mask = GenChunkMask(chunks.begin(), chunks.end(), has_bit_indices);
   EXPECT_EQ(mask, (1 << kHasbitIdxAt0) | (1 << kHasbitIdxAt1));
 }
-
 
 }  // namespace
 }  // namespace cpp

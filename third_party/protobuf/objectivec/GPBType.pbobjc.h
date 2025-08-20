@@ -193,11 +193,6 @@ typedef GPB_ENUM(GPBType_FieldNumber) {
 
 /**
  * A protocol buffer message type.
- *
- * New usages of this message as an alternative to DescriptorProto are strongly
- * discouraged. This message does not reliability preserve all information
- * necessary to model the schema and preserve semantics. Instead make use of
- * FileDescriptorSet which preserves the necessary information.
  **/
 GPB_FINAL @interface GPBType : GPBMessage
 
@@ -261,11 +256,6 @@ typedef GPB_ENUM(GPBField_FieldNumber) {
 
 /**
  * A single field of a message type.
- *
- * New usages of this message as an alternative to FieldDescriptorProto are
- * strongly discouraged. This message does not reliability preserve all
- * information necessary to model the schema and preserve semantics. Instead
- * make use of FileDescriptorSet which preserves the necessary information.
  **/
 GPB_FINAL @interface GPBField : GPBMessage
 
@@ -346,11 +336,6 @@ typedef GPB_ENUM(GPBEnum_FieldNumber) {
 
 /**
  * Enum type definition.
- *
- * New usages of this message as an alternative to EnumDescriptorProto are
- * strongly discouraged. This message does not reliability preserve all
- * information necessary to model the schema and preserve semantics. Instead
- * make use of FileDescriptorSet which preserves the necessary information.
  **/
 GPB_FINAL @interface GPBEnum : GPBMessage
 
@@ -402,11 +387,6 @@ typedef GPB_ENUM(GPBEnumValue_FieldNumber) {
 
 /**
  * Enum value definition.
- *
- * New usages of this message as an alternative to EnumValueDescriptorProto are
- * strongly discouraged. This message does not reliability preserve all
- * information necessary to model the schema and preserve semantics. Instead
- * make use of FileDescriptorSet which preserves the necessary information.
  **/
 GPB_FINAL @interface GPBEnumValue : GPBMessage
 
@@ -433,10 +413,6 @@ typedef GPB_ENUM(GPBOption_FieldNumber) {
 /**
  * A protocol buffer option, which can be attached to a message, field,
  * enumeration, etc.
- *
- * New usages of this message as an alternative to FileOptions, MessageOptions,
- * FieldOptions, EnumOptions, EnumValueOptions, ServiceOptions, or MethodOptions
- * are strongly discouraged.
  **/
 GPB_FINAL @interface GPBOption : GPBMessage
 

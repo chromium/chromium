@@ -5,21 +5,23 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "hpb/internal/message_lock.h"
+#include "google/protobuf/hpb/internal/message_lock.h"
 
 #include <atomic>
 #include <mutex>
 #include <string>
 #include <thread>
+#include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include "absl/hash/hash.h"
 #include "absl/log/absl_check.h"
-#include "hpb_generator/tests/test_model.hpb.h"
-#include "hpb/arena.h"
-#include "hpb/extension.h"
-#include "hpb/hpb.h"
+#include "google/protobuf/compiler/hpb/tests/test_model.hpb.h"
+#include "google/protobuf/hpb/extension.h"
+#include "google/protobuf/hpb/hpb.h"
 #include "upb/mem/arena.hpp"
+#include "upb/mini_table/extension.h"
 
 #ifndef ASSERT_OK
 #define ASSERT_OK(x) ASSERT_TRUE(x.ok())
@@ -42,7 +44,7 @@ std::string GenerateTestData() {
   extension2.set_ext_name("theme_extension");
   ABSL_CHECK_OK(
       ::hpb::SetExtension(&model, ThemeExtension::theme_extension, extension2));
-  hpb::Arena arena;
+  ::upb::Arena arena;
   auto bytes = ::hpb::Serialize(&model, arena);
   ABSL_CHECK_OK(bytes);
   return std::string(bytes->data(), bytes->size());
@@ -74,7 +76,7 @@ void TestConcurrentExtensionAccess(::hpb::ExtensionRegistry registry) {
     EXPECT_EQ((*ext)->ext_name(), "theme_extension");
   };
   const auto test_serialize = [&] {
-    hpb::Arena arena;
+    ::upb::Arena arena;
     EXPECT_OK(::hpb::Serialize(&parsed_model, arena));
   };
   const auto test_copy_constructor = [&] {
@@ -104,13 +106,13 @@ void TestConcurrentExtensionAccess(::hpb::ExtensionRegistry registry) {
 }
 
 TEST(CppGeneratedCode, ConcurrentAccessDoesNotRaceBothLazy) {
-  hpb::Arena arena;
+  upb::Arena arena;
   hpb::ExtensionRegistry registry(arena);
   TestConcurrentExtensionAccess(registry);
 }
 
 TEST(CppGeneratedCode, ConcurrentAccessDoesNotRaceOneLazyOneEager) {
-  hpb::Arena arena;
+  upb::Arena arena;
   hpb::ExtensionRegistry r1(arena);
   r1.AddExtension(theme);
   TestConcurrentExtensionAccess(r1);
@@ -120,7 +122,7 @@ TEST(CppGeneratedCode, ConcurrentAccessDoesNotRaceOneLazyOneEager) {
 }
 
 TEST(CppGeneratedCode, ConcurrentAccessDoesNotRaceBothEager) {
-  hpb::Arena arena;
+  upb::Arena arena;
   hpb::ExtensionRegistry registry(arena);
   registry.AddExtension(theme);
   registry.AddExtension(ThemeExtension::theme_extension);
@@ -128,7 +130,7 @@ TEST(CppGeneratedCode, ConcurrentAccessDoesNotRaceBothEager) {
 }
 
 TEST(CppGeneratedCode, ConcurrentAccessDoesNotRaceGlobalInstance) {
-  hpb::Arena arena;
+  upb::Arena arena;
   TestConcurrentExtensionAccess(hpb::ExtensionRegistry::generated_registry());
 }
 

@@ -10,7 +10,6 @@
 
 #include <stdbool.h>
 
-#include "python/protobuf.h"
 #include "python/python_api.h"
 #include "upb/reflection/def.h"
 
@@ -30,9 +29,7 @@ PyObject* PyUpb_RepeatedContainer_GetOrCreateWrapper(upb_Array* arr,
 
 // Reifies a repeated field stub to point to the concrete data in `arr`.
 // If `arr` is NULL, an appropriate empty array will be constructed.
-upb_Array* PyUpb_RepeatedContainer_Reify(PyObject* self, upb_Array* arr,
-                                         PyUpb_WeakMap* subobj_map,
-                                         intptr_t iter);
+void PyUpb_RepeatedContainer_Reify(PyObject* self, upb_Array* arr);
 
 // Reifies this repeated object if it is not already reified.
 upb_Array* PyUpb_RepeatedContainer_EnsureReified(PyObject* self);

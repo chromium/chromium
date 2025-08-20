@@ -244,9 +244,6 @@ message TestAllTypesProto3 {
 
   // Reserved for testing unknown fields
   reserved 501 to 510;
-
-  reserved "reserved_field";
-  reserved 999999;
 }
 
 message ForeignMessage {

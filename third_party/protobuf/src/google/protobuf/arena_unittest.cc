@@ -60,9 +60,7 @@ using proto2_unittest::TestAllTypes;
 using proto2_unittest::TestEmptyMessage;
 using proto2_unittest::TestOneof2;
 using proto2_unittest::TestRepeatedString;
-using ::testing::AnyOf;
 using ::testing::ElementsAreArray;
-using ::testing::HasSubstr;
 
 namespace google {
 namespace protobuf {
@@ -241,14 +239,6 @@ void TestCtorAndDtorTraits(std::vector<absl::string_view> def,
     Arena::Create<TraitsProber>(&arena, 17);
   }
   EXPECT_THAT(actions, ElementsAreArray(with_int));
-}
-
-TEST(ArenaTest, ZeroAllocDoesNotReturnNull) {
-  Arena arena;
-  EXPECT_NE(arena.AllocateAligned(0), nullptr);
-  // Try again after allocating some memory.
-  arena.AllocateAligned(10000);
-  EXPECT_NE(arena.AllocateAligned(0), nullptr);
 }
 
 TEST(ArenaTest, AllConstructibleAndDestructibleCombinationsWorkCorrectly) {
@@ -526,6 +516,7 @@ TEST(ArenaTest, GetConstructTypeWorks) {
   EXPECT_EQ(CT::kUnknown, (Peer::GetConstructType<int, const int&>()));
 }
 
+#ifdef __cpp_if_constexpr
 class DispatcherTestProto : public Message {
  public:
   using InternalArenaConstructable_ = void;
@@ -576,18 +567,6 @@ TEST(ArenaTest, CreateArenaConstructable) {
   EXPECT_EQ(copied->optional_nested_message().GetArena(), &arena);
 }
 
-TEST(ArenaTest, CreateArenaCheckFailsOnTooLargeInput) {
-  size_t max = std::numeric_limits<size_t>::max();
-
-  EXPECT_DEATH(Arena::CreateArray<double>(nullptr, max / sizeof(double) + 1),
-               "Requested size is too large to fit into size_t");
-
-  // For int32_t we trap even at this level because rounding up to 8 bytes will
-  // overflow.
-  EXPECT_DEATH(Arena::CreateArray<int32_t>(nullptr, max / sizeof(int32_t)),
-               "Requested size is too large to fit into size_t");
-}
-
 TEST(ArenaTest, CreateRepeatedPtrField) {
   Arena arena;
   auto repeated = Arena::Create<RepeatedPtrField<TestAllTypes>>(&arena);
@@ -623,6 +602,7 @@ TEST(ArenaTest, CreateMessageDispatchesToSpecialFunctions) {
   Arena::Create<DispatcherTestProto>(nullptr, 1);
   EXPECT_EQ(hook_called, "fallback");
 }
+#endif  // __cpp_if_constexpr
 
 TEST(ArenaTest, Parsing) {
   TestAllTypes original;
@@ -939,12 +919,9 @@ TEST(ArenaTest, SetAllocatedAcrossArenas) {
         Arena::Create<TestAllTypes::NestedMessage>(&arena2);
     arena2_submessage->set_bb(42);
 #if GTEST_HAS_DEATH_TEST
-    EXPECT_DEBUG_DEATH(
-        arena1_message->set_allocated_optional_nested_message(
-            arena2_submessage),
-        AnyOf(
-            HasSubstr("submessage_arena"),
-            HasSubstr("instance_arena == nullptr || instance_arena == arena")));
+    EXPECT_DEBUG_DEATH(arena1_message->set_allocated_optional_nested_message(
+                           arena2_submessage),
+                       "submessage_arena");
 #endif
     EXPECT_NE(arena2_submessage,
               arena1_message->mutable_optional_nested_message());
@@ -957,8 +934,7 @@ TEST(ArenaTest, SetAllocatedAcrossArenas) {
 #if GTEST_HAS_DEATH_TEST
   EXPECT_DEBUG_DEATH(
       heap_message->set_allocated_optional_nested_message(arena1_submessage),
-      AnyOf(HasSubstr("submessage_arena"),
-            HasSubstr("instance_arena == nullptr || instance_arena == arena")));
+      "submessage_arena");
 #endif
   EXPECT_NE(arena1_submessage, heap_message->mutable_optional_nested_message());
   delete heap_message;
@@ -1556,9 +1532,6 @@ TEST(ArenaTest, ClearOneofMessageOnArena) {
   if (!internal::DebugHardenClearOneofMessageOnArena()) {
     GTEST_SKIP() << "arena allocated oneof message fields are not hardened.";
   }
-  if (google::protobuf::internal::ForceEagerlyVerifiedLazyInProtoc()) {
-    GTEST_SKIP() << "Forced layout invalidates the test.";
-  }
 
   Arena arena;
   auto* message = Arena::Create<unittest::TestOneof2>(&arena);
@@ -1587,15 +1560,7 @@ TEST(ArenaTest, CopyValuesWithinOneof) {
   auto* foo = message->mutable_foogroup();
   foo->set_a(100);
   foo->set_b("hello world");
-  if (internal::ForceInlineStringInProtoc() && internal::HasMemoryPoisoning()) {
-#if GTEST_HAS_DEATH_TEST
-    EXPECT_DEATH(message->set_foo_string(message->foogroup().b()),
-                 "use-after-poison");
-#endif  // !GTEST_HAS_DEATH_TEST
-    return;
-  } else {
-    message->set_foo_string(message->foogroup().b());
-  }
+  message->set_foo_string(message->foogroup().b());
 
   // As a debug hardening measure, `set_foo_string` would clear `foo` in
   // (!NDEBUG && !ASAN) and the copy wouldn't work.

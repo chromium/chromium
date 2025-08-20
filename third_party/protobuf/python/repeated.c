@@ -55,28 +55,19 @@ static upb_Array* PyUpb_RepeatedContainer_GetIfReified(
   return PyUpb_RepeatedContainer_IsStub(self) ? NULL : self->ptr.arr;
 }
 
-upb_Array* PyUpb_RepeatedContainer_Reify(PyObject* _self, upb_Array* arr,
-                                         PyUpb_WeakMap* subobj_map,
-                                         intptr_t iter) {
+void PyUpb_RepeatedContainer_Reify(PyObject* _self, upb_Array* arr) {
   PyUpb_RepeatedContainer* self = (PyUpb_RepeatedContainer*)_self;
   assert(PyUpb_RepeatedContainer_IsStub(self));
-  const upb_FieldDef* f = PyUpb_RepeatedContainer_GetField(self);
   if (!arr) {
+    const upb_FieldDef* f = PyUpb_RepeatedContainer_GetField(self);
     upb_Arena* arena = PyUpb_Arena_Get(self->arena);
     arr = upb_Array_New(arena, upb_FieldDef_CType(f));
-  }
-  if (subobj_map) {
-    PyUpb_WeakMap_DeleteIter(subobj_map, &iter);
-  } else {
-    PyUpb_Message_SetConcreteSubobj(self->ptr.parent, f,
-                                    (upb_MessageValue){.array_val = arr});
   }
   PyUpb_ObjCache_Add(arr, &self->ob_base);
   Py_DECREF(self->ptr.parent);
   self->ptr.arr = arr;  // Overwrites self->ptr.parent.
   self->field &= ~(uintptr_t)1;
   assert(!PyUpb_RepeatedContainer_IsStub(self));
-  return arr;
 }
 
 upb_Array* PyUpb_RepeatedContainer_EnsureReified(PyObject* _self) {
@@ -84,7 +75,13 @@ upb_Array* PyUpb_RepeatedContainer_EnsureReified(PyObject* _self) {
   upb_Array* arr = PyUpb_RepeatedContainer_GetIfReified(self);
   if (arr) return arr;  // Already writable.
 
-  return PyUpb_RepeatedContainer_Reify((PyObject*)self, NULL, NULL, 0);
+  const upb_FieldDef* f = PyUpb_RepeatedContainer_GetField(self);
+  upb_Arena* arena = PyUpb_Arena_Get(self->arena);
+  arr = upb_Array_New(arena, upb_FieldDef_CType(f));
+  PyUpb_Message_SetConcreteSubobj(self->ptr.parent, f,
+                                  (upb_MessageValue){.array_val = arr});
+  PyUpb_RepeatedContainer_Reify((PyObject*)self, arr);
+  return arr;
 }
 
 static void PyUpb_RepeatedContainer_Dealloc(PyObject* _self) {

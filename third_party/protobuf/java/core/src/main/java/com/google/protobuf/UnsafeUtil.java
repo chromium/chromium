@@ -68,6 +68,10 @@ final class UnsafeUtil {
     return HAS_UNSAFE_BYTEBUFFER_OPERATIONS;
   }
 
+  static boolean isAndroid64() {
+    return IS_ANDROID_64;
+  }
+
   @SuppressWarnings("unchecked") // safe by method contract
   static <T> T allocateInstance(Class<T> clazz) {
     try {

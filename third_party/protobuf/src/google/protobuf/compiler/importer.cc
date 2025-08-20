@@ -127,7 +127,7 @@ SourceTreeDescriptorDatabase::SourceTreeDescriptorDatabase(
 
 SourceTreeDescriptorDatabase::~SourceTreeDescriptorDatabase() {}
 
-bool SourceTreeDescriptorDatabase::FindFileByName(StringViewArg filename,
+bool SourceTreeDescriptorDatabase::FindFileByName(const std::string& filename,
                                                   FileDescriptorProto* output) {
   std::unique_ptr<io::ZeroCopyInputStream> input(source_tree_->Open(filename));
   if (input == nullptr) {
@@ -160,12 +160,12 @@ bool SourceTreeDescriptorDatabase::FindFileByName(StringViewArg filename,
 }
 
 bool SourceTreeDescriptorDatabase::FindFileContainingSymbol(
-    StringViewArg symbol_name, FileDescriptorProto* output) {
+    const std::string& symbol_name, FileDescriptorProto* output) {
   return false;
 }
 
 bool SourceTreeDescriptorDatabase::FindFileContainingExtension(
-    StringViewArg containing_type, int field_number,
+    const std::string& containing_type, int field_number,
     FileDescriptorProto* output) {
   return false;
 }

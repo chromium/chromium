@@ -420,10 +420,11 @@ static VALUE Message_field_accessor(VALUE _self, const upb_FieldDef* f,
 }
 
 /*
- * ruby-doc: AbstractMessage
+ * call-seq:
+ *     Message.method_missing(*args)
  *
- * The {AbstractMessage} class is the parent class for all Protobuf messages,
- * and is generated from C code.
+ * Provides accessors and setters and methods to clear and check for presence of
+ * message fields according to their field names.
  *
  * For any field whose name does not conflict with a built-in method, an
  * accessor is provided with the same name as the field, and a setter is
@@ -652,12 +653,16 @@ void Message_InitFromValue(upb_Message* msg, const upb_MessageDef* m, VALUE val,
 }
 
 /*
- * ruby-doc: AbstractMessage#initialize
+ * call-seq:
+ *     Message.new(kwargs) => new_message
  *
  * Creates a new instance of the given message class. Keyword arguments may be
  * provided with keywords corresponding to field names.
  *
- * @param kwargs the list of field keys and values.
+ * Note that no literal Message class exists. Only concrete classes per message
+ * type exist, as provided by the #msgclass method on Descriptors after they
+ * have been added to a pool. The method definitions described here on the
+ * Message class are provided on each concrete message class.
  */
 static VALUE Message_initialize(int argc, VALUE* argv, VALUE _self) {
   Message* self = ruby_to_Message(_self);
@@ -679,11 +684,10 @@ static VALUE Message_initialize(int argc, VALUE* argv, VALUE _self) {
 }
 
 /*
- * ruby-doc: AbstractMessage#dup
+ * call-seq:
+ *     Message.dup => new_message
  *
  * Performs a shallow copy of this message and returns the new copy.
- *
- * @return [AbstractMessage]
  */
 static VALUE Message_dup(VALUE _self) {
   Message* self = ruby_to_Message(_self);
@@ -696,15 +700,13 @@ static VALUE Message_dup(VALUE _self) {
 }
 
 /*
- * ruby-doc: AbstractMessage#==
+ * call-seq:
+ *     Message.==(other) => boolean
  *
  * Performs a deep comparison of this message with another. Messages are equal
  * if they have the same type and if each field is equal according to the :==
  * method's semantics (a more efficient comparison may actually be done if the
  * field is of a primitive type).
- *
- * @param other [AbstractMessage]
- * @return [Boolean]
  */
 static VALUE Message_eq(VALUE _self, VALUE _other) {
   if (CLASS_OF(_self) != CLASS_OF(_other)) return Qfalse;
@@ -733,11 +735,10 @@ uint64_t Message_Hash(const upb_Message* msg, const upb_MessageDef* m,
 }
 
 /*
- * ruby-doc: AbstractMessage#hash
+ * call-seq:
+ *     Message.hash => hash_value
  *
  * Returns a hash value that represents this message's field values.
- *
- * @return [Integer]
  */
 static VALUE Message_hash(VALUE _self) {
   Message* self = ruby_to_Message(_self);
@@ -748,13 +749,12 @@ static VALUE Message_hash(VALUE _self) {
 }
 
 /*
- * ruby-doc: AbstractMessage#inspect
+ * call-seq:
+ *     Message.inspect => string
  *
  * Returns a human-readable string representing this message. It will be
  * formatted as "<MessageType: field1: value1, field2: value2, ...>". Each
  * field's value is represented according to its own #inspect method.
- *
- * @return [String]
  */
 static VALUE Message_inspect(VALUE _self) {
   Message* self = ruby_to_Message(_self);
@@ -830,11 +830,10 @@ VALUE Scalar_CreateHash(upb_MessageValue msgval, TypeInfo type_info) {
 }
 
 /*
- * ruby-doc: AbstractMessage#to_h
+ * call-seq:
+ *     Message.to_h => {}
  *
  * Returns the message as a Ruby Hash object, with keys as symbols.
- *
- * @return [Hash]
  */
 static VALUE Message_to_h(VALUE _self) {
   Message* self = ruby_to_Message(_self);
@@ -842,13 +841,12 @@ static VALUE Message_to_h(VALUE _self) {
 }
 
 /*
- * ruby-doc: AbstractMessage#frozen?
+ * call-seq:
+ *     Message.frozen? => bool
  *
  * Returns true if the message is frozen in either Ruby or the underlying
  * representation. Freezes the Ruby message object if it is not already frozen
  * in Ruby but it is frozen in the underlying representation.
- *
- * @return [Boolean]
  */
 VALUE Message_frozen(VALUE _self) {
   Message* self = ruby_to_Message(_self);
@@ -863,12 +861,11 @@ VALUE Message_frozen(VALUE _self) {
 }
 
 /*
- * ruby-doc: AbstractMessage#freeze
+ * call-seq:
+ *     Message.freeze => self
  *
  * Freezes the message object. We have to intercept this so we can freeze the
  * underlying representation, not just the Ruby wrapper.
- *
- * @return [self]
  */
 VALUE Message_freeze(VALUE _self) {
   Message* self = ruby_to_Message(_self);
@@ -885,13 +882,11 @@ VALUE Message_freeze(VALUE _self) {
 }
 
 /*
- * ruby-doc: AbstractMessage#[]
+ * call-seq:
+ *     Message.[](index) => value
  *
  * Accesses a field's value by field name. The provided field name should be a
  * string.
- *
- * @param index [Integer]
- * @return [Object]
  */
 static VALUE Message_index(VALUE _self, VALUE field_name) {
   Message* self = ruby_to_Message(_self);
@@ -908,14 +903,11 @@ static VALUE Message_index(VALUE _self, VALUE field_name) {
 }
 
 /*
- * ruby-doc: AbstractMessage#[]=
+ * call-seq:
+ *     Message.[]=(index, value)
  *
  * Sets a field's value by field name. The provided field name should be a
  * string.
- *
- * @param index [Integer]
- * @param value [Object]
- * @return [nil]
  */
 static VALUE Message_index_set(VALUE _self, VALUE field_name, VALUE value) {
   Message* self = ruby_to_Message(_self);
@@ -937,16 +929,14 @@ static VALUE Message_index_set(VALUE _self, VALUE field_name, VALUE value) {
 }
 
 /*
- * ruby-doc: AbstractMessage.decode
+ * call-seq:
+ *     MessageClass.decode(data, options) => message
  *
  * Decodes the given data (as a string containing bytes in protocol buffers wire
  * format) under the interpretation given by this message class's definition
  * and returns a message object with the corresponding field values.
- * @param data [String]
- * @param options [Hash]
- * @option recursion_limit [Integer] set to maximum decoding depth for message
- * (default is 64)
- * @return [AbstractMessage]
+ * @param options [Hash] options for the decoder
+ *  recursion_limit: set to maximum decoding depth for message (default is 64)
  */
 static VALUE Message_decode(int argc, VALUE* argv, VALUE klass) {
   VALUE data = argv[0];
@@ -999,17 +989,16 @@ VALUE Message_decode_bytes(int size, const char* bytes, int options,
 }
 
 /*
- * ruby-doc: AbstractMessage.decode_json
+ * call-seq:
+ *     MessageClass.decode_json(data, options = {}) => message
  *
  * Decodes the given data (as a string containing bytes in protocol buffers wire
  * format) under the interpretration given by this message class's definition
  * and returns a message object with the corresponding field values.
  *
- * @param data [String]
- * @param options [Hash]
- * @option ignore_unknown_fields [Boolean] set true to ignore unknown fields
- * (default is to raise an error)
- * @return [AbstractMessage]
+ *  @param options [Hash] options for the decoder
+ *   ignore_unknown_fields: set true to ignore unknown fields (default is to
+ *   raise an error)
  */
 static VALUE Message_decode_json(int argc, VALUE* argv, VALUE klass) {
   VALUE data = argv[0];
@@ -1068,16 +1057,13 @@ static VALUE Message_decode_json(int argc, VALUE* argv, VALUE klass) {
 }
 
 /*
- * ruby-doc: AbstractMessage.encode
+ * call-seq:
+ *     MessageClass.encode(msg, options) => bytes
  *
  * Encodes the given message object to its serialized form in protocol buffers
  * wire format.
- *
- * @param msg [AbstractMessage]
- * @param options [Hash]
- * @option recursion_limit [Integer] set to maximum encoding depth for message
- * (default is 64)
- * @return [String]
+ * @param options [Hash] options for the encoder
+ *  recursion_limit: set to maximum encoding depth for message (default is 64)
  */
 static VALUE Message_encode(int argc, VALUE* argv, VALUE klass) {
   Message* msg = ruby_to_Message(argv[0]);
@@ -1124,17 +1110,14 @@ static VALUE Message_encode(int argc, VALUE* argv, VALUE klass) {
 }
 
 /*
- * ruby-doc: AbstractMessage.encode_json
+ * call-seq:
+ *     MessageClass.encode_json(msg, options = {}) => json_string
  *
  * Encodes the given message object into its serialized JSON representation.
- *
- * @param msg [AbstractMessage]
- * @param options [Hash]
- * @option preserve_proto_fieldnames [Boolean] set true to use original
- * fieldnames (default is to camelCase)
- * @option emit_defaults [Boolean] set true to emit 0/false values (default is
- * to omit them)
- * @return [String]
+ * @param options [Hash] options for the decoder
+ *  preserve_proto_fieldnames: set true to use original fieldnames (default is
+ * to camelCase) emit_defaults: set true to emit 0/false values (default is to
+ * omit them)
  */
 static VALUE Message_encode_json(int argc, VALUE* argv, VALUE klass) {
   Message* msg = ruby_to_Message(argv[0]);
@@ -1202,12 +1185,11 @@ static VALUE Message_encode_json(int argc, VALUE* argv, VALUE klass) {
 }
 
 /*
- * ruby-doc: AbstractMessage.descriptor
+ * call-seq:
+ *     Message.descriptor => descriptor
  *
  * Class method that returns the Descriptor instance corresponding to this
  * message class's type.
- *
- * @return [Descriptor]
  */
 static VALUE Message_descriptor(VALUE klass) {
   return rb_ivar_get(klass, descriptor_instancevar_interned);
@@ -1230,26 +1212,12 @@ VALUE build_class_from_descriptor(VALUE descriptor) {
   return klass;
 }
 
-/* ruby-doc: Enum
- *
- * There isn't really a concrete `Enum` module generated by Protobuf. Instead,
- * you can use this documentation as an indicator of methods that are defined on
- * each `Enum` module that is generated. E.g. if you have:
- *
- *   enum my_enum_type
- *
- * in your Proto file and generate Ruby code, a module
- * called `MyEnumType` will be generated with the following methods available.
- */
-
 /*
- * ruby-doc: Enum.lookup
+ * call-seq:
+ *     Enum.lookup(number) => name
  *
  * This module method, provided on each generated enum module, looks up an enum
  * value by number and returns its name as a Ruby symbol, or nil if not found.
- *
- * @param number [Integer]
- * @return [String]
  */
 static VALUE enum_lookup(VALUE self, VALUE number) {
   int32_t num = NUM2INT(number);
@@ -1264,13 +1232,11 @@ static VALUE enum_lookup(VALUE self, VALUE number) {
 }
 
 /*
- * ruby-doc: Enum.resolve
+ * call-seq:
+ *     Enum.resolve(name) => number
  *
  * This module method, provided on each generated enum module, looks up an enum
  * value by name (as a Ruby symbol) and returns its name, or nil if not found.
- *
- * @param name [String]
- * @return [Integer]
  */
 static VALUE enum_resolve(VALUE self, VALUE sym) {
   const char* name = rb_id2name(SYM2ID(sym));
@@ -1285,13 +1251,11 @@ static VALUE enum_resolve(VALUE self, VALUE sym) {
 }
 
 /*
- * ruby-doc: Enum.descriptor
+ * call-seq:
+ *     Enum.descriptor
  *
  * This module method, provided on each generated enum module, returns the
- * {EnumDescriptor} corresponding to this enum type.
- *
- * @return [EnumDescriptor]
- *
+ * EnumDescriptor corresponding to this enum type.
  */
 static VALUE enum_descriptor(VALUE self) {
   return rb_ivar_get(self, descriptor_instancevar_interned);

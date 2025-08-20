@@ -97,4 +97,6 @@ void Protobuf_CheckNotFrozen(VALUE val, bool upb_frozen);
 
 #define PBRUBY_MAX(x, y) (((x) > (y)) ? (x) : (y))
 
+#define UPB_UNUSED(var) (void)var
+
 #endif  // __GOOGLE_PROTOBUF_RUBY_PROTOBUF_H__

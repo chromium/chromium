@@ -141,7 +141,7 @@ public class ExtensionRegistryLite {
    * i.e. {@link GeneratedMessageLite.GeneratedExtension}.
    */
   public final void add(ExtensionLite<?, ?> extension) {
-    if (extension instanceof GeneratedMessageLite.GeneratedExtension) {
+    if (GeneratedMessageLite.GeneratedExtension.class.isAssignableFrom(extension.getClass())) {
       add((GeneratedMessageLite.GeneratedExtension<?, ?>) extension);
     }
     if (!Protobuf.assumeLiteRuntime && ExtensionRegistryFactory.isFullRegistry(this)) {

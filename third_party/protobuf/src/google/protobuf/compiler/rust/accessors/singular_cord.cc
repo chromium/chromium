@@ -112,9 +112,11 @@ void SingularCord::InMsgImpl(Context& ctx, const FieldDescriptor& field,
                } else {
                  ctx.Emit(R"rs(
                 let view = unsafe {
-                  self.inner.ptr().get_string_at_index(
-                    $upb_mt_field_index$, ($default_value$).into()
-                  )
+                  let f = $pbr$::upb_MiniTable_GetFieldByIndex(
+                      <Self as $pbr$::AssociatedMiniTable>::mini_table(),
+                      $upb_mt_field_index$);
+                  $pbr$::upb_Message_GetString(
+                      self.raw_msg(), f, ($default_value$).into())
                 };
                 $transform_borrowed$
               )rs");
@@ -136,7 +138,7 @@ void SingularCord::InMsgImpl(Context& ctx, const FieldDescriptor& field,
               let s = val.into_proxied($pbi$::Private);
               unsafe {
                 $setter_thunk$(
-                  self.inner.raw(),
+                  self.as_mutator_message_ref($pbi$::Private).msg(),
                   s.into_inner($pbi$::Private).into_raw()
                 );
               }
@@ -147,14 +149,20 @@ void SingularCord::InMsgImpl(Context& ctx, const FieldDescriptor& field,
               let (view, arena) =
                 s.into_inner($pbi$::Private).into_raw_parts();
 
-              let parent_arena = self.inner.arena();
+              let mm_ref =
+                self.as_mutator_message_ref($pbi$::Private);
+              let parent_arena = mm_ref.arena();
+
               parent_arena.fuse(&arena);
 
               unsafe {
-                self.inner.ptr_mut().set_base_field_string_at_index(
-                  $upb_mt_field_index$,
-                  view,
-                );
+                let f = $pbr$::upb_MiniTable_GetFieldByIndex(
+                          <Self as $pbr$::AssociatedMiniTable>::mini_table(),
+                          $upb_mt_field_index$);
+                $pbr$::upb_Message_SetBaseFieldString(
+                  self.as_mutator_message_ref($pbi$::Private).msg(),
+                  f,
+                  view);
               }
             )rs");
                }

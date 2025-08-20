@@ -8,25 +8,26 @@
 #ifndef GOOGLE_PROTOBUF_JSON_INTERNAL_UNPARSER_TRAITS_H__
 #define GOOGLE_PROTOBUF_JSON_INTERNAL_UNPARSER_TRAITS_H__
 
-#include <cstddef>
+#include <algorithm>
+#include <cfloat>
 #include <cstdint>
 #include <memory>
+#include <sstream>
 #include <string>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "google/protobuf/type.pb.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/status/status.h"
-#include "absl/status/statusor.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/numbers.h"
-#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
-#include "google/protobuf/dynamic_message.h"
+#include "absl/types/optional.h"
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/json/internal/descriptor_traits.h"
-#include "google/protobuf/json/internal/untyped_message.h"
 #include "google/protobuf/stubs/status_macros.h"
 
 // Must be included last.

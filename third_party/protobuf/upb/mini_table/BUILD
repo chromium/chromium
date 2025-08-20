@@ -5,9 +5,6 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
-load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
-load("@rules_cc//cc:cc_test.bzl", "cc_test")
 load("//bazel:proto_library.bzl", "proto_library")
 load(
     "//bazel:upb_minitable_proto_library.bzl",
@@ -39,10 +36,10 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":internal",
-        "//upb/base",
+        "//upb:base",
+        "//upb:mem",
+        "//upb:port",
         "//upb/hash",
-        "//upb/mem",
-        "//upb/port",
     ],
 )
 
@@ -63,11 +60,11 @@ cc_library(
     copts = UPB_DEFAULT_COPTS,
     visibility = ["//visibility:public"],
     deps = [
-        "//upb/base",
+        "//upb:base",
+        "//upb:mem",
+        "//upb:port",
         "//upb/hash",
-        "//upb/mem",
         "//upb/message:types",
-        "//upb/port",
     ],
 )
 
@@ -83,10 +80,10 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":mini_table",
-        "//upb/base",
+        "//upb:base",
+        "//upb:mem",
+        "//upb:port",
         "//upb/hash",
-        "//upb/mem",
-        "//upb/port",
     ],
 )
 
@@ -94,7 +91,7 @@ cc_test(
     name = "compat_test",
     srcs = ["compat_test.cc"],
     deps = [
-        ":compat",
+        "//upb:mini_table_compat",
         "//upb/test:test_messages_proto2_upb_minitable",
         "//upb/test:test_messages_proto3_upb_minitable",
         "//upb/test:test_upb_proto",
@@ -115,15 +112,14 @@ upb_minitable_proto_library(
     deps = [":message_benchmark_proto"],
 )
 
-cc_binary(
+cc_test(
     name = "message_benchmark",
-    testonly = 1,
     srcs = ["message_benchmark.cc"],
     deps = [
-        ":compat",
         ":message_benchmark_upb_minitable_proto",
         ":mini_table",
-        "//upb/port",
+        "//upb:mini_table_compat",
+        "//upb:port",
         "@abseil-cpp//absl/random",
         "@google_benchmark//:benchmark_main",
         "@googletest//:gtest",

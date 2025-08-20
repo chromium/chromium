@@ -179,7 +179,6 @@ TEST_F(LazilyBuildDependenciesTest, InterpretedCustomOption) {
   ParseProtoAndAddToDb(R"pb(
     name: 'foo.proto'
     package: 'proto2_unittest'
-    edition: EDITION_2024
     option_dependency: 'bar.proto'
     message_type {
       name: 'Foo'

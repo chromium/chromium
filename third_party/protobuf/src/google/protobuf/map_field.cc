@@ -99,9 +99,7 @@ bool MapFieldBase::DeleteMapValue(const MapKey& map_key) {
 
 void MapFieldBase::ClearMapNoSync() { GetMapRaw().ClearTable(true); }
 
-template <bool kIsMutable>
-void MapFieldBase::SetMapIteratorValue(
-    MapIteratorBase<kIsMutable>* map_iter) const {
+void MapFieldBase::SetMapIteratorValue(MapIterator* map_iter) const {
   if (map_iter->iter_.Equals(UntypedMapBase::EndIterator())) return;
 
   const UntypedMapBase& map = *map_iter->iter_.m_;
@@ -144,32 +142,18 @@ void MapFieldBase::MapEnd(MapIterator* map_iter) const {
   map_iter->iter_ = UntypedMapBase::EndIterator();
 }
 
-void MapFieldBase::ConstMapBegin(ConstMapIterator* map_iter) const {
-  map_iter->iter_ = GetMap().begin();
-  SetMapIteratorValue(map_iter);
-}
-
-void MapFieldBase::ConstMapEnd(ConstMapIterator* map_iter) const {
-  map_iter->iter_ = UntypedMapBase::EndIterator();
-}
-
-template <bool kIsMutable>
-bool MapFieldBase::EqualIterator(const MapIteratorBase<kIsMutable>& a,
-                                 const MapIteratorBase<kIsMutable>& b) const {
+bool MapFieldBase::EqualIterator(const MapIterator& a,
+                                 const MapIterator& b) const {
   return a.iter_.Equals(b.iter_);
 }
 
-template <bool kIsMutable>
-void MapFieldBase::IncreaseIterator(
-    MapIteratorBase<kIsMutable>* map_iter) const {
+void MapFieldBase::IncreaseIterator(MapIterator* map_iter) const {
   map_iter->iter_.PlusPlus();
   SetMapIteratorValue(map_iter);
 }
 
-template <bool kIsMutable>
-void MapFieldBase::CopyIterator(
-    MapIteratorBase<kIsMutable>* this_iter,
-    const MapIteratorBase<kIsMutable>& that_iter) const {
+void MapFieldBase::CopyIterator(MapIterator* this_iter,
+                                const MapIterator& that_iter) const {
   this_iter->iter_ = that_iter.iter_;
   this_iter->key_.SetType(that_iter.key_.type());
   // MapValueRef::type() fails when containing data is null. However, if
@@ -326,8 +310,8 @@ void MapFieldBase::SyncRepeatedFieldWithMapNoLock() {
   RepeatedPtrField<Message>& rep = payload().repeated_field;
   rep.Clear();
 
-  ConstMapIterator it(this, descriptor);
-  ConstMapIterator end(this, descriptor);
+  MapIterator it(this, descriptor);
+  MapIterator end(this, descriptor);
 
   it.iter_ = GetMapRaw().begin();
   SetMapIteratorValue(&it);
@@ -361,7 +345,7 @@ void MapFieldBase::SyncRepeatedFieldWithMapNoLock() {
         Unreachable();
     }
 
-    const MapValueConstRef& map_val = it.GetValueRef();
+    const MapValueRef& map_val = it.GetValueRef();
     switch (val_des->cpp_type()) {
       case FieldDescriptor::CPPTYPE_STRING:
         reflection->SetString(new_entry, val_des,
@@ -512,62 +496,6 @@ bool MapFieldBase::InsertOrLookupMapValue(const MapKey& map_key,
 }
 
 }  // namespace internal
-
-template <bool kIsMutable>
-MapIteratorBase<kIsMutable>::MapIteratorBase(MessageT* message,
-                                             const FieldDescriptor* field) {
-  const Reflection* reflection = message->GetReflection();
-  if constexpr (kIsMutable) {
-    map_ = reflection->MutableMapData(message, field);
-  } else {
-    map_ = reflection->GetMapData(*message, field);
-  }
-  key_.SetType(field->message_type()->map_key()->cpp_type());
-  value_.SetType(field->message_type()->map_value()->cpp_type());
-}
-
-template <bool kIsMutable>
-MapIteratorBase<kIsMutable>& MapIteratorBase<kIsMutable>::operator=(
-    const MapIteratorBase& other) {
-  map_ = other.map_;
-  map_->CopyIterator(this, other);
-  return *this;
-}
-
-template <bool kIsMutable>
-bool MapIteratorBase<kIsMutable>::operator==(
-    const MapIteratorBase<kIsMutable>& other) const {
-  return map_->EqualIterator(*this, other);
-}
-
-template <bool kIsMutable>
-typename MapIteratorBase<kIsMutable>::DerivedIterator&
-MapIteratorBase<kIsMutable>::operator++() {
-  map_->IncreaseIterator(this);
-  return static_cast<DerivedIterator&>(*this);
-}
-
-template <bool kIsMutable>
-typename MapIteratorBase<kIsMutable>::DerivedIterator
-MapIteratorBase<kIsMutable>::operator++(int) {
-  // iter_ is copied from Map<...>::iterator, no need to
-  // copy from its self again. Use the same implementation
-  // with operator++()
-  map_->IncreaseIterator(this);
-  return *static_cast<DerivedIterator*>(this);
-}
-
-template <bool kIsMutable>
-MapIteratorBase<kIsMutable>::MapIteratorBase(MapFieldBase* map,
-                                             const Descriptor* descriptor) {
-  map_ = map;
-  key_.SetType(descriptor->map_key()->cpp_type());
-  value_.SetType(descriptor->map_value()->cpp_type());
-}
-
-template class MapIteratorBase</*kIsMutable=*/false>;
-template class MapIteratorBase</*kIsMutable=*/true>;
-
 }  // namespace protobuf
 }  // namespace google
 

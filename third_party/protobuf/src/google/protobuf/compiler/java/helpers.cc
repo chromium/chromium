@@ -929,12 +929,15 @@ namespace {
 // generated class should be nested in the generated proto file Java class.
 template <typename Descriptor>
 inline bool NestInFileClass(const Descriptor& descriptor) {
-  auto nest_in_file_class =
-      JavaGenerator::GetResolvedSourceFeatureExtension(descriptor, pb::java)
-          .nest_in_file_class();
+  auto nest_in_file_class = JavaGenerator::GetResolvedSourceFeatures(descriptor)
+                                .GetExtension(pb::java)
+                                .nest_in_file_class();
   ABSL_CHECK(
       nest_in_file_class !=
-      pb::JavaFeatures::NestInFileClassFeature::NEST_IN_FILE_CLASS_UNKNOWN);
+      pb::JavaFeatures::NestInFileClassFeature::NEST_IN_FILE_CLASS_UNKNOWN)
+      << "Unknown value for nest_in_file_class feature. Try populating the "
+         "Java feature set defaults in your generator plugin or custom "
+         "descriptor pool.";
 
   if (nest_in_file_class == pb::JavaFeatures::NestInFileClassFeature::LEGACY) {
     return !descriptor.file()->options().java_multiple_files();
@@ -942,9 +945,9 @@ inline bool NestInFileClass(const Descriptor& descriptor) {
   return nest_in_file_class == pb::JavaFeatures::NestInFileClassFeature::YES;
 }
 
-
 // Returns whether the type should be nested in the file class for the given
 // descriptor, depending on different Protobuf Java API versions.
+// TODO: b/372482046 - Implement `nest_in_file_class` feature for mutable API.
 template <typename Descriptor>
 bool NestInFileClass(const Descriptor& descriptor, bool immutable) {
   (void)immutable;
@@ -959,8 +962,8 @@ absl::Status ValidateNestInFileClassFeatureHelper(
         JavaGenerator::GetUnresolvedSourceFeatures(descriptor, pb::java);
     if (unresolved_features.has_nest_in_file_class()) {
       return absl::FailedPreconditionError(absl::StrCat(
-          "Feature pb.java.nest_in_file_class only applies to top-level types "
-          "and is not allowed to be set on the nested type: ",
+          "Feature next_in_file_class only applies to top-level types and is "
+          "not allowed to be set on the nexted type: ",
           descriptor.full_name()));
     }
   }
@@ -989,7 +992,6 @@ bool NestedInFileClass(const EnumDescriptor& descriptor, bool immutable) {
 bool NestedInFileClass(const ServiceDescriptor& descriptor, bool immutable) {
   return NestInFileClass(descriptor, immutable);
 }
-
 }  // namespace java
 }  // namespace compiler
 }  // namespace protobuf

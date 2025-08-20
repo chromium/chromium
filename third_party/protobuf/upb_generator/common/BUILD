@@ -5,8 +5,6 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
-
 package(default_applicable_licenses = ["//:license"])
 
 # Note: this library should not depend on upb reflection or C++ proto
@@ -34,10 +32,10 @@ cc_library(
     deps = [
         "//src/google/protobuf",
         "//src/google/protobuf:descriptor_upb_c_proto",
-        "//upb/base",
-        "//upb/mem",
-        "//upb/mini_table",
-        "//upb/reflection",
+        "//upb:base",
+        "//upb:mem",
+        "//upb:mini_table",
+        "//upb:reflection",
         "@abseil-cpp//absl/container:flat_hash_set",
         "@abseil-cpp//absl/log:absl_check",
     ],

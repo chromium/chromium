@@ -1,7 +1,6 @@
 """Macro to support py_extension """
 
 load("@bazel_skylib//lib:selects.bzl", "selects")
-load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 load("@rules_python//python:py_library.bzl", "py_library")
 
 def py_extension(name, srcs, copts, deps = [], **kwargs):
@@ -13,7 +12,8 @@ def py_extension(name, srcs, copts, deps = [], **kwargs):
       copts: List of C++ compile options to use
       deps: Libraries that the target depends on
     """
-    cc_binary(
+
+    native.cc_binary(
         name = name + "_binary",
         srcs = srcs,
         copts = copts + ["-fvisibility=hidden"],

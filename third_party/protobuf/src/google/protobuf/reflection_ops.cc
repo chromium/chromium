@@ -197,10 +197,9 @@ bool ReflectionOps::IsInitialized(const Message& message, bool check_fields,
               const MapFieldBase* map_field =
                   reflection->GetMapData(message, field);
               if (map_field->IsMapValid()) {
-                ConstMapIterator it(&message, field);
-                ConstMapIterator end_map(&message, field);
-                for (map_field->ConstMapBegin(&it),
-                     map_field->ConstMapEnd(&end_map);
+                MapIterator it(const_cast<Message*>(&message), field);
+                MapIterator end_map(const_cast<Message*>(&message), field);
+                for (map_field->MapBegin(&it), map_field->MapEnd(&end_map);
                      it != end_map; ++it) {
                   if (!it.GetValueRef().GetMessageValue().IsInitialized()) {
                     return false;
@@ -279,9 +278,9 @@ bool ReflectionOps::IsInitialized(const Message& message) {
           const MapFieldBase* map_field =
               reflection->GetMapData(message, field);
           if (map_field->IsMapValid()) {
-            ConstMapIterator iter(&message, field);
-            ConstMapIterator end(&message, field);
-            for (map_field->ConstMapBegin(&iter), map_field->ConstMapEnd(&end);
+            MapIterator iter(const_cast<Message*>(&message), field);
+            MapIterator end(const_cast<Message*>(&message), field);
+            for (map_field->MapBegin(&iter), map_field->MapEnd(&end);
                  iter != end; ++iter) {
               if (!iter.GetValueRef().GetMessageValue().IsInitialized()) {
                 return false;

@@ -14,7 +14,6 @@
 
 #include "absl/types/span.h"
 #include "google/protobuf/compiler/java/generator_common.h"
-#include "google/protobuf/compiler/java/helpers.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/io/printer.h"
 

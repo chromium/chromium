@@ -53,6 +53,7 @@ namespace protobuf {
 namespace {
 
 using ::proto2_unittest::TestAllTypes;
+using ::testing::A;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Ge;

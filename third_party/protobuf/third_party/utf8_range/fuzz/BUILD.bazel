@@ -7,8 +7,5 @@ cc_fuzz_test(
     testonly = 1,
     srcs = ["utf8_validity_fuzzer.cc"],
     dicts = ["utf8_fuzzer.dict"],
-    deps = [
-        "//third_party/utf8_range:utf8_validity",
-        "@abseil-cpp//absl/strings:string_view",
-    ],
+    deps = ["//third_party/utf8_range:utf8_validity"],
 )

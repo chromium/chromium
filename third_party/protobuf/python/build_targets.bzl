@@ -9,8 +9,6 @@ Most users should depend upon public aliases in the root:
 """
 
 load("@bazel_skylib//lib:selects.bzl", "selects")
-load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "strip_prefix")
 load("@rules_python//python:defs.bzl", "py_library")
 load("//:protobuf.bzl", "internal_py_proto_library")
@@ -74,7 +72,8 @@ def build_targets(name):
         ],
         strip_prefix = "src",
     )
-    cc_binary(
+
+    native.cc_binary(
         name = "google/protobuf/internal/_api_implementation.so",
         srcs = ["google/protobuf/internal/api_implementation.cc"],
         copts = COPTS + [
@@ -108,7 +107,8 @@ def build_targets(name):
             "define": "allow_oversize_protos=true",
         },
     )
-    cc_binary(
+
+    native.cc_binary(
         name = "google/protobuf/pyext/_message.so",
         srcs = native.glob([
             "google/protobuf/pyext/*.cc",
@@ -177,7 +177,7 @@ def build_targets(name):
     compile_edition_defaults(
         name = "python_edition_defaults",
         srcs = ["//:descriptor_proto"],
-        maximum_edition = "2024",
+        maximum_edition = "2023",
         minimum_edition = "PROTO2",
     )
 
@@ -258,36 +258,16 @@ def build_targets(name):
     )
 
     internal_copy_files(
-        name = "copied_cpp_features_test_dependency_proto_files",
+        name = "copied_test_dependency_proto_files",
         srcs = [
             "//src/google/protobuf:cpp_features_proto_srcs",
         ],
         strip_prefix = "src",
     )
 
-    internal_copy_files(
-        name = "copied_java_features_test_dependency_proto_files",
-        srcs = [
-            "//java/core:java_features_proto_srcs",
-        ],
-        strip_prefix = "java/core/src/main/resources",
-    )
-
-    internal_copy_files(
-        name = "copied_unittest_custom_options_unlinked_proto_files",
-        srcs = [
-            "//src/google/protobuf:unittest_custom_options_unlinked_proto_srcs",
-        ],
-        strip_prefix = "src",
-    )
-
     internal_py_proto_library(
         name = "test_dependency_proto_py_pb2",
-        srcs = [
-            ":copied_cpp_features_test_dependency_proto_files",
-            ":copied_java_features_test_dependency_proto_files",
-            ":copied_unittest_custom_options_unlinked_proto_files",
-        ],
+        srcs = [":copied_test_dependency_proto_files"],
         include = ".",
         default_runtime = "",
         protoc = "//:protoc",
@@ -468,7 +448,8 @@ def build_targets(name):
         name = "proto_json_test",
         srcs = ["google/protobuf/internal/proto_json_test.py"],
     )
-    cc_library(
+
+    native.cc_library(
         name = "proto_api",
         srcs = ["google/protobuf/proto_api.cc"],
         hdrs = ["google/protobuf/proto_api.h"],
@@ -514,7 +495,7 @@ def build_targets(name):
         }),
         maximum_edition = "2023",
         testee = "//conformance:conformance_python",
-        text_format_failure_list = "//conformance:text_format_failure_list_python.txt",
+        text_format_failure_list = "//conformance:text_format_failure_list_python_cpp.txt",
     )
 
     conformance_test(
@@ -528,7 +509,7 @@ def build_targets(name):
         }),
         maximum_edition = "2023",
         testee = "//conformance:conformance_python",
-        text_format_failure_list = "//conformance:text_format_failure_list_python.txt",
+        text_format_failure_list = "//conformance:text_format_failure_list_python_upb.txt",
     )
 
     ################################################################################
