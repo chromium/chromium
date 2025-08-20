@@ -172,8 +172,6 @@ chromium-metrics-reviews@google.com.
       summary="customizing new tab page"/>
   <variant name="IPH_DesktopCustomizeChromeRefresh"
       summary="customizing new tab page for refresh"/>
-  <variant name="IPH_DesktopNewTabPageModulesCustomize"
-      summary="customizing new tab page modules"/>
   <variant name="IPH_DesktopPwaInstall" summary="desktop PWA install icon"/>
   <variant name="IPH_DesktopPWAsLinkCapturingLaunch"
       summary="PWA launch due to link capturing being enabled"/>

@@ -50167,8 +50167,6 @@ should be able to be added at any place in this file.
   <suffix name="DesktopCustomizeChrome" label="For Customize Chrome feature."/>
   <suffix name="DesktopCustomizeChromeRefresh"
       label="For Customize Chrome refresh feature."/>
-  <suffix name="DesktopNewTabPageModulesCustomize"
-      label="For Desktop NTP modules customize feature."/>
   <suffix name="DesktopPwaInstall" label="For desktop PWA install icon."/>
   <suffix name="DesktopPWAsLinkCapturingLaunch"
       label="For desktop PWAs launched via Link Capturing."/>
