@@ -843,7 +843,10 @@ void GlicWindowControllerImpl::ClientReadyToShow(
 }
 
 void GlicWindowControllerImpl::OnViewChanged(mojom::CurrentView view) {
-  floaty_state_change_callback_list_.Notify(state(), view);
+  if (auto* actor_keyed_service = actor::ActorKeyedService::Get(profile_)) {
+    actor_keyed_service->GetActorUiStateManager()->OnGlicUpdateFloatyState(
+        state(), view);
+  }
 }
 
 void GlicWindowControllerImpl::GlicLoadedAndReadyToDisplay() {
@@ -1474,12 +1477,6 @@ void GlicWindowControllerImpl::MaybeAdjustSizeForDisplay(bool animate) {
   }
 }
 
-base::CallbackListSubscription
-GlicWindowControllerImpl::RegisterFloatyStateChange(
-    FloatyStateChangeCallback callback) {
-  return floaty_state_change_callback_list_.Add(std::move(callback));
-}
-
 void GlicWindowControllerImpl::SetWindowState(State new_state) {
   if (state_ == new_state) {
     return;
@@ -1493,10 +1490,11 @@ void GlicWindowControllerImpl::SetWindowState(State new_state) {
       actor_keyed_service->GetActorUiStateManager()->MaybeShowToast(
           last_active_browser);
     }
-  }
 
-  floaty_state_change_callback_list_.Notify(
-      state_, glic_service_->host().GetPrimaryCurrentView());
+    // Regardless, update the ActorUiStateManager.
+    actor_keyed_service->GetActorUiStateManager()->OnGlicUpdateFloatyState(
+        state_, glic_service_->host().GetPrimaryCurrentView());
+  }
 
   if (IsWindowOpenAndReady()) {
     glic_service_->metrics()->OnGlicWindowOpenAndReady();

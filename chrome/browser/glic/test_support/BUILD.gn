@@ -25,7 +25,6 @@ source_set("test_support") {
     "non_interactive_glic_test.h",
   ]
   deps = [
-    "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",

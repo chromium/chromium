@@ -138,9 +138,6 @@ class GlicWindowControllerImpl
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
-  base::CallbackListSubscription RegisterFloatyStateChange(
-      FloatyStateChangeCallback callback) override;
-
  private:
   Host& host() const;
 
@@ -280,10 +277,6 @@ class GlicWindowControllerImpl
 
   // Check if the invocation source matches the entry point for the given view.
   bool InvocationSourceMatchesCurrentView(mojom::InvocationSource source);
-
-  using FloatyStateChangeCallbackList =
-      base::RepeatingCallbackList<void(State, mojom::CurrentView view)>;
-  FloatyStateChangeCallbackList floaty_state_change_callback_list_;
 
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
