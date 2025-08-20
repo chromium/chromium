@@ -34,7 +34,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherUtils.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabThumbnailView.java",
     "java/src/org/chromium/chrome/browser/tab_ui/ThumbnailProvider.java",
-    "java/src/org/chromium/chrome/browser/tab_ui/VersionUpdateIphHandler.java",
   ]
   deps = [
     ":java_resources",
@@ -122,7 +121,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherCustomViewManagerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherGroupSuggestionServiceUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherUtilsUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/tab_ui/VersionUpdateIphHandlerUnitTest.java",
   ]
 
   deps = [
