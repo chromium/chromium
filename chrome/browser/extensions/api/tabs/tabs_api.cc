@@ -54,10 +54,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/wm/window_pin_util.h"
+#include "chrome/browser/ash/boca/on_task/locked_quiz_session_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_window.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -229,31 +227,6 @@ bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds) {
   }
   return intersect_area >= (bounds.size().GetArea() / 2);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void SetLockedFullscreenState(Browser* browser, bool pinned) {
-  aura::Window* window = browser->window()->GetNativeWindow();
-  DCHECK(window);
-
-  CHECK_NE(ash::GetWindowPinType(window), chromeos::WindowPinType::kPinned)
-      << "Extensions only set Trusted Pinned";
-
-  // As this gets triggered from extensions, we might encounter this case.
-  if (ash::IsWindowPinned(window) == pinned) {
-    return;
-  }
-
-  if (pinned) {
-    // Pins from extension are always trusted.
-    ash::PinWindow(window, /*trusted=*/true);
-  } else {
-    ash::UnpinWindow(window);
-  }
-
-  // Update the set of available browser commands.
-  browser->command_controller()->LockedFullscreenStateChanged();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace tabs_internal
 
@@ -480,18 +453,24 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS)
   // state will be WINDOW_STATE_NONE if the state parameter wasn't passed from
   // the JS side, and in that case we don't want to change the locked state.
-  if (is_locked_fullscreen &&
-      params->update_info.state != windows::WindowState::kLockedFullscreen &&
-      params->update_info.state != windows::WindowState::kNone) {
-    tabs_internal::SetLockedFullscreenState(
-        browser->GetBrowserForMigrationOnly(),
-        /*pinned=*/false);
-  } else if (!is_locked_fullscreen &&
-             params->update_info.state ==
-                 windows::WindowState::kLockedFullscreen) {
-    tabs_internal::SetLockedFullscreenState(
-        browser->GetBrowserForMigrationOnly(),
-        /*pinned=*/true);
+  Browser* const target_browser = browser->GetBrowserForMigrationOnly();
+  if (target_browser) {
+    Profile* const browser_profile = target_browser->profile();
+    if (is_locked_fullscreen &&
+        params->update_info.state != windows::WindowState::kLockedFullscreen &&
+        params->update_info.state != windows::WindowState::kNone) {
+      ash::boca::LockedQuizSessionManagerFactory::GetInstance()
+          ->GetForBrowserContext(browser_profile)
+          ->SetLockedFullscreenState(target_browser,
+                                     /*pinned=*/false);
+    } else if (!is_locked_fullscreen &&
+               params->update_info.state ==
+                   windows::WindowState::kLockedFullscreen) {
+      ash::boca::LockedQuizSessionManagerFactory::GetInstance()
+          ->GetForBrowserContext(browser_profile)
+          ->SetLockedFullscreenState(target_browser,
+                                     /*pinned=*/true);
+    }
   }
 #endif  // IS_CHROMEOS
 

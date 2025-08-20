@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ash/boca/on_task/locked_quiz_session_manager.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash::boca {
@@ -40,6 +41,12 @@ std::unique_ptr<KeyedService>
 LockedQuizSessionManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<LockedQuizSessionManager>(context);
+}
+
+content::BrowserContext*
+LockedQuizSessionManagerFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace ash::boca

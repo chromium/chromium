@@ -1297,6 +1297,7 @@ source_set("extensions") {
         "//chrome/browser/ash/arc/extensions",
         "//chrome/browser/ash/arc/optin",
         "//chrome/browser/ash/attestation",
+        "//chrome/browser/ash/boca/on_task",
         "//chrome/browser/ash/bruschetta",
         "//chrome/browser/ash/child_accounts",
         "//chrome/browser/ash/child_accounts/time_limits",

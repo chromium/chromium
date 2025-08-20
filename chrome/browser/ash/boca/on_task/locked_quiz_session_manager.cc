@@ -6,13 +6,18 @@
 
 #include <memory>
 
+#include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "content/public/browser/browser_context.h"
+#include "ui/aura/window.h"
 #include "url/gurl.h"
 
 namespace ash::boca {
@@ -103,6 +108,32 @@ void LockedQuizSessionManager::OnBocaSWALaunched(
                  << "find its Browser instance for window_id: " << window_id;
   }
   std::move(callback).Run(browser);
+}
+
+void LockedQuizSessionManager::SetLockedFullscreenState(Browser* browser,
+                                                        bool pinned) {
+  // TODO(crbug.com/438498962): Replace with the
+  // `SetPinStateForSystemWebAppWindow` helper in `OnTaskSystemWebAppManager`.
+  aura::Window* const window = browser->window()->GetNativeWindow();
+  DCHECK(window);
+
+  CHECK_NE(GetWindowPinType(window), chromeos::WindowPinType::kPinned)
+      << "Extensions only set Trusted Pinned";
+
+  // As this gets triggered from extensions, we might encounter this case.
+  if (IsWindowPinned(window) == pinned) {
+    return;
+  }
+
+  if (pinned) {
+    // Pins from extension are always trusted.
+    PinWindow(window, /*trusted=*/true);
+  } else {
+    UnpinWindow(window);
+  }
+
+  // Update the set of available browser commands.
+  browser->command_controller()->LockedFullscreenStateChanged();
 }
 
 }  // namespace ash::boca

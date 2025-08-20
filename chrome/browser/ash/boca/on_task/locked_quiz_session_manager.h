@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ash_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -21,8 +22,10 @@ class Profile;
 namespace ash::boca {
 
 // Manages the lifecycle of a locked quiz session within the Boca SWA.
-class LockedQuizSessionManager : public KeyedService {
+class ASH_EXPORT LockedQuizSessionManager : public KeyedService {
  public:
+  // TODO(crbug.com/438559838): Use `BrowserWindowInterface` instead of
+  // `Browser`.
   using CreateWindowCompletionCallback = base::OnceCallback<void(Browser*)>;
 
   explicit LockedQuizSessionManager(content::BrowserContext* context);
@@ -33,6 +36,13 @@ class LockedQuizSessionManager : public KeyedService {
   // Open the quiz with the given url in Boca SWA window, and lock the Boca SWA.
   void OpenLockedQuiz(const GURL& quiz_url,
                       CreateWindowCompletionCallback callback);
+
+  // This function sets the state of the browser window to a "locked"
+  // fullscreen state (where the user can't exit fullscreen) in response to a
+  // call to either `chrome.windows.create` or `chrome.windows.update` when the
+  // screen is set locked. This is only necessary for ChromeOS and is
+  // restricted to allowlisted extensions.
+  void SetLockedFullscreenState(Browser* browser, bool pinned);
 
  private:
   // Callback invoked after the SWA launch attempt.

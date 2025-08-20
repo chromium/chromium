@@ -37,10 +37,6 @@ class GURL;
 class SkBitmap;
 class TabStripModel;
 
-#if BUILDFLAG(IS_CHROMEOS)
-class Browser;
-#endif
-
 namespace base {
 class TaskRunner;
 }
@@ -150,15 +146,6 @@ ui::mojom::WindowShowState ConvertToWindowShowState(
 // Returns whether the given `bounds` intersect with at least 50% of all the
 // displays.
 bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds);
-
-#if BUILDFLAG(IS_CHROMEOS)
-// This function sets the state of the browser window to a "locked"
-// fullscreen state (where the user can't exit fullscreen) in response to a
-// call to either chrome.windows.create or chrome.windows.update when the
-// screen is set locked. This is only necessary for ChromeOS and is
-// restricted to allowlisted extensions.
-void SetLockedFullscreenState(Browser* browser, bool pinned);
-#endif
 
 }  // namespace tabs_internal
 

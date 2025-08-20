@@ -129,6 +129,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/wm/window_pin_util.h"
+#include "chrome/browser/ash/boca/on_task/locked_quiz_session_manager_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -675,8 +676,10 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   if (create_data &&
       create_data->state == windows::WindowState::kLockedFullscreen) {
 #if BUILDFLAG(IS_CHROMEOS)
-    tabs_internal::SetLockedFullscreenState(new_window, /*pinned=*/true);
-#endif
+    ash::boca::LockedQuizSessionManagerFactory::GetInstance()
+        ->GetForBrowserContext(calling_profile)
+        ->SetLockedFullscreenState(new_window, /*pinned=*/true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   if (new_window->profile()->IsOffTheRecord() &&

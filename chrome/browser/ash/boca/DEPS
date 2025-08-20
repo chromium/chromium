@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h",
   "+chrome/browser/login_detection/login_detection_util.h",
   "+chrome/browser/platform_util.h",
+  "+chrome/browser/profiles/incognito_helpers.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/profiles/profile_keyed_service_factory.h",
   "+chrome/browser/profiles/profile_manager.h",
