@@ -29,9 +29,12 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
+import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
+import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
@@ -352,6 +355,19 @@ public class PermissionUpdateMessageTest {
 
         final var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
         final String locationUrl = mTestServer.getURL(GEOLOCATION_PAGE);
+        final PermissionInfo geolocationSettings =
+                ThreadUtils.runOnUiThreadBlocking(
+                        new Callable<>() {
+                            @Override
+                            public PermissionInfo call() {
+                                return new PermissionInfo(
+                                        getGeolocationType(),
+                                        locationUrl,
+                                        null,
+                                        /* isEmbargoed= */ false,
+                                        SessionModel.DURABLE);
+                            }
+                        });
 
         mActivityTestRule
                 .getActivity()
@@ -364,7 +380,22 @@ public class PermissionUpdateMessageTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
 
         try {
-            setNativeContentSetting(getGeolocationType(), locationUrl, ContentSettingValues.ALLOW);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        if (geolocationSettings.getContentSettingsType()
+                                == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                            geolocationSettings.setGeolocationSetting(
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    new GeolocationSetting(
+                                            ContentSettingValues.ALLOW,
+                                            ContentSettingValues.ALLOW));
+
+                        } else {
+                            geolocationSettings.setContentSetting(
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    ContentSettingValues.ALLOW);
+                        }
+                    });
             mActivityTestRule.loadUrl(mTestServer.getURL(GEOLOCATION_PAGE));
             CriteriaHelper.pollUiThread(
                     () -> {
@@ -404,8 +435,11 @@ public class PermissionUpdateMessageTest {
                                 Matchers.is(1));
                     });
         } finally {
-            setNativeContentSetting(
-                    getGeolocationType(), locationUrl, ContentSettingValues.DEFAULT);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            geolocationSettings.setContentSetting(
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    ContentSettingValues.DEFAULT));
         }
     }
 }

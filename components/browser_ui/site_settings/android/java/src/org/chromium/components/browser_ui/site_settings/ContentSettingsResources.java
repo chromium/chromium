@@ -820,25 +820,15 @@ public class ContentSettingsResources {
         return getResourceItem(contentType).getDefaultDisabledValue();
     }
 
-    public static int getCategorySummary(@ContentSettingValues int value, boolean isOneTime) {
-        return getCategorySummary(value, isOneTime, /* isApproximateGeolocation= */ false);
-    }
-
     /**
      * Returns the string resource id for a given ContentSetting to show with a permission category.
      *
      * @param value The ContentSetting for which we want the resource.
      * @param isOneTime Whether the content setting value has a OneTime session model.
      */
-    public static int getCategorySummary(
-            @ContentSettingValues int value, boolean isOneTime, boolean isApproximateGeolocation) {
+    public static int getCategorySummary(@ContentSettingValues int value, boolean isOneTime) {
         switch (value) {
             case ContentSettingValues.ALLOW:
-                if (isApproximateGeolocation) {
-                    return isOneTime
-                            ? R.string.website_settings_category_approx_geo_allowed_this_time
-                            : R.string.website_settings_category_approx_geo_allowed;
-                }
                 return isOneTime
                         ? R.string.website_settings_category_allowed_this_time
                         : R.string.website_settings_category_allowed;
