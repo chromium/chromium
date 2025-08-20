@@ -14,12 +14,14 @@ constexpr base::TimeDelta kDefaultReturnToStartSurfaceInactiveDuration =
 
 }  // anonymous namespace
 
-BASE_FEATURE(StartSurface, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kStartSurface, "StartSurface", base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(IOSStartTimeBrowserBackgroundRemediations,
+BASE_FEATURE(kIOSStartTimeBrowserBackgroundRemediations,
+             "IOSStartTimeBrowserBackgroundRemediations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(IOSStartTimeStartupRemediations,
+BASE_FEATURE(kIOSStartTimeStartupRemediations,
+             "IOSStartTimeStartupRemediations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kReturnToStartSurfaceInactiveDurationInSeconds[] =

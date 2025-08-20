@@ -6,5 +6,7 @@
 
 namespace data_controls {
 
-BASE_FEATURE(EnableClipboardDataControlsIOS, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableClipboardDataControlsIOS,
+             "EnableClipboardDataControlsIOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }

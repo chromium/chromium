@@ -4,5 +4,6 @@
 
 #import "ios/chrome/browser/permissions/model/features.h"
 
-BASE_FEATURE(JavaScriptPermissionBasedAPIMetricsEnabled,
+BASE_FEATURE(kJavaScriptPermissionBasedAPIMetricsEnabled,
+             "JavaScriptPermissionBasedAPIMetricsEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);

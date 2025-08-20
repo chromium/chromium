@@ -6,7 +6,9 @@
 
 #import "ios/chrome/browser/default_browser/model/utils.h"
 
-BASE_FEATURE(PostDefaultAbandonmentPromo, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPostDefaultAbandonmentPromo,
+             "PostDefaultAbandonmentPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kPostDefaultAbandonmentIntervalStart{
     &kPostDefaultAbandonmentPromo,

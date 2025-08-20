@@ -40,7 +40,8 @@ namespace {
 
 // Kill switch to disable adding memory ranges to crash data when heap
 // corruption or double free is detected by PA-E.
-BASE_FEATURE(IOSCorruptionDetectedMemoryRangesKillSwitch,
+BASE_FEATURE(kIOSCorruptionDetectedMemoryRangesKillSwitch,
+             "IOSCorruptionDetectedMemoryRangesKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The number of times a PA-E double free or corruption has been detected.

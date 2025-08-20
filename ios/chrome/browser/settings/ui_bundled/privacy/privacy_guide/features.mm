@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/features.h"
 
-BASE_FEATURE(PrivacyGuideIos, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacyGuideIos,
+             "PrivacyGuideIos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPrivacyGuideIosEnabled() {
   return base::FeatureList::IsEnabled(kPrivacyGuideIos);

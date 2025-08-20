@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/screen_time/model/features.h"
 
-BASE_FEATURE(ScreenTimeIntegration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kScreenTimeIntegration,
+             "ScreenTimeIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsScreenTimeIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kScreenTimeIntegration);

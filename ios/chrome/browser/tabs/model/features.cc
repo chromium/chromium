@@ -4,7 +4,8 @@
 
 #include "ios/chrome/browser/tabs/model/features.h"
 
-BASE_FEATURE(CreateTabHelperOnlyForRealizedWebStates,
+BASE_FEATURE(kCreateTabHelperOnlyForRealizedWebStates,
+             "CreateTabHelperOnlyForRealizedWebStates",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool CreateTabHelperOnlyForRealizedWebStates() {

@@ -50,7 +50,9 @@ namespace {
 // will mark any pending reports as skipped. By disabling UserEnabledUploading
 // safe mode crashes will be ignored. This also disables the main thread freeze
 // detector.
-BASE_FEATURE(IOSCrashUploadKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSCrashUploadKillSwitch,
+             "IOSCrashUploadKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
 const char kUploadedInRecoveryMode[] = "uploaded_in_recovery_mode";

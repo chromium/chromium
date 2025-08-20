@@ -8,7 +8,9 @@
 
 namespace set_up_list {
 
-BASE_FEATURE(SetUpListShortenedDuration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSetUpListShortenedDuration,
+             "SetUpListShortenedDuration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kSetUpListDurationParam[] = "SetUpListDurationParam";
 

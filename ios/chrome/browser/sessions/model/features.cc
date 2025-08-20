@@ -6,7 +6,8 @@
 
 namespace session::features {
 
-BASE_FEATURE(SessionRestorationSessionIDCheck,
+BASE_FEATURE(kSessionRestorationSessionIDCheck,
+             "SessionRestorationSessionIDCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace session::features

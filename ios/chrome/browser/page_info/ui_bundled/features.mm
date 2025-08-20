@@ -8,7 +8,9 @@
 #import "ios/chrome/browser/page_info/ui_bundled/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
-BASE_FEATURE(PageInfoLastVisitedIOS, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPageInfoLastVisitedIOS,
+             "PageInfoLastVisitedIOS",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAboutThisSiteFeatureEnabled() {
   return page_info::IsAboutThisSiteFeatureEnabled(

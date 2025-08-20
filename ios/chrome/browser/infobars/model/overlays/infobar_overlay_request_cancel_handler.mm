@@ -15,7 +15,9 @@
 using infobars::InfoBar;
 using infobars::InfoBarManager;
 
-BASE_FEATURE(InfobarRemoveCheck, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kInfobarRemoveCheck,
+             "InfobarRemoveCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #pragma mark - InfobarOverlayRequestCancelHandler
 

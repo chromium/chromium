@@ -6,7 +6,8 @@
 
 #import "base/feature_list.h"
 
-BASE_FEATURE(FullscreenPromosManagerSkipInternalLimits,
+BASE_FEATURE(kFullscreenPromosManagerSkipInternalLimits,
+             "FullscreenPromosManagerSkipInternalLimits",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsSkippingInternalImpressionLimitsEnabled() {

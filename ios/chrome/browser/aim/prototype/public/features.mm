@@ -7,7 +7,9 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
 
-BASE_FEATURE(AimPrototypeDevTools, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAimPrototypeDevTools,
+             "AimPrototypeDevTools",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kImageLoadDelayMsParam[] = "image_load_delay_ms";
 const char kUploadDelayMsParam[] = "upload_delay_ms";

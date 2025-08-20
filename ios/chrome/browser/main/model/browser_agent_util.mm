@@ -64,7 +64,8 @@
 namespace {
 
 // Feature controlling for which Browser to create agents.
-BASE_FEATURE(LimitBrowserAgentsForInactiveBrowser,
+BASE_FEATURE(kLimitBrowserAgentsForInactiveBrowser,
+             "LimitBrowserAgentsForInactiveBrowser",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Attach agents for a regular, incognito or inactive Browser.
