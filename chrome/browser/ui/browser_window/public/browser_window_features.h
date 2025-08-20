@@ -16,7 +16,6 @@
 namespace glic {
 class GlicButtonController;
 class GlicIphController;
-class GlicSidePanelCoordinator;
 }  // namespace glic
 
 namespace tabs {
@@ -234,12 +233,6 @@ class BrowserWindowFeatures {
   CommentsSidePanelCoordinator* comments_side_panel_coordinator() {
     return comments_side_panel_coordinator_.get();
   }
-
-#if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicSidePanelCoordinator* glic_side_panel_coordinator() {
-    return glic_side_panel_coordinator_.get();
-  }
-#endif
 
   PinnedToolbarActionsController* pinned_toolbar_actions_controller() {
     return pinned_toolbar_actions_controller_.get();
@@ -539,7 +532,6 @@ class BrowserWindowFeatures {
       glic_actor_task_icon_controller_;
   std::unique_ptr<glic::GlicButtonController> glic_button_controller_;
   std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
-  std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
 #endif
 
   std::unique_ptr<tab_groups::MostRecentSharedTabUpdateStore>

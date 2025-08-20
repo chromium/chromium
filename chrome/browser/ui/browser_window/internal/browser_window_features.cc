@@ -135,7 +135,6 @@
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/widget/glic_side_panel_coordinator.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_controller.h"
 #endif
 
@@ -222,8 +221,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       glic_iph_controller_ = std::make_unique<glic::GlicIphController>(browser);
       glic_nudge_controller_ =
           std::make_unique<tabs::GlicNudgeController>(browser);
-      glic_side_panel_coordinator_ =
-          std::make_unique<glic::GlicSidePanelCoordinator>();
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

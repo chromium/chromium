@@ -39511,12 +39511,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SidePanel.Glic.Shown">
-  <owner>perrier@chromium.org</owner>
-  <owner>dewittj@google.com</owner>
-  <description>Recorded when the Glic side panel entry is shown.</description>
-</action>
-
 <action name="SidePanel.Hide">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

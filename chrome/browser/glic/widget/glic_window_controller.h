@@ -154,10 +154,10 @@ class GlicWindowController : public Host::Delegate {
   virtual bool IsShowing() const = 0;
 
   // Returns whether or not the glic window is currently attached to a browser.
+  // Virtual for testing.
   virtual bool IsAttached() const = 0;
 
   // Returns wehether or not the glic window is currently showing detached.
-  // When True |GetGlicWidget| will return a valid ptr.
   virtual bool IsDetached() const = 0;
 
   using WindowActivationChangedCallback =
@@ -182,12 +182,12 @@ class GlicWindowController : public Host::Delegate {
   // profile is deleted or if the browser shuts down.
   virtual base::WeakPtr<GlicWindowController> GetWeakPtr() = 0;
 
-  virtual GlicView* GetGlicView() const = 0;
+  virtual GlicView* GetGlicView() = 0;
 
   virtual base::WeakPtr<views::View> GetGlicViewAsView() = 0;
 
   // Returns the widget that backs the glic window.
-  virtual GlicWidget* GetGlicWidget() const = 0;
+  virtual GlicWidget* GetGlicWidget() = 0;
 
   // Return the Browser to which the panel is attached, or null if detached.
   virtual Browser* attached_browser() = 0;
@@ -197,16 +197,10 @@ class GlicWindowController : public Host::Delegate {
   //   * Waiting for glic to load (the open animation has finished, but the
   //     glic window contents is not yet ready)
   //   * Open (aka showing, visible)
-  //   * Detaching - the panel should not be considered open since the view
-  //     might not exist.
-  //   * Closing to reopen detached when the global hotkey is used and glic is
-  //     attached to a non-active browser window.
   enum class State {
     kClosed,
     kWaitingForGlicToLoad,
     kOpen,
-    kDetaching,
-    kClosingToReopenDetached,
   };
   virtual State state() const = 0;
 
@@ -220,7 +214,6 @@ class GlicWindowController : public Host::Delegate {
 
   virtual void ShowDetachedForTesting() = 0;
   virtual void SetPreviousPositionForTesting(gfx::Point position) = 0;
-  virtual std::unique_ptr<GlicView> CreateGlicViewForSidePanel() = 0;
 
   // Helper function to get the always detached flag.
   static bool AlwaysDetached() {

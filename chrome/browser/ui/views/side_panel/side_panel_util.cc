@@ -30,11 +30,6 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/widget/glic_side_panel_coordinator.h"
-#endif
-
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
                                           SidePanelRegistry* window_registry) {
@@ -69,13 +64,6 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
         ->comments_side_panel_coordinator()
         ->CreateAndRegisterEntry(window_registry);
   }
-#if BUILDFLAG(ENABLE_GLIC)
-  if (glic::GlicEnabling::IsEnabledForProfile(browser->profile())) {
-    browser->browser_window_features()
-        ->glic_side_panel_coordinator()
-        ->CreateAndRegisterEntry(window_registry);
-  }
-#endif
 }
 
 SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
