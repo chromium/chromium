@@ -78,16 +78,16 @@ const char kHistogramGWSConnectTimingFinalRequestConnectDelay[] =
 const char kHistogramGWSConnectTimingFinalRequestSslDelay[] =
     HISTOGRAM_PREFIX "ConnectTiming.FinalRequestSslDelay";
 
-const char kHistogramGWSAFTEnd[] = HISTOGRAM_PREFIX "PaintTiming.AFTEnd";
-const char kHistogramGWSAFTStart[] = HISTOGRAM_PREFIX "PaintTiming.AFTStart";
+const char kHistogramGWSAFTEnd[] = HISTOGRAM_PREFIX "PaintTiming.AFTEnd2";
+const char kHistogramGWSAFTStart[] = HISTOGRAM_PREFIX "PaintTiming.AFTStart2";
 const char kHistogramGWSHeaderChunkStart[] =
-    HISTOGRAM_PREFIX "PaintTiming.HeaderChunkStart";
+    HISTOGRAM_PREFIX "PaintTiming.HeaderChunkStart2";
 const char kHistogramGWSHeaderChunkEnd[] =
-    HISTOGRAM_PREFIX "PaintTiming.HeaderChunkEnd";
+    HISTOGRAM_PREFIX "PaintTiming.HeaderChunkEnd2";
 const char kHistogramGWSBodyChunkStart[] =
-    HISTOGRAM_PREFIX "PaintTiming.BodyChunkStart";
+    HISTOGRAM_PREFIX "PaintTiming.BodyChunkStart2";
 const char kHistogramGWSBodyChunkEnd[] =
-    HISTOGRAM_PREFIX "PaintTiming.BodyChunkEnd";
+    HISTOGRAM_PREFIX "PaintTiming.BodyChunkEnd2";
 const char kHistogramGWSFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
 const char kHistogramGWSLargestContentfulPaint[] =
@@ -130,7 +130,17 @@ const char kHistogramIncognitoSuffix[] = ".Incognito";
 // Prerender related histograms.
 const char kHistogramPrerenderHostReused[] =
     HISTOGRAM_PREFIX "Prerender.HostReused";
+const char kHistogramGWSPrerenderNavigationToActivation[] =
+    HISTOGRAM_PREFIX "Prerender.NavigationToActivation";
+const char kHistogramGWSActivationToFirstContentfulPaint[] =
+    HISTOGRAM_PREFIX "Prerender.ActivationToFirstContentfulPaint";
+const char kHistogramGWSActivationToLargestContentfulPaint[] =
+    HISTOGRAM_PREFIX "Prerender.ActivationToLargestContentfulPaint";
+const char kFineGrainedHistogramGWSActivationToLargestContentfulPaint[] =
+    FINEGRAINED_HISTOGRAM_PREFIX "Prerender.ActivationToLargestContentfulPaint";
 
+const char kHistogramPrerenderSuffix[] = ".Prerender";
+const char kHistogramNonPrerenderSuffix[] = ".NonPrerender";
 // ServiceWorker related histograms.
 const char kHistogramServiceWorkerParseStartSearch[] =
     "PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart.search";
@@ -273,6 +283,24 @@ void GWSPageLoadMetricsObserver::DidActivatePrerenderedPage(
     base::UmaHistogramBoolean(histogram_name,
                               navigation_handle->IsPrerenderHostReused());
   }
+
+  // |navigation_handle| here is for the activation navigation, while
+  // |GetDelegate().GetNavigationStart()| is the start time of initial prerender
+  // navigation.
+  auto navigation_to_activation_time =
+      navigation_handle->NavigationStart() - GetDelegate().GetNavigationStart();
+  base::UmaHistogramCustomTimes(
+      internal::kHistogramGWSPrerenderNavigationToActivation,
+      navigation_to_activation_time, base::Milliseconds(10), base::Minutes(10),
+      100);
+  if (IsIncognitoProfile()) {
+    auto histogram_name =
+        base::StrCat({internal::kHistogramGWSPrerenderNavigationToActivation,
+                      internal::kHistogramIncognitoSuffix});
+    base::UmaHistogramCustomTimes(histogram_name, navigation_to_activation_time,
+                                  base::Milliseconds(10), base::Minutes(10),
+                                  100);
+  }
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -287,12 +315,28 @@ GWSPageLoadMetricsObserver::OnFencedFramesStart(
 
 void GWSPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (WasActivatedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_paint, GetDelegate())) {
+    CHECK(is_prerendered_);
+    base::TimeDelta activation_to_fcp =
+        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+            GetDelegate(), timing.paint_timing->first_contentful_paint.value());
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSActivationToFirstContentfulPaint,
+                        activation_to_fcp);
+    if (IsIncognitoProfile()) {
+      auto histogram_name =
+          base::StrCat({internal::kHistogramGWSActivationToFirstContentfulPaint,
+                        internal::kHistogramIncognitoSuffix});
+      PAGE_LOAD_HISTOGRAM(histogram_name, activation_to_fcp);
+    }
+    return;
+  }
+
   if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.paint_timing->first_contentful_paint, GetDelegate())) {
     return;
   }
   CHECK(!is_prerendered_);
-
   if (page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramServiceWorkerFirstContentfulPaintSearch,
@@ -311,9 +355,9 @@ void GWSPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
         timing.paint_timing->first_contentful_paint.value() -
             timing.parse_timing->parse_start.value());
   }
-
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSFirstContentfulPaint,
                       timing.paint_timing->first_contentful_paint.value());
+  return;
 }
 
 void GWSPageLoadMetricsObserver::OnDomContentLoadedEventStart(
@@ -403,14 +447,12 @@ void GWSPageLoadMetricsObserver::OnDomainLookupEnd(
 
 void GWSPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (is_prerendered_) {
-    return;
-  }
-
-  const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
-  if (!navigation_start.is_null()) {
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSNavigationStartToOnComplete,
-                        base::TimeTicks::Now() - navigation_start);
+  if (!is_prerendered_) {
+    const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+    if (!navigation_start.is_null()) {
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSNavigationStartToOnComplete,
+                          base::TimeTicks::Now() - navigation_start);
+    }
   }
   LogMetricsOnComplete();
 }
@@ -418,31 +460,41 @@ void GWSPageLoadMetricsObserver::OnComplete(
 void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
     const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
         timings) {
-  if (is_prerendered_) {
-    return;
-  }
+  auto record_histogram = [this](const std::string& histogram_name,
+                                 const base::TimeDelta& timing) {
+    auto histogram_with_suffix = base::StrCat(
+        {histogram_name,
+         is_prerendered_ ? internal::kHistogramPrerenderSuffix
+                         : internal::kHistogramNonPrerenderSuffix,
+         IsIncognitoProfile() ? internal::kHistogramIncognitoSuffix : ""});
+    PAGE_LOAD_HISTOGRAM(histogram_name, timing);
+    PAGE_LOAD_HISTOGRAM(histogram_with_suffix, timing);
+  };
   for (const auto& mark : timings) {
+    // TODO(crbug.com/436345871): Update the logic to align with the server
+    // behavior.
+    auto timing =
+        is_prerendered_
+            ? page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+                  GetDelegate(), mark->start_time)
+            : mark->start_time;
     if (mark->mark_name == internal::kGwsAFTStartMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTStart, mark->start_time);
+      record_histogram(internal::kHistogramGWSAFTStart, timing);
       aft_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsAFTEndMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTEnd, mark->start_time);
+      record_histogram(internal::kHistogramGWSAFTEnd, timing);
       aft_end_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsHeaderChunkStartMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHeaderChunkStart,
-                          mark->start_time);
+      record_histogram(internal::kHistogramGWSHeaderChunkStart, timing);
       header_chunk_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsHeaderChunkEndMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHeaderChunkEnd,
-                          mark->start_time);
+      record_histogram(internal::kHistogramGWSHeaderChunkEnd, timing);
       header_chunk_end_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsBodyChunkStartMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSBodyChunkStart,
-                          mark->start_time);
+      record_histogram(internal::kHistogramGWSBodyChunkStart, timing);
       body_chunk_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsBodyChunkEndMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSBodyChunkEnd,
-                          mark->start_time);
+      record_histogram(internal::kHistogramGWSBodyChunkEnd, timing);
     }
   }
 }
@@ -450,27 +502,56 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 GWSPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!is_prerendered_) {
-    LogMetricsOnComplete();
-  }
+  LogMetricsOnComplete();
   return STOP_OBSERVING;
 }
 
 void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
-  CHECK(!is_prerendered_);
-
   const page_load_metrics::ContentfulPaintTimingInfo&
       all_frames_largest_contentful_paint =
           GetDelegate()
               .GetLargestContentfulPaintHandler()
               .MergeMainFrameAndSubframes();
-  if (!all_frames_largest_contentful_paint.ContainsValidTime() ||
-      !WasStartedInForegroundOptionalEventInForeground(
+  if (!all_frames_largest_contentful_paint.ContainsValidTime()) {
+    return;
+  }
+
+  if (WasActivatedInForegroundOptionalEventInForeground(
+          all_frames_largest_contentful_paint.Time(), GetDelegate())) {
+    CHECK(is_prerendered_);
+    base::TimeDelta activation_to_lcp =
+        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+            GetDelegate(), all_frames_largest_contentful_paint.Time().value());
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramGWSActivationToLargestContentfulPaint,
+        activation_to_lcp);
+    base::UmaHistogramCustomTimes(
+        internal::kFineGrainedHistogramGWSActivationToLargestContentfulPaint,
+        activation_to_lcp, base::Milliseconds(10), base::Seconds(10), 100);
+
+    if (IsIncognitoProfile()) {
+      PAGE_LOAD_HISTOGRAM(
+          base::StrCat(
+              {internal::kHistogramGWSActivationToLargestContentfulPaint,
+               internal::kHistogramIncognitoSuffix}),
+          activation_to_lcp);
+      base::UmaHistogramCustomTimes(
+          base::StrCat(
+              {internal::
+                   kFineGrainedHistogramGWSActivationToLargestContentfulPaint,
+               internal::kHistogramIncognitoSuffix}),
+          activation_to_lcp, base::Milliseconds(10), base::Seconds(10), 100);
+    }
+    return;
+  }
+
+  if (!WasStartedInForegroundOptionalEventInForeground(
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
     return;
   }
-  RecordNavigationTimingHistograms();
 
+  CHECK(!is_prerendered_);
+  RecordNavigationTimingHistograms();
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSLargestContentfulPaint,
                       all_frames_largest_contentful_paint.Time().value());
   // Record variant metrics in a range from 10ms to 10s with 100 buckets.

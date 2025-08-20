@@ -1500,18 +1500,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.GoogleSearch.PaintTiming.{MileStone}"
+<histogram
+    name="PageLoad.Clients.GoogleSearch.PaintTiming.{MileStone}2{PageLoadType}{IncognitoSuffix}"
     units="ms" expires_after="2026-02-09">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation start to the time {MileStone}, for Google
-    Search page loads. The actual value is recorded via `startTime` in
-    performance.mark()'s markOptions. If `startTime` is not set, this metric is
-    not recorded. This is recorded by emitting `performance.mark()` in
-    JavaScript, which is done after the navigation commit phase in Search. This
-    is only recorded in the outermost main frame.
+    Search page loads on {PageLoadType} with {IncognitoSuffix}. The actual value
+    is recorded via `startTime` in performance.mark()'s markOptions. If
+    `startTime` is not set, this metric is not recorded. This is recorded by
+    emitting `performance.mark()` in JavaScript, which is done after the
+    navigation commit phase in Search. This is only recorded in the outermost
+    main frame.
   </summary>
   <token key="MileStone">
     <variant name="AFTEnd" summary="AFT end event is sent"/>
@@ -1523,6 +1525,12 @@ chromium-metrics-reviews@google.com.
         summary="end of the header chunk start event is sent"/>
     <variant name="HeaderChunkStart" summary="beginning of the header chunk"/>
   </token>
+  <token key="PageLoadType">
+    <variant name="" summary="All page loads"/>
+    <variant name=".NonPrerender" summary="Non-prerendered page load"/>
+    <variant name=".Prerender" summary="Prerendered page load"/>
+  </token>
+  <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
 </histogram>
 
 <histogram
@@ -1541,6 +1549,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.Prerender.ActivationToFirstContentfulPaint{IncognitoSuffix}"
+    units="ms" expires_after="2026-08-17">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time from when a prerendered page is activated to the first
+    contentful paint, for GWS page loads for {IncognitoSuffix}. Only recorded
+    for GWS navigations that were prerendered and activated.
+  </summary>
+  <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.Prerender.HostReused{IncognitoSuffix}"
     enum="Boolean" expires_after="2026-01-11">
   <owner>suzukikeita@chromium.org</owner>
@@ -1549,6 +1570,19 @@ chromium-metrics-reviews@google.com.
     Whether the prerendering navigation is reusing a prerender host or not for
     {IncognitoSuffix}. This is recorded once, when a prerendered page is
     activated for Google search page loads.
+  </summary>
+  <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Prerender.NavigationToActivation{IncognitoSuffix}"
+    units="ms" expires_after="2026-08-17">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time from when a prerender navigation starts to when the
+    prerendered page is activated, for GWS page loads for {IncognitoSuffix}.
+    Only recorded for GWS navigations that were prerendered and activated.
   </summary>
   <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
 </histogram>
@@ -1573,6 +1607,23 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary=""/>
     <variant name=".FineGrained" summary="Metric is clipped to 10 seconds."/>
   </token>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch{Granularity}.Prerender.ActivationToLargestContentfulPaint{IncognitoSuffix}"
+    units="ms" expires_after="2026-08-17">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time from when a prerendered page is activated to the largest
+    contentful paint, for GWS page loads for {IncognitoSuffix}. Only recorded
+    for GWS navigations that were prerendered and activated.{Granularity}
+  </summary>
+  <token key="Granularity">
+    <variant name="" summary=""/>
+    <variant name=".FineGrained" summary="Metric is clipped to 10 seconds."/>
+  </token>
+  <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
 </histogram>
 
 <histogram

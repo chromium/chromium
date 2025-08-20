@@ -3385,6 +3385,7 @@ if (!is_android) {
       "../browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer_browsertest.h",
       "../browser/page_load_metrics/observers/gws_hp_page_load_metrics_observer_browsertest.cc",
+      "../browser/page_load_metrics/observers/gws_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/javascript_frameworks_ukm_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/multi_tab_loading_page_load_metrics_observer_browsertest.cc",

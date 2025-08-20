@@ -49,6 +49,15 @@ extern const char
 extern const char kHistogramNoServiceWorkerDomContentLoadedSearch[];
 extern const char kHistogramNoServiceWorkerLoadSearch[];
 
+extern const char kHistogramPrerenderHostReused[];
+extern const char kHistogramGWSPrerenderNavigationToActivation[];
+extern const char kHistogramGWSActivationToFirstContentfulPaint[];
+extern const char kHistogramGWSActivationToLargestContentfulPaint[];
+extern const char kFineGrainedHistogramGWSActivationToLargestContentfulPaint[];
+
+extern const char kHistogramPrerenderSuffix[];
+extern const char kHistogramNonPrerenderSuffix[];
+
 }  // namespace internal
 
 class GWSPageLoadMetricsObserver
