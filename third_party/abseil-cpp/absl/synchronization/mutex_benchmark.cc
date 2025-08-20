@@ -30,7 +30,7 @@ namespace {
 void BM_Mutex(benchmark::State& state) {
   static absl::NoDestructor<absl::Mutex> mu;
   for (auto _ : state) {
-    absl::MutexLock lock(mu.get());
+    absl::MutexLock lock(*mu.get());
   }
 }
 BENCHMARK(BM_Mutex)->UseRealTime()->Threads(1)->ThreadPerCpu();
@@ -38,7 +38,7 @@ BENCHMARK(BM_Mutex)->UseRealTime()->Threads(1)->ThreadPerCpu();
 void BM_ReaderLock(benchmark::State& state) {
   static absl::NoDestructor<absl::Mutex> mu;
   for (auto _ : state) {
-    absl::ReaderMutexLock lock(mu.get());
+    absl::ReaderMutexLock lock(*mu.get());
   }
 }
 BENCHMARK(BM_ReaderLock)->UseRealTime()->Threads(1)->ThreadPerCpu();

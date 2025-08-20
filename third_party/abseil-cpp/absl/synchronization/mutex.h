@@ -646,7 +646,7 @@ class ABSL_SCOPED_LOCKABLE ReaderMutexLock {
   explicit ReaderMutexLock(Mutex& mu ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this))
       ABSL_SHARED_LOCK_FUNCTION(mu)
       : mu_(mu) {
-    mu.ReaderLock();
+    mu.lock_shared();
   }
 
   explicit ReaderMutexLock(Mutex* absl_nonnull mu) ABSL_SHARED_LOCK_FUNCTION(mu)
@@ -682,7 +682,7 @@ class ABSL_SCOPED_LOCKABLE WriterMutexLock {
   explicit WriterMutexLock(Mutex& mu ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this))
       ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
       : mu_(mu) {
-    mu.WriterLock();
+    mu.lock();
   }
 
   explicit WriterMutexLock(Mutex* absl_nonnull mu)
@@ -705,7 +705,7 @@ class ABSL_SCOPED_LOCKABLE WriterMutexLock {
   WriterMutexLock& operator=(const WriterMutexLock&) = delete;
   WriterMutexLock& operator=(WriterMutexLock&&) = delete;
 
-  ~WriterMutexLock() ABSL_UNLOCK_FUNCTION() { this->mu_.WriterUnlock(); }
+  ~WriterMutexLock() ABSL_UNLOCK_FUNCTION() { this->mu_.unlock(); }
 
  private:
   Mutex& mu_;
@@ -1096,7 +1096,7 @@ class ABSL_SCOPED_LOCKABLE ReleasableMutexLock {
   explicit ReleasableMutexLock(Mutex& mu ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(
       this)) ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
       : mu_(&mu) {
-    this->mu_->Lock();
+    this->mu_->lock();
   }
 
   explicit ReleasableMutexLock(Mutex* absl_nonnull mu)

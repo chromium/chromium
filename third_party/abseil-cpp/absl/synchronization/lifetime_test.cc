@@ -45,7 +45,7 @@ void ThreadOne(absl::Mutex* mutex, absl::CondVar* condvar,
   CHECK(!*state) << "*state not initialized";
 
   {
-    absl::MutexLock lock(mutex);
+    absl::MutexLock lock(*mutex);
 
     notification->Notify();
     CHECK(notification->HasBeenNotified()) << "invalid Notification";
@@ -64,7 +64,7 @@ void ThreadTwo(absl::Mutex* mutex, absl::CondVar* condvar,
   notification->WaitForNotification();
   CHECK(notification->HasBeenNotified()) << "invalid Notification";
   {
-    absl::MutexLock lock(mutex);
+    absl::MutexLock lock(*mutex);
     *state = true;
     condvar->Signal();
   }

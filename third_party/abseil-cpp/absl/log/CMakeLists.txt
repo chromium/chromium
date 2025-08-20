@@ -28,7 +28,6 @@ absl_cc_library(
     absl::core_headers
     absl::log_internal_check_op
     absl::log_internal_conditions
-    absl::log_internal_message
     absl::log_internal_strip
 )
 

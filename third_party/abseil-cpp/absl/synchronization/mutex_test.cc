@@ -357,7 +357,7 @@ static void EndTest(int *c0, int *c1, absl::Mutex *mu, absl::CondVar *cv,
   int c = (*c0)++;
   mu->unlock();
   cb(c);
-  absl::MutexLock l(mu);
+  absl::MutexLock l(*mu);
   (*c1)++;
   cv->Signal();
 }
@@ -871,7 +871,7 @@ TEST(Mutex, LockedMutexDestructionBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
     auto mu = absl::make_unique<absl::Mutex[]>(kNumLocks);
     for (int j = 0; j != kNumLocks; j++) {
       if ((j % 2) == 0) {
-        mu[j].WriterLock();
+        mu[j].lock();
       } else {
         mu[j].lock_shared();
       }

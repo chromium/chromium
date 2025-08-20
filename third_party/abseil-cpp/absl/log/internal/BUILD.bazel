@@ -59,7 +59,6 @@ cc_library(
     deps = [
         ":check_op",
         ":conditions",
-        ":log_message",
         ":strip",
         "//absl/base:core_headers",
     ],
