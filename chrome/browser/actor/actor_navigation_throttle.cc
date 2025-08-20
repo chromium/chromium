@@ -79,7 +79,8 @@ ActorNavigationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 ActorNavigationThrottle::WillProcessResponse() {
-  if (!execution_engine_->ShouldGateNavigation(*navigation_handle())) {
+  if (!execution_engine_ ||
+      !execution_engine_->ShouldGateNavigation(*navigation_handle())) {
     return content::NavigationThrottle::PROCEED;
   }
 
