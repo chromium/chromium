@@ -69,6 +69,7 @@ if (use_bundled_fontconfig) {
   config("fontconfig_config") {
     include_dirs = [
       "src",
+      "include/",
       "include/fc-lang/",
     ]
   }
