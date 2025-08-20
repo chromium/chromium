@@ -416,9 +416,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                         mModel.get(TabGridDialogProperties.IS_INCOGNITO),
                         ColorPickerLayoutType.DOUBLE_ROW,
                         () -> {
-                            assumeNonNull(mColorIconPopupWindow);
-                            mColorIconPopupWindow.dismiss();
-                            mColorIconPopupWindow = null;
+                            if (mColorIconPopupWindow != null) {
+                                mColorIconPopupWindow.dismiss();
+                                mColorIconPopupWindow = null;
+                            }
                             onDismissListener.onDismiss();
                         });
         mColorPickerCoordinator.setSelectedColorItem(
