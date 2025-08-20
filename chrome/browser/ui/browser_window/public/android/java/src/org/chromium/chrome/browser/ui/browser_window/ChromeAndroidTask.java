@@ -115,6 +115,9 @@ public interface ChromeAndroidTask {
      */
     boolean isActive();
 
+    /** Returns whether this {@link ChromeAndroidTask} is currently maximized. */
+    boolean isMaximized();
+
     /**
      * Returns the most recent timestamp when this {@link ChromeAndroidTask} became active, i.e.,
      * when its state changed from nonexistent or inactive (minimized/unfocused), to the active
@@ -135,6 +138,9 @@ public interface ChromeAndroidTask {
      * state if necessary.
      */
     void activate();
+
+    /** Maximize this {@link ChromeAndroidTask}. */
+    void maximize();
 
     /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
     List<ChromeAndroidTaskFeature> getAllFeaturesForTesting();

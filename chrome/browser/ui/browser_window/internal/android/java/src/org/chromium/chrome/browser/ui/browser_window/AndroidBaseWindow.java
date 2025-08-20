@@ -53,6 +53,11 @@ final class AndroidBaseWindow {
     }
 
     @CalledByNative
+    private boolean isMaximized() {
+        return mChromeAndroidTask.isMaximized();
+    }
+
+    @CalledByNative
     @JniType("std::vector<int>")
     private int[] getBounds() {
         Rect bounds = mChromeAndroidTask.getBounds();
@@ -67,6 +72,11 @@ final class AndroidBaseWindow {
     @CalledByNative
     private void activate() {
         mChromeAndroidTask.activate();
+    }
+
+    @CalledByNative
+    private void maximize() {
+        mChromeAndroidTask.maximize();
     }
 
     @CalledByNative

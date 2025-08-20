@@ -252,6 +252,20 @@ public class ChromeAndroidTaskIntegrationTest {
         ntpStation.getActivity().finish();
     }
 
+    @Test
+    @MediumTest
+    public void isMaximized_trueByDefault() {
+        // Arrange
+        mFreshCtaTransitTestRule.startOnBlankPage();
+        Activity activity = mFreshCtaTransitTestRule.getActivity();
+        int taskId = activity.getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+
+        // Assert: by default, app is maximized in non desktop windowing mode.
+        assertTrue(chromeAndroidTask.isMaximized());
+    }
+
     /**
      * Verifies that a {@link ChromeAndroidTask} is destroyed with its {@code Activity}.
      *

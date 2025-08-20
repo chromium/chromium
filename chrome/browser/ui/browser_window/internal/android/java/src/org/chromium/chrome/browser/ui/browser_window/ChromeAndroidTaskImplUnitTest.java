@@ -19,14 +19,20 @@ import static org.mockito.Mockito.when;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Bundle;
+import android.view.WindowInsets;
 import android.view.WindowMetrics;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -484,5 +490,95 @@ public class ChromeAndroidTaskImplUnitTest {
         InOrder inOrder = Mockito.inOrder(mockFeature);
         inOrder.verify(mockFeature).onTaskFocusChanged(true);
         inOrder.verify(mockFeature).onTaskFocusChanged(false);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
+    public void maximize_maximizeToMaximizedBounds() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
+        var mockWindowManager =
+                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
+
+        // Mock isInDesktopWindowing() to return true.
+        var mockWindowMetrics = mock(WindowMetrics.class);
+        var mockWindowInsets = mock(WindowInsets.class);
+        when(mockWindowManager.getCurrentWindowMetrics()).thenReturn(mockWindowMetrics);
+        when(mockWindowMetrics.getWindowInsets()).thenReturn(mockWindowInsets);
+        when(mockWindowInsets.isVisible(WindowInsets.Type.captionBar())).thenReturn(true);
+
+        // Mock getMaximizedBounds().
+        var mockMaxWindowMetrics = mock(WindowMetrics.class);
+        var mockMaxWindowInsets = mock(WindowInsets.class);
+        when(mockWindowManager.getMaximumWindowMetrics()).thenReturn(mockMaxWindowMetrics);
+        when(mockMaxWindowMetrics.getWindowInsets()).thenReturn(mockMaxWindowInsets);
+        var tappableInsets = Insets.of(0, 10, 0, 20);
+        when(mockMaxWindowInsets.getInsets(WindowInsets.Type.tappableElement()))
+                .thenReturn(tappableInsets);
+        var fullscreenBounds = new Rect(0, 0, 1920, 1080);
+        when(mockMaxWindowMetrics.getBounds()).thenReturn(fullscreenBounds);
+        var maximizedBounds = new Rect(0, 10, 1920, 1060);
+
+        // Act.
+        chromeAndroidTask.maximize();
+
+        // Assert.
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        var bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mockActivity).startActivity(intentCaptor.capture(), bundleCaptor.capture());
+
+        var capturedIntent = intentCaptor.getValue();
+        assertEquals(
+                Intent.FLAG_ACTIVITY_CLEAR_TOP,
+                capturedIntent.getFlags() & Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        var capturedBundle = bundleCaptor.getValue();
+        Rect capturedBounds = capturedBundle.getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
+        assertEquals(maximizedBounds, capturedBounds);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
+    public void isMaximized_falseWhenNotMaximized() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockWindowManager =
+                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
+
+        // Mock isInDesktopWindowing() to return true.
+        var mockWindowMetrics = mock(WindowMetrics.class);
+        var mockWindowInsets = mock(WindowInsets.class);
+        when(mockWindowManager.getCurrentWindowMetrics()).thenReturn(mockWindowMetrics);
+        when(mockWindowMetrics.getWindowInsets()).thenReturn(mockWindowInsets);
+        when(mockWindowInsets.isVisible(WindowInsets.Type.captionBar())).thenReturn(true);
+
+        // Mock getBounds() to return non-maximized bounds.
+        var currentBounds = new Rect(0, 0, 800, 600);
+        when(mockWindowMetrics.getBounds()).thenReturn(currentBounds);
+
+        // Mock getMaximizedBounds().
+        var mockMaxWindowMetrics = mock(WindowMetrics.class);
+        var mockMaxWindowInsets = mock(WindowInsets.class);
+        when(mockWindowManager.getMaximumWindowMetrics()).thenReturn(mockMaxWindowMetrics);
+        when(mockMaxWindowMetrics.getWindowInsets()).thenReturn(mockMaxWindowInsets);
+        var tappableInsets = Insets.of(0, 10, 0, 20);
+        when(mockMaxWindowInsets.getInsets(WindowInsets.Type.tappableElement()))
+                .thenReturn(tappableInsets);
+        var fullscreenBounds = new Rect(0, 0, 1920, 1080);
+        when(mockMaxWindowMetrics.getBounds()).thenReturn(fullscreenBounds);
+
+        // Act & Assert.
+        assertFalse(chromeAndroidTask.isMaximized());
     }
 }

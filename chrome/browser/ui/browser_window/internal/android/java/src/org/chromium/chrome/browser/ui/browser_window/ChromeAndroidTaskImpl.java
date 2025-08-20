@@ -6,12 +6,18 @@ package org.chromium.chrome.browser.ui.browser_window;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
+import android.view.WindowInsets;
+import android.view.WindowManager;
 
 import androidx.annotation.GuardedBy;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
@@ -185,6 +191,29 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
+    public boolean isMaximized() {
+        // TODO(crbug.com/438268202): Change the if statement to an assert.
+        // We don't expect ChromeAndroidTask to work for R and below.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            Log.w(TAG, "isMaximized() requires Android R+; returning a false");
+            return false;
+        }
+        synchronized (mActivityWindowAndroidLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) return false;
+            var activity = activityWindowAndroid.getActivity().get();
+            if (activity == null) return false;
+            var windowManager = activity.getWindowManager();
+            if (isInDesktopWindowing(windowManager)) {
+                return getBoundsInternalLocked().equals(getMaximizedBounds(windowManager));
+            } else {
+                return !activity.isInMultiWindowMode();
+            }
+        }
+    }
+
+    @Override
     public long getLastActivatedTimeMillis() {
         long lastActivatedTimeMillis = mLastActivatedTimeMillis.get();
         assert lastActivatedTimeMillis > 0;
@@ -193,7 +222,9 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public Rect getBounds() {
-        return getBoundsInternal();
+        synchronized (mActivityWindowAndroidLock) {
+            return getBoundsInternalLocked();
+        }
     }
 
     @Override
@@ -206,16 +237,19 @@ final class ChromeAndroidTaskImpl
         // (2) As of Aug 12, 2025, Configuration doesn't provide a public API to get the window
         // bounds. Its "windowConfiguration" field is marked as @TestApi:
         // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/content/res/Configuration.java;l=417-418;drc=64130047e019cee612a85dde07755efd8f356f12
-        // Therefore, we obtain the new bounds using an Activity API (see getBoundsInternal()).
-        var newBounds = getBoundsInternal();
-        if (newBounds.equals(mLastBoundsOnConfigChanged)) {
-            return;
-        }
-
-        mLastBoundsOnConfigChanged = newBounds;
+        // Therefore, we obtain the new bounds using an Activity API (see
+        // getBoundsInternalLocked()).
         synchronized (mFeaturesLock) {
-            for (var feature : mFeatures) {
-                feature.onTaskBoundsChanged(newBounds);
+            synchronized (mActivityWindowAndroidLock) {
+                var newBounds = getBoundsInternalLocked();
+                if (newBounds.equals(mLastBoundsOnConfigChanged)) {
+                    return;
+                }
+
+                mLastBoundsOnConfigChanged = newBounds;
+                for (var feature : mFeatures) {
+                    feature.onTaskBoundsChanged(newBounds);
+                }
             }
         }
     }
@@ -249,6 +283,35 @@ final class ChromeAndroidTaskImpl
                 }
             }
             throw new IllegalStateException("Target task not found");
+        }
+    }
+
+    @Override
+    public void maximize() {
+        // TODO(crbug.com/438268202): Change the if statement to an assert.
+        // We don't expect ChromeAndroidTask to work for R and below.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            Log.w(TAG, "maximize() requires Android R+; does nothing");
+            return;
+        }
+        synchronized (mActivityWindowAndroidLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) return;
+            Activity activity = activityWindowAndroid.getActivity().get();
+            if (activity == null) return;
+            // No maximize action in non desktop window mode.
+            if (!isInDesktopWindowing(activity.getWindowManager())) return;
+            Rect maximizedBounds = getMaximizedBounds(activity.getWindowManager());
+            ActivityOptions options = ActivityOptions.makeBasic();
+            options.setLaunchBounds(maximizedBounds);
+            Intent intent = new Intent(activity, activity.getClass());
+            // TODO(crbug.com/437982549): Replace with new Task API if available.
+            // When maximize() is called while another activity is on top, Chrome is brought to the
+            // foreground. Subsequently, if a back gesture is triggered, FLAG_ACTIVITY_CLEAR_TOP
+            // prevents the other activity from being brought back to the top of the stack.
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            activity.startActivity(intent, options.toBundle());
         }
     }
 
@@ -330,25 +393,44 @@ final class ChromeAndroidTaskImpl
         }
     }
 
-    private Rect getBoundsInternal() {
-        synchronized (mActivityWindowAndroidLock) {
-            // TODO(crbug.com/438268202): Change the if statement to an assert.
-            // We don't expect ChromeAndroidTask to work for R and below.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                Log.w(TAG, "getBoundsInternal() requires Android R+; returning an empty Rect()");
-                return new Rect();
-            }
-
-            var activityWindowAndroid =
-                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
-            if (activityWindowAndroid == null) return new Rect();
-            Activity activity = activityWindowAndroid.getActivity().get();
-            if (activity == null) return new Rect();
-            return activity.getWindowManager().getCurrentWindowMetrics().getBounds();
+    @GuardedBy("mActivityWindowAndroidLock")
+    private Rect getBoundsInternalLocked() {
+        // TODO(crbug.com/438268202): Change the if statement to an assert.
+        // We don't expect ChromeAndroidTask to work for R and below.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            Log.w(TAG, "getBoundsInternal() requires Android R+; returning an empty Rect()");
+            return new Rect();
         }
+
+        var activityWindowAndroid = getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+        if (activityWindowAndroid == null) return new Rect();
+        Activity activity = activityWindowAndroid.getActivity().get();
+        if (activity == null) return new Rect();
+        return activity.getWindowManager().getCurrentWindowMetrics().getBounds();
     }
 
     private void assertAlive() {
         assert mState.get() == State.ALIVE : "This Task is not alive.";
+    }
+
+    @RequiresApi(api = VERSION_CODES.R)
+    private static Rect getMaximizedBounds(WindowManager windowManager) {
+        var insets =
+                windowManager
+                        .getMaximumWindowMetrics()
+                        .getWindowInsets()
+                        .getInsets(WindowInsets.Type.tappableElement());
+        var fullscreenBounds = windowManager.getMaximumWindowMetrics().getBounds();
+        return new Rect(
+                0, insets.top, fullscreenBounds.right, fullscreenBounds.bottom - insets.bottom);
+    }
+
+    @RequiresApi(api = VERSION_CODES.R)
+    // TODO(crbug.com/437982549): Replace with a more versatile API to improve OEM compatibility.
+    private static boolean isInDesktopWindowing(WindowManager windowManager) {
+        return windowManager
+                .getCurrentWindowMetrics()
+                .getWindowInsets()
+                .isVisible(WindowInsets.Type.captionBar());
     }
 }

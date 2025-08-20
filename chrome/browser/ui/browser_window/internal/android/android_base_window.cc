@@ -46,7 +46,8 @@ bool AndroidBaseWindow::IsActive() const {
 }
 
 bool AndroidBaseWindow::IsMaximized() const {
-  NOTREACHED();
+  return Java_AndroidBaseWindow_isMaximized(AttachCurrentThread(),
+                                            java_android_base_window_);
 }
 
 bool AndroidBaseWindow::IsMinimized() const {
@@ -108,7 +109,8 @@ void AndroidBaseWindow::Deactivate() {
 }
 
 void AndroidBaseWindow::Maximize() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_maximize(AttachCurrentThread(),
+                                  java_android_base_window_);
 }
 
 void AndroidBaseWindow::Minimize() {
