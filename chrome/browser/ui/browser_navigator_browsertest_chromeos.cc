@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
                        NavigationBlockedInLockedFullscreen) {
   // Set locked fullscreen state.
   aura::Window* window = browser()->window()->GetNativeWindow();
-  PinWindow(window, /*trusted=*/true);
+  ash::PinWindow(window, /*trusted=*/true);
 
   // Navigate to a page.
   auto url = GURL(chrome::kChromeUIVersionURL);
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
   // As a sanity check unset the locked fullscreen state and make sure that the
   // navigation happens (the following EXPECTs fail if the next line isn't
   // executed).
-  UnpinWindow(window);
+  ash::UnpinWindow(window);
 
   Navigate(&params);
 
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
                        NavigationAllowedInLockedFullscreenWhenLockedForOnTask) {
   // Set locked fullscreen state.
   aura::Window* const window = browser()->window()->GetNativeWindow();
-  PinWindow(window, /*trusted=*/true);
+  ash::PinWindow(window, /*trusted=*/true);
   browser()->SetLockedForOnTask(true);
 
   // Navigate to a page.

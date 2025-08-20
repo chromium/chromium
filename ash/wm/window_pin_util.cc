@@ -9,6 +9,8 @@
 #include "chromeos/ui/base/window_pin_type.h"
 #include "ui/aura/window.h"
 
+namespace ash {
+
 void PinWindow(aura::Window* window, bool trusted) {
   DCHECK(window);
   ash::window_util::PinWindow(window, trusted);
@@ -43,3 +45,5 @@ bool IsWindowPinned(const aura::Window* window) {
   const ash::WindowState* state = ash::WindowState::Get(window);
   return state->IsPinned();
 }
+
+}  // namespace ash

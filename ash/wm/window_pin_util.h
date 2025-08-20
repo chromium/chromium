@@ -12,6 +12,8 @@ namespace aura {
 class Window;
 }
 
+namespace ash {
+
 // Sets the window state to pinned.  If |trusted| is true, sets to
 // kTrustedPinned.  Otherwise, the window is set to kPinned.
 ASH_EXPORT void PinWindow(aura::Window* window, bool trusted);
@@ -24,5 +26,7 @@ ASH_EXPORT chromeos::WindowPinType GetWindowPinType(const aura::Window* window);
 
 // Returns true if the window is Pinned or TrustedPinned.
 ASH_EXPORT bool IsWindowPinned(const aura::Window* window);
+
+}  // namespace ash
 
 #endif  // ASH_WM_WINDOW_PIN_UTIL_H_

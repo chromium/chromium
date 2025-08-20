@@ -1613,7 +1613,7 @@ TEST_F(TabsApiUnitTest, DontCreateTabsInLockedFullscreenMode) {
   function->set_extension(extension_with_tabs_permission.get());
 
   // In locked fullscreen mode we should not be able to create any tabs.
-  PinWindow(browser_window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser_window()->GetNativeWindow(), /*trusted=*/true);
 
   EXPECT_EQ(ExtensionTabUtil::kLockedFullscreenModeNewTabError,
             api_test_utils::RunFunctionAndReturnError(

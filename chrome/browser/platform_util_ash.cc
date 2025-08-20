@@ -143,7 +143,8 @@ bool IsBrowserLockedFullscreen(const Browser* browser) {
   // |window| can be nullptr inside of unit tests.
   if (!window)
     return false;
-  return GetWindowPinType(window) == chromeos::WindowPinType::kTrustedPinned;
+  return ash::GetWindowPinType(window) ==
+         chromeos::WindowPinType::kTrustedPinned;
 }
 
 }  // namespace platform_util

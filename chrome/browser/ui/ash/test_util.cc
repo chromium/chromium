@@ -96,7 +96,7 @@ void ChromeOSBrowserUITest::SnapWindow(aura::Window* window,
 }
 
 void ChromeOSBrowserUITest::PinWindow(aura::Window* window, bool trusted) {
-  ::PinWindow(window, trusted);
+  ash::PinWindow(window, trusted);
 }
 
 bool ChromeOSBrowserUITest::IsIsShelfVisibleSupported() {

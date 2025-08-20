@@ -369,16 +369,16 @@ aura::Window* GetCurrentWindow() {
 }
 
 chromeos::WindowPinType GetCurrentWindowPinType() {
-  chromeos::WindowPinType type = GetWindowPinType(GetCurrentWindow());
+  chromeos::WindowPinType type = ash::GetWindowPinType(GetCurrentWindow());
 
   return type;
 }
 
 void SetCurrentWindowPinType(chromeos::WindowPinType type) {
   if (type == chromeos::WindowPinType::kNone) {
-    UnpinWindow(GetCurrentWindow());
+    ash::UnpinWindow(GetCurrentWindow());
   } else {
-    PinWindow(GetCurrentWindow(), /*trusted=*/true);
+    ash::PinWindow(GetCurrentWindow(), /*trusted=*/true);
   }
 }
 

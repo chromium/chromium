@@ -554,7 +554,7 @@ using BrowserViewLockedFullscreenTestChromeOS = BrowserViewTest;
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        ShowExclusiveAccessBubbleWhenNotLocked) {
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/false);
+  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/false);
   browser()
       ->GetFeatures()
       .exclusive_access_manager()
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        HideExclusiveAccessBubbleWhenLocked) {
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   browser()
       ->GetFeatures()
       .exclusive_access_manager()
@@ -592,21 +592,21 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        EnableImmersiveModeWhenNotTrustedPinned) {
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/false);
+  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/false);
   EXPECT_TRUE(browser_view()->immersive_mode_controller()->IsEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        DisableImmersiveModeWhenNotLockedForOnTask) {
   browser()->SetLockedForOnTask(false);
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   EXPECT_FALSE(browser_view()->immersive_mode_controller()->IsEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        EnableImmersiveModeWhenLockedForOnTask) {
   browser()->SetLockedForOnTask(true);
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   EXPECT_TRUE(browser_view()->immersive_mode_controller()->IsEnabled());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

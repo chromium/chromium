@@ -235,19 +235,19 @@ void SetLockedFullscreenState(Browser* browser, bool pinned) {
   aura::Window* window = browser->window()->GetNativeWindow();
   DCHECK(window);
 
-  CHECK_NE(GetWindowPinType(window), chromeos::WindowPinType::kPinned)
+  CHECK_NE(ash::GetWindowPinType(window), chromeos::WindowPinType::kPinned)
       << "Extensions only set Trusted Pinned";
 
   // As this gets triggered from extensions, we might encounter this case.
-  if (IsWindowPinned(window) == pinned) {
+  if (ash::IsWindowPinned(window) == pinned) {
     return;
   }
 
   if (pinned) {
     // Pins from extension are always trusted.
-    PinWindow(window, /*trusted=*/true);
+    ash::PinWindow(window, /*trusted=*/true);
   } else {
-    UnpinWindow(window);
+    ash::UnpinWindow(window);
   }
 
   // Update the set of available browser commands.

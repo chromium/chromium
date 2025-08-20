@@ -257,12 +257,12 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerLockedFullscreenTest,
             ArcSessionManager::Get()->state());
 
   // ARC should be disabled in locked fullscreen.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   ASSERT_EQ(ArcSessionManager::State::STOPPED,
             ArcSessionManager::Get()->state());
 
   // ARC should not remain disabled once we exit this mode.
-  UnpinWindow(browser()->window()->GetNativeWindow());
+  ash::UnpinWindow(browser()->window()->GetNativeWindow());
   EXPECT_NE(ArcSessionManager::State::STOPPED,
             ArcSessionManager::Get()->state());
 }
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(ArcSessionManagerLockedFullscreenWithMuteAudioTest,
 
   // ARC should remain enabled when entering fullscreen mode. This is because
   // we attempt to mute ARC VM audio instead.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   content::RunAllTasksUntilIdle();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE,
             ArcSessionManager::Get()->state());
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(ArcSessionManagerLockedFullscreenWithMuteAudioTest,
                                       IsMuteArcVMAudioSuccess(), 1);
 
   // ARC should remain enabled once we exit locked fullscreen mode.
-  UnpinWindow(browser()->window()->GetNativeWindow());
+  ash::UnpinWindow(browser()->window()->GetNativeWindow());
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE,
             ArcSessionManager::Get()->state());
