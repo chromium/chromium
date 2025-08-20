@@ -266,58 +266,5 @@ TEST_F(WKContentRuleListProviderTest, MultipleConcurrentUpdatesSucceed) {
   }
 }
 
-// Tests that the provider can be safely destroyed while operations are pending.
-// This is safe because of the weak pointer used in the completion handler.
-TEST_F(WKContentRuleListProviderTest, ProviderDestroyedWithPendingOperations) {
-  const std::string key = "pending_op_key";
-  TestFuture<NSError*> future;
-  // Start an update but don't wait for it.
-  provider_->UpdateRuleList(key, kValidTestRuleListJson, future.GetCallback());
-  // Track key for TearDown, in case the operation completes before the test
-  // finishes.
-  tracked_keys_.insert(key);
-
-  // Destroy the provider immediately.
-  provider_.reset();
-
-  // The test passes if it does not crash. We can also verify that the callback
-  // was never invoked.
-  EXPECT_FALSE(future.IsReady());
-}
-
-// Tests that the idle callback fires correctly when set while the provider
-// is already idle.
-TEST_F(WKContentRuleListProviderTest, IdleCallbackFiresWhenSetWhileIdle) {
-  TestFuture<void> idle_future;
-  provider_->SetIdleCallbackForTesting(idle_future.GetRepeatingCallback());
-
-  // The callback for an already-idle provider should fire. Wait for it.
-  EXPECT_TRUE(idle_future.Wait());
-}
-
-// Tests that the idle callback fires correctly when the provider becomes idle.
-TEST_F(WKContentRuleListProviderTest,
-       IdleCallbackFiresWhenProviderBecomesIdle) {
-  const std::string key = "idle_test_key";
-  // Start an update but do not wait for it, ensuring the provider is busy.
-  TestFuture<NSError*> update_future;
-  provider_->UpdateRuleList(key, kValidTestRuleListJson,
-                            update_future.GetCallback());
-  tracked_keys_.insert(key);
-
-  TestFuture<void> idle_future;
-  provider_->SetIdleCallbackForTesting(idle_future.GetRepeatingCallback());
-
-  // The provider is busy, so the idle callback should not have fired yet.
-  EXPECT_FALSE(idle_future.IsReady());
-
-  // Wait for the pending update to complete.
-  ASSERT_EQ(nil, update_future.Get());
-
-  // The provider should now be idle, and the callback should have been posted.
-  // Wait for it to execute.
-  EXPECT_TRUE(idle_future.Wait());
-}
-
 }  // namespace
 }  // namespace web

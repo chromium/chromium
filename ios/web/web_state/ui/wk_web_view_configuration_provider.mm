@@ -10,6 +10,7 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/check_is_test.h"
 #import "base/debug/crash_logging.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/functional/callback_helpers.h"
@@ -119,6 +120,23 @@ WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
     : browser_state_(browser_state),
       content_rule_list_provider_(
           std::make_unique<WKContentRuleListProvider>()) {
+  Initialize();
+}
+
+WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
+    BrowserState* browser_state,
+    std::unique_ptr<WKContentRuleListProvider> rule_list_provider)
+    : browser_state_(browser_state),
+      content_rule_list_provider_(std::move(rule_list_provider)) {
+  CHECK_IS_TEST();
+  Initialize();
+}
+
+WKWebViewConfigurationProvider::~WKWebViewConfigurationProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
+}
+
+void WKWebViewConfigurationProvider::Initialize() {
   // Create the static content rule lists.
   // 1. Create Block Local List
   content_rule_list_provider_->UpdateRuleList(
@@ -133,10 +151,6 @@ WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
       base::SysNSStringToUTF8(CreateMixedContentAutoUpgradeJsonRuleList()),
       base::BindOnce(&LogStaticListRegistrationError,
                      kMixedContentUpgradeRuleListKey));
-}
-
-WKWebViewConfigurationProvider::~WKWebViewConfigurationProvider() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
 }
 
 void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
