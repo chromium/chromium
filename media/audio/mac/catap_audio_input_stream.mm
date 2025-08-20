@@ -346,7 +346,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   TRACE_EVENT0("audio", "CatapAudioInputStream::Open");
   base::ElapsedTimer timer;
 
-  SendLogMessage("%s() => deviceId: %s", __func__, device_id_.c_str());
+  SendLogMessage("%s => deviceId: %s", __func__, device_id_.c_str());
 
   if (is_device_open_) {
     ReportOpenStatus(OpenStatus::kErrorDeviceAlreadyOpen, timer.Elapsed());
@@ -408,7 +408,8 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
     // `kAudioObjectUnknown` is returned if the specified output device doesn't
     // exist.
     ReportOpenStatus(OpenStatus::kErrorCreatingProcessTap, timer.Elapsed());
-    SendLogMessage("%s => Error creating process tap.", __func__);
+    SendLogMessage("%s => Error creating process tap. Status: %d", __func__,
+                   status);
     return OpenOutcome::kFailed;
   }
 
@@ -440,7 +441,8 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   if (status != noErr) {
     ReportOpenStatus(OpenStatus::kErrorCreatingAggregateDevice,
                      timer.Elapsed());
-    SendLogMessage("%s => Error creating aggregate device.", __func__);
+    SendLogMessage("%s => Error creating aggregate device. Status: %d",
+                   __func__, status);
     return OpenOutcome::kFailed;
   }
 
@@ -467,7 +469,8 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
       aggregate_device_id_, DeviceIoProc, this, &tap_io_proc_id_);
   if (status != noErr) {
     ReportOpenStatus(OpenStatus::kErrorCreatingIOProcID, timer.Elapsed());
-    SendLogMessage("%s => Error calling AudioDeviceCreateIOProcID.", __func__);
+    SendLogMessage("%s => Error calling AudioDeviceCreateIOProcID. Status: %d",
+                   __func__, status);
     return OpenOutcome::kFailed;
   }
 
@@ -495,7 +498,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
 void CatapAudioInputStream::Start(AudioInputCallback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Start");
-  SendLogMessage("%s()", __func__);
+  SendLogMessage("%s", __func__);
   base::ElapsedTimer timer;
   CHECK(callback);
   CHECK(is_device_open_);
@@ -507,7 +510,8 @@ void CatapAudioInputStream::Start(AudioInputCallback* callback) {
       catap_api_->AudioDeviceStart(aggregate_device_id_, tap_io_proc_id_);
   if (status != noErr) {
     ReportStartStatus(false, timer.Elapsed());
-    SendLogMessage("%s => Error starting the device.", __func__);
+    SendLogMessage("%s => Error starting the device. Status: %d", __func__,
+                   status);
     sink_->OnError();
   }
   ReportStartStatus(true, timer.Elapsed());
@@ -516,7 +520,7 @@ void CatapAudioInputStream::Start(AudioInputCallback* callback) {
 void CatapAudioInputStream::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Stop");
-  SendLogMessage("%s()", __func__);
+  SendLogMessage("%s", __func__);
   base::ElapsedTimer timer;
 
   property_listener_.reset();
@@ -536,7 +540,8 @@ void CatapAudioInputStream::Stop() {
       catap_api_->AudioDeviceStop(aggregate_device_id_, tap_io_proc_id_);
   if (status != noErr) {
     ReportStopStatus(false, timer.Elapsed());
-    SendLogMessage("%s => Error stopping the device.", __func__);
+    SendLogMessage("%s => Error stopping the device. Status: %d", __func__,
+                   status);
   }
 
   ReportHostTimeStatus(total_callbacks_, callbacks_with_missing_host_time_,
@@ -549,7 +554,7 @@ void CatapAudioInputStream::Stop() {
 void CatapAudioInputStream::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Close");
-  SendLogMessage("%s() => deviceId: %s", __func__, device_id_.c_str());
+  SendLogMessage("%s => deviceId: %s", __func__, device_id_.c_str());
   base::ElapsedTimer timer;
   Stop();
 
@@ -562,7 +567,8 @@ void CatapAudioInputStream::Close() {
         aggregate_device_id_, tap_io_proc_id_);
     if (status != noErr) {
       ReportCloseStatus(CloseStatus::kErrorDestroyingIOProcID, timer.Elapsed());
-      SendLogMessage("%s => Error destroying device IO process ID.", __func__);
+      SendLogMessage("%s => Error destroying device IO process ID. Status: %d",
+                     __func__, status);
     }
     tap_io_proc_id_ = nullptr;
   }
@@ -574,7 +580,8 @@ void CatapAudioInputStream::Close() {
     if (status != noErr) {
       ReportCloseStatus(CloseStatus::kErrorDestroyingAggregateDevice,
                         timer.Elapsed());
-      SendLogMessage("%s => Error destroying aggregate device.", __func__);
+      SendLogMessage("%s => Error destroying aggregate device. Status: %d",
+                     __func__, status);
     }
     aggregate_device_id_ = kAudioObjectUnknown;
   }
@@ -585,7 +592,8 @@ void CatapAudioInputStream::Close() {
     if (status != noErr) {
       ReportCloseStatus(CloseStatus::kErrorDestroyingProcessTap,
                         timer.Elapsed());
-      SendLogMessage("%s => Error destroying process tap.", __func__);
+      SendLogMessage("%s => Error destroying process tap. Status: %d", __func__,
+                     status);
     }
     tap_ = kAudioObjectUnknown;
   }
@@ -675,8 +683,9 @@ NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(
       /*in_qualifier_data=*/nullptr, &property_size);
   if (result != noErr) {
     ReportGetProcessAudioDeviceIdsDuration(false, timer.Elapsed());
-    SendLogMessage("%s => Could not get number of process audio device IDs.",
-                   __func__);
+    SendLogMessage(
+        "%s => Could not get number of process audio device IDs. Status: %d",
+        __func__, result);
     return @[];
   }
 
@@ -687,7 +696,8 @@ NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(
       /*in_qualifier_data=*/nullptr, &property_size, device_ids.data());
   if (result != noErr) {
     ReportGetProcessAudioDeviceIdsDuration(false, timer.Elapsed());
-    SendLogMessage("%s => Could not get process audio device IDs.", __func__);
+    SendLogMessage("%s => Could not get process audio device IDs. Status: %d",
+                   __func__, result);
     return @[];
   }
 
@@ -703,9 +713,9 @@ NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(
         device_id, &property_address, /*in_qualifier_data_size=*/0,
         /*in_qualifier_data=*/nullptr, &property_size, &process_id);
     if (result != noErr) {
-      SendLogMessage(
-          "%s => Could not determine process ID of process audio device ID.",
-          __func__);
+      SendLogMessage("%s => Could not determine process ID of process audio "
+                     "device ID. Status: %d",
+                     __func__, result);
       continue;  // Skip this device and continue to the next.
     }
 
@@ -730,8 +740,9 @@ bool CatapAudioInputStream::ConfigureSampleRateOfAggregateDevice() {
       aggregate_device_id_, &property_address, /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, property_size, &sample_rate);
   if (result != noErr) {
-    SendLogMessage("%s => Could not set sample rate of the aggregate device.",
-                   __func__);
+    SendLogMessage(
+        "%s => Could not set sample rate of the aggregate device. Status: %d",
+        __func__, result);
     return false;
   }
   return true;
@@ -750,9 +761,9 @@ bool CatapAudioInputStream::ConfigureFramesPerBufferOfAggregateDevice() {
       aggregate_device_id_, &property_address, /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, property_size, &frames_per_buffer);
   if (result != noErr) {
-    SendLogMessage(
-        "%s => Could not set frames per buffer of the aggregate device.",
-        __func__);
+    SendLogMessage("%s => Could not set frames per buffer of the aggregate "
+                   "device. Status: %d",
+                   __func__, result);
     return false;
   }
   return true;
@@ -822,7 +833,7 @@ void CatapAudioInputStream::ProcessPropertyChange(
 
 void CatapAudioInputStream::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SendLogMessage("%s()", __func__);
+  SendLogMessage("%s", __func__);
   if (sink_) {
     sink_->OnError();
   }
