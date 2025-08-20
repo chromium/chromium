@@ -271,6 +271,11 @@ class FakeClient : public PdfInkModuleClient {
               (const gfx::PointF& point),
               (override));
 
+  MOCK_METHOD(gfx::Transform,
+              GetCanonicalToPdfTransform,
+              (int page_index),
+              (override));
+
   MOCK_METHOD(ui::Cursor, GetCursor, (), (override));
 
   PageOrientation GetOrientation() const override { return orientation_; }

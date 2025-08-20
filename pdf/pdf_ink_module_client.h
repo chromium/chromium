@@ -15,6 +15,7 @@
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
@@ -60,6 +61,10 @@ class PdfInkModuleClient {
   // Extends the current text selection to the nearest page and character to
   // `point`. `point` must be in device coordinates.
   virtual void ExtendSelectionByPoint(const gfx::PointF& point) {}
+
+  // Returns the transform required to convert canonical coordinates to PDF
+  // coordinates.
+  virtual gfx::Transform GetCanonicalToPdfTransform(int page_index) = 0;
 
   // Returns the current cursor.
   virtual ui::Cursor GetCursor() = 0;

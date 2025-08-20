@@ -2229,6 +2229,23 @@ TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
       kPageIndex));
 }
 
+TEST_P(PDFiumEngineInkTest, GetCanonicalToPdfTransform) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(2, engine->GetNumberOfPages());
+
+  static constexpr gfx::PointF kCanonicalTopLeftPoint(0.0f, 0.0f);
+  static constexpr gfx::PointF kCanonicalMiddlePoint(100.0f, 50.0f);
+  const gfx::Transform transform =
+      engine->GetCanonicalToPdfTransform(/*page_index=*/0);
+  EXPECT_EQ(gfx::PointF(0.0f, 200.0f),
+            transform.MapPoint(kCanonicalTopLeftPoint));
+  EXPECT_EQ(gfx::PointF(75.0f, 162.5f),
+            transform.MapPoint(kCanonicalMiddlePoint));
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkTest, testing::Bool());
 
 class PDFiumEngineInkTextSelectionTest : public PDFiumEngineInkTest {

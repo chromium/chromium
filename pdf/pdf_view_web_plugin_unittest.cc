@@ -3044,6 +3044,14 @@ TEST_P(PdfViewWebPluginInkTest, ExtendSelectionByPoint) {
       gfx::PointF(10.5f, 20.1f));
 }
 
+TEST_P(PdfViewWebPluginInkTest, GetCanonicalToPdfTransform) {
+  static constexpr auto kTransform = gfx::Transform::MakeScale(3.0f);
+  ON_CALL(*engine_ptr_, GetCanonicalToPdfTransform)
+      .WillByDefault(Return(kTransform));
+  EXPECT_EQ(kTransform, plugin_->ink_module_client_for_testing()
+                            ->GetCanonicalToPdfTransform(/*page_index=*/0));
+}
+
 TEST_P(PdfViewWebPluginInkTest, GetPageSizeInPoints) {
   SetUpWithTrivialInkStrokes();
   EXPECT_EQ(gfx::SizeF(75.0f, 37.5f),

@@ -69,6 +69,7 @@
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_metrics_handler.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
+#include "ui/gfx/geometry/transform.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -466,6 +467,10 @@ class PDFiumEngine : public DocumentLoader::Client,
   // `point`. Returns whether any text is being selected after extending.
   // `point` must be in device coordinates. Virtual to support testing.
   virtual bool ExtendSelectionByPoint(const gfx::PointF& point);
+
+  // Returns the transform required to convert canonical coordinates to PDF
+  // coordinates. Virtual to support testing.
+  virtual gfx::Transform GetCanonicalToPdfTransform(int page_index);
 
   // Returns all current text selection rects in screen coordinates, indexed by
   // their page indices. Virtual to support testing.

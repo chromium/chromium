@@ -105,6 +105,7 @@
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdfium/pdfium_ink_reader.h"
+#include "pdf/pdfium/pdfium_ink_transform.h"
 #include "pdf/pdfium/pdfium_ink_writer.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #endif
@@ -4791,6 +4792,13 @@ bool PDFiumEngine::ExtendSelectionByPoint(const gfx::PointF& point) {
 
   SelectionChangeInvalidator selection_invalidator(this);
   return ExtendSelection(point_data.page_index, point_data.char_index);
+}
+
+gfx::Transform PDFiumEngine::GetCanonicalToPdfTransform(int page_index) {
+  // Note that this triggers a page load in PDFiumPage. Calling
+  // PDFiumPage::page() instead may return a null `page`.
+  FPDF_PAGE page = GetPage(page_index)->GetPage();
+  return GetCanonicalToPdfTransformForPage(page);
 }
 
 std::map<int, std::vector<gfx::Rect>> PDFiumEngine::GetSelectionRectMap() {

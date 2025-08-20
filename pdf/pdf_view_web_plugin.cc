@@ -316,6 +316,10 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     plugin_->engine_->ExtendSelectionByPoint(point);
   }
 
+  gfx::Transform GetCanonicalToPdfTransform(int page_index) override {
+    return plugin_->engine_->GetCanonicalToPdfTransform(page_index);
+  }
+
   ui::Cursor GetCursor() override { return plugin_->cursor_; }
 
   PageOrientation GetOrientation() const override {
