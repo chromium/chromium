@@ -1310,7 +1310,7 @@ class IDLParser(object):
 
     try:
       self.lexer.Tokenize(data, filename)
-      nodes = self.yaccobj.parse(lexer=self.lexer) or []
+      nodes = self.yaccobj.parse(lexer=self.lexer, tracking=True) or []
       name = self.BuildAttribute('NAME', filename)
       return IDLNode('File', filename, 0, 0, nodes + [name])
 

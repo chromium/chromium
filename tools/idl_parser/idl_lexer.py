@@ -221,6 +221,21 @@ class IDLLexer(object):
         self.FileLineMsg(line, msg),
         self.SourceLine(line, pos))
 
+  @property
+  def lineno(self):
+    # We generally want to forward these to lexer, but lexer also calls
+    # these accessor at construction time, so check if we have lexer already.
+    if not self._lexobj:
+      return None
+    return self._lexobj.lineno
+
+  @property
+  def lexpos(self):
+    # See comment in `lineno()` above.
+    if not self._lexobj:
+      return None
+    return self._lexobj.lexpos
+
 #
 # Tokenizer
 #
@@ -285,9 +300,13 @@ class IDLLexer(object):
     self.tokens = []
     self._AddTokens(IDLLexer.tokens)
     self._AddKeywords(IDLLexer.keywords)
+    # Let lineno/lexpos getters know we're not done initialization yet
+    # (see comments there for additional context).
+    self._lexobj = None
     self._lexobj = lex.lex(object=self, lextab=False, optimize=optimize)
     self.last = None
     self.lines = None
+
 
 # If run by itself, attempt to build the lexer
 if __name__ == '__main__':
