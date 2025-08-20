@@ -132,7 +132,8 @@
            browserViewVisibilityNotifier:
                browserViewVisibilityNotifierBrowserAgent
       discoverFeedVisibilityBrowserAgent:discoverFeedVisibilityBrowserAgent
-                featureEngagementTracker:tracker];
+                featureEngagementTracker:tracker
+                                 profile:profile];
 }
 
 - (NewTabPageViewController*)NTPViewController {

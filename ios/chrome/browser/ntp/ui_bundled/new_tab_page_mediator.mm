@@ -141,6 +141,8 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 @end
 
 @implementation NewTabPageMediator {
+  // The profile.
+  raw_ptr<ProfileIOS> _profile;
   // Listen for default search engine changes.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   // Observes changes in identity and updates the Identity Disc.
@@ -214,7 +216,8 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
                  browserViewVisibilityNotifierBrowserAgent
     discoverFeedVisibilityBrowserAgent:
         (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
-              featureEngagementTracker:(feature_engagement::Tracker*)tracker {
+              featureEngagementTracker:(feature_engagement::Tracker*)tracker
+                               profile:(ProfileIOS*)profile {
   self = [super init];
   if (self) {
     CHECK(identityManager);
@@ -249,6 +252,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
     _signedInIdentity =
         _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
     _tracker = tracker;
+    _profile = profile;
   }
   return self;
 }
@@ -347,6 +351,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   _syncService = nullptr;
   _regionalCapabilitiesService = nullptr;
   _identityManager = nullptr;
+  _profile = nullptr;
   self.feedControlDelegate = nil;
   _backgroundCustomizationServiceObserverBridge = nullptr;
   _backgroundCustomizationService = nullptr;
@@ -568,7 +573,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 #pragma mark - Private
 
 - (void)updateAIMAvailability {
-  BOOL aimAllowed = IsAIMAvailable(_prefService, self.templateURLService);
+  BOOL aimAllowed = IsAIMAvailable(_profile);
   [self.consumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setAIMAllowed:aimAllowed];
 }

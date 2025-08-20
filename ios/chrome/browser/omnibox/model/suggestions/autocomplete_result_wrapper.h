@@ -14,7 +14,7 @@
 class AutocompleteResult;
 class OmniboxClient;
 @class OmniboxPedalAnnotator;
-class PrefService;
+class ProfileIOS;
 class TemplateURLService;
 
 // The autocomplete match wrapper. This class is responsible for wrapping
@@ -23,6 +23,7 @@ class TemplateURLService;
 
 /// Initializes the wrapper with the given omnibox client.
 - (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
+                              profile:(ProfileIOS*)profile
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -41,9 +42,6 @@ class TemplateURLService;
 
 /// Whether the omnibox has a thumbnail.
 @property(nonatomic, assign) BOOL hasThumbnail;
-
-/// profile pref Service.
-@property(nonatomic, assign) PrefService* profilePrefService;
 
 /// Whether it's the lens overlay omnibox.
 @property(nonatomic, assign) BOOL isLensOverlay;

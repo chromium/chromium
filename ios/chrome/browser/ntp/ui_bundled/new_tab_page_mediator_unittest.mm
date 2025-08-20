@@ -145,7 +145,8 @@ class NewTabPageMediatorTest : public PlatformTest {
              browserViewVisibilityNotifier:browser_view_visibility_notifier_
         discoverFeedVisibilityBrowserAgent:
             discover_feed_visibility_browser_agent
-                  featureEngagementTracker:&mock_tracker_];
+                  featureEngagementTracker:&mock_tracker_
+                                   profile:profile_.get()];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
     visibility_observer_ =
