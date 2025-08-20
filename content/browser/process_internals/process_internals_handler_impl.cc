@@ -205,14 +205,21 @@ void ProcessInternalsHandlerImpl::GetProcessCountInfo(
 void ProcessInternalsHandlerImpl::GetIsolationMode(
     GetIsolationModeCallback callback) {
   std::vector<std::string_view> modes;
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
+  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     modes.push_back("Site Per Process");
-  if (SiteIsolationPolicy::AreIsolatedOriginsEnabled())
+  }
+  if (SiteIsolationPolicy::AreIsolatedOriginsEnabled()) {
     modes.push_back("Isolate Origins");
-  if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled())
+  }
+  if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+    modes.push_back("Origin Keyed Processes by Default");
+  }
+  if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled()) {
     modes.push_back("Strict Origin Isolation");
-  if (SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled())
+  }
+  if (SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled()) {
     modes.push_back("COOP");
+  }
 
   // Retrieve any additional site isolation modes controlled by the embedder.
   std::vector<std::string> additional_modes =
