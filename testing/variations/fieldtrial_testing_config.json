@@ -16037,6 +16037,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "NotificationTelemetrySwbPollingInterval": "60",
+                        "NotificationTelemetrySwbSendReports": "true"
+                    },
                     "enable_features": [
                         "NotificationTelemetrySwb"
                     ]
