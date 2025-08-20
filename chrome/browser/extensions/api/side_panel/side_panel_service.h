@@ -155,6 +155,12 @@ class SidePanelService : public BrowserContextKeyedAPI,
                              std::optional<int> tab_id,
                              const std::string& path);
 
+  // Dispatch the sidePanel.onClosed event to the extension.
+  void DispatchOnClosedEvent(const ExtensionId& extension_id,
+                             int window_id,
+                             std::optional<int> tab_id,
+                             const std::string& path);
+
  private:
   friend class BrowserContextKeyedAPIFactory<SidePanelService>;
 
