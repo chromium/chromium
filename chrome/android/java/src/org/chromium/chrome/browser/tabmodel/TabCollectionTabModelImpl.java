@@ -144,13 +144,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             assert !tab.isDestroyed() : "Attempting to undo tab that is destroyed.";
             Token tabGroupId = tab.getTabGroupId();
             boolean restoredTabGroup = tabGroupId != null && !tabGroupExists(tabGroupId);
-            TabCollectionTabModelImplJni.get()
-                    .addTabRecursive(
-                            mNativeTabCollectionTabModelImplPtr,
-                            tab,
-                            insertIndex,
-                            tabGroupId,
-                            tab.getIsPinned());
+            int finalIndex =
+                    TabCollectionTabModelImplJni.get()
+                            .addTabRecursive(
+                                    mNativeTabCollectionTabModelImplPtr,
+                                    tab,
+                                    insertIndex,
+                                    tabGroupId,
+                                    tab.getIsPinned());
 
             if (restoredTabGroup) {
                 assumeNonNull(tabGroupId);
@@ -189,7 +190,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             // notify any observers.
             if (noTabIsActivated && isActiveModel()) {
                 mCurrentTabSupplier.set(null);
-                setIndex(indexOf(tab), TabSelectionType.FROM_UNDO);
+                setIndex(finalIndex, TabSelectionType.FROM_UNDO);
             } else if (noTabIsActivated && !isActiveModel()) {
                 mCurrentTabSupplier.set(tab);
             }
@@ -652,14 +653,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         // back-migration pathway that rebuilds the correct root id structure from tab group id.
         tab.setRootId(tab.getId());
 
-        TabCollectionTabModelImplJni.get()
-                .addTabRecursive(
-                        mNativeTabCollectionTabModelImplPtr,
-                        tab,
-                        index,
-                        tabGroupId,
-                        tab.getIsPinned());
-        int finalIndex = indexOf(tab);
+        int finalIndex =
+                TabCollectionTabModelImplJni.get()
+                        .addTabRecursive(
+                                mNativeTabCollectionTabModelImplPtr,
+                                tab,
+                                index,
+                                tabGroupId,
+                                tab.getIsPinned());
 
         // When adding the first background tab make sure to select it.
         if (!isActiveModel() && !hasAnyTabs && !selectTab) {
@@ -2164,7 +2165,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 @JniType("std::optional<base::Token>") @Nullable Token tabGroupId,
                 boolean isPinned);
 
-        void addTabRecursive(
+        int addTabRecursive(
                 long nativeTabCollectionTabModelImpl,
                 @JniType("TabAndroid*") Tab tab,
                 int index,

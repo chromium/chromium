@@ -135,7 +135,7 @@ int TabCollectionTabModelImpl::MoveTabRecursive(
   return base::checked_cast<int>(new_index);
 }
 
-void TabCollectionTabModelImpl::AddTabRecursive(
+int TabCollectionTabModelImpl::AddTabRecursive(
     JNIEnv* env,
     TabAndroid* tab_android,
     size_t index,
@@ -152,6 +152,7 @@ void TabCollectionTabModelImpl::AddTabRecursive(
   auto tab_interface_android = ToTabInterface(tab_android);
   tab_strip_collection_->AddTabRecursive(std::move(tab_interface_android),
                                          index, tab_group_id, is_pinned);
+  return base::checked_cast<int>(index);
 }
 
 void TabCollectionTabModelImpl::RemoveTabRecursive(JNIEnv* env,

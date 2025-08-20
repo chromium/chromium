@@ -64,12 +64,12 @@ class TabCollectionTabModelImpl {
                        const std::optional<base::Token>& j_new_tab_group_id,
                        bool new_is_pinned);
 
-  // Adds a tab to the tab model.
-  void AddTabRecursive(JNIEnv* env,
-                       TabAndroid* tab,
-                       size_t index,
-                       const std::optional<base::Token>& j_tab_group_id,
-                       bool is_pinned);
+  // Adds a tab to the tab model. Returns the final index of the tab.
+  int AddTabRecursive(JNIEnv* env,
+                      TabAndroid* tab,
+                      size_t index,
+                      const std::optional<base::Token>& j_tab_group_id,
+                      bool is_pinned);
 
   // Removes a list of tabs from the tab model.
   void RemoveTabRecursive(JNIEnv* env, TabAndroid* tab);
