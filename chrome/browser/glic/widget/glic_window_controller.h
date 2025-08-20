@@ -219,6 +219,12 @@ class GlicWindowController : public Host::Delegate {
   static bool AlwaysDetached() {
     return base::FeatureList::IsEnabled(features::kGlicDetached);
   }
+
+  // Register for this callback to detect changes to the floaty.
+  using FloatyStateChangeCallback =
+      base::RepeatingCallback<void(State, mojom::CurrentView view)>;
+  virtual base::CallbackListSubscription RegisterFloatyStateChange(
+      FloatyStateChangeCallback callback) = 0;
 };
 
 }  // namespace glic

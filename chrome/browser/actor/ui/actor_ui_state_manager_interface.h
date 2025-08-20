@@ -11,9 +11,6 @@
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/buildflags.h"
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/widget/glic_window_controller.h"
-#endif
 
 namespace actor::ui {
 using UiCompleteCallback =
@@ -24,23 +21,6 @@ static constexpr base::TimeDelta kProfileScopedUiUpdateDebounceDelay =
 
 class ActorUiStateManagerInterface {
  public:
-  // TODO(crbug.com/437161973): Port this over to the dedicated TaskIcon keyed
-  // service class and add active/inactive (highlight status) states once the
-  // TaskIcon is refactored. We will revisit introducing the old ActorTaskState
-  // in the refactor.
-  enum class TaskIconUiState {
-    // The task icon is not visible.
-    kHidden,
-    // The task icon is visible with default text.
-    kShown,
-    // The task icon shows `needs attention` text, if this is set the task
-    // icon is expected to be visible.
-    kNeedsAttention,
-    // The task icon shows `complete tasks` text, if this is set the task
-    // icon is expected to be visible.
-    kCompleteTasks,
-  };
-
   virtual ~ActorUiStateManagerInterface() = default;
 
   // Handles a UiEvent that may be processed asynchronously.
@@ -57,24 +37,11 @@ class ActorUiStateManagerInterface {
   // Shows a maximum of kToastShownMax per profile.
   virtual void MaybeShowToast(BrowserWindowInterface* bwi) = 0;
 
-  // Returns the current UI state.
-  virtual TaskIconUiState GetTaskIconUiState() const = 0;
-
-#if BUILDFLAG(ENABLE_GLIC)
-  // Called on glic window (floaty) state change OR view change.
-  virtual void OnGlicUpdateFloatyState(
-      glic::GlicWindowController::State floaty_state,
-      glic::mojom::CurrentView current_view) = 0;
-
-  // Register for this callback to detect changes to the glic floaty status and
-  // TaskIconUiState.
-  using TaskIconStateChangeCallback = base::RepeatingCallback<void(
-      ActorUiStateManagerInterface::TaskIconUiState,
-      glic::GlicWindowController::State,
-      glic::mojom::CurrentView)>;
-  virtual base::CallbackListSubscription RegisterTaskIconStateChange(
-      TaskIconStateChangeCallback callback) = 0;
-#endif
+  // Register for this callback to be notified whenever the actor task state
+  // changes.
+  using ActorTaskStateChangeCallback = base::RepeatingCallback<void()>;
+  virtual base::CallbackListSubscription RegisterActorTaskStateChange(
+      ActorTaskStateChangeCallback callback) = 0;
 };
 
 }  // namespace actor::ui

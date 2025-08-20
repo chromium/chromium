@@ -45,6 +45,14 @@ class GlicActorTaskIconManager : public KeyedService {
                            glic::Host& host);
   ~GlicActorTaskIconManager() override;
 
+  // Called whenever floaty updates.
+  void OnFloatyUpdate(glic::GlicWindowController::State floaty_state,
+                      glic::mojom::CurrentView current_view);
+
+  // TODO(crbug.com/437161973): Add necessary parameters.
+  // Called whenever actor task state updates.
+  void OnActorTaskStateUpdate();
+
   // Determines the state the task icon should be in.
   void UpdateTaskIcon(glic::GlicWindowController::State floaty_state,
                       glic::mojom::CurrentView current_view);
@@ -63,6 +71,11 @@ class GlicActorTaskIconManager : public KeyedService {
   void Shutdown() override;
 
  private:
+  // Called once on startup.
+  void RegisterSubscriptions();
+
+  std::vector<base::CallbackListSubscription> callback_subscriptions_;
+
   using TaskIconStateChangeCallbackList = base::RepeatingCallbackList<void(
       glic::GlicWindowController::State floaty_state,
       glic::mojom::CurrentView current_view,

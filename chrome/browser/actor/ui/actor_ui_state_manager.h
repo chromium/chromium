@@ -10,9 +10,6 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/widget/glic_window_controller.h"
-#endif
 
 namespace tabs {
 class TabInterface;
@@ -31,56 +28,25 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
       tabs::TabInterface* tab) override;
   void MaybeShowToast(BrowserWindowInterface* bwi) override;
 
-// TODO(crbug.com/424495020): Post-task icon refactor, look into removing these
-// functions from AUSM.
-#if BUILDFLAG(ENABLE_GLIC)
-  void OnGlicUpdateFloatyState(glic::GlicWindowController::State floaty_state,
-                               glic::mojom::CurrentView current_view) override;
-
-  base::CallbackListSubscription RegisterTaskIconStateChange(
-      TaskIconStateChangeCallback callback) override;
-#endif
+  base::CallbackListSubscription RegisterActorTaskStateChange(
+      ActorTaskStateChangeCallback callback) override;
 
   // Returns the tabs associated with a given task id.
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
 
-  // Returns the current task icon ui state.
-  TaskIconUiState GetTaskIconUiState() const override;
-
- protected:
-  TaskIconUiState task_icon_state_ = TaskIconUiState::kHidden;
-
  private:
-  void MaybeNotifyProfileScopedUiComponents();
+  // TODO(crbug.com/422850343): Add task id to callback.
+  // Notify profile scoped ui components about actor task state changes.
+  void NotifyActorTaskStateChange();
+  // Called whenever an actor task state changes.
   void OnActorTaskStateChange(TaskId task_id, ActorTask::State new_task_state);
 
-  base::OneShotTimer update_profile_scoped_ui_debounce_timer_;
+  base::OneShotTimer notify_actor_task_state_change_debounce_timer_;
   base::OneShotTimer completed_tasks_expiry_timer_;
 
   const raw_ref<ActorKeyedService> actor_service_;
 
-// TODO(crbug.com/437161973): Refactor this repeating callback into 2 separate
-// callbacks within the standalone task icon controller.
-#if BUILDFLAG(ENABLE_GLIC)
-  // Determines whether `suppress_task_icon_text_` is updated based on passed in
-  // parameters.
-  void UpdateTaskIconSuppressionOnFloatyStateChange(
-      glic::GlicWindowController::State floaty_state,
-      glic::mojom::CurrentView current_view);
-
-  base::RepeatingCallbackList<void(
-      ActorUiStateManagerInterface::TaskIconUiState,
-      glic::GlicWindowController::State,
-      glic::mojom::CurrentView)>
-      task_icon_change_callback_list_;
-  // Determines whether or not to suppress the task icon text.
-  bool ShouldSuppressTaskIconText(
-      glic::GlicWindowController::State floaty_state,
-      glic::mojom::CurrentView view);
-
-  // Cached value whether the task icon should be suppressed or not.
-  bool suppress_task_icon_text_ = false;
-#endif
+  base::RepeatingCallbackList<void()> actor_task_state_change_callback_list_;
 
   base::WeakPtrFactory<ActorUiStateManager> weak_factory_{this};
 };

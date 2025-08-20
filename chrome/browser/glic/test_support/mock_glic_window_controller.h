@@ -74,6 +74,10 @@ class MockGlicWindowController
   MOCK_METHOD(gfx::Rect, GetInitialBounds, (Browser*), (override));
   MOCK_METHOD(void, ShowDetachedForTesting, (), (override));
   MOCK_METHOD(void, SetPreviousPositionForTesting, (gfx::Point), (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterFloatyStateChange,
+              (FloatyStateChangeCallback callback),
+              (override));
 
   base::WeakPtr<GlicWindowController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
