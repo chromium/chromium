@@ -859,7 +859,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctRevampedBranding =
             newCachedFlag(CCT_REVAMPED_BRANDING, true);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
-    public static final CachedFlag sCctToolbarRefactor = newCachedFlag(CCT_TOOLBAR_REFACTOR, false);
+    public static final CachedFlag sCctToolbarRefactor =
+            newCachedFlag(CCT_TOOLBAR_REFACTOR, false, true);
     public static final CachedFlag sCctResetTimeoutEnabled =
             newCachedFlag(CCT_RESET_TIMEOUT_ENABLED, false);
     public static final CachedFlag sContextMenuPictureInPictureAndroid =

@@ -129,6 +129,7 @@ import java.util.function.BooleanSupplier;
         manifest = Config.NONE,
         shadows = {ShadowLooper.class, ShadowPostTask.class})
 @LooperMode(Mode.PAUSED)
+@DisableFeatures(ChromeFeatureList.CCT_TOOLBAR_REFACTOR)
 public class CustomTabToolbarUnitTest {
     private static final GURL TEST_URL = JUnitTestGURLs.INITIAL_URL;
     private static final GURL AMP_URL =

@@ -4301,6 +4301,21 @@
             ]
         }
     ],
+    "CCTToolbarRefactor": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CCTToolbarRefactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "CSSReadingFlow": [
         {
             "platforms": [

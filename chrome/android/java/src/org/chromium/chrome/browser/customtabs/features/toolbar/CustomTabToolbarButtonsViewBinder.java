@@ -460,11 +460,13 @@ public class CustomTabToolbarButtonsViewBinder
 
         var titleUrlContainer = view.findViewById(R.id.title_url_container);
         var titleUrlLp = ((ViewGroup.MarginLayoutParams) titleUrlContainer.getLayoutParams());
-        if (model.get(OMNIBOX_ENABLED)) {
+        titleUrlLp.leftMargin = 0;
+        boolean omniboxEnabled = model.get(OMNIBOX_ENABLED);
+        if (omniboxEnabled) {
             // TODO(crbug.com/402213312): Revisit this when cleaning up CCTNestedSecurityIcon.
             // The security button is static when omnibox is enabled, so offset the url bar for it.
             int buttonWidth = resources.getDimensionPixelSize(R.dimen.toolbar_button_width);
-            titleUrlLp.leftMargin = buttonWidth;
+            titleUrlLp.leftMargin += buttonWidth;
         }
         if (model.get(IS_INCOGNITO)) {
             int incognitoIconWidth =
@@ -476,8 +478,15 @@ public class CustomTabToolbarButtonsViewBinder
         // Ensure correct spacing between the last start aligned button and the location bar.
         int desiredSpace =
                 resources.getDimensionPixelSize(R.dimen.custom_tabs_location_bar_start_spacing);
+        int paddingFromBg =
+                omniboxEnabled
+                        ? resources.getDimensionPixelSize(
+                                R.dimen.custom_tabs_url_bar_bg_horizontal_padding)
+                        : 0;
         int remainingSpace =
-                Math.max(0, desiredSpace - posParams.spacingFromLastStartAlignedButton);
+                Math.max(
+                        0,
+                        desiredSpace - posParams.spacingFromLastStartAlignedButton - paddingFromBg);
         setHorizontalPadding(locationBar, remainingSpace, locationBar.getPaddingEnd());
     }
 

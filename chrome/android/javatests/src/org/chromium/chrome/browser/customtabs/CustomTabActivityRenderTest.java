@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.customtabs;
 
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_END;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -14,6 +17,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -158,7 +162,15 @@ public class CustomTabActivityRenderTest {
     }
 
     private void startActivityAndRenderToolbar(String renderTestId) throws IOException {
+        startActivityAndRenderToolbar(renderTestId, /* expectTitle= */ false);
+    }
+
+    private void startActivityAndRenderToolbar(String renderTestId, boolean expectTitle)
+            throws IOException {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(mIntent);
+        if (expectTitle) {
+            onViewWaiting(withId(R.id.title_bar)).check(matches(isDisplayed()));
+        }
         View toolbarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
         mRenderTestRule.render(toolbarView, renderTestId);
     }
@@ -176,7 +188,8 @@ public class CustomTabActivityRenderTest {
     public void testCctToolbarWithTitle() throws IOException {
         mIntent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
-        startActivityAndRenderToolbar("cct_toolbar_with_title_with_https_" + mRunWithHttps);
+        startActivityAndRenderToolbar(
+                "cct_toolbar_with_title_with_https_" + mRunWithHttps, /* expectTitle= */ true);
     }
 
     @Test

@@ -19,6 +19,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -53,9 +55,19 @@ import org.chromium.url.JUnitTestGURLs;
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
 public class MinimizedCustomTabIphControllerUnitTest {
-    @Rule
-    public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
+    public static class MinimizedFeatureRule extends ExternalResource {
+        @Override
+        protected void before() throws Throwable {
+            MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
+        }
+    }
+
+    public final ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(CustomTabActivity.class);
+
+    @Rule
+    public RuleChain mRuleChain =
+            RuleChain.outerRule(new MinimizedFeatureRule()).around(mActivityScenarioRule);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -79,7 +91,10 @@ public class MinimizedCustomTabIphControllerUnitTest {
                 new MinimizedCustomTabIphController(
                         mActivity, mTabProvider, mUserEducationHelper, mProfileSupplier);
         ViewStub minimizeStub = mActivity.findViewById(R.id.minimize_button_stub);
-        View minimizeView = minimizeStub.inflate();
+        View minimizeView =
+                minimizeStub != null
+                        ? minimizeStub.inflate()
+                        : mActivity.findViewById(R.id.custom_tabs_minimize_button);
         minimizeView.setVisibility(View.VISIBLE);
     }
 

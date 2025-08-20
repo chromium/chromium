@@ -1014,7 +1014,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @param index The index of the custom action button to return.
      */
     public ImageButton getCustomActionButtonForTest(int index) {
-        View childView = mCustomActionButtons.getChildAt(index);
+        var parent =
+                ChromeFeatureList.sCctToolbarRefactor.isEnabled()
+                        ? mCustomButtonsParent
+                        : mCustomActionButtons;
+        View childView = parent.getChildAt(index);
 
         // The child could be ViewStub if not inflated. Returns null in such case as
         // it means there is no custom action button added to the container.
@@ -1483,6 +1487,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     protected void onMenuButtonDisabled() {
         super.onMenuButtonDisabled();
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
+
         mButtonVisibilityRule.update(ButtonId.MENU, false);
         // In addition to removing the menu button, we also need to remove the margin on the custom
         // action button.
