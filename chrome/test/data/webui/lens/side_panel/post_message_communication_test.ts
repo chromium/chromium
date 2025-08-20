@@ -37,6 +37,7 @@ suite('PostMessageCommunication', () => {
 
     loadTimeData.overrideValues({
       'resultsSearchURL': RESULTS_SEARCH_URL,
+      'enableAimSearchbox': true,
     });
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
