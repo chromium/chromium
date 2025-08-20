@@ -707,9 +707,9 @@ BlockLayoutAlgorithm::LayoutInlineChild(const InlineNode& node,
   }
 
   SimpleInlineChildLayoutContext context(node, &container_builder_);
-  // TODO(crbug.com/417306102): Setup `context` for measurement or execution.
+  context.EnableMeasuringModeIfNecessary(paragraph_scale);
   const LayoutResult* result = Layout(&context);
-  return {result, 1.0f};
+  return {result, context.MeasuredScale()};
 }
 
 template <wtf_size_t capacity>
@@ -718,9 +718,9 @@ BlockLayoutAlgorithm::LayoutWithOptimalInlineChildLayoutContext(
     const InlineNode& child,
     std::optional<float> paragraph_scale) {
   OptimalInlineChildLayoutContext<capacity> context(child, &container_builder_);
-  // TODO(crbug.com/417306102): Setup `context` for measurement or execution.
+  context.EnableMeasuringModeIfNecessary(paragraph_scale);
   const LayoutResult* result = Layout(&context);
-  return {result, 1.0f};
+  return {result, context.MeasuredScale()};
 }
 
 NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
