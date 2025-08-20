@@ -28,6 +28,7 @@
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -150,14 +151,12 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   struct RegistrationCriteria {
     // Requirements for install. Please update `LogInstallCriteria()` when
     // updating this.
-    bool disk_space_available = false;
     bool device_capable = false;
     bool on_device_feature_recently_used = false;
     bool enabled_by_feature = false;
     bool enabled_by_enterprise_policy = false;
 
     // Reasons to uninstall. TODO(302327114): Add UMA for uninstall reason.
-    bool running_out_of_disk_space = false;
     bool out_of_retention = false;
 
     // Current state.
@@ -165,6 +164,19 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     // We've registered the installer in the past, and haven't uninstalled yet.
     // The component may or may not be ready.
     bool is_already_installing = false;
+
+    // Most recently queried disk space available for model install.
+    base::ByteCount disk_space_free;
+
+    bool is_disk_space_available() const {
+      return features::IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
+          disk_space_free);
+    }
+
+    bool is_running_out_of_disk_space() const {
+      return features::IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
+          disk_space_free);
+    }
 
     bool is_model_allowed() const {
       return device_capable && enabled_by_feature &&
@@ -175,13 +187,13 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
       if (should_uninstall()) {
         return false;
       }
-      return (disk_space_available && is_model_allowed() &&
+      return (is_disk_space_available() && is_model_allowed() &&
               on_device_feature_recently_used);
     }
 
     bool should_uninstall() const {
       return (is_already_installing &&
-              (running_out_of_disk_space || out_of_retention ||
+              (is_running_out_of_disk_space() || out_of_retention ||
                !enabled_by_enterprise_policy));
     }
   };
@@ -280,6 +292,9 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   // UsageTracker::Observer:
   void OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey feature) override;
 
+  // Uninstalls the component.
+  void UninstallComponent();
+
   void OnGenAILocalFoundationalModelEnterprisePolicyChanged();
 
   void NotifyStateChanged();
@@ -294,20 +309,18 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   PrefChangeRegistrar pref_change_registrar_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  bool is_model_allowed_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   std::unique_ptr<OnDeviceModelComponentState> state_
       GUARDED_BY_CONTEXT(sequence_checker_);
   // Null until first registration attempt.
   std::unique_ptr<RegistrationCriteria> registration_criteria_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  // Most recently queried disk space available for model install.
-  base::ByteCount disk_space_available_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  SEQUENCE_CHECKER(sequence_checker_);
   base::raw_ref<UsageTracker> usage_tracker_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::ScopedObservation<UsageTracker, UsageTracker::Observer>
       usage_tracker_observation_{this};
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<OnDeviceModelComponentStateManager> weak_ptr_factory_{
       this};

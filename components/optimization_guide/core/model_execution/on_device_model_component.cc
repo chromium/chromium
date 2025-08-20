@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/byte_count.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -39,6 +38,9 @@
 namespace optimization_guide {
 namespace {
 
+// Delay to give consumers time to unload the model before it's deleted.
+constexpr base::TimeDelta kUninstallDelay = base::Seconds(1);
+
 void LogInstallCriteria(std::string_view event_name,
                         std::string_view criteria_name,
                         bool criteria_value) {
@@ -51,9 +53,17 @@ void LogInstallCriteria(std::string_view event_name,
 
 void LogInstallCriteria(
     const OnDeviceModelComponentStateManager::RegistrationCriteria& criteria,
-    std::string_view event_name) {
+    std::string_view event_name,
+    std::optional<int64_t> disk_space_gb = std::nullopt) {
   // Keep optimization/histograms.xml in sync with these criteria names.
-  LogInstallCriteria(event_name, "DiskSpace", criteria.disk_space_available);
+  LogInstallCriteria(event_name, "DiskSpace",
+                     criteria.is_disk_space_available());
+  if (disk_space_gb && !criteria.is_disk_space_available()) {
+    base::UmaHistogramCounts100(
+        "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+        "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
+        *disk_space_gb);
+  }
   LogInstallCriteria(event_name, "DeviceCapability", criteria.device_capable);
   LogInstallCriteria(event_name, "FeatureUse",
                      criteria.on_device_feature_recently_used);
@@ -200,7 +210,7 @@ OnDeviceModelComponentStateManager::GetOnDeviceModelStatus() {
   if (!registration_criteria_->is_model_allowed()) {
     return OnDeviceModelStatus::kNotEligible;
   }
-  if (!registration_criteria_->disk_space_available) {
+  if (!registration_criteria_->is_disk_space_available()) {
     return OnDeviceModelStatus::kInsufficientDiskSpace;
   }
   if (!registration_criteria_->on_device_feature_recently_used) {
@@ -215,7 +225,9 @@ OnDeviceModelComponentStateManager::GetDebugState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DebugState debug;
   debug.criteria_ = registration_criteria_.get();
-  debug.disk_space_available_ = disk_space_available_;
+  debug.disk_space_available_ = registration_criteria_
+                                    ? registration_criteria_->disk_space_free
+                                    : base::ByteCount(-1);
   debug.status_ = GetOnDeviceModelStatus();
   debug.has_override_ = !!switches::GetOnDeviceModelExecutionOverride();
   debug.state_ = state_.get();
@@ -262,8 +274,12 @@ void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
   }
   if (auto model_path_override_switch =
           switches::GetOnDeviceModelExecutionOverride()) {
+    // With an override, the model is always allowed.
+    registration_criteria_ = std::make_unique<RegistrationCriteria>();
+    registration_criteria_->device_capable = true;
+    registration_criteria_->enabled_by_feature = true;
+    registration_criteria_->enabled_by_enterprise_policy = true;
     if (!state_) {
-      is_model_allowed_ = true;
       SetReady(base::Version("override"), *model_path_override_switch,
                MakeOverrideManifest());
     }
@@ -280,28 +296,13 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
     std::optional<base::ByteCount> disk_space_free) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(https://crbug.com/438265416): Handle failure to get free disk space.
-  disk_space_available_ = disk_space_free.value_or(base::ByteCount(-1));
   RegistrationCriteria criteria = ComputeRegistrationCriteria(
       disk_space_free.value_or(base::ByteCount(-1)));
   bool first_registration_attempt = !registration_criteria_;
+
+  bool had_state = !!GetState();
   registration_criteria_ = std::make_unique<RegistrationCriteria>(criteria);
-
-  if (criteria.should_install()) {
-    local_state_->SetTime(model_execution::prefs::localstate::
-                              kLastTimeEligibleForOnDeviceModelDownload,
-                          base::Time::Now());
-  }
-
-  if (!criteria.disk_space_available) {
-    base::UmaHistogramCounts100(
-        "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
-        "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
-        disk_space_free.value_or(base::ByteCount(-1)).InGiB());
-  }
-
-  bool was_allowed = is_model_allowed_;
-  is_model_allowed_ = criteria.is_model_allowed();
-  if (state_ && was_allowed != is_model_allowed_) {
+  if (!!GetState() != had_state) {
     NotifyStateChanged();
   }
 
@@ -309,16 +310,29 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
     // Don't allow UpdateRegistration to do anything until after
     // UninstallComplete.
     component_installer_registered_ = true;
-    delegate_->Uninstall(GetWeakPtr());
+    // Uninstall the component which will delete the model files, after a short
+    // delay to give time for the consumers to unload the model.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&OnDeviceModelComponentStateManager::UninstallComponent,
+                       GetWeakPtr()),
+        kUninstallDelay);
   } else if (!component_installer_registered_ &&
              (criteria.should_install() || criteria.is_already_installing)) {
     component_installer_registered_ = true;
     delegate_->RegisterInstaller(GetWeakPtr(), criteria.is_already_installing);
   }
 
+  if (criteria.should_install()) {
+    local_state_->SetTime(model_execution::prefs::localstate::
+                              kLastTimeEligibleForOnDeviceModelDownload,
+                          base::Time::Now());
+  }
+
   // Log metrics only for first registration attempt.
   if (first_registration_attempt) {
-    LogInstallCriteria(criteria, "AtRegistration");
+    LogInstallCriteria(criteria, "AtRegistration",
+                       disk_space_free.value_or(base::ByteCount(-1)).InGiB());
   }
 }
 
@@ -337,15 +351,17 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
   BeginUpdateRegistration();
 }
 
+void OnDeviceModelComponentStateManager::UninstallComponent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->Uninstall(GetWeakPtr());
+}
+
 OnDeviceModelComponentStateManager::RegistrationCriteria
 OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
     base::ByteCount disk_space_free_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RegistrationCriteria result;
-  result.running_out_of_disk_space = optimization_guide::features::
-      IsFreeDiskSpaceTooLowForOnDeviceModelInstall(disk_space_free_bytes);
-  result.disk_space_available = optimization_guide::features::
-      IsFreeDiskSpaceSufficientForOnDeviceModelInstall(disk_space_free_bytes);
+  result.disk_space_free = disk_space_free_bytes;
   result.device_capable = performance_classifier_->IsDeviceCapable();
   result.on_device_feature_recently_used =
       usage_tracker_->WasAnyOnDeviceEligibleFeatureRecentlyUsed();
@@ -397,9 +413,15 @@ OnDeviceModelComponentStateManager::~OnDeviceModelComponentStateManager() =
 const OnDeviceModelComponentState*
 OnDeviceModelComponentStateManager::GetState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!state_) {
+    return nullptr;
+  }
+
   // Even if the component is installed, we return nullptr if the model is not
   // 'allowed' at the moment.
-  return is_model_allowed_ ? state_.get() : nullptr;
+  return registration_criteria_ && registration_criteria_->is_model_allowed()
+             ? state_.get()
+             : nullptr;
 }
 
 void OnDeviceModelComponentStateManager::AddObserver(Observer* observer) {
@@ -437,7 +459,7 @@ void OnDeviceModelComponentStateManager::SetReady(
     state_ = std::make_unique<OnDeviceModelComponentState>(install_dir, version,
                                                            *model_spec);
   }
-  if (is_model_allowed_) {
+  if (registration_criteria_ && registration_criteria_->is_model_allowed()) {
     NotifyStateChanged();
   }
 }

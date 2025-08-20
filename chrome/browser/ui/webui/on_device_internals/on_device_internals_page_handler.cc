@@ -94,11 +94,11 @@ base::flat_map<std::string, std::string> GetCriteria(
 
   // Disk criteria, needs to show what's available vs. required when not met.
   std::string disk_space_string =
-      base::ToString(criteria->disk_space_available);
-  if (!criteria->disk_space_available) {
+      base::ToString(criteria->is_disk_space_available());
+  if (!criteria->is_disk_space_available()) {
     base::ByteCount disk_space_required = optimization_guide::features::
         GetDiskSpaceRequiredForOnDeviceModelInstall();
-    base::ByteCount disk_space_available = debug_state.disk_space_available_;
+    base::ByteCount disk_space_available = criteria->disk_space_free;
     disk_space_string = base::StrCat(
         {" (", base::NumberToString(disk_space_available.InMiB()),
          " MiB available, ", base::NumberToString(disk_space_required.InMiB()),
