@@ -150,15 +150,12 @@ BASE_DECLARE_FEATURE(kFullscreenSignInPromoUseDate);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kInterceptBubblesDismissibleByAvatarButton);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 // When enabled, an implicitly signed-in user will be offered a dialog to
 // migrate to explicit browser sign-in.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kOfferMigrationToDiceUsers);
-
-// When enabled, rolls back the DICe migration for implicitly signed-in users.
-// Overrides `kOfferMigrationToDiceUsers`.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kRollbackDiceMigration);
 
 // The minimum delay after a browser startup before the dialog can be shown.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
@@ -167,6 +164,19 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kOfferMigrationToDiceUsersMinDelay);
 // The maximum delay after a browser startup before the dialog can be shown.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kOfferMigrationToDiceUsersMaxDelay);
+
+// When enabled, rolls back the DICe migration for implicitly signed-in users.
+// Overrides `kOfferMigrationToDiceUsers` and `kForcedDiceMigration`.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kRollbackDiceMigration);
+
+// When enabled, forces the users out of the implicitly signed-in state - either
+// signing them out of Chromium (i.e. signed into web-only) or explicitly
+// signing them in.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kForcedDiceMigration);
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // The minimum time from the last time the dialog was shown before it can be
 // shown again.

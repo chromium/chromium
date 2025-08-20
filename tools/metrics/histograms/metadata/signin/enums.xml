@@ -1264,6 +1264,10 @@ chromium-metrics-reviews@google.com.
       label="Sign out when declining the enterprise management disclaimer">
     The user tried to sign in but declined the enterprise management disclaimer.
   </int>
+  <int value="41" label="Forced DICe migration">
+    The user was signed out because they were a DICe user and they didn't accept
+    or see the migration dialog.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">

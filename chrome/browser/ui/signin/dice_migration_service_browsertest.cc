@@ -55,6 +55,8 @@ constexpr char kDialogNotShownReasonHistogram[] =
     "Signin.DiceMigrationDialog.NotShownReason";
 constexpr char kRestoredFromBackupHistogram[] =
     "Signin.DiceMigration.RestoredFromBackup";
+constexpr char kForceMigratedHistogram[] = "Signin.DiceMigration.ForceMigrated";
+constexpr char kSignoutReasonHistogram[] = "Signin.SignOut.Completed";
 
 // Utility macro to implicitly sign in the user in a PRE test.
 // NOTE: `test_suite` must be a subclass of `DiceMigrationServiceBrowserTest`.
@@ -1545,6 +1547,70 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTestWithWebApps,
   histogram_tester_.ExpectUniqueSample(
       kDialogNotShownReasonHistogram,
       DiceMigrationService::DialogNotShownReason::kAvatarButtonUnavailable, 1);
+}
+
+class DiceMigrationServiceForcedMigrationBrowserTest
+    : public DiceMigrationServiceBrowserTest {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kForcedDiceMigration};
+};
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
+                       PRE_ForceMigrateImplicitlySignedInUser) {
+  ImplicitlySignIn(kTestEmail);
+  ASSERT_TRUE(IsImplicitlySignedIn());
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
+                       ForceMigrateImplicitlySignedInUser) {
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  // The user is signed in to the web only.
+  EXPECT_THAT(
+      GetIdentityManager()->GetAccountsWithRefreshTokens(),
+      testing::ElementsAre(testing::Field(&AccountInfo::email, kTestEmail)));
+
+  histogram_tester_.ExpectUniqueSample(kForceMigratedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kSignoutReasonHistogram,
+      signin_metrics::ProfileSignout::kForcedDiceMigration, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
+                       DoesNotMigrateSignedOutUser) {
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  histogram_tester_.ExpectUniqueSample(kForceMigratedHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(kSignoutReasonHistogram, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
+                       PRE_DoesNotMigrateExplicitlySignedInUser) {
+  signin::MakePrimaryAccountAvailable(GetIdentityManager(), kTestEmail,
+                                      signin::ConsentLevel::kSignin);
+  ASSERT_TRUE(IsExplicitlySignedIn());
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
+                       DoesNotMigrateExplicitlySignedInUser) {
+  EXPECT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  histogram_tester_.ExpectUniqueSample(kForceMigratedHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(kSignoutReasonHistogram, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
+                       PRE_DoesNotMigrateSyncingUser) {
+  signin::MakePrimaryAccountAvailable(GetIdentityManager(), kTestEmail,
+                                      signin::ConsentLevel::kSync);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
+                       DoesNotMigrateSyncingUser) {
+  EXPECT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  histogram_tester_.ExpectUniqueSample(kForceMigratedHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(kSignoutReasonHistogram, 0);
 }
 
 }  // namespace

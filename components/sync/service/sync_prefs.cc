@@ -129,6 +129,7 @@ SyncPrefs::SyncPrefs(PrefService* pref_service)
       base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
                           base::Unretained(this)));
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers) ||
       base::FeatureList::IsEnabled(switches::kRollbackDiceMigration)) {
     // The explicit browser signin pref is used for determining whether some
@@ -139,6 +140,7 @@ SyncPrefs::SyncPrefs(PrefService* pref_service)
         base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
                             base::Unretained(this)));
   }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 SyncPrefs::~SyncPrefs() {

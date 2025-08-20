@@ -24,7 +24,6 @@ DiceMigrationServiceFactory::DiceMigrationServiceFactory()
     : ProfileKeyedServiceFactory("DiceMigrationService",
                                  BuildDiceMigrationServiceProfileSelections()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 DiceMigrationServiceFactory::~DiceMigrationServiceFactory() = default;

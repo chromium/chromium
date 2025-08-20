@@ -207,12 +207,10 @@ BASE_FEATURE(kInterceptBubblesDismissibleByAvatarButton,
              "InterceptBubblesDismissibleByAvatarButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 BASE_FEATURE(kOfferMigrationToDiceUsers,
              "OfferMigrationToDiceUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRollbackDiceMigration,
-             "RollbackDiceMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
@@ -232,6 +230,16 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kOfferMigrationToDiceUsers,
                    "offer_migration_to_dice_users_min_time_between_dialogs",
                    base::Days(7));
+
+BASE_FEATURE(kRollbackDiceMigration,
+             "RollbackDiceMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kForcedDiceMigration,
+             "ForcedDiceMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_IOS)
 

@@ -1321,6 +1321,16 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.DiceMigration.ForceMigrated" enum="Boolean"
+    expires_after="2026-08-18">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records whether a user was force migrated out of the DICe state. This is
+    recorded once per profile load for all users.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceMigration.RestoredFromBackup" enum="Boolean"
     expires_after="2026-07-30">
   <owner>ankushkush@google.com</owner>

@@ -132,8 +132,10 @@ enum class ProfileSignout {
   kSignoutFromWidgets = 39,
   // User declined the enterprise management disclaimer.
   kUserDeclinedEnterpriseManagementDisclaimer = 40,
+  // DICe user was forcefully signed out.
+  kForcedDiceMigration = 41,
   // Keep this as the last enum.
-  kMaxValue = kUserDeclinedEnterpriseManagementDisclaimer,
+  kMaxValue = kForcedDiceMigration,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
