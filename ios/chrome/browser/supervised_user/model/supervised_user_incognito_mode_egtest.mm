@@ -138,6 +138,11 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 
 // Tests that the disabled incognito tab grid shows a link to Family Link.
 - (void)testTabGridIncognitoDisabled {
+  // TODO(crbug.com/437287270): Test flaky on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
+  }
+
   [self setupAndRegisterHistogramTester];
   [self signInWithSupervisedAccount];
 
