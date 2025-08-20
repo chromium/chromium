@@ -559,7 +559,7 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 #if BUILDFLAG(IS_APPLE)
     usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
 #endif
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     // These SharedImages may be used for zero-copy of VideoFrames into WebGPU.
     usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
 #endif
