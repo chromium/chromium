@@ -105,14 +105,16 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   if (!shopping_helper) {
     return;
   }
-  const ShoppingPersistedDataTabHelper::PriceDrop* price_drop =
-      shopping_helper->GetPriceDrop();
-  BOOL has_price_drop =
-      price_drop && price_drop->current_price && price_drop->previous_price;
-  base::RecordAction(base::UserMetricsAction(
-      base::StringPrintf("Commerce.TabGridSwitched.%s",
-                         has_price_drop ? "HasPriceDrop" : "NoPriceDrop")
-          .c_str()));
+  shopping_helper->GetPriceDrop(base::BindOnce(
+      [](std::optional<ShoppingPersistedDataTabHelper::PriceDrop> price_drop) {
+        BOOL has_price_drop = price_drop.has_value() &&
+                              price_drop->current_price &&
+                              price_drop->previous_price;
+        base::RecordAction(base::UserMetricsAction(
+            base::StringPrintf("Commerce.TabGridSwitched.%s",
+                               has_price_drop ? "HasPriceDrop" : "NoPriceDrop")
+                .c_str()));
+      }));
 }
 
 // Returns the pinned WebState with the given SnapshotID (if it exists) or null.

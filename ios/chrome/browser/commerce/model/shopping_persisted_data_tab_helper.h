@@ -63,7 +63,8 @@ class ShoppingPersistedDataTabHelper
 
   // Return PriceDrop for the web::WebState corresponding to the
   // ShoppingPersistedDataTabHelper.
-  const PriceDrop* GetPriceDrop();
+  void GetPriceDrop(
+      base::OnceCallback<void(std::optional<PriceDrop>)> callback);
 
   // Log metrics for a given `price_drop_log_id`
   void LogMetrics(PriceDropLogId price_drop_log_id);

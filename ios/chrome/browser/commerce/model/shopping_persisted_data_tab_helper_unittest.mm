@@ -6,7 +6,9 @@
 
 #import "base/base64.h"
 #import "base/command_line.h"
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -140,13 +142,27 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     web_state_.SetCurrentURL(GURL(kPriceDropUrl));
   }
 
-  const ShoppingPersistedDataTabHelper::PriceDrop* GetPriceDrop() {
-    return ShoppingPersistedDataTabHelper::FromWebState(&web_state_)
-        ->GetPriceDrop();
+  void GetPriceDrop(
+      base::OnceCallback<void(
+          std::optional<ShoppingPersistedDataTabHelper::PriceDrop>)> callback) {
+    ShoppingPersistedDataTabHelper::FromWebState(&web_state_)
+        ->GetPriceDrop(std::move(callback));
   }
 
-  BOOL IsPriceDropEmpty() {
-    return !GetPriceDrop()->current_price && !GetPriceDrop()->previous_price;
+  void CheckIsPriceDropEmpty(base::OnceClosure closure) {
+    GetPriceDrop(base::BindOnce(
+                     [](std::optional<ShoppingPersistedDataTabHelper::PriceDrop>
+                            price_drop) {
+                       EXPECT_TRUE(!price_drop->current_price &&
+                                   !price_drop->previous_price);
+                     })
+                     .Then(std::move(closure)));
+  }
+
+  void CheckIsPriceDropEmpty() {
+    base::RunLoop wait_for_price_drop_is_empty_result;
+    CheckIsPriceDropEmpty(wait_for_price_drop_is_empty_result.QuitClosure());
+    wait_for_price_drop_is_empty_result.Run();
   }
 
   BOOL IsQualifyingPriceDrop(int64_t current_price_micros,
@@ -188,10 +204,17 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestRegularPriceDrop) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_EQ(kCurrentPriceFormatted,
-            base::SysNSStringToUTF8(GetPriceDrop()->current_price));
-  EXPECT_EQ(kPreviousPriceFormatted,
-            base::SysNSStringToUTF8(GetPriceDrop()->previous_price));
+  base::RunLoop wait_for_price_drop_result;
+
+  GetPriceDrop(
+      base::BindOnce([](std::optional<ShoppingPersistedDataTabHelper::PriceDrop>
+                            price_drop) {
+        EXPECT_EQ(kCurrentPriceFormatted,
+                  base::SysNSStringToUTF8(price_drop->current_price));
+        EXPECT_EQ(kPreviousPriceFormatted,
+                  base::SysNSStringToUTF8(price_drop->previous_price));
+      }).Then(wait_for_price_drop_result.QuitClosure()));
+  wait_for_price_drop_result.Run();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestRegularPriceIncreaseNull) {
@@ -202,7 +225,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestRegularPriceIncreaseNull) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
+  CheckIsPriceDropEmpty();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestEqualPriceNull) {
@@ -212,7 +235,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestEqualPriceNull) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
+  CheckIsPriceDropEmpty();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestNoPriceDropUrl) {
@@ -222,7 +245,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestNoPriceDropUrl) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kNoPriceDropUrl));
   RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
+  CheckIsPriceDropEmpty();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestInconsistentCurrencyCode) {
@@ -235,7 +258,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestInconsistentCurrencyCode) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
+  CheckIsPriceDropEmpty();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTwoUnits) {
@@ -245,7 +268,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTwoUnits) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
+  CheckIsPriceDropEmpty();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTenPercent) {
@@ -255,7 +278,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTenPercent) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
+  CheckIsPriceDropEmpty();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest,

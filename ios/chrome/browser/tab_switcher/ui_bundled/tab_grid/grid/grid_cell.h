@@ -55,6 +55,9 @@
 // Sets the price drop and displays the PriceViewCard.
 - (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice;
 
+// Hides the price drop annotation
+- (void)hidePriceDrop;
+
 // Fade in a new snapshot.
 - (void)fadeInSnapshot:(UIImage*)snapshot;
 

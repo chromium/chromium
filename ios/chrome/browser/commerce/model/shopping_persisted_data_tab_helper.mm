@@ -76,10 +76,11 @@ ShoppingPersistedDataTabHelper::PriceDrop::PriceDrop()
 
 ShoppingPersistedDataTabHelper::PriceDrop::~PriceDrop() = default;
 
-const ShoppingPersistedDataTabHelper::PriceDrop*
-ShoppingPersistedDataTabHelper::GetPriceDrop() {
+void ShoppingPersistedDataTabHelper::GetPriceDrop(
+    base::OnceCallback<void(std::optional<PriceDrop>)> callback) {
   if (!IsPriceAlertsEligibleForWebState(web_state_)) {
-    return nullptr;
+    std::move(callback).Run(std::nullopt);
+    return;
   }
   const GURL& url = web_state_->GetLastCommittedURL().is_valid()
                         ? web_state_->GetLastCommittedURL()
@@ -91,20 +92,21 @@ ShoppingPersistedDataTabHelper::GetPriceDrop() {
         OptimizationGuideServiceFactory::GetForProfile(
             ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
     if (!optimization_guide_service) {
-      return nullptr;
+      std::move(callback).Run(std::nullopt);
+      return;
     }
     optimization_guide::OptimizationMetadata metadata;
     if (optimization_guide_service->CanApplyOptimization(
             url, optimization_guide::proto::PRICE_TRACKING, &metadata) !=
         optimization_guide::OptimizationGuideDecision::kTrue) {
-      return nullptr;
+      std::move(callback).Run(std::nullopt);
+      return;
     }
     ParseProto(url, metadata.ParsedMetadata<commerce::PriceTrackingData>());
   }
   if (price_drop_) {
-    return price_drop_.get();
+    std::move(callback).Run(*price_drop_.get());
   }
-  return nullptr;
 }
 
 void ShoppingPersistedDataTabHelper::LogMetrics(PriceDropLogId log_id) {

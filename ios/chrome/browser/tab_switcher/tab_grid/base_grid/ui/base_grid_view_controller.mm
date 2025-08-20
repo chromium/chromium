@@ -1734,6 +1734,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                             itemID) {
                       [cell setPriceDrop:priceCardItem.price
                            previousPrice:priceCardItem.previousPrice];
+                    } else {
+                      [cell hidePriceDrop];
                     }
                   }];
   cell.opacity = 1.0f;

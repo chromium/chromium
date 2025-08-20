@@ -477,8 +477,13 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
   [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()
                   pinnedState:WebStateSearchCriteria::PinnedState::kNonPinned
        isFirstActionOnTabGrid:NO];
-  EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
-  EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^bool {
+        return 1 == user_action_tester_.GetActionCount(
+                        kHasNoPriceDropUserAction) &&
+               0 == user_action_tester_.GetActionCount(kHasPriceDropUserAction);
+      }));
 }
 
 TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
@@ -490,8 +495,13 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
   [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()
                   pinnedState:WebStateSearchCriteria::PinnedState::kNonPinned
        isFirstActionOnTabGrid:NO];
-  EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
-  EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^bool {
+        return 1 == user_action_tester_.GetActionCount(
+                        kHasPriceDropUserAction) &&
+               0 == user_action_tester_.GetActionCount(
+                        kHasNoPriceDropUserAction);
+      }));
 }
 
 // Ensures that when there is web states in normal mode, the toolbar

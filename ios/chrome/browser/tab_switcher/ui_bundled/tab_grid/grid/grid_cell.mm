@@ -334,6 +334,10 @@ void PositionView(UIView* view, CGPoint point) {
   [self updateAccessibilityLabel];
 }
 
+- (void)hidePriceDrop {
+  self.priceCardView.hidden = YES;
+}
+
 - (void)setTitle:(NSString*)title {
   self.titleLabel.text = title;
   _title = title;
