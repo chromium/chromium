@@ -37,6 +37,10 @@ class WindowControllerListObserverForTesting final
   static WindowControllerListObserverForTesting* GetInstance();
 
   // Implements |WindowControllerListObserver|.
+  void OnWindowControllerAdded(
+      extensions::WindowController* window_controller) override;
+  void OnWindowControllerRemoved(
+      extensions::WindowController* window_controller) override;
   void OnWindowBoundsChanged(
       extensions::WindowController* window_controller) override;
 };
@@ -46,6 +50,11 @@ class WindowControllerListObserverForTesting final
 //
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.chrome.browser.ui.extensions.windowing)
-enum class ExtensionInternalWindowEventForTesting { UNKNOWN, BOUNDS_CHANGED };
+enum class ExtensionInternalWindowEventForTesting {
+  UNKNOWN,
+  BOUNDS_CHANGED,
+  CREATED,
+  REMOVED
+};
 
 #endif  // CHROME_BROWSER_UI_ANDROID_EXTENSIONS_WINDOWING_INTERNAL_WINDOW_CONTROLLER_LIST_OBSERVER_FOR_TESTING_H_

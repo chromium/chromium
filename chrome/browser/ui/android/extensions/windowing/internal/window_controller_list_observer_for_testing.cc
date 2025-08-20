@@ -15,6 +15,20 @@ WindowControllerListObserverForTesting::GetInstance() {
   return base::Singleton<WindowControllerListObserverForTesting>::get();
 }
 
+void WindowControllerListObserverForTesting::OnWindowControllerAdded(
+    extensions::WindowController* window_controller) {
+  ExtensionWindowControllerBridge::
+      RecordExtensionInternalEventForTesting(  // IN-TEST
+          window_controller, ExtensionInternalWindowEventForTesting::CREATED);
+}
+
+void WindowControllerListObserverForTesting::OnWindowControllerRemoved(
+    extensions::WindowController* window_controller) {
+  ExtensionWindowControllerBridge::
+      RecordExtensionInternalEventForTesting(  // IN-TEST
+          window_controller, ExtensionInternalWindowEventForTesting::REMOVED);
+}
+
 void WindowControllerListObserverForTesting::OnWindowBoundsChanged(
     extensions::WindowController* window_controller) {
   ExtensionWindowControllerBridge::
