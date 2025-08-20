@@ -53,6 +53,7 @@ source_set("password_change") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "annotated_page_content_capturer_unittest.cc",
     "change_password_form_filling_submission_helper_unittest.cc",
     "change_password_form_finder_unittest.cc",
     "change_password_form_waiter_unittest.cc",

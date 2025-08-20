@@ -1508,7 +1508,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_FALSE(
       static_cast<PasswordChangeDelegateImpl*>(delegate)->login_checker());
   EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kCanceled);
+            PasswordChangeDelegate::State::kChangePasswordFormNotFound);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,

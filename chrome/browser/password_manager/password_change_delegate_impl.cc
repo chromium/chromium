@@ -312,8 +312,7 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
 void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
   login_state_checker_.reset();
   if (!is_logged_in) {
-    // TODO(crbug.com/436537301): Show an error instead of canceling the flow.
-    CancelPasswordChangeFlow();
+    UpdateState(State::kChangePasswordFormNotFound);
     return;
   }
   StartBackgroundTab();
