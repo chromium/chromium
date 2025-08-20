@@ -33,7 +33,7 @@ try_.defaults.set(
 def angle_mac_builder(*, name, **kwargs):
     kwargs.setdefault("builderless", True)
     kwargs.setdefault("cores", None)
-    kwargs.setdefault("os", os.MAC_ANY)
+    kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("ssd", None)
     return try_.builder(name = name, **kwargs)
 
