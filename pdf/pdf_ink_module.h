@@ -406,6 +406,8 @@ class PdfInkModule {
   // Wrapper around GetEventToCanonicalTransform(). `page_index` is the page
   // that the to-be-transformed position is on. The page must be visible.
   gfx::Transform GetEventToCanonicalTransformForPage(int page_index);
+  // Inverse of GetEventToCanonicalTransformForPage(), for convenience.
+  gfx::Transform GetCanonicalToEventTransformForPage(int page_index);
 
   // Helper to convert `position` to a canonical position and record it into
   // `current_tool_state_` for the indicated `timestamp` and `tool_type`.

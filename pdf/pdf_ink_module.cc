@@ -716,8 +716,8 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
     }
 
     client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
-        invalidate_envelope, client_->GetOrientation(),
-        client_->GetPageContentsRect(state.page_index), client_->GetZoom()));
+        invalidate_envelope,
+        GetCanonicalToEventTransformForPage(state.page_index)));
   }
 
   client_->StrokeFinished(/*modified=*/true);
@@ -910,8 +910,7 @@ void PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
   // If `invalidate_envelope` isn't empty, then something got erased.
   client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
-      invalidate_envelope, client_->GetOrientation(),
-      client_->GetPageContentsRect(page_index), client_->GetZoom()));
+      invalidate_envelope, GetCanonicalToEventTransformForPage(page_index)));
 
   CHECK(erased_stroke || erased_partitioned_mesh);
   EraserState& state = erasing_stroke_state();
@@ -1408,6 +1407,11 @@ gfx::Transform PdfInkModule::GetEventToCanonicalTransformForPage(
                                       page_contents_rect, client_->GetZoom());
 }
 
+gfx::Transform PdfInkModule::GetCanonicalToEventTransformForPage(
+    int page_index) {
+  return GetEventToCanonicalTransformForPage(page_index).GetCheckedInverse();
+}
+
 bool PdfInkModule::RecordStrokePosition(const gfx::PointF& position,
                                         base::TimeTicks timestamp,
                                         ink::StrokeInput::ToolType tool_type) {
@@ -1505,8 +1509,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
     }
 
     client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
-        invalidate_envelope, client_->GetOrientation(),
-        client_->GetPageContentsRect(page_index), client_->GetZoom()));
+        invalidate_envelope, GetCanonicalToEventTransformForPage(page_index)));
     page_indices_with_ink_thumbnail_updates.insert(page_index);
 
     if (stroke_ids.empty()) {
@@ -1547,8 +1550,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
     }
 
     client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
-        invalidate_envelope, client_->GetOrientation(),
-        client_->GetPageContentsRect(page_index), client_->GetZoom()));
+        invalidate_envelope, GetCanonicalToEventTransformForPage(page_index)));
     page_indices_with_pdf_thumbnail_updates.insert(page_index);
 
     if (shape_ids.empty()) {

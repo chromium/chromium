@@ -137,15 +137,10 @@ ink::AffineTransform GetInkThumbnailTransform(
 
 gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
     const ink::Envelope& envelope,
-    PageOrientation orientation,
-    const gfx::Rect& page_content_rect,
-    float scale_factor) {
+    const gfx::Transform& transform) {
   const std::optional<ink::Rect>& ink_rect = envelope.AsRect();
   CHECK(ink_rect.has_value());
 
-  gfx::Transform transform =
-      GetEventToCanonicalTransform(orientation, page_content_rect, scale_factor)
-          .GetCheckedInverse();
   gfx::PointF p1 =
       transform.MapPoint(gfx::PointF(ink_rect->XMin(), ink_rect->YMin()));
   gfx::PointF p2 =
