@@ -1697,7 +1697,7 @@
     },
     {
       name: "DeviceAttributesPermissionPolicy",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "DeviceBoundSessionCredentials",
