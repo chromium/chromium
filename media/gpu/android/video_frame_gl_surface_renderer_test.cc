@@ -7,7 +7,6 @@
 #include <android/native_window.h>
 #include <media/NdkImageReader.h>
 
-#include "base/android/build_info.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
