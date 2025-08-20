@@ -1932,18 +1932,22 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
           to_update_auth |= LoginAuthUserView::AUTH_PIN;
         }
         if (!state->show_password && !state->show_pin) {
-          CHECK(state->pin_available_at.has_value())
-              << "Password or pin factor must be present, if pin is not locked";
-          if (IsTimeInPast(state->pin_available_at)) {
-            LOG(WARNING)
-                << "User PIN factor should have been enabled by cryptohome at "
-                << ToString(state->pin_available_at)
-                << ". Waiting for OnPinUnlock call.";
+          if (state->pin_available_at.has_value()) {
+            if (IsTimeInPast(state->pin_available_at)) {
+              LOG(WARNING) << "User PIN factor should have been enabled by "
+                              "cryptohome at "
+                           << ToString(state->pin_available_at)
+                           << ". Waiting for OnPinUnlock call.";
+            }
+            to_update_auth =
+                screen_type_ == LockScreen::ScreenType::kLogin
+                    ? LoginAuthUserView::AUTH_PIN_LOCKED_SHOW_RECOVERY
+                    : LoginAuthUserView::AUTH_PIN_LOCKED;
+          } else {
+            LOG(ERROR) << "Password or pin factor must be present, if pin is "
+                          "not locked";
+            to_update_auth = LoginAuthUserView::AUTH_DISABLED;
           }
-          to_update_auth =
-              screen_type_ == LockScreen::ScreenType::kLogin
-                  ? LoginAuthUserView::AUTH_PIN_LOCKED_SHOW_RECOVERY
-                  : LoginAuthUserView::AUTH_PIN_LOCKED;
           // The auth error message might be shown at the moment due to previous
           // wrong attempts. We will hide it as it shows similar content as the
           // recover button and the pin delay message.
