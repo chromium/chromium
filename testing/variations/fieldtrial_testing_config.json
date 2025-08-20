@@ -9152,29 +9152,6 @@
             ]
         }
     ],
-    "DontForwardMemoryPressureToV8": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "BackgroundingGCNoMemoryReducer",
-                    "enable_features": [
-                        "V8Flag_gc_on_background_notification",
-                        "V8Flag_memory_reducer_respects_frozen_state"
-                    ],
-                    "disable_features": [
-                        "ForwardMemoryPressureToBlinkIsolates"
-                    ]
-                }
-            ]
-        }
-    ],
     "DownloadLater": [
         {
             "platforms": [
