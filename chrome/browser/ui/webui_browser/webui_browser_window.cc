@@ -170,8 +170,16 @@ void WebUIBrowserWindow::SetZOrderLevel(ui::ZOrderLevel order) {
 }
 
 gfx::NativeWindow WebUIBrowserWindow::GetNativeWindow() const {
-  NOTIMPLEMENTED();
+#if BUILDFLAG(IS_CHROMEOS)
+  // Ash ChromeOS has a UaF on widget's aura::Window during browser shutdown.
+  // The window is stored in apps::InstanceRegistry which becomes dangling after
+  // the BrowserWindow is destroyed.
+  // TODO(webium): Fix ChromeOS. Run WebUIBrowserTest.StartupAndShutdown
+  // to verify.
   return gfx::NativeWindow();
+#else
+  return widget_->GetNativeWindow();
+#endif
 }
 
 bool WebUIBrowserWindow::IsOnCurrentWorkspace() const {
@@ -235,6 +243,13 @@ ui::RendererColorMap WebUIBrowserWindow::GetRendererColorMap(
       ui::ColorProviderManager::Get().GetColorProviderFor(key);
   CHECK(color_provider);
   return ui::CreateRendererColorMap(*color_provider);
+}
+
+bool WebUIBrowserWindow::GetAcceleratorForCommandId(
+    int command_id,
+    ui::Accelerator* accelerator) const {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 int WebUIBrowserWindow::GetTopControlsHeight() const {

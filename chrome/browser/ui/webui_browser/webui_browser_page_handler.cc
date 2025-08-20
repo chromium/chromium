@@ -10,6 +10,7 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -22,6 +23,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace {
@@ -142,9 +144,20 @@ void WebUIBrowserPageHandler::GoForward(int guest_id) {
 void WebUIBrowserPageHandler::OpenAppMenu() {
   menu_.reset();
 
-  // TODO(webium): Find app menu button and call
-  // menu_->RunMenu(nullptr, app_menu_button.GetScreenBounds()).
-  NOTIMPLEMENTED();
+  // TODO(webium): use BrowserElements::From(browser)->GetElement(). This
+  // requires adding a BrowserElementsWebUI.
+  ui::TrackedElement* app_menu_button =
+      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+          kToolbarAppMenuButtonElementId,
+          ui::ElementContext(GetBrowserWindow()->widget()));
+  CHECK(app_menu_button) << "App menu button not found";
+  menu_model_ =
+      std::make_unique<AppMenuModel>(GetBrowserWindow(), GetBrowser());
+  menu_model_->Init();
+  menu_ = std::make_unique<AppMenu>(GetBrowser(), menu_model_.get(),
+                                    views::MenuRunner::NO_FLAGS);
+  menu_->RunMenu(GetBrowserWindow()->widget(),
+                 app_menu_button->GetScreenBounds());
 }
 
 void WebUIBrowserPageHandler::OpenProfileMenu() {

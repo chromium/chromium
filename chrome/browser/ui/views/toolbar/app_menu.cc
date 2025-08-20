@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -667,7 +668,8 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
                 base::BindRepeating(&AppMenu::ZoomView::OnZoomLevelChanged,
                                     base::Unretained(this)));
     // Disable full screen button when window is not resizable
-    views::Widget* widget = menu->browser_->GetBrowserView().GetWidget();
+    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+        menu->browser_->window()->GetNativeWindow());
     if (widget) {
       widget_observation_.Observe(widget);
     }
@@ -843,8 +845,11 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
   }
 
   void UpdateFullScreenButton() {
-    bool can_fullscreen =
-        menu()->browser_->GetBrowserView().CanUserEnterFullscreen();
+    bool can_fullscreen = menu()
+                              ->browser_->browser_window_features()
+                              ->exclusive_access_manager()
+                              ->context()
+                              ->CanUserEnterFullscreen();
     const int accname_string_id = can_fullscreen
                                       ? IDS_ACCNAME_FULLSCREEN
                                       : IDS_ACCNAME_FULLSCREEN_DISABLED;
@@ -1048,6 +1053,19 @@ void AppMenu::RunMenu(views::MenuButtonController* host) {
   menu_runner_->RunMenuAt(
       host->button()->GetWidget(), host,
       host->button()->GetAnchorBoundsInScreen(),
+      views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kNone,
+      /*native_view_for_gestures=*/gfx::NativeView(), /*corners=*/std::nullopt,
+      "Chrome.AppMenu.MenuHostInitToNextFramePresented");
+}
+
+void AppMenu::RunMenu(views::Widget* parent,
+                      const gfx::Rect& anchor_screen_bounds) {
+  base::RecordAction(UserMetricsAction("ShowAppMenu"));
+  UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", MENU_ACTION_MENU_OPENED,
+                            LIMIT_MENU_ACTION);
+
+  menu_runner_->RunMenuAt(
+      parent, nullptr, anchor_screen_bounds,
       views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kNone,
       /*native_view_for_gestures=*/gfx::NativeView(), /*corners=*/std::nullopt,
       "Chrome.AppMenu.MenuHostInitToNextFramePresented");

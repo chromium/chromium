@@ -74,6 +74,7 @@ source_set("impl") {
     "//ui/base",
     "//ui/views",
     "//ui/views/controls/webview",
+    "//ui/webui/tracked_element",
   ]
 }
 

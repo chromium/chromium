@@ -10,6 +10,7 @@ import './tab_strip.js';
 import './webview.js';
 import '//resources/cr_components/searchbox/searchbox.js';
 
+import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
@@ -24,6 +25,7 @@ import {TabStripController} from './tab_strip_controller.js';
 
 export interface WebuiBrowserAppElement {
   $: {
+    appMenuButton: HTMLElement,
     bookmarkBar: BookmarkBar,
     contentRegion: ContentRegion,
     tabstrip: TabStrip,
@@ -53,6 +55,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
 
   private bookmarkBarController_: BookmarkBarController;
   private tabStripController_: TabStripController;
+  private trackedElementManager_: TrackedElementManager;
   protected accessor backButtonDisabled_: boolean = true;
   protected accessor forwardButtonDisabled_: boolean = true;
 
@@ -62,12 +65,15 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     this.bookmarkBarController_ = new BookmarkBarController();
     this.tabStripController_ =
         new TabStripController(this, this.$.tabstrip, this.$.contentRegion);
+    this.trackedElementManager_ = new TrackedElementManager();
   }
 
   override connectedCallback() {
     // Important. Properties are not reactive without calling
     // super.connectedCallback().
     super.connectedCallback();
+    this.trackedElementManager_.startTracking(
+        this.$.appMenuButton, 'kToolbarAppMenuButtonElementId');
   }
 
   // LayoutManager:

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/views/widget/widget.h"
@@ -29,7 +30,8 @@ class WebUILocationBar;
 // uses views::Widget for windowing management.
 class WebUIBrowserWindow : public BrowserWindow,
                            public ExclusiveAccessContext,
-                           public ui::ColorProviderSource {
+                           public ui::ColorProviderSource,
+                           public ui::AcceleratorProvider {
  public:
   explicit WebUIBrowserWindow(std::unique_ptr<Browser> browser);
   ~WebUIBrowserWindow() override;
@@ -244,7 +246,12 @@ class WebUIBrowserWindow : public BrowserWindow,
   bool CanUserEnterFullscreen() const override;
   bool CanUserExitFullscreen() const override;
 
+  // ui::AcceleratorProvider:
+  bool GetAcceleratorForCommandId(int command_id,
+                                  ui::Accelerator* accelerator) const override;
+
   Browser* browser() { return browser_.get(); }
+  views::Widget* widget() { return widget_.get(); }
 
  protected:
   void DestroyBrowser() override;
