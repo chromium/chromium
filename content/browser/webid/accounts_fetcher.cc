@@ -283,6 +283,7 @@ void AccountsFetcher::OnAccountsResponseReceived(
     return;
   }
   RecordRawAccountsSize(accounts.size());
+  RecordAccountFieldsType(accounts);
   FilterAccountsWithLabel(idp_info->metadata.requested_label, accounts);
   FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
   FilterAccountsWithDomainHint(idp_info->provider->domain_hint, accounts);

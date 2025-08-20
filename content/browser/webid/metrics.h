@@ -289,6 +289,21 @@ enum class ThirdPartyCookiesStatus {
   kMaxValue = kDisabledInSettings
 };
 
+// This enum describes the fields that we received in the accounts. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+//
+// LINT.IfChange(AccountFieldsType)
+enum class AccountFieldsType {
+  kNameAndEmailAndNoOther = 0,
+  kOneOfNameAndEmailAndNoOther = 1,
+  kNameOrEmailAndOtherIdentifier = 2,
+  kOtherIdentifierButNoNameOrEmail = 3,
+
+  kMaxValue = kOtherIdentifierButNoNameOrEmail
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmAccountFieldsType)
+
 class CONTENT_EXPORT Metrics {
  public:
   explicit Metrics(const ukm::SourceId page_source_id);
@@ -593,7 +608,12 @@ void RecordRawAccountsSize(int size);
 // filter. If no account left, nothing will be recorded.
 void RecordReadyToShowAccountsSize(int size);
 
+// Records what kinds of fields we received in the accounts from the IDP.
+CONTENT_EXPORT void RecordAccountFieldsType(
+    const std::vector<IdentityRequestAccountPtr>& accounts);
+
 }  // namespace webid
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_METRICS_H_

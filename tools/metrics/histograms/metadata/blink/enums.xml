@@ -6445,6 +6445,18 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="Tap scrim on Android"/>
 </enum>
 
+<!-- LINT.IfChange(FedCmAccountFieldsType) -->
+
+<enum name="FedCmAccountFieldsType">
+  <int value="0" label="Name and email, but not phone or username"/>
+  <int value="1" label="Only one of name and email, no phone or username"/>
+  <int value="2"
+      label="Name or email (or both) and phone number or username (or both)"/>
+  <int value="3" label="Only phone number or username, no name or email"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:AccountFieldsType) -->
+
 <enum name="FedCmAccountsResponseInvalidReason">
   <int value="0" label="Response is not JSON or dict"/>
   <int value="1" label="No accounts key"/>

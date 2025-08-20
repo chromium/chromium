@@ -3251,6 +3251,11 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
       "Blink.FedCm.Timing.MismatchDialogShownDuration", 0);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.IsSignInUser", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.AccountFieldsType",
+      static_cast<int>(
+          webid::AccountFieldsType::kNameOrEmailAndOtherIdentifier),
+      1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 1, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.ReadyToShow",
                                        1, 1);

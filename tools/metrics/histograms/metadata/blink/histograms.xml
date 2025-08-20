@@ -1262,6 +1262,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.AccountFieldsType" enum="FedCmAccountFieldsType"
+    expires_after="2025-12-14">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records what kind of account fields we received from the server. Recorded
+    once per accounts endpoint response, when we receive it.
+
+    Considers the union of fields over all accounts that were received. For
+    example, if one account has only an email address and one account only has a
+    name, we record kOnlyNameAndEmail.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.AccountLabel.NumMatchingAccounts"
     enum="FedCmNumAccounts" expires_after="2025-12-14">
   <owner>cbiesinger@chromium.org</owner>

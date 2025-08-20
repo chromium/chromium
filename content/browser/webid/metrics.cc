@@ -841,5 +841,31 @@ void RecordReadyToShowAccountsSize(int size) {
                                  /*exclusive_max=*/10, /*buckets=*/10);
 }
 
+void RecordAccountFieldsType(
+    const std::vector<IdentityRequestAccountPtr>& accounts) {
+  bool has_name = false;
+  bool has_email = false;
+  bool has_phone_or_username = false;
+  for (const auto& account : accounts) {
+    has_name |= !account->name.empty();
+    has_email |= !account->email.empty();
+    has_phone_or_username |=
+        !account->phone.empty() || !account->username.empty();
+  }
+  AccountFieldsType type;
+  if ((has_name || has_email) && has_phone_or_username) {
+    type = AccountFieldsType::kNameOrEmailAndOtherIdentifier;
+  } else if (!has_name && !has_email && has_phone_or_username) {
+    type = AccountFieldsType::kOtherIdentifierButNoNameOrEmail;
+  } else if (has_name && has_email && !has_phone_or_username) {
+    type = AccountFieldsType::kNameAndEmailAndNoOther;
+  } else {
+    DCHECK(has_name ^ has_email);
+    DCHECK(!has_phone_or_username);
+    type = AccountFieldsType::kOneOfNameAndEmailAndNoOther;
+  }
+  base::UmaHistogramEnumeration("Blink.FedCm.AccountFieldsType", type);
+}
+
 }  // namespace webid
 }  // namespace content
