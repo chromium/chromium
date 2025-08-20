@@ -132,8 +132,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
   bool has_built_ = false;
 
   std::set<std::unique_ptr<WebNNPendingConstantOperand>,
-           WebNNObjectImpl<blink::WebNNPendingConstantToken>::Comparator<
-               WebNNPendingConstantOperand>>
+           WebNNPendingConstantOperand::Comparator>
       pending_constant_operands_;
 
   base::WeakPtrFactory<WebNNGraphBuilderImpl> weak_factory_

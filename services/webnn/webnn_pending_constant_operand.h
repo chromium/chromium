@@ -9,7 +9,6 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/webnn_object_impl.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
@@ -30,15 +29,14 @@ class WebNNConstantOperand;
 // TODO(crbug.com/349428379): Consider allowing this class to be extended by
 // backend-specific implementations, which can stream the constant data into the
 // form needed by the backend.
-class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNPendingConstantOperand
-    : public WebNNObjectImpl<blink::WebNNPendingConstantToken> {
+class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNPendingConstantOperand {
  public:
   // Create a constant operand from bytes with an unknown shape.
   WebNNPendingConstantOperand(blink::WebNNPendingConstantToken handle,
                               OperandDataType data_type,
                               base::span<const uint8_t> data);
 
-  ~WebNNPendingConstantOperand() override;
+  ~WebNNPendingConstantOperand();
 
   WebNNPendingConstantOperand(const WebNNPendingConstantOperand&) = delete;
   WebNNPendingConstantOperand& operator=(const WebNNPendingConstantOperand&) =
@@ -51,7 +49,39 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNPendingConstantOperand
 
   bool IsValidWithDescriptor(OperandDescriptor descriptor) const;
 
+  // Defines a "transparent" comparator so that unique_ptr keys to
+  // WebNNPendingConstantOperand instances can be compared against tokens for
+  // lookup in associative containers like base::flat_set.
+  struct Comparator {
+    using is_transparent = blink::WebNNPendingConstantToken;
+    template <class Deleter = std::default_delete<WebNNPendingConstantOperand>>
+    bool operator()(
+        const std::unique_ptr<WebNNPendingConstantOperand, Deleter>& lhs,
+        const std::unique_ptr<WebNNPendingConstantOperand, Deleter>& rhs)
+        const {
+      return lhs->handle() < rhs->handle();
+    }
+
+    template <class Deleter = std::default_delete<WebNNPendingConstantOperand>>
+    bool operator()(const blink::WebNNPendingConstantToken& lhs,
+                    const std::unique_ptr<WebNNPendingConstantOperand, Deleter>&
+                        rhs) const {
+      return lhs < rhs->handle();
+    }
+
+    template <class Deleter = std::default_delete<WebNNPendingConstantOperand>>
+    bool operator()(
+        const std::unique_ptr<WebNNPendingConstantOperand, Deleter>& lhs,
+        const blink::WebNNPendingConstantToken& rhs) const {
+      return lhs->handle() < rhs;
+    }
+  };
+
+  const blink::WebNNPendingConstantToken& handle() const { return handle_; }
+
  private:
+  blink::WebNNPendingConstantToken handle_;
+
   const OperandDataType data_type_;
 
   base::HeapArray<uint8_t> data_;

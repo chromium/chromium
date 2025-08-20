@@ -37,6 +37,7 @@
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_object_impl.h"
+#include "services/webnn/webnn_tensor_impl.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
@@ -46,8 +47,7 @@ class WebNNTensorImpl;
 class ScopedSequence;
 
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
-    : public WebNNReceiverImpl<mojom::WebNNContext>,
-      public WebNNObjectImpl<blink::WebNNContextToken> {
+    : public WebNNObjectImpl<mojom::WebNNContext, blink::WebNNContextToken> {
  public:
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
@@ -190,7 +190,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // by the lifetime of the tensors it contains.
   base::flat_set<
       scoped_refptr<WebNNTensorImpl>,
-      WebNNObjectImpl<blink::WebNNTensorToken>::Comparator<WebNNTensorImpl>>
+      WebNNObjectImpl<mojom::WebNNTensor, blink::WebNNTensorToken>::Comparator>
       tensor_impls_;
 
  private:
@@ -204,7 +204,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // context during operations.
   base::flat_set<
       scoped_refptr<WebNNGraphImpl>,
-      WebNNObjectImpl<blink::WebNNGraphToken>::Comparator<WebNNGraphImpl>>
+      WebNNObjectImpl<mojom::WebNNGraph, blink::WebNNGraphToken>::Comparator>
       graph_impls_;
 
   const gpu::CommandBufferId command_buffer_id_;

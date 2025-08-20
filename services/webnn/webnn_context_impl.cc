@@ -39,7 +39,9 @@ WebNNContextImpl::WebNNContextImpl(
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
     scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
-    : WebNNReceiverImpl<mojom::WebNNContext>(std::move(receiver), task_runner),
+    : WebNNObjectImpl<mojom::WebNNContext, blink::WebNNContextToken>(
+          std::move(receiver),
+          task_runner),
       context_provider_(context_provider),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)),

@@ -24,8 +24,7 @@ class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
 
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
-    : public WebNNReceiverImpl<mojom::WebNNGraph>,
-      public WebNNObjectImpl<blink::WebNNGraphToken> {
+    : public WebNNObjectImpl<mojom::WebNNGraph, blink::WebNNGraphToken> {
  public:
   // Describes the constraints of a graph's inputs and outputs.
   struct COMPONENT_EXPORT(WEBNN_SERVICE) ComputeResourceInfo {

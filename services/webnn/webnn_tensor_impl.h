@@ -21,8 +21,7 @@ class WebNNContextImpl;
 
 // GPU process implementation of the MLTensor interface exposed to script.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
-    : public WebNNReceiverImpl<mojom::WebNNTensor>,
-      public WebNNObjectImpl<blink::WebNNTensorToken> {
+    : public WebNNObjectImpl<mojom::WebNNTensor, blink::WebNNTensorToken> {
  public:
   explicit WebNNTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,

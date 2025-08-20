@@ -94,8 +94,9 @@ WebNNGraphImpl::WebNNGraphImpl(
     base::WeakPtr<WebNNContextImpl> context,
     ComputeResourceInfo compute_resource_info,
     std::vector<mojom::Device> devices)
-    : WebNNReceiverImpl<mojom::WebNNGraph>(std::move(receiver),
-                                           context->scheduler_task_runner()),
+    : WebNNObjectImpl<mojom::WebNNGraph, blink::WebNNGraphToken>(
+          std::move(receiver),
+          context->scheduler_task_runner()),
       context_(std::move(context)),
       compute_resource_info_(std::move(compute_resource_info)),
       devices_(std::move(devices)) {

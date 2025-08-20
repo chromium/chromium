@@ -16,6 +16,7 @@
 #include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_object_impl.h"
 
@@ -81,9 +82,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   base::optional_ref<WebNNContextImpl> GetWebNNContextImplForTesting(
       const blink::WebNNContextToken& handle);
 
-  using WebNNContextImplSet = base::flat_set<
-      scoped_refptr<WebNNContextImpl>,
-      WebNNObjectImpl<blink::WebNNContextToken>::Comparator<WebNNContextImpl>>;
+  using WebNNContextImplSet =
+      base::flat_set<scoped_refptr<WebNNContextImpl>,
+                     WebNNObjectImpl<mojom::WebNNContext,
+                                     blink::WebNNContextToken>::Comparator>;
 
   // The test cases can override the context creating behavior by implementing
   // this class and setting its instance by SetBackendForTesting().
