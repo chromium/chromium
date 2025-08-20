@@ -159,7 +159,7 @@
 
     switch (suggestAction.type) {
       case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
-        formatter.hasAimShortcut = _aimShortcutAvailable && !self.incognito;
+        formatter.hasAimShortcut = _aimShortcutAvailable;
         break;
       case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL: {
         BOOL hasDialApp = [[UIApplication sharedApplication]
