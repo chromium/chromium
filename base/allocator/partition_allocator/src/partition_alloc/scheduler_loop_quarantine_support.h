@@ -10,7 +10,6 @@
 #ifndef PARTITION_ALLOC_SCHEDULER_LOOP_QUARANTINE_SUPPORT_H_
 #define PARTITION_ALLOC_SCHEDULER_LOOP_QUARANTINE_SUPPORT_H_
 
-#include <map>
 #include <optional>
 #include <variant>
 
