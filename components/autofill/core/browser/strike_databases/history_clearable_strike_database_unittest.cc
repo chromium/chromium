@@ -9,7 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/addresses/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
