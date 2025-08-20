@@ -6116,8 +6116,8 @@
   },
   {
     "name": "ios-segmentation-ephemeral-card-ranker",
-    "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 136
+    "owners": [ "ericekey@google.com", "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
+    "expiry_milestone": 144
   },
   {
     "name": "ios-shared-highlighting-color-change",

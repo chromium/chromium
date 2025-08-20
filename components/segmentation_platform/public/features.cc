@@ -283,4 +283,12 @@ BASE_FEATURE(kDefaultBrowserPromoPropensityModel,
              "DefaultBrowserPromoPropensityModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAppBundlePromoEphemeralCard,
+             "AppBundlePromoEphemeralCard",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace segmentation_platform::features

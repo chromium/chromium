@@ -196,6 +196,10 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformFedCmUser);
 // browser promo.
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoPropensityModel);
 
+// Feature flag for enabling the App Bundle Promo Ephemeral card in the Magic
+// Stack.
+BASE_DECLARE_FEATURE(kAppBundlePromoEphemeralCard);
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_
