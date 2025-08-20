@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -155,6 +156,28 @@ public class HubActionButtonViewUnitTest {
         // Click again should trigger the callback again
         mActionButton.callOnClick();
         verify(mOnButton, times(2)).run();
+    }
+
+    @Test
+    public void testActionButtonTooltipText() {
+        assertNull(mActionButton.getTooltipText());
+
+        // Set button data, tooltip should be set.
+        FullButtonData fullButtonData = makeTestButtonData();
+        mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
+        assertEquals("New tab", mActionButton.getTooltipText());
+
+        // Set ACTION_BUTTON_VISIBLE to false, button should be invisible and tooltip should be
+        // null.
+        mPropertyModel.set(ACTION_BUTTON_VISIBLE, false);
+        assertEquals(View.GONE, mActionButton.getVisibility());
+        assertNull(mActionButton.getTooltipText());
+
+        // Set ACTION_BUTTON_VISIBLE back to true, button should be visible and tooltip should be
+        // set.
+        mPropertyModel.set(ACTION_BUTTON_VISIBLE, true);
+        assertEquals(View.VISIBLE, mActionButton.getVisibility());
+        assertEquals("New tab", mActionButton.getTooltipText());
     }
 
     @Test
