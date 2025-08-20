@@ -165,10 +165,20 @@ class CORE_EXPORT BlockLayoutAlgorithm
   NOINLINE const LayoutResult* HandleNonsuccessfulLayoutResult(
       const LayoutResult*);
 
-  NOINLINE const LayoutResult* LayoutInlineChild(const InlineNode& child);
+  const LayoutResult* LayoutInlineChild(const InlineNode& child);
+  // A helper for the above.
+  // If `paragraph_scale` is std::nullopt, this computes the paragraph scaling
+  // factor and returns it. Otherwise, it lays out inline children with
+  // `*paragraph_scale`.
+  NOINLINE std::pair<const LayoutResult*, float> LayoutInlineChild(
+      const InlineNode& node,
+      std::optional<float> paragraph_scale);
+  // Ditto, for OptimalInlineChildLayoutContext.
   template <wtf_size_t capacity>
-  NOINLINE const LayoutResult* LayoutWithOptimalInlineChildLayoutContext(
-      const InlineNode& child);
+  NOINLINE std::pair<const LayoutResult*, float>
+  LayoutWithOptimalInlineChildLayoutContext(
+      const InlineNode& child,
+      std::optional<float> paragraph_scale);
 
   NOINLINE const LayoutResult* RelayoutIgnoringLineClamp();
   NOINLINE const LayoutResult* RelayoutClampingByLines(int lines_until_clamp);

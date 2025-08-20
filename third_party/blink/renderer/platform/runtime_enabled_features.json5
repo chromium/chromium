@@ -1295,6 +1295,10 @@
       status: "experimental",
     },
     {
+      // crbug.com/417306102
+      name: "CssFitWidthTextConsistent",
+    },
+    {
       name: "CSSFontSizeAdjust",
       status: "stable",
     },

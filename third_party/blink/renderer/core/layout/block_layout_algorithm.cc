@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/early_break.h"
 #include "third_party/blink/renderer/core/layout/floats_utils.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
+#include "third_party/blink/renderer/core/layout/inline/fit_text_scale.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
@@ -649,36 +650,77 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
   }
 }
 
-NOINLINE const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
+const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
     const InlineNode& node) {
+  float paragraph_scale = 1.0f;
+  if (RuntimeEnabledFeatures::CssFitWidthTextConsistentEnabled()) {
+    const bool grow_consistent =
+        Style().TextGrow().Target() == FitTextTarget::kConsistent;
+    const bool shrink_consistent =
+        Style().TextShrink().Target() == FitTextTarget::kConsistent;
+    if (grow_consistent || shrink_consistent) {
+      // Compute the paragraph scaling factor with a cloned
+      // BlockLayoutAlgorithm.
+      // TODO(crbug.com/417306102): This approach is an inefficient because it
+      // handles all layout processes, and is a temporary hack until we can
+      // implement a production-ready solution. Ideally we should introduce a
+      // new phase separate from minmax and layout to skip unnecessary
+      // processing.
+      // Additionally, this feature is not currently intended to be used with
+      // multi-column layouts.
+      LayoutAlgorithmParams cloned_param(
+          Node(), container_builder_.InitialFragmentGeometry(),
+          GetConstraintSpace(), GetBreakToken(), early_break_,
+          additional_early_breaks_);
+      cloned_param.column_spanner_path = column_spanner_path_;
+      cloned_param.previous_result = previous_result_;
+      BlockLayoutAlgorithm cloned_algorithm(cloned_param);
+      paragraph_scale =
+          cloned_algorithm.LayoutInlineChild(node, std::nullopt).second;
+      if ((paragraph_scale < 1.0f && !shrink_consistent) ||
+          (paragraph_scale > 1.0f && !grow_consistent)) {
+        paragraph_scale = 1.0f;
+      }
+    }
+  }
+  return LayoutInlineChild(node, paragraph_scale).first;
+}
+
+NOINLINE std::pair<const LayoutResult*, float>
+BlockLayoutAlgorithm::LayoutInlineChild(const InlineNode& node,
+                                        std::optional<float> paragraph_scale) {
   const TextWrapStyle wrap = node.Style().GetTextWrapStyle();
   if (wrap == TextWrapStyle::kPretty) [[unlikely]] {
     UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPretty);
     if (!node.IsScoreLineBreakDisabled()) {
       return LayoutWithOptimalInlineChildLayoutContext<kMaxLinesForOptimal>(
-          node);
+          node, paragraph_scale);
     }
   } else if (wrap == TextWrapStyle::kBalance) [[unlikely]] {
     UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalance);
     if (!node.IsScoreLineBreakDisabled()) {
       return LayoutWithOptimalInlineChildLayoutContext<kMaxLinesForBalance>(
-          node);
+          node, paragraph_scale);
     }
   } else {
     DCHECK(ShouldWrapLineGreedy(wrap));
   }
 
   SimpleInlineChildLayoutContext context(node, &container_builder_);
-  return Layout(&context);
+  // TODO(crbug.com/417306102): Setup `context` for measurement or execution.
+  const LayoutResult* result = Layout(&context);
+  return {result, 1.0f};
 }
 
 template <wtf_size_t capacity>
-NOINLINE const LayoutResult*
+NOINLINE std::pair<const LayoutResult*, float>
 BlockLayoutAlgorithm::LayoutWithOptimalInlineChildLayoutContext(
-    const InlineNode& child) {
+    const InlineNode& child,
+    std::optional<float> paragraph_scale) {
   OptimalInlineChildLayoutContext<capacity> context(child, &container_builder_);
+  // TODO(crbug.com/417306102): Setup `context` for measurement or execution.
   const LayoutResult* result = Layout(&context);
-  return result;
+  return {result, 1.0f};
 }
 
 NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
