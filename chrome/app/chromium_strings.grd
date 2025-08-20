@@ -1027,6 +1027,20 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Session Restore Infobar -->
+      <message name="IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_SESSION" desc="Message that appears in the session restore infobar when the user has restored their tabs once.">
+        Continue where you left off: Chromium restored your tabs from your last session. You can turn this off in
+      </message>
+      <message name="IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_RESTART" desc="Message that appears in the session restore infobar when the user has restored their tabs multiple times.">
+        Continue where you left off: Chromium restores your tabs every time you restart. To turn this off, go to
+      </message>
+      <message name="IDS_SESSION_RESTORE_TURN_ON" desc="Message that appears in the session restore infobar to get the user to opt-in into session restore.">
+        Continue where you left off: Chromium can restore your tabs every time you restart. To turn this on, go to
+      </message>
+      <message name="IDS_SESSION_RESTORE_LINK" desc="Text for the link in the session restore infobar to open the Settings page.">
+        Settings.
+      </message>
+
       <!-- Enterprise sign-in dialog -->
       <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE" desc="Title of the screen in the profile creation flow where the user is asked whether they want to confirm signing in to Chromium with their enterprise account when it is mandatory to sign in to Chromium with the enterprise account.">
         Your organization requires you to sign into Chromium
