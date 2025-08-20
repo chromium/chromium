@@ -76,7 +76,7 @@ declare_args() {
   ios_enable_background_mode = true
 
   # Enable iOS 17 widgets improvements to support multi profile.
-  ios_enable_widgets_for_mim = true
+  ios_enable_widgets_for_mim = false
 
   # Enable iOS 26 liquid glass.
   ios_enable_liquid_glass = true
