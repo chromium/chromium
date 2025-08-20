@@ -298,7 +298,8 @@ class InfoBarDelegate {
   virtual bool ShouldHideInFullscreen() const;
 
   // Type-checking downcast routines:
-  virtual ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate();
+  ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate();
+  virtual const ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate() const;
   virtual blocked_content::PopupBlockedInfoBarDelegate*
   AsPopupBlockedInfoBarDelegate();
   virtual ThemeInstalledInfoBarDelegate* AsThemePreviewInfobarDelegate();
