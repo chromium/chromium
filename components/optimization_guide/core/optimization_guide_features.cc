@@ -167,10 +167,6 @@ BASE_FEATURE(kPrivacyGuideAiSettings,
              "PrivacyGuideAiSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAiSettingsPageEnterpriseDisabledUi,
-             "AiSettingsPageEnterpriseDisabledUi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOnDeviceModelPerformanceParams,
              "OnDeviceModelPerformanceParams",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -22,12 +22,6 @@ const char kAiModeOmniboxEntryPointName[] = "AI Mode Omnibox entrypoint";
 const char kAiModeOmniboxEntryPointDescription[] =
     "Enables icon button for AI Mode entrypoint in the Omnibox.";
 
-const char kAiSettingsPageEnterpriseDisabledName[] =
-    "AI settings page enterprise disabled UI";
-const char kAiSettingsPageEnterpriseDisabledDescription[] =
-    "Enables settings UI for AI features that are disabled by enterprise "
-    "policy.";
-
 const char kCanvasHibernationName[] = "Hibernation for 2D canvas";
 const char kCanvasHibernationDescription[] =
     "Enables canvas hibernation for 2D canvas.";

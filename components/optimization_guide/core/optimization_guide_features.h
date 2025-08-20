@@ -405,10 +405,6 @@ bool ShouldEnableOptimizationGuideIconView();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsPrivacyGuideAiSettingsEnabled();
 
-// Whether policy-disabled AI settings are visible.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kAiSettingsPageEnterpriseDisabledUi);
-
 }  // namespace features
 }  // namespace optimization_guide
 

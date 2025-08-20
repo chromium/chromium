@@ -332,9 +332,8 @@ bool ModelExecutionFeaturesController::IsSettingVisible(
 
   ScopedSettingsVisibilityResultHistogramRecorder metrics_recorder;
 
-  switch (GetCurrentUserValidityResult(
-      feature, /*skip_enterprise_check=*/base::FeatureList::IsEnabled(
-          features::kAiSettingsPageEnterpriseDisabledUi))) {
+  switch (
+      GetCurrentUserValidityResult(feature, /*skip_enterprise_check=*/true)) {
     case ModelExecutionFeaturesController::UserValidityResult::
         kInvalidUnsignedUser:
       metrics_recorder.SetResult(

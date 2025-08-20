@@ -557,9 +557,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("showGlicSettings", show_glic_section);
   html_source->AddBoolean("glicDisallowedByAdmin", glic_disallowed_by_admin);
 
-  const bool use_is_setting_visible = base::FeatureList::IsEnabled(
-      optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi);
-
   const auto& autofill_client =
       *autofill::ContentAutofillClient::FromWebContents(
           web_ui->GetWebContents());
@@ -570,18 +567,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           autofill::AutofillAiAction::kListEntityInstancesInSettings));
   std::pair<const std::string_view, bool> optimization_guide_features[] = {
       {"showTabOrganizationControl",
-       use_is_setting_visible
-           ? TabOrganizationUtils::GetInstance()->IsSettingVisible(profile)
-           : TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
-      {"showComposeControl",
-       use_is_setting_visible ? compose_visible : compose_enabled},
+       TabOrganizationUtils::GetInstance()->IsSettingVisible(profile)},
+      {"showComposeControl", compose_visible},
       {"showHistorySearchControl",
        history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
-      {"showCompareControl",
-       use_is_setting_visible ? commerce::IsProductSpecificationsSettingVisible(
-                                    shopping_service->GetAccountChecker())
-                              : commerce::CanFetchProductSpecificationsData(
-                                    shopping_service->GetAccountChecker())},
+      {"showCompareControl", commerce::IsProductSpecificationsSettingVisible(
+                                 shopping_service->GetAccountChecker())},
       {"showPasswordChangeControl",
        PasswordChangeServiceFactory::GetForProfile(profile) &&
            PasswordChangeServiceFactory::GetForProfile(profile)

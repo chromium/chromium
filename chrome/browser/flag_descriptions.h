@@ -57,9 +57,6 @@ extern const char kAcceleratedVideoEncodeDescription[];
 extern const char kAiModeOmniboxEntryPointName[];
 extern const char kAiModeOmniboxEntryPointDescription[];
 
-extern const char kAiSettingsPageEnterpriseDisabledName[];
-extern const char kAiSettingsPageEnterpriseDisabledDescription[];
-
 extern const char kAlignSurfaceLayerImplToPixelGridName[];
 extern const char kAlignSurfaceLayerImplToPixelGridDescription[];
 
