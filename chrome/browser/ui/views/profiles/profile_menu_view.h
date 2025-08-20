@@ -102,6 +102,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   // Helper methods for building the menu.
   void SetMenuTitleForAccessibility();
   void BuildGuestIdentity();
+  void BuildHistorySyncOptInButton();
   void MaybeBuildBatchUploadButton();
   void BuildAutofillSettingsButton();
   void BuildCustomizeProfileButton();

@@ -1164,18 +1164,33 @@
       No thanks
     </message>
     <!-- History Sync Opt-in Expansion Pill Desktop -->
+    <message name="IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
+      Browse across devices?
+    </message>
     <message name="IDS_AVATAR_BUTTON_SYNC_HISTORY" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
       Sync history?
+    </message>
+    <message name="IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
+      See tabs from other devices?
     </message>
     <message name="IDS_AVATAR_BUTTON_SYNC_PROMO" desc="The avatar button label for the sync promo. When clicked, it opens the profile menu with the sync button.">
       Back up your stuff?
     </message>
     <!-- Profile Menu Sync Promo Desktop -->
+    <message name="IDS_PROFILE_MENU_SYNC_PROMO_BROWSE_ACROSS_DEVICES_DESCRIPTION" desc="The description for the sync promo in the profile menu opened from the 'Browse across devices?' history sync opt-in identity pill.">
+      To pick up where you left off on other devices, sync your history and tabs to <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
+    </message>
     <message name="IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION" desc="The description for the sync promo in the profile menu opened from the 'Sync history?' history sync opt-in identity pill.">
       To easily get back to sites you’ve visited, sync your history and tabs to <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
     </message>
+    <message name="IDS_PROFILE_MENU_SYNC_PROMO_SEE_TABS_FROM_OTHER_DEVICES_DESCRIPTION" desc="The description for the sync promo in the profile menu opened from the 'See tabs from other devices?' history sync opt-in identity pill.">
+      To see open tabs from your other computers and phones, sync your history and tabs to <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
+    </message>
     <message name="IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL" desc="The button label for the sync promo. When clicked, it opens the turn on sync dialog.">
       Turn on
+    </message>
+    <message name="IDS_PROFILE_MENU_SYNC_PROMO_ROW_BUTTON_LABEL" desc="The button label for the history sync promo. When clicked, it opens the turn on sync dialog.">
+      Browse across devices
     </message>
     <message name="IDS_PROFILE_MENU_DESCRIPTION_WITH_SYNC_PROMO" desc="The description of the identity section in the Profile Menu for users that can see the Sync Promo in the Avatar button. This describes the action presented right below it in the button.">
       Back up your passwords, bookmarks, and more, so you can easily get them on all your devices
