@@ -397,7 +397,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
 - (void)setState:(DownloadManagerState)state {
   if (_state != state) {
-    if (state == kDownloadManagerStateSucceeded) {
+    if (state == DownloadManagerState::kSucceeded) {
       // Some Download task may not report progress correctly, but animation
       // does not look good if progress is not at 1.
       [self setProgress:1];
@@ -744,19 +744,19 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 - (void)updateViews {
   [self updateViewsVisibility];
   switch (_state) {
-    case kDownloadManagerStateNotStarted:
+    case DownloadManagerState::kNotStarted:
       [self updateViewsForStateNotStarted];
       break;
-    case kDownloadManagerStateInProgress:
+    case DownloadManagerState::kInProgress:
       [self updateViewsForStateInProgress];
       break;
-    case kDownloadManagerStateSucceeded:
+    case DownloadManagerState::kSucceeded:
       [self updateViewsForStateSucceeded];
       break;
-    case kDownloadManagerStateFailed:
+    case DownloadManagerState::kFailed:
       [self updateViewsForStateFailed];
       break;
-    case kDownloadManagerStateFailedNotResumable:
+    case DownloadManagerState::kFailedNotResumable:
       [self updateViewsForStateFailedNotResumable];
       break;
   }
@@ -769,9 +769,9 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 // any.
 - (UIButton*)currentVisibleButton {
   switch (_state) {
-    case kDownloadManagerStateNotStarted:
+    case DownloadManagerState::kNotStarted:
       return self.downloadButton;
-    case kDownloadManagerStateSucceeded:
+    case DownloadManagerState::kSucceeded:
       switch (_downloadFileDestination) {
         case DownloadFileDestination::kFiles:
           return (_canOpenFile) ? self.openButton : self.openInButton;
@@ -779,10 +779,10 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
           return _installDriveButtonVisible ? self.installAppButton
                                             : self.openInDriveButton;
       }
-    case kDownloadManagerStateFailed:
+    case DownloadManagerState::kFailed:
       return self.tryAgainButton;
-    case kDownloadManagerStateInProgress:
-    case kDownloadManagerStateFailedNotResumable:
+    case DownloadManagerState::kInProgress:
+    case DownloadManagerState::kFailedNotResumable:
       return nil;
   }
 }
@@ -802,10 +802,10 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
 // Updates views `hidden` attribute according to the current state.
 - (void)updateViewsVisibility {
-  const bool taskNotStarted = _state == kDownloadManagerStateNotStarted;
+  const bool taskNotStarted = _state == DownloadManagerState::kNotStarted;
   const bool taskWasInProgress =
-      _transitioningFromState == kDownloadManagerStateInProgress;
-  const bool taskInProgress = _state == kDownloadManagerStateInProgress;
+      _transitioningFromState == DownloadManagerState::kInProgress;
+  const bool taskInProgress = _state == DownloadManagerState::kInProgress;
   const bool destinationIsFiles =
       _downloadFileDestination == DownloadFileDestination::kFiles;
   const bool destinationIsDrive =
@@ -834,7 +834,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   }
 }
 
-// Sets up views for the state `kDownloadManagerStateNotStarted`.
+// Sets up views for the state `DownloadManagerState::kNotStarted`.
 - (void)updateViewsForStateNotStarted {
   // Update status label text.
   self.statusLabel.text = [self localizedFileNameAndSizeWithPeriod:NO];
@@ -886,7 +886,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       IDS_IOS_DOWNLOAD_MANAGER_CLOSE_DOWNLOAD_ACCESSIBILITY_LABEL);
 }
 
-// Sets up views for the state `kDownloadManagerStateInProgress`.
+// Sets up views for the state `DownloadManagerState::kInProgress`.
 - (void)updateViewsForStateInProgress {
   self.leadingIcon.image =
       GetDownloadFileDestinationImage(_downloadFileDestination);
@@ -919,7 +919,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   self.progressView.progress = _progress;
 }
 
-// Sets up views for the state `kDownloadManagerStateSucceeded`.
+// Sets up views for the state `DownloadManagerState::kSucceeded`.
 - (void)updateViewsForStateSucceeded {
   self.leadingIcon.image =
       GetDownloadFileDestinationImage(_downloadFileDestination);
@@ -944,7 +944,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       IDS_IOS_DOWNLOAD_MANAGER_CLOSE_DOWNLOAD_ACCESSIBILITY_LABEL);
 }
 
-// Sets up views for the state `kDownloadManagerStateFailed`.
+// Sets up views for the state `DownloadManagerState::kFailed`.
 - (void)updateViewsForStateFailed {
   self.leadingIcon.image =
       GetDownloadFileDestinationImage(_downloadFileDestination);
@@ -956,7 +956,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       IDS_IOS_DOWNLOAD_MANAGER_CLOSE_DOWNLOAD_ACCESSIBILITY_LABEL);
 }
 
-// Sets up views for the state `kDownloadManagerStateFailedNotResumable`.
+// Sets up views for the state `DownloadManagerState::kFailedNotResumable`.
 - (void)updateViewsForStateFailedNotResumable {
   self.leadingIcon.image =
       GetDownloadFileDestinationImage(_downloadFileDestination);

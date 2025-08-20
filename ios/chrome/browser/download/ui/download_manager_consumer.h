@@ -35,7 +35,7 @@ enum class DownloadFileDestination {
 - (void)setProgress:(float)progress;
 
 // Sets the state of the download task. Default is
-// kDownloadManagerStateNotStarted.
+// DownloadManagerState::kNotStarted.
 - (void)setState:(DownloadManagerState)state;
 
 // Sets visible state to Install Google Drive button.

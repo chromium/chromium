@@ -5,17 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_MANAGER_STATE_H_
 #define IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_MANAGER_STATE_H_
 
-typedef NS_ENUM(NSInteger, DownloadManagerState) {
+enum class DownloadManagerState : NSInteger {
   // Download has not started yet.
-  kDownloadManagerStateNotStarted = 0,
+  kNotStarted = 0,
   // Download is actively progressing.
-  kDownloadManagerStateInProgress,
+  kInProgress,
   // Download is completely finished without errors.
-  kDownloadManagerStateSucceeded,
+  kSucceeded,
   // Download has failed with an error.
-  kDownloadManagerStateFailed,
+  kFailed,
   // Download has failed and cannot be resumed
-  kDownloadManagerStateFailedNotResumable,
+  kFailedNotResumable,
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_MANAGER_STATE_H_

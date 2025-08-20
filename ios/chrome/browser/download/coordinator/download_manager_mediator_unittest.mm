@@ -100,7 +100,7 @@ TEST_F(DownloadManagerMediatorTest, StartTempDownload) {
   mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
-  EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kInProgress, consumer_.state);
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -116,7 +116,7 @@ TEST_F(DownloadManagerMediatorTest, StartTempDownload) {
   task()->SetDone(true);
   base::FilePath download_dir;
   GetDownloadsDirectory(&download_dir);
-  EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForDownloadTimeout, true, ^{
         return !mediator_.GetDownloadPath().empty();
@@ -133,7 +133,7 @@ TEST_F(DownloadManagerMediatorTest, StartDownload) {
   mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
-  EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kInProgress, consumer_.state);
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -141,7 +141,7 @@ TEST_F(DownloadManagerMediatorTest, StartDownload) {
       }));
 
   task()->SetDone(true);
-  EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
   // Download file should be located in download directory.
   base::FilePath download_dir;
   GetDownloadsDirectory(&download_dir);
@@ -164,7 +164,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInstantUpdate) {
   mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
-  EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kInProgress, consumer_.state);
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -179,7 +179,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInstantUpdate) {
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
 
-  EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
   EXPECT_FALSE(consumer_.installDriveButtonVisible);
   EXPECT_EQ(base::FilePath(kTestSuggestedFileName),
             base::apple::NSStringToFilePath(consumer_.fileName));
@@ -188,18 +188,18 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInstantUpdate) {
   EXPECT_FLOAT_EQ(0.8f, consumer_.progress);
 }
 
-// Tests that consumer changes the state to kDownloadManagerStateFailed if task
-// competed with an error.
+// Tests that consumer changes the state to DownloadManagerState::kFailed if
+// task competed with an error.
 TEST_F(DownloadManagerMediatorTest, ConsumerFailedStateUpdate) {
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
 
   task()->SetState(web::DownloadTask::State::kFailed);
   task()->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
-  EXPECT_EQ(kDownloadManagerStateFailed, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kFailed, consumer_.state);
 }
 
-// Tests that consumer changes the state to kDownloadManagerStateSucceeded if
+// Tests that consumer changes the state to DownloadManagerState::kSucceeded if
 // task competed without an error.
 TEST_F(DownloadManagerMediatorTest, ConsumerSuceededStateUpdate) {
   OCMStub([application_ canOpenURL:GetGoogleDriveAppURL()]).andReturn(YES);
@@ -209,7 +209,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerSuceededStateUpdate) {
   mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
-  EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kInProgress, consumer_.state);
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -217,11 +217,11 @@ TEST_F(DownloadManagerMediatorTest, ConsumerSuceededStateUpdate) {
       }));
 
   task()->SetDone(true);
-  EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
   EXPECT_FALSE(consumer_.installDriveButtonVisible);
 }
 
-// Tests that consumer changes the state to kDownloadManagerStateSucceeded if
+// Tests that consumer changes the state to DownloadManagerState::kSucceeded if
 // task competed without an error and Google Drive app is not installed.
 TEST_F(DownloadManagerMediatorTest,
        ConsumerSuceededStateUpdateWithoutDriveAppInstalled) {
@@ -232,7 +232,7 @@ TEST_F(DownloadManagerMediatorTest,
   mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
-  EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kInProgress, consumer_.state);
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -240,18 +240,18 @@ TEST_F(DownloadManagerMediatorTest,
       }));
 
   task()->SetDone(true);
-  EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
   EXPECT_TRUE(consumer_.installDriveButtonVisible);
 }
 
-// Tests that consumer changes the state to kDownloadManagerStateInProgress if
+// Tests that consumer changes the state to DownloadManagerState::kInProgress if
 // the task has started.
 TEST_F(DownloadManagerMediatorTest, ConsumerInProgressStateUpdate) {
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
 
   task()->Start(base::FilePath());
-  EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kInProgress, consumer_.state);
   EXPECT_EQ(0.0, consumer_.progress);
 }
 
@@ -263,7 +263,7 @@ TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
   mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
-  EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kInProgress, consumer_.state);
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -279,7 +279,7 @@ TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
   task()->SetDone(true);
   base::FilePath download_dir;
   GetDownloadsDirectory(&download_dir);
-  EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForDownloadTimeout, true, ^{
         return !mediator_.GetDownloadPath().empty();
@@ -289,7 +289,7 @@ TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
 
   // Set the consumer a second time.
   mediator_.SetConsumer(consumer_);
-  EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
+  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
   EXPECT_TRUE(download_dir.IsParent(file_path));
   EXPECT_EQ(file_path, mediator_.GetDownloadPath());
 }

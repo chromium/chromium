@@ -26,19 +26,19 @@ const CGFloat kViewSize = 28;
 
 - (void)setState:(DownloadManagerState)state {
   switch (state) {
-    case kDownloadManagerStateNotStarted:
+    case DownloadManagerState::kNotStarted:
       self.image = DefaultSymbolTemplateWithPointSize(
           kDownloadPromptFillSymbol, kSymbolDownloadInfobarPointSize);
       self.tintColor = [UIColor colorNamed:kBlueColor];
       break;
-    case kDownloadManagerStateInProgress:
+    case DownloadManagerState::kInProgress:
       self.image = DefaultSymbolTemplateWithPointSize(
           kDownloadDocFillSymbol, kSymbolDownloadSmallInfobarPointSize);
       self.tintColor = [UIColor colorNamed:kGrey400Color];
       break;
-    case kDownloadManagerStateSucceeded:
-    case kDownloadManagerStateFailed:
-    case kDownloadManagerStateFailedNotResumable:
+    case DownloadManagerState::kSucceeded:
+    case DownloadManagerState::kFailed:
+    case DownloadManagerState::kFailedNotResumable:
       self.image = DefaultSymbolTemplateWithPointSize(
           kDownloadDocFillSymbol, kSymbolDownloadInfobarPointSize);
       self.tintColor = [UIColor colorNamed:kGrey400Color];

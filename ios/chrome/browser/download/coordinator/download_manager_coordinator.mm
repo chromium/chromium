@@ -336,7 +336,8 @@
 #pragma mark - DownloadManagerViewControllerDelegate
 
 - (void)downloadManagerViewControllerDidClose:(UIViewController*)controller {
-  if (_mediator.GetDownloadManagerState() != kDownloadManagerStateInProgress) {
+  if (_mediator.GetDownloadManagerState() !=
+      DownloadManagerState::kInProgress) {
     base::UmaHistogramEnumeration("Download.IOSDownloadFileResult",
                                   DownloadFileResult::NotStarted,
                                   DownloadFileResult::Count);
