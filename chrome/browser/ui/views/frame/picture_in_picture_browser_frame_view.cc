@@ -48,6 +48,7 @@
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/compositor_animation_runner.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -94,6 +95,10 @@ constexpr int kResizeAreaCornerSize = 16;
 
 // The time duration that the top bar animation will take in total.
 constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
+
+// The time duration that child dialog animations will take in total.
+constexpr base::TimeDelta kChildDialogAnimationDuration =
+    base::Milliseconds(250);
 
 // The animation durations for the top right buttons, which are separated into
 // multiple parts because some changes need to be delayed.
@@ -254,6 +259,7 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
 
     // At this point, we'll no longer resize when the child dialog closes, so
     // reset the state to normal.
+    AnimateDialogsWaitingForResize();
     resizing_state_ = ResizingState::kNotSizedToChildren;
     resize_timer_.Stop();
   }
@@ -267,6 +273,8 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
 
   invisible_child_dialogs_.erase(widget);
   child_dialog_observations_.RemoveObservation(widget);
+  child_dialogs_waiting_for_resize_.erase(widget);
+  child_dialog_sizes_.erase(widget);
 
   MaybeRevertSizeAfterChildDialogCloses();
 }
@@ -310,6 +318,33 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
 }
 
 void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
+    AnimateDialogsWaitingForResize() {
+  if (child_dialogs_waiting_for_resize_.empty()) {
+    return;
+  }
+
+  for (auto child_dialog : child_dialogs_waiting_for_resize_) {
+    // If the dialog is already visible, don't re-animate it.
+    if (child_dialog->GetLayer()->GetTargetOpacity() == 1.0f) {
+      continue;
+    }
+
+    // Enable visibility changed animations after resizing the
+    // picture-in-picture window.
+    child_dialog->SetVisibilityChangedAnimationsEnabled(true);
+    // Fade-in the child dialog now that the picture-in-picture window is the
+    // correct size.
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS)
+        .Once()
+        .SetDuration(kChildDialogAnimationDuration)
+        .SetOpacity(child_dialog->GetLayer(), 1.0f);
+    // Allow the view to process events.
+    child_dialog->GetContentsView()->SetCanProcessEventsWithinSubtree(true);
+  }
+}
+
+void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
     PostResizeForChild(const gfx::Rect& new_bounds) {
   resizing_state_ = ResizingState::kPendingResizeForChild;
   pending_bounds_ = new_bounds;
@@ -336,6 +371,7 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
   resizing_state_ = ResizingState::kResizeForChildInProgress;
   pip_widget_->SetBoundsConstrained(pending_bounds_);
   pip_frame_->EnforceTucking();
+  AnimateDialogsWaitingForResize();
   resizing_state_ = ResizingState::kSizedToChildren;
 }
 
@@ -361,6 +397,23 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
                                 : pip_widget_->GetWindowBoundsInScreen();
   gfx::Rect dialog_bounds = child_dialog->GetWindowBoundsInScreen();
   gfx::Rect adjusted_bounds = original_bounds;
+
+  // If the child dialog is contained within the picture-in-picture window and
+  // its size has not changed, do not resize the picture-in-picture window.
+  //
+  // On some platforms, Mac specifically, the child widget may resize after the
+  // picture-in-picture window resizes to contain the child. To avoid
+  // unnecessarily re-resizing the window, we check if the child dialog is
+  // contained within the picture-in-picture window and if its size is
+  // unchanged, if those conditions are met then do not resize.
+  auto it = child_dialog_sizes_.find(child_dialog);
+  if (original_bounds.Contains(dialog_bounds) &&
+      it != child_dialog_sizes_.end() && it->second == dialog_bounds.size()) {
+    return;
+  }
+
+  child_dialog_sizes_.insert_or_assign(child_dialog, dialog_bounds.size());
+
   if (!child_dialog->IsModal()) {
     // Non-modal dialogs set their bounds directly.  Expand the pip window to
     // include them, and that's it if we're on a platform that clips child
@@ -402,11 +455,29 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
     return;
   }
 
+  // If the dialog is not already pending a resize, then set it up to be.
+  if (!child_dialogs_waiting_for_resize_.contains(child_dialog)) {
+    // Disable visibility changed animations for the child dialog. This is done
+    // to prevent "flickering" due to conflicts between the picture-in-picture
+    // window resize and the child dialog animation.
+    child_dialog->SetVisibilityChangedAnimationsEnabled(false);
+    // Don't allow the view to process events.
+    child_dialog->GetContentsView()->SetCanProcessEventsWithinSubtree(false);
+    child_dialog->GetLayer()->SetOpacity(0.0f);
+    child_dialogs_waiting_for_resize_.insert(child_dialog);
+  }
+
   PostResizeForChild(adjusted_bounds);
 }
 
 void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
     MaybeRevertSizeAfterChildDialogCloses() {
+  // If the pip window in the process of closing ignore any resizes that could
+  // occur as child dialogs are destroyed during teardown.
+  if (pip_widget_->IsClosed()) {
+    return;
+  }
+
   // If the pip window in the process of closing ignore any resizes that could
   // occur as child dialogs are destroyed during teardown.
   if (pip_widget_->IsClosed()) {

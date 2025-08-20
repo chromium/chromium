@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -292,6 +293,16 @@ class PictureInPictureBrowserFrameView
       kSizedToChildren,
     };
 
+    // Animates the picture-in-picture child dialogs that are waiting to be
+    // resized.
+    //
+    // When child dialogs that require a resize of the parent window are
+    // opened, we first make them transparent and non-interactive to avoid
+    // visual glitches while the parent resizes. This function is called after
+    // the parent resize is complete to fade in the child dialogs and make them
+    // interactive again.
+    void AnimateDialogsWaitingForResize();
+
     void PostResizeForChild(const gfx::Rect& new_bounds);
     void FinishPendingResizeForChild();
 
@@ -317,6 +328,19 @@ class PictureInPictureBrowserFrameView
     // The bounds that we forced the window to be in response to a child dialog
     // opening.
     gfx::Rect latest_child_dialog_forced_bounds_;
+
+    // The child dialogs that are waiting for the picture-in-picture window to
+    // resize.
+    //
+    // Used to disable visibility changed animations while child
+    // dialogs are waiting for the picture-in-picture window to resize. After
+    // the picture-in-picture window resizes, or if the user resizes the
+    // picture-in-picture window before the resize takes place, this set
+    // is used to enable visibility changed animations.
+    base::flat_set<raw_ptr<views::Widget>> child_dialogs_waiting_for_resize_;
+
+    // The sizes of the child dialogs. Used to avoid unnecessary resizes.
+    base::flat_map<raw_ptr<views::Widget>, gfx::Size> child_dialog_sizes_;
 
     // The bounds that the window would ideally be if we did not have to enlarge
     // to fit a child dialog.
