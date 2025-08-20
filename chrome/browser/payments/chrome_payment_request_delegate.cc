@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -69,6 +70,20 @@ bool FrameSupportsPayments(content::RenderFrameHost* rfh) {
   return rfh && rfh->IsActive() && rfh->IsRenderFrameLive() &&
          rfh->IsFeatureEnabled(
              network::mojom::PermissionsPolicyFeature::kPayment);
+}
+
+base::OnceClosure ChainSpcFallbackOutcomeLogToCallback(
+    SecurePaymentRequestOutcome outcome,
+    base::OnceClosure callback) {
+  return callback.is_null()
+             ? std::move(callback)
+             : base::BindOnce(
+                   [](SecurePaymentRequestOutcome outcome) {
+                     base::UmaHistogramEnumeration(
+                         "SecurePaymentRequest.Fallback.Outcome", outcome);
+                   },
+                   outcome)
+                   .Then(std::move(callback));
 }
 
 }  // namespace
@@ -222,10 +237,15 @@ void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
       content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents)
     return;
+
   spc_no_creds_dialog_ = SecurePaymentConfirmationNoCreds::Create();
-  spc_no_creds_dialog_->ShowDialog(web_contents, merchant_name, rp_id,
-                                   std::move(response_callback),
-                                   std::move(opt_out_callback));
+  spc_no_creds_dialog_->ShowDialog(
+      web_contents, merchant_name, rp_id,
+      ChainSpcFallbackOutcomeLogToCallback(
+          SecurePaymentRequestOutcome::kAnotherWay,
+          std::move(response_callback)),
+      ChainSpcFallbackOutcomeLogToCallback(SecurePaymentRequestOutcome::kOptOut,
+                                           std::move(opt_out_callback)));
 }
 
 content::RenderFrameHost* ChromePaymentRequestDelegate::GetRenderFrameHost()

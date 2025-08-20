@@ -13,6 +13,7 @@
 #include "components/payments/core/journey_logger.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"

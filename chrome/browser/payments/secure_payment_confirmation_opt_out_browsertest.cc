@@ -8,8 +8,10 @@
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace payments {
 namespace {
@@ -284,6 +286,28 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
                          Event2::kUserAborted, Event2::kNoMatchingCredentials,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
+                       Metrics_NoMatchingCreds_OptOut) {
+  base::HistogramTester histogram_tester;
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+
+  ResetEventWaiterForSingleEvent(TestEvent::kErrorDisplayed);
+  ExecuteScriptAsync(
+      GetActiveWebContents(),
+      content::JsReplace(
+          "getSecurePaymentConfirmationStatus(undefined, undefined, $1)",
+          /*show_opt_out*/ true));
+  WaitForObservedEvent();
+  test_controller()->ClickOptOut();
+
+  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
+                                      SecurePaymentRequestOutcome::kOptOut,
+                                      /*expected_bucket_count=*/1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class SecurePaymentConfirmationOptOutDisabledTest
     : public SecurePaymentConfirmationOptOutTest {

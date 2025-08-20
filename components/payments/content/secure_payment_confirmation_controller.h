@@ -15,6 +15,17 @@ namespace payments {
 
 class PaymentRequest;
 
+// LINT.IfChange(SecurePaymentRequestOutcome)
+enum class SecurePaymentRequestOutcome {
+  kUnknown = 0,
+  kAccept = 1,
+  kAnotherWay = 2,
+  kCancel = 3,
+  kOptOut = 4,
+  kMaxValue = kOptOut,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:SecurePaymentRequestOutcome)
+
 // Controls the user interface in the secure payment confirmation flow.
 class SecurePaymentConfirmationController
     : public PaymentRequestDialog,

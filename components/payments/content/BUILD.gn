@@ -267,6 +267,8 @@ source_set("payment_content_unit_tests") {
       "payment_request_state_unittest.cc",
       "payment_request_web_contents_manager_unittest.cc",
       "payment_response_helper_unittest.cc",
+      "secure_payment_confirmation_controller_unittest.cc",
+      "secure_payment_confirmation_view_stub.cc",
       "service_worker_payment_app_unittest.cc",
       "test_content_payment_request_delegate.cc",
       "test_content_payment_request_delegate.h",

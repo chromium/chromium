@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -247,6 +248,9 @@ void SecurePaymentConfirmationController::OnInitialized(
 }
 
 void SecurePaymentConfirmationController::OnCancel() {
+  base::UmaHistogramEnumeration("SecurePaymentRequest.Transaction.Outcome",
+                                SecurePaymentRequestOutcome::kAnotherWay);
+
   CloseDialog();
 
   if (!request_)
@@ -257,6 +261,9 @@ void SecurePaymentConfirmationController::OnCancel() {
 }
 
 void SecurePaymentConfirmationController::OnOptOut() {
+  base::UmaHistogramEnumeration("SecurePaymentRequest.Transaction.Outcome",
+                                SecurePaymentRequestOutcome::kOptOut);
+
   // Set the opt out clicked state on the model so that the view knows not to
   // call back to OnCancel when the dialog is closed.
   model_.set_opt_out_clicked(true);
@@ -270,6 +277,9 @@ void SecurePaymentConfirmationController::OnOptOut() {
 }
 
 void SecurePaymentConfirmationController::OnConfirm() {
+  base::UmaHistogramEnumeration("SecurePaymentRequest.Transaction.Outcome",
+                                SecurePaymentRequestOutcome::kAccept);
+
   if (!request_)
     return;
 
