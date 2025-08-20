@@ -741,7 +741,8 @@ ios_builder(
             "ci/ios-structured-test-ids-simulator-fyi",
         ],
     ),
-    os = os.LINUX_DEFAULT,
+    builderless = True,
+    cpu = cpu.ARM64,
     contact_team_email = "chrome-browser-infra-team@google.com",
     experiments = {
         "chromium_test.resultdb_module": 100,
