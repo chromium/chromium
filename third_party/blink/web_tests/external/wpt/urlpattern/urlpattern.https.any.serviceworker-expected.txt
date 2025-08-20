@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Pattern: [{"protocol":"http","port":"80 "}] Inputs: [{"protocol":"http","port":"80"}]
   Failed to construct 'URLPattern': Invalid port pattern '80 '. Invalid port pattern '80 '.
 [FAIL] Pattern: [{"port":"80"}] Inputs: [{"port":"8\\t0"}]
@@ -24,5 +24,11 @@ Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to construct 'URLPattern': Invalid hostname pattern 'bad\rhostname'. Invalid hostname pattern 'bad\rhostname'.
 [FAIL] Pattern: [{"hostname":"bad\\thostname"}] Inputs: [{"hostname":"badhostname"}]
   Failed to construct 'URLPattern': Invalid hostname pattern 'bad	hostname'. Invalid hostname pattern 'bad	hostname'.
+[FAIL] Pattern: [{"protocol":"http","hostname":"example.com/ignoredpath"}] Inputs: ["http://example.com/"]
+  Failed to construct 'URLPattern': Invalid hostname pattern 'example.com/ignoredpath'. Invalid hostname pattern 'example.com/ignoredpath'.
+[FAIL] Pattern: [{"protocol":"http","hostname":"example.com\\\\?ignoredsearch"}] Inputs: ["http://example.com/"]
+  Failed to construct 'URLPattern': Invalid hostname pattern 'example.com\\?ignoredsearch'. Invalid hostname pattern 'example.com?ignoredsearch'.
+[FAIL] Pattern: [{"protocol":"http","hostname":"example.com#ignoredhash"}] Inputs: ["http://example.com/"]
+  Failed to construct 'URLPattern': Invalid hostname pattern 'example.com#ignoredhash'. Invalid hostname pattern 'example.com#ignoredhash'.
 Harness: the test ran to completion.
 
