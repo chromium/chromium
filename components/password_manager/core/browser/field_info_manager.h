@@ -69,8 +69,12 @@ class FieldInfoManager : public KeyedService {
   void AddFieldInfo(const FieldInfo& new_info,
                     const std::optional<FormPredictions>& predictions);
 
-  // Retrieves field info for the given |signon_realm|.
-  std::vector<FieldInfo> GetFieldInfo(const std::string& signon_realm);
+  // Retrieves field info for the given `signon_realm`. If
+  // `num_fields_to_consider` is set, only the last `num_fields_to_consider`
+  // fields are considered.
+  std::vector<FieldInfo> GetFieldInfo(
+      const std::string& signon_realm,
+      std::optional<size_t> num_fields_to_consider = std::nullopt);
 
   // Propagates signatures and field type received from the server.
   void ProcessServerPredictions(
