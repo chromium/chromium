@@ -15,8 +15,53 @@
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
+
+// This file defines Glic API test fixtures NonInteractiveGlicApiTest and
+// InteractiveGlicApiTest.
+// These fixtures configure a Glic client that runs test code. Each .cc test
+// file corresponds to a .ts file. The .cc file runs browser-side code, and the
+// .ts file runs glic client code. Each gtest in the .cc file should correspond
+// to a test function in the .ts file.
+// Using these fixtures requires a little bit of setup. Example:
+//
+// class MyNewGlicTest : public NonInteractiveGlicApiTest {
+//  public:
+//   MyNewGlicTest() :
+//     // Make a new .ts file in chrome/test/data/webui/glic/browser_tests
+//     // update build rules, and point to the generated .js file here.
+//     NonInteractiveGlicApiTest("./my_new_glic_test_browsertest.js") {}
+// };
+//
+// // Always include this test in one fixture of your test file. It ensures
+// // the set of tests in the .ts file match the set of tests in the .cc file.
+// IN_PROC_BROWSER_TEST_F(MyNewGlicTest, testAllTestsAreRegistered) {
+//   // Include all test fixture names here.
+//   AssertAllTestsRegistered({
+//       "MyNewGlicTest",
+//   });
+// }
+// // Add test cases...
+//
+// Next, here's boilerplate for the my_new_glic_test_browsertest.ts file:
+//
+// import {ApiTestFixtureBase, testMain} from './browser_test_base.js';
+//
+// class MyNewGlicTest extends ApiTestFixtureBase {
+//   // Normally it's useful to wait until the client is shown to start the test
+//   // but is not necessary.
+//   override async setUpTest() {
+//     await this.client.waitForFirstOpen();
+//   }
+//   // Add test cases...
+// }
+// testMain([
+//   // All test fixtures need to be listed here.
+//   MyNewGlicTest,
+// ]);
 
 struct ExecuteTestOptions {
   // Test parameters passed to the JS test. See `ApiTestFixtureBase.testParams`.
@@ -256,6 +301,12 @@ class GlicApiTestBase : public T {
 
   void AssertAllTestsRegistered(
       std::vector<std::string> gunit_test_suite_names) {
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
+    GTEST_SKIP() << "AssertAllTestsRegistered not processed for slow binaries.";
+#else
+    T::RunTestSequence(T::OpenGlicWindow(T::GlicWindowMode::kDetached,
+                                         T::GlicInstrumentMode::kNone));
     ExecuteJsTest();
     ASSERT_TRUE(step_data()->is_list());
     ::testing::UnitTest* unit_test = ::testing::UnitTest::GetInstance();
@@ -284,6 +335,7 @@ class GlicApiTestBase : public T {
     ASSERT_THAT(js_test_names, testing::IsSubsetOf(cc_test_names))
         << "Test cases in js, but not cc";
     ContinueJsTest();
+#endif
   }
 
   // Records all requests to the embedded test server.
@@ -306,6 +358,7 @@ class GlicApiTestBase : public T {
 };
 
 using NonInteractiveGlicApiTest = GlicApiTestBase<NonInteractiveGlicTest>;
+using InteractiveGlicApiTest = GlicApiTestBase<test::InteractiveGlicTest>;
 
 }  // namespace glic
 

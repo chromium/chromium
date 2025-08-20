@@ -28,15 +28,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testAllTestsAreRegistered() {
-    const allNames = [];
-    for (const fixture of TEST_FIXTURES) {
-      allNames.push(...Object.getOwnPropertyNames(fixture.prototype)
-                        .filter(name => name.startsWith('test')));
-    }
-    await this.advanceToNextStep(allNames);
-  }
-
   async testRequestHeader() {}
 
   async testCreateTab() {
