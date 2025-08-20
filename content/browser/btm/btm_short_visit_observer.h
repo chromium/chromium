@@ -77,10 +77,12 @@ class CONTENT_EXPORT BtmShortVisitObserver
   // The source ID of the current page -- used in DidFinishNavigation() to emit
   // an event for the previous page.
   ukm::SourceId page_source_id_;
-  // Metrics state for the current page.
+  // Metrics state for the current page. Moved to `pending_metrics_` when the
+  // page is navigated away from.
   std::unique_ptr<AsyncMetricsState> current_page_metrics_;
   // Metrics state for previously-visited pages that we're still waiting for BTM
-  // state for.
+  // state for. Once the BTM state is retrieved, the metrics are emitted and
+  // the state is removed from this set.
   std::set<std::unique_ptr<AsyncMetricsState>, base::UniquePtrComparator>
       pending_metrics_;
   base::WeakPtrFactory<BtmShortVisitObserver> weak_factory_{this};

@@ -54,6 +54,11 @@ struct CONTENT_EXPORT BtmNavigationInfo {
   UrlAndSourceId destination;
 };
 
+// Observes a `WebContents` and reports page visit information to a callback. A
+// page visit is defined as the time from when a primary page is committed until
+// the next primary page change. Also attempts to attribute late cookie access
+// notifications (reports of navigational cookie accesses that are received
+// after the navigation has finished) to the appropriate page or redirect.
 class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
  public:
   using VisitCallback =
@@ -97,8 +102,10 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
   BtmPageVisitInfo current_page_;
   raw_ref<base::Clock> clock_;
   base::Time last_page_change_time_;
-  // Past page visits that we are still waiting to see if late cookie accesses
-  // are reported for them.
+  // Past page visits that we are holding on to, to see if any late cookie
+  // access notifications come through for them. A "late" cookie access
+  // notification is when a navigational cookie access is reported after the
+  // navigation has finished.
   std::deque<VisitTuple> pending_visits_;
   base::WeakPtrFactory<BtmPageVisitObserver> weak_factory_{this};
 };

@@ -421,6 +421,10 @@ void BtmRedirectContext::EndChain(UrlAndSourceId final_url,
 }
 
 namespace {
+// Attempts to attribute a late cookie access `op` to one of the most recent
+// redirects in `redirects` with URL `url`, starting from the most recent
+// redirect. Returns true if the cookie access was attributed to a redirect in
+// `redirects`, and false otherwise.
 bool AddLateCookieAccess(const GURL& url,
                          CookieOperation op,
                          std::vector<BtmRedirectInfoPtr>& redirects) {

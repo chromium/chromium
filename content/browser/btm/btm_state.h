@@ -16,7 +16,8 @@ namespace content {
 
 class BtmStorage;
 
-// A boolean value that gets cleared when moved.
+// A boolean-like class that tracks whether the `BtmState` has been modified
+// since it was loaded from storage.
 class DirtyBit {
  public:
   explicit DirtyBit(bool value = false) : value_(value) {}
@@ -42,8 +43,9 @@ class DirtyBit {
   bool value_;
 };
 
-// Not to be confused with state stored by sites (e.g. cookies, local storage),
-// BtmState represents the state recorded by BtmService itself.
+// Represents the state recorded by the BTM feature for a particular site. Not
+// to be confused with the state stored by the site itself (e.g., cookies, local
+// storage). `BtmState` is stored in the BTM database.
 class CONTENT_EXPORT BtmState {
  public:
   BtmState(BtmStorage* storage, std::string site);
@@ -69,7 +71,10 @@ class CONTENT_EXPORT BtmState {
   TimestampRange stateful_bounce_times() const {
     return state_.stateful_bounce_times;
   }
+  // The time range of all bounces (both stateful and stateless).
   TimestampRange bounce_times() const { return state_.bounce_times; }
+  // The time range of successful WebAuthn assertions (failed WAAs do not
+  // count).
   TimestampRange web_authn_assertion_times() const {
     return state_.web_authn_assertion_times;
   }

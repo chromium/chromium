@@ -96,8 +96,10 @@ constexpr size_t kBtmRedirectChainMax = 1000;
 inline constexpr int kAllSitesFollowingFirstPartyLookbackLength = 10;
 
 // A redirect-chain-in-progress. It grows by calls to Append() and restarts by
-// calls to EndChain().
-// TODO: crbug.com/324573484 - rename to remove association with DIPS.
+// calls to EndChain(). Runs a `BtmRedirectChainHandler` when the chain is
+// complete.
+//
+// TODO: crbug.com/324573484 - rename to remove association with BTM.
 class CONTENT_EXPORT BtmRedirectContext {
  public:
   BtmRedirectContext(BtmRedirectChainHandler handler,
@@ -128,8 +130,13 @@ class CONTENT_EXPORT BtmRedirectContext {
   // NOTE: A chain is valid if it has a non-empty `initial_url_`.
   void EndChain(UrlAndSourceId final_url, bool current_page_has_interaction);
 
+  // Reports a BTM issue to the inspector (e.g., DevTools).
   void ReportIssue(const GURL& final_url);
 
+  // Attempts to attribute a late cookie access `op` to a recent redirect with
+  // URL `url`. A late cookie access is a navigational cookie access for which
+  // the notification arrives after the navigation has finished. Returns true if
+  // the cookie access was attributed to a redirect, and false otherwise.
   [[nodiscard]] bool AddLateCookieAccess(const GURL& url, CookieOperation op);
 
   size_t size() const { return redirects_.size(); }
@@ -140,6 +147,8 @@ class CONTENT_EXPORT BtmRedirectContext {
     handler_ = handler;
   }
 
+  // Returns the total number of redirects in the chain, including any that
+  // preceded this chain that should count toward this chain's length.
   size_t GetRedirectChainLength() const {
     return redirects_.size() + redirect_prefix_count_;
   }
@@ -160,7 +169,7 @@ class CONTENT_EXPORT BtmRedirectContext {
 
   // Returns the server redirects from the last navigation. Note that due to
   // limitations in C++ the BtmRedirectInfo objects are unavoidably mutable.
-  // Clients must not modify them.
+  // Clients MUST NOT modify them.
   base::span<const BtmRedirectInfoPtr>
   GetServerRedirectsSinceLastPrimaryPageChange() const;
 
@@ -188,19 +197,22 @@ class CONTENT_EXPORT BtmRedirectContext {
   std::set<std::string> redirectors_;
   // The number of redirects preceding this chain, that should be counted toward
   // this chain's total length. Includes both committed redirects (for an
-  // uncommitted chain) and trimmed redirects.
+  // uncommitted chain) and trimmed redirects. (Redirects may be trimmed from
+  // the front of an ongoing chain for memory management.)
   size_t redirect_prefix_count_ = 0;
 };
 
 // A simplified interface to WebContents and BtmServiceImpl that can be faked
 // in tests. Needed to allow unit testing BtmBounceDetector.
-// TODO: crbug.com/324573484 - rename to remove association with DIPS.
+//
+// TODO: crbug.com/324573484 - rename to remove association with BTM.
 class CONTENT_EXPORT BtmBounceDetectorDelegate {
  public:
   virtual ~BtmBounceDetectorDelegate();
   virtual UrlAndSourceId GetLastCommittedURL() const = 0;
   virtual void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
                                    BtmRedirectChainInfoPtr chain) = 0;
+  // Report `sites` as redirectors to the inspector (e.g., DevTools).
   virtual void ReportRedirectors(std::set<std::string> sites) = 0;
   virtual void OnSiteStorageAccessed(const GURL& first_party_url,
                                      CookieOperation op,
@@ -239,9 +251,11 @@ class CONTENT_EXPORT ServerBounceDetectionState
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
 
-// A simplified interface to NavigationHandle that can be faked in
-// tests. Needed to allow unit testing BtmBounceDetector.
-// TODO: crbug.com/324573484 - rename to remove association with DIPS.
+// A simplified interface to `NavigationHandle` that can be faked in tests.
+//
+// TODO: crbug.com/324573484 - Rename to remove association with BTM.
+// TODO: crbug.com/381687258 - Remove in favor of using `NavigationSimulator` in
+// tests.
 class CONTENT_EXPORT BtmNavigationHandle {
  public:
   virtual ~BtmNavigationHandle();
@@ -278,10 +292,17 @@ class CONTENT_EXPORT BtmNavigationHandle {
   virtual ServerBounceDetectionState* GetServerState() = 0;
 };
 
-// Detects client/server-side bounces and handles them (currently by collecting
-// metrics and storing them in the BtmDatabase).
+// Detects client- and server-side bounces and handles them (currently by
+// collecting metrics and storing them in the BtmDatabase).
+//
+// This class has a communication loop with `RedirectChainDetector`.
+// `RedirectChainDetector` owns this class and calls it directly; this class
+// then uses the `BtmBounceDetectorDelegate` interface, which
+// `RedirectChainDetector` implements, to communicate back to the owning
+// `RedirectChainDetector` instance.
+//
 // TODO: crbug.com/324573484 - rename this to avoid confusion with
-// RedirectChainDetector and remove its association with DIPS.
+// `RedirectChainDetector` and remove its association with BTM.
 class CONTENT_EXPORT BtmBounceDetector {
  public:
   explicit BtmBounceDetector(BtmBounceDetectorDelegate* delegate,
@@ -317,10 +338,16 @@ class CONTENT_EXPORT BtmBounceDetector {
   void SetRedirectChainHandlerForTesting(BtmRedirectChainHandler handler) {
     committed_redirect_context_.SetRedirectChainHandlerForTesting(handler);
   }
+  // Returns state for the in-progress redirect chain.
   const BtmRedirectContext& CommittedRedirectContext() const {
     return committed_redirect_context_;
   }
 
+  // Attempts to attribute the late cookie access notification `op` to a recent
+  // redirect by `url` in the current chain. A "late" cookie access is a
+  // navigational cookie access that is reported after the navigation has
+  // finished. Returns true if the access was attributed to a redirect, and
+  // false otherwise.
   [[nodiscard]] bool AddLateCookieAccess(GURL url, CookieOperation op) {
     bool was_late = committed_redirect_context_.AddLateCookieAccess(url, op);
     if (was_late) {
@@ -348,6 +375,9 @@ class CONTENT_EXPORT BtmBounceDetector {
   base::RetainingOneShotTimer client_bounce_detection_timer_;
 };
 
+// Holds a pointer to a redirect chain, and uses a timer to delay BTM's
+// processing of the chain, to give some time for "late" cookie accesses to be
+// reported first.
 class DelayedChainHandler {
  public:
   explicit DelayedChainHandler(BtmRedirectChainHandler handler);
@@ -370,7 +400,10 @@ class DelayedChainHandler {
   base::RetainingOneShotTimer timer_;
 };
 
-// Detects chains of server- and client redirects, and notifies observers.
+// Attached to a `WebContents` and observes its navigations to detect chains of
+// server and client redirects. Notifies `RedirectChainDetector::Observer`s
+// when a redirect chain has completed.
+//
 // TODO: crbug.com/324573485 - move to separate file.
 class CONTENT_EXPORT RedirectChainDetector
     : public WebContentsObserver,
@@ -408,6 +441,7 @@ class CONTENT_EXPORT RedirectChainDetector
     detector_.SetRedirectChainHandlerForTesting(handler);
   }
 
+  // Returns state for the in-progress redirect chain.
   const BtmRedirectContext& CommittedRedirectContext() const {
     return detector_.CommittedRedirectContext();
   }
@@ -436,8 +470,12 @@ class CONTENT_EXPORT RedirectChainDetector
   void PrimaryPageChanged(Page& page) override;
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
+  // See the `WebContentsObserver` declarations for `OnCookiesAccessed` for when
+  // this overload is called vs. the other.
   void OnCookiesAccessed(RenderFrameHost* render_frame_host,
                          const CookieAccessDetails& details) override;
+  // See the `WebContentsObserver` declarations for `OnCookiesAccessed` for when
+  // this overload is called vs. the other.
   void OnCookiesAccessed(NavigationHandle* navigation_handle,
                          const CookieAccessDetails& details) override;
   void NotifyStorageAccessed(RenderFrameHost* render_frame_host,
@@ -462,8 +500,9 @@ class CONTENT_EXPORT RedirectChainDetector
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-// Populates the DIPS Database with site metadata, for the DIPS Service to
-// recognize and delete the storage of sites that perform bounce tracking.
+// Populates the BTM database with site metadata, which is then used by the
+// `BtmService` to identify sites that perform bounce tracking and delete their
+// storage.
 class CONTENT_EXPORT BtmWebContentsObserver
     : public WebContentsObserver,
       public WebContentsUserData<BtmWebContentsObserver>,
@@ -497,6 +536,7 @@ class CONTENT_EXPORT BtmWebContentsObserver
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
   friend class WebContentsUserData<BtmWebContentsObserver>;
 
+  // Emits a BTM issue to the inspector (e.g., DevTools).
   void EmitBtmIssue(const std::set<std::string>& sites);
 
   void RecordEvent(BtmRecordedEvent event,

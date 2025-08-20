@@ -3,7 +3,10 @@
 This directory contains the code for Chromium's Bounce Tracking Mitigation (BTM)
 feature.
 BTM aims to mitigate the privacy impact of "bounce tracking," a technique used
-to track users across websites without relying on third-party cookies.
+to track users across websites without relying on third-party cookies (3PCs).
+
+For historical reasons, some of the code in this directory is also used to
+support mitigations against using popups to simulate 3PCs.
 
 ## What is bounce tracking?
 

@@ -22,7 +22,7 @@ enum class QuantityBucket {
 };
 
 // Types that qualify a navigation for the
-// DIPS.TrustIndicator.DirectNavigationV2 UKM event. Should only contain core
+// `DIPS.TrustIndicator.DirectNavigationV2` UKM event. Should only contain core
 // page transition types (no qualifiers).
 constexpr const std::array<ui::PageTransition, 2>&
     kDirectNavigationPageTransitions{
@@ -499,6 +499,7 @@ bool BtmNavigationFlowDetector::
     return false;
   }
 
+  // We've now confirmed that `possible_entrypoint` is indeed an entrypoint.
   successor_interaction_tracking_state_.emplace(btm::EntrypointInfo(
       possible_entrypoint,
       WasClientRedirectLike(*previous_page_to_current_page_)));
