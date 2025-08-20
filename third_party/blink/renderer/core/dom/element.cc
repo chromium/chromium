@@ -1250,16 +1250,17 @@ GCedHeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
       GetExplicitlySetElementsForAttr(name);
   if (explicitly_set_elements) {
     // 3. If reflectedTarget's explicitly set attr-elements is not null:
-    for (auto attr_element : *explicitly_set_elements) {
+    for (const auto& attr_element : *explicitly_set_elements) {
       // 3.1. If attrElement is not a descendant of any of element's
       // shadow-including ancestors, then continue.
       if (ElementIsDescendantOfShadowIncludingAncestor(*this, *attr_element)) {
         // 3.NEW. Resolve the referenceTarget of attr_element
-        attr_element = attr_element->GetShadowReferenceTargetOrSelf(name);
+        Element* reference_target =
+            attr_element->GetShadowReferenceTargetOrSelf(name);
 
         // 3.2. Append attrElement to elements.
-        if (attr_element) {
-          result_elements->push_back(attr_element);
+        if (reference_target) {
+          result_elements->push_back(reference_target);
         }
       }
     }
@@ -1294,7 +1295,7 @@ GCedHeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
     attribute_value = attribute_value.SimplifyWhiteSpace();
     attribute_value.Split(' ', tokens);
 
-    for (auto id : tokens) {
+    for (const auto& id : tokens) {
       // 4.3.1. Let candidate be the first element, in tree order, that meets
       // [certain criteria].
       Element* candidate =
@@ -1407,7 +1408,7 @@ void Element::SetElementArrayAttribute(
     stored_elements->clear();
   }
 
-  for (auto element : *given_elements) {
+  for (const auto& element : *given_elements) {
     stored_elements->insert(element);
   }
 
@@ -6251,7 +6252,7 @@ void Element::RecalcCustomHighlightPseudoStyle(
   }
 
   StyleHighlightData& highlights = builder.AccessHighlightData();
-  for (auto highlight_name : *highlight_names) {
+  for (const auto& highlight_name : *highlight_names) {
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->CustomHighlight(highlight_name)
                           : nullptr;

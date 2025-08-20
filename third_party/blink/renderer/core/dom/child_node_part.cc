@@ -191,7 +191,7 @@ void ChildNodePart::replaceChildren(
   // trusted type handling if that template parameter is a V8UnionNodeOrString.
   HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>> nodes_mapped;
   nodes_mapped.ReserveInitialCapacity(nodes.size());
-  for (auto node_or_string : nodes) {
+  for (const auto& node_or_string : nodes) {
     if (node_or_string->IsNode()) {
       nodes_mapped.push_back(
           MakeGarbageCollected<V8UnionNodeOrStringOrTrustedScript>(

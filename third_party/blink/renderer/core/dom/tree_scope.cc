@@ -467,7 +467,7 @@ void TreeScope::ClearAdoptedStyleSheets() {
   removed.AppendRange(adopted_style_sheets_->begin(),
                       adopted_style_sheets_->end());
   adopted_style_sheets_->clear();
-  for (auto sheet : removed) {
+  for (const auto& sheet : removed) {
     StyleSheetWasRemoved(sheet);
   }
 }
@@ -476,7 +476,7 @@ void TreeScope::SetAdoptedStyleSheetsForTesting(
     HeapVector<Member<CSSStyleSheet>>& adopted_style_sheets) {
   ClearAdoptedStyleSheets();
   EnsureAdoptedStyleSheets();
-  for (auto sheet : adopted_style_sheets) {
+  for (const auto& sheet : adopted_style_sheets) {
     DCHECK(sheet->IsConstructed());
     DCHECK_EQ(sheet->ConstructorDocument(), GetDocument());
     adopted_style_sheets_->push_back(sheet);

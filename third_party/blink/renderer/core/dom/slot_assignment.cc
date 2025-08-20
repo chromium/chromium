@@ -301,7 +301,7 @@ void SlotAssignment::RecalcAssignment() {
         }
       }
 
-      for (auto child : children_to_clear) {
+      for (auto& child : children_to_clear) {
         child->ClearFlatTreeNodeData();
         child->RemovedFromFlatTree();
       }
