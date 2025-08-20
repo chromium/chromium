@@ -99,18 +99,6 @@ void ConfirmInfoBar::Layout(PassKey) {
             DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING);
   }
 
-  if (GetDelegate()->ShouldShowLinkBeforeButton()) {
-    link_->SetPosition(gfx::Point(label_->bounds().right(), OffsetY(link_)));
-
-    if (!link_->GetText().empty()) {
-      x = link_->bounds().right() +
-          layout_provider->GetDistanceMetric(
-              views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-    }
-  } else {
-    link_->SetPosition(gfx::Point(GetEndX() - link_->width(), OffsetY(link_)));
-  }
-
   // Add buttons into a vector to be displayed in an ordered row.
   // Depending on the PlatformStyle, reverse the vector so the ok button will be
   // on the correct leading style.
@@ -132,6 +120,8 @@ void ConfirmInfoBar::Layout(PassKey) {
         layout_provider->GetDistanceMetric(
             views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
   }
+
+  link_->SetPosition(gfx::Point(GetEndX() - link_->width(), OffsetY(link_)));
 }
 
 void ConfirmInfoBar::OkButtonPressed() {
@@ -156,10 +146,6 @@ ConfirmInfoBarDelegate* ConfirmInfoBar::GetDelegate() {
   return delegate()->AsConfirmInfoBarDelegate();
 }
 
-const ConfirmInfoBarDelegate* ConfirmInfoBar::GetDelegate() const {
-  return delegate()->AsConfirmInfoBarDelegate();
-}
-
 int ConfirmInfoBar::GetContentMinimumWidth() const {
   return label_->GetMinimumSize().width() + link_->GetMinimumSize().width() +
          NonLabelWidth();
@@ -167,17 +153,9 @@ int ConfirmInfoBar::GetContentMinimumWidth() const {
 
 int ConfirmInfoBar::NonLabelWidth() const {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  const bool should_show_link_before_button =
-      GetDelegate()->ShouldShowLinkBeforeButton();
-  // The link should be shown before the button if the custom layout is
-  // enabled. The spacing between the label and the link is different than the
-  // spacing between the link and the button.
-  const int label_spacing =
-      should_show_link_before_button
-          ? layout_provider->GetDistanceMetric(
-                DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING)
-          : layout_provider->GetDistanceMetric(
-                views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+
+  const int label_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   const int button_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
 
