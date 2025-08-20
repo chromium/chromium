@@ -901,23 +901,7 @@ TEST_F(ChromeContentBrowserClientTest, PreferenceRankVideoDeviceInfos) {
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
-#if BUILDFLAG(USE_NSS_CERTS)
-TEST_F(ChromeContentBrowserClientTest, RedirectCertManagerFeatureOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kEnableCertManagementUIV2);
-  TestChromeContentBrowserClient test_content_browser_client;
-  GURL settings_cert_url(chrome::kChromeUICertificateRedirectURL);
-  test_content_browser_client.HandleWebUI(&settings_cert_url, &profile_);
-  // No redirection, feature is off.
-  EXPECT_EQ(GURL(chrome::kChromeUICertificateRedirectURL), settings_cert_url);
-}
-#endif  // BUILDFLAG(USE_NSS_CERTS)
-
 TEST_F(ChromeContentBrowserClientTest, RedirectCertManagerFeatureOn) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kEnableCertManagementUIV2);
-
   TestChromeContentBrowserClient test_content_browser_client;
   GURL settings_cert_url(chrome::kChromeUICertificateRedirectURL);
   test_content_browser_client.HandleWebUI(&settings_cert_url, &profile_);
