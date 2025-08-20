@@ -538,14 +538,14 @@ ci.thin_tester(
             "chromium_win_rel_isolated_scripts",
         ],
         mixins = [
-            # TODO(https://crbug.com/433551587): win11-23h2->24h2 migration
-            "experiments",
             "x86-64",
             "win11-any",
             "isolate_profile_data",
         ],
         per_test_modifications = {
             "blink_web_tests": targets.mixin(
+                # TODO(https://crbug.com/433551587): Fix test failures due to win11-24h2
+                experiment_percentage = 100,
                 swarming = targets.swarming(
                     shards = 12,
                 ),
@@ -595,6 +595,13 @@ ci.thin_tester(
             "telemetry_unittests": targets.remove(
                 reason = "Similar to Win10 Tests x64. Some test cases fail on win-rel (crbug/40622135)",
             ),
+            # TODO(https://crbug.com/433551587): test failures due to win11-24h2 migration
+            "views_examples_unittests": targets.mixin(
+                experiment_percentage = 100,
+            ),
+            "media_unittests": targets.mixin(experiment_percentage = 100),
+            "blink_python_tests": targets.mixin(experiment_percentage = 100),
+            "blink_wpt_tests": targets.mixin(experiment_percentage = 100),
         },
     ),
     tree_closing = False,
