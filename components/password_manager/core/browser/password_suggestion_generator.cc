@@ -388,6 +388,24 @@ void RecordPendingStatePromoHistogram(FillingReauthPromoShown sample) {
 }
 
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+bool ShowPasskeysFromAnotherDeviceInAutofill() {
+#if BUILDFLAG(IS_IOS)
+  return true;
+#else
+  // Show the hybrid passkey item if the context menu experiment (which moves
+  // this option) is not enabled, or if the feature to reintroduce it to the
+  // dropdown is explicitly enabled.
+  return !base::FeatureList::IsEnabled(
+             password_manager::features::
+                 kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu) ||
+         base::FeatureList::IsEnabled(
+             password_manager::features::
+                 kAutofillReintroduceHybridPasskeyDropdownItem);
+#endif  // BUILDFLAG(IS_IOS)
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 PasswordSuggestionGenerator::PasswordSuggestionGenerator(
@@ -470,20 +488,8 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
 #if !BUILDFLAG(IS_ANDROID)
   // Add "Use a passkey" or "Use a different passkey" button.
-  if (uses_passkeys && delegate->IsSecurityKeyOrHybridFlowAvailable()) {
-#if !BUILDFLAG(IS_IOS)
-    const bool passkey_from_another_device_in_autofill =
-        !(base::FeatureList::IsEnabled(
-            features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
-#else
-    const bool passkey_from_another_device_in_autofill = true;
-#endif  //! BUILDFLAG(IS_IOS)
-    if (passkey_from_another_device_in_autofill) {
-      bool listed_passkeys = delegate->GetPasskeys().has_value() &&
-                             delegate->GetPasskeys().value()->size() > 0;
-      suggestions.emplace_back(
-          CreatePasskeyFromAnotherDeviceEntry(listed_passkeys));
-    }
+  if (auto hybrid_suggestion = GetWebauthnSignInWithAnotherDeviceSuggestion()) {
+    suggestions.push_back(std::move(hybrid_suggestion.value()));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -629,6 +635,25 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
   MaybeAppendManagePasswordsEntry(&suggestions);
 
   return suggestions;
+}
+
+std::optional<autofill::Suggestion>
+PasswordSuggestionGenerator::GetWebauthnSignInWithAnotherDeviceSuggestion()
+    const {
+#if BUILDFLAG(IS_ANDROID)
+  return std::nullopt;
+#else   // BUILDFLAG(IS_ANDROID)
+  WebAuthnCredentialsDelegate* delegate =
+      password_client_->GetWebAuthnCredentialsDelegateForDriver(
+          password_manager_driver_);
+  if (!delegate || !delegate->GetPasskeys().has_value() ||
+      !delegate->IsSecurityKeyOrHybridFlowAvailable() ||
+      !ShowPasskeysFromAnotherDeviceInAutofill()) {
+    return std::nullopt;
+  }
+  return CreatePasskeyFromAnotherDeviceEntry(
+      /*listed_passkeys=*/delegate->GetPasskeys().value()->size() > 0);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace password_manager
