@@ -719,14 +719,6 @@ void WaitForFakeJoinFlowView() {
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
       performAction:grey_tap()];
   LongPressOn(chrome_test_util::ShowTabsButton());
-  if (@available(iOS 26, *)) {
-    // TODO(crbug.com/428928323): Investigate why the keyboard appears. Remove
-    // this workaround when it's not needed anymore.
-    // On iOS 26, the keyboard appears when the show tabs button is long pressed
-    // and it hides the elements behind. Close the keyboard by typing a return
-    // key.
-    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
-  }
   [[EarlGrey selectElementWithMatcher:
                  grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
                                 IDS_IOS_CONTENT_CONTEXT_CLOSETAB),

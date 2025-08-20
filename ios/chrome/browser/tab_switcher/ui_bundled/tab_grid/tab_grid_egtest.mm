@@ -225,19 +225,10 @@ void PerformTabGridSearch(NSString* text) {
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 }
 
-// Taps the edit button in the tab grid and close the keyboard if it apprears on
-// iOS 26.
+// Taps the edit button in the tab grid.
 void TapVisibleTabGridEditButton() {
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
       performAction:grey_tap()];
-
-  if (@available(iOS 19, *)) {
-    // TODO(crbug.com/428928323): Investigate why the keyboard appears. Remove
-    // this workaround when it's not needed anymore.
-    // On iOS 26, the keyboard appears when the "Edit" button is tapped and it
-    // hides the elements behind. Close the keyboard by typing a return key.
-    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
-  }
 }
 
 #pragma mark - TestResponseProvider
