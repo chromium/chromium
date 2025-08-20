@@ -2304,6 +2304,12 @@ BASE_FEATURE(UnloadBlocklisted, base::FEATURE_DISABLED_BY_DEFAULT);
 // are marked urgent, and thus unthtrottled.
 BASE_FEATURE(UrgentMainFrameForInput, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, URLPattern will use standard defined dummy URL canonicalization
+// to canonicalize URL properties. See https://crbug.com/409350827
+BASE_FEATURE(kURLPatternDummyURLCanonicalization,
+             "URLPatternDummyURLCanonicalization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Flag guard for changes in how navigation code handles the URL to commit.
 // https://crbug.com/422803238
 BASE_FEATURE(UseCommitUrlInsteadOfRedirectUrl,

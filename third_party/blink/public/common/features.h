@@ -1757,6 +1757,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUnloadBlocklisted);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUrgentMainFrameForInput);
 
+// If enabled, URLPattern will use standard defined dummy URL canonicalization
+// to canonicalize URL properties. See https://crbug.com/409350827
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kURLPatternDummyURLCanonicalization);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseCommitUrlInsteadOfRedirectUrl);
 
 // Uses page viewport instead of frame viewport in the Largest Contentful Paint
