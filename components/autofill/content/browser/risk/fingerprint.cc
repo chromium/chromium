@@ -129,10 +129,10 @@ void AddAcceptLanguagesToFingerprint(
 // into the |machine|.
 void AddScreenInfoToFingerprint(const display::ScreenInfo& screen_info,
                                 Fingerprint::MachineCharacteristics* machine) {
-  machine->set_screen_count(display::Screen::GetScreen()->GetNumDisplays());
+  machine->set_screen_count(display::Screen::Get()->GetNumDisplays());
 
   const gfx::Size screen_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel();
   machine->mutable_screen_size()->set_width(screen_size.width());
   machine->mutable_screen_size()->set_height(screen_size.height());
 

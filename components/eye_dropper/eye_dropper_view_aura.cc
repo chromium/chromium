@@ -19,7 +19,7 @@ namespace eye_dropper {
 namespace {
 gfx::Point ClampToDisplay(const gfx::Point& point) {
   gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(point).bounds();
+      display::Screen::Get()->GetDisplayNearestPoint(point).bounds();
   return gfx::Point(std::clamp(point.x(), bounds.x(), bounds.right() - 1),
                     std::clamp(point.y(), bounds.y(), bounds.bottom() - 1));
 }

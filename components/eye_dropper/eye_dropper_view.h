@@ -116,7 +116,7 @@ class EyeDropperView : public content::EyeDropper,
   std::optional<SkColor> selected_color_;
   base::TimeTicks ignore_selection_time_;
   gfx::Point last_cursor_position_ =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+      display::Screen::Get()->GetCursorScreenPoint();
 
 #if BUILDFLAG(IS_CHROMEOS)
   base::ScopedObservation<aura::Window, aura::WindowObserver>

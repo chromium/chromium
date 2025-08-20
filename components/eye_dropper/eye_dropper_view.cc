@@ -66,7 +66,7 @@ EyeDropperView::ViewPositionHandler::~ViewPositionHandler() {
 
 void EyeDropperView::ViewPositionHandler::UpdateViewPosition() {
   owner_->OnCursorPositionUpdate(
-      display::Screen::GetScreen()->GetCursorScreenPoint());
+      display::Screen::Get()->GetCursorScreenPoint());
 }
 
 class EyeDropperView::ScreenCapturer
@@ -157,15 +157,14 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
   // origins.
   original_offset_x_ = 0;
   original_offset_y_ = 0;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
 #if BUILDFLAG(IS_WIN)
     // The window parameter is intentionally passed as nullptr on Windows
     // because a non-null window parameter causes errors when restoring windows
     // to saved positions in variable-DPI situations. See
     // https://crbug.com/1224715 for details.
-    gfx::Rect scaled_bounds =
-        display::Screen::GetScreen()->DIPToScreenRectInWindow(
-            /*window=*/nullptr, display.bounds());
+    gfx::Rect scaled_bounds = display::Screen::Get()->DIPToScreenRectInWindow(
+        /*window=*/nullptr, display.bounds());
 #else
     gfx::Rect scaled_bounds = gfx::ScaleToEnclosingRect(
         display.bounds(), display.device_scale_factor());
@@ -240,7 +239,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
       std::make_unique<PreEventDispatchHandler>(this, event_handler);
   widget->Show();
   CaptureInput();
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   gfx::Point initial_position = screen->GetCursorScreenPoint();
 #if BUILDFLAG(IS_CHROMEOS)
   if (screen->InTabletMode()) {
@@ -313,7 +312,7 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   // The captured frame is not scaled so we need to use widget's bounds in
   // pixels to have the magnified region match cursor position.
   center_position_px =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->DIPToScreenRectInWindow(GetWidget()->GetNativeWindow(),
                                     GetWidget()->GetWindowBoundsInScreen())
           .CenterPoint();
@@ -395,7 +394,7 @@ void EyeDropperView::OnWidgetMove() {
 #if BUILDFLAG(IS_CHROMEOS)
 void EyeDropperView::OnWindowAddedToRootWindow(aura::Window* window) {
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   CaptureScreen(display.id());
 }
 

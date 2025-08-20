@@ -83,7 +83,7 @@ constexpr auto kUIPaintTimeout = base::Milliseconds(500);
 
 // Returns the display that the specified window is on.
 display::Display GetDisplayForWindow(NSWindow* window) {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(
+  return display::Screen::Get()->GetDisplayNearestWindow(
       gfx::NativeWindow(window));
 }
 
@@ -1538,8 +1538,7 @@ int64_t NativeWidgetNSWindowBridge::FullscreenControllerGetDisplayId() const {
 gfx::Rect NativeWidgetNSWindowBridge::FullscreenControllerGetFrameForDisplay(
     int64_t display_id) const {
   display::Display display;
-  if (display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
-                                                            &display)) {
+  if (display::Screen::Get()->GetDisplayWithDisplayId(display_id, &display)) {
     // Use the current window size to avoid unexpected window resizes on
     // subsequent cross-screen window drag and drops; see crbug.com/1338664
     return gfx::Rect(display.work_area().origin(),

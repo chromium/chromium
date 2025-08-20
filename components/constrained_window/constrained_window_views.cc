@@ -130,7 +130,7 @@ gfx::Rect GetModalDialogBounds(views::Widget* widget,
 
     // Adjust the dialog bound to ensure it remains visible on the display.
     const gfx::Rect display_work_area =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestView(dialog_host->GetHostView())
             .work_area();
     if (!display_work_area.Contains(dialog_screen_bounds)) {

@@ -129,7 +129,7 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
   }
 
   gfx::Rect GetPrimaryDisplayWorkArea() const {
-    return display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+    return display::Screen::Get()->GetPrimaryDisplay().work_area();
   }
 
   views::DialogDelegate* delegate() { return delegate_.get(); }
@@ -251,7 +251,7 @@ TEST_F(ConstrainedWindowViewsTest, ClampDialogHostWindowToNearestDisplay) {
   // First, make sure the host and dialog are sized and positioned.
   UpdateWebContentsModalDialogPosition(dialog(), dialog_host());
 
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   const display::Display display = screen->GetPrimaryDisplay();
   // Within the tests there is only 1 display. Error if that ever changes.
   EXPECT_EQ(screen->GetNumDisplays(), 1);
