@@ -13,6 +13,7 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/optimization_guide/content/browser/media_transcript_provider.h"
+#include "components/soda/mock_soda_installer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -28,6 +29,14 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    // Set up soda Installer
+    soda_installer_.NeverDownloadSodaForTesting();
+    ON_CALL(soda_installer_, Init).WillByDefault(testing::Return());
+    captions::LiveCaptionController::RegisterProfilePrefs(
+        static_cast<user_prefs::PrefRegistrySyncable*>(
+            testing_pref_service_.registry()));
+
     // Return a mock Live Caption controller.
     auto controller = CreateLiveCaptionController();
     live_caption_controller_ = controller.get();
@@ -112,6 +121,8 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
   std::optional<base::test::ScopedFeatureList> scoped_feature_list_;
   raw_ptr<captions::LiveCaptionController> live_caption_controller_ = nullptr;
   raw_ptr<user_prefs::PrefRegistrySyncable> pref_registry_ = nullptr;
+  TestingPrefServiceSimple testing_pref_service_;
+  speech::MockSodaInstaller soda_installer_;
 };
 
 TEST_F(GlicMediaIntegrationTest, GetWithNullReturnsNull) {

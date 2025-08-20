@@ -163,10 +163,11 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
 
   // Registers a language pack by adding it to the preference tracking the
   // installed SODA language packs.
-  void RegisterLanguage(const std::string& language, PrefService* global_prefs);
+  virtual void RegisterLanguage(const std::string& language,
+                                PrefService* global_prefs);
 
-  void UnregisterLanguage(const std::string& language,
-                          PrefService* global_prefs);
+  virtual void UnregisterLanguage(const std::string& language,
+                                  PrefService* global_prefs);
 
   bool IsLanguageEnabled(const std::string& language);
 

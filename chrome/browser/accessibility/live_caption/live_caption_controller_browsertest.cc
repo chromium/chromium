@@ -241,9 +241,8 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaInstalled) {
   EXPECT_FALSE(HasBubbleController());
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                true);
-  EXPECT_FALSE(HasBubbleController());
 
-  // The UI is only created after SODA is installed.
+  // The UI must be created once SODA is installed, but possibly earlier.
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   EXPECT_TRUE(HasBubbleController());

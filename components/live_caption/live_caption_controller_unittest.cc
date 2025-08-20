@@ -90,6 +90,8 @@ class LiveCaptionControllerTest : public testing::Test {
         static_cast<user_prefs::PrefRegistrySyncable*>(
             testing_pref_service_.registry()));
     RegisterStylePrefs(&testing_pref_service_);
+    speech::SodaInstaller::RegisterLocalStatePrefs(
+        testing_pref_service_.registry());
 
     // Set up soda Installer
     soda_installer_.NeverDownloadSodaForTesting();
@@ -173,11 +175,11 @@ TEST_F(LiveCaptionControllerTest,
 
   auto mock_delegate = std::make_unique<MockCaptionControllerDelgate>();
   auto* mock_delegate_ptr = mock_delegate.get();
+  EXPECT_CALL(*mock_delegate_ptr, CreateCaptionBubbleController).Times(1);
   LiveCaptionController controller_under_test = LiveCaptionController(
       &testing_pref_service_, &testing_pref_service_, speech::kUsEnglishLocale,
       /*browser_context=*/nullptr, std::move(mock_delegate));
 
-  EXPECT_CALL(*mock_delegate_ptr, CreateCaptionBubbleController).Times(1);
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
       speech::GetLanguageCode(speech::kUsEnglishLocale));
   NotifySodaBinaryInstalled();
