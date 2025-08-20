@@ -469,7 +469,7 @@ public class OfflinePageBridge {
      * @param uiAction UI action, like showing infobar or toast on certain case.
      */
     public void scheduleDownload(
-            WebContents webContents, String nameSpace, String url, int uiAction) {
+            @Nullable WebContents webContents, String nameSpace, String url, int uiAction) {
         scheduleDownload(webContents, nameSpace, url, uiAction, new OfflinePageOrigin());
     }
 

@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -21,6 +20,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,7 +50,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private static final String TAG = "AndroidShare";
 
     private final BottomSheetController mController;
-    private final Supplier<Tab> mTabProvider;
+    private final Supplier<@Nullable Tab> mTabProvider;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<Profile> mProfileSupplier;
     private final Callback<Tab> mPrintCallback;
@@ -78,7 +78,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             ShareParams params,
             ChromeShareExtras chromeShareExtras,
             BottomSheetController controller,
-            Supplier<Tab> tabProvider,
+            Supplier<@Nullable Tab> tabProvider,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<Profile> profileSupplier,
             Callback<Tab> printCallback,
@@ -115,7 +115,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     @VisibleForTesting
     AndroidShareSheetController(
             BottomSheetController controller,
-            Supplier<Tab> tabProvider,
+            Supplier<@Nullable Tab> tabProvider,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<Profile> profileSupplier,
             Callback<Tab> printCallback,

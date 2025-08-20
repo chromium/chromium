@@ -209,7 +209,10 @@ public interface NativePage {
      */
     // TODO(crbug.com/40549331) - Convert to using GURL.
     static @NativePageType int nativePageType(
-            String url, NativePage candidatePage, boolean isIncognito, boolean hasPdfDownload) {
+            String url,
+            @Nullable NativePage candidatePage,
+            boolean isIncognito,
+            boolean hasPdfDownload) {
         if (url == null) return NativePageType.NONE;
 
         GURL gurl = new GURL(url);

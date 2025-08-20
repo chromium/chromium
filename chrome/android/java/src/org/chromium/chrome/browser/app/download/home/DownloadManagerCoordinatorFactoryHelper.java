@@ -9,6 +9,7 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinatorFactory;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
@@ -39,7 +40,7 @@ class DownloadManagerCoordinatorFactoryHelper {
             Activity activity,
             DownloadManagerUiConfig config,
             SnackbarManager snackbarManager,
-            ModalDialogManager modalDialogManager) {
+            @Nullable ModalDialogManager modalDialogManager) {
         Profile profile =
                 config.otrProfileId != null
                         ? ProfileManager.getLastUsedRegularProfile()

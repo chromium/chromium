@@ -7,10 +7,11 @@ package org.chromium.chrome.browser;
 import android.app.Activity;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
@@ -26,13 +27,14 @@ import java.lang.ref.WeakReference;
  * The window that has access to the main activity and is able to create and receive intents,
  * and show error messages.
  */
+@NullMarked
 public class ChromeWindow extends ActivityWindowAndroid {
     /** Interface allowing to inject a different keyboard delegate for testing. */
     @VisibleForTesting
     public interface KeyboardVisibilityDelegateFactory {
         ChromeKeyboardVisibilityDelegate create(
-                @NonNull WeakReference<Activity> activity,
-                @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier);
+                WeakReference<Activity> activity,
+                Supplier<ManualFillingComponent> manualFillingComponentSupplier);
     }
 
     private static KeyboardVisibilityDelegateFactory sKeyboardVisibilityDelegateFactory =
@@ -51,12 +53,12 @@ public class ChromeWindow extends ActivityWindowAndroid {
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
     public ChromeWindow(
-            @NonNull Activity activity,
-            @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier,
-            @NonNull IntentRequestTracker intentRequestTracker,
-            @NonNull InsetObserver insetObserver) {
+            Activity activity,
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ManualFillingComponent> manualFillingComponentSupplier,
+            IntentRequestTracker intentRequestTracker,
+            InsetObserver insetObserver) {
         this(
                 activity,
                 compositorViewHolderSupplier,
@@ -78,13 +80,13 @@ public class ChromeWindow extends ActivityWindowAndroid {
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
     public ChromeWindow(
-            @NonNull Activity activity,
-            @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
+            Activity activity,
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
             boolean activityTopResumedSupported,
             IntentRequestTracker intentRequestTracker,
-            @NonNull InsetObserver insetObserver) {
+            InsetObserver insetObserver) {
         super(
                 activity,
                 /* listenToActivityState= */ true,
@@ -109,7 +111,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
     }
 
     @Override
-    public View getReadbackView() {
+    public @Nullable View getReadbackView() {
         return mCompositorViewHolderSupplier.get() == null
                 ? null
                 : mCompositorViewHolderSupplier.get().getActiveSurfaceView();

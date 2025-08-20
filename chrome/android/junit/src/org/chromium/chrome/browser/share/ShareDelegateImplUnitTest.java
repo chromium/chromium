@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -663,6 +664,7 @@ public class ShareDelegateImplUnitTest {
         doReturn(true).when(mTab).isNativePage();
         doReturn(new GURL(pdfUrl)).when(mTab).getUrl();
         doReturn(pdfTitle).when(mTab).getTitle();
+        doReturn(mock(WindowAndroid.class)).when(mTab).getWindowAndroid();
 
         createShareDelegate(false, mShareSheetController);
         mShareDelegate.share(mTab, false, ShareOrigin.OVERFLOW_MENU);

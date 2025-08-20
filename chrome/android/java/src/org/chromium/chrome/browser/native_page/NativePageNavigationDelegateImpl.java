@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.native_page;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.DownloadUiActionFlags;
@@ -24,6 +26,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /** {@link NativePageNavigationDelegate} implementation. */
+@NullMarked
 public class NativePageNavigationDelegateImpl implements NativePageNavigationDelegate {
     private final Profile mProfile;
 
@@ -118,18 +121,16 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
 
     private void saveUrlForOffline(String url) {
         if (mTab != null) {
-            OfflinePageBridge.getForProfile(mProfile)
-                    .scheduleDownload(
-                            mTab.getWebContents(),
-                            OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE,
-                            url,
-                            DownloadUiActionFlags.ALL);
+            var bridge = assumeNonNull(OfflinePageBridge.getForProfile(mProfile));
+            bridge.scheduleDownload(
+                    mTab.getWebContents(),
+                    OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE,
+                    url,
+                    DownloadUiActionFlags.ALL);
         } else {
-            RequestCoordinatorBridge.getForProfile(mProfile)
-                    .savePageLater(
-                            url,
-                            OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE,
-                            /* userRequested= */ true);
+            var bridge = assumeNonNull(RequestCoordinatorBridge.getForProfile(mProfile));
+            bridge.savePageLater(
+                    url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, /* userRequested= */ true);
         }
     }
 

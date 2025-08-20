@@ -195,7 +195,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     }
 
     @Override
-    public NativePage createNativePage(
+    public @Nullable NativePage createNativePage(
             String url, @Nullable NativePage candidatePage, Tab tab, @Nullable PdfInfo pdfInfo) {
         if (mNativePageFactory == null) {
             mNativePageFactory =
