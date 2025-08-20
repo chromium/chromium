@@ -104,6 +104,11 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
       query_text.size(), query_controller_->num_files_in_request());
 }
 
+void ComposeboxHandler::FocusChanged(bool focused) {
+  // Unimplemented. Currently the composebox session is tied to when it is
+  // connected/disconnected from the DOM, so this is not needed.
+}
+
 void ComposeboxHandler::OpenUrl(GURL url,
                                 const WindowOpenDisposition disposition) {
   content::OpenURLParams params(url, content::Referrer(), disposition,

@@ -856,6 +856,10 @@ extern bool GetAimSearchboxEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetSidePanelGhostLoaderDisabledForAim();
 
+// Whether the composebox should contextualize on focus.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetShouldComposeboxContextualizeOnFocus();
+
 // Whether to use the alt loading hint when overlay is opened on web pages.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldUseAltLoadingHintWeb();

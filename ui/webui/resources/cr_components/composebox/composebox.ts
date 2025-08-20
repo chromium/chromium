@@ -408,12 +408,14 @@ export class ComposeboxElement extends I18nMixinLit
   protected handleComposeboxFocusIn_() {
     this.expanded_ = true;
     this.submitting_ = false;
+    this.pageHandler_.focusChanged(true);
   }
 
   protected handleComposeboxFocusOut_() {
     // If the input is blurred and the composebox is expandable, collapse it.
     // Else, keep the composebox expanded.
     this.expanded_ = !this.isCollapsible;
+    this.pageHandler_.focusChanged(false);
   }
 
   protected onKeydown_(e: KeyboardEvent) {

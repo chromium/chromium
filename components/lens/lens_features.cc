@@ -10,8 +10,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 
 namespace lens::features {
 
@@ -591,6 +591,9 @@ constexpr base::FeatureParam<bool> kAimSearchboxEnabled{
 constexpr base::FeatureParam<bool> kSidePanelGhostLoaderDisabledForAim{
     &kLensSearchAimM3, "side-panel-ghost-loader-disabled-for-aim", true};
 
+constexpr base::FeatureParam<bool> kContextualizeOnFocus{
+    &kLensSearchAimM3, "contextualize-on-focus", false};
+
 const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId{
     &kLensOverlayEntrypointLabelAlt, "id", 0};
 
@@ -1108,6 +1111,11 @@ bool GetAimSearchboxEnabled() {
 bool GetSidePanelGhostLoaderDisabledForAim() {
   return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
          kSidePanelGhostLoaderDisabledForAim.Get();
+}
+
+bool GetShouldComposeboxContextualizeOnFocus() {
+  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
+         kContextualizeOnFocus.Get();
 }
 
 bool ShouldUseAltLoadingHintWeb() {

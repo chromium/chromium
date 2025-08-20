@@ -72,6 +72,25 @@ void LensComposeboxController::IssueComposeboxQuery(
       ->SendClientMessageToAim(serialized_message);
 }
 
+void LensComposeboxController::OnFocusChanged(bool focused) {
+  // Ignore if the user left focus.
+  if (!focused) {
+    return;
+  }
+
+  // Ignore if recontextualization on focus is disabled.
+  if (!lens::features::GetShouldComposeboxContextualizeOnFocus()) {
+    return;
+  }
+
+  // If the composebox becomes focused, the user is showing intent to issue a
+  // new query. Upload the new page content for contextualization. The content
+  // is updated asynchronously, but this class does not need to wait for the
+  // update to complete, so a callback is not needed.
+  lens_search_controller_->lens_search_contextualization_controller()
+      ->TryUpdatePageContextualization(base::DoNothing());
+}
+
 void LensComposeboxController::CloseUI() {
   composebox_handler_.reset();
 }
