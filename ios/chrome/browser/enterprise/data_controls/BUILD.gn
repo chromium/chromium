@@ -10,7 +10,7 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
-source_set("data_control") {
+source_set("data_controls") {
   sources = [
     "clipboard_utils.h",
     "clipboard_utils.mm",
@@ -29,7 +29,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "data_controls_tab_helper_unittest.mm" ]
   deps = [
-    ":data_control",
+    ":data_controls",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
