@@ -29,7 +29,8 @@ class SafetyClient final : public TextSafetyClient {
   void SetLanguageDetectionModel(
       base::optional_ref<const ModelInfo> model_info);
   // Updates the safety model, possibly interrupting ongoing executions.
-  void MaybeUpdateSafetyModel(base::optional_ref<const ModelInfo> model_info);
+  void MaybeUpdateSafetyModel(
+      std::unique_ptr<SafetyModelInfo> safety_model_info);
 
   SafetyModelInfo* safety_model_info() const {
     return safety_model_info_.get();

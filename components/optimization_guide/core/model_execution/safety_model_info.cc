@@ -47,6 +47,7 @@ bool HasRequiredSafetyFiles(const ModelInfo& model_info) {
 }  // namespace
 
 std::unique_ptr<SafetyModelInfo> SafetyModelInfo::Load(
+    SafetyModelType model_type,
     base::optional_ref<const ModelInfo> opt_model_info) {
   if (!opt_model_info.has_value() || !HasRequiredSafetyFiles(*opt_model_info)) {
     return nullptr;
@@ -78,9 +79,9 @@ std::unique_ptr<SafetyModelInfo> SafetyModelInfo::Load(
     feature_configs[feature_config.feature()] = feature_config;
   }
 
-  return base::WrapUnique(
-      new SafetyModelInfo(model_info, model_metadata->num_output_categories(),
-                          std::move(feature_configs)));
+  return base::WrapUnique(new SafetyModelInfo(
+      model_type, model_info, model_metadata->num_output_categories(),
+      std::move(feature_configs)));
 }
 
 std::optional<proto::FeatureTextSafetyConfiguration> SafetyModelInfo::GetConfig(
@@ -91,6 +92,10 @@ std::optional<proto::FeatureTextSafetyConfiguration> SafetyModelInfo::GetConfig(
   }
 
   return it->second;
+}
+
+SafetyModelInfo::SafetyModelType SafetyModelInfo::GetModelType() const {
+  return model_type_;
 }
 
 base::FilePath SafetyModelInfo::GetDataPath() const {
@@ -106,11 +111,13 @@ int64_t SafetyModelInfo::GetVersion() const {
 }
 
 SafetyModelInfo::SafetyModelInfo(
+    SafetyModelType model_type,
     const ModelInfo& model_info,
     uint32_t num_output_categories,
     base::flat_map<proto::ModelExecutionFeature,
                    proto::FeatureTextSafetyConfiguration> feature_configs)
-    : model_info_(model_info),
+    : model_type_(model_type),
+      model_info_(model_info),
       num_output_categories_(num_output_categories),
       feature_configs_(std::move(feature_configs)) {}
 

@@ -193,7 +193,9 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
           model_broker_state_->component_state_manager());
     }
     if (params.safety) {
-      controller().MaybeUpdateSafetyModel(params.safety->model_info());
+      controller().MaybeUpdateSafetyModel(SafetyModelInfo::Load(
+          SafetyModelInfo::SafetyModelType::kTextSafetyModel,
+          params.safety->model_info()));
     }
     if (params.language) {
       controller().SetLanguageDetectionModel(params.language->model_info());
@@ -732,110 +734,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
       OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature, 1);
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
-  FakeSafetyModelAsset fake_safety_asset(ComposeSafetyConfig());
-
-  Initialize(standard_assets_);
-
-  // Safety model info is valid but no metadata.
-  {
-    base::HistogramTester histogram_tester;
-
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
-        TestModelInfoBuilder()
-            .SetVersion(10)
-            .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
-            .Build();
-    controller().MaybeUpdateSafetyModel(*model_info);
-
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        TextSafetyModelMetadataValidity::kNoMetadata, 1);
-  }
-
-  // Safety model info is valid but metadata is of wrong type.
-  {
-    base::HistogramTester histogram_tester;
-
-    proto::Any any;
-    any.set_type_url("garbagetype");
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
-        TestModelInfoBuilder()
-            .SetVersion(20)
-            .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
-            .SetModelMetadata(any)
-            .Build();
-    controller().MaybeUpdateSafetyModel(*model_info);
-
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        TextSafetyModelMetadataValidity::kMetadataWrongType, 1);
-  }
-
-  // Safety model info is valid but no feature configs.
-  {
-    base::HistogramTester histogram_tester;
-
-    proto::TextSafetyModelMetadata model_metadata;
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
-        TestModelInfoBuilder()
-            .SetVersion(30)
-            .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
-            .SetModelMetadata(AnyWrapProto(model_metadata))
-            .Build();
-    controller().MaybeUpdateSafetyModel(*model_info);
-
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        TextSafetyModelMetadataValidity::kNoFeatureConfigs, 1);
-  }
-
-  // Safety model info is valid and metadata has feature configs.
-  {
-    base::HistogramTester histogram_tester;
-
-    proto::TextSafetyModelMetadata model_metadata;
-    model_metadata.add_feature_text_safety_configurations()->set_feature(
-        ToModelExecutionFeatureProto(kFeature));
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
-        TestModelInfoBuilder()
-            .SetVersion(40)
-            .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
-            .SetModelMetadata(AnyWrapProto(model_metadata))
-            .Build();
-    controller().MaybeUpdateSafetyModel(*model_info);
-
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        TextSafetyModelMetadataValidity::kValid, 1);
-  }
-
-  // Duplicate model info is ignored.
-  {
-    base::HistogramTester histogram_tester;
-
-    proto::TextSafetyModelMetadata model_metadata;
-    model_metadata.add_feature_text_safety_configurations()->set_feature(
-        ToModelExecutionFeatureProto(kFeature));
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
-        TestModelInfoBuilder()
-            .SetVersion(40)
-            .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
-            .SetModelMetadata(AnyWrapProto(model_metadata))
-            .Build();
-    controller().MaybeUpdateSafetyModel(*model_info);
-
-    histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        0);
-  }
-}
-
 TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
   // Verifies that when we start a session before safety is available, that
   // future session that require a safety model still get one.
@@ -884,7 +782,9 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     return safety_config;
   }());
-  controller().MaybeUpdateSafetyModel(safety_asset.model_info());
+  controller().MaybeUpdateSafetyModel(
+      SafetyModelInfo::Load(SafetyModelInfo::SafetyModelType::kTextSafetyModel,
+                            safety_asset.model_info()));
   auto compose_session =
       controller().CreateSession(ModelBasedCapabilityKey::kCompose,
                                  FailOnRemoteFallback(), logger_.GetWeakPtr(),
@@ -935,7 +835,9 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         }()}),
         .model_info_version = 10,
     });
-    controller().MaybeUpdateSafetyModel(safety_asset.model_info());
+    controller().MaybeUpdateSafetyModel(SafetyModelInfo::Load(
+        SafetyModelInfo::SafetyModelType::kTextSafetyModel,
+        safety_asset.model_info()));
     EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
@@ -956,7 +858,9 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         .metadata = SafetyMetadata({ComposeSafetyConfig()}),
         .model_info_version = 20,
     });
-    controller().MaybeUpdateSafetyModel(safety_asset.model_info());
+    controller().MaybeUpdateSafetyModel(SafetyModelInfo::Load(
+        SafetyModelInfo::SafetyModelType::kTextSafetyModel,
+        safety_asset.model_info()));
     EXPECT_TRUE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
@@ -974,7 +878,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
   {
     base::HistogramTester histogram_tester;
 
-    controller().MaybeUpdateSafetyModel(std::nullopt);
+    controller().MaybeUpdateSafetyModel(nullptr);
     EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
@@ -988,24 +892,8 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         0);
   }
 
-  // Safety model reset to invalid, session no longer created successfully.
-  {
-    base::HistogramTester histogram_tester;
-
-    std::unique_ptr<ModelInfo> model_info = TestModelInfoBuilder().Build();
-    controller().MaybeUpdateSafetyModel(*model_info);
-    EXPECT_FALSE(CreateSession());
-
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
-        "Compose",
-        OnDeviceModelEligibilityReason::kSafetyModelNotAvailable, 1);
-    // No required model files. Shouldn't even record this histogram.
-    histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        0);
-  }
+  // TODO(crbug.com/440141447): Add test case for setting safety model to
+  // invalid model.
 
   // Safety model info is valid and requires language but no language detection
   // model, session not created successfully.
@@ -1020,7 +908,9 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         }()}),
         .model_info_version = 30,
     });
-    controller().MaybeUpdateSafetyModel(safety_asset.model_info());
+    controller().MaybeUpdateSafetyModel(SafetyModelInfo::Load(
+        SafetyModelInfo::SafetyModelType::kTextSafetyModel,
+        safety_asset.model_info()));
 
     EXPECT_FALSE(CreateSession());
 
@@ -1047,7 +937,9 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         }()}),
         .model_info_version = 40,
     });
-    controller().MaybeUpdateSafetyModel(safety_asset.model_info());
+    controller().MaybeUpdateSafetyModel(SafetyModelInfo::Load(
+        SafetyModelInfo::SafetyModelType::kTextSafetyModel,
+        safety_asset.model_info()));
     controller().SetLanguageDetectionModel(
         standard_assets_.language.model_info());
 
@@ -1069,7 +961,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     feature_list.InitAndDisableFeature(features::kTextSafetyClassifier);
     base::HistogramTester histogram_tester;
 
-    controller().MaybeUpdateSafetyModel(std::nullopt);
+    controller().MaybeUpdateSafetyModel(nullptr);
     EXPECT_TRUE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
@@ -2778,7 +2670,9 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
         GetParam());
     return safety_config;
   }());
-  controller().MaybeUpdateSafetyModel(safety_asset.model_info());
+  controller().MaybeUpdateSafetyModel(
+      SafetyModelInfo::Load(SafetyModelInfo::SafetyModelType::kTextSafetyModel,
+                            safety_asset.model_info()));
 
   auto session = CreateSession();
   ASSERT_TRUE(session);

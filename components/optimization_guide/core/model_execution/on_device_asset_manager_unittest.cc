@@ -26,6 +26,7 @@
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -175,6 +176,92 @@ TEST_F(OnDeviceAssetManagerTest, UpdateLanguageDetection) {
   EXPECT_EQ(fake_language.model_path(), service_controller()
                                             .GetSafetyClientForTesting()
                                             .language_detection_model_path());
+}
+
+TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
+  CreateAssetManager();
+  FakeSafetyModelAsset fake_safety_asset(ComposeSafetyConfig());
+  // Safety model info is valid but no metadata.
+  {
+    base::HistogramTester histogram_tester;
+
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetVersion(10)
+            .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
+            .Build();
+    asset_manager()->OnModelUpdated(proto::OPTIMIZATION_TARGET_TEXT_SAFETY,
+                                    *model_info);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kNoMetadata, 1);
+  }
+
+  // Safety model info is valid but metadata is of wrong type.
+  {
+    base::HistogramTester histogram_tester;
+
+    proto::Any any;
+    any.set_type_url("garbagetype");
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetVersion(20)
+            .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
+            .SetModelMetadata(any)
+            .Build();
+    asset_manager()->OnModelUpdated(proto::OPTIMIZATION_TARGET_TEXT_SAFETY,
+                                    *model_info);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kMetadataWrongType, 1);
+  }
+
+  // Safety model info is valid but no feature configs.
+  {
+    base::HistogramTester histogram_tester;
+
+    proto::TextSafetyModelMetadata model_metadata;
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetVersion(30)
+            .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
+            .SetModelMetadata(AnyWrapProto(model_metadata))
+            .Build();
+    asset_manager()->OnModelUpdated(proto::OPTIMIZATION_TARGET_TEXT_SAFETY,
+                                    *model_info);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kNoFeatureConfigs, 1);
+  }
+
+  // Safety model info is valid and metadata has feature configs.
+  {
+    base::HistogramTester histogram_tester;
+
+    proto::TextSafetyModelMetadata model_metadata;
+    model_metadata.add_feature_text_safety_configurations()->set_feature(
+        ToModelExecutionFeatureProto(ModelBasedCapabilityKey::kCompose));
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetVersion(40)
+            .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
+            .SetModelMetadata(AnyWrapProto(model_metadata))
+            .Build();
+    asset_manager()->OnModelUpdated(proto::OPTIMIZATION_TARGET_TEXT_SAFETY,
+                                    *model_info);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kValid, 1);
+  }
+
+  // TODO(crbug.com/440141447): Add test case for duplicate safety model.
 }
 
 TEST_F(OnDeviceAssetManagerTest, NotRegisteredWhenDisabledByEnterprisePolicy) {

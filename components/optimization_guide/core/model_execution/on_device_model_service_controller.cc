@@ -245,8 +245,8 @@ void OnDeviceModelServiceController::SetLanguageDetectionModel(
 }
 
 void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
-    base::optional_ref<const ModelInfo> model_info) {
-  safety_client_.MaybeUpdateSafetyModel(model_info);
+    std::unique_ptr<SafetyModelInfo> safety_model_info) {
+  safety_client_.MaybeUpdateSafetyModel(std::move(safety_model_info));
   UpdateSolutionProviders();
 }
 

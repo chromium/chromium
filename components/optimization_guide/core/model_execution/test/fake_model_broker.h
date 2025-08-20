@@ -37,7 +37,11 @@ class FakeModelBroker {
 
   void UpdateModelAdaptation(const FakeAdaptationAsset& asset);
   void UpdateSafetyModel(const optimization_guide::ModelInfo& model_info) {
-    controller().MaybeUpdateSafetyModel(model_info);
+    auto safety_model_info = SafetyModelInfo::Load(
+        SafetyModelInfo::SafetyModelType::kTextSafetyModel, model_info);
+    if (safety_model_info) {
+      controller().MaybeUpdateSafetyModel(std::move(safety_model_info));
+    }
   }
 
   std::unique_ptr<OnDeviceAssetManager> CreateAssetManager(

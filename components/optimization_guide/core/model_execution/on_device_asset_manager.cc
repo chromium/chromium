@@ -109,7 +109,14 @@ void OnDeviceAssetManager::OnModelUpdated(
   switch (optimization_target) {
     case proto::OPTIMIZATION_TARGET_TEXT_SAFETY:
       if (on_device_model_service_controller_) {
-        on_device_model_service_controller_->MaybeUpdateSafetyModel(model_info);
+        std::unique_ptr<SafetyModelInfo> safety_model_info =
+            SafetyModelInfo::Load(
+                SafetyModelInfo::SafetyModelType::kTextSafetyModel, model_info);
+
+        if (safety_model_info) {
+          on_device_model_service_controller_->MaybeUpdateSafetyModel(
+              std::move(safety_model_info));
+        }
       }
       break;
 

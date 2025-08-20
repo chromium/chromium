@@ -86,7 +86,13 @@ class SafetyClientFixture {
   explicit SafetyClientFixture(proto::FeatureTextSafetyConfiguration config)
       : safety_asset_(std::move(config)) {
     safety_client_.SetLanguageDetectionModel(language_asset_.model_info());
-    safety_client_.MaybeUpdateSafetyModel(safety_asset_.model_info());
+
+    auto safety_model_info = SafetyModelInfo::Load(
+        SafetyModelInfo::SafetyModelType::kTextSafetyModel,
+        safety_asset_.model_info());
+    if (safety_model_info) {
+      safety_client_.MaybeUpdateSafetyModel(std::move(safety_model_info));
+    }
   }
 
   std::unique_ptr<SafetyChecker> MakeSafetyChecker() {
