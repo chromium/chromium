@@ -16,8 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -71,8 +70,7 @@ std::string Sha256File(const base::FilePath& path) {
     return "";
   }
 
-  std::unique_ptr<crypto::SecureHash> ctx(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
+  crypto::hash::Hasher ctx(crypto::hash::kSha256);
   std::array<uint8_t, 4096> buffer;
   while (true) {
     std::optional<size_t> read = file.ReadAtCurrentPos(buffer);
@@ -80,11 +78,11 @@ std::string Sha256File(const base::FilePath& path) {
     if (read.value_or(0) == 0) {
       break;
     }
-    ctx->Update(base::span(buffer).first(*read));
+    ctx.Update(base::span(buffer).first(*read));
   }
 
-  std::array<uint8_t, crypto::kSHA256Length> digest_bytes;
-  ctx->Finish(digest_bytes);
+  std::array<uint8_t, crypto::hash::kSha256Size> digest_bytes;
+  ctx.Finish(digest_bytes);
   return base::HexEncode(digest_bytes);
 }
 
