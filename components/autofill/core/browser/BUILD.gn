@@ -198,6 +198,8 @@ static_library("browser") {
     "data_model/data_model_utils.h",
     "data_model/form_group.cc",
     "data_model/form_group.h",
+    "data_model/identity_credential/identity_credential.cc",
+    "data_model/identity_credential/identity_credential.h",
     "data_model/payments/autofill_offer_data.cc",
     "data_model/payments/autofill_offer_data.h",
     "data_model/payments/autofill_wallet_usage_data.cc",

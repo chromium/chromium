@@ -800,7 +800,10 @@ TEST_F(PasswordSuggestionGeneratorTest, IdentitySuggestions_SingleAccount) {
       IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
       base::UTF8ToUTF16(identity_provider_for_display)))});
   suggestion.custom_icon = decoded_picture;
-  auto payload = Suggestion::IdentityCredentialPayload(identity_provider, id);
+  std::map<autofill::FieldType, std::u16string> fields = {
+      {autofill::EMAIL_ADDRESS, u"john@example.com"}};
+  auto payload =
+      Suggestion::IdentityCredentialPayload(identity_provider, id, fields);
   suggestion.payload = payload;
   identity_suggestions.push_back(suggestion);
 
