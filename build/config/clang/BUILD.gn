@@ -6,12 +6,6 @@ import("//build/config/pch.gni")
 import("//build/config/rust.gni")
 import("clang.gni")
 
-declare_args() {
-  # Ignored.
-  # TODO(crbug.com/437900567): Stop passing this in, then remove it.
-  use_cros_sysroot_libs = false
-}
-
 if (is_ios) {
   # For `target_environment` and `target_platform`.
   import("//build/config/apple/mobile_config.gni")
