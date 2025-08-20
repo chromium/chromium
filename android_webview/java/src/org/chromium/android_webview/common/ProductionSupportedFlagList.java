@@ -747,6 +747,9 @@ public final class ProductionSupportedFlagList {
                 MediaFeatures.LIBAOM_USE_CHROME_THREADS,
                 "Attaches libaom threads to the chromium thread system."),
         Flag.baseFeature(
+                MediaFeatures.PAUSE_MUTED_BACKGROUND_AUDIO,
+                "Prevents inaudble audio from decoding in background tabs (experimental)."),
+        Flag.baseFeature(
                 BlinkFeatures.BACK_FORWARD_CACHE_SEND_NOT_RESTORED_REASONS,
                 "Expose NotRestoredReasons via PerformanceNavigationTiming API."),
         Flag.baseFeature("SkipUnnecessaryThreadHopsForParseHeaders"),
