@@ -86,8 +86,7 @@ BASE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Development flag. Must not be enabled by default.
-BASE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay,
-             "WebAuthnEnclaveAuthenticatorDelay",
+BASE_FEATURE(WebAuthnEnclaveAuthenticatorDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Not yet enabled by default.
@@ -110,8 +109,7 @@ BASE_FEATURE(kWebAuthnHelloSignal,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Disabled by default.
-BASE_FEATURE(kDigitalCredentialsHybridLinking,
-             "DigitalCredentialsHybridLinking",
+BASE_FEATURE(DigitalCredentialsHybridLinking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default enabled in M136. Remove in or after M139.
@@ -141,8 +139,7 @@ BASE_FEATURE(kWebAuthnSignalApiHidePasskeys,
 
 // Enabled by default as part of the WebAuthenticationImmediateGet feature. Do
 // not remove before WebAuthenticationImmediateGet is removed.
-BASE_FEATURE(kWebAuthnImmediateRequestRateLimit,
-             "WebAuthnImmediateRequestRateLimit",
+BASE_FEATURE(WebAuthnImmediateRequestRateLimit,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,

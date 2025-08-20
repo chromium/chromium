@@ -24,9 +24,7 @@ BASE_FEATURE(kWebXrIncubations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature flag for the WebXRInternals debugging page.
-BASE_FEATURE(kWebXrInternals,
-             "WebXrInternals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(WebXrInternals, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables access to WebXR composition layers.
 BASE_FEATURE(kWebXrLayers, "WebXRLayers", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -47,16 +45,13 @@ BASE_FEATURE(kWebXrOrientationSensorDevice,
 // Controls whether or not SharedBuffer support is enabled. This is enabled by
 // default; but some platforms (e.g. below O) cannot support the feature; while
 // on other GPUs there may be quirks that prevent using the shared buffers.
-BASE_FEATURE(kWebXrSharedBuffers,
-             "WebXrSharedBuffers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(WebXrSharedBuffers, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif
 
 #if BUILDFLAG(ENABLE_OPENXR)
 // Controls WebXR support for the OpenXR Runtime.
-BASE_FEATURE(kOpenXR,
-             "OpenXR",
+BASE_FEATURE(OpenXR,
              BUILDFLAG(IS_WIN) ? base::FEATURE_ENABLED_BY_DEFAULT
                                : base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -65,26 +60,18 @@ BASE_FEATURE(kOpenXR,
 // to gate such support in a generic way. Note that this feature should not be
 // used for features we intend to ship simultaneously on both OpenXR and ArCore.
 // For those features, a feature-specific flag should be created if needed.
-BASE_FEATURE(kOpenXrExtendedFeatureSupport,
-             "OpenXrExtendedFeatureSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(OpenXrExtendedFeatureSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether shared images are used for OpenXR Runtime
-BASE_FEATURE(kOpenXRSharedImages,
-             "OpenXRSharedImages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(OpenXRSharedImages, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the XrFeatureStatus.isXrDevice check is allowed to
 // be used to determine if OpenXR should be enabled or not. Functionally, this
 // feature is intended to be used as a kill-switch when on an xr device.
-BASE_FEATURE(kAllowOpenXrOnXrDevices,
-             "AllowOpenXrOnXrDevices",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(AllowOpenXrOnXrDevices, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kOpenXrAndroidSmoothDepth,
-             "OpenXrAndroidSmoothDepth",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(OpenXrAndroidSmoothDepth, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Helper for enabling a feature if either the base flag is enabled or if the
