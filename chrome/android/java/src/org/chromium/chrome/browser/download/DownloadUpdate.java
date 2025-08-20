@@ -192,12 +192,12 @@ public final class DownloadUpdate {
             return this;
         }
 
-        public Builder setFileName(String fileName) {
+        public Builder setFileName(@Nullable String fileName) {
             this.mFileName = fileName;
             return this;
         }
 
-        public Builder setFilePath(String filePath) {
+        public Builder setFilePath(@Nullable String filePath) {
             this.mFilePath = filePath;
             return this;
         }
@@ -250,7 +250,7 @@ public final class DownloadUpdate {
             return this;
         }
 
-        public Builder setProgress(Progress progress) {
+        public Builder setProgress(@Nullable Progress progress) {
             this.mProgress = progress;
             return this;
         }

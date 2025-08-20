@@ -13,6 +13,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -26,6 +27,7 @@ import org.chromium.components.download.DownloadTaskType;
  * conditions as requested by the download service.
  */
 @JNINamespace("download::android")
+@NullMarked
 public class DownloadTaskScheduler {
     public static final String EXTRA_BATTERY_REQUIRES_CHARGING = "extra_battery_requires_charging";
     public static final String EXTRA_OPTIMAL_BATTERY_PERCENTAGE =

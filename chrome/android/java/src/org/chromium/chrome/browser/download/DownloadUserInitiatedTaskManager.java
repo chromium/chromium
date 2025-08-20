@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 
 import java.util.HashMap;
@@ -86,7 +87,7 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
      * @param taskNotificationCallback The callback to be invoked to attach notification.
      */
     public void setTaskNotificationCallback(
-            int taskId, TaskFinishedCallback taskNotificationCallback) {
+            int taskId, @Nullable TaskFinishedCallback taskNotificationCallback) {
         if (taskNotificationCallback == null) {
             mTaskNotificationCallbacks.remove(taskId);
             if (mHasUnseenCallbacks) {

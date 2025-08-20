@@ -161,7 +161,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
         // If the download is cancelled, no need to DownloadInfo object and it is enough to notify
         // that the download is canceled.
         if (item.state == OfflineItemState.CANCELLED) {
-            mUi.notifyDownloadCanceled(item.id);
+            mUi.notifyDownloadCanceled(assertNonNull(item.id));
             return;
         }
 
@@ -195,7 +195,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
                     assert false : "Unexpected OfflineItem state.";
             }
         } catch (IllegalStateException e) {
-            mUi.notifyDownloadCanceled(item.id);
+            mUi.notifyDownloadCanceled(assertNonNull(item.id));
         }
     }
 

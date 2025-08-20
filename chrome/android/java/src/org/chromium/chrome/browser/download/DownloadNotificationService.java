@@ -150,7 +150,7 @@ public class DownloadNotificationService {
      *     notification.
      */
     public void setBackgroundTaskNotificationCallback(
-            int taskId, TaskFinishedCallback backgroundTaskNotificationCallback) {
+            int taskId, @Nullable TaskFinishedCallback backgroundTaskNotificationCallback) {
         mDownloadUserInitiatedTaskManager.setTaskNotificationCallback(
                 taskId, backgroundTaskNotificationCallback);
     }
@@ -181,14 +181,14 @@ public class DownloadNotificationService {
     public void notifyDownloadProgress(
             ContentId id,
             String fileName,
-            Progress progress,
+            @Nullable Progress progress,
             long bytesReceived,
             long timeRemainingInMillis,
             long startTime,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             boolean canDownloadWhileMetered,
             boolean isTransient,
-            Bitmap icon,
+            @Nullable Bitmap icon,
             GURL originalUrl,
             boolean shouldPromoteOrigin) {
         updateActiveDownloadNotification(
@@ -265,7 +265,7 @@ public class DownloadNotificationService {
     private void updateActiveDownloadNotification(
             ContentId id,
             String fileName,
-            Progress progress,
+            @Nullable Progress progress,
             long timeRemainingInMillis,
             long startTime,
             @Nullable OtrProfileId otrProfileId,
@@ -490,10 +490,10 @@ public class DownloadNotificationService {
             String filePath,
             String fileName,
             long systemDownloadId,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             boolean isSupportedMimeType,
             boolean isOpenable,
-            Bitmap icon,
+            @Nullable Bitmap icon,
             GURL originalUrl,
             boolean shouldPromoteOrigin,
             GURL referrer,
@@ -549,7 +549,7 @@ public class DownloadNotificationService {
     @VisibleForTesting
     public void notifyDownloadFailed(
             ContentId id,
-            String fileName,
+            @Nullable String fileName,
             @Nullable Bitmap icon,
             @Nullable GURL originalUrl,
             boolean shouldPromoteOrigin,
@@ -606,7 +606,7 @@ public class DownloadNotificationService {
             String fileName,
             GURL originalUrl,
             boolean shouldPromoteOrigin,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             boolean canDownloadWhileMetered,
             boolean isTransient,
             @DownloadDangerType int dangerType) {

@@ -12,6 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadUserInitiatedTaskManager;
@@ -29,6 +30,7 @@ import org.chromium.components.download.internal.BatteryStatusListenerAndroid;
  * scheduler.
  */
 @JNINamespace("download::android")
+@NullMarked
 public class DownloadBackgroundTask extends NativeBackgroundTask {
     @DownloadTaskType private int mCurrentTaskType;
 
