@@ -15,6 +15,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
@@ -42,6 +43,7 @@ import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.view.Gravity;
 import android.view.Surface;
 import android.view.View;
 
@@ -113,7 +115,10 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Controller tests for the root controller for interactions with the manual filling UI. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_SUPPRESS_ACCESSORY_ON_EMPTY})
+@Features.EnableFeatures({
+    ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_SUPPRESS_ACCESSORY_ON_EMPTY,
+    ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP
+})
 public class ManualFillingControllerTest {
     private static final int sKeyboardHeightDp = 100;
     private static final int sAccessoryHeightDp = 48;
@@ -141,6 +146,7 @@ public class ManualFillingControllerTest {
     @Mock private BackPressManager mMockBackPressManager;
     @Mock private EdgeToEdgeController mMockEdgeToEdgeController;
     @Mock private MultiWindowModeStateDispatcher mMockMultiWindowModeStateDispatcher;
+    @Mock private BrowserControlsManager mMockBrowserControlsManager;
 
     private final ManualFillingCoordinator mController = new ManualFillingCoordinator();
     private final ManualFillingMediator mMediator = mController.getMediatorForTesting();
@@ -371,7 +377,8 @@ public class ManualFillingControllerTest {
                 mMockBackPressManager,
                 mMockEdgeToEdgeControllerSupplier,
                 mMockSoftKeyboardDelegate,
-                mMockConfirmationHelper);
+                mMockConfirmationHelper,
+                mMockBrowserControlsManager);
     }
 
     @Test
@@ -1036,7 +1043,7 @@ public class ManualFillingControllerTest {
         // Ensure it's bottom-aligned and insetting the page with its height.
         assertEquals(
                 sAccessoryHeightDp * density, (int) mController.getBottomInsetSupplier().get());
-        verify(mMockKeyboardAccessory).setBottomOffset(0);
+        verify(mMockKeyboardAccessory).setOffsetAndGravity(eq(0), anyInt());
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
 
         // Simulate entering fullscreen mode which makes the keyboard overlaying.
@@ -1068,7 +1075,7 @@ public class ManualFillingControllerTest {
         // Ensure it's bottom-aligned and insetting the page with its height.
         assertEquals(
                 sAccessoryHeightDp * density, (int) mController.getBottomInsetSupplier().get());
-        verify(mMockKeyboardAccessory).setBottomOffset(0);
+        verify(mMockKeyboardAccessory).setOffsetAndGravity(eq(0), anyInt());
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
 
         // Simulate entering fullscreen mode which makes the keyboard overlaying.
@@ -1465,6 +1472,7 @@ public class ManualFillingControllerTest {
                 /* isCredentialFieldOrHasAutofillSuggestions= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
+        verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.BOTTOM));
     }
 
     @Test
@@ -1481,6 +1489,7 @@ public class ManualFillingControllerTest {
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
+        verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.TOP));
     }
 
     @Test
@@ -1499,6 +1508,7 @@ public class ManualFillingControllerTest {
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
+        verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.TOP));
     }
 
     @Test
@@ -1517,6 +1527,7 @@ public class ManualFillingControllerTest {
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
+        verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.TOP));
     }
 
     @Test
@@ -1535,6 +1546,7 @@ public class ManualFillingControllerTest {
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
+        verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.BOTTOM));
     }
 
     @Test
@@ -1551,7 +1563,7 @@ public class ManualFillingControllerTest {
         // Verify that the states are updated correctly and the active tab is set.
         assertThat(mModel.get(SHOW_WHEN_VISIBLE), is(true));
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
-        verify(mMockKeyboardAccessory, times(1)).setActiveTab(AccessoryTabType.PASSWORDS);
+        verify(mMockKeyboardAccessory).setActiveTab(AccessoryTabType.PASSWORDS);
 
         // Simulate the callback once active tab is set.
         mMediator.onChangeAccessorySheet(0);

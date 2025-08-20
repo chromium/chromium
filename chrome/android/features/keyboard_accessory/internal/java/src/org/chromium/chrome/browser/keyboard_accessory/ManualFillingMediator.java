@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProper
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SUPPRESSED_BY_BOTTOM_SHEET;
 
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState;
@@ -128,6 +130,7 @@ class ManualFillingMediator
             mKeyboardAccessoryVisualStateSupplier = new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<AccessorySheetVisualStateProvider>
             mAccessorySheetVisualStateSupplier = new ObservableSupplierImpl<>();
+    private @Nullable BrowserControlsManager mControlsManager;
 
     private final TabObserver mTabObserver =
             new EmptyTabObserver() {
@@ -196,7 +199,8 @@ class ManualFillingMediator
             BackPressManager backPressManager,
             Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ManualFillingComponent.SoftKeyboardDelegate keyboardDelegate,
-            ConfirmationDialogHelper confirmationHelper) {
+            ConfirmationDialogHelper confirmationHelper,
+            @Nullable BrowserControlsManager controlsManager) {
         mActivity = (ChromeActivity) windowAndroid.getActivity().get();
         assert mActivity != null;
         mWindowAndroid = windowAndroid;
@@ -219,6 +223,7 @@ class ManualFillingMediator
         mBackPressChangedSupplier.set(shouldHideOnBackPress());
         mBackPressManager.addHandler(this, Type.MANUAL_FILLING);
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+        mControlsManager = controlsManager;
 
         mTabModelObserver =
                 new TabModelSelectorTabModelObserver(mActivity.getTabModelSelector()) {
@@ -485,7 +490,7 @@ class ManualFillingMediator
         } else if (property == IS_FULLSCREEN) {
             if (isInitialized() && !mKeyboardAccessory.empty()) {
                 updateExtensionStateAndKeyboard(isSoftKeyboardShowing(getContentView()));
-                changeBottomControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
+                changeControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
             }
             return;
         } else if (property == PORTRAIT_ORIENTATION) {
@@ -523,7 +528,7 @@ class ManualFillingMediator
     private void transitionIntoState(@KeyboardExtensionState int extensionState) {
         if (!meetsStatePreconditions(extensionState)) return;
         TraceEvent.begin("ManualFillingMediator#transitionIntoState");
-        changeBottomControlSpaceForState(extensionState);
+        changeControlSpaceForState(extensionState);
         enforceStateProperties(extensionState); // Triggers a relayout. Call after changing insets.
         updateKeyboard(extensionState);
         TraceEvent.end("ManualFillingMediator#transitionIntoState");
@@ -733,10 +738,38 @@ class ManualFillingMediator
                 title, message, confirmButtonText, confirmedCallback, declinedCallback);
     }
 
-    private void changeBottomControlSpaceForState(int extensionState) {
+    private void changeTopOffset() {
+        if (mControlsManager == null) {
+            return;
+        }
+        int calculatedOffset = 0;
+        int contentOffset = mControlsManager.getContentOffset();
+        if (contentOffset != 0) {
+            // Sets the keyboard accessory's top offset. This offset is slightly smaller than
+            // the content offset to allow the accessory to partially overlap the top bar.
+            int topInsetOverlap =
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelOffset(R.dimen.keyboard_accessory_top_inset_overlap);
+            calculatedOffset = contentOffset - topInsetOverlap;
+        }
+        mKeyboardAccessory.setOffsetAndGravity(calculatedOffset, Gravity.TOP);
+        mBottomInsetSupplier.set(0);
+    }
+
+    private void changeControlSpaceForState(int extensionState) {
         if (extensionState == WAITING_TO_REPLACE) return; // Don't change yet.
-        int newControlsHeight = 0;
+
         int newControlsOffset = 0;
+        if (isLargeFormFactor()
+                && requiresVisibleBar(extensionState)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP)) {
+            changeTopOffset();
+            return;
+        }
+
+        int newControlsHeight = 0;
         if (requiresVisibleBar(extensionState)) {
             boolean isEdgeToEdgeActive = mEdgeToEdgeControllerSupplier.get() != null;
             // TODO(crbug.com/41483806): Treat VirtualKeyboardMode.OVERLAYS_CONTENT like fullscreen?
@@ -760,7 +793,7 @@ class ManualFillingMediator
                                     .getDimensionPixelSize(R.dimen.toolbar_shadow_height);
             newControlsOffset += mAccessorySheet.getHeight();
         }
-        mKeyboardAccessory.setBottomOffset(newControlsOffset);
+        mKeyboardAccessory.setOffsetAndGravity(newControlsOffset, Gravity.BOTTOM);
         mBottomInsetSupplier.set(newControlsHeight);
     }
 
@@ -889,7 +922,7 @@ class ManualFillingMediator
         // MINIMAL_AVAILABLE_VERTICAL_SPACE.
         mAccessorySheet.setHeight(
                 visibleViewportHeightPx + mAccessorySheet.getHeight() - minimumVerticalSpacePx);
-        changeBottomControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
+        changeControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
     }
 
     private void refreshTabs() {

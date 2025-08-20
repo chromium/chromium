@@ -52,7 +52,7 @@ class KeyboardAccessoryMetricsRecorder {
                 }
                 return;
             }
-            if (propertyKey == KeyboardAccessoryProperties.BOTTOM_OFFSET_PX
+            if (propertyKey == KeyboardAccessoryProperties.OFFSET_AND_GRAVITY
                     || propertyKey == KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION
                     || propertyKey == KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING
                     || propertyKey == KeyboardAccessoryProperties.SHOW_SWIPING_IPH

@@ -9,7 +9,6 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/keyboard_accessory"
-    android:layout_gravity="start|bottom"
     android:scrollbars="none"
     android:visibility="gone"
     android:orientation="vertical"

@@ -67,8 +67,7 @@ found in the LICENSE file.
             android:id="@+id/keyboard_accessory_stub"
             android:inflatedId="@+id/keyboard_accessory"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_gravity="start|bottom"/>
+            android:layout_width="match_parent"/>
 
         <org.chromium.ui.AsyncViewStub
             android:id="@+id/keyboard_accessory_sheet_stub"

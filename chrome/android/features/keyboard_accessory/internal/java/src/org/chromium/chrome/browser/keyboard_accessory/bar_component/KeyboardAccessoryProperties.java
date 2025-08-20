@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.IntDef;
@@ -31,7 +32,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -39,10 +39,9 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * As model of the keyboard accessory component, this class holds the data relevant to the visual
- * state of the accessory.
- * This includes the visibility of the accessory, its relative position and actions. Whenever the
- * state changes, it notifies its listeners - like the {@link KeyboardAccessoryMediator} or a
- * ModelChangeProcessor.
+ * state of the accessory. This includes the visibility of the accessory, its relative position and
+ * actions. Whenever the state changes, it notifies its listeners - like the {@link
+ * KeyboardAccessoryMediator} or a ModelChangeProcessor.
  */
 class KeyboardAccessoryProperties {
     static final ReadableObjectPropertyKey<ListModel<BarItem>> BAR_ITEMS =
@@ -50,11 +49,12 @@ class KeyboardAccessoryProperties {
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
     static final WritableBooleanPropertyKey SKIP_CLOSING_ANIMATION =
             new WritableBooleanPropertyKey("skip_closing_animation");
-    static final WritableIntPropertyKey BOTTOM_OFFSET_PX = new WritableIntPropertyKey("offset");
     static final WritableObjectPropertyKey<SheetOpenerBarItem> SHEET_OPENER_ITEM =
             new WritableObjectPropertyKey<>("sheet_opener_item");
     static final ReadableBooleanPropertyKey DISABLE_ANIMATIONS_FOR_TESTING =
             new ReadableBooleanPropertyKey("skip_all_animations_for_testing");
+    static final WritableObjectPropertyKey<Pair<Integer, Integer>> OFFSET_AND_GRAVITY =
+            new WritableObjectPropertyKey<>("offset_and_gravity");
     static final WritableObjectPropertyKey<Callback<Integer>> OBFUSCATED_CHILD_AT_CALLBACK =
             new WritableObjectPropertyKey<>("obfuscated_child_at_callback");
     static final PropertyModel.WritableObjectPropertyKey<Callback<Boolean>>
@@ -74,7 +74,7 @@ class KeyboardAccessoryProperties {
                         BAR_ITEMS,
                         VISIBLE,
                         SKIP_CLOSING_ANIMATION,
-                        BOTTOM_OFFSET_PX,
+                        OFFSET_AND_GRAVITY,
                         SHEET_OPENER_ITEM,
                         OBFUSCATED_CHILD_AT_CALLBACK,
                         ON_TOUCH_EVENT_CALLBACK,

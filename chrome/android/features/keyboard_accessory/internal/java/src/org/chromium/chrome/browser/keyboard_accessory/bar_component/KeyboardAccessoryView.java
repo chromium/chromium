@@ -10,6 +10,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -281,9 +283,14 @@ class KeyboardAccessoryView extends LinearLayout {
         return provider;
     }
 
-    void setBottomOffset(int bottomOffset) {
-        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
-        params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, bottomOffset);
+    void setOffsetAndGravity(@Px int offset, int gravity) {
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) getLayoutParams();
+        if (gravity == Gravity.TOP) {
+            params.setMargins(params.leftMargin, offset, params.rightMargin, 0);
+        } else if (gravity == Gravity.BOTTOM) {
+            params.setMargins(params.leftMargin, 0, params.rightMargin, offset);
+        }
+        params.gravity = gravity;
         setLayoutParams(params);
     }
 

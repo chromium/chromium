@@ -8,10 +8,10 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIphUtils.showHelpBubble;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BOTTOM_OFFSET_PX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OFFSET_AND_GRAVITY;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ON_TOUCH_EVENT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
@@ -316,8 +316,9 @@ class KeyboardAccessoryViewBinder {
             if (!model.get(VISIBLE)) {
                 view.setVisible(false); // Update to cancel any animation.
             }
-        } else if (propertyKey == BOTTOM_OFFSET_PX) {
-            view.setBottomOffset(model.get(BOTTOM_OFFSET_PX));
+        } else if (propertyKey == OFFSET_AND_GRAVITY) {
+            view.setOffsetAndGravity(
+                    model.get(OFFSET_AND_GRAVITY).first, model.get(OFFSET_AND_GRAVITY).second);
         } else if (propertyKey == ANIMATION_LISTENER) {
             view.setAnimationListener(model.get(ANIMATION_LISTENER));
         } else if (propertyKey == OBFUSCATED_CHILD_AT_CALLBACK) {

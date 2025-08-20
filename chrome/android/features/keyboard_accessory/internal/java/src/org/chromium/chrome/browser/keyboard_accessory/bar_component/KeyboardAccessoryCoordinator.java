@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.view.Gravity;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -325,12 +326,16 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
     }
 
     /**
-     * Sets the offset to the end of the activity - which is usually 0, the height of the keyboard
-     * or the height of a bottom sheet.
-     * @param bottomOffset The offset in pixels.
+     * Sets the vertical offset and gravity for the component.
+     *
+     * <p>The gravity determines whether the offset is applied from the top ({@link Gravity#TOP}) or
+     * the bottom ({@link Gravity#BOTTOM}) of the view.
+     *
+     * @param offset The vertical offset in pixels.
+     * @param gravity The gravity flag, either {@link Gravity#TOP} or {@link Gravity#BOTTOM}.
      */
-    public void setBottomOffset(@Px int bottomOffset) {
-        mMediator.setBottomOffset(bottomOffset);
+    public void setOffsetAndGravity(@Px int offset, int gravity) {
+        mMediator.setOffsetAndGravity(offset, gravity);
     }
 
     /** Triggers the accessory to be shown. */

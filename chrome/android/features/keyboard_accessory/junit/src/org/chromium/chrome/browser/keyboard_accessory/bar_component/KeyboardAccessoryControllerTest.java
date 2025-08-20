@@ -24,9 +24,13 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OFFSET_AND_GRAVITY;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
+
+import android.util.Pair;
+import android.view.Gravity;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,8 +47,10 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.R;
@@ -81,6 +87,7 @@ import java.util.List;
 @Config(
         manifest = Config.NONE,
         shadows = {CustomShadowAsyncTask.class})
+@Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP})
 public class KeyboardAccessoryControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -621,6 +628,15 @@ public class KeyboardAccessoryControllerTest {
         autofillSuggestionProvider.notifyObservers(List.of(addressSuggestion));
 
         assertThat(getAutofillItemAt(0).getViewType(), is(BarItem.Type.HOME_AND_WORK_SUGGESTION));
+    }
+
+    @Test
+    public void testOffsetAndGravity() {
+        final int testOffset = 123;
+        final int testGravity = Gravity.BOTTOM;
+        Pair<Integer, Integer> testOffsetAndGravity = new Pair<>(testOffset, testGravity);
+        mCoordinator.setOffsetAndGravity(testOffset, testGravity);
+        assertThat(mModel.get(OFFSET_AND_GRAVITY), is(testOffsetAndGravity));
     }
 
     private int getGenerationImpressionCount() {

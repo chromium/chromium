@@ -6,15 +6,17 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BOTTOM_OFFSET_PX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OFFSET_AND_GRAVITY;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ON_TOUCH_EVENT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
+
+import android.util.Pair;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -295,7 +297,7 @@ class KeyboardAccessoryMediator
             }
             return;
         }
-        if (propertyKey == BOTTOM_OFFSET_PX
+        if (propertyKey == OFFSET_AND_GRAVITY
                 || propertyKey == SHEET_OPENER_ITEM
                 || propertyKey == SKIP_CLOSING_ANIMATION
                 || propertyKey == DISABLE_ANIMATIONS_FOR_TESTING
@@ -347,8 +349,8 @@ class KeyboardAccessoryMediator
         return mModel.get(BAR_ITEMS).size() > 1; // Ignore tab switcher item.
     }
 
-    void setBottomOffset(@Px int bottomOffset) {
-        mModel.set(BOTTOM_OFFSET_PX, bottomOffset);
+    void setOffsetAndGravity(@Px int offset, int gravity) {
+        mModel.set(OFFSET_AND_GRAVITY, new Pair<Integer, Integer>(offset, gravity));
     }
 
     boolean isShown() {

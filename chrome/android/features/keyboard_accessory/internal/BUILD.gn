@@ -57,6 +57,7 @@ android_library("internal_java") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_viewpager_viewpager_java",
