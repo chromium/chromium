@@ -196,6 +196,12 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 
 #pragma mark - UIViewController
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  [self.formInputAccessoryView layoutIfNeeded];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
@@ -206,12 +212,6 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
   // is not, so `showScrollHint` will not be set to YES in that scenario.
   self.showScrollHint = _keyboardWasClosed;
   _keyboardWasClosed = NO;
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-
-  [self.formInputAccessoryView layoutIfNeeded];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

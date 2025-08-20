@@ -358,7 +358,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
 - (id)initWithSuggestion:(FormSuggestion*)suggestion
                     index:(NSUInteger)index
-           numSuggestions:(NSUInteger)numSuggestions
+      numberOfSuggestions:(NSUInteger)numberOfSuggestions
     accessoryTrailingView:(UIView*)accessoryTrailingView
                  delegate:(id<FormSuggestionLabelDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
@@ -459,16 +459,18 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
                                   suggestionText, suggestion.displayDescription,
                                   suggestion.type ==
                                       SuggestionType::kBackupPasswordEntry)];
-    [self setAccessibilityValue:l10n_util::GetNSStringF(
-                                    IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
-                                    base::NumberToString16(index + 1),
-                                    base::NumberToString16(numSuggestions))];
+    [self
+        setAccessibilityValue:l10n_util::GetNSStringF(
+                                  IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
+                                  base::NumberToString16(index + 1),
+                                  base::NumberToString16(numberOfSuggestions))];
     [self
         setAccessibilityIdentifier:kFormSuggestionLabelAccessibilityIdentifier];
 
     // On phones, set a maximum width to save space on the keyboard accessory.
     if (!isTablet && IsKeyboardAccessoryUpgradeEnabled()) {
-      CGFloat maximumWidth = [self maximumWidth:accessoryTrailingView];
+      CGFloat maximumWidth = [self maximumWidth:accessoryTrailingView
+                                suggestionCount:numberOfSuggestions];
       if (maximumWidth < CGFLOAT_MAX) {
         [self.widthAnchor constraintLessThanOrEqualToConstant:maximumWidth]
             .active = YES;
@@ -593,10 +595,11 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
 // Computes the suggestion label's maximum width.
 // Returns CGFLOAT_MAX if there's no maximum width.
-- (CGFloat)maximumWidth:(UIView*)accessoryTrailingView {
+- (CGFloat)maximumWidth:(UIView*)accessoryTrailingView
+        suggestionCount:(NSUInteger)suggestionCount {
   CGFloat maxWidth = CGFLOAT_MAX;
-  // We're using the screen width because the 'window' member is nil at the
-  // moment of setting up the label's width anchor.
+  // Using the screen width because the `window` member is nil at the moment of
+  // setting up the label's width anchor.
   CGSize windowSize = [[UIScreen mainScreen] bounds].size;
   CGFloat portraitScreenWidth = MIN(windowSize.width, windowSize.height);
   switch (_suggestion.type) {
@@ -609,8 +612,10 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
                  kHalfCreditCardIconOffset;
     } break;
     case SuggestionType::kAddressEntry:
-      // Max width is half width, in portrait mode.
-      maxWidth = portraitScreenWidth * 0.5;
+      if (suggestionCount > 1) {
+        // Max width is half width, in portrait mode.
+        maxWidth = portraitScreenWidth * 0.5;
+      }
       break;
     default:
       break;

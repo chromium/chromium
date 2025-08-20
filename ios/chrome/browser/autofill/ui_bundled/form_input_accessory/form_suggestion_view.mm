@@ -316,7 +316,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
     FormSuggestionLabel* label = [[FormSuggestionLabel alloc]
            initWithSuggestion:suggestion
                         index:idx
-               numSuggestions:[self.suggestions count]
+          numberOfSuggestions:[self.suggestions count]
         accessoryTrailingView:self.accessoryTrailingView
                      delegate:self];
     [self addFormSuggestionLabel:label atIndex:idx];
