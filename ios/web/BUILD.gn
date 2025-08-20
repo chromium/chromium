@@ -416,7 +416,6 @@ source_set("ios_web_web_state_unittests") {
   ]
 
   sources = [
-    "web_state/data_controls_protocol_smoke_unittest.mm",
     "web_state/policy_decision_state_tracker_unittest.mm",
     "web_state/web_state_context_menu_bridge_unittest.mm",
     "web_state/web_state_delegate_bridge_unittest.mm",
