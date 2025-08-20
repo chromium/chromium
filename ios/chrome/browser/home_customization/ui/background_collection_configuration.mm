@@ -6,4 +6,13 @@
 
 @implementation BackgroundCollectionConfiguration
 
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _configurationOrder = [NSMutableArray array];
+    _configurations = [NSMutableDictionary dictionary];
+  }
+  return self;
+}
+
 @end

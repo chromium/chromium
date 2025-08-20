@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_consumer.h"
@@ -86,26 +87,25 @@
 
   if (IsNTPBackgroundCustomizationEnabled() &&
       _prefService->GetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy)) {
-    NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*
-        backgroundCustomizationConfigurationMap =
-            [NSMutableDictionary dictionary];
-    NSMutableArray<NSString*>* configurationOrder = [NSMutableArray array];
+    BackgroundCollectionConfiguration* collectionConfiguration =
+        [[BackgroundCollectionConfiguration alloc] init];
 
     // Create and add a background configuration with no background applied.
     BackgroundCustomizationConfigurationItem* defaultConfig =
         [[BackgroundCustomizationConfigurationItem alloc] initWithNoBackground];
-    backgroundCustomizationConfigurationMap[defaultConfig.configurationID] =
+    collectionConfiguration.configurations[defaultConfig.configurationID] =
         defaultConfig;
-    [configurationOrder addObject:defaultConfig.configurationID];
+    [collectionConfiguration.configurationOrder
+        addObject:defaultConfig.configurationID];
 
     for (RecentlyUsedBackground background :
          _backgroundService->GetRecentlyUsedBackgrounds()) {
       BackgroundCustomizationConfigurationItem* config =
           [self generateConfigurationItemForRecentBackground:background];
       if (config) {
-        backgroundCustomizationConfigurationMap[config.configurationID] =
-            config;
-        [configurationOrder addObject:config.configurationID];
+        collectionConfiguration.configurations[config.configurationID] = config;
+        [collectionConfiguration.configurationOrder
+            addObject:config.configurationID];
       }
     }
 
@@ -113,11 +113,9 @@
     // configurations and fill the `backgroundCustomizationConfigurationMap` and
     // `selectedBackgroundId`.
     [self.mainPageConsumer
-        populateBackgroundCustomizationConfigurations:
-            backgroundCustomizationConfigurationMap
-                                   configurationOrder:configurationOrder
-                                 selectedBackgroundId:defaultConfig
-                                                          .configurationID];
+        populateBackgroundCollectionConfiguration:collectionConfiguration
+                             selectedBackgroundId:defaultConfig
+                                                      .configurationID];
   }
 }
 

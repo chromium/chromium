@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
@@ -48,13 +49,8 @@
   // Registration for the background picker cell.
   UICollectionViewCellRegistration* _backgroundPickerCellRegistration;
 
-  // Contains the options the HomeCustomizationBackgroundCell will use to set a
-  // background on the NTP.
-  NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*
-      _backgroundCustomizationConfigurationMap;
-
-  // Contains the order that the background cells should appear in.
-  NSMutableArray<NSString*>* _backgroundCustomizationConfigurationOrder;
+  // Collection of backgrounds to display in the collection view.
+  BackgroundCollectionConfiguration* _backgroundCollectionConfiguration;
 
   // The id of the selected background cell.
   NSString* _selectedBackgroundId;
@@ -270,7 +266,7 @@
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
 
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
-      _backgroundCustomizationConfigurationMap[itemIdentifier];
+      _backgroundCollectionConfiguration.configurations[itemIdentifier];
 
   [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
 }
@@ -288,7 +284,7 @@
   }
 
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
-      _backgroundCustomizationConfigurationMap[itemIdentifier];
+      _backgroundCollectionConfiguration.configurations[itemIdentifier];
 
   // TODO(crbug.com/438568944): Display user-uploaded background images as well.
   if (backgroundConfiguration &&
@@ -322,18 +318,11 @@
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
-- (void)populateBackgroundCustomizationConfigurations:
-            (NSMutableDictionary<NSString*,
-                                 id<BackgroundCustomizationConfiguration>>*)
-                backgroundCustomizationConfigurationMap
-                                   configurationOrder:
-                                       (NSMutableArray<NSString*>*)
-                                           configurationOrder
-                                 selectedBackgroundId:
-                                     (NSString*)selectedBackgroundId {
-  _backgroundCustomizationConfigurationMap =
-      backgroundCustomizationConfigurationMap;
-  _backgroundCustomizationConfigurationOrder = configurationOrder;
+- (void)
+    populateBackgroundCollectionConfiguration:
+        (BackgroundCollectionConfiguration*)backgroundCollectionConfiguration
+                         selectedBackgroundId:(NSString*)selectedBackgroundId {
+  _backgroundCollectionConfiguration = backgroundCollectionConfiguration;
   _selectedBackgroundId = selectedBackgroundId;
 
   // Recreate the snapshot with the new items to take into account all the
@@ -355,8 +344,8 @@
 // by the snapshot.
 - (NSArray<NSString*>*)identifiersForBackgroundCells {
   NSMutableArray<NSString*>* identifiers = [[NSMutableArray alloc] init];
-  for (NSString* key in _backgroundCustomizationConfigurationOrder) {
-    if (![_backgroundCustomizationConfigurationMap objectForKey:key]) {
+  for (NSString* key in _backgroundCollectionConfiguration.configurationOrder) {
+    if (![_backgroundCollectionConfiguration.configurations objectForKey:key]) {
       continue;
     }
     [identifiers addObject:key];
@@ -386,7 +375,7 @@
                     atIndexPath:(NSIndexPath*)indexPath
              withItemIdentifier:(NSString*)itemIdentifier {
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
-      _backgroundCustomizationConfigurationMap[itemIdentifier];
+      _backgroundCollectionConfiguration.configurations[itemIdentifier];
 
   CustomUITraitAccessor* traitAccessor =
       [[CustomUITraitAccessor alloc] initWithMutableTraits:cell.traitOverrides];
@@ -429,8 +418,10 @@
   NSDiffableDataSourceSnapshot* snapshot = [self.diffableDataSource snapshot];
   [self.mutator deleteBackgroundFromRecentlyUsedAtIndex:indexPath.item];
   [snapshot deleteItemsWithIdentifiers:@[ identifier ]];
-  [_backgroundCustomizationConfigurationMap removeObjectForKey:identifier];
-  [_backgroundCustomizationConfigurationOrder removeObject:identifier];
+  [_backgroundCollectionConfiguration.configurations
+      removeObjectForKey:identifier];
+  [_backgroundCollectionConfiguration.configurationOrder
+      removeObject:identifier];
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 @end

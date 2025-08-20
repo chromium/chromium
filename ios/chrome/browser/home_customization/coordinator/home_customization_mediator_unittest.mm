@@ -45,15 +45,10 @@
   _toggleMap = toggleMap;
 }
 
-- (void)populateBackgroundCustomizationConfigurations:
-            (NSMutableDictionary<NSString*,
-                                 id<BackgroundCustomizationConfiguration>>*)
-                BackgroundCustomizationConfigurationMap
-                                   configurationOrder:
-                                       (NSMutableArray<NSString*>*)
-                                           configurationOrder
-                                 selectedBackgroundId:
-                                     (NSString*)selectedBackgroundId {
+- (void)
+    populateBackgroundCollectionConfiguration:
+        (BackgroundCollectionConfiguration*)backgroundCollectionConfiguration
+                         selectedBackgroundId:(NSString*)selectedBackgroundId {
   // No-op for fake implementation.
 }
 

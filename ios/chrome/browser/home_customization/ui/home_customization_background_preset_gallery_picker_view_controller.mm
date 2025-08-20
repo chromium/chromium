@@ -156,13 +156,15 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 
   // Flattens all background configurations from the collections into a single
   // map.
-  for (BackgroundCollectionConfiguration* BackgroundCollectionConfiguration in
+  for (BackgroundCollectionConfiguration* backgroundCollectionConfiguration in
            backgroundCollectionConfigurations) {
-    for (id<BackgroundCustomizationConfiguration> backgroundConfiguration in
-             BackgroundCollectionConfiguration.configurations) {
-      [backgroundCustomizationConfigurationMap
-          setObject:backgroundConfiguration
-             forKey:backgroundConfiguration.configurationID];
+    for (NSString* configurationID in backgroundCollectionConfiguration
+             .configurations) {
+      id<BackgroundCustomizationConfiguration> backgroundConfiguration =
+          [backgroundCollectionConfiguration.configurations
+              objectForKey:configurationID];
+      [backgroundCustomizationConfigurationMap setObject:backgroundConfiguration
+                                                  forKey:configurationID];
     }
   }
 
@@ -296,9 +298,9 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
       backgroundCollectionConfiguration.collectionName
     ]];
     NSMutableArray* backgroundIds = [NSMutableArray array];
-    for (id<BackgroundCustomizationConfiguration> backgroundConfiguration in
-             backgroundCollectionConfiguration.configurations) {
-      [backgroundIds addObject:backgroundConfiguration.configurationID];
+    for (NSString* configurationID in backgroundCollectionConfiguration
+             .configurationOrder) {
+      [backgroundIds addObject:configurationID];
     }
 
     [snapshot appendItemsWithIdentifiers:backgroundIds

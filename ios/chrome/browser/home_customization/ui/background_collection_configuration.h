@@ -9,16 +9,23 @@
 
 @protocol BackgroundCustomizationConfiguration;
 
-// A tuple for grouping a collection name with its associated array of
-// `BackgroundCustomizationConfiguration`.
+// A tuple for grouping a collection name with its associated dictionary of
+// `BackgroundCustomizationConfiguration` and array for ordering. Anyone who
+// updates data here must take care to make sure the dictionary and array stay
+// in sync.
 @interface BackgroundCollectionConfiguration : NSObject
 
-// The name of the background collection.
+// The name of the background collection, may be empty if the collection
+// doesn't have a name.
 @property(nonatomic, copy) NSString* collectionName;
 
 // The background customization configurations associated with this collection.
 @property(nonatomic, strong)
-    NSArray<id<BackgroundCustomizationConfiguration>>* configurations;
+    NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*
+        configurations;
+
+// The order the configurations in this section should be displayed in..
+@property(nonatomic, strong) NSMutableArray<NSString*>* configurationOrder;
 
 @end
 

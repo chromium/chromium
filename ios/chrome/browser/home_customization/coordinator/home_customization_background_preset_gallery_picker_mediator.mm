@@ -122,20 +122,18 @@
     BackgroundCollectionConfiguration* section =
         [[BackgroundCollectionConfiguration alloc] init];
     section.collectionName = base::SysUTF8ToNSString(collectionName);
-    NSMutableArray<BackgroundCustomizationConfigurationItem*>*
-        imageConfigurations = [[NSMutableArray alloc] init];
     for (const auto& image : collectionImages) {
       BackgroundCustomizationConfigurationItem* config =
           [[BackgroundCustomizationConfigurationItem alloc]
               initWithCollectionImage:image];
-      [imageConfigurations addObject:config];
+      [section.configurations setObject:config forKey:config.configurationID];
+      [section.configurationOrder addObject:config.configurationID];
 
       if (ntpCustomBackground &&
           image.image_url == ntpCustomBackground->url()) {
         selectedBackgroundId = config.configurationID;
       }
     }
-    section.configurations = [NSArray arrayWithArray:imageConfigurations];
     [collectionConfigurations addObject:section];
   }
 
