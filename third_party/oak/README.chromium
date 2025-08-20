@@ -1,0 +1,16 @@
+Name: oak
+URL: https://github.com/project-oak/oak/
+Version: N/A
+Date: 2025-08-07
+Revision: bd9e19ed20525444be0882bd5848ec475ac8c040
+Update Mechanism: Manual
+License: Apache-2.0
+License File: src/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description:
+Oak is a software platform for building distributed systems providing externally verifiable (or falsifiable) claims about system behaviors in a transparent way. Oak provides building blocks that are used to build Enclave Applications, i.e. applications that are isolated from the host on which they run, and are remotely attestable.
+
+Local Modifications:
+None

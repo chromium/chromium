@@ -274,6 +274,9 @@
 [submodule "third_party/emoji-segmenter/src"]
 	path = third_party/emoji-segmenter/src
 	url = https://chromium.googlesource.com/external/github.com/google/emoji-segmenter
+[submodule "third_party/oak/src"]
+	path = third_party/oak/src
+	url = https://chromium.googlesource.com/external/github.com/project-oak/oak
 [submodule "third_party/ots/src"]
 	path = third_party/ots/src
 	url = https://chromium.googlesource.com/external/github.com/khaledhosny/ots

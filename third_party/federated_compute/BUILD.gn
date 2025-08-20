@@ -2,8 +2,75 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
 config("confidential_compute_include") {
   include_dirs = [ "src" ]
+}
+
+proto_library("signed_endorsements_proto") {
+  sources = [ "src/fcp/protos/confidentialcompute/signed_endorsements.proto" ]
+
+  proto_deps = [ "//third_party/oak:endorsement_proto" ]
+
+  import_dirs = [ "//third_party/oak/src" ]
+
+  cc_generator_options = "lite"
+}
+
+proto_library("confidential_encryption_config_proto") {
+  sources =
+      [ "src/fcp/protos/federatedcompute/confidential_encryption_config.proto" ]
+
+  proto_deps = [
+    "//third_party/oak:endorsement_proto",
+    "//third_party/oak:evidence_proto",
+  ]
+
+  import_dirs = [
+    "//third_party/oak/src",
+    "//third_party/protobuf/src",
+  ]
+
+  cc_generator_options = "lite"
+}
+
+proto_library("data_upload_config_proto") {
+  sources = [ "src/fcp/protos/confidentialcompute/data_upload_config.proto" ]
+
+  proto_deps = [
+    ":confidential_encryption_config_proto",
+    ":signed_endorsements_proto",
+    "//third_party/oak:endorsement_proto",
+    "//third_party/oak:eventlog_proto",
+    "//third_party/oak:evidence_proto",
+    "//third_party/protobuf:any_proto",
+  ]
+
+  link_deps = [
+    ":confidential_encryption_config_proto",
+    ":signed_endorsements_proto",
+    "//third_party/oak:endorsement_proto",
+    "//third_party/oak:eventlog_proto",
+    "//third_party/oak:evidence_proto",
+    "//third_party/protobuf:any_proto",
+  ]
+
+  import_dirs = [
+    "src",
+    "//third_party/oak/src",
+    "//third_party/protobuf/src",
+  ]
+
+  cc_generator_options = "lite"
+}
+
+group("confidential_compute_proto") {
+  public_deps = [
+    ":confidential_encryption_config_proto",
+    ":data_upload_config_proto",
+    ":signed_endorsements_proto",
+  ]
 }
 
 source_set("confidential_compute") {
@@ -27,6 +94,8 @@ source_set("confidential_compute") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   public_configs = [ ":confidential_compute_include" ]
+
+  public_deps = [ ":confidential_compute_proto" ]
 
   deps = [
     "//third_party/abseil-cpp:absl",

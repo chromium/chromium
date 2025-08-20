@@ -1,10 +1,10 @@
 Name: federated-compute
 URL: https://github.com/google-parfait/federated-compute/
 Version: N/A
-Date: 2025-07-30
-Revision: d9608bf1a16ee03a5451e15c8f3e262617472a38
+Date: 2025-08-07
+Revision: cf49f95f941eb872f596522890055878240c3a22
 Update Mechanism: Manual
-License:  Apache-2.0
+License: Apache-2.0
 License File: src/LICENSE
 Shipped: yes
 Security Critical: yes

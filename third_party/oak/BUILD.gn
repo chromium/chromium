@@ -1,0 +1,50 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("digest_proto") {
+  sources = [ "src/proto/digest.proto" ]
+  cc_generator_options = "lite"
+}
+
+proto_library("eventlog_proto") {
+  sources = [ "src/proto/attestation/eventlog.proto" ]
+
+  proto_deps = [
+    ":digest_proto",
+    "//third_party/protobuf:any_proto",
+  ]
+
+  link_deps = [ ":digest_proto" ]
+
+  import_dirs = [
+    "src",
+    "//third_party/protobuf/src",
+  ]
+
+  cc_generator_options = "lite"
+}
+
+proto_library("endorsement_proto") {
+  sources = [ "src/proto/attestation/endorsement.proto" ]
+
+  cc_generator_options = "lite"
+}
+
+proto_library("evidence_proto") {
+  sources = [ "src/proto/attestation/evidence.proto" ]
+
+  proto_deps = [
+    ":eventlog_proto",
+    "//third_party/protobuf:any_proto",
+  ]
+
+  import_dirs = [
+    "src",
+    "//third_party/protobuf/src",
+  ]
+
+  cc_generator_options = "lite"
+}
