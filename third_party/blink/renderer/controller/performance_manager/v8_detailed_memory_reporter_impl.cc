@@ -192,7 +192,8 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
                        ExecutionContextToken::Hasher>
         per_context_bytes;
     // Group and accumulate canvas bytes by execution context token.
-    for (auto entry : CanvasResourceTracker::For(isolate_)->GetResourceMap()) {
+    for (const auto& entry :
+         CanvasResourceTracker::For(isolate_)->GetResourceMap()) {
       ExecutionContextToken token = entry.value->GetExecutionContextToken();
       base::ByteCount memory_used =
           base::ByteCount::FromUnsigned(entry.key->GetMemoryUsage());
@@ -207,7 +208,7 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
         it->second += memory_used;
       }
     }
-    for (auto entry : per_context_bytes) {
+    for (const auto& entry : per_context_bytes) {
       auto memory_usage = mojom::blink::PerContextCanvasMemoryUsage::New();
       memory_usage->token = entry.first;
       memory_usage->memory_used = entry.second;

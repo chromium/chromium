@@ -82,8 +82,9 @@ void BlinkLeakDetector::PerformLeakDetection(
   CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
 
   // Stop keepalive loaders that may persist after page navigation.
-  for (auto resource_fetcher : ResourceFetcher::MainThreadFetchers())
+  for (auto& resource_fetcher : ResourceFetcher::MainThreadFetchers()) {
     resource_fetcher->PrepareForLeakDetection();
+  }
 
   Page::PrepareForLeakDetection();
 
