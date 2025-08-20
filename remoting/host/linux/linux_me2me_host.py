@@ -1177,7 +1177,6 @@ class WaylandDesktop(Desktop):
 
   def _init_child_env(self):
     super(WaylandDesktop, self)._init_child_env()
-    self.child_env["GDK_BACKEND"] = "wayland,x11"
     self.child_env["XDG_SESSION_TYPE"] = "wayland"
     self.child_env["XDG_RUNTIME_DIR"] = self.runtime_dir
 
