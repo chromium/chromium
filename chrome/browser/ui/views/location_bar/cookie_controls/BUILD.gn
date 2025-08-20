@@ -113,7 +113,6 @@ source_set("interactive_ui_tests") {
   deps = [
     ":cookie_controls",
     "//chrome/browser",  # Needed for browser.h and privacy_sandbox
-    "//chrome/test:browser_tests",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/content_settings/core/test:test_support",
