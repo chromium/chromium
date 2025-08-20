@@ -216,6 +216,9 @@ class TabGridViewBinder {
         } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
             setNullableLongClickListener(
                     model.get(TabProperties.TAB_LONG_CLICK_LISTENER), view, model);
+        } else if (TabProperties.TAB_CONTEXT_CLICK_LISTENER == propertyKey) {
+            setNullableContextClickListener(
+                    model.get(TabProperties.TAB_CONTEXT_CLICK_LISTENER), view, model);
         } else if (TabProperties.MEDIA_INDICATOR == propertyKey) {
             ((TabGridView) view).setMediaIndicator(model.get(TabProperties.MEDIA_INDICATOR));
         }
@@ -347,6 +350,22 @@ class TabGridViewBinder {
             view.setOnLongClickListener(null);
         } else {
             view.setOnLongClickListener(
+                    v -> {
+                        runTabActionListener(
+                                listener, v, propertyModel, /* triggeringMotion= */ null);
+                        return true;
+                    });
+        }
+    }
+
+    static void setNullableContextClickListener(
+            @Nullable TabActionListener listener, View view, PropertyModel propertyModel) {
+        if (listener == null) {
+            view.setContextClickable(false);
+            view.setOnContextClickListener(null);
+        } else {
+            view.setContextClickable(true);
+            view.setOnContextClickListener(
                     v -> {
                         runTabActionListener(
                                 listener, v, propertyModel, /* triggeringMotion= */ null);

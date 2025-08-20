@@ -83,6 +83,8 @@ public class TabProperties {
 
     public static final WritableObjectPropertyKey<TabActionListener> TAB_LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<TabActionListener> TAB_CONTEXT_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey IS_HIGHLIGHTED =
             new WritableBooleanPropertyKey();
@@ -179,6 +181,7 @@ public class TabProperties {
                 IS_SELECTED,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
+                TAB_CONTEXT_CLICK_LISTENER,
                 TAB_ACTION_BUTTON_DATA,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
@@ -243,6 +246,7 @@ public class TabProperties {
                 TAB_ACTION_BUTTON_DATA,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
+                TAB_CONTEXT_CLICK_LISTENER,
                 ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
                 CONTENT_DESCRIPTION_TEXT_RESOLVER,
             };

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -15,6 +16,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -514,6 +516,25 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
 
         verify(mViewGroup).setMediaIndicator(eq(MediaState.AUDIBLE));
+    }
+
+    @Test
+    public void testBindContextClickListener() {
+        TabActionListener listener = mock();
+        mModel.set(TabProperties.TAB_CONTEXT_CLICK_LISTENER, listener);
+
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CONTEXT_CLICK_LISTENER);
+
+        verify(mViewGroup).setContextClickable(true);
+        ArgumentCaptor<View.OnContextClickListener> captor =
+                ArgumentCaptor.forClass(View.OnContextClickListener.class);
+        verify(mViewGroup).setOnContextClickListener(captor.capture());
+        assertNotNull(captor.getValue());
+
+        mModel.set(TabProperties.TAB_CONTEXT_CLICK_LISTENER, null);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CONTEXT_CLICK_LISTENER);
+        verify(mViewGroup).setContextClickable(false);
+        verify(mViewGroup).setOnContextClickListener(eq(null));
     }
 
     private void assertImageMatrix(

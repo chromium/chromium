@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView.QuickDeleteAnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -361,6 +362,7 @@ class TabListMediator implements TabListNotificationHandler {
     private @Nullable ListObserver<Void> mListObserver;
     private View.AccessibilityDelegate mAccessibilityDelegate;
     private int mCurrentSpanCount;
+    private @Nullable OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
 
     private final TabActionListener mTabSelectedListener =
             new TabActionListener() {
@@ -488,6 +490,20 @@ class TabListMediator implements TabListNotificationHandler {
                     if (tabGroup != null) {
                         updateThumbnailFetcher(model, tabGroup);
                     }
+                }
+            };
+    private final TabActionListener mContextClickTabItemEventListener =
+            new TabActionListener() {
+                @Override
+                public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
+                    if (mOnLongPressTabItemEventListener == null) return;
+                    mOnLongPressTabItemEventListener.onLongPressEvent(tabId, view);
+                }
+
+                @Override
+                public void run(
+                        View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {
+                    // No-op.
                 }
             };
 
@@ -1382,8 +1398,8 @@ class TabListMediator implements TabListNotificationHandler {
      * @param onLongPressTabItemEventListener to handle long press events on tabs.
      */
     public void setOnLongPressTabItemEventListener(
-            TabGridItemLongPressOrchestrator.@Nullable OnLongPressTabItemEventListener
-                    onLongPressTabItemEventListener) {
+            @Nullable OnLongPressTabItemEventListener onLongPressTabItemEventListener) {
+        mOnLongPressTabItemEventListener = onLongPressTabItemEventListener;
         mTabGridItemTouchHelperCallback.setOnLongPressTabItemEventListener(
                 onLongPressTabItemEventListener);
     }
@@ -2023,11 +2039,14 @@ class TabListMediator implements TabListNotificationHandler {
 
     private @Nullable TabActionListener getTabLongClickListener(
             @TabActionState int tabActionState) {
-        if (tabActionState == TabActionState.SELECTABLE) {
-            return mSelectableTabOnClickListener;
-        } else {
-            return null;
-        }
+        return tabActionState == TabActionState.SELECTABLE ? mSelectableTabOnClickListener : null;
+    }
+
+    private @Nullable TabActionListener getTabContextClickListener(
+            @TabActionState int tabActionState) {
+        return tabActionState != TabActionState.SELECTABLE
+                ? mContextClickTabItemEventListener
+                : null;
     }
 
     private void bindTabActionStateProperties(
@@ -2038,6 +2057,9 @@ class TabListMediator implements TabListNotificationHandler {
                 TabProperties.TAB_ACTION_BUTTON_DATA, getTabActionButtonData(tab, tabActionState));
         model.set(TabProperties.TAB_CLICK_LISTENER, getTabClickListener(tab, tabActionState));
         model.set(TabProperties.TAB_LONG_CLICK_LISTENER, getTabLongClickListener(tabActionState));
+        model.set(
+                TabProperties.TAB_CONTEXT_CLICK_LISTENER,
+                getTabContextClickListener(tabActionState));
         model.set(TabProperties.TAB_CARD_LABEL_DATA, model.get(TabProperties.TAB_CARD_LABEL_DATA));
 
         if (mTabActionState != TabActionState.SELECTABLE) {
