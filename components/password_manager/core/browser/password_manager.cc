@@ -404,6 +404,18 @@ base::flat_map<FieldRendererId, FieldType> KeyPredictionsByRendererIds(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+// Shows an error message that nudges the user to update GMSCore if necessary.
+void MaybeNudgeToUpdateGMSCoreWhenSavingDisabled(
+    PasswordManagerClient* client) {
+  CHECK(client);
+  if (client->GetPasswordFeatureManager()->ShouldUpdateGmsCore()) {
+    client->ShowPasswordManagerErrorMessage(
+        ErrorMessageFlowType::kSaveFlow,
+        password_manager::PasswordStoreBackendErrorType::
+            kGMSCoreOutdatedSavingDisabled);
+  }
+}
+
 // Records the form submission if the user has saving enabled and
 // the password is eligible for saving.
 void SignalFormSubmissionIfEligibleForSaving(PasswordFormManager* manager,
@@ -1563,6 +1575,9 @@ void PasswordManager::OnLoginSuccessful() {
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
                         able_to_save_passwords);
   if (!submitted_manager->IsPasswordUpdate() && !able_to_save_passwords) {
+#if BUILDFLAG(IS_ANDROID)
+    MaybeNudgeToUpdateGMSCoreWhenSavingDisabled(client_);
+#endif
     return;
   }
 

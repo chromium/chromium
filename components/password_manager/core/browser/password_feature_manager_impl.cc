@@ -70,4 +70,10 @@ PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
   return features_util::ComputePasswordAccountStorageUsageLevel(sync_service_);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool PasswordFeatureManagerImpl::ShouldUpdateGmsCore() {
+  return IsGmsCoreUpdateRequired();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace password_manager

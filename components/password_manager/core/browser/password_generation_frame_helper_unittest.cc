@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/field_trial.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -46,11 +45,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/device_info.h"
-#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 using autofill::AutofillField;
 using autofill::AutofillType;
@@ -251,12 +245,12 @@ TEST_F(PasswordGenerationFrameHelperTest, IsGenerationEnabled) {
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordGenerationFrameHelperTest,
        GenerationDisabledDueToOutdatedGMSCore) {
-  base::android::device_info::set_gms_version_code_for_test(
-      base::NumberToString(GetSplitStoresUpmMinVersion() - 1));
   EXPECT_CALL(*client_->mock_store(), IsAbleToSavePasswords())
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*client_->GetPasswordFeatureManager(), ShouldUpdateGmsCore())
+      .WillRepeatedly(testing::Return(false));
   EXPECT_FALSE(IsGenerationEnabled());
 }
 #endif

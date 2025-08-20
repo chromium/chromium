@@ -30,10 +30,16 @@ class PasswordManagerErrorMessageHelperBridge {
 
   // Checks if enough time has passed since the last error UI was shown.
   virtual bool ShouldShowSignInErrorUI(content::WebContents* web_contents) = 0;
+  virtual bool ShouldShowUpdateGMSCoreErrorUI(
+      content::WebContents* web_contents) = 0;
 
   // Saves the timestam at which the error UI was shown.
   virtual void SaveErrorUIShownTimestamp(
       content::WebContents* web_contents) = 0;
+
+  // Starts the Google Play services page where the user can choose to update
+  // GMSCore.
+  virtual void LaunchGmsUpdate(content::WebContents* web_contents) = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ERROR_MESSAGE_HELPER_BRIDGE_H_

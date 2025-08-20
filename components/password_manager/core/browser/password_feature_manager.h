@@ -38,6 +38,12 @@ class PasswordFeatureManager {
   // definition of PasswordAccountStorageUsageLevel.
   virtual features_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns whether it is required to update the GMSCore based on the
+  // GMSCore version.
+  virtual bool ShouldUpdateGmsCore() = 0;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace password_manager

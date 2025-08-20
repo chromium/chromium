@@ -35,9 +35,9 @@ enum class PasswordStoreBackendErrorType {
   // key is missing. Used on Android.
   kKeyRetrievalRequired = 4,
   // Saving new credentials is disabled due to an outdated GMSCore version.
-  // Deprecated: kGMSCoreOutdatedSavingDisabled = 5,
+  kGMSCoreOutdatedSavingDisabled = 5,
   // Credentials are saved only on device due to an outdated GMSCore version.
-  // Deprecated: kGMSCoreOutdatedSavingPossible = 6,
+  kGMSCoreOutdatedSavingPossible = 6,
   // Used on Android.
   kEmptySecurityDomain = 7,
   // Used on Android.

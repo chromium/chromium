@@ -77,6 +77,24 @@ public class PasswordManagerErrorMessageHelperBridge {
                 && (currentTime - lastShownSyncErrorTimestamp) > MINIMAL_INTERVAL_TO_SYNC_ERROR_MS;
     }
 
+    /**
+     * Checks whether the right amount of time has passed since the last error UI messages were
+     * shown.
+     *
+     * <p>The error UI should be shown at least {@link #MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS} from
+     * the previous one.
+     *
+     * @return whether the UI can be shown given the conditions above.
+     */
+    @CalledByNative
+    static boolean shouldShowUpdateGMSCoreErrorUi(Profile profile) {
+        PrefService prefService = UserPrefs.get(profile);
+        long lastShownTimestamp =
+                Long.valueOf(prefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP));
+        long currentTime = TimeUtils.currentTimeMillis();
+        return currentTime - lastShownTimestamp > MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS;
+    }
+
     /** Saves the timestamp in ms since UNIX epoch at which the error UI was shown. */
     @CalledByNative
     static void saveErrorUiShownTimestamp(Profile profile) {
@@ -137,5 +155,13 @@ public class PasswordManagerErrorMessageHelperBridge {
                                             intent, trustedVaultUserActionTriggerForUMA);
                             IntentUtils.safeStartActivity(activity, proxyIntent);
                         });
+    }
+
+    /** Starts the Google Play services page where the user can choose to update GMSCore. */
+    @CalledByNative
+    static void launchGmsUpdate(WindowAndroid windowAndroid) {
+        assert windowAndroid.getActivity().get() != null;
+        Activity activity = windowAndroid.getActivity().get();
+        GmsUpdateLauncher.launch(activity);
     }
 }

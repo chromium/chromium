@@ -27,6 +27,10 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
               IsBiometricAuthenticationBeforeFillingEnabled,
               (),
               (override, const));
+
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(bool, ShouldUpdateGmsCore, (), (override));
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace password_manager

@@ -7058,6 +7058,23 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PASSWORD_ERROR_DESCRIPTION_SIGN_UP" desc="The description of the password manager error message during sign up flow.">
         Keep saving passwords in your Google Account
       </message>
+      <if expr="is_android">
+        <message name="IDS_UPDATE_GMS" desc="The title of the password manager error message when the user needs update Google Play services to save account passwords.">
+          Update Google Play services
+        </message>
+        <message name="IDS_UPDATE_TO_SAVE_PASSWORDS" desc="The title of the password manager error message when the user needs update Google Play services to save passwords.">
+          Update to save passwords
+        </message>
+        <message name="IDS_UPDATE_GMS_TO_SAVE_PASSWORDS_TO_ACCOUNT" desc="The description of the password manager error message when the user needs update Google Play services to save account passwords.">
+          Password saved on this device only. To save new passwords in your Google Account, update Google Play services.
+        </message>
+        <message name="IDS_UPDATE_GMS_TO_SAVE_PASSWORDS" desc="The description of the password manager error message when the user needs update Google Play services to save passwords.">
+          To start saving passwords to Google Password Manager again, update Google Play services
+        </message>
+        <message name="IDS_UPDATE_GMS_BUTTON_TITLE" desc="Label for the button that appears on the error message saying that Google Play Services needs to be updated to use the Google Password Manager. Clicking on this button opens the Google Play services page in the Google Play Store.">
+          Update
+        </message>
+      </if>
       <message name="IDS_PASSWORD_ERROR_VERIFY_BUTTON_TITLE" desc="The title of the verify button in the password manager error message.">
         Verify
       </message>

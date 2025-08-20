@@ -19,7 +19,10 @@ class PasswordManagerErrorMessageHelperBridgeImpl
       content::WebContents* web_contents,
       syncer::TrustedVaultUserActionTriggerForUMA user_action_trigger) override;
   bool ShouldShowSignInErrorUI(content::WebContents* web_contents) override;
+  bool ShouldShowUpdateGMSCoreErrorUI(
+      content::WebContents* web_contents) override;
   void SaveErrorUIShownTimestamp(content::WebContents* web_contents) override;
+  void LaunchGmsUpdate(content::WebContents* web_contents) override;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ERROR_MESSAGE_HELPER_BRIDGE_IMPL_H_
