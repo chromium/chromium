@@ -334,7 +334,6 @@ public class StripLayoutTab extends StripLayoutView {
      *
      * @param isPinned whether this tab has been pinned.
      */
-    // TODO(crbug.com/436263009) Hide close button and don't hide favicon.
     public void setIsPinned(boolean isPinned) {
         mIsPinned = isPinned;
     }
@@ -914,6 +913,8 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     public boolean shouldHideFavicon(boolean mediaIndicatorIsPresent) {
+        if (mIsPinned) return mediaIndicatorIsPresent;
+
         // TODO(crbug.com/439931221): Toggle the favicon visibility based on the close button's
         // opacity.
         final float width = getWidth();

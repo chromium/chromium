@@ -121,7 +121,9 @@ public class StripLayoutTabDelegate {
 
         boolean currentCanShow = tab.canShowCloseButton();
         boolean canShow =
-                (tab.getWidth() >= TAB_WIDTH_MEDIUM || (tab.getIsSelected() && isFullyVisible));
+                !tab.getIsPinned()
+                        && (tab.getWidth() >= TAB_WIDTH_MEDIUM
+                                || (tab.getIsSelected() && isFullyVisible));
 
         // A dying tab that is not selected should not show its close button.
         // TODO(crbug.com/419843587): Await UX direction for close button appearance
