@@ -62,7 +62,7 @@
 
 namespace {
 
-inline constexpr base::TimeDelta kProfileCreationTimeout = base::Seconds(10);
+inline constexpr base::TimeDelta kProfileCreationTimeout = base::Seconds(20);
 
 // Returns the original ProfileIOS if `incognito` is false. If
 // `incognito` is true, returns an off-the-record ProfileIOS.
