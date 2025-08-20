@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -37,6 +38,10 @@ import org.chromium.chromecast.base.Observer;
 import org.chromium.chromecast.base.Unit;
 import org.chromium.content_public.browser.WebContents;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
 /**
  * Activity for displaying a WebContents in CastShell.
  *
@@ -47,34 +52,6 @@ import org.chromium.content_public.browser.WebContents;
  */
 public class CastWebContentsActivity extends Activity {
     private static final String TAG = "CastWebActivity";
-
-    // JavaScript to execute on WebContents when the back key is pressed.
-    // This will return a value that indicates whether or not the default
-    // Android behavior for the back key should be disabled or not.
-    private static final String BACK_PRESSED_JAVASCRIPT = "{"
-            + "  let getActiveElement = function() {"
-            + "    let activeElement = document.activeElement;"
-            + "    while (activeElement && activeElement.shadowRoot && activeElement.shadowRoot.activeElement) {"
-            + "      activeElement = activeElement.shadowRoot.activeElement;"
-            + "    }"
-            + "    return activeElement;"
-            + "  };"
-            + "  let backPressEvent = new KeyboardEvent("
-            + "     \"keydown\", {"
-            + "      bubbles: true,"
-            + "      key: \"BrowserBack\","
-            + "      cancelable: true,"
-            + "      composed: true"
-            + "     }"
-            + "  );"
-            + "  let activeElement = getActiveElement();"
-            + "  if (activeElement) {"
-            + "    activeElement.dispatchEvent(backPressEvent);"
-            + "  } else {"
-            + "    document.dispatchEvent(backPressEvent);"
-            + "  }"
-            + "  backPressEvent.defaultPrevented;"
-            + "};";
 
     // Tracks whether this Activity is between onCreate() and onDestroy().
     private final Controller<Unit> mCreatedState = new Controller<>();
@@ -392,13 +369,31 @@ public class CastWebContentsActivity extends Activity {
             super.onBackPressed();
             return;
         }
+        String backPressedJs;
+        try {
+            backPressedJs = loadBackPressedJavaScript(this);
+        } catch (IOException | Resources.NotFoundException e) {
+            Log.e(TAG, "Failed to find JS resource for handling back press key events", e);
+            super.onBackPressed();
+            return;
+        }
         webContents.evaluateJavaScript(
-                BACK_PRESSED_JAVASCRIPT,
+                backPressedJs,
                 defaultPrevented -> {
                     if (!"true".equals(defaultPrevented)) {
                         super.onBackPressed();
                     }
                 });
+    }
+
+    private static String loadBackPressedJavaScript(Context context)
+            throws IOException, Resources.NotFoundException {
+        try (Scanner scanner =
+                new Scanner(
+                        context.getResources().openRawResource(R.raw.back_pressed),
+                        StandardCharsets.UTF_8.name())) {
+            return scanner.useDelimiter("\\A").next();
+        }
     }
 
     @Override
