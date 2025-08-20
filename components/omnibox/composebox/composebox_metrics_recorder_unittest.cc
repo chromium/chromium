@@ -43,7 +43,7 @@ const char kComposeboxFileValidationErrorTypes[] =
     "Test.Composebox.Session.File.Browser.ValidationFailureCount.";
 const char kComposeboxQueryTextLength[] = "Test.Composebox.Query.TextLength";
 const char kComposeboxQueryFileCount[] = "Test.Composebox.Query.FileCount";
-const char kComposeboxQueryModality[] = "Test.Composebox.Query.Modality";
+const char kComposeboxQueryModality[] = "Test.Composebox.Query.Modality.V2";
 const char kComposeboxQueryCount[] = "Test.Composebox.Session.QueryCount";
 const char kComposeboxFileSizePdf[] = "Test.Composebox.File.Size.Pdf";
 

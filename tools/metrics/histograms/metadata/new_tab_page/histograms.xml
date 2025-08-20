@@ -321,7 +321,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Composebox.Query.Modality"
+<histogram name="NewTabPage.Composebox.Query.Modality.V2"
     enum="NtpComposeboxMultimodalState" expires_after="2026-01-20">
   <owner>jennserrano@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

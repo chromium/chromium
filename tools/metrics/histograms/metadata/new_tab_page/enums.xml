@@ -318,9 +318,9 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="NtpComposeboxMultimodalState">
-  <int value="1" label="Text Only"/>
-  <int value="2" label="File Only"/>
-  <int value="3" label="Text and File"/>
+  <int value="0" label="Text Only"/>
+  <int value="1" label="File Only"/>
+  <int value="2" label="Text and File"/>
 </enum>
 
 <enum name="NtpCustomizationBottomSheetType">
