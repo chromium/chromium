@@ -39,8 +39,7 @@ const base::TimeDelta kBannerPromoAnimationDuration = base::Seconds(0.5);
 }  // namespace
 
 // TODO(crbug.com/374808149): Clean up the killswitch.
-BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
-             "PrimaryToolbarViewDidLoadUpdateViews",
+BASE_FEATURE(PrimaryToolbarViewDidLoadUpdateViews,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 @interface PrimaryToolbarViewController () <TabGroupIndicatorViewDelegate>

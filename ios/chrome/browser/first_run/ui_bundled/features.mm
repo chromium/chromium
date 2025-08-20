@@ -11,29 +11,21 @@
 
 namespace first_run {
 
-BASE_FEATURE(kAnimatedDefaultBrowserPromoInFRE,
-             "AnimatedDefaultBrowserPromoInFRE",
+BASE_FEATURE(AnimatedDefaultBrowserPromoInFRE,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBestFeaturesScreenInFirstRun,
              "BestFeaturesScreenInFirstRunExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kManualLogUploadsInTheFRE,
-             "ManualLogUploadsInTheFRE",
+BASE_FEATURE(ManualLogUploadsInTheFRE, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(SkipDefaultBrowserPromoInFirstRun,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSkipDefaultBrowserPromoInFirstRun,
-             "SkipDefaultBrowserPromoInFirstRun",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(UpdatedFirstRunSequence, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUpdatedFirstRunSequence,
-             "UpdatedFirstRunSequence",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWelcomeBackInFirstRun,
-             "WelcomeBackInFirstRun",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(WelcomeBackInFirstRun, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kAnimatedDefaultBrowserPromoInFREExperimentType[] =
     "AnimatedDefaultBrowserPromoInFREExperimentType";

@@ -58,8 +58,7 @@ NSString* const kShouldIgnoreHistorySyncDeclineLimits =
     @"ShouldIgnoreHistorySyncDeclineLimits";
 NSString* const kSafetyCheckNotificationsInactivityThreshold =
     @"SafetyCheckNotificationsInactivityThreshold";
-BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
-             "EnableThirdPartyKeyboardWorkaround",
+BASE_FEATURE(EnableThirdPartyKeyboardWorkaround,
              base::FEATURE_ENABLED_BY_DEFAULT);
 NSString* const kTipsMagicStackLensShopWithImage =
     @"TipsMagicStackLensShopWithImage";

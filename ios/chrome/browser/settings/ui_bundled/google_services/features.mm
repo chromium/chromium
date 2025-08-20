@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/google_services/features.h"
 
-BASE_FEATURE(kLinkedServicesSettingIos,
-             "LinkedServicesSettingIos",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(LinkedServicesSettingIos, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLinkedServicesSettingIosEnabled() {
   return base::FeatureList::IsEnabled(kLinkedServicesSettingIos);

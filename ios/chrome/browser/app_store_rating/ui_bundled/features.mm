@@ -7,9 +7,7 @@
 #import "base/feature_list.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 
-BASE_FEATURE(kAppStoreRating,
-             "AppStoreRating",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(AppStoreRating, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAppStoreRatingEnabled() {
   return base::FeatureList::IsEnabled(kAppStoreRating);

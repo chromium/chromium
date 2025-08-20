@@ -12,6 +12,4 @@ bool IsRichAutocompletionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kRichAutocompletion);
 }
 
-BASE_FEATURE(kBeginCursorAtPointTentativeFix,
-             "BeginCursorAtPointTentativeFix",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(BeginCursorAtPointTentativeFix, base::FEATURE_DISABLED_BY_DEFAULT);
