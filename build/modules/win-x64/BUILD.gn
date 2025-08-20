@@ -144,6 +144,12 @@ libcxx_module("std_math_h") {
 }
 
 libcxx_module("std_private_mbstate_t") {
+  public_deps = [
+    ":_Builtin_stddef",
+    ":sys_stage1",
+    ":sys_stage3",
+  ]
+  defines = [ "_LIBCPP_WCHAR_H_HAS_CONST_OVERLOADS" ]
 }
 
 libcxx_module("std_stdatomic_h") {
