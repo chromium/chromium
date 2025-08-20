@@ -107,9 +107,11 @@ void ChangeProfileAuthenticationContinuation(WidgetContext* context,
             signin::ConsentLevel::kSignin)) {
       SigninForContext(context, contexts, authentication_service, scene_state,
                        std::move(closure));
-    } else if (authentication_service
-                       ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-                       .gaiaID != context.gaiaID &&
+    } else if (![context.gaiaID
+                   isEqualToString:authentication_service
+                                       ->GetPrimaryIdentity(
+                                           signin::ConsentLevel::kSignin)
+                                       .gaiaID] &&
                !authentication_service->HasPrimaryIdentityManaged(
                    signin::ConsentLevel::kSignin)) {
       base::OnceClosure completion = base::BindOnce(
