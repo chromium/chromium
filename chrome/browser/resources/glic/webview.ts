@@ -29,8 +29,6 @@ enum WebviewExitReason {
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebviewExitReason)
 
-type WebviewExitReasonString = 'normal'|'abnormal'|'oom killed'|'oom'|'killed'|
-    'crashed'|'failed to launch'|'integrity failure';
 const WEBVIEW_EXIT_REASON_MAP = {
   'normal': WebviewExitReason.NORMAL,
   'abnormal': WebviewExitReason.ABNORMAL,
@@ -41,6 +39,11 @@ const WEBVIEW_EXIT_REASON_MAP = {
   'failed to launch': WebviewExitReason.FAILED_TO_LAUNCH,
   'integrity failure': WebviewExitReason.INTEGRITY_FAILURE,
 };
+
+function webviewExitReasonStringToEnum(reason: chrome.webviewTag.ExitReason):
+    WebviewExitReason {
+  return WEBVIEW_EXIT_REASON_MAP[reason] ?? WebviewExitReason.UNKNOWN;
+}
 
 export type PageType =
     // A login page.
@@ -263,18 +266,16 @@ export class WebviewController {
   }
 
   private onExit: ChromeEventFunctionType<typeof chrome.webviewTag.exit> =
-      (exitEvent: any) => {
-        const reason: WebviewExitReasonString = exitEvent.reason;
-        const exitReason =
-            WEBVIEW_EXIT_REASON_MAP[reason] ?? WebviewExitReason.UNKNOWN;
+      (event) => {
         chrome.metricsPrivate.recordEnumerationValue(
-            'Glic.Session.WebClientCrash.ExitReason', exitReason,
+            'Glic.Session.WebClientCrash.ExitReason',
+            webviewExitReasonStringToEnum(event.reason),
             Object.keys(WEBVIEW_EXIT_REASON_MAP).length);
-        if (reason !== 'normal') {
+        if (event.reason !== 'normal') {
           this.destroyHost(WebClientState.ERROR);
           chrome.metricsPrivate.recordUserAction('GlicSessionWebClientCrash');
-          console.warn(`webview exit. processID: ${
-              exitEvent.processID}, reason: ${reason}`);
+          console.warn(`webview exit. processID: ${event.processID}, reason: ${
+              event.reason}`);
         }
       };
 

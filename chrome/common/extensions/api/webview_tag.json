@@ -710,11 +710,15 @@
         "type": "string",
         "description": "String indicating the reason for the exit.",
         "enum": [
-          "normal",
-          "abnormal",
-          "crash",
-          "kill"
-        ]
+                  "normal",
+                  "abnormal",
+                  "crashed",
+                  "killed",
+                  "oom killed",
+                  "oom",
+                  "failed to launch",
+                  "integrity failure"
+                ]
       },
       {
         "id": "LoadAbortReason",
@@ -1307,14 +1311,18 @@
         "description": "Fired when the process rendering the guest web content has exited.<p>The following example code will show a farewell message whenever the guest page crashes:</p><pre>webview.addEventListener('exit', function(e) {\r  if (e.reason === 'crash') {\r    webview.src = 'data:text/plain,Goodbye, world!';\r  }\r});</pre>",
         "parameters": [
           {
-            "name": "processID",
-            "description": "Chrome's internal ID of the process that exited.",
-            "type": "integer"
-          },
-          {
-            "name": "reason",
-            "$ref": "ExitReason",
-            "description": "String indicating the reason for the exit."
+            "type": "object",
+            "name": "details",
+            "properties": {
+              "processID": {
+                "description": "Chrome's internal ID of the process that exited.",
+                "type": "integer"
+              },
+              "reason": {
+                "$ref": "ExitReason",
+                "description": "String indicating the reason for the exit."
+              }
+            }
           }
         ]
       },

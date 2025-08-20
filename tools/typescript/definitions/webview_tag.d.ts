@@ -233,8 +233,12 @@ declare global {
       export enum ExitReason {
         NORMAL = 'normal',
         ABNORMAL = 'abnormal',
-        CRASH = 'crash',
-        KILL = 'kill',
+        CRASHED = 'crashed',
+        KILLED = 'killed',
+        OOM_KILLED = 'oom killed',
+        OOM = 'oom',
+        FAILED_TO_LAUNCH = 'failed to launch',
+        INTEGRITY_FAILURE = 'integrity failure',
       }
 
       export enum LoadAbortReason {
@@ -383,8 +387,10 @@ declare global {
           (messageType: DialogMessageType, messageText: string,
            dialog: DialogController) => void>;
 
-      export const exit:
-          ChromeEvent<(processID: number, reason: ExitReason) => void>;
+      export const exit: ChromeEvent<(details: {
+                                       processID: number,
+                                       reason: ExitReason,
+                                     }) => void>;
 
       export const findupdate: ChromeEvent<
           (searchText: string, numberOfMatches: number,
