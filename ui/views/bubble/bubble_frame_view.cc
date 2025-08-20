@@ -966,7 +966,7 @@ gfx::Insets BubbleFrameView::GetClientViewInsets() const {
 gfx::Rect BubbleFrameView::GetAvailableScreenBounds(
     const gfx::Rect& rect) const {
   // The bubble attempts to fit within the current screen bounds.
-  return display::Screen::GetScreen()
+  return display::Screen::Get()
       ->GetDisplayNearestPoint(rect.CenterPoint())
       .work_area();
 }

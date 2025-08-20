@@ -422,7 +422,7 @@ std::unique_ptr<HWNDMessageHandler> HWNDMessageHandler::Create(
     HWNDMessageHandlerDelegate* delegate,
     const std::string& debugging_id) {
   HWNDMessageHandler* message_handler =
-      display::Screen::GetScreen()->IsHeadless()
+      display::Screen::Get()->IsHeadless()
           ? new HWNDMessageHandlerHeadless(delegate, debugging_id)
           : new HWNDMessageHandler(delegate, debugging_id);
   return base::WrapUnique(message_handler);

@@ -609,7 +609,7 @@ ui::EventDispatchDetails EventGeneratorDelegateMac::PreDispatchEvent(
         !(mouse_event->flags() & ui::EF_IS_SYNTHESIZED)) {
       // Update the cursor location on screen.
       owner_->set_current_screen_location(mouse_event->root_location());
-      display::Screen::GetScreen()->SetCursorScreenPointForTesting(
+      display::Screen::Get()->SetCursorScreenPointForTesting(
           mouse_event->root_location());
     }
   }

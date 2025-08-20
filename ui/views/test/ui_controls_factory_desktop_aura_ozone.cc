@@ -172,7 +172,7 @@ bool SendMouseMoveNotifyWhenDone(int screen_x,
   host->ConvertPixelsToDIP(&root_current_location);
 
   auto* screen = views::test::TestDesktopScreenOzone::GetInstance();
-  DCHECK_EQ(screen, display::Screen::GetScreen());
+  DCHECK_EQ(screen, display::Screen::Get());
   screen->set_cursor_screen_point(gfx::Point(screen_x, screen_y));
 
   if (root_location != root_current_location &&

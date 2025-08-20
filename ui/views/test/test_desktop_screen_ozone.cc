@@ -15,7 +15,7 @@ std::unique_ptr<display::Screen> TestDesktopScreenOzone::Create() {
 }
 
 TestDesktopScreenOzone* TestDesktopScreenOzone::GetInstance() {
-  DCHECK_EQ(display::Screen::GetScreen(), g_instance);
+  DCHECK_EQ(display::Screen::Get(), g_instance);
   return g_instance;
 }
 

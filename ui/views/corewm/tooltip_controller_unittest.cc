@@ -281,7 +281,7 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
   // We don't need a real tootip. Let's just use a custom size and custom point
   // to test this function.
   gfx::Size tooltip_size(100, 40);
-  gfx::Rect display_bounds(display::Screen::GetScreen()
+  gfx::Rect display_bounds(display::Screen::Get()
                                ->GetDisplayNearestPoint(gfx::Point(0, 0))
                                .bounds());
   gfx::Point anchor_point = display_bounds.CenterPoint();

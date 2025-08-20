@@ -266,8 +266,7 @@ bool WidgetDelegate::GetSavedWindowPlacement(
     return false;
   }
   // Try to find a display intersecting the saved bounds.
-  const auto& display =
-      display::Screen::GetScreen()->GetDisplayMatching(*bounds);
+  const auto& display = display::Screen::Get()->GetDisplayMatching(*bounds);
   return display.bounds().Intersects(*bounds);
 }
 

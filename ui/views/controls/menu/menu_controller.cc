@@ -707,7 +707,7 @@ void MenuController::Run(Widget* parent,
     //  for more details.
     menu_open_mouse_loc_ =
         ConvertFromScreen(*to_select->GetRootMenuItem()->GetSubmenu(),
-                          display::Screen::GetScreen()->GetCursorScreenPoint());
+                          display::Screen::Get()->GetCursorScreenPoint());
   } else {
     // Set the selection, which opens the initial menu.
     SetSelection(root, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
@@ -1517,9 +1517,9 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
 void MenuController::UpdateSubmenuSelection(SubmenuView* submenu) {
   if (submenu->IsShowing()) {
     HandleMouseLocation(
-        submenu, ConvertFromScreen(
-                     GetRootMenu(*submenu),
-                     display::Screen::GetScreen()->GetCursorScreenPoint()));
+        submenu,
+        ConvertFromScreen(GetRootMenu(*submenu),
+                          display::Screen::Get()->GetCursorScreenPoint()));
   }
 }
 
@@ -2020,8 +2020,7 @@ void MenuController::UpdateInitialLocation(const gfx::Rect& anchor_bounds,
   // Calculate the bounds of the monitor we'll show menus on. Do this once to
   // avoid repeated system queries for the info.
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(
-          anchor_bounds.origin());
+      display::Screen::Get()->GetDisplayNearestPoint(anchor_bounds.origin());
   pending_state_.monitor_bounds = display.work_area();
 
   if (!pending_state_.monitor_bounds.Contains(anchor_bounds)) {
@@ -2127,8 +2126,8 @@ bool MenuController::ShowSiblingMenu(SubmenuView* source,
   }
 
   // TODO(oshima): Replace with views only API.
-  if (!owner_ || !display::Screen::GetScreen()->IsWindowUnderCursor(
-                     owner_->GetNativeWindow())) {
+  if (!owner_ ||
+      !display::Screen::Get()->IsWindowUnderCursor(owner_->GetNativeWindow())) {
     return false;
   }
 
@@ -2462,8 +2461,7 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
     // work correctly if the widget isn't shown.
     if (item->GetSubmenu()->GetWidget()) {
       const gfx::Point mouse_pos = ConvertFromScreen(
-          *item->submenu_,
-          display::Screen::GetScreen()->GetCursorScreenPoint());
+          *item->submenu_, display::Screen::Get()->GetCursorScreenPoint());
       MenuPart part_under_mouse = GetMenuPart(item->submenu_.get(), mouse_pos);
       if (part_under_mouse.type != MenuPartType::kNone) {
         menu_open_mouse_loc_ =
@@ -3303,7 +3301,7 @@ void MenuController::RepostEventAndCancel(SubmenuView* source,
       gfx::NativeView native_view = source->GetWidget()->GetNativeView();
       gfx::NativeWindow window =
           native_view
-              ? display::Screen::GetScreen()->GetWindowAtScreenPoint(screen_loc)
+              ? display::Screen::Get()->GetWindowAtScreenPoint(screen_loc)
               : nullptr;
 
       state_.item->GetRootMenuItem()->GetSubmenu()->ReleaseCapture();

@@ -45,7 +45,7 @@ void EventMonitorRemoteCocoa::NativeWidgetMacEventMonitorOnEvent(
 EventMonitorRemoteCocoa::~EventMonitorRemoteCocoa() = default;
 
 gfx::Point EventMonitorRemoteCocoa::GetLastMouseLocation() {
-  return display::Screen::GetScreen()->GetCursorScreenPoint();
+  return display::Screen::Get()->GetCursorScreenPoint();
 }
 
 }  // namespace views

@@ -461,7 +461,7 @@ TEST_P(MenuRunnerFalseTriggerTest, DetectsRightClickAndDragFalseTrigger) {
   views::test::DisableMenuClosureAnimations();
 
   const gfx::Rect screen_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   owner()->SetBounds(screen_bounds);
 
   InitMenuRunner(0);

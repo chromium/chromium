@@ -80,7 +80,7 @@ bool WindowEventFilterLinux::HandleMouseEventWithHitTest(
                 ->GetPlatformRuntimeProperties()
                 .supports_server_window_menus) {
           desktop_window_tree_host_->ShowWindowControlsMenu(
-              display::Screen::GetScreen()->GetCursorScreenPoint());
+              display::Screen::Get()->GetCursorScreenPoint());
           return true;
         }
         break;

@@ -168,7 +168,7 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
     return tooltip_rect;
   }
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   gfx::Rect display_bounds(
       screen->GetDisplayNearestPoint(anchor_point).bounds());
 
@@ -231,7 +231,7 @@ void TooltipAura::DestroyWidget() {
 }
 
 int TooltipAura::GetMaxWidth(const gfx::Point& location) const {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   gfx::Rect display_bounds(screen->GetDisplayNearestPoint(location).bounds());
   return std::min(max_width_, (display_bounds.width() + 1) / 2);
 }

@@ -39,7 +39,7 @@ TEST_F(DesktopScreenPositionClientTest, PositionControlWithNonRootParent) {
   Widget widget3;
   gfx::Point origin = gfx::Point(16, 16);
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(origin).work_area();
+      display::Screen::Get()->GetDisplayNearestPoint(origin).work_area();
 
   // Use a custom frame type.  By default we will choose a native frame when
   // aero glass is enabled, and this complicates the logic surrounding origin
@@ -89,8 +89,7 @@ TEST_F(DesktopScreenPositionClientTest, PositionControlWithNonRootParent) {
 TEST_F(DesktopScreenPositionClientTest, InitialBoundsConstrainedToDesktop) {
   Widget widget;
   // Use the primary display for this test.
-  gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect work_area = display::Screen::Get()->GetPrimaryDisplay().work_area();
   // Make the origin start at 75% of the width and height.
   gfx::Point origin =
       gfx::Point(work_area.width() * 3 / 4, work_area.height() * 3 / 4);
@@ -120,8 +119,7 @@ TEST_F(DesktopScreenPositionClientTest, InitialBoundsConstrainedToParent) {
   Widget widget1;
   Widget widget2;
   // Use the primary display for this test.
-  gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect work_area = display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Point origin = gfx::Point(work_area.x() + work_area.width() / 4,
                                  work_area.y() + work_area.height() / 4);
 

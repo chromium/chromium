@@ -875,7 +875,7 @@ void TableView::SyncHoverToScroll() {
 
 void TableView::ForceHoverUpdate() {
   SetHover(ConvertPointFromScreen(
-      this, display::Screen::GetScreen()->GetCursorScreenPoint()));
+      this, display::Screen::Get()->GetCursorScreenPoint()));
 }
 
 void TableView::SetHover(gfx::Point view_coordinates) {

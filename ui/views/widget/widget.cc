@@ -668,7 +668,7 @@ gfx::NativeWindow Widget::GetNativeWindow() const {
 
 std::optional<display::Display> Widget::GetNearestDisplay() {
   if (auto native_view = GetNativeView()) {
-    return display::Screen::GetScreen()->GetDisplayNearestView(native_view);
+    return display::Screen::Get()->GetDisplayNearestView(native_view);
   }
   return std::nullopt;
 }
@@ -1609,8 +1609,7 @@ gfx::Rect Widget::GetWorkAreaBoundsInScreen() const {
 
 void Widget::SynthesizeMouseMoveEvent() {
   // In screen coordinate.
-  gfx::Point mouse_location =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point mouse_location = display::Screen::Get()->GetCursorScreenPoint();
   if (!GetWindowBoundsInScreen().Contains(mouse_location)) {
     return;
   }

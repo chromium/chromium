@@ -104,7 +104,7 @@ void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
   BubbleDialogDelegateView::CreateBubble(this);
   Widget* widget = GetWidget();
   gfx::Rect bounds = widget->GetWindowBoundsInScreen();
-  gfx::Rect work_area = display::Screen::GetScreen()
+  gfx::Rect work_area = display::Screen::Get()
                             ->GetDisplayNearestPoint(bounds.origin())
                             .work_area();
   if (!work_area.IsEmpty()) {

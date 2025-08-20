@@ -100,7 +100,7 @@ EventMonitorMac::~EventMonitorMac() {
 }
 
 gfx::Point EventMonitorMac::GetLastMouseLocation() {
-  return display::Screen::GetScreen()->GetCursorScreenPoint();
+  return display::Screen::Get()->GetCursorScreenPoint();
 }
 
 // static
