@@ -22,6 +22,8 @@ export enum ParamType {
   PDF_PAGE_NUMBER = 'pdfPageNumber',
 }
 
+const HANDSHAKE_INTERVAL_MS = 500;
+
 // Proxy class to control post messages received from the remote UI.
 export class PostMessageReceiver {
   private eventTracker: EventTracker = new EventTracker();
@@ -30,6 +32,9 @@ export class PostMessageReceiver {
   private listenerIds: number[] = [];
   private resultsSearchUrl: URL =
       new URL(loadTimeData.getString('resultsSearchURL'));
+  private handshakeMessage: Uint8Array =
+      new TextEncoder().encode(loadTimeData.getString('handshakeMessage'));
+  private handshakeIntervalId: number|null = null;
 
   constructor(
       sidePanelProxy: SidePanelBrowserProxy, resultsFrame: HTMLIFrameElement) {
@@ -38,9 +43,15 @@ export class PostMessageReceiver {
 
     // Listen to message events on the window.
     this.eventTracker.add(window, 'message', this.onMessageReceived.bind(this));
-    this.listenerIds.push(
-        this.sidePanelProxy.callbackRouter.sendClientMessageToAim.addListener(
-            this.onSendClientMessageToAim.bind(this)));
+    this.listenerIds = [
+      this.sidePanelProxy.callbackRouter.sendClientMessageToAim.addListener(
+          this.onSendClientMessageToAim.bind(this)),
+      this.sidePanelProxy.callbackRouter.aimHandshakeReceived.addListener(
+          this.onAimHandshakeReceived.bind(this)),
+    ];
+
+    // Begin sending the handshake message until the remote UI acknowledges.
+    this.queueHandshake();
   }
 
   // Stop listening to message events.
@@ -49,6 +60,19 @@ export class PostMessageReceiver {
     this.listenerIds.forEach(
         id => assert(this.sidePanelProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
+
+    // Stop sending the handshake message if it's still running.
+    this.stopAimHandshake();
+  }
+
+  private queueHandshake() {
+    // Wait for the iframe to load before sending the handshake message.
+    // Also will send a new handshake message if the iframe is reloaded.
+    this.eventTracker.add(this.resultsFrame, 'load', () => {
+      this.handshakeIntervalId = setInterval(() => {
+        this.onSendClientMessageToAim(this.handshakeMessage);
+      }, HANDSHAKE_INTERVAL_MS);
+    });
   }
 
   // Sends the message to the remote UI. Message should be a serialized proto,
@@ -65,12 +89,37 @@ export class PostMessageReceiver {
       return;
     }
 
-    const data = JSON.parse(event.data);
-    const messageType = data[ParamType.MESSAGE_TYPE];
-    if (messageType === MessageType.SCROLL_TO) {
-      this.sidePanelProxy.handler.onScrollToMessage(
-          data[ParamType.TEXT_FRAGMENTS], data[ParamType.PDF_PAGE_NUMBER]);
-      return;
+    // The scrollTo message is a JSON object with the message type and
+    // parameters. If JSON parsing fails, assume it's a AIM message and pass it
+    // to the remote UI to serialize.
+    try {
+      const data = JSON.parse(event.data);
+      const messageType = data[ParamType.MESSAGE_TYPE];
+      if (messageType === MessageType.SCROLL_TO) {
+        this.sidePanelProxy.handler.onScrollToMessage(
+            data[ParamType.TEXT_FRAGMENTS], data[ParamType.PDF_PAGE_NUMBER]);
+        return;
+      }
+    } catch (e) {
+      this.onAimMessage(event.data);
+    }
+  }
+
+  private onAimMessage(message: Uint8Array) {
+    // Pass the message to the browser to handle. Array.from is used to convert
+    // the Uint8Array to a normal number JS array which mojo expects.
+    this.sidePanelProxy.handler.onAimMessage(Array.from(message));
+  }
+
+  private onAimHandshakeReceived() {
+    this.stopAimHandshake();
+  }
+
+  private stopAimHandshake() {
+    // Stop sending the handshake message.
+    if (this.handshakeIntervalId) {
+      clearInterval(this.handshakeIntervalId);
+      this.handshakeIntervalId = null;
     }
   }
 }

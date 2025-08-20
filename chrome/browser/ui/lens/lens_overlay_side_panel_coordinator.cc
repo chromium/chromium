@@ -13,6 +13,7 @@
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/lens/lens_composebox_controller.h"
 #include "chrome/browser/ui/lens/lens_help_menu_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_web_view.h"
@@ -426,6 +427,12 @@ void LensOverlaySidePanelCoordinator::RequestSendFeedback() {
                            ui::EF_NONE);
 }
 
+void LensOverlaySidePanelCoordinator::OnAimMessage(
+    const std::vector<uint8_t>& message) {
+  // Pass the message to the LensComposeboxController to handle.
+  GetLensComposeboxController()->OnAimMessage(message);
+}
+
 void LensOverlaySidePanelCoordinator::OnScrollToMessage(
     const std::vector<std::string>& text_fragments,
     uint32_t pdf_page_number) {
@@ -640,6 +647,12 @@ void LensOverlaySidePanelCoordinator::SendClientMessageToAim(
     const std::vector<uint8_t>& serialized_message) {
   if (side_panel_page_) {
     side_panel_page_->SendClientMessageToAim(serialized_message);
+  }
+}
+
+void LensOverlaySidePanelCoordinator::AimHandshakeReceived() {
+  if (side_panel_page_) {
+    side_panel_page_->AimHandshakeReceived();
   }
 }
 
