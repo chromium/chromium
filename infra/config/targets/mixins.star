@@ -2706,6 +2706,23 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "xcode_26_main",
+    generate_pyl_entry = False,
+    args = [
+        "--xcode-build-version",
+        "17a5305f",
+    ],
+    swarming = targets.swarming(
+        named_caches = [
+            swarming.cache(
+                name = "xcode_ios_17a5305f",
+                path = "Xcode.app",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "xcodebuild_sim_runner",
     generate_pyl_entry = False,
     args = [
