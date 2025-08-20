@@ -16,10 +16,16 @@ class CORE_EXPORT DisplayAdElementMonitor
     : public GarbageCollected<DisplayAdElementMonitor>,
       public LocalFrameView::LifecycleNotificationObserver {
  public:
+  enum class OverlayVisibility {
+    kSkipped,
+    kVisible,
+    kInvisible,
+  };
+
   explicit DisplayAdElementMonitor(Element* element);
 
-  // Start receiving LifecycleNotificationObserver notifications if a
-  // LocalFrameView exists. No-op if notifications are already active.
+  // Start receiving LifecycleNotificationObserver notifications if the element
+  // is eligible for ad monitoring. No-op if notifications are already active.
   void EnsureStarted();
 
   // Stop receiving LifecycleNotificationObserver notifications, and
@@ -30,12 +36,20 @@ class CORE_EXPORT DisplayAdElementMonitor
   void DidFinishLifecycleUpdate(
       const LocalFrameView& local_frame_view) override;
 
+  // Performs a hit-test on `element_` to determine if it's the topmost element
+  // at its center. This check can be skipped due to frequency-capping or if the
+  // element is outside the viewport to reduce performance impact.
+  OverlayVisibility CheckOverlayVisibility(const LocalFrame& main_frame,
+                                           const gfx::Rect& rect_in_viewport);
+
   void Trace(Visitor*) const override;
 
  private:
   Member<Element> element_;
 
   bool started_ = false;
+
+  base::TimeTicks last_overlay_check_time_;
 
   bool ad_use_counter_recorded_ = false;
 
@@ -44,6 +58,13 @@ class CORE_EXPORT DisplayAdElementMonitor
   // report was used to signal the removal of this element (i.e. both cases
   // will be handled the same way).
   gfx::Rect last_reported_rect_;
+
+  // Elements are treated as visible by default as a best-effort approach (i.e.,
+  // for performance reasons, we only check for overlay visibility for elements
+  // within the viewport). In practice, elements that are overlaid at the bottom
+  // of a page are often fixed-position within the viewport, so this heuristic
+  // works well.
+  OverlayVisibility overlay_visibility_ = OverlayVisibility::kVisible;
 };
 
 }  // namespace blink
