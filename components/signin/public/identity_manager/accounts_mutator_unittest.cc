@@ -703,6 +703,79 @@ TEST(ExplicitBrowserSigninAccountsMutatorTest, MoveAccount) {
                    ->HasAccountWithRefreshTokenInPersistentErrorState(
                        other_accounts_with_refresh_token[0].account_id));
 }
+
+// Observer that releases the memory of the account info when the refresh token
+// is removed. This is to simulate the case where the observer owns the
+// account info and destroys it in `OnRefreshTokenRemovedForAccount()`.
+// The observer is then called a second time to verify that it doesn't crash
+// (crbug.com/425560583).
+class MoveAccountUafTestObserver : public signin::IdentityManager::Observer {
+ public:
+  explicit MoveAccountUafTestObserver(
+      IdentityManager* identity_manager,
+      std::unique_ptr<AccountInfo>& account_info_temporary)
+      : account_info_temporary_(account_info_temporary),
+        account_id_copy_(account_info_temporary->account_id) {
+    identity_manager_observation_.Observe(identity_manager);
+  }
+
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override {
+    called_ = true;
+
+    // Release the memory (only has effect on the first call).
+    account_info_temporary_->reset();
+    // Should not crash.
+    EXPECT_EQ(account_id, account_id_copy_);
+  }
+
+  void OnIdentityManagerShutdown(IdentityManager* identity_manager) override {
+    identity_manager_observation_.Reset();
+  }
+
+  bool called() const { return called_; }
+
+ private:
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+  raw_ref<std::unique_ptr<AccountInfo>> account_info_temporary_;
+  const CoreAccountId account_id_copy_;
+  bool called_ = false;
+};
+
+TEST(ExplicitBrowserSigninAccountsMutatorTest, RemoveAccountCopiesAccountId) {
+  base::test::TaskEnvironment task_environment;
+  IdentityTestEnvironment identity_test_env;
+  IdentityManager* identity_manager = identity_test_env.identity_manager();
+  AccountsMutator* accounts_mutator = identity_manager->GetAccountsMutator();
+  AccountInfo account_info = identity_test_env.MakeAccountAvailable(kTestEmail);
+  EXPECT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_EQ(1U, identity_manager->GetAccountsWithRefreshTokens().size());
+
+  // Setup two observers. The first one deletes the temporary account info when
+  // OnRefreshTokenRemovedForAccount() is called the first time. The second
+  // observer uses the account ID to verify that it doesn't crash
+  // (crbug.com/425560583).
+  auto account_info_temporary = std::make_unique<AccountInfo>(account_info);
+  MoveAccountUafTestObserver test_observer1(identity_manager,
+                                            account_info_temporary);
+  MoveAccountUafTestObserver test_observer2(identity_manager,
+                                            account_info_temporary);
+
+  // This should not crash.
+  accounts_mutator->RemoveAccount(
+      account_info_temporary->account_id,
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+  EXPECT_TRUE(test_observer1.called());
+  EXPECT_TRUE(test_observer2.called());
+
+  EXPECT_FALSE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_EQ(0U, identity_manager->GetAccountsWithRefreshTokens().size());
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin

@@ -739,8 +739,12 @@ void IdentityManager::OnRefreshTokenAvailableFromSource(
 void IdentityManager::OnRefreshTokenRevokedFromSource(
     const CoreAccountId& account_id,
     const std::string& source) {
+  // Copy the account ID to avoid a use-after-free if one of the observers
+  // owns the reference to the account ID and destroys it in
+  // `OnRefreshTokenRemovedForAccountFromSource()`.
+  CoreAccountId account_id_copy = account_id;
   for (auto& observer : diagnostics_observation_list_) {
-    observer.OnRefreshTokenRemovedForAccountFromSource(account_id, source);
+    observer.OnRefreshTokenRemovedForAccountFromSource(account_id_copy, source);
   }
 }
 
