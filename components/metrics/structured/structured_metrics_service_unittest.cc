@@ -97,8 +97,6 @@ class StructuredMetricsServiceTest : public testing::Test {
 
   void TearDown() override {
     StructuredMetricsClient::Get()->UnsetDelegate();
-    service_.reset();
-    Wait();
   }
 
   void Init() {
@@ -199,20 +197,34 @@ class StructuredMetricsServiceTest : public testing::Test {
     task_environment_.AdvanceClock(base::Hours(hours));
   }
 
- protected:
-  std::unique_ptr<StructuredMetricsService> service_;
-  metrics::TestMetricsServiceClient client_;
-
  private:
+  // Test resources must be declared before TaskEnvironment so they outlive
+  // the tasks that TaskEnvironment flushes during its destruction.
+  base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple prefs_;
 
-  TestRecorder test_recorder_;
-  base::ScopedTempDir temp_dir_;
-
+  // The TaskEnvironment is the manager for the test's threads and tasks. It
+  // must be declared after the resources that its tasks may access. Its
+  // destructor will block and flush all tasks, ensuring they can safely use
+  // the resources above before they are destroyed.
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  // TestRecorder is a delegate for the process-wide StructuredMetricsClient
+  // singleton. Its lifetime is managed by Set/UnsetDelegate in
+  // SetUp/TearDown.
+  TestRecorder test_recorder_;
+
+ protected:
+  // The service holds a raw pointer to this client, so `client_` must be
+  // destroyed after `service_`.
+  metrics::TestMetricsServiceClient client_;
+
+  // The service under test. Declared last so it is destroyed first, before
+  // its dependencies and before the TaskEnvironment that manages its tasks.
+  std::unique_ptr<StructuredMetricsService> service_;
 };
 
 TEST_F(StructuredMetricsServiceTest, PurgeInMemory) {
