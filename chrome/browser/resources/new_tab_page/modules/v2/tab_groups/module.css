@@ -170,7 +170,8 @@ a:focus-visible {
   display: flex;
   align-items: center;
   gap: 16px;
-  flex: 1 0 0;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .tab-group-container:hover .hover-layer {
@@ -212,8 +213,9 @@ a:focus-visible {
 .tab-group-info {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  flex: 1 0 0;
+  align-items: stretch;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .tab-group-title,

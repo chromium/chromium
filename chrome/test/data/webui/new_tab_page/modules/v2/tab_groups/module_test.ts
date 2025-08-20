@@ -39,6 +39,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       {
         title: 'Tab Group 1',
         updateTime: 'Recently used',
+        deviceName: 'Test Device',
         faviconUrls: [
           {url: 'https://www.google.com'},
           {url: 'https://www.youtube.com'},
@@ -50,6 +51,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       {
         title: 'Tab Group 2',
         updateTime: 'Recently used',
+        deviceName: 'Test Device',
         faviconUrls: [
           {url: 'https://www.google.com'},
           {url: 'https://www.youtube.com'},
@@ -61,6 +63,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       {
         title: 'Tab Group 3',
         updateTime: 'Recently used',
+        deviceName: null,
         faviconUrls: [
           {url: 'https://www.google.com'},
           {url: 'https://www.youtube.com'},
@@ -84,14 +87,10 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     assertTrue(!!groups);
     assertEquals(tabGroups.length, groups.length);
 
-    // Verify tab group 1.
     for (let i = 0; i < groups.length; ++i) {
       assertEquals(
           `Tab Group ${i + 1}`,
           groups[i]!.querySelector('.tab-group-title')!.textContent);
-      assertEquals(
-          'Recently used',
-          groups[i]!.querySelector('.tab-group-description')!.textContent);
       const iconContainer =
           groups[i]!.querySelector<IconContainerElement>('ntp-icon-container')!;
       assertTrue(!!iconContainer);
@@ -99,6 +98,17 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
           tabGroups[i]!.faviconUrls.map(u => u.url), iconContainer.faviconUrls);
       assertEquals(tabGroups[i]!.totalTabCount, iconContainer.totalTabCount);
     }
+
+    // Verify that optional device info is parsed correclty.
+    assertEquals(
+        'Recently used • Test Device',
+        groups[0]!.querySelector('.tab-group-description')!.textContent);
+    assertEquals(
+        'Recently used • Test Device',
+        groups[1]!.querySelector('.tab-group-description')!.textContent);
+    assertEquals(
+        'Recently used',
+        groups[2]!.querySelector('.tab-group-description')!.textContent);
   });
 
   test('module not created when getTabGroups returns null', async () => {
@@ -119,6 +129,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     const module = await createModule([{
       title: 'Tab Group',
       updateTime: 'Recently used',
+      deviceName: 'Test Device',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
     }]);
@@ -142,6 +153,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     const module = await createModule([{
       title: 'Tab Group',
       updateTime: 'Recently used',
+      deviceName: 'Test Device',
       faviconUrls: [
         {url: 'https://www.google.com'},
         {url: 'https://www.youtube.com'},
@@ -168,6 +180,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     const module = await createModule([{
       title: 'Tab Group',
       updateTime: 'Recently used',
+      deviceName: 'Test Device',
       faviconUrls: [
         {url: 'https://www.google.com'},
         {url: 'https://www.youtube.com'},
@@ -197,6 +210,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     const module = await createModule([{
       title: 'Tab Group',
       updateTime: 'Recently used',
+      deviceName: 'Test Device',
       faviconUrls: [
         {url: 'https://www.google.com'},
         {url: 'https://www.youtube.com'},
@@ -258,6 +272,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     const module = await createModule([{
       title: 'Tab Group',
       updateTime: 'Recently used',
+      deviceName: 'Test Device',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
     }]);
@@ -295,6 +310,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     const module = await createModule([{
       title: 'Tab Group',
       updateTime: 'Recently used',
+      deviceName: 'Test Device',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
     }]);
@@ -319,6 +335,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     const module = await createModule([{
       title: 'Tab Group',
       updateTime: 'Recently used',
+      deviceName: 'Test Device',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
     }]);

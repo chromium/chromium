@@ -60,6 +60,10 @@ export class ModuleElement extends ModuleElementBase {
     this.handler_ = TabGroupsProxyImpl.getInstance().handler;
   }
 
+  protected computeDescription_(time: string, device: string|null): string {
+    return (device && device.length > 0) ? `${time} • ${device.trim()}` : time;
+  }
+
   protected getMenuItemGroups_(): MenuItem[][] {
     return [
       [

@@ -4,9 +4,12 @@
 
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups_page_handler.h"
 
+#include <memory>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups.mojom.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -14,7 +17,12 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/public/versioning_message_controller.h"
 #include "components/search/ntp_features.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_sync_bridge.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -175,6 +183,48 @@ class MockTabGroupSyncService : public TabGroupSyncService {
 
 }  // namespace tab_groups
 
+namespace {
+
+class MockDeviceInfoTracker : public syncer::DeviceInfoTracker {
+ public:
+  MOCK_METHOD(bool, IsSyncing, (), (const));
+  MOCK_METHOD(syncer::DeviceInfo*,
+              GetDeviceInfo,
+              (const std::string& client_id),
+              (const));
+  MOCK_METHOD(std::vector<const syncer::DeviceInfo*>,
+              GetAllDeviceInfo,
+              (),
+              (const));
+  MOCK_METHOD(std::vector<const syncer::DeviceInfo*>,
+              GetAllChromeDeviceInfo,
+              (),
+              (const));
+  MOCK_METHOD(void, AddObserver, (Observer * observer));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer));
+  MOCK_METHOD((std::map<syncer::DeviceInfo::FormFactor, int>),
+              CountActiveDevicesByType,
+              (),
+              (const));
+  MOCK_METHOD(void, ForcePulseForTest, ());
+  MOCK_METHOD(bool,
+              IsRecentLocalCacheGuid,
+              (const std::string& cache_guid),
+              (const));
+};
+
+class MockDeviceInfoSyncService : public syncer::DeviceInfoSyncService {
+ public:
+  MOCK_METHOD(syncer::LocalDeviceInfoProvider*, GetLocalDeviceInfoProvider, ());
+  MOCK_METHOD(syncer::DeviceInfoTracker*, GetDeviceInfoTracker, ());
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
+              GetControllerDelegate,
+              ());
+  MOCK_METHOD(void, RefreshLocalDeviceInfo, ());
+};
+
+}  // namespace
+
 class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   TabGroupsPageHandlerTest() = default;
@@ -183,15 +233,34 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     // Setup mock TabGroupSyncService.
-    auto* factory = tab_groups::TabGroupSyncServiceFactory::GetInstance();
-    factory->SetTestingFactory(
+    auto* tab_group_sync_service_factory =
+        tab_groups::TabGroupSyncServiceFactory::GetInstance();
+    tab_group_sync_service_factory->SetTestingFactory(
         profile(), base::BindRepeating([](content::BrowserContext* context)
                                            -> std::unique_ptr<KeyedService> {
           return std::make_unique<
               testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
         }));
     mock_service_ = static_cast<tab_groups::MockTabGroupSyncService*>(
-        factory->GetForProfile(profile()));
+        tab_group_sync_service_factory->GetForProfile(profile()));
+
+    // Setup mock_device_info_sync_service_.
+    auto* device_info_sync_service_factory =
+        DeviceInfoSyncServiceFactory::GetInstance();
+    device_info_sync_service_factory->SetTestingFactory(
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              testing::NiceMock<MockDeviceInfoSyncService>>();
+        }));
+    mock_device_info_sync_service_ = static_cast<MockDeviceInfoSyncService*>(
+        device_info_sync_service_factory->GetForProfile(profile()));
+
+    // Setup mock_device_info_tracker_.
+    mock_device_info_tracker_ =
+        std::make_unique<testing::NiceMock<MockDeviceInfoTracker>>();
+    ON_CALL(*mock_device_info_sync_service_, GetDeviceInfoTracker())
+        .WillByDefault(testing::Return(mock_device_info_tracker_.get()));
 
     handler_ = std::make_unique<TabGroupsPageHandler>(
         mojo::PendingReceiver<ntp::tab_groups::mojom::PageHandler>(),
@@ -207,6 +276,8 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     owned_groups_.clear();
     saved_tab_groups_.clear();
+    mock_device_info_sync_service_ = nullptr;
+    mock_device_info_tracker_.reset();
     handler_.reset();
     mock_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
@@ -286,10 +357,31 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
     return groups;
   }
 
+  std::unique_ptr<syncer::DeviceInfo> BuildDeviceInfo(std::string cache_guid,
+                                                      std::string device_name) {
+    return std::make_unique<syncer::DeviceInfo>(
+        cache_guid, device_name, "chrome_version", "user_agent",
+        sync_pb::SyncEnums::TYPE_UNSET, syncer::DeviceInfo::OsType::kUnknown,
+        syncer::DeviceInfo::FormFactor::kUnknown, "device_id",
+        "manufacturer_name", "model_name", "full_hardware_class",
+        base::Time::Now(), base::Minutes(60),
+        /*send_tab_to_self_receiving_enabled=*/false,
+        /*send_tab_to_self_receiving_type=*/
+        sync_pb::
+            SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+        /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
+        "fcm_registration_token", /*interested_data_types=*/
+        Difference(syncer::ProtocolTypes(), syncer::CommitOnlyTypes()),
+        /*floating_workspace_last_signin_timestamp=*/std::nullopt);
+  }
+
   tab_groups::MockTabGroupSyncService* service() { return mock_service_; }
   TabGroupsPageHandler* handler() { return handler_.get(); }
   std::vector<const tab_groups::SavedTabGroup*> saved_tab_groups() {
     return saved_tab_groups_;
+  }
+  MockDeviceInfoTracker* mock_device_info_tracker() {
+    return mock_device_info_tracker_.get();
   }
 
  private:
@@ -299,7 +391,93 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
 
   std::vector<tab_groups::SavedTabGroup> owned_groups_;
   std::vector<const tab_groups::SavedTabGroup*> saved_tab_groups_;
+
+  raw_ptr<MockDeviceInfoSyncService> mock_device_info_sync_service_;
+  std::unique_ptr<MockDeviceInfoTracker> mock_device_info_tracker_;
 };
+
+TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_WithDeviceInfo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpTabGroupsModule, {});
+  const std::string kCacheGuid = "test_cache_guid";
+  const std::string kDeviceName = "TestDevice";
+  const std::string kUpdateTime = "Recently used";
+
+  // Create a tab group with a specific cache_guid.
+  std::vector<tab_groups::SavedTabGroup> groups;
+  groups.emplace_back(u"Group Title", tab_groups::TabGroupColorId::kGrey,
+                      std::vector<tab_groups::SavedTabGroupTab>{});
+  groups.back().SetUpdateTime(base::Time::Now());
+  groups.back().SetLastUpdaterCacheGuid(kCacheGuid);
+  std::vector<const tab_groups::SavedTabGroup*> groups_ptr;
+  groups_ptr.push_back(&groups[0]);
+
+  // Set up the mock tracker to return a specific DeviceInfo for the given guid.
+  auto device_info = BuildDeviceInfo(kCacheGuid, kDeviceName);
+  ON_CALL(*mock_device_info_tracker(), GetDeviceInfo(kCacheGuid))
+      .WillByDefault(testing::Return(device_info.get()));
+  EXPECT_CALL(*service(), ReadAllGroups())
+      .WillOnce(testing::Return(groups_ptr));
+
+  auto result = RunGetTabGroups();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(1u, result->size());
+  EXPECT_EQ(kUpdateTime, result.value()[0]->update_time);
+  EXPECT_EQ(kDeviceName, result.value()[0]->device_name);
+}
+
+TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_DeviceInfoNotFound) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpTabGroupsModule, {});
+
+  // Create a group with a cache_guid that cannot be found.
+  const std::string kUnknownCacheGuid = "unknown_guid";
+  std::vector<tab_groups::SavedTabGroup> groups;
+  groups.emplace_back(u"Group Title", tab_groups::TabGroupColorId::kGrey,
+                      std::vector<tab_groups::SavedTabGroupTab>{});
+  groups.back().SetUpdateTime(base::Time::Now());
+  groups.back().SetLastUpdaterCacheGuid(kUnknownCacheGuid);
+  std::vector<const tab_groups::SavedTabGroup*> groups_ptr;
+  groups_ptr.push_back(&groups[0]);
+
+  // Set up mock tracker to return nullptr for the unknown guid.
+  ON_CALL(*mock_device_info_tracker(), GetDeviceInfo(kUnknownCacheGuid))
+      .WillByDefault(testing::Return(nullptr));
+  EXPECT_CALL(*service(), ReadAllGroups())
+      .WillOnce(testing::Return(groups_ptr));
+
+  auto result = RunGetTabGroups();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(1u, result->size());
+  EXPECT_EQ("Recently used", result.value()[0]->update_time);
+  EXPECT_EQ(std::nullopt, result.value()[0]->device_name);
+}
+
+TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_NoCacheGuid) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpTabGroupsModule, {});
+
+  // Create tab groups data.
+  std::vector<tab_groups::SavedTabGroup> groups;
+  groups.emplace_back(u"Group Title", tab_groups::TabGroupColorId::kGrey,
+                      std::vector<tab_groups::SavedTabGroupTab>{});
+  groups.back().SetUpdateTime(base::Time::Now());
+  std::vector<const tab_groups::SavedTabGroup*> groups_ptr;
+  groups_ptr.push_back(&groups[0]);
+
+  EXPECT_CALL(*mock_device_info_tracker(), GetDeviceInfo(testing::_)).Times(0);
+  EXPECT_CALL(*service(), ReadAllGroups())
+      .WillOnce(testing::Return(groups_ptr));
+
+  auto result = RunGetTabGroups();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(1u, result->size());
+  EXPECT_EQ("Recently used", result.value()[0]->update_time);
+  EXPECT_EQ(std::nullopt, result.value()[0]->device_name);
+}
 
 TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_Empty) {
   base::test::ScopedFeatureList feature_list;
@@ -377,23 +555,31 @@ TEST_F(TabGroupsPageHandlerTest, GetFakeTabGroups) {
   EXPECT_EQ(group1->total_tab_count,
             static_cast<int>(group1->favicon_urls.size()));
   EXPECT_EQ(GURL("https://www.google.com"), group1->favicon_urls[0]);
-  EXPECT_EQ(GURL("https://www.youtube.com"), group1->favicon_urls[1]);
-  EXPECT_EQ(GURL("https://www.wikipedia.org"), group1->favicon_urls[2]);
+  EXPECT_EQ(GURL("https://www.google.com"), group1->favicon_urls[1]);
+  EXPECT_EQ(GURL("https://www.google.com"), group1->favicon_urls[2]);
+  EXPECT_EQ("Recently used", group1->update_time);
+  EXPECT_EQ("Test Device", group1->device_name);
 
   const auto& group2 = tab_groups[1];
   EXPECT_EQ("Tab Group 2 (4 tabs total)", group2->title);
   EXPECT_EQ(4u, group2->favicon_urls.size());
   EXPECT_EQ(4, group2->total_tab_count);
+  EXPECT_EQ("Used 1 day ago", group2->update_time);
+  EXPECT_EQ("Test Device", group2->device_name);
 
   const auto& group3 = tab_groups[2];
   EXPECT_EQ("Tab Group 3 (8 tabs total)", group3->title);
   EXPECT_EQ(4u, group3->favicon_urls.size());
   EXPECT_EQ(8, group3->total_tab_count);
+  EXPECT_EQ("Used 1 week ago", group3->update_time);
+  EXPECT_EQ("Test Device", group3->device_name);
 
   const auto& group4 = tab_groups[3];
   EXPECT_EQ("Tab Group 4 (199 tabs total)", group4->title);
   EXPECT_EQ(4u, group4->favicon_urls.size());
   EXPECT_EQ(199, group4->total_tab_count);
+  EXPECT_EQ("Used 2 weeks ago", group4->update_time);
+  EXPECT_EQ(std::nullopt, group4->device_name);
 }
 
 TEST_F(TabGroupsPageHandlerTest, GetFakeZeroStateTabGroups) {

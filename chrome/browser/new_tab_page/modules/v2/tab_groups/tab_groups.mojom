@@ -12,6 +12,8 @@ struct TabGroup {
   string title;
   // The time delta between now and when the tab group was last updated.
   string update_time;
+  // The device name that the tab group was last used on.
+  string? device_name;
   // The total number of tabs in the tab group.
   int32 total_tab_count;
   // The URLs for up to the first three tabs. Used for fetching favicon.

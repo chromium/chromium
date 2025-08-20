@@ -41,6 +41,8 @@ class TabGroupsPageHandler : public ntp::tab_groups::mojom::PageHandler {
   void RestoreModule() override;
 
  private:
+  std::optional<std::string> GetDeviceName(
+      const std::optional<std::string>& cache_guid);
   std::vector<ntp::tab_groups::mojom::TabGroupPtr> GetSavedTabGroups();
   void GetLastInteractedTimeForGroup(
       const std::optional<tab_groups::TabGroupId> group_id);

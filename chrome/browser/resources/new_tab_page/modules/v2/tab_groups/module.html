@@ -50,7 +50,7 @@
             </ntp-icon-container>
             <div class="tab-group-info">
               <div class="tab-group-title">${item.title}</div>
-              <div class="tab-group-description">${item.updateTime}</div>
+              <div class="tab-group-description">${this.computeDescription_(item.updateTime, item.deviceName)}</div>
             </div>
           </a>
         </div>
