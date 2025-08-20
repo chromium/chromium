@@ -1289,8 +1289,20 @@ bool GpuInit::InitializeDawn() {
   auto validate_adapter_fn = DawnContextProvider::DefaultValidateAdapterFn;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  dawn_context_provider_ = gpu::DawnContextProvider::Create(
-      gpu_preferences_, gpu_feature_info_, validate_adapter_fn);
+  static BASE_FEATURE(kGraphiteDawnReportWorkerTaskProgressToWatchdog,
+                      "GraphiteDawnReportWorkerTaskProgressToWatchdog",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+
+  gl::ProgressReporter* progress_reporter = nullptr;
+  if (base::FeatureList::IsEnabled(
+          kGraphiteDawnReportWorkerTaskProgressToWatchdog)) {
+    // TODO(crbug.com/439913491): Wire this up for the DrDC thread watchdog.
+    progress_reporter = watchdog_thread_.get();
+  }
+
+  dawn_context_provider_ =
+      DawnContextProvider::Create(gpu_preferences_, gpu_feature_info_,
+                                  progress_reporter, validate_adapter_fn);
   if (dawn_context_provider_) {
     return true;
   }

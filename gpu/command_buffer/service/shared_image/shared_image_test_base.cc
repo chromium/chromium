@@ -169,7 +169,7 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     dawn_context_provider_ = DawnContextProvider::CreateWithBackend(
         GetDawnBackendType(), DawnForceFallbackAdapter(), gpu_preferences_,
-        GpuFeatureInfo(), DawnContextProvider::DefaultValidateAdapterFn);
+        GpuFeatureInfo());
     ASSERT_TRUE(dawn_context_provider_);
 #else
     FAIL() << "Graphite-Dawn not available";

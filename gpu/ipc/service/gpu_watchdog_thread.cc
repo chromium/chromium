@@ -273,7 +273,6 @@ void GpuWatchdogThread::CleanUp() {
 }
 
 void GpuWatchdogThread::ReportProgress() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
   InProgress();
 }
 

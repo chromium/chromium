@@ -428,7 +428,8 @@ bool DawnContextProvider::DefaultValidateAdapterFn(wgpu::BackendType,
 class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
                           public base::trace_event::MemoryDumpProvider {
  public:
-  explicit DawnSharedContext(bool thread_safe_graphite_context);
+  DawnSharedContext(gl::ProgressReporter* progress_reporter,
+                    bool thread_safe_graphite_context);
 
   bool Initialize(wgpu::BackendType backend_type,
                   bool force_fallback_adapter,
@@ -658,9 +659,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   std::unique_ptr<webgpu::DawnCachingInterface> caching_interface_;
 
-  Platform platform_{/*dawn_caching_interface=*/nullptr,
-                     /*uma_prefix=*/"GPU.GraphiteDawn.",
-                     /*record_cache_count_uma=*/true};
+  Platform platform_;
   std::unique_ptr<webgpu::DawnInstance> instance_;
   wgpu::Adapter adapter_;
   wgpu::Device device_;
@@ -684,8 +683,13 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   THREAD_CHECKER(main_thread_checker_);
 };
 
-DawnSharedContext::DawnSharedContext(bool use_thread_safe_graphite_context)
-    : use_thread_safe_graphite_context_(use_thread_safe_graphite_context) {
+DawnSharedContext::DawnSharedContext(gl::ProgressReporter* progress_reporter,
+                                     bool use_thread_safe_graphite_context)
+    : platform_(/*dawn_caching_interface=*/nullptr,
+                progress_reporter,
+                /*uma_prefix=*/"GPU.GraphiteDawn.",
+                /*record_cache_count_uma=*/true),
+      use_thread_safe_graphite_context_(use_thread_safe_graphite_context) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 }
 
@@ -1132,10 +1136,11 @@ bool DawnSharedContext::OnMemoryDump(
 std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
     const GpuPreferences& gpu_preferences,
     const GpuFeatureInfo& gpu_feature_info,
+    gl::ProgressReporter* progress_reporter,
     ValidateAdapterFn validate_adapter_fn) {
   return DawnContextProvider::CreateWithBackend(
       GetDefaultBackendType(), DefaultForceFallbackAdapter(), gpu_preferences,
-      gpu_feature_info, validate_adapter_fn);
+      gpu_feature_info, progress_reporter, validate_adapter_fn);
 }
 
 std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
@@ -1143,12 +1148,13 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
     const GpuFeatureInfo& gpu_feature_info,
+    gl::ProgressReporter* progress_reporter,
     ValidateAdapterFn validate_adapter_fn) {
   bool use_thread_safe_graphite_context =
       features::IsDrDcEnabled(gpu_feature_info) &&
       features::IsGraphiteContextThreadSafe();
-  auto dawn_shared_context =
-      base::MakeRefCounted<DawnSharedContext>(use_thread_safe_graphite_context);
+  auto dawn_shared_context = base::MakeRefCounted<DawnSharedContext>(
+      progress_reporter, use_thread_safe_graphite_context);
   GpuDriverBugWorkarounds workarounds(
       gpu_feature_info.enabled_gpu_driver_bug_workarounds);
   if (!dawn_shared_context->Initialize(backend_type, force_fallback_adapter,

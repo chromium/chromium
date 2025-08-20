@@ -29,6 +29,10 @@
 #include <wrl/client.h>
 #endif
 
+namespace gl {
+class ProgressReporter;
+}  // namespace gl
+
 namespace gpu {
 
 class DawnSharedContext;
@@ -45,12 +49,14 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   static std::unique_ptr<DawnContextProvider> Create(
       const GpuPreferences& gpu_preferences,
       const GpuFeatureInfo& gpu_feature_info,
+      gl::ProgressReporter* progress_reporter = nullptr,
       ValidateAdapterFn validate_adapter_fn = DefaultValidateAdapterFn);
   static std::unique_ptr<DawnContextProvider> CreateWithBackend(
       wgpu::BackendType backend_type,
       bool force_fallback_adapter,
       const GpuPreferences& gpu_preferences,
       const GpuFeatureInfo& gpu_feature_info,
+      gl::ProgressReporter* progress_reporter = nullptr,
       ValidateAdapterFn validate_adapter_fn = DefaultValidateAdapterFn);
 
   // Creates a new context provider for use on a different thread that shares
