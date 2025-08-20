@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/ptr_util.h"
 
@@ -18,7 +19,7 @@ namespace {
 class DiscardableMemoryImpl : public DiscardableMemory {
  public:
   explicit DiscardableMemoryImpl(size_t size)
-      : data_(new uint8_t[size]), size_(size) {}
+      : data_(base::HeapArray<uint8_t>::Uninit(size)) {}
 
   // Overridden from DiscardableMemory:
   bool Lock() override {
@@ -32,12 +33,12 @@ class DiscardableMemoryImpl : public DiscardableMemory {
     is_locked_ = false;
     // Force eviction to catch clients not correctly checking the return value
     // of Lock().
-    UNSAFE_TODO(memset(data_.get(), 0, size_));
+    UNSAFE_TODO(memset(data_.data(), 0, data_.size()));
   }
 
   void* data() const override {
     DCHECK(is_locked_);
-    return data_.get();
+    return const_cast<uint8_t*>(data_.data());
   }
 
   void DiscardForTesting() override {}
@@ -50,8 +51,7 @@ class DiscardableMemoryImpl : public DiscardableMemory {
 
  private:
   bool is_locked_ = true;
-  std::unique_ptr<uint8_t[]> data_;
-  size_t size_;
+  base::HeapArray<uint8_t> data_;
 };
 
 }  // namespace
