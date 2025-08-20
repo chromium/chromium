@@ -48,7 +48,8 @@ public class NullAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public void createAddAccountIntent(Callback<@Nullable Intent> callback) {
+    public void createAddAccountIntent(
+            @Nullable String prefilledEmail, Callback<@Nullable Intent> callback) {
         throw new UnsupportedOperationException(
                 "NullAccountManagerDelegate does not implement createAddAccountIntent");
     }

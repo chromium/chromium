@@ -18,6 +18,7 @@ import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 /** Implementation of {@link AccountPickerDelegate} for the web-signin flow. */
 @NullMarked
@@ -25,17 +26,17 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
     private final Tab mCurrentTab;
     private final Profile mProfile;
     private final WebSigninBridge.Factory mWebSigninBridgeFactory;
-    private final String mContinueUrl;
+    private final GURL mContinueUrl;
     private @Nullable WebSigninBridge mWebSigninBridge;
 
     /**
      * @param currentTab The current tab where the account picker bottom sheet is displayed.
      * @param webSigninBridgeFactory A {@link WebSigninBridge.Factory} to create {@link
-     *         WebSigninBridge} instances.
+     *     WebSigninBridge} instances.
      * @param continueUrl The URL that the user would be redirected to after sign-in succeeds.
      */
     public WebSigninAccountPickerDelegate(
-            Tab currentTab, WebSigninBridge.Factory webSigninBridgeFactory, String continueUrl) {
+            Tab currentTab, WebSigninBridge.Factory webSigninBridgeFactory, GURL continueUrl) {
         mCurrentTab = currentTab;
         mProfile = currentTab.getProfile();
         mWebSigninBridgeFactory = webSigninBridgeFactory;
@@ -84,7 +85,7 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
     }
 
     private Callback<@WebSigninTrackerResult Integer> createWebSigninBridgeCallback(
-            Tab tab, String continueUrl, AccountPickerDelegate.SigninStateController controller) {
+            Tab tab, GURL continueUrl, AccountPickerDelegate.SigninStateController controller) {
         return (result) -> {
             ThreadUtils.assertOnUiThread();
             switch (result) {

@@ -44,6 +44,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /** JUnit tests for the class {@link SigninBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -66,7 +67,7 @@ public class SigninBridgeTest {
         }
     }
 
-    private static final String CONTINUE_URL = "https://test-continue-url.com";
+    private static final GURL CONTINUE_URL = new GURL("https://test-continue-url.com");
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();

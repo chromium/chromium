@@ -59,8 +59,10 @@ const char kMirrorActionAddSession[] = "action=ADDSESSION";
 const char kMirrorActionGoIncognito[] =
     "action=INCOGNITO,continue_url=http://example.com";
 const char kMirrorActionWithPromoAndContinueUrl[] =
-    "action=ADDSESSION,show_consistency_promo=true,continue_url=http://"
+    "action=DEFAULT,show_consistency_promo=true,continue_url=http://"
     "example.com";
+const char kMirrorActionAddSessionWithContinueUrl[] =
+    "action=ADDSESSION,continue_url=http://example.com,email=test@gmail.com";
 const char kMirrorActionDefault[] = "action=DEFAULT";
 #endif
 #endif
@@ -196,6 +198,13 @@ class MockSigninBridge : public SigninBridge {
   MockSigninBridge() = default;
 
   MOCK_METHOD(void,
+              StartAddAccountFlow,
+              (ui::WindowAndroid * window,
+               const std::string& prefilled_email,
+               const GURL& continue_url),
+              (override));
+
+  MOCK_METHOD(void,
               OpenAccountManagementScreen,
               (ui::WindowAndroid * window,
                signin::GAIAServiceType service_type),
@@ -203,8 +212,7 @@ class MockSigninBridge : public SigninBridge {
 
   MOCK_METHOD(void,
               OpenAccountPickerBottomSheet,
-              (content::WebContents * web_contents,
-               const std::string& continue_url),
+              (content::WebContents * web_contents, const GURL& continue_url),
               (override));
 };
 
@@ -247,7 +255,7 @@ TEST_F(ChromeSigninHelperTest, RemoveDiceSigninHeader) {
   TestResponseAdapter adapter(signin::kDiceResponseHeader, "Foo",
                               /*is_outermost_main_frame=*/false);
   signin::ProcessAccountConsistencyResponseHeaders(&adapter, GURL(),
-                                                   false /* is_incognito */);
+                                                   /*is_off_the_record=*/false);
 
   // Check that the header has been removed.
   EXPECT_FALSE(adapter.GetHeaders()->HasHeader(signin::kDiceResponseHeader));
@@ -314,7 +322,7 @@ TEST_F(ChromeSigninHelperTest, MirrorMainFrame) {
                                        kMirrorActionAddSession,
                                        /*is_outermost_main_frame=*/true);
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
-                                                   false /* is_incognito */);
+                                                   /*is_off_the_record=*/false);
   // Check that the header has not been removed.
   EXPECT_TRUE(response_adapter.GetHeaders()->HasHeader(
       signin::kChromeManageAccountsHeader));
@@ -330,7 +338,7 @@ TEST_F(ChromeSigninHelperTest, MirrorSubFrame) {
                                        kMirrorActionAddSession,
                                        /*is_outermost_main_frame=*/false);
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
-                                                   false /* is_incognito */);
+                                                   /*is_off_the_record=*/false);
   // Request was not flagged with the user data.
   EXPECT_FALSE(response_adapter.GetUserData(
       signin::kManageAccountsHeaderReceivedUserDataKey));
@@ -348,6 +356,10 @@ TEST_F(ChromeSigninHelperTest, MirrorGoIncognitoForemostWebContents) {
   TabModelList::AddTabModel(&tab_model);
   base::ScopedClosureRunner remover(base::BindOnce(
       TabModelList::RemoveTabModel, base::Unretained(&tab_model)));
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android = ui::WindowAndroid::CreateForTesting();
+  window_android.get()->get()->AddChild(web_contents->GetNativeView());
 
   // WebContents should be considered foremost for kChromeManageAccountsHeader
   // to be processed.
@@ -431,10 +443,46 @@ TEST_F(ChromeSigninHelperTest, MirrorGoIncognitoInactiveWebContents) {
   task_environment()->RunUntilIdle();
 }
 
+// Tests that receiving an ADDSESSION action within kChromeManageAccountsHeader
+// opens the bottom sheet with the correct continue URL.
+TEST_F(ChromeSigninHelperTest, AddSessionOpensBottomSheet) {
+  std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
+
+  TestTabModel tab_model(profile());
+  TabModelList::AddTabModel(&tab_model);
+  base::ScopedClosureRunner remover(base::BindOnce(
+      TabModelList::RemoveTabModel, base::Unretained(&tab_model)));
+
+  // WebContents should be considered foremost for kChromeManageAccountsHeader
+  // to be processed.
+  tab_model.SetWebContentsList({web_contents.get()});
+  tab_model.SetIsActiveModel(true);
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android = ui::WindowAndroid::CreateForTesting();
+  window_android.get()->get()->AddChild(web_contents->GetNativeView());
+
+  // Process the header.
+  TestResponseAdapter response_adapter(signin::kChromeManageAccountsHeader,
+                                       kMirrorActionAddSessionWithContinueUrl,
+                                       /*is_outermost_main_frame=*/true,
+                                       web_contents.get());
+
+  // Check that the sign-in bridge is called to open the sign-in bottom sheet
+  // with the correct continue URL.
+  EXPECT_CALL(
+      *signin_bridge(),
+      StartAddAccountFlow(_, "test@gmail.com", GURL("http://example.com")));
+
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  task_environment()->RunUntilIdle();
+}
+
 // Tests that receiving an action with show_consistency_promo parameter
 // within kChromeManageAccountsHeader opens the bottom sheet with the correct
 // continue URL.
-TEST_F(ChromeSigninHelperTest, OpenBottomSheet) {
+TEST_F(ChromeSigninHelperTest, OpenBottomSheetWithConsistencyParameter) {
   std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
 
   TestTabModel tab_model(profile());
@@ -459,11 +507,10 @@ TEST_F(ChromeSigninHelperTest, OpenBottomSheet) {
   // Check that the sign-in bridge is called to open the sign-in bottom sheet
   // with the correct continue URL.
   EXPECT_CALL(*signin_bridge(),
-              OpenAccountPickerBottomSheet(_, "http://example.com"))
-      .Times(1);
+              OpenAccountPickerBottomSheet(_, GURL("http://example.com")));
 
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
-                                                   false /* is_incognito */);
+                                                   /*is_off_the_record=*/false);
   task_environment()->RunUntilIdle();
 }
 
@@ -492,10 +539,10 @@ TEST_F(ChromeSigninHelperTest, OpenAccountManagementScreen) {
       /*is_outermost_main_frame=*/true, web_contents.get());
 
   // Check that the sign-in bridge is called to open the management screen.
-  EXPECT_CALL(*signin_bridge(), OpenAccountManagementScreen(_, _)).Times(1);
+  EXPECT_CALL(*signin_bridge(), OpenAccountManagementScreen(_, _));
 
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
-                                                   false /* is_incognito */);
+                                                   /*is_off_the_record=*/false);
   task_environment()->RunUntilIdle();
 }
 

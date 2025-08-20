@@ -180,6 +180,7 @@ public class SigninFirstRunFragment extends Fragment
                 .recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
         AccountManagerFacadeProvider.getInstance()
                 .createAddAccountIntent(
+                        null,
                         (@Nullable Intent intent) -> {
                             if (intent != null) {
                                 startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);

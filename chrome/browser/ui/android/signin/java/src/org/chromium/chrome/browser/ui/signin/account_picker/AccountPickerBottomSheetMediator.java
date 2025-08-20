@@ -174,6 +174,7 @@ public class AccountPickerBottomSheetMediator
                     onAccountAddedInternal(addedAccountEmail);
                 };
         mAccountManagerFacade.createAddAccountIntent(
+                null,
                 intent -> {
                     if (intent == null) {
                         // AccountManagerFacade couldn't create intent, use SigninUtils to open

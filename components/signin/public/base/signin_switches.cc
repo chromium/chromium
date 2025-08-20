@@ -60,7 +60,12 @@ BASE_FEATURE(kMakeAccountsAvailableInIdentityManager,
 BASE_FEATURE(kSmartEmailLineBreaking,
              "SmartEmailLineBreaking",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+
+// Killswitch for the support of AddSession in web sign-in flow.
+BASE_FEATURE(kSupportWebSigninAddSession,
+             "SupportWebSigninAddSession",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables the History Sync Opt-in on Desktop.

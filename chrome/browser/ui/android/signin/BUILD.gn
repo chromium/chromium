@@ -54,6 +54,7 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_recycler_view_java",
     "//ui/android:ui_utils_java",
+    "//url:gurl_java",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncConfig.java",
@@ -232,6 +233,7 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
 }
 

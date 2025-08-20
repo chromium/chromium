@@ -38,12 +38,13 @@ import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 /** This class tests the {@link WebSigninAccountPickerDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebSigninAccountPickerDelegateTest {
-    private static final String CONTINUE_URL = "https://test-continue-url.com";
+    private static final GURL CONTINUE_URL = new GURL("https://test-continue-url.com");
     private static final String TEST_EMAIL = "test.account@gmail.com";
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
@@ -107,7 +108,8 @@ public class WebSigninAccountPickerDelegateTest {
         verify(mSigninStateControllerMock).onSigninComplete();
         verify(mTabMock).loadUrl(mLoadUrlParamsCaptor.capture());
         LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
-        Assert.assertEquals("Continue url does not match!", CONTINUE_URL, loadUrlParams.getUrl());
+        Assert.assertEquals(
+                "Continue url does not match!", CONTINUE_URL.getSpec(), loadUrlParams.getUrl());
     }
 
     @Test

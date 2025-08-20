@@ -301,9 +301,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
      *     If there is an issue while creating the intent, callback will receive null.
      */
     @Override
-    public void createAddAccountIntent(Callback<@Nullable Intent> callback) {
+    public void createAddAccountIntent(
+            @Nullable String prefilledEmail, Callback<@Nullable Intent> callback) {
         RecordUserAction.record("Signin_AddAccountToDevice");
-        mDelegate.createAddAccountIntent(callback);
+        mDelegate.createAddAccountIntent(prefilledEmail, callback);
     }
 
     /**

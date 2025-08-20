@@ -25,14 +25,20 @@ class SigninBridge : public KeyedService {
   SigninBridge() = default;
   ~SigninBridge() override = default;
 
+  // Opens a add account flow pre-filled with |prefilled_email| that opens
+  // the specified |continue_url| upon completion.
+  virtual void StartAddAccountFlow(ui::WindowAndroid* window,
+                                   const std::string& prefilled_email,
+                                   const GURL& continue_url);
+
   // Opens the account management screen.
   virtual void OpenAccountManagementScreen(
       ui::WindowAndroid* window,
       signin::GAIAServiceType service_type);
 
-  // Opens the account picker bottomsheet
+  // Opens the account picker bottomsheet.
   virtual void OpenAccountPickerBottomSheet(content::WebContents* web_contents,
-                                            const std::string& continue_url);
+                                            const GURL& continue_url);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_ANDROID_SIGNIN_BRIDGE_H_

@@ -374,6 +374,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                     AccountManagerFacade accountManagerFacade =
                             AccountManagerFacadeProvider.getInstance();
                     accountManagerFacade.createAddAccountIntent(
+                            null,
                             (@Nullable Intent intent) -> {
                                 if (!isVisible() || !isResumed()) return;
 

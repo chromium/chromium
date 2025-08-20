@@ -322,6 +322,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         SigninMetricsUtils.logAddAccountStateHistogram(State.REQUESTED);
         AccountManagerFacadeProvider.getInstance()
                 .createAddAccountIntent(
+                        null,
                         intent -> {
                             final ActivityWindowAndroid windowAndroid = getWindowAndroid();
                             if (windowAndroid == null) {
