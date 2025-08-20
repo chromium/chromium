@@ -28,6 +28,7 @@ if (is_android) {
     testonly = true
     sources = [
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindowNativeUnitTestSupport.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowEnumeratorNativeUnitTestSupport.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowNativeUnitTestSupport.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport.java",
     ]
@@ -48,6 +49,7 @@ if (is_android) {
     testonly = true
     sources = [
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindowNativeUnitTestSupport.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowEnumeratorNativeUnitTestSupport.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowNativeUnitTestSupport.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport.java",
     ]

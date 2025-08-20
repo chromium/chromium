@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 
 #include "base/android/jni_android.h"
+#include "chrome/browser/ui/browser_window/internal/android/android_browser_window_enumerator.h"
 #include "chrome/browser/ui/browser_window/internal/jni/BrowserWindowInterfaceIteratorAndroid_jni.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
@@ -44,13 +45,23 @@ GetBrowserWindowInterfacesOrderedByActivation() {
 
 void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
     base::FunctionRef<void(BrowserWindowInterface*)> on_browser) {
-  // TODO(crbug.com/438456927): This implementation does not yet account for
-  // addition or removal of instances during iteration. We need a mechanism on
-  // Android that is similar to chrome/browser/ui/browser_list_enumerator.h.
-  std::vector<BrowserWindowInterface*> browsers =
-      GetBrowserWindowInterfacesOrderedByActivation();
-  for (BrowserWindowInterface* browser : browsers) {
-    on_browser(browser);
+  // Make a copy of the BrowserWindows from Java to simplify the case where we
+  // need to add or remove a Browser during the loop.
+  constexpr bool kEnumerateNewBrowser = false;
+  AndroidBrowserWindowEnumerator browser_windows_copy(kEnumerateNewBrowser);
+  while (!browser_windows_copy.empty()) {
+    on_browser(browser_windows_copy.Next());
+  }
+}
+
+void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
+    base::FunctionRef<void(BrowserWindowInterface*)> on_browser) {
+  // Make a copy of the BrowserWindows from Java to simplify the case where we
+  // need to add or remove a Browser during the loop.
+  constexpr bool kEnumerateNewBrowser = true;
+  AndroidBrowserWindowEnumerator browser_windows_copy(kEnumerateNewBrowser);
+  while (!browser_windows_copy.empty()) {
+    on_browser(browser_windows_copy.Next());
   }
 }
 

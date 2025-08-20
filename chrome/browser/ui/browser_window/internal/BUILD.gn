@@ -21,6 +21,8 @@ source_set("internal") {
     sources += [
       "android/android_base_window.cc",
       "android/android_browser_window.cc",
+      "android/android_browser_window_enumerator.cc",
+      "android/android_browser_window_enumerator.h",
       "android/browser_window_interface_iterator_android.cc",
       "android/create_browser_window_android.cc",
     ]
@@ -98,12 +100,14 @@ source_set("unit_tests") {
   sources = []
   deps = [
     ":internal",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 
   if (is_android) {
     sources += [
       "android/android_base_window_unittest.cc",
+      "android/android_browser_window_enumerator_unittest.cc",
       "android/android_browser_window_unittest.cc",
       "android/browser_window_interface_iterator_android_unittest.cc",
     ]
@@ -136,6 +140,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindow.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindow.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowEnumerator.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroid.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskImpl.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java",
@@ -158,6 +163,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindow.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindow.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowEnumerator.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroid.java",
     ]
   }
