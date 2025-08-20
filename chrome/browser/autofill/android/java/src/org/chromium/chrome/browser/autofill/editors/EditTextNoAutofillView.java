@@ -7,16 +7,17 @@ package org.chromium.chrome.browser.autofill.editors;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.ViewStructure;
-import android.widget.EditText;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * A wrapper class around {@link EditText} to stop Android Autofill from suggesting cards. This is
- * achieved by overriding the {@code onProvideAutofillStructure} method.
+ * A wrapper class around {@link TextInputEditText} to stop Android Autofill from suggesting cards.
+ * This is achieved by overriding the {@code onProvideAutofillStructure} method.
  */
 @NullMarked
-public class EditTextNoAutofillView extends EditText {
+public class EditTextNoAutofillView extends TextInputEditText {
 
     public EditTextNoAutofillView(Context context, AttributeSet attrs) {
         super(context, attrs);
