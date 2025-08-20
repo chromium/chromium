@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.feedback;
 
 import android.os.Build;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
@@ -34,7 +33,7 @@ class DeviceInfoFeedbackSource implements FeedbackSource {
         // via android.os.Build.DEVICE.
         String name = Build.DEVICE;
         String type;
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             type = TYPE_AUTO;
         } else if (XrUtils.isXrDevice()) {
             type = TYPE_XR;

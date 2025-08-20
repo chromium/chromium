@@ -19,7 +19,7 @@ import android.os.UserManager;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.AndroidInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
@@ -195,10 +195,9 @@ public abstract class ChildConnectionAllocator {
 
         // OnePlus devices are having trouble with app zygote in combination with dynamic
         // feature modules. See crbug.com/1064314 for details.
-        BuildInfo buildInfo = BuildInfo.getInstance();
         boolean disableZygote =
                 Build.VERSION.SDK_INT == 29
-                        && buildInfo.androidBuildFingerprint.startsWith("OnePlus/");
+                        && AndroidInfo.getAndroidBuildFingerprint().startsWith("OnePlus/");
 
         if (Build.VERSION.SDK_INT == 29 && !disableZygote) {
             UserManager userManager =

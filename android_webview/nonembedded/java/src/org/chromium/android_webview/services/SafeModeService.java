@@ -21,7 +21,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.services.ISafeModeService;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.AndroidInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
@@ -81,7 +81,7 @@ public final class SafeModeService extends Service {
 
         // Whether or not this is a debug build. This can be mocked in tests.
         protected boolean isDebugAndroid() {
-            return BuildInfo.isDebugAndroid();
+            return AndroidInfo.isDebugAndroid();
         }
 
         public boolean verify(String packageName) {

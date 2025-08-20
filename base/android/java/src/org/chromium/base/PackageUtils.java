@@ -71,15 +71,13 @@ public class PackageUtils {
 
     /** Returns the PackageInfo for the Chromium app, as retrieved by PackageManager. */
     public static PackageInfo getApplicationPackageInfo(int flags) {
-        BuildInfo bi = BuildInfo.getInstance();
-
         // In WebView the Chromium app is not the same package as the current app, and there is a
         // platform bug where this lookup can fail in rare cases; try to work around it.
-        if (!bi.packageName.equals(bi.hostPackageName)) {
+        if (!ApkInfo.getPackageName().equals(ApkInfo.getHostPackageName())) {
             maybeWorkAroundWebViewPackageVisibility();
         }
 
-        PackageInfo ret = getPackageInfo(bi.packageName, flags);
+        PackageInfo ret = getPackageInfo(ApkInfo.getPackageName(), flags);
         assert ret != null;
         return ret;
     }

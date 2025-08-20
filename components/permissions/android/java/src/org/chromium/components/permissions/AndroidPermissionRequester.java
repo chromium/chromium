@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -247,7 +247,7 @@ public class AndroidPermissionRequester {
                                     : "Invalid combination of missing content settings: "
                                             + deniedContentSettings;
 
-                            String appName = BuildInfo.getInstance().hostPackageLabel;
+                            String appName = ApkInfo.getHostPackageLabel();
                             if (onMissingPermission == null) {
                                 showMissingPermissionDialog(
                                         windowAndroid,

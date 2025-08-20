@@ -41,11 +41,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.InputHintChecker;
 import org.chromium.base.Log;
 import org.chromium.base.PowerMonitor;
@@ -513,8 +513,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // insets.
         rootView.setFitsSystemWindows(false);
 
-        if (BuildInfo.getInstance().isAutomotive
-                || EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
+        if (DeviceInfo.isAutomotive() || EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
             mBaseChromeLayout = new FrameLayout(this);
         }
 
@@ -1178,7 +1177,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     private void checkForDeviceLockOnAutomotive() {
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             KeyguardManager keyguardManager =
                     (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
             RecordHistogram.recordBooleanHistogram(
@@ -1788,8 +1787,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     protected Drawable getBackgroundDrawable() {
         // Set the window background to black on R cars to better blend in with the keyboard
         // background and minimize flickering - More context on b/302039878.
-        if (BuildInfo.getInstance().isAutomotive
-                && Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
+        if (DeviceInfo.isAutomotive() && Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
             return new ColorDrawable(getColor(R.color.baseline_neutral_0));
         }
         return new ColorDrawable(getColor(R.color.window_background_color));
@@ -2228,10 +2226,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             // TODO(https://crbug.com/354039289): densityDpi is overridden on the Configuration so
             // changes to densityDpi won't show up in the newConfig. Once Chrome migrates to adapt
             // app, test this flow again.
-            if (newConfig.densityDpi != mConfig.densityDpi
-                    && !BuildInfo.getInstance().isAutomotive) {
-                doRecreateActivity();
-                return;
+            if (newConfig.densityDpi != mConfig.densityDpi) {
+                if (!DeviceInfo.isAutomotive()) {
+                    doRecreateActivity();
+                    return;
+                }
             }
 
             // Maintain tab state by re-parenting tabs when a Chrome window is moved between

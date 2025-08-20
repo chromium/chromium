@@ -34,7 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -567,7 +567,7 @@ public class ShowNtpAtStartupTest {
         View searchBoxLayout = ntpLayout.findViewById(R.id.search_box);
 
         // Orientation changes are not supported on automotive.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             verifyFakeSearchBoxWidthForCurrentOrientation(
                     expectedLandScapeWidth, expectedPortraitWidth, ntpLayout, searchBoxLayout);
             return;
@@ -629,7 +629,7 @@ public class ShowNtpAtStartupTest {
                 ((MarginLayoutParams) mvTilesLayout.getTileAt(1).getLayoutParams()).leftMargin;
 
         // Orientation changes are not supported on automotive.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             verifyTileMargin(
                     expectedContainerWidth,
                     expectedEdgeMargin,

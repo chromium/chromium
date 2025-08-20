@@ -9,7 +9,7 @@ import android.os.SystemClock;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -50,11 +50,13 @@ public class FullscreenManagerTestUtils {
         int expectedPosition = -browserControlsHeight;
 
         // The top back button toolbar will still be shown on automotive, even in fullscreen mode.
-        if (show && !BuildInfo.getInstance().isAutomotive) {
-            expectedPosition = 0;
-            float tempDragStartY = dragStartY;
-            dragStartY = dragEndY;
-            dragEndY = tempDragStartY;
+        if (show) {
+            if (!DeviceInfo.isAutomotive()) {
+                expectedPosition = 0;
+                float tempDragStartY = dragStartY;
+                dragStartY = dragEndY;
+                dragEndY = tempDragStartY;
+            }
         }
         long downTime = SystemClock.uptimeMillis();
         TouchCommon.performDragNoFling(activity, dragX, dragX, dragStartY, dragEndY, 100, downTime);

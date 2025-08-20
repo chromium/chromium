@@ -21,7 +21,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.Toolbar;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -81,7 +81,7 @@ public class ChromeDialog extends ComponentDialog {
 
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
-        if (BuildInfo.getInstance().isAutomotive && mIsFullScreen) {
+        if (DeviceInfo.isAutomotive() && mIsFullScreen) {
             super.setContentView(
                     AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(mActivity));
             setAutomotiveToolbarBackButtonAction();
@@ -100,7 +100,7 @@ public class ChromeDialog extends ComponentDialog {
 
     @Override
     public void setContentView(View view) {
-        if (BuildInfo.getInstance().isAutomotive && mIsFullScreen) {
+        if (DeviceInfo.isAutomotive() && mIsFullScreen) {
             super.setContentView(
                     AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(mActivity));
             setAutomotiveToolbarBackButtonAction();
@@ -115,7 +115,7 @@ public class ChromeDialog extends ComponentDialog {
 
     @Override
     public void setContentView(View view, ViewGroup.@Nullable LayoutParams params) {
-        if (BuildInfo.getInstance().isAutomotive && mIsFullScreen) {
+        if (DeviceInfo.isAutomotive() && mIsFullScreen) {
             super.setContentView(
                     AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(mActivity));
             setAutomotiveToolbarBackButtonAction();
@@ -130,7 +130,7 @@ public class ChromeDialog extends ComponentDialog {
 
     @Override
     public void addContentView(View view, ViewGroup.@Nullable LayoutParams params) {
-        if (BuildInfo.getInstance().isAutomotive
+        if (DeviceInfo.isAutomotive()
                 && mIsFullScreen
                 && assumeNonNull(params).width == MATCH_PARENT
                 && params.height == MATCH_PARENT) {

@@ -12,7 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.ManifestMetadataUtil;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -64,8 +64,10 @@ public class AwMetricsServiceClient {
         Context ctx = ContextUtils.getApplicationContext();
         if ((ctx.getApplicationInfo().flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
             return InstallerPackageType.SYSTEM_APP;
-        } else if (PLAY_STORE_PACKAGE_NAME.equals(BuildInfo.getInstance().installerPackageName)) {
-            return InstallerPackageType.GOOGLE_PLAY_STORE;
+        } else {
+            if (PLAY_STORE_PACKAGE_NAME.equals(ApkInfo.getInstallerPackageName())) {
+                return InstallerPackageType.GOOGLE_PLAY_STORE;
+            }
         }
         return InstallerPackageType.OTHER;
     }
@@ -74,7 +76,7 @@ public class AwMetricsServiceClient {
     private static String getAppPackageName() {
         // Return this unconditionally; let native code enforce whether or not it's OK to include
         // this in the logs.
-        return BuildInfo.getInstance().hostPackageName;
+        return ApkInfo.getHostPackageName();
     }
 
     public static void setInstallerPackageTypeForTesting(@InstallerPackageType int type) {

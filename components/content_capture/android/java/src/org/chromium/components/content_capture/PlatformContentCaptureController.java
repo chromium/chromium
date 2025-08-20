@@ -17,7 +17,7 @@ import android.view.contentcapture.DataRemovalRequest;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.AndroidInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
@@ -91,7 +91,8 @@ public class PlatformContentCaptureController {
                             + assumeNonNull(mContentCaptureManager.getServiceComponentName())
                                     .getPackageName());
             // Disable the ContentCapture if there is no testing flag.
-            if (!BuildInfo.isDebugAndroid() && !ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            if (!AndroidInfo.isDebugAndroid()
+                    && !ContentCaptureFeatures.isDumpForTestingEnabled()) {
                 return;
             }
         }

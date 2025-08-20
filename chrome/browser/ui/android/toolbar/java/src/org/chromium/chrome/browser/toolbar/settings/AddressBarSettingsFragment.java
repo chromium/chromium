@@ -10,7 +10,7 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -50,7 +50,7 @@ public class AddressBarSettingsFragment extends ChromeBaseSettingsFragment {
     }
 
     private void overrideDescriptionIfFoldable() {
-        if (BuildInfo.getInstance().isFoldable) {
+        if (DeviceInfo.isFoldable()) {
             findPreference(PREF_ADDRESS_BAR_TITLE)
                     .setSummary(R.string.address_bar_settings_description_foldable);
             // Ensure the preference disabled state reflects device folded state.

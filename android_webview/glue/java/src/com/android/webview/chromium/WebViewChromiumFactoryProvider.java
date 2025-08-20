@@ -59,7 +59,7 @@ import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.safe_mode.BrowserSafeModeActionList;
 import org.chromium.android_webview.safe_mode.DisableStartupTasksSafeModeAction;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -395,10 +395,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             // Ensuring we set this before we might read it in any future calls to BuildInfo.
             // BuildInfo requires ContextUtils' application context, so this has to happen after.
-            BuildInfo.setBrowserPackageInfo(packageInfo);
+            ApkInfo.setBrowserPackageInfo(packageInfo);
             // Trigger the creation of the BuildInfo singleton to avoid potential issues reading
             // the command line if this happens on another thread.
-            BuildInfo.getInstance();
 
             // Find the package ID for the package that WebView's resources come from.
             // This will be the donor package if there is one, not our main package.
@@ -455,7 +454,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 // Enable logging JS console messages in system logs only if the app is debuggable
                 // or
                 // it's a debuggable android build.
-                if (BuildInfo.isDebugAndroidOrApp()) {
+                if (ApkInfo.isDebugAndroidOrApp()) {
                     cl.appendSwitch(AwSwitches.WEBVIEW_LOG_JS_CONSOLE_MESSAGES);
                 }
             }

@@ -15,7 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -165,7 +165,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         // Set title to include current app name.
         PreferenceCategory mAppLanguageTitle =
                 (PreferenceCategory) findPreference(APP_LANGUAGE_SECTION_KEY);
-        String appName = BuildInfo.getInstance().hostPackageLabel;
+        String appName = ApkInfo.getHostPackageLabel();
         mAppLanguageTitle.setTitle(getResources().getString(R.string.app_language_title, appName));
 
         LanguageItemPickerPreference appLanguagePreference =

@@ -46,7 +46,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -382,7 +382,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         onView(allOf(withText(R.string.continue_button), isCompletelyDisplayed())).perform(click());
 
         mSigninTestRule.waitForSignin(TestAccounts.MANAGED_ACCOUNT);
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             verify(mDeviceLockActivityLauncher)
                     .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
         }
@@ -498,7 +498,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         // Verify signed-in state.
         mSigninTestRule.waitForSignin(TestAccounts.ACCOUNT1);
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             verify(mDeviceLockActivityLauncher)
                     .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
         }
@@ -820,7 +820,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         // Verify signed-in state.
         mSigninTestRule.waitForSignin(accountInfo);
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             verify(mDeviceLockActivityLauncher)
                     .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
         }
@@ -853,7 +853,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         signinHistogramWatcher.assertExpected();
 
         mSigninTestRule.waitForSignin(TestAccounts.AADC_ADULT_ACCOUNT);
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             verify(mDeviceLockActivityLauncher)
                     .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
         }

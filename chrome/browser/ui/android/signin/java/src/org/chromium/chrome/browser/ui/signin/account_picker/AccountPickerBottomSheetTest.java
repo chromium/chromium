@@ -64,8 +64,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -1315,8 +1315,10 @@ public class AccountPickerBottomSheetTest {
                 bottomSheetView.findViewById(R.id.account_picker_selected_account).isShown();
 
         clickContinueButton(bottomSheetView);
-        if (clearDeviceLock && BuildInfo.getInstance().isAutomotive) {
-            SigninTestUtil.completeDeviceLock(mDeviceLockActivityLauncher, true);
+        if (clearDeviceLock) {
+            if (DeviceInfo.isAutomotive()) {
+                SigninTestUtil.completeDeviceLock(mDeviceLockActivityLauncher, true);
+            }
         }
     }
 

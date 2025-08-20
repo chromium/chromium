@@ -15,7 +15,6 @@ import android.view.Display;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.SysUtils;
@@ -390,7 +389,7 @@ public class RequestDesktopUtils {
      */
     static boolean shouldApplyWindowSetting(Profile profile, @Nullable GURL url, Context context) {
         // Skip window setting on Automotive and revisit if / when they add split screen.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             return false;
         }
         PrefService prefService = UserPrefs.get(profile);

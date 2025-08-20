@@ -43,8 +43,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
@@ -584,7 +584,7 @@ public class FirstRunIntegrationTest {
                                 MobileFreProgress.STARTED,
                                 MobileFreProgress.WELCOME_SHOWN);
         // There is no dismiss button on automotive devices.
-        if (!BuildInfo.getInstance().isAutomotive) {
+        if (!DeviceInfo.isAutomotive()) {
             histogramBuilder.expectIntRecord(
                     "MobileFre.Progress.ViewIntent", MobileFreProgress.WELCOME_DISMISS);
         }
@@ -1376,7 +1376,7 @@ public class FirstRunIntegrationTest {
         protected FirstRunNavigationHelper dismissSigninPromo() throws Exception {
             ensureWelcomePageIsCurrentPage();
             int dismissButtonId =
-                    BuildInfo.getInstance().isAutomotive
+                    DeviceInfo.isAutomotive()
                             ? R.id.signin_fre_continue_button
                             : R.id.signin_fre_dismiss_button;
             clickButton(mFirstRunActivity, dismissButtonId, "Failed to skip signing-in");

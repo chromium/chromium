@@ -15,9 +15,9 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -106,8 +106,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         ResolveInfo info =
                 PackageManagerUtils.resolveActivity(
                         intent, matchDefaultOnly ? PackageManager.MATCH_DEFAULT_ONLY : 0);
-        return info != null
-                && info.activityInfo.packageName.equals(BuildInfo.getInstance().hostPackageName);
+        if (info == null) return false;
+        return info.activityInfo.packageName.equals(ApkInfo.getHostPackageName());
     }
 
     @Override

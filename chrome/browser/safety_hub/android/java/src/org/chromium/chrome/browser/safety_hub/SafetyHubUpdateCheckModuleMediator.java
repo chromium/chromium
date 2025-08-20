@@ -8,13 +8,11 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 
 import android.view.View;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -152,7 +150,7 @@ public class SafetyHubUpdateCheckModuleMediator
                         .getContext()
                         .getString(R.string.safety_hub_updates_outdated_summary);
             case UpdateStatusProvider.UpdateState.NONE:
-                String currentVersion = BuildInfo.getInstance().versionName;
+                String currentVersion = ApkInfo.getPackageVersionName();
                 if (currentVersion != null && !currentVersion.isEmpty()) {
                     return mPreference
                             .getContext()

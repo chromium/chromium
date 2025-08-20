@@ -67,7 +67,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.PackageManagerUtils;
@@ -305,7 +304,7 @@ public class MainSettingsFragmentTest {
 
         // Assert for advanced section
         assertSettingsExists("privacy", PrivacySettings.class);
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             Assert.assertNull(
                     "Safety check should not be shown on automotive",
                     mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
@@ -776,7 +775,7 @@ public class MainSettingsFragmentTest {
         // characteristics, so we just fork the test's behavior based on the eligibility state.
         boolean showSetting =
                 !DeviceInfo.isAutomotive()
-                        && (BuildInfo.getInstance().isFoldable
+                        && (DeviceInfo.isFoldable()
                                 || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                                         mSettingsActivityTestRule.getActivity()));
         if (!showSetting) {

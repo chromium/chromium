@@ -55,7 +55,7 @@ import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.metrics.TrackExitReasons;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FieldTrialList;
@@ -490,7 +490,7 @@ public class WebViewChromiumAwInit {
                         }
                     }
 
-                    if (BuildInfo.isDebugAndroidOrApp()) {
+                    if (ApkInfo.isDebugAndroidOrApp()) {
                         mChromiumStartedGlobals.mSharedStatics
                                 .setWebContentsDebuggingEnabledUnconditionally(true);
                     }

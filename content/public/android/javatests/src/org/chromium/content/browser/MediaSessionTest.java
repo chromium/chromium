@@ -18,7 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -218,7 +218,7 @@ public class MediaSessionTest {
 
         // AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK is not reliably set by automotive devices, as
         // ducking is often handled by the hardware instead on Android Automotive OS.
-        if (!BuildInfo.getInstance().isAutomotive) {
+        if (!DeviceInfo.isAutomotive()) {
             mAudioFocusChangeListener.waitForFocusStateChange(
                     AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK);
         }
@@ -292,7 +292,7 @@ public class MediaSessionTest {
 
         // AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK is not reliably set by automotive devices, as
         // ducking is often handled by the hardware instead on Android Automotive OS.
-        if (!BuildInfo.getInstance().isAutomotive) {
+        if (!DeviceInfo.isAutomotive()) {
             mAudioFocusChangeListener.waitForFocusStateChange(
                     AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK);
         }
@@ -317,7 +317,7 @@ public class MediaSessionTest {
 
         // AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK is not reliably set by automotive devices, as
         // ducking is often handled by the hardware instead on Android Automotive OS.
-        if (!BuildInfo.getInstance().isAutomotive) {
+        if (!DeviceInfo.isAutomotive()) {
             mAudioFocusChangeListener.waitForFocusStateChange(
                     AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK);
         }

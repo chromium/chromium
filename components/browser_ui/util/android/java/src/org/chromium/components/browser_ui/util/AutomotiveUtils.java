@@ -11,7 +11,7 @@ import android.os.Build;
 
 import androidx.annotation.LayoutRes;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -43,8 +43,7 @@ public class AutomotiveUtils {
 
     /** Returns the height of the horizontal automotive back button toolbar. */
     public static int getHorizontalAutomotiveToolbarHeightDp(Context activityContext) {
-        if (BuildInfo.getInstance().isAutomotive
-                && !useVerticalAutomotiveBackButtonToolbar(activityContext)) {
+        if (DeviceInfo.isAutomotive() && !useVerticalAutomotiveBackButtonToolbar(activityContext)) {
             return getActionBarSize(activityContext);
         } else {
             return 0;
@@ -53,8 +52,7 @@ public class AutomotiveUtils {
 
     /** Returns the width of the vertical automotive back button toolbar. */
     public static int getVerticalAutomotiveToolbarWidthDp(Context activityContext) {
-        if (BuildInfo.getInstance().isAutomotive
-                && useVerticalAutomotiveBackButtonToolbar(activityContext)) {
+        if (DeviceInfo.isAutomotive() && useVerticalAutomotiveBackButtonToolbar(activityContext)) {
             return getActionBarSize(activityContext);
         } else {
             return 0;

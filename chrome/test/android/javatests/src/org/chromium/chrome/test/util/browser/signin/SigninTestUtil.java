@@ -18,7 +18,7 @@ import androidx.annotation.WorkerThread;
 
 import org.junit.Assert;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
@@ -228,7 +228,10 @@ public final class SigninTestUtil {
      */
     // TODO(crbug.com/328117919): Delete this method after deleting sign-in tests for FRE on Auto.
     public static void completeAutoDeviceLockForFirstRunIfNeeded(SigninFirstRunFragment fragment) {
-        if (!ThreadUtils.runOnUiThreadBlocking(() -> BuildInfo.getInstance().isAutomotive)) {
+        if (!ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return DeviceInfo.isAutomotive();
+                })) {
             return;
         }
 
@@ -240,7 +243,7 @@ public final class SigninTestUtil {
     /** Completes the device lock flow when on automotive devices. */
     public static void completeDeviceLockIfOnAutomotive(
             CustomDeviceLockActivityLauncher deviceLockActivityLauncher) {
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             completeDeviceLock(deviceLockActivityLauncher, true);
         }
     }
@@ -251,7 +254,7 @@ public final class SigninTestUtil {
     public static void completeDeviceLock(
             CustomDeviceLockActivityLauncher deviceLockActivityLauncher,
             boolean deviceLockCreated) {
-        assertTrue(BuildInfo.getInstance().isAutomotive);
+        assertTrue(DeviceInfo.isAutomotive());
         assertTrue(deviceLockActivityLauncher.isLaunched());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

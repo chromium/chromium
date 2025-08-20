@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -199,7 +199,7 @@ public class PermissionDialogMediator
                                 ModalDialogProperties.TITLE,
                                 context.getString(
                                         R.string.overlay_detected_dialog_title,
-                                        BuildInfo.getInstance().hostPackageLabel))
+                                        ApkInfo.getHostPackageLabel()))
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 context.getString(R.string.overlay_detected_dialog_message))

@@ -13,9 +13,9 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -255,7 +255,7 @@ public class ShareSheetCoordinator
 
         // Initialize with an empty list of third party apps for automotive -
         // C++ share ranking breaks on Android automotive.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             finishUpdateShareSheet(firstPartyApps, new ArrayList<>(), onUpdateFinished);
             return;
         }

@@ -15,7 +15,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.AndroidInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -136,7 +136,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     BrowserStartupControllerImpl() {
         mAsyncStartupCallbacks = new ArrayList<>();
         mMinimalBrowserStartedCallbacks = new ArrayList<>();
-        if (BuildInfo.isDebugAndroid() && !ContextUtils.isSdkSandboxProcess()) {
+        if (AndroidInfo.isDebugAndroid() && !ContextUtils.isSdkSandboxProcess()) {
             // Only set up the tracing broadcast receiver on debug builds of the OS and
             // non-SdkSandbox process. Normal tracing should use the DevTools API.
             PostTask.postTask(

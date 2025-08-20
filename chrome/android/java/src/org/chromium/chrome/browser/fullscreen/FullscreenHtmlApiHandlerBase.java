@@ -24,7 +24,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ApplicationStatus.WindowFocusChangedListener;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -577,7 +577,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         // TODO(peilinwang/clhager) When edge to edge is enabled, or when we are in multi window
         //  mode, onLayoutChange doesn't trigger, which results in not showing the browser controls
         //  when we're supposed to, and also messes up the viewport and toolbar.
-        if (BuildInfo.getInstance().isAutomotive
+        if (DeviceInfo.isAutomotive()
                 || EdgeToEdgeUtils.isChromeEdgeToEdgeFeatureEnabled()
                 || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
             ViewUtils.requestLayout(contentView, "FullscreenHtmlApiHandler.exitFullScreen");
@@ -613,14 +613,16 @@ public abstract class FullscreenHtmlApiHandlerBase
         boolean didLayoutGrow = (bottom - top) > (oldBottom - oldTop);
         // Only show the browser controls if the layout is shrinking (or staying the same). However,
         // this check should be bypassed on automotive.
-        if (didLayoutGrow && !BuildInfo.getInstance().isAutomotive) {
-            // If the dedicated flag is enabled, bypass this check and show the browser controls. A
-            // report should also be logged to help confirm whether odd layout values are related
-            // to multi-window mode / the edge-to-edge feature.
-            if (ChromeFeatureList.sForceBrowserControlsUponExitingFullscreen.isEnabled()) {
-                logBrowserControlsForcedUponFullscreenExit();
-            } else {
-                return;
+        if (didLayoutGrow) {
+            if (!DeviceInfo.isAutomotive()) {
+                // If the dedicated flag is enabled, bypass this check and show the browser
+                // controls. A report should also be logged to help confirm whether odd layout
+                // values are related to multi-window mode / the edge-to-edge feature.
+                if (ChromeFeatureList.sForceBrowserControlsUponExitingFullscreen.isEnabled()) {
+                    logBrowserControlsForcedUponFullscreenExit();
+                } else {
+                    return;
+                }
             }
         }
 
@@ -704,10 +706,10 @@ public abstract class FullscreenHtmlApiHandlerBase
             // Do not do this in multi-window mode or if the system bars can't be dismissed (i.e.
             // on some automotive devices), since the status bar will be forced to always stay
             // visible.
-            if (!mFullscreenOptions.showStatusBar
-                    && !mIsInMultiWindowMode
-                    && !BuildInfo.getInstance().isAutomotive) {
-                setTranslucentStatusBar();
+            if (!mFullscreenOptions.showStatusBar && !mIsInMultiWindowMode) {
+                if (!DeviceInfo.isAutomotive()) {
+                    setTranslucentStatusBar();
+                }
             }
 
             resetEnterFullscreenLayoutChangeListener(contentView);
@@ -755,11 +757,10 @@ public abstract class FullscreenHtmlApiHandlerBase
                         mHandler.sendEmptyMessage(MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS);
 
                         if ((bottom - top) < (oldBottom - oldTop)
-                                && (right - left) < (oldRight - oldLeft)
-                                // Some automotive devices never hide the system bars, so Chrome
-                                // can't rely on detecting a change in insets.
-                                && !BuildInfo.getInstance().isAutomotive) {
-                            return;
+                                && (right - left) < (oldRight - oldLeft)) {
+                            if (!DeviceInfo.isAutomotive()) {
+                                return;
+                            }
                         }
 
                         getToast().onFullscreenLayout();

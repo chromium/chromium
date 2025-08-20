@@ -17,8 +17,8 @@ import android.view.WindowInsets;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
@@ -266,7 +266,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         int keyboardHeight = mKeyboardHeightSupplier.get();
 
         int windowHeight;
-        if (BuildInfo.getInstance().isAutomotive
+        if (DeviceInfo.isAutomotive()
                 && contentView != null
                 && contentView.getRootWindowInsets() != null) {
             // Some automotive devices dismiss bottom system bars when bringing up the keyboard,

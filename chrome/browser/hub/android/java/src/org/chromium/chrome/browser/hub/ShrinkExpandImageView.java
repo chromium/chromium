@@ -15,7 +15,7 @@ import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
@@ -104,7 +104,7 @@ public class ShrinkExpandImageView extends RoundedCornerImageView implements Run
 
     @Override
     public void setImageBitmap(@Nullable Bitmap bitmap) {
-        if (BuildInfo.getInstance().isAutomotive && bitmap != null) {
+        if (DeviceInfo.isAutomotive() && bitmap != null) {
             bitmap.setDensity(
                     DisplayUtil.getUiDensityForAutomotive(getContext(), bitmap.getDensity()));
         }

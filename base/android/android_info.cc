@@ -19,7 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/android_info_jni/AndroidInfo_jni.h"
+#include "base/build_info_jni/AndroidInfo_jni.h"
 
 #if __ANDROID_API__ >= 29
 // .aidl based NDK generation is only available when our min SDK level is 29 or

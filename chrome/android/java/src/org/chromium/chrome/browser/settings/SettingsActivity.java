@@ -27,9 +27,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -360,7 +360,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     private void checkForMissingDeviceLockOnAutomotive() {
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             if (mMissingDeviceLockLauncher == null) {
                 mMissingDeviceLockLauncher =
                         new MissingDeviceLockLauncher(
@@ -516,7 +516,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     /** Set device status bar to match the activity background color, if supported. */
     private void setStatusBarColor() {
-        if (!BuildInfo.getInstance().isAutomotive
+        if (!DeviceInfo.isAutomotive()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
             return;
         }

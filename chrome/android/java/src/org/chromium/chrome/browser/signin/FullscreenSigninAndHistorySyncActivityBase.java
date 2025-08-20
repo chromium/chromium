@@ -10,7 +10,7 @@ import android.os.SystemClock;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -96,7 +96,7 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
 
         // TODO(crbug.com/40939710): Find the underlying issue causing the status bar not to be set
         //  during re-FRE, this is just a temporary visual fix.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             StatusBarColorController.setStatusBarColor(
                     (getEdgeToEdgeManager() != null)
                             ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()

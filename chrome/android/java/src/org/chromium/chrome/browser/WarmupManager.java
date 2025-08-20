@@ -34,8 +34,8 @@ import androidx.core.content.res.ResourcesCompat;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
@@ -417,7 +417,7 @@ public class WarmupManager {
     @VisibleForTesting
     static Context applyContextOverrides(Context baseContext) {
         // Scale up the UI for the base Context on automotive
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             Configuration config = new Configuration();
             DisplayUtil.scaleUpConfigurationForAutomotive(baseContext, config);
             return baseContext.createConfigurationContext(config);

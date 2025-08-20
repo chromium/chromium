@@ -12,7 +12,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.xmlpull.v1.XmlSerializer;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
@@ -77,7 +78,7 @@ public abstract class RequestGenerator {
             serializer.attribute(
                     null,
                     "updaterchannel",
-                    StringSanitizer.sanitize(BuildInfo.getInstance().hostPackageLabel));
+                    StringSanitizer.sanitize(ApkInfo.getHostPackageLabel()));
             serializer.attribute(null, "ismachine", "1");
             serializer.attribute(null, "requestid", "{" + data.getRequestID() + "}");
             serializer.attribute(null, "sessionid", "{" + sessionID + "}");
@@ -88,7 +89,7 @@ public abstract class RequestGenerator {
             serializer.startTag(null, "os");
             serializer.attribute(null, "platform", "android");
             serializer.attribute(null, "version", Build.VERSION.RELEASE);
-            serializer.attribute(null, "arch", BuildInfo.getArch());
+            serializer.attribute(null, "arch", DeviceInfo.getArch());
             serializer.endTag(null, "os");
 
             // Set up <app version="" ...>
@@ -153,14 +154,12 @@ public abstract class RequestGenerator {
     }
 
     /**
-     * Sends additional info that might be useful for statistics generation,
-     * including information about channel and device type.
-     * This string is partially sanitized for dashboard viewing and because people randomly set
-     * these strings when building their own custom Android ROMs.
+     * Sends additional info that might be useful for statistics generation, including information
+     * about channel and device type. This string is partially sanitized for dashboard viewing and
+     * because people randomly set these strings when building their own custom Android ROMs.
      */
     public String getAdditionalParameters() {
-        String applicationLabel =
-                StringSanitizer.sanitize(BuildInfo.getInstance().hostPackageLabel);
+        String applicationLabel = StringSanitizer.sanitize(ApkInfo.getHostPackageLabel());
         String brand = StringSanitizer.sanitize(Build.BRAND);
         String model = StringSanitizer.sanitize(Build.MODEL);
         return applicationLabel + ";" + brand + ";" + model;

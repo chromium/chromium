@@ -8,7 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.view.ViewGroup;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -160,7 +160,7 @@ public class HistoryNavigationCoordinator
 
         mInsetObserver = insetObserver;
         insetObserver.addObserver(this);
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             mFullscreenObserver =
                     new FullscreenManager.Observer() {
                         @Override
@@ -208,7 +208,7 @@ public class HistoryNavigationCoordinator
             return mForceFeatureEnabledForTesting;
         }
 
-        if (BuildInfo.getInstance().isAutomotive && mIsFullscreen) {
+        if (DeviceInfo.isAutomotive() && mIsFullscreen) {
             return false;
         }
 

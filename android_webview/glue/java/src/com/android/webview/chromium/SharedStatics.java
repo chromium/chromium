@@ -17,7 +17,7 @@ import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwDevToolsServer;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.ThreadUtils;
@@ -122,7 +122,7 @@ public class SharedStatics {
                 TraceEvent.scoped("WebView.APICall.Framework.SET_WEB_CONTENTS_DEBUGGING_ENABLED")) {
             recordStaticApiCall(ApiCall.SET_WEB_CONTENTS_DEBUGGING_ENABLED);
             // On debug builds, Web Contents debugging is enabled elsewhere, and cannot be disabled.
-            if (BuildInfo.isDebugAndroidOrApp()) return;
+            if (ApkInfo.isDebugAndroidOrApp()) return;
             setWebContentsDebuggingEnabledUnconditionally(enable);
         }
     }

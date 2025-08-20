@@ -9,7 +9,7 @@ import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
@@ -59,10 +59,11 @@ public class VersionNumberGetter {
 
     /**
      * Retrieve the version of Chrome we're using.
+     *
      * @return The latest version if we retrieved one from the Omaha server, or "" if we haven't.
      */
     public String getCurrentlyUsedVersion() {
-        return BuildInfo.getInstance().versionName;
+        return ApkInfo.getPackageVersionName();
     }
 
     /**

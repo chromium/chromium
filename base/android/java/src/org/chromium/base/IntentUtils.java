@@ -473,7 +473,7 @@ public class IntentUtils {
      */
     public static boolean intentTargetsSelf(Intent intent) {
         boolean hasPackage = !TextUtils.isEmpty(intent.getPackage());
-        String appPackage = BuildInfo.getInstance().hostPackageName;
+        String appPackage = ApkInfo.getHostPackageName();
         boolean matchesPackage = hasPackage && appPackage.equals(intent.getPackage());
         ComponentName componentName = intent.getComponent();
         boolean matchesComponent =

@@ -20,9 +20,9 @@ import androidx.annotation.WorkerThread;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BaseSwitches;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ServiceLoaderUtil;
@@ -479,7 +479,7 @@ public class ProcessInitializationHandler {
 
         AccessibilityState.registerObservers();
 
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             DrivingRestrictionsManager.initialize();
         }
 

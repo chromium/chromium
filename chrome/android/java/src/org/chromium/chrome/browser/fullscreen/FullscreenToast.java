@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.fullscreen;
 import android.app.Activity;
 import android.view.Gravity;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -103,7 +103,7 @@ interface FullscreenToast {
                     toastTextId = R.string.immersive_fullscreen_api_notification_desktop;
                 }
             }
-            if (BuildInfo.getInstance().isAutomotive) {
+            if (DeviceInfo.isAutomotive()) {
                 toastTextId = R.string.immersive_fullscreen_automotive_toolbar_improvements;
             }
             mNotificationToast =

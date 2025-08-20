@@ -11,7 +11,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.Supplier;
@@ -338,7 +337,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     }
 
     private static boolean isAutomotive() {
-        return BuildInfo.getInstance().isAutomotive;
+        return DeviceInfo.isAutomotive();
     }
 
     private FirstPartyOption createCopyLinkFirstPartyOption() {

@@ -28,7 +28,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Initializer;
@@ -304,7 +304,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // To solve this, we apply Theme.Chromium.TabbedMode on Tablet and Automotive here, to use
         // the same window background as other tabbed mode activities using the same theme.
         boolean isTabletOrAuto =
-                BuildInfo.getInstance().isAutomotive
+                DeviceInfo.isAutomotive()
                         || DeviceFormFactor.isNonMultiDisplayContextOnTablet(this);
         if (isTabletOrAuto) {
             setTheme(R.style.Theme_Chromium_TabbedMode);

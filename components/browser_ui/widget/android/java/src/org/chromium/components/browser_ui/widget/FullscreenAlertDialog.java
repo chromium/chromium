@@ -17,7 +17,7 @@ import android.widget.FrameLayout;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
@@ -57,7 +57,7 @@ public class FullscreenAlertDialog extends AlertDialog {
 
     @Override
     public void setView(View view) {
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             View automotiveLayout =
                     LayoutInflater.from(mContext)
                             .inflate(
@@ -82,7 +82,7 @@ public class FullscreenAlertDialog extends AlertDialog {
             int viewSpacingTop,
             int viewSpacingRight,
             int viewSpacingBottom) {
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             MarginLayoutParams params = (MarginLayoutParams) view.getLayoutParams();
             params.setMargins(viewSpacingLeft, viewSpacingTop, viewSpacingRight, viewSpacingBottom);
             ViewGroup automotiveLayout =
@@ -132,7 +132,7 @@ public class FullscreenAlertDialog extends AlertDialog {
             super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
             mContext = context;
 
-            if (shouldPadForContent && !BuildInfo.getInstance().isAutomotive) {
+            if (shouldPadForContent && !DeviceInfo.isAutomotive()) {
                 mEdgeToEdgeLayout = initEdgeToEdgeLayoutCoordinator(mContext);
             } else {
                 mEdgeToEdgeLayout = null;
@@ -141,7 +141,7 @@ public class FullscreenAlertDialog extends AlertDialog {
 
         @Override
         public Builder setView(int layoutResId) {
-            if (BuildInfo.getInstance().isAutomotive) {
+            if (DeviceInfo.isAutomotive()) {
                 View automotiveLayout =
                         LayoutInflater.from(mContext)
                                 .inflate(
@@ -166,7 +166,7 @@ public class FullscreenAlertDialog extends AlertDialog {
 
         @Override
         public Builder setView(View view) {
-            if (BuildInfo.getInstance().isAutomotive) {
+            if (DeviceInfo.isAutomotive()) {
                 ViewGroup automotiveLayout =
                         (ViewGroup)
                                 LayoutInflater.from(mContext)

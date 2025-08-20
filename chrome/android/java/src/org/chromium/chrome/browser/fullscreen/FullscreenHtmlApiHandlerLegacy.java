@@ -15,7 +15,7 @@ import android.app.Activity;
 import android.view.View;
 import android.view.WindowManager;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -183,7 +183,7 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
     }
 
     private void setSystemUiVisibility(View contentView, int systemUiVisibility) {
-        if (!BuildInfo.getInstance().isAutomotive) {
+        if (!DeviceInfo.isAutomotive()) {
             contentView.setSystemUiVisibility(systemUiVisibility);
         }
     }

@@ -12,7 +12,7 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullUnmarked;
@@ -126,7 +126,7 @@ public class GlobalAppLocaleController {
         Resources resources = base.getResources();
         // Resources#updateConfiguration() seems to reset densityDpi if it's not specified by the
         // configuration, regardless of whether it's specified by the input DisplayMetrics.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             config.densityDpi = resources.getConfiguration().densityDpi;
         }
         // Because of an Android bug with {@link Context#createConfigurationContext} the deprecated

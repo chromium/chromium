@@ -12,9 +12,9 @@ import android.system.StructStat;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -105,7 +105,7 @@ public class DexFixer {
 
     private static String odexPathFromApkPath(String apkPath) {
         // Based on https://cs.android.com/search?q=OatFileAssistant::DexLocationToOdexNames
-        String isaName = BuildInfo.getArch();
+        String isaName = DeviceInfo.getArch();
         // E.g. /data/app/org.chromium.chrome-qtmmjyN79ucfPKm0ZVZMHg==/base.apk
         File apkFile = new File(apkPath);
         String baseName = apkFile.getName();

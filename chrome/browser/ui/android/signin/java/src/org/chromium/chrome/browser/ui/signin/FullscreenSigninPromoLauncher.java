@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -80,7 +80,7 @@ public final class FullscreenSigninPromoLauncher {
             return true;
         }
 
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             return false;
         }
 

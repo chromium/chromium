@@ -14,7 +14,7 @@ import androidx.annotation.StringRes;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -217,7 +217,7 @@ public class RuntimePermissionTestUtils {
                     manager.getCurrentDialogForTest()
                             .get(ModalDialogProperties.CUSTOM_VIEW)
                             .findViewById(R.id.text);
-            String appName = BuildInfo.getInstance().hostPackageLabel;
+            String appName = ApkInfo.getHostPackageLabel();
             Assert.assertEquals(
                     ((TextView) dialogText).getText(),
                     activity.getResources().getString(missingPermissionPromptTextId, appName));

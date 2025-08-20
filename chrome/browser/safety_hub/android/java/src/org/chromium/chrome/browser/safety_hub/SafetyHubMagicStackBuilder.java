@@ -8,8 +8,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -89,7 +89,7 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
     @Override
     public boolean isEligible() {
         // The Safety Hub is not fully supported on Automotive.
-        if (BuildInfo.getInstance().isAutomotive) return false;
+        if (DeviceInfo.isAutomotive()) return false;
 
         if (!mProfileSupplier.hasValue()) return false;
 

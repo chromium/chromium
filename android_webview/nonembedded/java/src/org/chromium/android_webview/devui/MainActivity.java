@@ -38,7 +38,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.android_webview.common.BugTrackerConstants;
 import org.chromium.android_webview.devui.util.SafeIntentUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
@@ -552,7 +551,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * Override whether or not the Activity is running on a T+ build of Android.
      *
-     * <p>This method has been introduced to avoid mocking out {@link BuildInfo#isAtLeastT()}.
+     * <p>This method has been introduced to avoid mocking out Build.VERSION.SDK_INT.
      *
      * @param isAtLeastT Whether the running Android version is at least T.
      */

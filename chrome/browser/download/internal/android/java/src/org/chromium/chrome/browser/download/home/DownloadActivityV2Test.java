@@ -52,8 +52,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -640,7 +640,7 @@ public class DownloadActivityV2Test {
 
         onView(withText("Rename")).check(matches(isDisplayed()));
         onView(withText("Delete")).check(matches(isDisplayed()));
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withText("Share")).check(doesNotExist());
         } else {
             onView(withText("Share")).check(matches(isDisplayed()));
@@ -667,7 +667,7 @@ public class DownloadActivityV2Test {
 
         onView(withText("Rename")).check(doesNotExist());
         onView(withText("Delete")).check(matches(isDisplayed()));
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withText("Share")).check(doesNotExist());
         } else {
             onView(withText("Share")).check(matches(isDisplayed()));
@@ -704,7 +704,7 @@ public class DownloadActivityV2Test {
         onView(withId(R.id.search_menu_id)).check(doesNotExist());
         onView(withId(R.id.close_menu_id)).check(doesNotExist());
         onView(withId(R.id.selection_mode_number)).check(matches(isDisplayed()));
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withId(R.id.selection_mode_share_menu_id)).check(matches(not(isDisplayed())));
         } else {
             onView(withId(R.id.selection_mode_share_menu_id)).check(matches(isDisplayed()));
@@ -814,7 +814,7 @@ public class DownloadActivityV2Test {
                 .perform(ViewActions.click());
 
         // Share an item. The share via android dialog should popup.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withText("Share")).check(doesNotExist());
         } else {
             onView(withText("Share")).check(matches(isDisplayed()));

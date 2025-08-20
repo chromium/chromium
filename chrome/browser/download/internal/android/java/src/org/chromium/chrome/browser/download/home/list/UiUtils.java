@@ -15,8 +15,8 @@ import android.text.format.Formatter;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -425,7 +425,7 @@ public final class UiUtils {
         }
         // Sharing functionality that leads directly to the Android share sheet is
         // currently disabled.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             return false;
         }
         return (item.state == OfflineItemState.COMPLETE)

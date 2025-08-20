@@ -76,7 +76,8 @@ public final class CommandLineInitUtil {
         if (shouldUseDebugFlags != null && shouldUseDebugFlags.get()) return true;
         Context context = ContextUtils.getApplicationContext();
         // Check isDebugAndroid() last to get full code coverage when using userdebug devices.
-        return context.getPackageName().equals(getDebugApp(context)) || BuildInfo.isDebugAndroid();
+        return context.getPackageName().equals(getDebugApp(context))
+                || AndroidInfo.isDebugAndroid();
     }
 
     private static @Nullable String getDebugApp(Context context) {

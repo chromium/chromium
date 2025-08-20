@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.language.settings;
 import android.app.Activity;
 import android.content.res.Resources;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -122,7 +122,7 @@ public class AppLanguagePreferenceDelegate {
     /** Callback to update the UI when a language split has successfully been installed. */
     private void languageSplitDownloadComplete() {
         CharSequence nativeName = mPreference.getLanguageItem().getNativeDisplayName();
-        CharSequence appName = BuildInfo.getInstance().hostPackageLabel;
+        CharSequence appName = ApkInfo.getHostPackageLabel();
         CharSequence summary =
                 mActivity
                         .getResources()

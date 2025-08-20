@@ -14,7 +14,7 @@ import android.os.Looper;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -236,7 +236,7 @@ public class BookmarkUtils {
                             activity, tab.getProfile(), bookmarkId, bookmarkManagerOpener);
             if (getLastUsedParent() == null) {
                 if (fromCustomTab) {
-                    String packageLabel = BuildInfo.getInstance().hostPackageLabel;
+                    String packageLabel = ApkInfo.getHostPackageLabel();
                     snackbar =
                             Snackbar.make(
                                     activity.getString(R.string.bookmark_page_saved, packageLabel),

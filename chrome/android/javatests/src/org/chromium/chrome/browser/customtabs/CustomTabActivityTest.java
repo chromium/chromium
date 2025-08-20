@@ -98,8 +98,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ServiceLoaderUtil;
@@ -519,8 +519,7 @@ public class CustomTabActivityTest {
                         .getLocationBarModelForTesting()
                         .shouldEmphasizeHttpsScheme());
         // Status bar color is constantly black on automotive. See b/285208454.
-        int expectedStatusBarColor =
-                BuildInfo.getInstance().isAutomotive ? Color.BLACK : expectedColor;
+        int expectedStatusBarColor = DeviceInfo.isAutomotive() ? Color.BLACK : expectedColor;
         assertEquals(
                 expectedStatusBarColor,
                 mCustomTabActivityTestRule.getActivity().getWindow().getStatusBarColor());

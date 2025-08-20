@@ -25,8 +25,8 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -321,7 +321,7 @@ public class TabUtils {
      */
     public static void setDrawableAndUpdateImageMatrix(
             ImageView view, Drawable drawable, Size destinationSize) {
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             if (drawable instanceof BitmapDrawable bitmapDrawable) {
                 Bitmap bitmap = bitmapDrawable.getBitmap();
                 assert bitmap != null;

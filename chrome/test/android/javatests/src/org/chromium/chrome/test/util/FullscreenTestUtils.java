@@ -11,7 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.hamcrest.Matchers;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Criteria;
@@ -226,7 +226,7 @@ public class FullscreenTestUtils {
             final Tab tab, final boolean state, Activity activity) {
         // Status bars persist in fullscreen mode in automotive (see crrev.com/c/4569720) so system
         // UI flags are not set.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             return true;
         }
         View view = tab.getContentView();
@@ -243,7 +243,7 @@ public class FullscreenTestUtils {
             final Tab tab, final boolean state, Activity activity) {
         // Status bars persist in fullscreen mode in automotive (see crrev.com/c/4569720) so system
         // UI flags are not set.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             return true;
         }
         View view = tab.getContentView();

@@ -22,7 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
@@ -159,7 +159,7 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.hint_sync_auth_error_modern);
             case SyncError.CLIENT_OUT_OF_DATE:
                 return context.getString(
-                        R.string.hint_client_out_of_date, BuildInfo.getInstance().hostPackageLabel);
+                        R.string.hint_client_out_of_date, ApkInfo.getHostPackageLabel());
             case SyncError.OTHER_ERRORS:
                 return context.getString(R.string.hint_other_sync_errors);
             case SyncError.PASSPHRASE_REQUIRED:
@@ -219,7 +219,7 @@ public class SyncSettingsUtils {
             case SyncError.CLIENT_OUT_OF_DATE:
                 return context.getString(
                         R.string.client_out_of_date_error_card_button,
-                        BuildInfo.getInstance().hostPackageLabel);
+                        ApkInfo.getHostPackageLabel());
             case SyncError.PASSPHRASE_REQUIRED:
                 return context.getString(R.string.passphrase_required_error_card_button);
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
@@ -264,7 +264,7 @@ public class SyncSettingsUtils {
 
         if (syncService.requiresClientUpgrade()) {
             return context.getString(
-                    R.string.sync_error_upgrade_client, BuildInfo.getInstance().hostPackageLabel);
+                    R.string.sync_error_upgrade_client, ApkInfo.getHostPackageLabel());
         }
 
         if (syncService.hasUnrecoverableError()) {

@@ -117,6 +117,14 @@ public final class ApkInfo {
     }
 
     /**
+     * Check if this is either a debuggable build of Android or of the host app. Use this to enable
+     * developer-only features.
+     */
+    public static boolean isDebugAndroidOrApp() {
+        return AndroidInfo.isDebugAndroid() || isDebugApp();
+    }
+
+    /**
      * Checks if the application targets pre-release SDK B. This must be manually maintained as the
      * SDK goes through finalization.
      */

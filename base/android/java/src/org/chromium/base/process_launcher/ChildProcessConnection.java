@@ -21,10 +21,10 @@ import android.os.RemoteException;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApkInfo;
 import org.chromium.base.BaseFeatureList;
 import org.chromium.base.BaseFeatureMap;
 import org.chromium.base.BaseFeatures;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
@@ -443,8 +443,7 @@ public class ChildProcessConnection {
         mFallbackServiceName = fallbackServiceName;
         mServiceBundle = serviceBundle != null ? serviceBundle : new Bundle();
         mServiceBundle.putString(
-                ChildProcessConstants.EXTRA_BROWSER_PACKAGE_NAME,
-                BuildInfo.getInstance().packageName);
+                ChildProcessConstants.EXTRA_BROWSER_PACKAGE_NAME, ApkInfo.getPackageName());
         mBindToCaller = bindToCaller;
         mInstanceName = instanceName;
         mIndependentFallback = independentFallback;
@@ -753,7 +752,7 @@ public class ChildProcessConnection {
             try {
                 String[] childAppInfoStrings = mService.getAppInfoStrings();
 
-                ApplicationInfo parentAppInfo = BuildInfo.getInstance().getBrowserApplicationInfo();
+                ApplicationInfo parentAppInfo = ApkInfo.getInstance().getBrowserApplicationInfo();
                 String[] parentAppInfoStrings = ChildProcessService.convertToStrings(parentAppInfo);
 
                 // Don't compare splitSourceDirs as isolatedSplits/dynamic feature modules/etc
@@ -767,7 +766,7 @@ public class ChildProcessConnection {
                 // Check if it looks like the browser's package version has been changed since the
                 // browser process launched (i.e. if the install somehow did not kill our process)
                 PackageInfo latestPackage = PackageUtils.getApplicationPackageInfo(0);
-                long latestVersionCode = BuildInfo.packageVersionCode(latestPackage);
+                long latestVersionCode = latestPackage.getLongVersionCode();
                 long loadedVersionCode = BuildConfig.VERSION_CODE;
                 if (latestVersionCode != loadedVersionCode) {
                     // Crashing the process is likely to improve the situation - when we are next

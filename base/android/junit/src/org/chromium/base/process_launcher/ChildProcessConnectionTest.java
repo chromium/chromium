@@ -39,7 +39,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -162,7 +162,7 @@ public class ChildProcessConnectionTest {
         MockitoAnnotations.initMocks(this);
 
         mIChildProcessService = mock(IChildProcessService.class);
-        ApplicationInfo appInfo = BuildInfo.getInstance().getBrowserApplicationInfo();
+        ApplicationInfo appInfo = ApkInfo.getInstance().getBrowserApplicationInfo();
         String[] appInfoStrings = ChildProcessService.convertToStrings(appInfo);
         when(mIChildProcessService.getAppInfoStrings()).thenReturn(appInfoStrings);
         // Capture the parameters passed to the IChildProcessService.setupConnection() call.

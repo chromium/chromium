@@ -37,7 +37,7 @@ public class IntentUtilsTest {
     @Test
     @SmallTest
     public void testIntentTargetsSelf() {
-        String packageName = BuildInfo.getInstance().hostPackageName;
+        String packageName = ApkInfo.getHostPackageName();
         assertTargetsSelf(false, new Intent(), false);
         assertTargetsSelf(
                 true,

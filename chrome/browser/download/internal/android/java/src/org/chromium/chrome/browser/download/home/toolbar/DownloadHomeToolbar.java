@@ -9,7 +9,7 @@ import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -72,7 +72,7 @@ public class DownloadHomeToolbar extends SelectableListToolbar<ListItem> {
             if (shareButton != null) {
                 // Sharing functionality that leads directly to the Android share sheet is
                 // currently disabled.
-                if (BuildInfo.getInstance().isAutomotive) {
+                if (DeviceInfo.isAutomotive()) {
                     shareButton.setVisibility(View.GONE);
                 } else {
                     shareButton.setContentDescription(

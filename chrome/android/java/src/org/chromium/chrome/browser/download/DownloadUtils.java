@@ -30,9 +30,9 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -456,7 +456,7 @@ public class DownloadUtils {
             String normalizedMimeType = Intent.normalizeMimeType(mimeType);
 
             // Sharing for media files is disabled on automotive.
-            boolean isAutomotive = BuildInfo.getInstance().isAutomotive;
+            boolean isAutomotive = DeviceInfo.isAutomotive();
             Intent intent =
                     MediaViewerUtils.getMediaViewerIntent(
                             /* displayUri= */ fileUri,
