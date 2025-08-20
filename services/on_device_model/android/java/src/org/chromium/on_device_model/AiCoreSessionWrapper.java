@@ -4,6 +4,8 @@
 
 package org.chromium.on_device_model;
 
+import androidx.annotation.GuardedBy;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -18,12 +20,18 @@ import org.chromium.on_device_model.mojom.InputPiece;
 class AiCoreSessionWrapper {
     private final AiCoreSessionBackend mBackend;
 
+    private final Object mLock = new Object();
+
+    @GuardedBy("mLock")
+    private boolean mNativeDestroyed;
+
     public AiCoreSessionWrapper(AiCoreSessionBackend backend) {
         mBackend = backend;
     }
 
     @CalledByNative
-    public void generate(long nativeBackendSession, Object generateOptions, Object[] inputPieces) {
+    public void generate(
+            long nativeBackendSession, Object generateOptions, Object[] inputPieces) {
         final GenerateOptions castedGenerateOptions = (GenerateOptions) generateOptions;
         final InputPiece[] castedInputPieces = new InputPiece[inputPieces.length];
         for (int i = 0; i < inputPieces.length; i++) {
@@ -33,12 +41,24 @@ class AiCoreSessionWrapper {
                 new SessionResponder() {
                     @Override
                     public void onResponse(String response) {
-                        AiCoreSessionWrapperJni.get().onResponse(nativeBackendSession, response);
+                        synchronized (mLock) {
+                            if (mNativeDestroyed) {
+                                return;
+                            }
+                            AiCoreSessionWrapperJni.get()
+                                    .onResponse(nativeBackendSession, response);
+                        }
                     }
 
                     @Override
                     public void onComplete(@GenerateResult int result) {
-                        AiCoreSessionWrapperJni.get().onComplete(nativeBackendSession, result);
+                        synchronized (mLock) {
+                            if (mNativeDestroyed) {
+                                return;
+                            }
+                            AiCoreSessionWrapperJni.get()
+                                    .onComplete(nativeBackendSession, result);
+                        }
                     }
                 };
         mBackend.generate(castedGenerateOptions, castedInputPieces, responder);
@@ -46,7 +66,10 @@ class AiCoreSessionWrapper {
 
     @CalledByNative
     public void onNativeDestroyed() {
-        mBackend.onNativeDestroyed();
+        synchronized (mLock) {
+            mNativeDestroyed = true;
+            mBackend.onNativeDestroyed();
+        }
     }
 
     @NativeMethods

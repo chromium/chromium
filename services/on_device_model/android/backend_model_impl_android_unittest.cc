@@ -177,6 +177,33 @@ TEST_F(BackendModelImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
       BackendSessionImplAndroid::GenerateResult::kSuccess, 2);
 }
 
+TEST_F(BackendModelImplAndroidTest, GenerateCallbacksOnDifferentThread) {
+  java_helper_.SetMockAiCoreFactory();
+
+  std::unique_ptr<BackendSession> session = model_->CreateSession(
+      /*adaptation=*/nullptr,
+      MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
+
+  {
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back("mock input");
+    session->Append(MakeInput(std::move(pieces)), /*client=*/{},
+                    /*on_complete=*/base::DoNothing());
+  }
+
+  java_helper_.SetCallbackOnDifferentThread();
+
+  TestResponseHolder response_holder;
+  session->Generate(MakeGenerateOptions(/*max_output_tokens=*/100),
+                    response_holder.BindRemote(),
+                    /*on_complete=*/base::DoNothing());
+  response_holder.WaitForCompletion();
+  EXPECT_THAT(response_holder.responses(), ElementsAre("mock input"));
+  histogram_tester_.ExpectUniqueSample(
+      "OnDeviceModel.Android.GenerateResult",
+      BackendSessionImplAndroid::GenerateResult::kSuccess, 1);
+}
+
 TEST_F(BackendModelImplAndroidTest, NativeSessionDeletionIsSafe) {
   java_helper_.SetMockAiCoreFactory();
 

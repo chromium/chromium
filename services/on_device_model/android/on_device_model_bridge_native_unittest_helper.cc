@@ -54,6 +54,12 @@ void OnDeviceModelBridgeNativeUnitTestHelper::SetCompleteAsync() {
                                                                 java_helper_);
 }
 
+void OnDeviceModelBridgeNativeUnitTestHelper::SetCallbackOnDifferentThread() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_setCallbackOnDifferentThread(
+      env, java_helper_);
+}
+
 void OnDeviceModelBridgeNativeUnitTestHelper::ResumeOnCompleteCallback() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_OnDeviceModelBridgeNativeUnitTestHelper_resumeOnCompleteCallback(

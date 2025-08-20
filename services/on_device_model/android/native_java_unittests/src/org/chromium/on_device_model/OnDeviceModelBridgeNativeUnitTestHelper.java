@@ -27,6 +27,9 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         // If true, the onComplete callback will be called asynchronously through
         // resumeOnCompleteCallback. This field should be set before generate() is called.
         private boolean mCompleteAsync;
+        // If true, the callbacks will be called asynchronously through a different thread. This
+        // field should be set before generate() is called.
+        private boolean mCallbackOnDifferentThread;
         private @GenerateResult int mGenerateResult;
         private boolean mNativeDestroyed;
         // Below are the params received in the generate() call.
@@ -71,6 +74,15 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
                         sb.append(inputPiece.getText());
                         break;
                 }
+            }
+            if (mCallbackOnDifferentThread) {
+                new Thread(
+                                () -> {
+                                    responder.onResponse(sb.toString());
+                                    responder.onComplete(mGenerateResult);
+                                })
+                        .start();
+                return;
             }
             responder.onResponse(sb.toString());
             if (mCompleteAsync) {
@@ -177,6 +189,11 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     @CalledByNative
     public void setCompleteAsync() {
         mMockAiCoreFactory.mSessionBackend.mCompleteAsync = true;
+    }
+
+    @CalledByNative
+    public void setCallbackOnDifferentThread() {
+        mMockAiCoreFactory.mSessionBackend.mCallbackOnDifferentThread = true;
     }
 
     @CalledByNative
