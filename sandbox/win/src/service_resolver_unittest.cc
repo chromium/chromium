@@ -13,6 +13,7 @@
 
 #include "base/bit_cast.h"
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/resolver.h"
@@ -67,8 +68,9 @@ NTSTATUS PatchNtdllWithResolver(const char* function,
   void* target =
       reinterpret_cast<void*>(::GetProcAddress(ntdll_base, function));
   EXPECT_TRUE(target);
-  if (!target)
+  if (!target) {
     return STATUS_UNSUCCESSFUL;
+  }
 
   BYTE service[50];
   UNSAFE_TODO(memcpy(service, target, sizeof(service)));
@@ -78,13 +80,16 @@ NTSTATUS PatchNtdllWithResolver(const char* function,
   // Any pointer will do as an interception_entry_point
   void* function_entry = &resolver;
   size_t thunk_size = resolver.GetThunkSize();
-  std::unique_ptr<char[]> thunk = std::make_unique<char[]>(thunk_size);
+  auto thunk = base::HeapArray<char>::Uninit(thunk_size);
   size_t used;
 
   resolver.AllowLocalPatches();
 
-  NTSTATUS ret = resolver.Setup(ntdll_base, nullptr, function, nullptr,
-                                function_entry, thunk.get(), thunk_size, &used);
+  // TODO(crbug.com/40285824): Eventually, `Setup` should just take a span<char>
+  // instead of a pointer and a size.
+  NTSTATUS ret =
+      resolver.Setup(ntdll_base, nullptr, function, nullptr, function_entry,
+                     thunk.data(), thunk_size, &used);
   if (NT_SUCCESS(ret)) {
     const BYTE kJump32 = 0xE9;
     EXPECT_EQ(thunk_size, used);
@@ -95,8 +100,8 @@ NTSTATUS PatchNtdllWithResolver(const char* function,
       // It's already patched, let's patch again, and simulate a direct patch.
       service[0] = kJump32;
       ret = resolver.Setup(ntdll_base, nullptr, function, nullptr,
-                           function_entry, thunk.get(), thunk_size, &used);
-      EXPECT_TRUE(resolver.VerifyJumpTargetForTesting(thunk.get()));
+                           function_entry, thunk.data(), thunk.size(), &used);
+      EXPECT_TRUE(resolver.VerifyJumpTargetForTesting(thunk.data()));
     }
   }
 
@@ -193,20 +198,20 @@ TEST(ServiceResolverTest, LocalPatchesAllowed) {
   // Any pointer will do as an interception_entry_point
   void* function_entry = &resolver;
   size_t thunk_size = resolver.GetThunkSize();
-  std::unique_ptr<char[]> thunk = std::make_unique<char[]>(thunk_size);
+  auto thunk = base::HeapArray<char>::Uninit(thunk_size);
   size_t used;
 
   NTSTATUS ret = STATUS_UNSUCCESSFUL;
 
   // First try patching without having allowed local patches.
   ret = resolver.Setup(ntdll_base, nullptr, kFunctionName, nullptr,
-                       function_entry, thunk.get(), thunk_size, &used);
+                       function_entry, thunk.data(), thunk_size, &used);
   EXPECT_FALSE(NT_SUCCESS(ret));
 
   // Now allow local patches and check that things work.
   resolver.AllowLocalPatches();
   ret = resolver.Setup(ntdll_base, nullptr, kFunctionName, nullptr,
-                       function_entry, thunk.get(), thunk_size, &used);
+                       function_entry, thunk.data(), thunk_size, &used);
   EXPECT_EQ(STATUS_SUCCESS, ret);
 }
 
