@@ -26,6 +26,7 @@ IGNORED_MODULES = [
 SYSROOT_DIRS = {
     'android_toolchain',
     'debian_bullseye_amd64-sysroot',
+    'debian_bullseye_arm64-sysroot',
     'MacOSX.platform',
     'win_toolchain',
 }
