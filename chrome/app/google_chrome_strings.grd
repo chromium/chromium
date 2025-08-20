@@ -2388,6 +2388,9 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_DOWNLOADING" desc="For when time remaining is less than 0.">
           Downloading...
         </message>
+        <message name="IDS_VERIFYING" desc="While verifying and unpacking the downloaded payload.">
+          Verifying the download...
+        </message>
         <message name="IDS_WAITING_TO_INSTALL" desc="While waiting to install between downloading and installing.">
           Waiting to install...
         </message>
