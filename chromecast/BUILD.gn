@@ -12,6 +12,7 @@ import("//chromecast/chromecast.gni")
 import("//chromecast/resource_sizes/chromecast_resource_sizes.gni")
 import("//media/media_options.gni")
 import("//third_party/jni_zero/jni_zero.gni")
+import("//third_party/ffmpeg/ffmpeg_options.gni")
 import("//tools/grit/repack.gni")
 import("//v8/gni/v8.gni")
 
@@ -733,6 +734,15 @@ if (is_android) {
       "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
       "//third_party/jni_zero:jni_zero_java",
     ]
+
+    if (is_component_ffmpeg) {
+      native_libraries += [
+        "$root_build_dir/libffmpeg.so",
+      ]
+      deps += [
+        "//third_party/ffmpeg:ffmpeg",
+      ]
+    }
 
     output = "$root_build_dir/apks/cast_browser.aar"
 
