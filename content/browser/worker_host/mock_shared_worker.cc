@@ -56,10 +56,17 @@ void MockSharedWorker::Disconnect() {
   receiver_.reset();
 }
 
+void MockSharedWorker::SetConnectCallback(base::OnceClosure callback) {
+  connect_callback_ = std::move(callback);
+}
+
 void MockSharedWorker::Connect(int connection_request_id,
                                blink::MessagePortDescriptor port) {
   connect_received_.emplace(connection_request_id,
                             blink::MessagePortChannel(std::move(port)));
+  if (connect_callback_) {
+    std::move(connect_callback_).Run();
+  }
 }
 
 void MockSharedWorker::Terminate() {
@@ -104,6 +111,11 @@ void MockSharedWorkerFactory::Disconnect() {
   receiver_.reset();
 }
 
+void MockSharedWorkerFactory::SetCreateWorkerCallback(
+    base::OnceClosure callback) {
+  create_worker_callback_ = std::move(callback);
+}
+
 void MockSharedWorkerFactory::CreateSharedWorker(
     blink::mojom::SharedWorkerInfoPtr info,
     const blink::SharedWorkerToken& token,
@@ -146,6 +158,9 @@ void MockSharedWorkerFactory::CreateSharedWorker(
   create_params_->ukm_source_id = ukm_source_id;
   create_params_->require_cross_site_request_for_cookies =
       require_cross_site_request_for_cookies;
+  if (create_worker_callback_) {
+    std::move(create_worker_callback_).Run();
+  }
 }
 
 MockSharedWorkerFactory::CreateParams::CreateParams() = default;
@@ -203,19 +218,34 @@ bool MockSharedWorkerClient::CheckReceivedOnScriptLoadFailed() {
   return true;
 }
 
+bool MockSharedWorkerClient::CheckReceivedOnReportException(
+    blink::mojom::SharedWorkerExceptionDetailsPtr* details) {
+  if (!on_report_exception_received_) {
+    return false;
+  }
+  on_report_exception_received_ = false;
+  *details = std::move(received_details_);
+  return true;
+}
+
 void MockSharedWorkerClient::ResetReceiver() {
   receiver_.reset();
 }
 
+void MockSharedWorkerClient::SetOnReportExceptionCallback(
+    base::OnceClosure callback) {
+  on_report_exception_callback_ = std::move(callback);
+}
+
 void MockSharedWorkerClient::OnCreated(
     blink::mojom::SharedWorkerCreationContextType creation_context_type) {
-  DCHECK(!on_created_received_);
+  EXPECT_FALSE(on_created_received_);
   on_created_received_ = true;
 }
 
 void MockSharedWorkerClient::OnConnected(
     const std::vector<blink::mojom::WebFeature>& features_used) {
-  DCHECK(!on_connected_received_);
+  EXPECT_FALSE(on_connected_received_);
   on_connected_received_ = true;
   for (auto feature : features_used)
     on_connected_features_.insert(feature);
@@ -223,14 +253,24 @@ void MockSharedWorkerClient::OnConnected(
 
 void MockSharedWorkerClient::OnScriptLoadFailed(
     const std::string& error_message) {
-  DCHECK(!on_script_load_failed_);
+  EXPECT_FALSE(on_script_load_failed_);
   on_script_load_failed_ = true;
 }
 
 void MockSharedWorkerClient::OnFeatureUsed(blink::mojom::WebFeature feature) {
-  DCHECK(!on_feature_used_received_);
+  EXPECT_FALSE(on_feature_used_received_);
   on_feature_used_received_ = true;
   on_feature_used_feature_ = feature;
+}
+
+void MockSharedWorkerClient::OnReportException(
+    blink::mojom::SharedWorkerExceptionDetailsPtr details) {
+  EXPECT_FALSE(on_report_exception_received_);
+  on_report_exception_received_ = true;
+  received_details_ = std::move(details);
+  if (on_report_exception_callback_) {
+    std::move(on_report_exception_callback_).Run();
+  }
 }
 
 }  // namespace content

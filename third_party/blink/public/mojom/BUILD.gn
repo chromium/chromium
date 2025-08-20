@@ -259,6 +259,7 @@ mojom("mojom_platform") {
     "worker/dedicated_worker_host.mojom",
     "worker/shared_worker_client.mojom",
     "worker/shared_worker_creation_context_type.mojom",
+    "worker/shared_worker_exception_details.mojom",
     "worker/shared_worker_host.mojom",
     "worker/shared_worker_info.mojom",
     "worker/subresource_loader_updater.mojom",

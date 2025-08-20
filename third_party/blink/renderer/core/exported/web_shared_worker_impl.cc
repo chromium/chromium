@@ -44,6 +44,7 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
+#include "third_party/blink/public/mojom/worker/shared_worker_exception_details.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -108,6 +109,23 @@ void WebSharedWorkerImpl::CountFeature(WebFeature feature) {
   host_->OnFeatureUsed(feature);
 }
 
+void WebSharedWorkerImpl::ReportException(const WebString& error_message,
+                                          const WebString& source_url,
+                                          int line_number,
+                                          int column_number,
+                                          int exception_id,
+                                          bool is_eval_error) {
+  DCHECK(IsMainThread());
+  auto details = mojom::blink::SharedWorkerExceptionDetails::New();
+  details->error_message = error_message;
+  details->source_location = network::mojom::blink::SourceLocation::New(
+      source_url, line_number, column_number);
+  details->error_type = is_eval_error
+                            ? mojom::blink::SharedWorkerErrorType::kRuntimeError
+                            : mojom::blink::SharedWorkerErrorType::kParseError;
+  host_->OnReportException(std::move(details));
+}
+
 void WebSharedWorkerImpl::DidFailToFetchClassicScript() {
   DCHECK(IsMainThread());
   host_->OnScriptLoadFailed("Failed to fetch a worker script.");
@@ -124,7 +142,7 @@ void WebSharedWorkerImpl::DidFailToFetchModuleScript() {
 
 void WebSharedWorkerImpl::DidEvaluateTopLevelScript(bool success) {
   DCHECK(IsMainThread());
-  DCHECK(!running_);
+  CHECK(!running_);
   running_ = true;
   DispatchPendingConnections();
 }

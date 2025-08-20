@@ -44,6 +44,7 @@
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/worker/shared_worker_exception_details.mojom.h"
 #include "url/origin.h"
 
 using blink::MessagePortChannel;
@@ -485,6 +486,60 @@ TEST_F(SharedWorkerHostTestWithPNAEnabled,
             network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
   EXPECT_EQ(params->client_security_state->cross_origin_embedder_policy.value,
             network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless);
+}
+
+TEST_F(SharedWorkerHostTest, ReportException) {
+  base::WeakPtr<SharedWorkerHost> host = CreateHost();
+
+  // Start the worker.
+  mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
+  MockSharedWorkerFactory factory_impl(
+      factory.InitWithNewPipeAndPassReceiver());
+  StartWorker(host.get(), std::move(factory));
+
+  // Add a client.
+  MockSharedWorkerClient client;
+  mojo::PendingRemote<blink::mojom::SharedWorkerClient> remote_client;
+  client.Bind(remote_client.InitWithNewPipeAndPassReceiver());
+  base::RunLoop run_loop;
+  factory_impl.SetCreateWorkerCallback(run_loop.QuitClosure());
+  AddClient(host.get(), std::move(remote_client));
+  run_loop.Run();
+
+  // Get the worker host remote.
+  mojo::Remote<blink::mojom::SharedWorkerHost> worker_host;
+  mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
+  EXPECT_TRUE(factory_impl.CheckReceivedCreateSharedWorker(
+      host->instance().url(), host->instance().name(),
+      host->content_security_policies(), &worker_host, &worker_receiver));
+  MockSharedWorker worker(std::move(worker_receiver));
+  base::RunLoop run_loop2;
+  worker.SetConnectCallback(run_loop2.QuitClosure());
+  run_loop2.Run();
+
+  // The worker and client should have gotten initial messages.
+  int connection_request_id;
+  blink::MessagePortChannel port;
+  EXPECT_TRUE(worker.CheckReceivedConnect(&connection_request_id, &port));
+  EXPECT_TRUE(client.CheckReceivedOnCreated());
+
+  // Simulate the worker reporting an exception.
+  auto details = blink::mojom::SharedWorkerExceptionDetails::New();
+  details->error_message = "test error";
+  details->source_location =
+      network::mojom::SourceLocation::New("http://example.com/worker.js", 1, 2);
+  details->error_type = blink::mojom::SharedWorkerErrorType::kRuntimeError;
+  base::RunLoop run_loop3;
+  client.SetOnReportExceptionCallback(run_loop3.QuitClosure());
+  worker_host->OnReportException(details.Clone());
+  run_loop3.Run();
+
+  // The client should have received the exception.
+  blink::mojom::SharedWorkerExceptionDetailsPtr received_details;
+  EXPECT_TRUE(client.CheckReceivedOnReportException(&received_details));
+  EXPECT_EQ(details->error_message, received_details->error_message);
+  EXPECT_EQ(*details->source_location, *received_details->source_location);
+  EXPECT_EQ(details->error_type, received_details->error_type);
 }
 
 }  // namespace content

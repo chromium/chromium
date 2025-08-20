@@ -62,6 +62,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/worker/shared_worker_exception_details.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom.h"
 
@@ -763,6 +764,13 @@ void SharedWorkerHost::OnReadyForInspection(
 void SharedWorkerHost::OnScriptLoadFailed(const std::string& error_message) {
   for (const ClientInfo& info : clients_) {
     info.client->OnScriptLoadFailed(error_message);
+  }
+}
+
+void SharedWorkerHost::OnReportException(
+    blink::mojom::SharedWorkerExceptionDetailsPtr details) {
+  for (const ClientInfo& info : clients_) {
+    info.client->OnReportException(details.Clone());
   }
 }
 

@@ -49,6 +49,7 @@ class SharedWorkerReportingProxy final
   WebSharedWorkerImpl* worker_;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+  bool script_evaluated_ = false;
 };
 
 }  // namespace blink
