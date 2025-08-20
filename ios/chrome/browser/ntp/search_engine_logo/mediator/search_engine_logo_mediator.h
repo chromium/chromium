@@ -58,6 +58,8 @@ class WebState;
 - (void)simulateDoodleTapped;
 // Sets the destination URL for the doodle tap handler.
 - (void)setClickURLText:(const GURL&)url;
+// Called when the search engine has changed.
+- (void)searchEngineChanged;
 
 @end
 

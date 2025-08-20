@@ -38,9 +38,10 @@
 @property(strong, nonatomic, readonly)
     SearchEngineLogoContainerView* containerView;
 
-// Shows the doodle UIImageView with a fade animation.
-- (void)updateLogo:(const search_provider_logos::Logo*)logo
-           animate:(BOOL)animate;
+// Called when the logo is downloaded or failed to be downloaded.
+- (void)logoDownloaded:(const search_provider_logos::Logo*)logo
+        callbackReason:
+            (search_provider_logos::LogoCallbackReason)callbackReason;
 
 @end
 
@@ -67,10 +68,8 @@ enum ClickedLogoType {
 void OnLogoAvailable(SearchEngineLogoMediator* mediator,
                      search_provider_logos::LogoCallbackReason callback_reason,
                      const std::optional<search_provider_logos::Logo>& logo) {
-  if (callback_reason ==
-      search_provider_logos::LogoCallbackReason::DETERMINED) {
-    [mediator updateLogo:(logo ? &logo.value() : nullptr) animate:YES];
-  }
+  [mediator logoDownloaded:(logo ? &logo.value() : nullptr)
+            callbackReason:callback_reason];
 }
 
 }  // namespace
@@ -292,6 +291,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
                             CLICKED_LOGO_TYPE_COUNT);
 }
 
+// Shows the doodle UIImageView with a fade animation.
 - (void)updateLogo:(const search_provider_logos::Logo*)logo
            animate:(BOOL)animate {
   if (!logo) {
@@ -373,6 +373,46 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
       SHOWN_LOGO_TYPE_COUNT);
 
   [self.containerView setLogoState:logoState animated:animate];
+}
+
+- (void)logoDownloaded:(const search_provider_logos::Logo*)logo
+        callbackReason:
+            (search_provider_logos::LogoCallbackReason)callbackReason {
+  switch (callbackReason) {
+    case search_provider_logos::LogoCallbackReason::DETERMINED:
+      [self updateLogo:logo animate:YES];
+      break;
+    case search_provider_logos::LogoCallbackReason::CANCELED: {
+      // The logo fetch was canceled. This can be for several reasons, for
+      // example the search engine was changed, or the cookies were updated.
+      // The fetch needs to be restarted, to make sure there is no mistake,
+      // `[self searchEngineChanged]` is called.
+      // TODO(crbug.com/439815392): This should be a temporary fix. The real
+      // fix should be done in LogoServiceImpl.
+      __weak __typeof(self) weakSelf = self;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(
+                         [](__typeof(self) strongSelf) {
+                           [strongSelf logoDownloadCanceled];
+                         },
+                         weakSelf));
+      break;
+    }
+    case search_provider_logos::LogoCallbackReason::DISABLED:
+    case search_provider_logos::LogoCallbackReason::REVALIDATED:
+    case search_provider_logos::LogoCallbackReason::FAILED:
+      break;
+  }
+}
+
+// Called when the logo fetch was canceled.
+- (void)logoDownloadCanceled {
+  if (!_templateURLService) {
+    // If the mediator was disconnected, this call should be ignored.
+    return;
+  }
+  // Makes sure the logo is fetched again.
+  [self searchEngineChanged];
 }
 
 // Called when the doodle's appearance animation completes.
