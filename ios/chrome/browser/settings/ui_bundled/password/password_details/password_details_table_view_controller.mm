@@ -906,7 +906,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 - (void)setCredentials:(NSArray<CredentialDetails*>*)credentials
               andTitle:(NSString*)title {
   BOOL hadCredentials = [_credentials count];
-  _credentials = credentials;
+  NSSortDescriptor* hidden = [[NSSortDescriptor alloc] initWithKey:@"hidden"
+                                                         ascending:YES];
+  _credentials = [credentials sortedArrayUsingDescriptors:@[ hidden ]];
   _pageTitle = [title copy];
 
   [self updateNavigationTitle];

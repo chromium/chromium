@@ -158,6 +158,7 @@ source_set("unit_tests") {
     "//components/sync/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/credential_provider/model:features",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/passwords/model/metrics",
