@@ -1093,12 +1093,27 @@ bool Columns::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* column_width = nullptr;
   CSSValue* column_count = nullptr;
+  CSSValue* column_height = nullptr;
+
   if (!css_parsing_utils::ConsumeColumnWidthOrCount(
           stream, context, column_width, column_count)) {
     return false;
   }
   css_parsing_utils::ConsumeColumnWidthOrCount(stream, context, column_width,
                                                column_count);
+
+  if (RuntimeEnabledFeatures::MulticolColumnWrappingEnabled() &&
+      css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
+    column_height = css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream);
+    if (!column_height) {
+      column_height = css_parsing_utils::ConsumeLength(
+          stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+      if (!column_height) {
+        return false;
+      }
+    }
+  }
+
   if (!column_width) {
     column_width = CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
@@ -1113,6 +1128,19 @@ bool Columns::ParseShorthand(
       CSSPropertyID::kColumnCount, CSSPropertyID::kInvalid, *column_count,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
+  if (RuntimeEnabledFeatures::MulticolColumnWrappingEnabled()) {
+    if (!column_height) {
+      column_height = CSSIdentifierValue::Create(CSSValueID::kAuto);
+    }
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kColumnHeight, CSSPropertyID::kInvalid, *column_height,
+        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+        properties);
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kColumnWrap, CSSPropertyID::kInvalid,
+        *CSSIdentifierValue::Create(CSSValueID::kAuto), important,
+        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  }
   return true;
 }
 
@@ -1121,9 +1149,55 @@ const CSSValue* Columns::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValuesForShorthandProperty(
-      columnsShorthand(), style, layout_object, allow_visited_style,
-      value_phase);
+  const CSSValue* width = GetCSSPropertyColumnWidth().CSSValueFromComputedStyle(
+      style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* count = GetCSSPropertyColumnCount().CSSValueFromComputedStyle(
+      style, layout_object, allow_visited_style, value_phase);
+
+  auto* width_keyword = DynamicTo<CSSIdentifierValue>(width);
+  auto* count_keyword = DynamicTo<CSSIdentifierValue>(count);
+
+  bool width_is_auto =
+      width_keyword && width_keyword->GetValueID() == CSSValueID::kAuto;
+  bool count_is_auto =
+      count_keyword && count_keyword->GetValueID() == CSSValueID::kAuto;
+
+  const CSSValue* height = nullptr;
+  bool height_is_auto = true;
+  if (RuntimeEnabledFeatures::MulticolColumnWrappingEnabled()) {
+    height = GetCSSPropertyColumnHeight().CSSValueFromComputedStyle(
+        style, layout_object, allow_visited_style, value_phase);
+    auto* height_keyword = DynamicTo<CSSIdentifierValue>(height);
+    height_is_auto =
+        height_keyword && height_keyword->GetValueID() == CSSValueID::kAuto;
+  }
+
+  if (width_is_auto && count_is_auto && height_is_auto) {
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+
+  CSSValue* pre_slash;
+  if (width_is_auto && count_is_auto) {
+    pre_slash = CSSIdentifierValue::Create(CSSValueID::kAuto);
+  } else if (width_is_auto) {
+    pre_slash = const_cast<CSSValue*>(count);
+  } else if (count_is_auto) {
+    pre_slash = const_cast<CSSValue*>(width);
+  } else {
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*width);
+    list->Append(*count);
+    pre_slash = list;
+  }
+
+  if (height_is_auto) {
+    return pre_slash;
+  }
+
+  CSSValueList* list = CSSValueList::CreateSlashSeparated();
+  list->Append(*pre_slash);
+  list->Append(*height);
+  return list;
 }
 
 bool ContainIntrinsicSize::ParseShorthand(

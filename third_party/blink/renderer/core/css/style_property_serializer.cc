@@ -2187,24 +2187,46 @@ String StylePropertySerializer::GetShorthandValueForColumnRule(
 
 String StylePropertySerializer::GetShorthandValueForColumns(
     const StylePropertyShorthand& shorthand) const {
-  DCHECK_EQ(shorthand.length(), 2u);
+  const CSSValue* width =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyColumnWidth());
+  const CSSValue* count =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyColumnCount());
+  const CSSValue* height = nullptr;
 
-  StringBuilder result;
-  for (const CSSProperty* const longhand : shorthand.properties()) {
-    const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
-    String value_text = value->CssText();
-    if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(value);
-        ident_value && ident_value->GetValueID() == CSSValueID::kAuto) {
-      continue;
-    }
-    if (!result.empty()) {
-      result.Append(" ");
-    }
-    result.Append(value_text);
+  auto* width_keyword = DynamicTo<CSSIdentifierValue>(width);
+  auto* count_keyword = DynamicTo<CSSIdentifierValue>(count);
+
+  bool width_is_auto =
+      width_keyword && width_keyword->GetValueID() == CSSValueID::kAuto;
+  bool count_is_auto =
+      count_keyword && count_keyword->GetValueID() == CSSValueID::kAuto;
+  bool height_is_auto = true;
+
+  if (RuntimeEnabledFeatures::MulticolColumnWrappingEnabled()) {
+    height = property_set_.GetPropertyCSSValue(GetCSSPropertyColumnHeight());
+    auto* height_keyword = DynamicTo<CSSIdentifierValue>(height);
+    height_is_auto =
+        height_keyword && height_keyword->GetValueID() == CSSValueID::kAuto;
   }
 
-  if (result.empty()) {
-    return "auto";
+  StringBuilder result;
+  if (width_is_auto && count_is_auto) {
+    result.Append("auto");
+  } else {
+    if (!width_is_auto) {
+      result.Append(width->CssText());
+    }
+    if (!count_is_auto) {
+      if (!width_is_auto) {
+        result.Append(" ");
+      }
+      result.Append(count->CssText());
+    }
+  }
+
+  if (!height_is_auto) {
+    result.Append(" / ");
+    result.Append(height->CssText());
   }
 
   return result.ReleaseString();

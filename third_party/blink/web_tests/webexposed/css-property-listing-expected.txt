@@ -643,7 +643,9 @@ All changes to this list should go through Blink's feature review process: http:
         column-rule-width
     columns
         column-count
+        column-height
         column-width
+        column-wrap
     contain-intrinsic-size
         contain-intrinsic-height
         contain-intrinsic-width

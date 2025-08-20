@@ -8906,7 +8906,7 @@
     },
     {
       name: "columns",
-      longhands: ["column-width", "column-count"],
+      longhands: ["column-width", "column-count", "column-height", "column-wrap"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
