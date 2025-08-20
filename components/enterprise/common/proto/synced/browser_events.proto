@@ -206,6 +206,7 @@ message TriggeredRuleInfo {
     REPORT_ONLY = 1;
     WARN = 2;
     BLOCK = 3;
+    FORCE_SAVE_TO_CLOUD = 4;
   }
 
   Action action = 5;
