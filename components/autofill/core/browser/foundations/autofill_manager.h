@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -37,7 +36,6 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/translate/core/browser/translate_driver.h"
 
 namespace autofill {
@@ -350,16 +348,6 @@ class AutofillManager
 
   AutofillDriver& driver() { return *driver_; }
 
-  // Reparses all known forms.
-  void ReparseKnownForms();
-
-  // After subscribing, FieldClassificationModelHandler::OnModelUpdated() will
-  // trigger ReparseKnownForms(). There may be a handler for Autofill and/or
-  // Password Manager.
-  void SubscribeToMlModelChanges(
-      FieldClassificationModelHandler& handler,
-      optimization_guide::proto::OptimizationTarget optimization_target);
-
  protected:
   explicit AutofillManager(AutofillDriver* driver);
 
@@ -523,10 +511,6 @@ class AutofillManager
 
   // Observers that listen to updates of this instance.
   base::ObserverList<Observer> observers_;
-
-  // Set by SubscribeToMlModelChanges().
-  base::CallbackListSubscription autofill_model_change_subscription_;
-  base::CallbackListSubscription password_manager_model_change_subscription_;
 
   // DetermineHeuristicTypes() should only be run on the `parsing_task_runner_`.
   // The reply will be called on the main thread and should be a no-op if this

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -131,38 +130,19 @@ bool IsCreditCardFormForSignaturePurposes(const FormStructure& form_structure) {
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-// Applies a field classification ML model to `forms`.
-// The model execution is performed on a background thread. Upon completion, the
-// `callback` is invoked with the `forms`. The `optimization_target` selects
-// either the Autofill or Password Manager model. Since this function can be
-// called asynchronously (triggering a second classifier after a first one
-// completes), it takes a `WeakPtr<AutofillManager>` to handle cases where the
-// manager might be destroyed before execution.
-void ApplyMlModel(
-    base::WeakPtr<AutofillManager> manager,
-    optimization_guide::proto::OptimizationTarget optimization_target,
+// Retrieves the ML model handler form the `client` using `get_handler`, and
+// requests ML predictions for `forms` if the handler is available. Passes
+// `callback` to the handler so it is invoked once predictions are available.
+void GetMlPredictionsIfNeeded(
+    base::WeakPtr<AutofillClient> client,
+    FieldClassificationModelHandler* (AutofillClient::*get_handler)(),
     base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
         callback,
     std::vector<std::unique_ptr<FormStructure>> forms) {
-  if (!manager) {
+  if (!client) {
     return;
   }
-  AutofillClient& client = manager->client();
-  FieldClassificationModelHandler* ml_handler = nullptr;
-  switch (optimization_target) {
-    case optimization_guide::proto::
-        OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION:
-      ml_handler = client.GetAutofillFieldClassificationModelHandler();
-      break;
-    case optimization_guide::proto::
-        OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION:
-      ml_handler = client.GetPasswordManagerFieldClassificationModelHandler();
-      break;
-    default:
-      NOTREACHED();
-  }
-  if (ml_handler) {
-    manager->SubscribeToMlModelChanges(*ml_handler, optimization_target);
+  if (FieldClassificationModelHandler* ml_handler = (*client.*get_handler)()) {
     ml_handler->GetModelPredictionsForForms(std::move(forms),
                                             std::move(callback));
   } else {
@@ -546,21 +526,6 @@ void AutofillManager::TriggerFormExtractionInAllFrames(
       std::move(form_extraction_finished_callback));
 }
 
-void AutofillManager::ReparseKnownForms() {
-  std::vector<FormData> forms;
-  forms.reserve(form_structures_.size());
-  for (const auto& [id, form_structure] : form_structures_) {
-    forms.push_back(form_structure->ToFormData());
-  }
-  auto ProcessParsedForms = [](AutofillManager& self,
-                               const std::vector<FormData>& parsed_forms) {
-    if (!parsed_forms.empty()) {
-      self.OnFormsParsed(parsed_forms);
-    }
-  };
-  ParseFormsAsync(forms, base::BindOnce(ProcessParsedForms));
-}
-
 base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
 AutofillManager::GetServerPredictionsForForm(
     FormGlobalId form_id,
@@ -805,17 +770,16 @@ void AutofillManager::ParseFormsAsyncCommon(
   // Chain running heuristics and updating cache after running the Password
   // Manager model.
   auto run_password_manager_model_if_needed = base::BindOnce(
-      &ApplyMlModel, GetWeakPtr(),
-      optimization_guide::proto::
-          OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION,
+      &GetMlPredictionsIfNeeded, client().GetWeakPtr(),
+      &AutofillClient::GetPasswordManagerFieldClassificationModelHandler,
       std::move(run_heuristics_and_update_cache));
 
   // Chain running the Password Manager model after running the Autofill model.
-  ApplyMlModel(GetWeakPtr(),
-               optimization_guide::proto::
-                   OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-               std::move(run_password_manager_model_if_needed),
-               std::move(form_structures));
+  GetMlPredictionsIfNeeded(
+      client().GetWeakPtr(),
+      &AutofillClient::GetAutofillFieldClassificationModelHandler,
+      std::move(run_password_manager_model_if_needed),
+      std::move(form_structures));
 #else
   std::move(run_heuristics_and_update_cache).Run(std::move(form_structures));
 #endif
@@ -886,31 +850,6 @@ void AutofillManager::LogCurrentFieldTypes(const FormStructure& form) {
   if (base::FeatureList::IsEnabled(
           features::test::kAutofillShowTypePredictions)) {
     driver().SendTypePredictionsToRenderer(form);
-  }
-}
-
-void AutofillManager::SubscribeToMlModelChanges(
-    FieldClassificationModelHandler& handler,
-    optimization_guide::proto::OptimizationTarget optimization_target) {
-  switch (optimization_target) {
-    case optimization_guide::proto::OptimizationTarget::
-        OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION:
-      if (!autofill_model_change_subscription_) {
-        autofill_model_change_subscription_ =
-            handler.RegisterModelChangeCallback(base::BindRepeating(
-                &AutofillManager::ReparseKnownForms, base::Unretained(this)));
-      }
-      break;
-    case optimization_guide::proto::OptimizationTarget::
-        OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION:
-      if (!password_manager_model_change_subscription_) {
-        password_manager_model_change_subscription_ =
-            handler.RegisterModelChangeCallback(base::BindRepeating(
-                &AutofillManager::ReparseKnownForms, base::Unretained(this)));
-      }
-      break;
-    default:
-      NOTREACHED();
   }
 }
 

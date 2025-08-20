@@ -368,14 +368,6 @@ void FieldClassificationModelHandler::OnModelUpdated(
 
   // Invalidate cached predictions, if any.
   predictions_cache_.Clear();
-
-  model_change_callback_list_.Notify();
-}
-
-base::CallbackListSubscription
-FieldClassificationModelHandler::RegisterModelChangeCallback(
-    ModelChangeCallbackList::CallbackType callback) {
-  return model_change_callback_list_.Add(std::move(callback));
 }
 
 std::vector<FieldType> FieldClassificationModelHandler::GetMostLikelyTypes(
