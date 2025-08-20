@@ -29,6 +29,7 @@
 #include "components/embedder_support/switches.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/language_experiments.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -3129,4 +3130,94 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageDeprecationOTBrowserTest,
   // Ensure third-party JavaScript access JS getters get the full list of
   // accept-language.
   VerifyNavigatorLanguages({"zh", "en-US"});
+}
+
+// Browser tests verify reduce the total number of Accept-Language.
+class ReduceAcceptLanguageCountBrowserTest
+    : public ReduceAcceptLanguageBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void EnabledFeatures() override {
+    // If explicitly set custom count set 5 as max.
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{{network::features::kReduceAcceptLanguageCount,
+                                 {{network::features::kMaxAcceptLanguage.name,
+                                   "5"}}}},
+          /*disabled_features=*/{network::features::kReduceAcceptLanguage,
+                                 network::features::kReduceAcceptLanguageHTTP});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{network::features::kReduceAcceptLanguageCount},
+          /*disabled_features=*/{network::features::kReduceAcceptLanguage,
+                                 network::features::kReduceAcceptLanguageHTTP});
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(FeatureFlag,
+                         ReduceAcceptLanguageCountBrowserTest,
+                         testing::Values(true, false));
+
+IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, RegularRequest) {
+  base::HistogramTester histograms;
+
+  SetTestOptions({.content_language_in_parent = "en",
+                  .avail_language_in_parent = "en, en-US",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginRequestUrl()});
+  SetPrefsAcceptLanguage(base::SplitString(
+      kLargeLanguages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
+
+  // Expect no Accept-Language header added because browser_tests can only check
+  // headers in navigation layer, browser_tests can't see headers added by
+  // network stack.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                               std::nullopt);
+  if (GetParam()) {
+    VerifyNavigatorLanguages({"zh", "zh-CN", "en-US", "en", "af"});
+  } else {
+    VerifyNavigatorLanguages(
+        {"zh", "zh-CN", "en-US", "en", "af", "sq", "am", "ar", "an", "hy"});
+  }
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Expect a total count of 3. The histogram is recorded once during initial
+  // profile setup, and then twice more when SetPrefsAcceptLanguage is called
+  // to sync the preference to the renderer and network services.
+  histograms.ExpectTotalCount("LanguageUsage.AcceptLanguage.Count2", 3);
+}
+
+IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
+  base::HistogramTester histograms;
+
+  SetTestOptions({.content_language_in_parent = "es",
+                  .avail_language_in_parent = "es, en-US",
+                  .vary_in_parent = "accept-language",
+                  .content_language_in_child = "es",
+                  .avail_language_in_child = "es, en-US",
+                  .vary_in_child = "accept-language"},
+                 {SameOriginIframeUrl(), SimpleRequestUrl()});
+
+  SetPrefsAcceptLanguage(base::SplitString(
+      kLargeLanguages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
+
+  // Expect no Accept-Language header added because browser_tests can only check
+  // headers in navigation layer, browser_tests can't see headers added by
+  // network stack.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                               std::nullopt);
+  if (GetParam()) {
+    VerifyNavigatorLanguages({"zh", "zh-CN", "en-US", "en", "af"});
+  } else {
+    VerifyNavigatorLanguages(
+        {"zh", "zh-CN", "en-US", "en", "af", "sq", "am", "ar", "an", "hy"});
+  }
+  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Expect a total count of 3. The histogram is recorded once during initial
+  // profile setup, and then twice more when SetPrefsAcceptLanguage is called
+  // to sync the preference to the renderer and network services.
+  histograms.ExpectTotalCount("LanguageUsage.AcceptLanguage.Count2", 3);
 }

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -124,6 +125,25 @@ bool ReduceAcceptLanguageUtils::CheckDisableReduceAcceptLanguageOriginTrial(
       request_origin, partition_origin.value(),
       blink::mojom::OriginTrialFeature::kDisableReduceAcceptLanguage,
       base::Time::Now());
+}
+
+// static
+std::string ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+    const std::string& language_list) {
+  if (base::FeatureList::IsEnabled(
+          network::features::kReduceAcceptLanguageCount)) {
+    std::vector<std::string> languages = base::SplitString(
+        language_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    base::UmaHistogramCounts100("LanguageUsage.AcceptLanguage.Count2",
+                                languages.size());
+
+    size_t max_language_count = network::features::kMaxAcceptLanguage.Get();
+    if (max_language_count > 0 && languages.size() > max_language_count) {
+      languages.resize(max_language_count);
+      return base::JoinString(languages, ",");
+    }
+  }
+  return language_list;
 }
 
 std::optional<std::string>

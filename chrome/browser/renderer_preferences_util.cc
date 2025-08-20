@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/convert_explicitly_allowed_network_ports_pref.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
+#include "content/public/browser/reduce_accept_language_utils.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #endif
@@ -99,7 +100,8 @@ std::string GetLanguageListForProfile(Profile* profile,
     // In incognito mode return only the first language.
     return language::GetFirstLanguage(language_list);
   }
-  return language_list;
+  return content::ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+      language_list);
 }
 
 }  // namespace

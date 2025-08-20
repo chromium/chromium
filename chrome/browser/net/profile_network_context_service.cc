@@ -78,6 +78,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/reduce_accept_language_utils.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
@@ -710,7 +711,9 @@ std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
     return ComputeAcceptLanguageFromPref(
         language::GetFirstLanguage(pref_accept_language_.GetValue()));
   }
-  return ComputeAcceptLanguageFromPref(pref_accept_language_.GetValue());
+  return ComputeAcceptLanguageFromPref(
+      content::ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+          pref_accept_language_.GetValue()));
 }
 
 void ProfileNetworkContextService::UpdateReferrersEnabled() {

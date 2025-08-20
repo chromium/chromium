@@ -60,6 +60,10 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
       const std::vector<std::string>& preferred_languages,
       const std::vector<std::string>& available_languages);
 
+  // Given a comma separated list of locales, return the top number of language
+  // based on the setting.
+  static std::string GetLanguagesWithMaxCount(const std::string& language_list);
+
   // Returns whether reduce accept language can happen for the given URL.
   // This is true only if the URL is eligible.
   //

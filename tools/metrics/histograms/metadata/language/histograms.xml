@@ -326,8 +326,20 @@ chromium-metrics-reviews@google.com.
   <owner>dvallet@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    The number of accepted languages in the user preferences recored once per
+    The number of accepted languages in the user preferences recorded once per
     profile initialization. Incognito profiles are ignored.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.AcceptLanguage.Count2" units="count"
+    expires_after="2026-01-25">
+  <owner>victortan@chromium.org</owner>
+  <owner>katabolism-finch@google.com</owner>
+  <summary>
+    The number of accepted languages in the user preferences recorded when the
+    user's language preferences change. This metric ignores cases when the
+    Accept-Language header was added before requests are handled by network
+    layer. Incognito profiles are ignored.
   </summary>
 </histogram>
 

@@ -213,6 +213,21 @@ BASE_FEATURE(kReduceAcceptLanguageHTTP,
              "ReduceAcceptLanguageHTTP",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled this feature will limit the total number of languages for
+// Accept-Language to enhance privacy. See details in
+// https://datatracker.ietf.org/doc/html/rfc7231#section-9.7.
+BASE_FEATURE(kReduceAcceptLanguageCount,
+             "ReduceAcceptLanguageCount",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When non-zero, the number of Accept-Language of this size will return as the
+// HTTP header and JavaScript getter.
+BASE_FEATURE_PARAM(int,
+                   kMaxAcceptLanguage,
+                   &kReduceAcceptLanguageCount,
+                   /*name=*/"MaxAcceptLanguage",
+                   /*default_value=*/10);
+
 // Reduce PNA preflight response waiting time to 200ms.
 // See: https://wicg.github.io/private-network-access/#cors-preflight
 BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,

@@ -680,6 +680,38 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
   }
 }
 
+TEST_F(AcceptLanguageUtilsTests, GetLanguageWithDefaultLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kReduceAcceptLanguageCount);
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it",
+            ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
+}
+
+TEST_F(AcceptLanguageUtilsTests, GetLanguageWithCustomLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kReduceAcceptLanguageCount,
+      {{network::features::kMaxAcceptLanguage.name, "5"}});
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN",
+            ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
+}
+
+TEST_F(AcceptLanguageUtilsTests, GetLanguageWithInvalidLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kReduceAcceptLanguageCount,
+      {{network::features::kMaxAcceptLanguage.name, "0"}});
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko",
+            ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
+}
+
 class CreateAcceptLanguageUtilsTest : public ::testing::Test {
  public:
   CreateAcceptLanguageUtilsTest() = default;
