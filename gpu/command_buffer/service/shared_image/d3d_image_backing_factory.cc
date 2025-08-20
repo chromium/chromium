@@ -103,33 +103,6 @@ bool DCompTextureIsSupported(const D3D11_TEXTURE2D_DESC& desc) {
              (D3D11_RESOURCE_MISC_SHARED | D3D11_RESOURCE_MISC_SHARED_NTHANDLE);
 }
 
-// Formats supported by CreateSharedImage() with no GpuMemoryBufferHandle.
-DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
-  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
-    return DXGI_FORMAT_R16G16B16A16_FLOAT;
-  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
-    return DXGI_FORMAT_B8G8R8A8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kRGBA_8888) {
-    return DXGI_FORMAT_R8G8B8A8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kBGRX_8888) {
-    return DXGI_FORMAT_B8G8R8A8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kRGBX_8888) {
-    return DXGI_FORMAT_R8G8B8A8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kR_8) {
-    return DXGI_FORMAT_R8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kRG_88) {
-    return DXGI_FORMAT_R8G8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kR_16) {
-    return DXGI_FORMAT_R16_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kRG_1616) {
-    return DXGI_FORMAT_R16G16_UNORM;
-  } else if (format == viz::MultiPlaneFormat::kNV12) {
-    return DXGI_FORMAT_NV12;
-  }
-
-  return DXGI_FORMAT_UNKNOWN;
-}
-
 // Formats supported by CreateSharedImage(GMB).
 DXGI_FORMAT GetDXGIFormatForGMB(viz::SharedImageFormat format) {
   if (format == viz::SinglePlaneFormat::kRGBA_8888) {
@@ -528,7 +501,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  DXGI_FORMAT dxgi_format = GetDXGIFormatForCreateTexture(format);
+  DXGI_FORMAT dxgi_format = ToDXGIFormat(format);
   DCHECK_NE(dxgi_format, DXGI_FORMAT_UNKNOWN);
 
   // GL_TEXTURE_2D is ok to use here as D3D11_BIND_RENDER_TARGET is being used.
@@ -954,8 +927,7 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
       // creating a swapchain backing.
     } else if (gmb_type == gfx::EMPTY_BUFFER) {
       return gl::DirectCompositionTextureSupported() &&
-             IsFormatSupportedForDCompTexture(
-                 GetDXGIFormatForCreateTexture(format));
+             IsFormatSupportedForDCompTexture(ToDXGIFormat(format));
     }
   }
 
@@ -965,8 +937,7 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
   }
 
   if (gmb_type == gfx::EMPTY_BUFFER) {
-    if (GetDXGIFormatForCreateTexture(format) == DXGI_FORMAT_UNKNOWN &&
-        !is_buffer) {
+    if (ToDXGIFormat(format) == DXGI_FORMAT_UNKNOWN && !is_buffer) {
       return false;
     }
   } else if (gmb_type == gfx::DXGI_SHARED_HANDLE) {

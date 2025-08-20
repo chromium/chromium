@@ -132,26 +132,14 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandle(
   TRACE_EVENT0("gpu", "GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandle");
 
   gfx::GpuMemoryBufferHandle handle;
-
   auto d3d11_device = GetOrCreateD3D11Device();
   if (!d3d11_device) {
     return handle;
   }
 
-  DXGI_FORMAT dxgi_format;
-  if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
-      format == viz::SinglePlaneFormat::kRGBX_8888) {
-    dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kBGRA_8888 ||
-             format == viz::SinglePlaneFormat::kBGRX_8888) {
-    dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
-    dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-  } else if (format == viz::MultiPlaneFormat::kNV12) {
-    dxgi_format = DXGI_FORMAT_NV12;
-  } else {
-    NOTREACHED() << "Creating native GMB Handle from invalid format="
-                 << format.ToString();
+  DXGI_FORMAT dxgi_format = gpu::ToDXGIFormat(format);
+  if (dxgi_format == DXGI_FORMAT_UNKNOWN) {
+    return handle;
   }
 
   size_t buffer_size;
