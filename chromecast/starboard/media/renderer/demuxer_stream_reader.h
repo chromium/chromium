@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/starboard/media/media/drm_util.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "media/base/audio_decoder_config.h"
@@ -51,15 +50,13 @@ class DemuxerStreamReader {
   using HandleEosCb =
       base::RepeatingCallback<void(int seek_ticket, StarboardMediaType type)>;
 
-  DemuxerStreamReader(
-      ::media::DemuxerStream* audio_stream,
-      ::media::DemuxerStream* video_stream,
-      std::optional<StarboardAudioSampleInfo> audio_sample_info,
-      std::optional<StarboardVideoSampleInfo> video_sample_info,
-      HandleBufferCb handle_buffer_cb,
-      HandleEosCb handle_eos_cb,
-      ::media::RendererClient* client,
-      chromecast::metrics::CastMetricsHelper* cast_metrics_helper);
+  DemuxerStreamReader(::media::DemuxerStream* audio_stream,
+                      ::media::DemuxerStream* video_stream,
+                      std::optional<StarboardAudioSampleInfo> audio_sample_info,
+                      std::optional<StarboardVideoSampleInfo> video_sample_info,
+                      HandleBufferCb handle_buffer_cb,
+                      HandleEosCb handle_eos_cb,
+                      ::media::RendererClient* client);
 
   ~DemuxerStreamReader();
 
@@ -95,19 +92,13 @@ class DemuxerStreamReader {
   // Runs a pending callback now that a DRM key is available.
   void RunPendingDrmKeyCallback(int64_t token);
 
-  // Updates the audio config to match the current config from audio_stream_. If
-  // the change is unsupported (e.g. if the codec changed), returns false;
-  // returns true if the config change is supported.
-  bool UpdateAudioConfig();
+  // Updates the audio config to match the current config from audio_stream_.
+  void UpdateAudioConfig();
 
-  // Updates the video config to match the current config from video_stream_. If
-  // the change is unsupported (e.g. if the codec changed), returns false;
-  // returns true if the config change is supported.
-  bool UpdateVideoConfig();
+  // Updates the video config to match the current config from video_stream_.
+  void UpdateVideoConfig();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  raw_ptr<chromecast::metrics::CastMetricsHelper> cast_metrics_helper_ =
-      nullptr;
   ConvertAudioFn convert_audio_fn_;
   HandleBufferCb handle_buffer_cb_;
   HandleEosCb handle_eos_cb_;

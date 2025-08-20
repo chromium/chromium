@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromecast/base/metrics/mock_cast_metrics_helper.h"
 #include "chromecast/starboard/media/cdm/starboard_drm_key_tracker.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "chromecast/starboard/media/media/test_matchers.h"
@@ -27,7 +26,6 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/mock_filters.h"
 #include "media/base/sample_format.h"
-#include "media/base/video_transformation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,7 +34,6 @@ namespace media {
 namespace {
 
 using ::base::test::SingleThreadTaskEnvironment;
-using ::chromecast::metrics::MockCastMetricsHelper;
 using ::media::AudioDecoderConfig;
 using ::media::DecoderBuffer;
 using ::media::DecryptConfig;
@@ -44,7 +41,6 @@ using ::media::DemuxerStream;
 using ::media::MockDemuxerStream;
 using ::media::MockRendererClient;
 using ::testing::_;
-using ::testing::AnyNumber;
 using ::testing::DoAll;
 using ::testing::MockFunction;
 using ::testing::NotNull;
@@ -52,7 +48,6 @@ using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::SaveArgByMove;
-using ::testing::StrEq;
 
 // Some default data. The values themselves are not relevant to the logic of the
 // DemuxerStreamReader.
@@ -136,7 +131,6 @@ class DemuxerStreamReaderTest : public ::testing::Test {
                     scoped_refptr<::media::DecoderBuffer> buffer)>
       handle_buffer_cb_;
   MockFunction<void(int seek_ticket, StarboardMediaType type)> handle_eos_cb_;
-  MockCastMetricsHelper metrics_helper_;
 };
 
 TEST_F(DemuxerStreamReaderTest, ReadsVideoBufferAndCallsBufferCb) {
@@ -161,7 +155,7 @@ TEST_F(DemuxerStreamReaderTest, ReadsVideoBufferAndCallsBufferCb) {
       /*audio_sample_info=*/std::nullopt, expected_info.video_sample_info,
       base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
       base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
-      &renderer_client_, &metrics_helper_);
+      &renderer_client_);
   stream_reader.ReadBuffer(kSeekTicket,
                            StarboardMediaType::kStarboardMediaTypeVideo);
 
@@ -189,7 +183,7 @@ TEST_F(DemuxerStreamReaderTest, ReadsVideoBufferAndCallsEosCb) {
       /*audio_sample_info=*/std::nullopt, video_sample_info,
       base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
       base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
-      &renderer_client_, &metrics_helper_);
+      &renderer_client_);
   stream_reader.ReadBuffer(kSeekTicket,
                            StarboardMediaType::kStarboardMediaTypeVideo);
 
@@ -197,76 +191,6 @@ TEST_F(DemuxerStreamReaderTest, ReadsVideoBufferAndCallsEosCb) {
   ASSERT_FALSE(read_cb.is_null());
   std::move(read_cb).Run(DemuxerStream::Status::kOk,
                          {DecoderBuffer::CreateEOSBuffer()});
-}
-
-TEST_F(DemuxerStreamReaderTest, ReportsVideoResolutionMetrics) {
-  constexpr int kSeekTicket = 7;
-  scoped_refptr<DecoderBuffer> buffer =
-      DecoderBuffer::CopyFrom({1, 2, 3, 4, 5});
-  StarboardSampleInfo expected_info = CreateVideoSample(*buffer);
-  expected_info.video_sample_info.frame_width = 1920;
-  expected_info.video_sample_info.frame_height = 1080;
-
-  base::OnceCallback<void(
-      DemuxerStream::Status status,
-      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
-      read_cb_1;
-  base::OnceCallback<void(
-      DemuxerStream::Status status,
-      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
-      read_cb_2;
-
-  EXPECT_CALL(metrics_helper_,
-              RecordApplicationEventWithValue(
-                  StrEq("Cast.Platform.VideoResolution"), (1920 << 16) | 1080))
-      .Times(1);
-  EXPECT_CALL(metrics_helper_,
-              RecordApplicationEventWithValue(
-                  StrEq("Cast.Platform.VideoResolution"), (3840 << 16) | 2160))
-      .Times(1);
-
-  // Note: AnyNumber() is used so that we ignore any further reads without
-  // failing the test.
-  EXPECT_CALL(video_stream_, OnRead)
-      .Times(AnyNumber())
-      .WillOnce(SaveArgByMove<0>(&read_cb_1))
-      .WillOnce(SaveArgByMove<0>(&read_cb_2));
-
-  DemuxerStreamReader stream_reader(
-      /*audio_stream=*/nullptr, &video_stream_,
-      /*audio_sample_info=*/std::nullopt, expected_info.video_sample_info,
-      base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
-      base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
-      &renderer_client_, &metrics_helper_);
-  stream_reader.ReadBuffer(kSeekTicket,
-                           StarboardMediaType::kStarboardMediaTypeVideo);
-
-  // Simulate the DemuxerStream providing a buffer.
-  ASSERT_FALSE(read_cb_1.is_null());
-  std::move(read_cb_1).Run(DemuxerStream::Status::kOk, {buffer});
-  RunPendingTasks();
-
-  // Simulate reading a buffer. The DemuxerStream reports a config change this
-  // time. The new resolution (4k) should be reported.
-  video_stream_.set_video_decoder_config(::media::VideoDecoderConfig(
-      ::media::VideoCodec::kHEVC, ::media::VideoCodecProfile::HEVCPROFILE_MAIN,
-      ::media::VideoDecoderConfig::AlphaMode::kIsOpaque,
-      ::media::VideoColorSpace(::media::VideoColorSpace::PrimaryID::BT709,
-                               ::media::VideoColorSpace::TransferID::BT709,
-                               ::media::VideoColorSpace::MatrixID::BT709,
-                               gfx::ColorSpace::RangeID::LIMITED),
-      ::media::VideoTransformation(::media::VideoRotation::VIDEO_ROTATION_0,
-                                   /*mirrored=*/false),
-      /*codec_size=*/gfx::Size(3840, 2160),
-      /*visible_rect=*/gfx::Rect(0, 0, 3840, 2160),
-      /*natural_size=*/gfx::Size(3840, 2160), /*extra_data=*/{},
-      ::media::EncryptionScheme::kUnencrypted));
-  stream_reader.ReadBuffer(kSeekTicket,
-                           StarboardMediaType::kStarboardMediaTypeVideo);
-  ASSERT_FALSE(read_cb_2.is_null());
-  std::move(read_cb_2).Run(DemuxerStream::Status::kConfigChanged, {});
-
-  RunPendingTasks();
 }
 
 TEST_F(DemuxerStreamReaderTest, ReadsAudioBufferAndCallsBufferCb) {
@@ -291,7 +215,7 @@ TEST_F(DemuxerStreamReaderTest, ReadsAudioBufferAndCallsBufferCb) {
       /*video_sample_info=*/std::nullopt,
       base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
       base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
-      &renderer_client_, &metrics_helper_);
+      &renderer_client_);
   stream_reader.ReadBuffer(kSeekTicket,
                            StarboardMediaType::kStarboardMediaTypeAudio);
 
@@ -319,7 +243,7 @@ TEST_F(DemuxerStreamReaderTest, ReadsAudioBufferAndCallsEosCb) {
       /*video_sample_info=*/std::nullopt,
       base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
       base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
-      &renderer_client_, &metrics_helper_);
+      &renderer_client_);
   stream_reader.ReadBuffer(kSeekTicket,
                            StarboardMediaType::kStarboardMediaTypeAudio);
 
@@ -374,7 +298,7 @@ TEST_F(DemuxerStreamReaderTest, ReadsAudioBufferAndConvertsPcmToS16) {
       /*video_sample_info=*/std::nullopt,
       base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
       base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
-      &renderer_client_, &metrics_helper_);
+      &renderer_client_);
   stream_reader.ReadBuffer(kSeekTicket,
                            StarboardMediaType::kStarboardMediaTypeAudio);
 
@@ -433,7 +357,7 @@ TEST_F(DemuxerStreamReaderTest,
       /*audio_sample_info=*/std::nullopt, expected_info.video_sample_info,
       base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
       base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
-      &renderer_client_, &metrics_helper_);
+      &renderer_client_);
   stream_reader.ReadBuffer(kSeekTicket,
                            StarboardMediaType::kStarboardMediaTypeVideo);
 
@@ -485,7 +409,7 @@ TEST_F(DemuxerStreamReaderTest,
       /*audio_sample_info=*/std::nullopt, expected_info.video_sample_info,
       base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
       base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
-      &renderer_client_, &metrics_helper_);
+      &renderer_client_);
   stream_reader.ReadBuffer(kSeekTicket,
                            StarboardMediaType::kStarboardMediaTypeVideo);
 
