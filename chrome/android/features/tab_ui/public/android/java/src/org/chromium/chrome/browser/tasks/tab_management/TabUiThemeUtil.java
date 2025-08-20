@@ -104,12 +104,15 @@ public class TabUiThemeUtil {
     /** Returns the tab strip multi-selected and hovered tab color. */
     public static @ColorInt int getTabStripMultiSelectedHoveredTabColor(
             Context context, boolean isIncognito) {
-        int baseColor = SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
-
-        float alpha =
+        int baseColor = getTabStripMultiSelectedTabColor(context, isIncognito);
+        int overlayColor =
+                isIncognito
+                        ? context.getColor(R.color.baseline_primary_80)
+                        : ChromeSemanticColorUtils.getTabInactiveHoverColor(context);
+        float overlayAlpha =
                 ResourcesCompat.getFloat(
-                        context.getResources(), R.dimen.multi_selected_tab_hovered_alpha);
-        return ColorUtils.setAlphaComponentWithFloat(baseColor, alpha);
+                        context.getResources(), R.dimen.tsr_folio_tab_inactive_hover_alpha);
+        return ColorUtils.getColorWithOverlay(baseColor, overlayColor, overlayAlpha);
     }
 
     /** Returns the tab strip title text color. */
