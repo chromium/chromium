@@ -318,12 +318,17 @@ class CORE_EXPORT HTMLElement : public Element {
   void SetPopoverFocusOnShow();
   // This hides all visible popovers up to, but not including,
   // |endpoint|. If |endpoint| is nullptr, all popovers are hidden. Hiding
-  // (some) popovers may be prevented by the inspector. In that case,
-  // PopoverHideResult::kForceOpenedByInspector is returned.
-  static PopoverHideResult HideAllPopoversUntil(const HTMLElement*,
-                                                Document&,
-                                                HidePopoverFocusBehavior,
-                                                HidePopoverTransitionBehavior);
+  // (some) popovers may be prevented by the inspector. In that case, this
+  // function will return PopoverHideResult::kForcedOpenByInspector, and the
+  // `popovers_held_open_by_inspector` output param will contain the list of
+  // popovers held open above |endpoint| on its stack in top to bottom order.
+  static PopoverHideResult HideAllPopoversUntil(
+      const HTMLElement*,
+      Document&,
+      HidePopoverFocusBehavior,
+      HidePopoverTransitionBehavior,
+      HeapVector<Member<HTMLElement>>* popovers_held_open_by_inspector =
+          nullptr);
 
   virtual PopoverTriggerSupport SupportsPopoverTriggering() const;
 
