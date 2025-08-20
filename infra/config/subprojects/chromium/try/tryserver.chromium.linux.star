@@ -55,10 +55,6 @@ try_.builder(
         ),
     executable = "recipe:compile_size_trybot",
     gn_args = gn_args.config(
-        args = {
-            # Disable clang modules to detect header size change in non-module build.
-            "use_clang_modules": False,
-        },
         configs = [
             "release_try_builder",
             "remoteexec",
