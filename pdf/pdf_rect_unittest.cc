@@ -19,7 +19,7 @@ TEST(PdfRectTest, DefaultConstructor) {
   EXPECT_EQ(0, kRect.height());
 }
 
-TEST(PdfRectTest, Constructor) {
+TEST(PdfRectTest, FloatsConstructor) {
   static constexpr PdfRect kRect(1.0f, 2.0f, 3.0f, 5.0f);
   EXPECT_EQ(1.0f, kRect.left());
   EXPECT_EQ(2.0f, kRect.bottom());
@@ -27,6 +27,13 @@ TEST(PdfRectTest, Constructor) {
   EXPECT_EQ(5.0f, kRect.top());
   EXPECT_EQ(2.0f, kRect.width());
   EXPECT_EQ(3.0f, kRect.height());
+}
+
+TEST(PdfRectTest, GfxRectFConstructor) {
+  static constexpr PdfRect kRect(1.0f, 2.0f, 3.0f, 5.0f);
+  const gfx::RectF rect = kRect.AsGfxRectF();
+  const PdfRect pdf_rect(rect);
+  EXPECT_EQ(kRect, pdf_rect);
 }
 
 TEST(PdfRectTest, WritableAccessors) {

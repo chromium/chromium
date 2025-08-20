@@ -20,6 +20,12 @@ namespace chrome_pdf {
 class PdfRect {
  public:
   constexpr PdfRect() : PdfRect(0, 0, 0, 0) {}
+  // PdfRect and gfx::RectF have top/bottom flipped.
+  constexpr explicit PdfRect(const gfx::RectF& rect)
+      : left_(rect.x()),
+        top_(rect.bottom()),
+        right_(rect.right()),
+        bottom_(rect.y()) {}
   constexpr PdfRect(float left, float bottom, float right, float top)
       : left_(left), top_(top), right_(right), bottom_(bottom) {}
   constexpr ~PdfRect() = default;
