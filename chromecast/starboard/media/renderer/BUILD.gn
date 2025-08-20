@@ -59,9 +59,11 @@ source_set("demuxer_stream_reader") {
   ]
   deps = [
     ":chromium_starboard_conversions",
+    "//chromecast/base/metrics",
     "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
     "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
     "//chromecast/starboard/media/media:starboard_resampler",
+    "//ui/gfx/geometry",
   ]
 }
 

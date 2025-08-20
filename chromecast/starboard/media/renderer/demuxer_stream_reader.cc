@@ -4,6 +4,9 @@
 
 #include "chromecast/starboard/media/renderer/demuxer_stream_reader.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -11,11 +14,13 @@
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/starboard/chromecast/starboard_cast_api/cast_starboard_api_types.h"
 #include "chromecast/starboard/media/cdm/starboard_drm_key_tracker.h"
 #include "chromecast/starboard/media/media/starboard_resampler.h"
 #include "chromecast/starboard/media/renderer/chromium_starboard_conversions.h"
 #include "media/base/video_decoder_config.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace chromecast {
 namespace media {
@@ -23,6 +28,9 @@ namespace media {
 namespace {
 
 using ::media::DecoderBuffer;
+
+constexpr std::string_view kResolutionMetricName =
+    "Cast.Platform.VideoResolution";
 
 scoped_refptr<DecoderBuffer> ConvertPcmAudioBufferToS16(
     ::media::AudioCodec codec,
@@ -51,6 +59,27 @@ bool IsResamplingNecessary(const ::media::AudioDecoderConfig& audio_config) {
          audio_config.codec() == ::media::AudioCodec::kPCM_S24BE;
 }
 
+// Updates the VideoResolution metric. If `client` is not null, it will be
+// informed of the new resolution via OnVideoNaturalSizeChange.
+//
+// This should be called when the resolution is first specified, and again any
+// time the resolution changes.
+void HandleNewResolution(
+    int width,
+    int height,
+    ::media::RendererClient* client,
+    chromecast::metrics::CastMetricsHelper* metrics_helper) {
+  if (client) {
+    client->OnVideoNaturalSizeChange(gfx::Size(width, height));
+  }
+
+  if (metrics_helper) {
+    const int encoded_video_resolution = (width << 16) | height;
+    metrics_helper->RecordApplicationEventWithValue(
+        std::string(kResolutionMetricName), encoded_video_resolution);
+  }
+}
+
 }  // namespace
 
 DemuxerStreamReader::DemuxerStreamReader(
@@ -60,14 +89,21 @@ DemuxerStreamReader::DemuxerStreamReader(
     std::optional<StarboardVideoSampleInfo> video_sample_info,
     HandleBufferCb handle_buffer_cb,
     HandleEosCb handle_eos_cb,
-    ::media::RendererClient* client)
-    : handle_buffer_cb_(std::move(handle_buffer_cb)),
+    ::media::RendererClient* client,
+    chromecast::metrics::CastMetricsHelper* cast_metrics_helper)
+    : cast_metrics_helper_(cast_metrics_helper),
+      handle_buffer_cb_(std::move(handle_buffer_cb)),
       handle_eos_cb_(std::move(handle_eos_cb)),
       client_(client),
       audio_stream_(audio_stream),
       video_stream_(video_stream),
       audio_sample_info_(std::move(audio_sample_info)),
       video_sample_info_(std::move(video_sample_info)) {
+  if (cast_metrics_helper_ == nullptr) {
+    LOG(WARNING) << "cast_metrics_helper is null; resolution metrics will not "
+                    "be uploaded.";
+  }
+
   if (audio_stream_) {
     ::media::AudioDecoderConfig audio_config =
         audio_stream_->audio_decoder_config();
@@ -79,6 +115,21 @@ DemuxerStreamReader::DemuxerStreamReader(
     } else {
       convert_audio_fn_ = base::BindRepeating(&DoNotConvertBuffer);
     }
+  }
+
+  if (video_sample_info_) {
+    LOG(INFO) << "Initial resolution: " << video_sample_info_->frame_width
+              << "x" << video_sample_info_->frame_height;
+
+    // There's a bug (?) in MojoRenderer: they don't check that client_ is
+    // non-null in MojoRenderer::OnVideoNaturalSizeChange. Calling
+    // client_->OnVideoNaturalSizeChange here will cause a crash, presumably
+    // since the MojoRenderer has not finished initializing at this point.
+    //
+    // If that bug is resolved, we can pass client_ to HandleNewResolution.
+    HandleNewResolution(video_sample_info_->frame_width,
+                        video_sample_info_->frame_height,
+                        /*client=*/nullptr, cast_metrics_helper_);
   }
 }
 
@@ -118,7 +169,10 @@ void DemuxerStreamReader::HandleNonOkDemuxerStatus(
     }
     case ::media::DemuxerStream::Status::kConfigChanged: {
       if (type == StarboardMediaType::kStarboardMediaTypeAudio) {
-        UpdateAudioConfig();
+        if (!UpdateAudioConfig()) {
+          client_->OnError(::media::DECODER_ERROR_NOT_SUPPORTED);
+          return;
+        }
 
         // Keep reading more data.
         audio_stream_->Read(
@@ -126,7 +180,10 @@ void DemuxerStreamReader::HandleNonOkDemuxerStatus(
                               weak_factory_.GetWeakPtr(), type, seek_ticket));
       } else {
         CHECK_EQ(type, StarboardMediaType::kStarboardMediaTypeVideo);
-        UpdateVideoConfig();
+        if (!UpdateVideoConfig()) {
+          client_->OnError(::media::DECODER_ERROR_NOT_SUPPORTED);
+          return;
+        }
 
         // Keep reading more data.
         video_stream_->Read(
@@ -281,14 +338,31 @@ void DemuxerStreamReader::RunPendingDrmKeyCallback(int64_t token) {
   }
 }
 
-void DemuxerStreamReader::UpdateAudioConfig() {
+bool DemuxerStreamReader::UpdateAudioConfig() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(audio_stream_);
   chromium_audio_config_ = audio_stream_->audio_decoder_config();
   LOG(INFO) << "Audio config changed to "
             << chromium_audio_config_.AsHumanReadableString();
-  audio_sample_info_ = ToStarboardAudioSampleInfo(chromium_audio_config_);
+
+  std::optional<StarboardAudioSampleInfo> new_sample_info =
+      ToStarboardAudioSampleInfo(chromium_audio_config_);
+
+  if (!new_sample_info) {
+    LOG(ERROR) << "Audio config could not be converted to a starboard config.";
+    return false;
+  }
+
+  if (audio_sample_info_ &&
+      audio_sample_info_->codec != new_sample_info->codec) {
+    LOG(ERROR)
+        << "Mid-playback audio codec changes are not supported (changed from "
+        << audio_sample_info_->codec << " to " << new_sample_info->codec << ")";
+    return false;
+  }
+
+  audio_sample_info_ = std::move(new_sample_info);
   if (IsResamplingNecessary(chromium_audio_config_)) {
     convert_audio_fn_ = base::BindRepeating(
         &ConvertPcmAudioBufferToS16, chromium_audio_config_.codec(),
@@ -298,9 +372,10 @@ void DemuxerStreamReader::UpdateAudioConfig() {
     convert_audio_fn_ = base::BindRepeating(&DoNotConvertBuffer);
   }
   client_->OnAudioConfigChange(chromium_audio_config_);
+  return true;
 }
 
-void DemuxerStreamReader::UpdateVideoConfig() {
+bool DemuxerStreamReader::UpdateVideoConfig() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(video_stream_);
@@ -311,16 +386,29 @@ void DemuxerStreamReader::UpdateVideoConfig() {
   std::optional<StarboardVideoSampleInfo> new_sample_info =
       ToStarboardVideoSampleInfo(video_config);
 
-  // TODO(antoniori): maybe fail gracefully here, rather than crashing.
-  DCHECK(new_sample_info);
+  if (!new_sample_info) {
+    LOG(ERROR) << "Video config could not be converted to a starboard config.";
+    return false;
+  }
+
+  if (video_sample_info_ &&
+      video_sample_info_->codec != new_sample_info->codec) {
+    LOG(ERROR)
+        << "Mid-playback video codec changes are not supported (changed from "
+        << video_sample_info_->codec << " to " << new_sample_info->codec << ")";
+    return false;
+  }
+
   if (!video_sample_info_ ||
       video_sample_info_->frame_width != new_sample_info->frame_width ||
       video_sample_info_->frame_height != new_sample_info->frame_height) {
-    client_->OnVideoNaturalSizeChange(gfx::Size(
-        video_sample_info_->frame_width, video_sample_info_->frame_height));
+    HandleNewResolution(new_sample_info->frame_width,
+                        new_sample_info->frame_height, client_,
+                        cast_metrics_helper_);
   }
   video_sample_info_ = std::move(new_sample_info);
   client_->OnVideoConfigChange(video_config);
+  return true;
 }
 
 }  // namespace media

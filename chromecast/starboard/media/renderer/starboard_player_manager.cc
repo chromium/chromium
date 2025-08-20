@@ -159,7 +159,8 @@ StarboardPlayerManager::StarboardPlayerManager(
                               base::Unretained(this)),
           base::BindRepeating(&StarboardPlayerManager::PushEos,
                               base::Unretained(this)),
-          client_) {
+          client_,
+          cast_metrics_helper) {
   CHECK(starboard_);
   CHECK(client_);
   CHECK(task_runner_);
