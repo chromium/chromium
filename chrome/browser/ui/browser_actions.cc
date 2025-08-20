@@ -102,6 +102,11 @@
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#endif
+
 namespace {
 
 actions::ActionItem::ActionItemBuilder ChromeMenuAction(
@@ -997,6 +1002,18 @@ void BrowserActions::InitializeBrowserActions() {
                         bwi, false)
             .Build());
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic::GlicEnabling::IsEnabledForProfile(profile)) {
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kGlic, IDS_SETTINGS_GLIC_PAGE_TITLE,
+                        IDS_SETTINGS_GLIC_PAGE_TITLE,
+                        glic::GlicVectorIconManager::GetVectorIcon(
+                            IDR_GLIC_BUTTON_VECTOR_ICON),
+                        kActionSidePanelShowGlic, bwi, /*is_pinnable=*/true)
+            .Build());
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
   AddListeners();
 }

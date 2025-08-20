@@ -25,7 +25,7 @@ void GlicOcclusionNotifier::PanelStateChanged(
     Browser*) {
   PictureInPictureOcclusionTracker* tracker =
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
-  if (!tracker) {
+  if (!window_controller_->IsDetached() || !tracker) {
     return;
   }
 
