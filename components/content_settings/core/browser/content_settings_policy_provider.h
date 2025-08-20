@@ -11,6 +11,8 @@
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/content_settings_origin_value_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -74,6 +76,10 @@ class PolicyProvider : public ObservableProvider {
   void UpdateManagedDefaultSetting(const PrefsForManagedDefaultMapEntry& entry);
 
   void ReadManagedContentSettings(bool overwrite);
+
+  void SetDefaultValue(ContentSettingsType type,
+                       std::optional<PermissionSetting> setting)
+      EXCLUSIVE_LOCKS_REQUIRED(value_map_.GetLock());
 
   void GetContentSettingsFromPreferences()
       EXCLUSIVE_LOCKS_REQUIRED(value_map_.GetLock());

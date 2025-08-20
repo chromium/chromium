@@ -6,10 +6,12 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -21,10 +23,14 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -628,16 +634,37 @@ void PolicyProvider::UpdateManagedDefaultSetting(
   DCHECK(!prefs_->HasPrefPath(entry.pref_name) ||
          prefs_->IsManagedPreference(entry.pref_name));
   int setting = prefs_->GetInteger(entry.pref_name);
+  ContentSetting content_setting = IntToContentSetting(setting);
+
   base::AutoLock lock(value_map_.GetLock());
-  if (setting == CONTENT_SETTING_DEFAULT) {
+  SetDefaultValue(entry.content_type,
+                  content_setting == CONTENT_SETTING_DEFAULT
+                      ? std::nullopt
+                      : std::make_optional(content_setting));
+  if (entry.content_type == ContentSettingsType::GEOLOCATION &&
+      base::FeatureList::IsEnabled(
+          features::kApproximateGeolocationPermission)) {
+    SetDefaultValue(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+                    content_setting == CONTENT_SETTING_DEFAULT
+                        ? std::nullopt
+                        : std::make_optional(GeolocationSetting{
+                              ToPermissionOption(content_setting),
+                              ToPermissionOption(content_setting)}));
+  }
+}
+
+void PolicyProvider::SetDefaultValue(ContentSettingsType type,
+                                     std::optional<PermissionSetting> setting) {
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(type);
+
+  if (!setting) {
     value_map_.DeleteValue(ContentSettingsPattern::Wildcard(),
-                           ContentSettingsPattern::Wildcard(),
-                           entry.content_type);
-  } else if (info->IsSettingValid(IntToContentSetting(setting))) {
+                           ContentSettingsPattern::Wildcard(), type);
+  } else if (info->delegate().IsValid(*setting)) {
     // Don't set a timestamp for policy settings.
     value_map_.SetValue(ContentSettingsPattern::Wildcard(),
-                        ContentSettingsPattern::Wildcard(), entry.content_type,
-                        base::Value(setting), {});
+                        ContentSettingsPattern::Wildcard(), type,
+                        info->delegate().ToValue(*setting), {});
   }
 }
 
@@ -678,8 +705,9 @@ void PolicyProvider::OnPreferenceChanged(const std::string& name) {
   DCHECK(CalledOnValidThread());
 
   for (const PrefsForManagedDefaultMapEntry& entry : kPrefsForManagedDefault) {
-    if (entry.pref_name == name)
+    if (entry.pref_name == name) {
       UpdateManagedDefaultSetting(entry);
+    }
   }
 
   if (base::Contains(kManagedPrefs, name)) {

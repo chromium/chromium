@@ -41,6 +41,12 @@ bool PatternAppliesToSingleOrigin(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern);
 
+// Converts a PermissionOption enum to a ContentSetting.
+ContentSetting ToContentSetting(PermissionOption option);
+
+// Converts a ContentSetting enum to a PermissionOption.
+PermissionOption ToPermissionOption(ContentSetting setting);
+
 }  // namespace content_settings
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_UTILS_H_

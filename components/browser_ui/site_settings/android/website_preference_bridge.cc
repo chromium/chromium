@@ -40,6 +40,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -82,6 +83,8 @@ using base::android::ScopedJavaLocalRef;
 using content::BrowserContext;
 using content::BrowserThread;
 using content_settings::CookieControlsUtil;
+using content_settings::ToContentSetting;
+using content_settings::ToPermissionOption;
 
 namespace {
 
@@ -348,29 +351,6 @@ bool IsContentSettingUserModifiable(
   return provider >= content_settings::ProviderType::kPrefProvider;
 }
 
-ContentSetting ToContentSetting(PermissionOption option) {
-  switch (option) {
-    case PermissionOption::kAllowed:
-      return CONTENT_SETTING_ALLOW;
-    case PermissionOption::kDenied:
-      return CONTENT_SETTING_BLOCK;
-    case PermissionOption::kAsk:
-      return CONTENT_SETTING_ASK;
-  }
-}
-
-PermissionOption ToPermissionOption(ContentSetting setting) {
-  switch (setting) {
-    case CONTENT_SETTING_ALLOW:
-      return PermissionOption::kAllowed;
-    case CONTENT_SETTING_BLOCK:
-      return PermissionOption::kDenied;
-    case CONTENT_SETTING_ASK:
-      return PermissionOption::kAsk;
-    default:
-      NOTREACHED() << setting;
-  }
-}
 
 }  // anonymous namespace
 

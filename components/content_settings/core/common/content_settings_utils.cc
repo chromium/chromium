@@ -80,4 +80,28 @@ bool PatternAppliesToSingleOrigin(
   return true;
 }
 
+ContentSetting ToContentSetting(PermissionOption option) {
+  switch (option) {
+    case PermissionOption::kAllowed:
+      return CONTENT_SETTING_ALLOW;
+    case PermissionOption::kDenied:
+      return CONTENT_SETTING_BLOCK;
+    case PermissionOption::kAsk:
+      return CONTENT_SETTING_ASK;
+  }
+}
+
+PermissionOption ToPermissionOption(ContentSetting setting) {
+  switch (setting) {
+    case CONTENT_SETTING_ALLOW:
+      return PermissionOption::kAllowed;
+    case CONTENT_SETTING_BLOCK:
+      return PermissionOption::kDenied;
+    case CONTENT_SETTING_ASK:
+      return PermissionOption::kAsk;
+    default:
+      NOTREACHED() << setting;
+  }
+}
+
 }  // namespace content_settings

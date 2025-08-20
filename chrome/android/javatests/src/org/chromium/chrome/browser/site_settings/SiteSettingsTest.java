@@ -4256,16 +4256,13 @@ public class SiteSettingsTest {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
                 && type != SiteSettingsCategory.Type.ANTI_ABUSE) {
             BinaryStatePermissionPreference binaryRadioButton =
-                    (BinaryStatePermissionPreference)
-                            singleCategorySettings.findPreference(
-                                    SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+                    singleCategorySettings.findPreference(
+                            SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
 
             Assert.assertFalse(binaryRadioButton.isEnabled());
         } else {
             ChromeSwitchPreference binaryToggle =
-                    (ChromeSwitchPreference)
-                            singleCategorySettings.findPreference(
-                                    SingleCategorySettings.BINARY_TOGGLE_KEY);
+                    singleCategorySettings.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
 
             Assert.assertFalse(binaryToggle.isEnabled());
         }
