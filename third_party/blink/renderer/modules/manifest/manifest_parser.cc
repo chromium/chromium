@@ -2308,7 +2308,8 @@ mojom::blink::ManifestTabStripPtr ManifestParser::ParseTabStrip(
       home_tab_params->icons = ParseIcons(home_tab_object);
     }
 
-    home_tab_params->scope_patterns = ParseScopePatterns(home_tab_object);
+    home_tab_params->scope_patterns =
+        ParseUrlPatterns(home_tab_object, "scope_patterns");
 
     result->home_tab =
         mojom::blink::HomeTabUnion::NewParams(std::move(home_tab_params));
@@ -2354,20 +2355,17 @@ ManifestParser::ParseTabStripMemberVisibility(const JSONValue* json_value) {
   return mojom::blink::TabStripMemberVisibility::kAuto;
 }
 
-Vector<SafeUrlPattern> ManifestParser::ParseScopePatterns(
-    const JSONObject* object) {
+Vector<SafeUrlPattern> ManifestParser::ParseUrlPatterns(
+    const JSONObject* object,
+    const String& field_name) {
   Vector<SafeUrlPattern> result;
 
-  if (!object->Get("scope_patterns")) {
+  auto* url_patterns = object->GetArray(field_name);
+  if (!url_patterns) {
     return result;
   }
 
-  JSONArray* scope_patterns_list = object->GetArray("scope_patterns");
-  if (!scope_patterns_list) {
-    return result;
-  }
-
-  for (const JSONValue& entry : *scope_patterns_list) {
+  for (const JSONValue& entry : *url_patterns) {
     // TODO(b/330640840): allow strings to be passed through here and parsed via
     // liburlpattern::ConstructorStringParser. The result of the parse can then
     // be used to create a PatternInit object for the rest of the process.
@@ -2380,7 +2378,7 @@ Vector<SafeUrlPattern> ManifestParser::ParseScopePatterns(
     if (init.has_value()) {
       auto base_url = init->base_url.IsValid() ? init->base_url : manifest_url_;
       std::optional<SafeUrlPattern> pattern =
-          ParseScopePattern(init.value(), base_url);
+          ParseUrlPattern(field_name, init.value(), base_url);
       if (pattern.has_value()) {
         result.push_back(std::move(pattern.value()));
       }
@@ -2390,7 +2388,8 @@ Vector<SafeUrlPattern> ManifestParser::ParseScopePatterns(
   return result;
 }
 
-std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
+std::optional<SafeUrlPattern> ManifestParser::ParseUrlPattern(
+    const String& field_name,
     const PatternInit& init,
     const KURL& base_url) {
   auto url_pattern = std::make_optional<SafeUrlPattern>();
@@ -2402,8 +2401,8 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
         ParsePatternInitField(init.protocol, base_url.Protocol());
     if (!part_list.has_value()) {
       AddErrorInfo(
-          "property 'protocol in home tab scope pattern could not be parsed or "
-          "contains banned regex.");
+          StrCat({"property 'protocol' in '", field_name,
+                  "' pattern could not be parsed or contains banned regex."}));
       return std::nullopt;
     }
     url_pattern->protocol = std::move(part_list.value());
@@ -2421,8 +2420,8 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
         ParsePatternInitField(init.username, default_username);
     if (!part_list.has_value()) {
       AddErrorInfo(
-          "property 'username'in home tab scope pattern could not be parsed or "
-          "contains banned regex.");
+          StrCat({"property 'username' in '", field_name,
+                  "' pattern could not be parsed or contains banned regex."}));
       return std::nullopt;
     }
     url_pattern->username = std::move(part_list.value());
@@ -2440,8 +2439,8 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
         ParsePatternInitField(init.password, default_password);
     if (!part_list.has_value()) {
       AddErrorInfo(
-          "property 'password' in home tab scope pattern could not be parsed "
-          "or contains banned regex.");
+          StrCat({"property 'password' in '", field_name,
+                  "' pattern could not be parsed or contains banned regex."}));
       return std::nullopt;
     }
     url_pattern->password = std::move(part_list.value());
@@ -2458,8 +2457,8 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
         ParsePatternInitField(init.hostname, default_hostname);
     if (!part_list.has_value()) {
       AddErrorInfo(
-          "property 'hostname' in home tab scope pattern could not be parsed "
-          "or contains banned regex.");
+          StrCat({"property 'hostname' in '", field_name,
+                  "' pattern could not be parsed or contains banned regex."}));
       return std::nullopt;
     }
     url_pattern->hostname = std::move(part_list.value());
@@ -2477,8 +2476,8 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
         ParsePatternInitField(init.port, default_port);
     if (!part_list.has_value()) {
       AddErrorInfo(
-          "property 'port'in home tab scope pattern could not be parsed or "
-          "contains banned regex.");
+          StrCat({"property 'port' in '", field_name,
+                  "' pattern could not be parsed or contains banned regex."}));
       return std::nullopt;
     }
     url_pattern->port = std::move(part_list.value());
@@ -2501,8 +2500,8 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
         ParsePatternInitField(std::nullopt, default_path);
     if (!part_list.has_value()) {
       AddErrorInfo(
-          "property 'pathname'in home tab scope pattern could not be parsed or "
-          "contains banned regex.");
+          StrCat({"property 'pathname' in '", field_name,
+                  "' pattern could not be parsed or contains banned regex."}));
       return std::nullopt;
     }
     url_pattern->pathname = std::move(part_list.value());
@@ -2520,8 +2519,8 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
         ParsePatternInitField(init.search, default_search);
     if (!part_list.has_value()) {
       AddErrorInfo(
-          "property 'search' in home tab scope pattern could not be parsed "
-          "or contains banned regex.");
+          StrCat({"property 'search' in '", field_name,
+                  "' pattern could not be parsed or contains banned regex."}));
       return std::nullopt;
     }
     url_pattern->search = std::move(part_list.value());
@@ -2540,8 +2539,8 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
         ParsePatternInitField(init.hash, default_hash);
     if (!part_list.has_value()) {
       AddErrorInfo(
-          "property 'hash' in home tab scope pattern could not be parsed "
-          "or contains banned regex.");
+          StrCat({"property 'hash' in '", field_name,
+                  "' pattern could not be parsed or contains banned regex."}));
       return std::nullopt;
     }
     url_pattern->hash = std::move(part_list.value());

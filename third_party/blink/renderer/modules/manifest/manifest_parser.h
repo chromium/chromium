@@ -562,13 +562,16 @@ class MODULES_EXPORT ManifestParser {
   mojom::blink::TabStripMemberVisibility ParseTabStripMemberVisibility(
       const JSONValue* json_value);
 
-  // Parses the 'scope_patterns' field of the 'tab_strip.home_tab' field
-  // of the manifest.
-  Vector<SafeUrlPattern> ParseScopePatterns(const JSONObject* object);
+  // Helper function to parse the JSON array under `object.field_name` as list
+  // of `SafeUrlPattern`, as defined in https://urlpattern.spec.whatwg.org/.
+  Vector<SafeUrlPattern> ParseUrlPatterns(const JSONObject* object,
+                                          const String& field_name);
 
-  // Helper method to parse individual scope patterns.
-  std::optional<SafeUrlPattern> ParseScopePattern(const PatternInit& init,
-                                                  const KURL& base_url);
+  // Helper function to parse an individual URL pattern. See also
+  // `ParseUrlPatterns`.
+  std::optional<SafeUrlPattern> ParseUrlPattern(const String& property_name,
+                                                const PatternInit& init,
+                                                const KURL& base_url);
 
   HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseLocalizedField(const JSONObject* object, const String& field_name);
