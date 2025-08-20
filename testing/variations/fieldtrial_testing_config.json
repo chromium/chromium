@@ -24491,7 +24491,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "TabCollectionAndroid"
+                        "TabCollectionAndroid",
+                        "TabGroupAndroidVisualDataCleanup"
                     ]
                 }
             ]

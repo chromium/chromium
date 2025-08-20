@@ -3994,10 +3994,7 @@ const char kTabArchivalDragDropAndroidDescription[] =
 const char kTabCollectionAndroidName[] = "Tab Collection Android";
 const char kTabCollectionAndroidDescription[] =
     "A data layer refactoring to use tab collections rather than a list to "
-    "store tabs on Chrome Android. WARNING: at present turning this on is "
-    "likely to cause tabs to not work properly, may cause crashes, or tab "
-    "data loss, etc. Don't enable this flag unless you know what you are doing "
-    "and are working on developing this feature.";
+    "store tabs on Chrome Android.";
 
 const char kTabGroupEntryPointsAndroidName[] = "Tab Group Entry Points";
 const char kTabGroupEntryPointsAndroidDescription[] =
