@@ -102,6 +102,8 @@ class NativeWidgetBridgeOwner : public NativeWidgetNSWindowHostHelper {
   NSAccessibilityRemoteUIElement* __strong remote_accessibility_element_;
 };
 
+bool g_is_out_of_process_app_shim = false;
+
 }  // namespace
 
 // static
@@ -114,6 +116,16 @@ void ApplicationBridge::BindReceiver(
     mojo::PendingAssociatedReceiver<mojom::Application> receiver) {
   receiver_.Bind(std::move(receiver),
                  ui::WindowResizeHelperMac::Get()->task_runner());
+}
+
+// static
+bool ApplicationBridge::IsOutOfProcessAppShim() {
+  return g_is_out_of_process_app_shim;
+}
+
+// static
+void ApplicationBridge::SetIsOutOfProcessAppShim() {
+  g_is_out_of_process_app_shim = true;
 }
 
 void ApplicationBridge::SetContentNSViewCreateCallbacks(

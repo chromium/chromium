@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "content/browser/download/drag_download_file.h"
 #include "content/browser/download/drag_download_util.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
@@ -299,6 +300,17 @@
 
   // Oops! Unknown drag pasteboard type.
   NOTREACHED();
+}
+
+- (NSPasteboardWritingOptions)writingOptionsForType:(NSString*)type
+                                         pasteboard:(NSPasteboard*)pasteboard {
+  // It is critical to return 0 here if we're in an app shim process. Otherwise
+  // for drags that end in the host chrome browser process, we might end up
+  // deadlocked with the app shim waiting for a sync IPC reply from chrome,
+  // while chrome is blocked trying to get the promised drag data.
+  return remote_cocoa::ApplicationBridge::IsOutOfProcessAppShim()
+             ? 0
+             : NSPasteboardWritingPromised;
 }
 
 @end  // @implementation WebDragSource

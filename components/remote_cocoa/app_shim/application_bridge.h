@@ -35,6 +35,12 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
   void BindReceiver(
       mojo::PendingAssociatedReceiver<mojom::Application> receiver);
 
+  // App shim code can run either in the main browser process or in a separate
+  // app shim. Generally code shouldn't care which case we're in, but when the
+  // difference matters, this method can be used to check where we are.
+  static bool IsOutOfProcessAppShim();
+  static void SetIsOutOfProcessAppShim();
+
   // Set callbacks to create content types (content types cannot be created
   // in remote_cocoa).
   // TODO(crbug.com/40595042): Move these types from content to

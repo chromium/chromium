@@ -45,6 +45,7 @@
 #include "chrome/common/mac/app_mode_common.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "components/crash/core/app/crashpad.h"
+#include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/features.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
@@ -233,6 +234,8 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
 
     ChromeContentClient chrome_content_client;
     content::SetContentClient(&chrome_content_client);
+
+    remote_cocoa::ApplicationBridge::SetIsOutOfProcessAppShim();
 
     // Local histogram to let tests verify that histograms are emitted properly.
     LOCAL_HISTOGRAM_BOOLEAN("AppShim.Launched", true);
