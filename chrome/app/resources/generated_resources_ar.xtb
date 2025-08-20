@@ -1098,7 +1098,6 @@
 <translation id="174123615272205933">مخصَّص</translation>
 <translation id="1741314857973421784">متابعة</translation>
 <translation id="1744108098763830590">صفحة الخلفية</translation>
-<translation id="174516937379651657">‏عند مشاركة صفحة مع Gemini، يتم إرسال محتواها بالكامل وعنوان URL الخاص بها إلى Google.</translation>
 <translation id="1745732479023874451">إدارة جهات الاتصال</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}zero{هل تريد فتح # ملف وتعديله في تطبيق الويب هذا؟}two{هل تريد فتح ملفَين وتعديلهما في تطبيق الويب هذا؟}few{هل تريد فتح # ملفات وتعديلها في تطبيق الويب هذا؟}many{هل تريد فتح # ملفًا وتعديلها في تطبيق الويب هذا؟}other{هل تريد فتح # ملف وتعديلها في تطبيق الويب هذا؟}}</translation>
 <translation id="1748329107062243374">استخدام مفتاح مرور من جهاز <ph name="DEVICE_NAME" /> لتسجيل الدخول إلى <ph name="WEBSITE" /></translation>
@@ -8198,7 +8197,6 @@
 <translation id="6759193508432371551">إعادة الضبط على الإعدادات الأصلية</translation>
 <translation id="6760354150216532978">تحذير: يمكن لهذا الموقع الإلكتروني الاطّلاع على التعديلات التي تُجريها.</translation>
 <translation id="6761209758867628753">الأداة: مساعدة في الكتابة</translation>
-<translation id="6761459308170527362">‏يمكنك إجراء محادثة صوتية أو نصية لطرح سؤال على Gemini عن محتوى الصفحة التي تتم مشاركتها</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">غير مسموح بحفظ بيانات الموقع الإلكتروني على الجهاز فقط</translation>
 <translation id="6762833852331690540">مفعّل</translation>
@@ -8989,7 +8987,6 @@
 <translation id="7320213904474460808">الاتصال بالشبكة تلقائيًا</translation>
 <translation id="7321545336522791733">خادم يتعذر الوصول إليه</translation>
 <translation id="7322515217754205362">أذونات الوصول إلى المواقع الإلكترونية</translation>
-<translation id="7322919329844967709">ستكون الردود أكثر صلة بمحتوى الصفحة التي تتم مشاركتها</translation>
 <translation id="7323315405936922211">حجم منطقة المؤشر</translation>
 <translation id="7324020307732396723">فتح إعدادات اللغة</translation>
 <translation id="7324297612904500502">منتدى الإصدار التجريبي</translation>
@@ -10327,7 +10324,6 @@
 <translation id="8222112516148944758">يتم حفظ مجموعات علامات التبويب وتعديلها تلقائيًا على جميع أجهزتك</translation>
 <translation id="8222674561049363989">الملف ليس مستندًا صالحًا</translation>
 <translation id="822347941086490485">‏جارٍ البحث عن أجهزة HID...</translation>
-<translation id="8224209912580158729">‏يمكنك مشاركة محتوى الصفحة مع Gemini للحصول على ردود أكثر صلة بطلبك.</translation>
 <translation id="8224427620313426549">لن يتم حذف حسابك على <ph name="DOMAIN_LINK" />.</translation>
 <translation id="8225046344534779393">يُرجى التحقق من الاتصال بالإنترنت.</translation>
 <translation id="8225265270453771718">مشاركة نافذة التطبيق</translation>

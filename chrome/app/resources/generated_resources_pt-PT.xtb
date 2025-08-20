@@ -1095,7 +1095,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="174123615272205933">Personalizar</translation>
 <translation id="1741314857973421784">Continuar</translation>
 <translation id="1744108098763830590">página de fundo</translation>
-<translation id="174516937379651657">Quando partilha uma página com o Gemini, o conteúdo completo e o URL da página são enviados para a Google.</translation>
 <translation id="1745732479023874451">Gerir contactos</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Abrir e editar # ficheiros nesta app Web?}}</translation>
 <translation id="1748329107062243374">Use uma chave de acesso a partir do <ph name="DEVICE_NAME" /> para iniciar sessão em <ph name="WEBSITE" /></translation>
@@ -8189,7 +8188,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6759193508432371551">Reposição de dados de fábrica</translation>
 <translation id="6760354150216532978">Aviso: este site pode ver as edições que fez</translation>
 <translation id="6761209758867628753">Ferramenta: Ajuda-me a escrever</translation>
-<translation id="6761459308170527362">Pode usar o chat de voz ou texto para fazer uma pergunta ao Gemini sobre o conteúdo da página que está a partilhar</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Não são permitidos dados de sites no dispositivo</translation>
 <translation id="6762833852331690540">Ativado</translation>
@@ -8979,7 +8977,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7320213904474460808">Predefinir rede</translation>
 <translation id="7321545336522791733">Servidor inacessível</translation>
 <translation id="7322515217754205362">Autorizações do site</translation>
-<translation id="7322919329844967709">Vai receber respostas mais relevantes relacionadas com o conteúdo da página que está a partilhar</translation>
 <translation id="7323315405936922211">Tamanho da área do cursor</translation>
 <translation id="7324020307732396723">Abrir definições de idioma</translation>
 <translation id="7324297612904500502">Fórum da versão beta</translation>
@@ -10317,7 +10314,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8222112516148944758">Os seus grupos de separadores são guardados e atualizados automaticamente em todos os seus dispositivos</translation>
 <translation id="8222674561049363989">O ficheiro não é um documento válido</translation>
 <translation id="822347941086490485">A procurar dispositivos HID…</translation>
-<translation id="8224209912580158729">Partilhe o conteúdo da página com o Gemini para receber respostas mais relevantes.</translation>
 <translation id="8224427620313426549">A sua conta de <ph name="DOMAIN_LINK" /> não vai ser eliminada</translation>
 <translation id="8225046344534779393">Verifique a ligação à Internet</translation>
 <translation id="8225265270453771718">Partilhe uma janela da aplicação</translation>

@@ -1102,7 +1102,6 @@
 <translation id="174123615272205933">ກຳນົດເອງ</translation>
 <translation id="1741314857973421784">ສືບຕໍ່</translation>
 <translation id="1744108098763830590">ຫນ້າ​ພື້ນຫຼັງ</translation>
-<translation id="174516937379651657">ເມື່ອທ່ານແບ່ງປັນໜ້າກັບ Gemini, ລະບົບຈະສົ່ງເນື້ອຫາ ແລະ URL ແບບເຕັມຂອງໜ້າເວັບດັ່ງກ່າວໄປຫາ Google.</translation>
 <translation id="1745732479023874451">ຈັດການລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{ເປີດ ແລະ ແກ້ໄຂ # ໄຟລ໌ໃນເວັບແອັບນີ້ບໍ?}}</translation>
 <translation id="1748329107062243374">ໃຊ້ກະແຈຜ່ານຈາກ <ph name="DEVICE_NAME" /> ເພື່ອເຂົ້າສູ່ລະບົບຫາ <ph name="WEBSITE" /></translation>
@@ -8198,7 +8197,6 @@
 <translation id="6759193508432371551">ຕັ້ງຄ່າຄືນເປັນຄ່າໂຮງ​ງານ</translation>
 <translation id="6760354150216532978">ຄຳເຕືອນ: ເວັບໄຊນີ້ຈະເຫັນການແກ້ໄຂທີ່ທ່ານເຮັດ</translation>
 <translation id="6761209758867628753">ເຄື່ອງມື: ຊ່ວຍຂ້ອຍຂຽນ</translation>
-<translation id="6761459308170527362">ທ່ານສາມາດໃຊ້ສຽງ ຫຼື ຂໍ້ຄວາມສົນທະນາເພື່ອຖາມ Gemini ກ່ຽວກັບເນື້ອຫາໜ້າທີ່ທ່ານກໍາລັງແບ່ງປັນ</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">ບໍ່ອະນຸຍາດຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນ</translation>
 <translation id="6762833852331690540">ເປີດ</translation>
@@ -8987,7 +8985,6 @@
 <translation id="7320213904474460808">ໃຫ້ເປັນເຄືອຂ່າຍເລີ່ມຕົ້ນ</translation>
 <translation id="7321545336522791733">ບໍ່ສາມາດຕິດຕໍ່ຫາເຊີບເວີໄດ້</translation>
 <translation id="7322515217754205362">ການອະນຸຍາດເວັບໄຊ</translation>
-<translation id="7322919329844967709">ທ່ານຈະໄດ້ຮັບຄໍາຕອບທີ່ກ່ຽວຂ້ອງກັບເນື້ອຫາໜ້າທີ່ທ່ານກໍາລັງແບ່ງປັນ</translation>
 <translation id="7323315405936922211">ຂະໜາດພື້ນທີ່ເຄີເຊີ</translation>
 <translation id="7324020307732396723">ເປີດການຕັ້ງຄ່າພາສາ</translation>
 <translation id="7324297612904500502">ເວທີເບຕ້າ</translation>
@@ -10322,7 +10319,6 @@
 <translation id="8222112516148944758">ກຸ່ມແຖບຂອງທ່ານຈະບັນທຶກ ແລະ ອັບເດດໂດຍອັດຕະໂນມັດໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
 <translation id="8222674561049363989">ໄຟລ໌ບໍ່ແມ່ນເອກະສານທີ່ຖືກຕ້ອງ</translation>
 <translation id="822347941086490485">ກຳລັງຊອກຫາອຸປະກອນ HID...</translation>
-<translation id="8224209912580158729">ແບ່ງປັນເນື້ອຫາຂອງໜ້າເວັບກັບ Gemini ເພື່ອຮັບຄຳຕອບທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນ.</translation>
 <translation id="8224427620313426549">ບັນຊີ <ph name="DOMAIN_LINK" /> ຂອງທ່ານຈະບໍ່ຖືກລຶບ</translation>
 <translation id="8225046344534779393">ກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດ</translation>
 <translation id="8225265270453771718">ແບ່ງປັນໜ້າຈໍແອັບພລິເຄຊັນ</translation>

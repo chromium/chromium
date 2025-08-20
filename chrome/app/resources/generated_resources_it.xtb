@@ -1095,7 +1095,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="174123615272205933">Personalizzati</translation>
 <translation id="1741314857973421784">Continua</translation>
 <translation id="1744108098763830590">pagina di sfondo</translation>
-<translation id="174516937379651657">Quando condividi una pagina con Gemini, i contenuti completi e l'URL della pagina vengono inviati a Google.</translation>
 <translation id="1745732479023874451">Gestisci contatti</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Aprire e modificare # file in questa app web?}}</translation>
 <translation id="1748329107062243374">Usa una passkey di <ph name="DEVICE_NAME" /> per accedere al sito <ph name="WEBSITE" /></translation>
@@ -3389,7 +3388,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3347086966102161372">C&amp;opia l'indirizzo dell'immagine</translation>
 <translation id="3348038390189153836">Dispositivo rimovibile rilevato</translation>
 <translation id="3348131053948466246">Emoji suggerite. Premi la freccia Su o Giù per spostarti e Invio per inserire l'emoji desiderata.</translation>
-<translation id="3349933790966648062">Footprint di memoria</translation>
+<translation id="3349933790966648062">Footprint della memoria</translation>
 <translation id="3350450887151703713">Riproduci nuovamente 10 secondi</translation>
 <translation id="3351472127384196879">Aggiungi o individua i pulsanti della penna</translation>
 <translation id="3353786022389205125">Attiva "Mostra la schermata di blocco quando il dispositivo viene riattivato dopo la sospensione" e riprova</translation>
@@ -8183,7 +8182,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6759193508432371551">Ripristino dati di fabbrica</translation>
 <translation id="6760354150216532978">Attenzione: questo sito può vedere le modifiche che apporti</translation>
 <translation id="6761209758867628753">Strumento: Aiutami a scrivere</translation>
-<translation id="6761459308170527362">Puoi usare la chat vocale o di testo per fare una domanda a Gemini sui contenuti della pagina che stai condividendo</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Dati dei siti sul dispositivo non consentiti</translation>
 <translation id="6762833852331690540">On</translation>
@@ -8426,7 +8424,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6910211073230771657">Eliminato</translation>
 <translation id="6910274140210351823">Scuro</translation>
 <translation id="691102290537033604">L'estensione potrà eseguire codici che non sono stati esaminati da Google. L'opzione potrebbe non essere sicura e dovresti attivarla solo se non hai dubbi.</translation>
-<translation id="6911734910326569517">Footprint di memoria</translation>
+<translation id="6911734910326569517">Footprint della memoria</translation>
 <translation id="6912007319859991306">PIN SIM rete mobile</translation>
 <translation id="6912380255120084882">Prova con un altro dispositivo</translation>
 <translation id="691289340230098384">Preferenze sottotitoli</translation>
@@ -8973,7 +8971,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7320213904474460808">Scegli rete predefinita</translation>
 <translation id="7321545336522791733">Server non raggiungibile</translation>
 <translation id="7322515217754205362">Autorizzazioni siti</translation>
-<translation id="7322919329844967709">Riceverai risposte più pertinenti relative ai contenuti della pagina che stai condividendo</translation>
 <translation id="7323315405936922211">Dimensione area cursore</translation>
 <translation id="7324020307732396723">Apri le impostazioni di lingua</translation>
 <translation id="7324297612904500502">Forum per la versione Beta</translation>
@@ -10311,7 +10308,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8222112516148944758">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i tuoi dispositivi</translation>
 <translation id="8222674561049363989">Il file non è un documento valido</translation>
 <translation id="822347941086490485">Ricerca di dispositivi HID in corso…</translation>
-<translation id="8224209912580158729">Condividi i contenuti della pagina con Gemini per ricevere risposte più pertinenti.</translation>
 <translation id="8224427620313426549">Il tuo account <ph name="DOMAIN_LINK" /> non verrà eliminato</translation>
 <translation id="8225046344534779393">Controlla la connessione a Internet</translation>
 <translation id="8225265270453771718">Condividi una finestra dell'applicazione</translation>

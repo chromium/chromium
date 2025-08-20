@@ -1095,7 +1095,6 @@
 <translation id="174123615272205933">حسب ضرورت</translation>
 <translation id="1741314857973421784">جاری رکھیں</translation>
 <translation id="1744108098763830590">پس منظر کا صفحہ</translation>
-<translation id="174516937379651657">‏جب آپ Gemini کے ساتھ کسی صفحہ کا اشتراک کرتے ہیں تو Google کو صفحہ کا مکمل مواد اور URL بھیج دیا جاتا ہے۔</translation>
 <translation id="1745732479023874451">رابطوں کا نظم کریں</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{اس ویب ایپ میں # فائلز کھولیں اور ان میں ترمیم کریں؟}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> میں سائن ان کرنے کے لئے <ph name="DEVICE_NAME" /> سے پاس کی کا استعمال کریں</translation>
@@ -8184,7 +8183,6 @@
 <translation id="6759193508432371551">فیکٹری ری سیٹ</translation>
 <translation id="6760354150216532978">وارننگ: یہ سائٹ آپ کی وہ ترامیم دیکھ سکتی ہے جنہیں آپ کرتے ہیں</translation>
 <translation id="6761209758867628753">ٹول: لکھنے میں میری مدد کریں</translation>
-<translation id="6761459308170527362">‏آپ جس صفحہ کے مواد کا اشتراک کر رہے ہیں اس کے بارے میں Gemini سے سوال پوچھنے کے لیے آپ آواز یا ٹیکسٹ چیٹ کا استعمال کر سکتے ہیں</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">آلے پر سائٹ ڈیٹا کی اجازت نہیں ہے</translation>
 <translation id="6762833852331690540">آن</translation>
@@ -8973,7 +8971,6 @@
 <translation id="7320213904474460808">نیٹ ورک کو ترجیح دیں</translation>
 <translation id="7321545336522791733">سرور ناقابل رسائی ہے</translation>
 <translation id="7322515217754205362">سائٹ کی اجازتیں</translation>
-<translation id="7322919329844967709">آپ جس صفحہ کے مواد کا اشتراک کر رہے ہیں اس سے متعلق آپ کو مزید متعلقہ جوابات ملیں گے</translation>
 <translation id="7323315405936922211">کرسر ایریا کا سائز</translation>
 <translation id="7324020307732396723">زبان کی ترتیبات کھولیں</translation>
 <translation id="7324297612904500502">بی ٹا فورم</translation>
@@ -10310,7 +10307,6 @@
 <translation id="8222112516148944758">آپ کے ٹیب گروپس آپ کے تمام آلات پر خودکار طور پر محفوظ ہو جاتے ہیں، نیز اپ ڈیٹ بھی ہو جاتے ہیں</translation>
 <translation id="8222674561049363989">یہ فائل ایک درست دستاویز نہیں ہے</translation>
 <translation id="822347941086490485">‏HID آلات تلاش کئے جا رہے ہیں...</translation>
-<translation id="8224209912580158729">‏مزید متعلقہ جوابات حاصل کرنے کے لیے صفحہ کے مواد کا Gemini کے ساتھ اشتراک کریں۔</translation>
 <translation id="8224427620313426549">آپ کے <ph name="DOMAIN_LINK" /> اکاؤنٹ کو حذف نہیں کیا جائے گا</translation>
 <translation id="8225046344534779393">انٹرنیٹ کنکشن چیک کریں</translation>
 <translation id="8225265270453771718">ایک ایپلیکیشن ونڈو کا اشتراک کریں</translation>

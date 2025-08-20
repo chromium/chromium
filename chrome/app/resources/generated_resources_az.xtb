@@ -1091,7 +1091,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="174123615272205933">Fərdi</translation>
 <translation id="1741314857973421784">Davam edin</translation>
 <translation id="1744108098763830590">arxa fon səhifəsi</translation>
-<translation id="174516937379651657">Gemini bir səhifə paylaşdığınız zaman səhifənin tam kontenti və URL-i Google-a göndərilir.</translation>
 <translation id="1745732479023874451">Kontaktları idarə edin</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Bu veb tətbiqdə # fayl açılsın və redaktə edilsin?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> veb-saytına daxil olmaq üçün <ph name="DEVICE_NAME" /> cihazından əldə edilən giriş açarından istifadə edin</translation>
@@ -8182,7 +8181,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6759193508432371551">Zavod Sıfırlaması</translation>
 <translation id="6760354150216532978">Xəbərdarlıq: bu sayt redaktələri görə bilər</translation>
 <translation id="6761209758867628753">Alət: Yazmağa kömək et</translation>
-<translation id="6761459308170527362">Paylaşdığınız səhifə kontenti ilə bağlı Gemini-a sual vermək üçün səsli və ya mətn söhbətindən istifadə edə bilərsiniz</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Cihazda sayt datasına icazə verilməyib</translation>
 <translation id="6762833852331690540">Aktiv</translation>
@@ -8971,7 +8969,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7320213904474460808">Şəbəkəni defolt olaraq seçin</translation>
 <translation id="7321545336522791733">Server əlçatmazdır</translation>
 <translation id="7322515217754205362">Sayt icazələri</translation>
-<translation id="7322919329844967709">Paylaşdığınız səhifə kontenti ilə bağlı daha uyğun cavablar alacaqsınız</translation>
 <translation id="7323315405936922211">Kursor sahəsinin ölçüsü</translation>
 <translation id="7324020307732396723">Dil ayarlarını açın</translation>
 <translation id="7324297612904500502">Beta Forumu</translation>
@@ -10308,7 +10305,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8222112516148944758">Tab qrupları bütün cihazlarda avtomatik yadda saxlanılır və güncəllənir</translation>
 <translation id="8222674561049363989">Fayl etibarlı sənəd deyil</translation>
 <translation id="822347941086490485">HID cihazları axtarılır...</translation>
-<translation id="8224209912580158729">Daha uyğun cavablar almaq üçün səhifə kontentini Gemini ilə paylaşın.</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> hesabı silinməyəcək</translation>
 <translation id="8225046344534779393">İnternet bağlantısını yoxlayın</translation>
 <translation id="8225265270453771718">Tətbiq pəncərəsini paylaşın</translation>

@@ -1092,7 +1092,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="174123615272205933">Personalizado</translation>
 <translation id="1741314857973421784">Continuar</translation>
 <translation id="1744108098763830590">página en segundo plano</translation>
-<translation id="174516937379651657">Cuando compartes una página con Gemini, se envían a Google el contenido completo y la URL de la página.</translation>
 <translation id="1745732479023874451">Administrar contactos</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{¿Quieres abrir y editar # archivos en la aplicación web?}}</translation>
 <translation id="1748329107062243374">Usa una llave de acceso de <ph name="DEVICE_NAME" /> para acceder a <ph name="WEBSITE" /></translation>
@@ -8184,7 +8183,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6759193508432371551">Restablecer configuración de fábrica</translation>
 <translation id="6760354150216532978">Advertencia: Este sitio puede ver los cambios que haces</translation>
 <translation id="6761209758867628753">Herramienta: Ayúdame a escribir</translation>
-<translation id="6761459308170527362">Puedes usar el chat de voz o de texto para preguntarle a Gemini sobre el contenido de la página que estás compartiendo</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">No se permiten los datos de sitios en el dispositivo</translation>
 <translation id="6762833852331690540">Sí</translation>
@@ -8974,7 +8972,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7320213904474460808">Elegir la red predeterminada</translation>
 <translation id="7321545336522791733">No se puede acceder al servidor</translation>
 <translation id="7322515217754205362">Permisos de sitios</translation>
-<translation id="7322919329844967709">Obtendrás respuestas más pertinentes relacionadas con el contenido de la página que compartes</translation>
 <translation id="7323315405936922211">Tamaño del área del cursor</translation>
 <translation id="7324020307732396723">Abrir configuración de idioma</translation>
 <translation id="7324297612904500502">Foro de la versión Beta</translation>
@@ -10312,7 +10309,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8222112516148944758">Tus grupos de pestañas se guardan y actualizan automáticamente en todos tus dispositivos</translation>
 <translation id="8222674561049363989">El archivo no es un documento válido</translation>
 <translation id="822347941086490485">Buscando dispositivos HID…</translation>
-<translation id="8224209912580158729">Comparte el contenido de la página con Gemini para obtener respuestas más pertinentes.</translation>
 <translation id="8224427620313426549">No se borrará tu cuenta de <ph name="DOMAIN_LINK" /></translation>
 <translation id="8225046344534779393">Comprueba la conexión a Internet.</translation>
 <translation id="8225265270453771718">Compartir la ventana de una aplicación</translation>

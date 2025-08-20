@@ -1101,7 +1101,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="174123615272205933">Maalum</translation>
 <translation id="1741314857973421784">Endelea</translation>
 <translation id="1744108098763830590">Ukurasa wa mandharinyuma</translation>
-<translation id="174516937379651657">Unapoiruhusu Gemini ifikie ukurasa, maudhui yote yaliyo kwenye ukurasa na URL yake hutumwa kwa Google.</translation>
 <translation id="1745732479023874451">Dhibiti anwani</translation>
 <translation id="1748283190377208783">{0,plural, =1{wingi usiotumika}other{Ungependa kufungua na kubadilisha faili # katika programu hizi za wavuti?}}</translation>
 <translation id="1748329107062243374">Tumia ufunguo wa siri wa <ph name="DEVICE_NAME" /> ili uingie kwenye <ph name="WEBSITE" /></translation>
@@ -8195,7 +8194,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6759193508432371551">Rejesha upya mipangilio ya kiwandani</translation>
 <translation id="6760354150216532978">Tahadhari: tovuti hii inaweza kuona mabadiliko unayoyafanya</translation>
 <translation id="6761209758867628753">Zana: Nisaidie kuandika</translation>
-<translation id="6761459308170527362">Unaweza kutumia gumzo la sauti au la maandishi kuuliza Gemini swali kuhusu maudhui ya ukurasa unayoruhusu yafikiwe</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Tovuti hairuhusiwi kuhifadhi data kwenye kifaa</translation>
 <translation id="6762833852331690540">Imewashwa</translation>
@@ -8985,7 +8983,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7320213904474460808">Weka kuwa mtandao chaguomsingi</translation>
 <translation id="7321545336522791733">Seva haifikiki</translation>
 <translation id="7322515217754205362">Ruhusa za Tovuti</translation>
-<translation id="7322919329844967709">Utapata majibu yanayofaa zaidi ambayo yanahusiana na maudhui ya ukurasa unayoruhusu yafikiwe</translation>
 <translation id="7323315405936922211">Ukubwa wa sehemu ya kiteuzi</translation>
 <translation id="7324020307732396723">Fungua Mipangilio ya Lugha</translation>
 <translation id="7324297612904500502">Mfumo wa Beta</translation>
@@ -10324,7 +10321,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8222112516148944758">Vikundi vya vichupo vyako huhifadhiwa na kusasishwa kiotomatiki kwenye vifaa vyako vyote</translation>
 <translation id="8222674561049363989">Faili si hati sahihi</translation>
 <translation id="822347941086490485">Inatafuta vifaa vya HID...</translation>
-<translation id="8224209912580158729">Iruhusu Gemini ifikie maudhui yaliyo kwenye ukurasa ili upate majibu yanayofaa zaidi.</translation>
 <translation id="8224427620313426549">Akaunti yako ya <ph name="DOMAIN_LINK" /> haitafutwa</translation>
 <translation id="8225046344534779393">Kagua muunganisho wa intaneti</translation>
 <translation id="8225265270453771718">Shiriki dirisha la programu</translation>

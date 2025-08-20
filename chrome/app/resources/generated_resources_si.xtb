@@ -1093,7 +1093,6 @@
 <translation id="174123615272205933">අභිරුචි</translation>
 <translation id="1741314857973421784">ඉදිරියට යන්න</translation>
 <translation id="1744108098763830590">පසුබිම් පිටුව</translation>
-<translation id="174516937379651657">ඔබ Gemini සමග පිටුවක් බෙදා ගන්නා විට, පිටුවේ සම්පූර්ණ අන්තර්ගතය සහ URL එක Google වෙත යවනු ලැබේ.</translation>
 <translation id="1745732479023874451">සම්බන්ධතා කළමනාකරණය කරන්න</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{මෙම වෙබ් යෙදුමේ ගොනු #ක් විවෘත කර සංස්කරණය කරන්නද?}other{මෙම වෙබ් යෙදුමේ ගොනු #ක් විවෘත කර සංස්කරණය කරන්නද?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> වෙත පුරනය වීමට <ph name="DEVICE_NAME" /> වෙතින් මුරයතුරක් භාවිතා කරන්න</translation>
@@ -8188,7 +8187,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6759193508432371551">කර්මාන්තශාලා නැවත සැකසුම</translation>
 <translation id="6760354150216532978">අවවාදයයි: මෙම අඩවියට ඔබ කරන සංස්කරණයන් දැකිය හැක</translation>
 <translation id="6761209758867628753">මෙවලම: මට ලිවීමට උදවු කරන්න</translation>
-<translation id="6761459308170527362">ඔබ බෙදා ගන්නා පිටු අන්තර්ගතය පිළිබඳව Gemini ගෙන් ප්‍රශ්නයක් ඇසීමට ඔබට හඬ හෝ පෙළ කතාබස් භාවිතා කළ හැක</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">උපාංගයේ අඩවි දත්ත ඉඩ නොදේ</translation>
 <translation id="6762833852331690540">ක්‍රියාත්මකයි</translation>
@@ -8977,7 +8975,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7320213904474460808">ජාලයට පෙරනිමි</translation>
 <translation id="7321545336522791733">සේවාදායකයට ළඟාවිය නොහැකිය</translation>
 <translation id="7322515217754205362">අඩවි අවසර</translation>
-<translation id="7322919329844967709">ඔබ බෙදා ගන්නා පිටු අන්තර්ගතයට අදාළව ඔබට වඩාත් අදාළ පිළිතුරු ලැබෙනු ඇත</translation>
 <translation id="7323315405936922211">කර්සර ප්‍රදේශයේ ප්‍රමාණය</translation>
 <translation id="7324020307732396723">භාෂා සැකසීම් විවෘත කරන්න</translation>
 <translation id="7324297612904500502">බීටා සංසදය</translation>
@@ -10313,7 +10310,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8222112516148944758">ඔබේ පටිති සමූහ ඔබේ සියලුම උපාංග පුරා ස්වයංක්‍රීයව සුරැකෙන අතර යාවත්කාලීන වෙයි</translation>
 <translation id="8222674561049363989">ගොනුව වලංගු ලේඛනයක් නොවේ</translation>
 <translation id="822347941086490485">HID උපාංග සොයමින්...</translation>
-<translation id="8224209912580158729">වඩාත් අදාළ පිළිතුරු ලබා ගැනීමට Gemini සමග පිටු අන්තර්ගතය බෙදා ගන්න.</translation>
 <translation id="8224427620313426549">ඔබේ <ph name="DOMAIN_LINK" /> ගිණුම මකා නොදමනු ඇත</translation>
 <translation id="8225046344534779393">අන්තර්ජාල සබැඳුම පරීක්ෂා කරන්න</translation>
 <translation id="8225265270453771718">යෙදුම් කවුළුවක් බෙදා ගන්න</translation>

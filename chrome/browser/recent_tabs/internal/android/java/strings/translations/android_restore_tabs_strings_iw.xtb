@@ -10,7 +10,7 @@
 <translation id="3665329097964129553">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), העדכון האחרון: <ph name="TIME_SINCE_MODIFIED" />}one{<ph name="TABS_COUNT_MANY" /> כרטיסיות, העדכון האחרון: <ph name="TIME_SINCE_MODIFIED" />}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות, העדכון האחרון: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות, העדכון האחרון: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3983305234037158273">יש מכשירים מסונכרנים לשחזור כרטיסיות שזמינים לשינוי במגע. צריך לבדוק או לשחזר בנגיעה את הכרטיסיות שנבחרו במכשיר שמסומן כרגע. המקלדת מוסתרת.</translation>
-<translation id="4386361164755260473">{TABS_COUNT,plural, =1{פתיחת הכרטיסייה (<ph name="TABS_COUNT_ONE" />)}one{פתיחת <ph name="TABS_COUNT_MANY" /> הכרטיסיות}two{פתיחת <ph name="TABS_COUNT_MANY" /> הכרטיסיות}other{פתיחת <ph name="TABS_COUNT_MANY" /> הכרטיסיות}}</translation>
+<translation id="4386361164755260473">{TABS_COUNT,plural, =1{פתיחת הכרטיסייה (<ph name="TABS_COUNT_ONE" />)}one{פתיחת <ph name="TABS_COUNT_MANY" /> כרטיסיות}two{פתיחת <ph name="TABS_COUNT_MANY" /> כרטיסיות}other{פתיחת <ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
 <translation id="4509609396389120020">שחזור כרטיסיות ממכשירים אחרים</translation>
 <translation id="4619615317237390068">כרטיסיות ממכשירים אחרים</translation>
 <translation id="4811934403802581334">כל הכרטיסיות שבחרת מהמכשיר שמסומן כרגע ישוחזרו.</translation>

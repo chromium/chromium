@@ -1104,7 +1104,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="174123615272205933">Gepasmaak</translation>
 <translation id="1741314857973421784">Gaan voort</translation>
 <translation id="1744108098763830590">agtergrondbladsy</translation>
-<translation id="174516937379651657">Wanneer jy ’n bladsy met Gemini deel, word die bladsy se volledige inhoud en URL na Google toe gestuur.</translation>
 <translation id="1745732479023874451">Bestuur kontakte</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Maak # lêers in hierdie webprogram oop en wysig dit?}}</translation>
 <translation id="1748329107062243374">Gebruik <ph name="DEVICE_NAME" /> se toegangsleutel om aan te meld by <ph name="WEBSITE" /></translation>
@@ -8201,7 +8200,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6759193508432371551">Fabriekterugstelling</translation>
 <translation id="6760354150216532978">Waarskuwing: hierdie werf kan wysigings sien wat jy maak</translation>
 <translation id="6761209758867628753">Nutsding: Help my skryf</translation>
-<translation id="6761459308170527362">Jy kan stem- of teksklets gebruik om vir Gemini ’n vraag te vra oor die bladsy-inhoud wat jy deel</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Optoestelwerfdata word nie toegelaat nie</translation>
 <translation id="6762833852331690540">Aan</translation>
@@ -8990,7 +8988,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7320213904474460808">Verstek vir netwerk</translation>
 <translation id="7321545336522791733">Bediener onbereikbaar</translation>
 <translation id="7322515217754205362">Werftoestemmings</translation>
-<translation id="7322919329844967709">Jy sal meer relevante antwoorde kry wat betrekking het op die bladsy-inhoud wat jy deel</translation>
 <translation id="7323315405936922211">Grootte van skermpyltjie-area</translation>
 <translation id="7324020307732396723">Maak Taalinstellings oop</translation>
 <translation id="7324297612904500502">Beta-forum</translation>
@@ -10327,7 +10324,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8222112516148944758">Jou oortjiegroepe stoor en dateer outomaties op al jou toestelle op</translation>
 <translation id="8222674561049363989">Lêer is nie ’n geldige dokument nie</translation>
 <translation id="822347941086490485">Soek tans HID-toestelle …</translation>
-<translation id="8224209912580158729">Deel bladsyinhoud met Gemini om meer relevante antwoorde te kry.</translation>
 <translation id="8224427620313426549">Jou <ph name="DOMAIN_LINK" />-rekening sal nie uitgevee word nie</translation>
 <translation id="8225046344534779393">Gaan internetverbinding na</translation>
 <translation id="8225265270453771718">Deel 'n programvenster</translation>

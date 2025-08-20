@@ -1092,7 +1092,6 @@
 <translation id="174123615272205933">કસ્ટમ</translation>
 <translation id="1741314857973421784">ચાલુ રાખો</translation>
 <translation id="1744108098763830590">બૅકગ્રાઉન્ડ પેજ</translation>
-<translation id="174516937379651657">જ્યારે તમે Gemini સાથે કોઈ પેજ શેર કરો છો, ત્યારે પેજનું સંપૂર્ણ કન્ટેન્ટ અને URL Googleને મોકલવામાં આવે છે.</translation>
 <translation id="1745732479023874451">સંપર્કો મેનેજ કરો</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{# ફાઇલને આ વેબ ઍપમાં ખોલીને તેમાં ફેરફાર કરીએ?}other{# ફાઇલને આ વેબ ઍપમાં ખોલીને તેમાં ફેરફાર કરીએ?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" />માં સાઇન ઇન કરવા માટે, <ph name="DEVICE_NAME" />ની કોઈ પાસકીનો ઉપયોગ કરો</translation>
@@ -8189,7 +8188,6 @@ USB ડિવાઇસ</translation>
 <translation id="6759193508432371551">ફેક્ટરી ફરીથી સેટ કરો</translation>
 <translation id="6760354150216532978">ચેતવણી: આ સાઇટ તમે કરશો તે ફેરફારો જોઈ શકશે</translation>
 <translation id="6761209758867628753">ટૂલ: લખવામાં મારી સહાય કરો</translation>
-<translation id="6761459308170527362">તમે પેજનું જે કન્ટેન્ટ શેર કરી રહ્યાં છો, તેના વિશે Geminiને પ્રશ્ન પૂછવા માટે, તમે વૉઇસ અથવા ટેક્સ્ટ ચૅટનો ઉપયોગ કરી શકો છો</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">સાઇટના ડિવાઇસ પરના ડેટા માટે મંજૂરી નથી</translation>
 <translation id="6762833852331690540">ચાલુ</translation>
@@ -8979,7 +8977,6 @@ USB ડિવાઇસ</translation>
 <translation id="7320213904474460808">ડિફૉલ્ટ કરેલું નેટવર્ક</translation>
 <translation id="7321545336522791733">સર્વર પહોંચની બહાર છે</translation>
 <translation id="7322515217754205362">સાઇટની પરવાનગીઓ</translation>
-<translation id="7322919329844967709">તમે પેજનું જે કન્ટેન્ટ શેર કરી રહ્યાં છો, તેનાથી સંબંધિત વધુ સુસંગત જવાબો તમને મળશે</translation>
 <translation id="7323315405936922211">કર્સર એરિયાનું કદ</translation>
 <translation id="7324020307732396723">ભાષાના સેટિંગ ખોલો</translation>
 <translation id="7324297612904500502">બીટા ચર્ચા મંચ</translation>
@@ -10311,7 +10308,6 @@ USB ડિવાઇસ</translation>
 <translation id="8222112516148944758">તમારા ટૅબના ગ્રૂપ તમારા બધા ડિવાઇસ પર ઑટોમૅટિક રીતે સાચવવામાં અને અપડેટ કરવામાં આવે છે</translation>
 <translation id="8222674561049363989">ફાઇલ કોઈ માન્ય દસ્તાવેજ નથી</translation>
 <translation id="822347941086490485">HID ડિવાઇસ શોધી રહ્યાં છીએ...</translation>
-<translation id="8224209912580158729">વધુ સંબંધિત જવાબો મેળવવા માટે Gemini સાથે પેજનું કન્ટેન્ટ શેર કરો.</translation>
 <translation id="8224427620313426549">તમારું <ph name="DOMAIN_LINK" /> એકાઉન્ટ ડિલીટ થશે નહીં</translation>
 <translation id="8225046344534779393">ઇન્ટરનેટ કનેક્શન ચેક કરો</translation>
 <translation id="8225265270453771718">ઍપ્લિકેશન વિંડો શેર કરો</translation>

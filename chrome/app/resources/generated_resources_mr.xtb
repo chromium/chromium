@@ -1103,7 +1103,6 @@
 <translation id="174123615272205933">कस्टम</translation>
 <translation id="1741314857973421784">सुरू ठेवा</translation>
 <translation id="1744108098763830590">बॅकग्राउंड पेज</translation>
-<translation id="174516937379651657">तुम्ही Gemini सोबत पेज शेअर करता, तेव्हा पेजचा पूर्ण आशय आणि URL या गोष्टी Google ला पाठवल्या जातात.</translation>
 <translation id="1745732479023874451">संपर्क व्यवस्थापित करा</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{या वेब अ‍ॅपमध्ये # फाइल उघडून संपादित करायच्या आहेत का?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> मध्ये साइन इन करण्यासाठी <ph name="DEVICE_NAME" /> वरील पासकी वापरा</translation>
@@ -8200,7 +8199,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6759193508432371551">फॅक्टरी रीसेट</translation>
 <translation id="6760354150216532978">चेतावणी: ही साइट तुम्ही केलेली संपादने पाहू शकते</translation>
 <translation id="6761209758867628753">टूल: मला लिहिण्यात मदत कर</translation>
-<translation id="6761459308170527362">तुम्ही शेअर करत असलेल्या पेजच्या आशयाबद्दल Gemini ला प्रश्न विचारण्यासाठी तुम्ही व्हॉइस किंवा मजकूर चॅट वापरू शकता</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">डिव्‍हाइसवरील साइट डेटाला अनुमती नाही</translation>
 <translation id="6762833852331690540">सुरू</translation>
@@ -8990,7 +8988,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7320213904474460808">नेटवर्कवर डीफॉल्ट करा</translation>
 <translation id="7321545336522791733">सर्व्हर आवाक्याबाहेर आहे</translation>
 <translation id="7322515217754205362">साइट परवानग्या</translation>
-<translation id="7322919329844967709">तुम्ही शेअर करत असलेल्या पेजवरील आशयाशी संबंधित असलेली अधिक सुसंबद्ध उत्तरे तुम्हाला मिळतील</translation>
 <translation id="7323315405936922211">कर्सरच्या भागाचा आकार</translation>
 <translation id="7324020307732396723">भाषा सेटिंग्ज उघडा</translation>
 <translation id="7324297612904500502">बीटा फोरम</translation>
@@ -10326,7 +10323,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8222112516148944758">तुमचे टॅब गट तुमच्या सर्व डिव्हाइसवर आपोआप सेव्ह आणि अपडेट होतात</translation>
 <translation id="8222674561049363989">फाइल योग्य दस्तऐवज नाही</translation>
 <translation id="822347941086490485">HID डिव्हाइस शोधत आहे…</translation>
-<translation id="8224209912580158729">अधिक सुसंबद्ध उत्तरे मिळवण्यासाठी Gemini सह पेजचा आशय शेअर करा.</translation>
 <translation id="8224427620313426549">तुमचे <ph name="DOMAIN_LINK" /> खाते हटवले जाणार नाही</translation>
 <translation id="8225046344534779393">इंटरनेट कनेक्शन तपासा</translation>
 <translation id="8225265270453771718">ॲप्लिकेशन विंडो शेअर करा</translation>

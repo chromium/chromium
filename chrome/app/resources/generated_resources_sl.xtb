@@ -1107,7 +1107,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="174123615272205933">Po meri</translation>
 <translation id="1741314857973421784">Naprej</translation>
 <translation id="1744108098763830590">stran v ozadju</translation>
-<translation id="174516937379651657">Ko stran delite z Geminijem, se vsebina in URL strani v celoti pošljeta Googlu.</translation>
 <translation id="1745732479023874451">Upravljanje stikov</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Želite odpreti in urediti # datoteko v tej spletni aplikaciji?}two{Želite odpreti in urediti # datoteki v tej spletni aplikaciji?}few{Želite odpreti in urediti # datoteke v tej spletni aplikaciji?}other{Želite odpreti in urediti # datotek v tej spletni aplikaciji?}}</translation>
 <translation id="1748329107062243374">Uporabite ključ za dostop v napravi <ph name="DEVICE_NAME" /> za prijavo na spletnem mestu <ph name="WEBSITE" /></translation>
@@ -8211,7 +8210,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6759193508432371551">Ponastavitev na tovarniške nastavitve</translation>
 <translation id="6760354150216532978">Opozorilo: To spletno mesto lahko vidi vaše spremembe</translation>
 <translation id="6761209758867628753">Orodje: Pomagaj mi pisati</translation>
-<translation id="6761459308170527362">Z glasovnim ali besedilnim klepetom lahko Geminiju zastavite vprašanje o vsebini strani, ki jo delite</translation>
 <translation id="676158322851696513">»<ph name="EXTENSION_NAME" />«</translation>
 <translation id="6761623907967804682">Podatki spletnih mest v napravi niso dovoljeni</translation>
 <translation id="6762833852331690540">Vklopljeno</translation>
@@ -9001,7 +8999,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7320213904474460808">Privzeto omrežje</translation>
 <translation id="7321545336522791733">Strežnik ni dosegljiv</translation>
 <translation id="7322515217754205362">Dovoljenja spletnih mest</translation>
-<translation id="7322919329844967709">Prejeli boste ustreznejše odgovore, povezane z vsebino strani, ki jo delite</translation>
 <translation id="7323315405936922211">Velikost območja kazalca</translation>
 <translation id="7324020307732396723">Odpri nastavitve jezika</translation>
 <translation id="7324297612904500502">Forum za beto</translation>
@@ -10339,7 +10336,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8222112516148944758">Skupine zavihkov se samodejno shranjujejo in posodabljajo v vseh napravah</translation>
 <translation id="8222674561049363989">Datoteka ni veljaven dokument</translation>
 <translation id="822347941086490485">Iskanje naprav HID …</translation>
-<translation id="8224209912580158729">Delite vsebino strani z Geminijem in prejmite ustreznejše odgovore.</translation>
 <translation id="8224427620313426549">Vaš račun za <ph name="DOMAIN_LINK" /> ne bo izbrisan</translation>
 <translation id="8225046344534779393">Preverite internetno povezavo</translation>
 <translation id="8225265270453771718">Deljenje okna aplikacije</translation>

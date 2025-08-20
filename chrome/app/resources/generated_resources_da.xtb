@@ -1105,7 +1105,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="174123615272205933">Tilpasset</translation>
 <translation id="1741314857973421784">Fortsæt</translation>
 <translation id="1744108098763830590">baggrundsside</translation>
-<translation id="174516937379651657">Når du deler en side med Gemini, sendes sidens fulde indhold og webadresse til Google.</translation>
 <translation id="1745732479023874451">Administrer kontakter</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Vil du åbne og redigere # fil i denne webapp?}other{Vil du åbne og redigere # filer i denne webapp?}}</translation>
 <translation id="1748329107062243374">Brug en adgangsnøgle fra <ph name="DEVICE_NAME" /> til at logge ind på <ph name="WEBSITE" /></translation>
@@ -7615,7 +7614,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6325191661371220117">Deaktiver Automatisk opstart</translation>
 <translation id="632524945411480350">Størrelsen på vinduerne nederst blev ændret</translation>
 <translation id="6326175484149238433">Fjern fra Chrome</translation>
-<translation id="6326855256003666642">Optælling af Keepalive</translation>
+<translation id="6326855256003666642">Antal aktiviteter, der bruger udvidelsen</translation>
 <translation id="6327065839080961103">Dataforbrug for <ph name="FEATURE_NAME" /></translation>
 <translation id="6327785803543103246">Automatisk registrering af webproxy</translation>
 <translation id="6329916384047371874">Du forsøger at bruge din adgangskode til <ph name="PASSWORD_DOMAIN" /> på <ph name="DOMAIN" />. Du bør kun bruge din adgangskode, hvis du har tillid til <ph name="DOMAIN" />.</translation>
@@ -8204,7 +8203,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6759193508432371551">Gendannelse af fabriksindstillinger</translation>
 <translation id="6760354150216532978">Advarsel! Dette website kan se de ændringer, du foretager</translation>
 <translation id="6761209758867628753">Værktøj: Hjælp mig med at skrive</translation>
-<translation id="6761459308170527362">Du kan bruge stemme- eller tekstchat til at stille Gemini et spørgsmål om det sideindhold, du deler</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Websitedata på enheden er ikke tilladt</translation>
 <translation id="6762833852331690540">Til</translation>
@@ -8994,7 +8992,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7320213904474460808">Vælg som standardnetværk</translation>
 <translation id="7321545336522791733">Serveren er utilgængelig</translation>
 <translation id="7322515217754205362">Websitetilladelser</translation>
-<translation id="7322919329844967709">Du får mere relevante svar, der er relateret til det sideindhold, du deler</translation>
 <translation id="7323315405936922211">Størrelse på markørområde</translation>
 <translation id="7324020307732396723">Åbn sprogindstillingerne</translation>
 <translation id="7324297612904500502">Betaforum</translation>
@@ -10331,7 +10328,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8222112516148944758">Fanegrupper gemmes og opdateres automatisk på alle dine enheder</translation>
 <translation id="8222674561049363989">Filen er ikke et gyldigt dokument</translation>
 <translation id="822347941086490485">Finder HID-enheder...</translation>
-<translation id="8224209912580158729">Del sideindhold med Gemini for at få mere relevante svar.</translation>
 <translation id="8224427620313426549">Din <ph name="DOMAIN_LINK" />-konto slettes ikke</translation>
 <translation id="8225046344534779393">Tjek din internetforbindelse</translation>
 <translation id="8225265270453771718">Del et appvindue</translation>

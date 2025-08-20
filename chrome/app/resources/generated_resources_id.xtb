@@ -1104,7 +1104,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="174123615272205933">Kustom</translation>
 <translation id="1741314857973421784">Lanjutkan</translation>
 <translation id="1744108098763830590">halaman background</translation>
-<translation id="174516937379651657">Saat Anda membagikan halaman kepada Gemini, URL dan konten lengkap halaman tersebut akan dikirim ke Google.</translation>
 <translation id="1745732479023874451">Kelola kontak</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Buka dan edit # file di aplikasi web ini?}}</translation>
 <translation id="1748329107062243374">Gunakan kunci sandi dari <ph name="DEVICE_NAME" /> untuk login ke <ph name="WEBSITE" /></translation>
@@ -8200,7 +8199,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6759193508432371551">Kembalikan ke setelan pabrik</translation>
 <translation id="6760354150216532978">Peringatan: situs ini dapat melihat hasil edit yang Anda lakukan</translation>
 <translation id="6761209758867628753">Alat: Bantu tulis</translation>
-<translation id="6761459308170527362">Anda dapat menggunakan percakapan suara atau teks untuk mengajukan pertanyaan kepada Gemini tentang konten halaman yang Anda bagikan</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Data situs di perangkat tidak diizinkan</translation>
 <translation id="6762833852331690540">Aktif</translation>
@@ -8990,7 +8988,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7320213904474460808">Jadikan jaringan default</translation>
 <translation id="7321545336522791733">Server tidak dapat dijangkau</translation>
 <translation id="7322515217754205362">Izin situs</translation>
-<translation id="7322919329844967709">Anda akan mendapatkan jawaban yang lebih relevan terkait konten halaman yang Anda bagikan</translation>
 <translation id="7323315405936922211">Ukuran area kursor</translation>
 <translation id="7324020307732396723">Buka Setelan Bahasa</translation>
 <translation id="7324297612904500502">Forum Beta</translation>
@@ -10327,7 +10324,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8222112516148944758">Grup tab Anda disimpan dan diperbarui otomatis di semua perangkat Anda</translation>
 <translation id="8222674561049363989">File bukan dokumen yang valid</translation>
 <translation id="822347941086490485">Mencari perangkat HID ...</translation>
-<translation id="8224209912580158729">Bagikan konten halaman kepada Gemini untuk mendapatkan jawaban yang lebih relevan.</translation>
 <translation id="8224427620313426549">Akun <ph name="DOMAIN_LINK" /> Anda tidak akan dihapus</translation>
 <translation id="8225046344534779393">Periksa koneksi internet</translation>
 <translation id="8225265270453771718">Bagikan jendela aplikasi</translation>

@@ -1096,7 +1096,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="174123615272205933">Personnalisées</translation>
 <translation id="1741314857973421784">Continuer</translation>
 <translation id="1744108098763830590">page en arrière-plan</translation>
-<translation id="174516937379651657">Lorsque vous partagez une page avec Gemini, le contenu complet et l'URL de la page sont envoyés à Google.</translation>
 <translation id="1745732479023874451">Gérer les contacts</translation>
 <translation id="1748283190377208783">{0,plural, =1{forme plurielle non utilisée}one{Ouvrir et modifier # fichier dans cette application Web?}other{Ouvrir et modifier # fichiers dans cette application Web?}}</translation>
 <translation id="1748329107062243374">Utiliser une clé d'accès à partir de <ph name="DEVICE_NAME" /> pour vous connecter à <ph name="WEBSITE" /></translation>
@@ -8190,7 +8189,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6759193508432371551">Rétablir les paramètres par défaut</translation>
 <translation id="6760354150216532978">Attention : Ce site peut voir les modifications que vous apportez</translation>
 <translation id="6761209758867628753">Outil : Aide à la rédaction</translation>
-<translation id="6761459308170527362">Vous pouvez utiliser le clavardage à l'aide de commandes vocales ou textuelles pour poser une question à Gemini sur le contenu de la page que vous partagez</translation>
 <translation id="676158322851696513">« <ph name="EXTENSION_NAME" /> »</translation>
 <translation id="6761623907967804682">Données relatives aux sites sur l'appareil non autorisées</translation>
 <translation id="6762833852331690540">Activé</translation>
@@ -8979,7 +8977,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7320213904474460808">Définir un réseau comme favori</translation>
 <translation id="7321545336522791733">Serveur inaccessible</translation>
 <translation id="7322515217754205362">Autorisations du site</translation>
-<translation id="7322919329844967709">Vous obtiendrez des réponses plus pertinentes liées au contenu de la page que vous partagez</translation>
 <translation id="7323315405936922211">Taille de la zone du curseur</translation>
 <translation id="7324020307732396723">Ouvrir les paramètres de langue</translation>
 <translation id="7324297612904500502">Forum bêta</translation>
@@ -10316,7 +10313,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8222112516148944758">Vos groupes d'onglets sont automatiquement enregistrés et mis à jour sur l'ensemble de vos appareils</translation>
 <translation id="8222674561049363989">Le fichier n'est pas un document valide</translation>
 <translation id="822347941086490485">Recherche d'appareils HID en cours…</translation>
-<translation id="8224209912580158729">Partagez le contenu de la page avec Gemini pour obtenir des réponses plus pertinentes.</translation>
 <translation id="8224427620313426549">Votre compte <ph name="DOMAIN_LINK" /> ne sera pas supprimé</translation>
 <translation id="8225046344534779393">Vérifiez la connexion Internet</translation>
 <translation id="8225265270453771718">Partager la fenêtre d'une application</translation>

@@ -393,7 +393,7 @@
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
 <translation id="2576253868710695442">‏הקובץ יתפוס עד 2GB מנפח האחסון</translation>
 <translation id="2584547424703650812">מרחבים זוהרים</translation>
-<translation id="2584559707064218956">כדי להגדיר את הרשת, צריך לעבור להגדרות</translation>
+<translation id="2584559707064218956">כדי להגדיר רשת, צריך לעבור להגדרות</translation>
 <translation id="2586146417912237930">כחול ואינדיגו</translation>
 <translation id="2589921777872778654">תפריט עריכה ומחיקה</translation>
 <translation id="2597774443162333062">‏הקבצים יישלחו אל Google לניפוי באגים</translation>
@@ -885,7 +885,7 @@
 <translation id="4868181314237714900">פליז</translation>
 <translation id="4873827928179867585">האלגוריתם לאימות</translation>
 <translation id="4880328057631981605">‏שם נקודת גישה (APN)</translation>
-<translation id="488307179443832524">נעשה שימוש במקש הקיצור הזה עבור '<ph name="CONFLICT_ACCEL_NAME" />'. אפשר להקיש על קיצור דרך חדש.</translation>
+<translation id="488307179443832524">הקיצור הזה כבר נמצא בשימוש ב-<ph name="CONFLICT_ACCEL_NAME" />. אפשר לקבוע קיצור דרך חדש.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">יש לבחור מיד סיסמה חדשה</translation>
 <translation id="4891842000192098784">בדיקת עומסים</translation>
@@ -1091,7 +1091,7 @@
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
 <translation id="586463370326011345">ברק</translation>
-<translation id="5875913454160982848">הורדת מודל התמלול</translation>
+<translation id="5875913454160982848">להורדת מודל התמלול</translation>
 <translation id="5876385649737594562">צריך להפעיל כדי לבחור אפשרויות</translation>
 <translation id="5877503382465267833">השהיה של <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">מסך מלא</translation>
@@ -1423,7 +1423,7 @@
 <translation id="723419678599947502">‏יצירת שם באמצעות AI מבית Google</translation>
 <translation id="725133483556299729">בחירת אימייל</translation>
 <translation id="7255187042098209569">ורוד וסגול</translation>
-<translation id="7267918995585557751">צריך לאפס את ההגדרות כדי לוודא שדף הפתיחה שמוגדר כברירת מחדל הוא לא אתר פישינג. מומלץ להשתמש רק באתרים מהימנים.</translation>
+<translation id="7267918995585557751">כדי לוודא שדף הפתיחה שמוגדר כברירת מחדל הוא לא אתר פישינג צריך לאפס את ההגדרות. מומלץ להשתמש רק באתרים מהימנים.</translation>
 <translation id="7271000785316964275">קלאסיציסטי</translation>
 <translation id="7271040990581020067">הסורק נמצא בשימוש כרגע. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="7271932918253517778">מקש קיצור עם מקשים בשורה העליונה צריך לכלול את המקש '<ph name="META_KEY" />'.</translation>
@@ -1804,7 +1804,7 @@
 <translation id="8960969673307890087">אבטיחים</translation>
 <translation id="8961025972867871808">פינגווינים</translation>
 <translation id="8968751544471797276">שיעור הטעינה</translation>
-<translation id="8970109610781093811">הפעל שוב</translation>
+<translation id="8970109610781093811">בדיקה חוזרת</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{סריקה}=1{סריקת דף {NUMBER_OF_PAGES}}one{סריקת דף {NUMBER_OF_PAGES}}two{סריקת דף {NUMBER_OF_PAGES}}other{סריקת דף {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">כפר</translation>

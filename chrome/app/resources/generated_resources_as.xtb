@@ -1102,7 +1102,6 @@
 <translation id="174123615272205933">কাষ্টম</translation>
 <translation id="1741314857973421784">অব্যাহত ৰাখক</translation>
 <translation id="1744108098763830590">নেপথ্যৰ পৃষ্ঠা</translation>
-<translation id="174516937379651657">আপুনি Geminiৰ সৈতে কোনো পৃষ্ঠা শ্বেয়াৰ কৰিলে, Googleলৈ পৃষ্ঠাখনৰ সম্পূৰ্ণ সমল আৰু URL পঠিওৱা হয়।</translation>
 <translation id="1745732479023874451">সম্পৰ্কসমূহ পৰিচালনা কৰক</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{এই ৱেব এপ্‌টোত # টা ফাইল খুলি সম্পাদনা কৰিবনে?}other{এই ৱেব এপ্‌টোত # টা ফাইল খুলি সম্পাদনা কৰিবনে?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" />ত ছাইন ইন কৰিবলৈ <ph name="DEVICE_NAME" />ৰ পৰা এটা পাছকী ব্যৱহাৰ কৰক</translation>
@@ -8199,7 +8198,6 @@
 <translation id="6759193508432371551">ফেক্টৰী ৰিছেট কৰক</translation>
 <translation id="6760354150216532978">সকীয়নি: এই ছাইটটোৱে আপুনি কৰা সম্পাদনাসমূহ চাব পাৰে</translation>
 <translation id="6761209758867628753">সঁজুলি: হেল্প মী ৰাইট</translation>
-<translation id="6761459308170527362">আপুনি শ্বেয়াৰ কৰি থকা পৃষ্ঠাখনৰ সমল সন্দৰ্ভত Geminiক কিবা প্ৰশ্ন সুধিবলৈ আপুনি ভইচ বা পাঠ চাট ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">অন-ডিভাইচৰ ছাইটৰ ডেটাৰ অনুমতি দিয়া নহয়</translation>
 <translation id="6762833852331690540">অন আছে</translation>
@@ -8988,7 +8986,6 @@
 <translation id="7320213904474460808">নেটৱৰ্কক ডিফ’ল্ট বনাওক</translation>
 <translation id="7321545336522791733">ছাৰ্ভাৰৰ লগত সংযোগ কৰিব পৰা নাই</translation>
 <translation id="7322515217754205362">ছাইটৰ অনুমতি</translation>
-<translation id="7322919329844967709">আপুনি শ্বেয়াৰ কৰি থকা পৃষ্ঠাখনৰ সৈতে সম্পৰ্কিত অধিক প্ৰাসংগিক উত্তৰ লাভ কৰিব</translation>
 <translation id="7323315405936922211">কাৰ্ছৰৰ অঞ্চলৰ আকাৰ</translation>
 <translation id="7324020307732396723">ভাষাৰ ছেটিং খোলক</translation>
 <translation id="7324297612904500502">বিটা ফ’ৰাম</translation>
@@ -10325,7 +10322,6 @@
 <translation id="8222112516148944758">আপোনাৰ টেবৰ গোটসমূহ আপোনাৰ সমগ্ৰ ডিভাইচত স্বয়ংক্ৰিয়ভাৱে ছেভ আৰু আপডে’ট হয়</translation>
 <translation id="8222674561049363989">ফাইলটো এখন মান্য নথি নহয়</translation>
 <translation id="822347941086490485">HID ডিভাইচ বিচাৰি থকা হৈছে...</translation>
-<translation id="8224209912580158729">অধিক প্ৰাসংগিক উত্তৰ পাবলৈ পৃষ্ঠাখনৰ সমল Geminiৰ সৈতে শ্বেয়াৰ কৰক।</translation>
 <translation id="8224427620313426549">আপোনাৰ <ph name="DOMAIN_LINK" /> একাউণ্টটো মচি পেলোৱা নহ’ব</translation>
 <translation id="8225046344534779393">ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="8225265270453771718">কোনো এপ্লিকেশ্বন ৱিণ্ড’ শ্বেয়াৰ কৰক</translation>

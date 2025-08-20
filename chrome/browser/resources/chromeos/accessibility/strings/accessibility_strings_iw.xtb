@@ -48,7 +48,7 @@
     כדי לפתוח את התפריט של דפדפן Chrome, מקישים על Alt+F.</translation>
 <translation id="1213216066620407844">‏ChromeVox - מתן קול ל-Chrome</translation>
 <translation id="1225969361094801578">אפור תכלת כהה</translation>
-<translation id="122928249241119550">move to the previous sentence</translation>
+<translation id="122928249241119550">אל המשפט הקודם</translation>
 <translation id="1230503547248836149">התחלת בחירה</translation>
 <translation id="1236794971743289975">הערת סיום</translation>
 <translation id="1237797094773582699">אפשר גם להחליק בעזרת ארבע אצבעות משמאל לימין כדי לעבור לקטע הקודם. אפשר לנסות עכשיו!</translation>
@@ -435,7 +435,7 @@
 <translation id="3622350485154495700">לחיצה פעמיים עם אצבע אחת</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="366419593095697301">‏רמז: כדי לצאת מהמדריך הזה, מקישים על Escape.</translation>
+<translation id="366419593095697301">‏רמז: כדי לצאת מהמדריך לוחצים על Escape.</translation>
 <translation id="3676062394766691318">‏לאחר הגדרת המכשיר, אפשר לחזור ולהציג עוד מדריכים כך: מקישים על מקש החיפוש ועל O ולאחר מכן מקישים על T.</translation>
 <translation id="3681531118904532409">וניל פפאיה</translation>
 <translation id="3692274950075847560">ח:<ph name="RESULT" /></translation>
@@ -533,7 +533,7 @@
 <translation id="4281245629646759298">צהוב בהיר</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="4294967782363273192">מיון בסדר עולה</translation>
-<translation id="4300318234632215983">הכרזה על כתובת האתר של קישור</translation>
+<translation id="4300318234632215983">‏הקראה של כתובת ה-URL של קישור</translation>
 <translation id="4306112273432859778">.input {$$COUNT :number} .match $$COUNT 1{{greater than}} *{{{$$COUNT} greater than signs}}</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">סיינה</translation>
@@ -694,7 +694,7 @@
 <translation id="5400836586163650660">אפור</translation>
 <translation id="5402367795255837559">ברייל</translation>
 <translation id="5402791055281059602">התראה שמוצגת בחלון קופץ</translation>
-<translation id="5406272775687194041">התחלת הפעולה 'גרירה ושחרור'</translation>
+<translation id="5406272775687194041">התחלת הפעולה "גרירה ושחרור"</translation>
 <translation id="5420259671171615858">חיפוש בתפריטים</translation>
 <translation id="5435274640623994081">הפעלת רישום ביומן של צלילי התראה</translation>
 <translation id="5444587279251314700">(פעיל)</translation>
@@ -1013,7 +1013,7 @@
 <translation id="762020119231868829">השהיית כל הווידאג'טים של מדיה הפועלים כעת</translation>
 <translation id="7625690649919402823">הטבלה הבאה</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), רמה <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">כדי למצוא את אזור התרגול או את הכפתור 'השיעור הבא', לוחצים על מקש החיפוש ועל החץ ימינה. לאחר מכן לוחצים על מקש החיפוש ועל הרווח כדי להפעיל.</translation>
+<translation id="7637342083105831460">כדי למצוא את אזור התרגול או את הכפתור "השיעור הבא", לוחצים יחד על מקש החיפוש ועל החץ ימינה. ואז כדי להפעיל, לוחצים יחד על מקש החיפוש ועל הרווח.</translation>
 <translation id="7639968568612851608">אפור כהה</translation>
 <translation id="7663318257180412551">כותרת 2</translation>
 <translation id="7673144236430784711">.input {$$COUNT :number} .match $$COUNT 1{{dollar}} *{{{$$COUNT} dollar signs}}</translation>

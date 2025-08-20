@@ -1094,7 +1094,6 @@
 <translation id="174123615272205933">カスタム</translation>
 <translation id="1741314857973421784">次へ</translation>
 <translation id="1744108098763830590">バックグラウンド ページ</translation>
-<translation id="174516937379651657">ページを Gemini と共有すると、ページのコンテンツ全体と URL が Google に送信されます。</translation>
 <translation id="1745732479023874451">連絡先を管理</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# 件のファイルをこのウェブアプリで開いて編集しますか？}}</translation>
 <translation id="1748329107062243374"><ph name="DEVICE_NAME" /> のパスキーを使用して <ph name="WEBSITE" /> にログインする</translation>
@@ -8170,7 +8169,6 @@
 <translation id="6759193508432371551">初期状態へのリセット</translation>
 <translation id="6760354150216532978">警告: このサイトはあなたが行った編集内容を参照できます</translation>
 <translation id="6761209758867628753">ツール: 文書作成サポート</translation>
-<translation id="6761459308170527362">音声やテキストによる会話形式で、共有しているページのコンテンツについて Gemini に質問できます</translation>
 <translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6761623907967804682">デバイス上のサイトデータは許可されていません</translation>
 <translation id="6762833852331690540">オン</translation>
@@ -8959,7 +8957,6 @@
 <translation id="7320213904474460808">デフォルトのネットワーク</translation>
 <translation id="7321545336522791733">サーバーにアクセスできません</translation>
 <translation id="7322515217754205362">サイトの権限</translation>
-<translation id="7322919329844967709">共有しているページのコンテンツに基づく関連性の高い回答が得られます</translation>
 <translation id="7323315405936922211">カーソル領域のサイズ</translation>
 <translation id="7324020307732396723">言語設定を開く</translation>
 <translation id="7324297612904500502">ベータ版フォーラム</translation>
@@ -10296,7 +10293,6 @@
 <translation id="8222112516148944758">タブグループは自動的に保存され、すべてのデバイスで更新されます。</translation>
 <translation id="8222674561049363989">ファイルは有効なドキュメントではありません</translation>
 <translation id="822347941086490485">HID デバイスを検出しています...</translation>
-<translation id="8224209912580158729">ページのコンテンツを Gemini と共有して、より関連性の高い回答を得ることができます。</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> のアカウントは削除されません</translation>
 <translation id="8225046344534779393">インターネット接続をご確認ください</translation>
 <translation id="8225265270453771718">アプリケーション ウィンドウの共有</translation>

@@ -1103,7 +1103,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="174123615272205933">Prilagođeno</translation>
 <translation id="1741314857973421784">Nastavi</translation>
 <translation id="1744108098763830590">pozadinska stranica</translation>
-<translation id="174516937379651657">Kada dijelite stranicu s Geminijem, cijeli sadržaj stranice i URL se šalju Googleu.</translation>
 <translation id="1745732479023874451">Upravljajte kontaktima</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Otvoriti i urediti # fajl u ovoj web aplikaciji?}few{Otvoriti i urediti # fajla u ovoj web aplikaciji?}other{Otvoriti i urediti # fajlova u ovoj web aplikaciji?}}</translation>
 <translation id="1748329107062243374">Koristite pristupni ključ s uređaja <ph name="DEVICE_NAME" /> da se prijavite na <ph name="WEBSITE" /></translation>
@@ -8203,7 +8202,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6759193508432371551">Vraćanje na fabričke postavke</translation>
 <translation id="6760354150216532978">Upozorenje: web lokacija može vidjeti izmjene koje unesete</translation>
 <translation id="6761209758867628753">Alat: Pomoć za pisanje</translation>
-<translation id="6761459308170527362">Možete koristiti glasovni ili tekstualni chat da Geminiju postavite pitanje o sadržaju stranice koji dijelite</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Pohranjivanje podataka web lokacije na uređaj nije dozvoljeno</translation>
 <translation id="6762833852331690540">Uključeno</translation>
@@ -8993,7 +8991,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7320213904474460808">Zadana mreža</translation>
 <translation id="7321545336522791733">Server je nedostupan</translation>
 <translation id="7322515217754205362">Odobrenja za web lokaciju</translation>
-<translation id="7322919329844967709">Dobijat ćete relevantnije odgovore u vezi sa sadržajem stranice koji dijelite</translation>
 <translation id="7323315405936922211">Veličina područja kursora</translation>
 <translation id="7324020307732396723">Otvori postavke jezika</translation>
 <translation id="7324297612904500502">Beta verzija foruma</translation>
@@ -10331,7 +10328,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8222112516148944758">Grupe kartica se automatski pohranjuju i ažuriraju na svim vašim uređajima</translation>
 <translation id="8222674561049363989">Fajl nije važeći dokument</translation>
 <translation id="822347941086490485">Pronalaženje HID uređaja...</translation>
-<translation id="8224209912580158729">Dijelite sadržaj stranice s Geminijem da dobijate relevantnije odgovore.</translation>
 <translation id="8224427620313426549">Vaš račun na web lokaciji <ph name="DOMAIN_LINK" /> se neće izbrisati</translation>
 <translation id="8225046344534779393">Provjerite internetsku vezu</translation>
 <translation id="8225265270453771718">Dijelite prozor aplikacije</translation>

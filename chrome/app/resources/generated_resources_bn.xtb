@@ -1105,7 +1105,6 @@
 <translation id="174123615272205933">কাস্টম</translation>
 <translation id="1741314857973421784">চালিয়ে যান</translation>
 <translation id="1744108098763830590">পৃষ্ঠভূমি পৃষ্ঠা</translation>
-<translation id="174516937379651657">আপনি Gemini-র সাথে কোনও পৃষ্ঠা শেয়ার করলে, Google-এর কাছে, পৃষ্ঠাটির সম্পূর্ণ কন্টেন্ট ও URL পাঠানো হয়।</translation>
 <translation id="1745732479023874451">পরিচিতি ম্যানেজ করুন</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{এই ওয়েব অ্যাপে #টি ফাইল খুলবেন এবং এডিট করবেন?}other{এই ওয়েব অ্যাপে #টি ফাইল খুলবেন এবং এডিট করবেন?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" />-এ লগ-ইন করতে <ph name="DEVICE_NAME" /> থেকে 'পাসকী' ব্যবহার করুন</translation>
@@ -8204,7 +8203,6 @@
 <translation id="6759193508432371551">ফ্যাক্টরি রিসেট</translation>
 <translation id="6760354150216532978">সতর্কতা: এই সাইট আপনার করা এডিট দেখতে পারে</translation>
 <translation id="6761209758867628753">টুল: আমাকে লিখতে সাহায্য করো</translation>
-<translation id="6761459308170527362">আপনার শেয়ার করা পৃষ্ঠার কন্টেন্ট সম্পর্কে Gemini-কে জিজ্ঞাসা করার জন্য ভয়েস বা টেক্সট চ্যাট ব্যবহার করতে পারবেন</translation>
 <translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6761623907967804682">অন-ডিভাইস সাইট ডেটাকে অনুমোদন দেওয়া হয় না</translation>
 <translation id="6762833852331690540">চালু করা আছে</translation>
@@ -8994,7 +8992,6 @@
 <translation id="7320213904474460808">ডিফল্ট নেটওয়ার্ক</translation>
 <translation id="7321545336522791733">সার্ভারে সংযোগ করা যাচ্ছে না</translation>
 <translation id="7322515217754205362">সাইট অ্যাক্সেস করার অনুমতি</translation>
-<translation id="7322919329844967709">আপনার শেয়ার করা পৃষ্ঠার কন্টেন্টের সাথে সম্পর্কিত আরও প্রাসঙ্গিক উত্তর পাবেন।</translation>
 <translation id="7323315405936922211">কার্সর এরিয়া সাইজ</translation>
 <translation id="7324020307732396723">ভাষার সেটিংস খুলুন</translation>
 <translation id="7324297612904500502">বিটা ফোরাম</translation>
@@ -10331,7 +10328,6 @@
 <translation id="8222112516148944758">আপনার সবকটি ডিভাইস জুড়ে আপনার ট্যাব গ্রুপ অটোমেটিক সেভ এবং আপডেট হয়</translation>
 <translation id="8222674561049363989">ফাইল সঠিক ফর্ম্যাটে নেই</translation>
 <translation id="822347941086490485">HID ডিভাইস খোঁজা হচ্ছে...</translation>
-<translation id="8224209912580158729">আরও বেশি প্রাসঙ্গিক উত্তর পাওয়ার জন্য Gemini-র সাথে পৃষ্ঠার কন্টেন্ট শেয়ার করুন।</translation>
 <translation id="8224427620313426549">আপনার <ph name="DOMAIN_LINK" /> অ্যাকাউন্ট মুছে ফেলা হবে না</translation>
 <translation id="8225046344534779393">ইন্টারনেট কানেকশন চালু আছে কিনা দেখে নিন</translation>
 <translation id="8225265270453771718">একটি অ্যাপ্লিকেশনের উইন্ডো শেয়ার করুন</translation>

@@ -1092,7 +1092,6 @@
 <translation id="174123615272205933">Арнаулы</translation>
 <translation id="1741314857973421784">Жалғастыру</translation>
 <translation id="1744108098763830590">фондық бет</translation>
-<translation id="174516937379651657">Бетті Gemini-мен бөліскен кезде, беттің толық контенті мен URL мекенжайы Google-ға жіберіледі.</translation>
 <translation id="1745732479023874451">Контактілерді басқару</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Осы веб-қолданбада # файлды ашып, өзгерту керек пе?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> сайтына кіру үшін <ph name="DEVICE_NAME" /> кіру кілтін пайдалану</translation>
@@ -8177,7 +8176,6 @@
 <translation id="6759193508432371551">Зауыттық параметрлерге қайта орнату</translation>
 <translation id="6760354150216532978">Ескерту: бұл сайт сіз енгізген өзгерістерді көре алады</translation>
 <translation id="6761209758867628753">Құрал: Жазуға көмек керек</translation>
-<translation id="6761459308170527362">Gemini-ға өзіңіз бөлісіп жатқан бет контенті туралы сұрақ қою үшін дауыстық немесе мәтіндік чатты пайдалануға болады.</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Құрылғыға сайт деректерін сақтауға рұқсат берілмеді</translation>
 <translation id="6762833852331690540">Қосулы</translation>
@@ -8966,7 +8964,6 @@
 <translation id="7320213904474460808">Желіні әдепкісінше таңдау</translation>
 <translation id="7321545336522791733">Сервер қолжетімді емес</translation>
 <translation id="7322515217754205362">Сайт рұқсаттары</translation>
-<translation id="7322919329844967709">Өзіңіз бөлісетін бет контентіне қатысты көбірек сәйкес келетін жауаптар аласыз.</translation>
 <translation id="7323315405936922211">Курсор аумағының өлшемі</translation>
 <translation id="7324020307732396723">Тіл параметрлерін ашу</translation>
 <translation id="7324297612904500502">Бета форумы</translation>
@@ -10302,7 +10299,6 @@
 <translation id="8222112516148944758">Қойындылар топтары барлық құрылғыңызда автоматты түрде сақталып, жаңарады.</translation>
 <translation id="8222674561049363989">Файл жарамсыз.</translation>
 <translation id="822347941086490485">HID құрылғылары ізделуде...</translation>
-<translation id="8224209912580158729">Барынша дұрыс жауаптар алу үшін бет контентін Gemini-мен бөлісіңіз.</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> аккаунтыңыз жойылмайды.</translation>
 <translation id="8225046344534779393">Интернет байланысын тексеріңіз.</translation>
 <translation id="8225265270453771718">Қолданба терезесін бөлісу</translation>

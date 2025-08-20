@@ -1100,7 +1100,6 @@
 <translation id="174123615272205933">Захиалгат</translation>
 <translation id="1741314857973421784">Үргэлжлүүлэх</translation>
 <translation id="1744108098763830590">дэвсгэр хуудас</translation>
-<translation id="174516937379651657">Таныг Gemini-тай хуудас хуваалцах үед хуудасны бүтэн агуулга, URL-г Google-д илгээнэ.</translation>
 <translation id="1745732479023874451">Харилцагчдыг удирдах</translation>
 <translation id="1748283190377208783">{0,plural, =1{ашиглаагүй олон тооны төлөв}other{# файлыг энэ веб аппад нээж, засах уу?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" />-д нэвтрэхийн тулд <ph name="DEVICE_NAME" />-н passkey-г ашиглах</translation>
@@ -8195,7 +8194,6 @@
 <translation id="6759193508432371551">Үйлдвэрийн тохиргоонд нь буцааж оруулах</translation>
 <translation id="6760354150216532978">Сануулга: энэ сайт таны хийх засваруудыг харах боломжтой</translation>
 <translation id="6761209758867628753">Багаж: Надад бичихэд тусал</translation>
-<translation id="6761459308170527362">Та хуваалцаж буй хуудасныхаа агуулгын талаар Gemini-с асуулт асуухын тулд дуу хоолой, текст ашиглах боломжтой</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Төхөөрөмж дээрх сайтын өгөгдлийг зөвшөөрдөггүй</translation>
 <translation id="6762833852331690540">Асаалттай</translation>
@@ -8984,7 +8982,6 @@
 <translation id="7320213904474460808">Сүлжээг өгөгдмөл болгох</translation>
 <translation id="7321545336522791733">Серверт холбогдох боломжгүй</translation>
 <translation id="7322515217754205362">Сайтын зөвшөөрөл</translation>
-<translation id="7322919329844967709">Та хуваалцаж буй хуудасныхаа агуулгатай холбоотой илүү хамааралтай хариултыг авна</translation>
 <translation id="7323315405936922211">Курсорын хэсгийн хэмжээ</translation>
 <translation id="7324020307732396723">Хэлний тохиргоог нээх</translation>
 <translation id="7324297612904500502">Бета Форум</translation>
@@ -10319,7 +10316,6 @@
 <translation id="8222112516148944758">Таны табын бүлгийг таны бүх төхөөрөмж дээр автоматаар хадгалж, шинэчилдэг</translation>
 <translation id="8222674561049363989">Файл нь хүчинтэй документ биш байна</translation>
 <translation id="822347941086490485">HID төхөөрөмжүүдийг хайж байна...</translation>
-<translation id="8224209912580158729">Илүү хамааралтай хариулт авахын тулд хуудасны агуулгыг Gemini-тай хуваалцаарай.</translation>
 <translation id="8224427620313426549">Таны <ph name="DOMAIN_LINK" />-н бүртгэлийг устгахгүй</translation>
 <translation id="8225046344534779393">Интернэт холболтоо шалгана уу</translation>
 <translation id="8225265270453771718">Аппликейшний цонхыг хуваалцах</translation>

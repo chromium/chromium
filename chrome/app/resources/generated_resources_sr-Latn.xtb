@@ -1094,7 +1094,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="174123615272205933">Prilagođeno</translation>
 <translation id="1741314857973421784">Nastavi</translation>
 <translation id="1744108098763830590">stranica u pozadini</translation>
-<translation id="174516937379651657">Kada delite stranicu sa Gemini-jem, ceo sadržaj i URL stranice se šalju Google-u.</translation>
 <translation id="1745732479023874451">Upravljajte kontaktima</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Želite da otvorite i izmenite # fajl u ovoj veb-aplikaciji?}few{Želite da otvorite i izmenite # fajla u ovoj veb-aplikaciji?}other{Želite da otvorite i izmenite # fajlova u ovoj veb-aplikaciji?}}</translation>
 <translation id="1748329107062243374">Koristite pristupni ključ uređaja <ph name="DEVICE_NAME" /> da biste se prijavili na <ph name="WEBSITE" /></translation>
@@ -8188,7 +8187,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6759193508432371551">Vraćanje fabričkih podešavanja</translation>
 <translation id="6760354150216532978">Upozorenje: Ovaj sajt može da vidi izmene koje unosite</translation>
 <translation id="6761209758867628753">Alatka: Pomoć pri pisanju</translation>
-<translation id="6761459308170527362">Možete da koristite glasovni ili tekstualni čet da biste postavili pitanje Gemini-ju o sadržaju stranice koju delite</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Podaci o sajtovima na uređaju nisu dozvoljeni</translation>
 <translation id="6762833852331690540">Uključeno</translation>
@@ -8978,7 +8976,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7320213904474460808">Postavi kao podrazumevanu mrežu</translation>
 <translation id="7321545336522791733">Server nije dostupan</translation>
 <translation id="7322515217754205362">Dozvole za sajtove</translation>
-<translation id="7322919329844967709">Dobijaćete relevantnije odgovore u vezi sa sadržajem stranice koju delite</translation>
 <translation id="7323315405936922211">Veličina oblasti kursora</translation>
 <translation id="7324020307732396723">Otvori podešavanja jezika</translation>
 <translation id="7324297612904500502">Forum za beta verziju</translation>
@@ -10316,7 +10313,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8222112516148944758">Grupe kartica se automatski čuvaju i ažuriraju na svim uređajima</translation>
 <translation id="8222674561049363989">Fajl nije važeći dokument</translation>
 <translation id="822347941086490485">Traže se uređaji sa interfejsom…</translation>
-<translation id="8224209912580158729">Delite sadržaj stranice sa Gemini-jem da biste dobijali relevantnije odgovore.</translation>
 <translation id="8224427620313426549">Nalog za <ph name="DOMAIN_LINK" /> neće biti izbrisan</translation>
 <translation id="8225046344534779393">Proverite internet vezu</translation>
 <translation id="8225265270453771718">Delite prozor aplikacije</translation>

@@ -1105,7 +1105,6 @@
 <translation id="174123615272205933">कस्टम</translation>
 <translation id="1741314857973421784">जारी रखें</translation>
 <translation id="1744108098763830590">पेजभूमि पेज</translation>
-<translation id="174516937379651657">Gemini के साथ कोई पेज शेयर करने पर, पेज पर मौजूद पूरा कॉन्टेंट और यूआरएल, Google को भेजा जाता है.</translation>
 <translation id="1745732479023874451">संपर्कों को प्रबंधित करें</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{क्या # फ़ाइल को इस वेब ऐप्लिकेशन में खोलकर उसमें बदलाव करना है?}other{क्या # फ़ाइलों को इस वेब ऐप्लिकेशन में खोलकर उनमें बदलाव करना है?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> पर साइन इन करने के लिए, <ph name="DEVICE_NAME" /> से पासकी इस्तेमाल करें</translation>
@@ -8200,7 +8199,6 @@
 <translation id="6759193508432371551">फैक्टरी रीसेट करें</translation>
 <translation id="6760354150216532978">चेतावनी: यह साइट आपके किए गए बदलाव देख सकती है</translation>
 <translation id="6761209758867628753">टूल: लिखने में मेरी मदद करो</translation>
-<translation id="6761459308170527362">अपने शेयर किए जा रहे पेज कॉन्टेंट के बारे में, Gemini से बोलकर या लिखकर सवाल पूछा जा सकता है</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">डिवाइस पर मौजूद साइट डेटा को सेव करने की अनुमति नहीं है</translation>
 <translation id="6762833852331690540">चालू है</translation>
@@ -8990,7 +8988,6 @@
 <translation id="7320213904474460808">नेटवर्क चुनें</translation>
 <translation id="7321545336522791733">सर्वर पहुंच योग्य नहीं है</translation>
 <translation id="7322515217754205362">साइट के लिए अनुमतियां</translation>
-<translation id="7322919329844967709">आपको उस पेज कॉन्टेंट से जुड़े ज़्यादा काम के जवाब मिलेंगे जिसे आपने शेयर किया है</translation>
 <translation id="7323315405936922211">कर्सर एरिया का साइज़</translation>
 <translation id="7324020307732396723">भाषा की सेटिंग खोलें</translation>
 <translation id="7324297612904500502">बीटा फ़ोरम</translation>
@@ -10326,7 +10323,6 @@
 <translation id="8222112516148944758">टैब ग्रुप आपके सभी डिवाइसों पर, अपने-आप सेव और अपडेट हो जाते हैं</translation>
 <translation id="8222674561049363989">फ़ाइल मान्य फ़ॉर्मैट में नहीं है</translation>
 <translation id="822347941086490485">एचआईडी डिवाइस ढूंढे जा रहे हैं...</translation>
-<translation id="8224209912580158729">ज़्यादा काम के जवाब पाने के लिए, Gemini के साथ पेज कॉन्टेंट शेयर करें.</translation>
 <translation id="8224427620313426549">आपका <ph name="DOMAIN_LINK" /> खाता नहीं मिटाया जाएगा</translation>
 <translation id="8225046344534779393">इंटरनेट कनेक्शन की जांच करें</translation>
 <translation id="8225265270453771718">ऐप्लिकेशन की विंडो शेयर करें</translation>

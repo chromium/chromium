@@ -1092,7 +1092,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="174123615272205933">Të personalizuara</translation>
 <translation id="1741314857973421784">Vazhdo</translation>
 <translation id="1744108098763830590">faqja e sfondit</translation>
-<translation id="174516937379651657">Kur ndan një faqe me Gemini, përmbajtja e plotë dhe URL-ja e faqes i dërgohen Google.</translation>
 <translation id="1745732479023874451">Menaxho kontaktet</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Të hapen dhe të modifikohen # skedarë në këtë aplikacion uebi?}}</translation>
 <translation id="1748329107062243374">Përdor një çelës kalimi nga <ph name="DEVICE_NAME" /> për t'u identifikuar në <ph name="WEBSITE" /></translation>
@@ -8181,7 +8180,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6759193508432371551">Rivendosje në gjendje fabrike</translation>
 <translation id="6760354150216532978">Paralajmërim: ky sajt mund të shikojë modifikimet që ti bën</translation>
 <translation id="6761209758867628753">Vegla: Më ndihmo të shkruaj</translation>
-<translation id="6761459308170527362">Mund të përdorësh bisedën me zë ose tekst për t'i bërë Gemini një pyetje rreth përmbajtjes së faqes që po ndan</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Të dhënat e sajtit në pajisje nuk lejohen</translation>
 <translation id="6762833852331690540">Aktiv</translation>
@@ -8970,7 +8968,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7320213904474460808">Kalo si parazgjedhje te rrjeti</translation>
 <translation id="7321545336522791733">Serveri i paarritshëm</translation>
 <translation id="7322515217754205362">Lejet e sajtit</translation>
-<translation id="7322919329844967709">Do të marrësh përgjigje më të përshtatshme në lidhje me përmbajtjen e faqes që po ndan</translation>
 <translation id="7323315405936922211">Madhësia e zonës së kursorit</translation>
 <translation id="7324020307732396723">Hap cilësimet e gjuhës</translation>
 <translation id="7324297612904500502">Forumi beta</translation>
@@ -10306,7 +10303,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8222112516148944758">Grupet e tua të skedave ruhen dhe përditësohen automatikisht nëpër të gjitha pajisjet e tua</translation>
 <translation id="8222674561049363989">Skedari nuk është një dokument i vlefshëm</translation>
 <translation id="822347941086490485">Po gjen pajisje HID...</translation>
-<translation id="8224209912580158729">Ndaj përmbajtjen e faqes me Gemini për të marrë përgjigje më të përshtatshme.</translation>
 <translation id="8224427620313426549">Llogaria jote e <ph name="DOMAIN_LINK" /> nuk do të fshihet</translation>
 <translation id="8225046344534779393">Kontrollo lidhjen me internetin</translation>
 <translation id="8225265270453771718">Ndaj një dritare të aplikacionit</translation>

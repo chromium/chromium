@@ -1095,7 +1095,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="174123615272205933">Aangepast</translation>
 <translation id="1741314857973421784">Doorgaan</translation>
 <translation id="1744108098763830590">achtergrondpagina</translation>
-<translation id="174516937379651657">Als je een pagina deelt met Gemini, worden de volledige content en URL van de pagina naar Google gestuurd.</translation>
 <translation id="1745732479023874451">Contacten beheren</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# bestanden openen en bewerken in deze web-app?}}</translation>
 <translation id="1748329107062243374">Gebruik een toegangssleutel van <ph name="DEVICE_NAME" /> om in te loggen bij <ph name="WEBSITE" /></translation>
@@ -8179,7 +8178,6 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6759193508432371551">Terugzetten op fabrieksinstellingen</translation>
 <translation id="6760354150216532978">Waarschuwing: Deze site kan bewerkingen zien die je aanbrengt</translation>
 <translation id="6761209758867628753">Tool: Help me met schrijven</translation>
-<translation id="6761459308170527362">Je kunt spraak- of tekstchat gebruiken om Gemini een vraag te stellen over de paginacontent die je deelt</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Sitegegevens op het apparaat niet toegestaan</translation>
 <translation id="6762833852331690540">Aan</translation>
@@ -8969,7 +8967,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7320213904474460808">Standaardnetwerk gebruiken</translation>
 <translation id="7321545336522791733">Server niet bereikbaar</translation>
 <translation id="7322515217754205362">Siterechten</translation>
-<translation id="7322919329844967709">Je krijgt relevantere antwoorden over de paginacontent die je deelt</translation>
 <translation id="7323315405936922211">Grootte van cursorgebied</translation>
 <translation id="7324020307732396723">Taalinstellingen openen</translation>
 <translation id="7324297612904500502">Bètaforum</translation>
@@ -10305,7 +10302,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8222112516148944758">Je tabbladgroepen worden automatisch opgeslagen en geüpdatet op al je apparaten</translation>
 <translation id="8222674561049363989">Bestand is geen geldig document</translation>
 <translation id="822347941086490485">Zoeken naar HID-apparaten...</translation>
-<translation id="8224209912580158729">Deel paginacontent met Gemini om relevantere antwoorden te krijgen.</translation>
 <translation id="8224427620313426549">Je account voor <ph name="DOMAIN_LINK" /> wordt niet verwijderd</translation>
 <translation id="8225046344534779393">Check de internetverbinding</translation>
 <translation id="8225265270453771718">Een app-venster delen</translation>

@@ -1099,7 +1099,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="174123615272205933">Egendefinert</translation>
 <translation id="1741314857973421784">Fortsett</translation>
 <translation id="1744108098763830590">bakgrunnsside</translation>
-<translation id="174516937379651657">Når du deler en side med Gemini, sendes hele sideinnholdet og nettadressen til Google.</translation>
 <translation id="1745732479023874451">Administrer kontakter</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Vil du åpne og redigere # filer i denne nettappen?}}</translation>
 <translation id="1748329107062243374">Bruk en passnøkkel fra <ph name="DEVICE_NAME" /> for å logge på <ph name="WEBSITE" /></translation>
@@ -8189,7 +8188,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6759193508432371551">Tilbakestilling til fabrikkstandard</translation>
 <translation id="6760354150216532978">Advarsel: Dette nettstedet kan se endringer du gjør</translation>
 <translation id="6761209758867628753">Verktøy: Hjelp meg å skrive</translation>
-<translation id="6761459308170527362">Du kan bruke tale- eller tekstchat for å stille Gemini spørsmål om sideinnholdet du deler</translation>
 <translation id="676158322851696513">«<ph name="EXTENSION_NAME" />»</translation>
 <translation id="6761623907967804682">Nettstedsdata på enheten er ikke tillatt</translation>
 <translation id="6762833852331690540">På</translation>
@@ -8979,7 +8977,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7320213904474460808">Bruk nettverk som standard</translation>
 <translation id="7321545336522791733">Tjeneren er ikke tilgjengelig</translation>
 <translation id="7322515217754205362">Nettstedstillatelser</translation>
-<translation id="7322919329844967709">Du får mer relevante svar knyttet til sideinnholdet du deler</translation>
 <translation id="7323315405936922211">Størrelse på markørområdet</translation>
 <translation id="7324020307732396723">Åpne språkinnstillingene</translation>
 <translation id="7324297612904500502">Forumet for betaversjoner</translation>
@@ -10317,7 +10314,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8222112516148944758">Fanegruppene dine lagres og oppdateres automatisk på alle enhetene dine</translation>
 <translation id="8222674561049363989">Filen er ikke noe gyldig dokument</translation>
 <translation id="822347941086490485">Finner HID-enheter …</translation>
-<translation id="8224209912580158729">Del sideinnhold med Gemini for å få mer relevante svar.</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" />-kontoen din slettes ikke</translation>
 <translation id="8225046344534779393">Sjekk internettilkoblingen</translation>
 <translation id="8225265270453771718">Del et programvindu</translation>

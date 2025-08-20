@@ -1107,7 +1107,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="174123615272205933">Personol</translation>
 <translation id="1741314857973421784">Parhau</translation>
 <translation id="1744108098763830590">tudalen gefndir</translation>
-<translation id="174516937379651657">Pan fyddwch yn rhannu tudalen gyda Gemini, anfonir cynnwys llawn ac URL y dudalen at Google.</translation>
 <translation id="1745732479023874451">Rheoli cysylltiadau</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}zero{Agor a golygu # ffeil yn yr ap gwe hwn?}two{Agor a golygu # ffeil yn yr ap gwe hwn?}few{Agor a golygu # ffeil yn yr ap gwe hwn?}many{Agor a golygu # o ffeiliau yn yr ap gwe hwn?}other{Agor a golygu # o ffeiliau yn yr ap gwe hwn?}}</translation>
 <translation id="1748329107062243374">Defnyddiwch god pas o <ph name="DEVICE_NAME" /> i fewngofnodi i <ph name="WEBSITE" /></translation>
@@ -8211,7 +8210,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6759193508432371551">Ailosod i'r gosodiadau ffatri</translation>
 <translation id="6760354150216532978">Rhybudd: gall y wefan hon weld y golygiadau rydych yn eu gwneud</translation>
 <translation id="6761209758867628753">Offeryn: Helpu fi i ysgrifennu</translation>
-<translation id="6761459308170527362">Gallwch ddefnyddio sgwrs llais neu destun i ofyn cwestiwn i Gemini am gynnwys y dudalen rydych chi'n ei rhannu</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Ni chaniateir data gwefan ar y ddyfais</translation>
 <translation id="6762833852331690540">Ymlaen</translation>
@@ -9000,7 +8998,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7320213904474460808">Gwneud y rhwydwaith yn ddiofyn</translation>
 <translation id="7321545336522791733">Methu â chyrraedd y gweinydd</translation>
 <translation id="7322515217754205362">Caniatadau Gwefan</translation>
-<translation id="7322919329844967709">Byddwch yn cael atebion mwy perthnasol sy'n gysylltiedig â chynnwys y dudalen rydych yn ei rhannu</translation>
 <translation id="7323315405936922211">Maint ardal cyrchwr</translation>
 <translation id="7324020307732396723">Agor Gosodiadau Iaith</translation>
 <translation id="7324297612904500502">Fforwm Beta</translation>
@@ -10337,7 +10334,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8222112516148944758">Mae grwpiau tabiau yn cael eu cadw a'u diweddaru'n awtomatig ar draws eich holl ddyfeisiau</translation>
 <translation id="8222674561049363989">Nid yw'r ffeil yn ddogfen ddilys</translation>
 <translation id="822347941086490485">Wrthi'n dod o hyd i ddyfeisiau HID...</translation>
-<translation id="8224209912580158729">Rhannu cynnwys y dudalen gyda Gemini i gael atebion mwy perthnasol.</translation>
 <translation id="8224427620313426549">Ni fydd eich cyfrif <ph name="DOMAIN_LINK" /> yn cael ei ddileu</translation>
 <translation id="8225046344534779393">Gwirio'r cysylltiad rhyngrwyd</translation>
 <translation id="8225265270453771718">Rhannu ffenestr rhaglen</translation>

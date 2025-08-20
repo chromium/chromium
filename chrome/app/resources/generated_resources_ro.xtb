@@ -1096,7 +1096,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="174123615272205933">Personalizată</translation>
 <translation id="1741314857973421784">Continuă</translation>
 <translation id="1744108098763830590">pagină de fundal</translation>
-<translation id="174516937379651657">Când trimiți o pagină la Gemini, conținutul complet și adresa URL a paginii sunt trimise la Google.</translation>
 <translation id="1745732479023874451">Gestionează agenda</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}few{Deschizi și editezi # fișiere în această aplicație web?}other{Deschizi și editezi # de fișiere în această aplicație web?}}</translation>
 <translation id="1748329107062243374">Folosește o cheie de acces de la <ph name="DEVICE_NAME" /> pentru a te conecta la <ph name="WEBSITE" /></translation>
@@ -8187,7 +8186,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6759193508432371551">Resetare la setările din fabrică</translation>
 <translation id="6760354150216532978">Avertisment: acest site poate vedea modificările pe care le faci</translation>
 <translation id="6761209758867628753">Instrument: Ajută-mă să scriu</translation>
-<translation id="6761459308170527362">Poți folosi chatul vocal sau prin text pentru a-i pune o întrebare serviciului Gemini despre conținutul paginii pe care o trimiți</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Nu se permit datele privind site-urile pe dispozitiv</translation>
 <translation id="6762833852331690540">Activat</translation>
@@ -8977,7 +8975,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7320213904474460808">Setează ca rețea prestabilită</translation>
 <translation id="7321545336522791733">Serverul nu poate fi accesat</translation>
 <translation id="7322515217754205362">Permisiuni la nivel de site</translation>
-<translation id="7322919329844967709">Vei primi răspunsuri mai relevante legate de conținutul paginii pe care îl trimiți</translation>
 <translation id="7323315405936922211">Mărimea zonei cursorului</translation>
 <translation id="7324020307732396723">Deschide setările de limbă</translation>
 <translation id="7324297612904500502">Forumul pentru versiunea beta</translation>
@@ -10315,7 +10312,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8222112516148944758">Grupurile de file se salvează și se actualizează automat pe toate dispozitivele</translation>
 <translation id="8222674561049363989">Fișierul nu este un document valid</translation>
 <translation id="822347941086490485">Se caută dispozitive HID...</translation>
-<translation id="8224209912580158729">Trimite conținutul paginii la Gemini pentru a primi răspunsuri mai relevante.</translation>
 <translation id="8224427620313426549">Contul tău <ph name="DOMAIN_LINK" /> nu se va șterge</translation>
 <translation id="8225046344534779393">Verifică starea conexiunii la internet</translation>
 <translation id="8225265270453771718">Arată fereastra unei aplicații</translation>

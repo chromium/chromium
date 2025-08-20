@@ -1105,7 +1105,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="174123615272205933">Custom</translation>
 <translation id="1741314857973421784">Magpatuloy</translation>
 <translation id="1744108098763830590">pahina ng background</translation>
-<translation id="174516937379651657">Kapag nag-share ka ng page sa Gemini, ipapadala sa Google ang buong content at URL ng page.</translation>
 <translation id="1745732479023874451">Pamahalaan ang mga contact</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Buksan at i-edit ang # file sa web app na ito?}other{Buksan at i-edit ang # na file sa web app na ito?}}</translation>
 <translation id="1748329107062243374">Gumamit ng passkey mula sa <ph name="DEVICE_NAME" /> para makapag-sign in sa <ph name="WEBSITE" /></translation>
@@ -8203,7 +8202,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6759193508432371551">Factory reset</translation>
 <translation id="6760354150216532978">Babala: makikita ng site na ito ang mga pag-edit na gagawin mo</translation>
 <translation id="6761209758867628753">Tool: Tulungan akong magsulat</translation>
-<translation id="6761459308170527362">Puwede kang gumamit ng voice o text chat para magtanong sa Gemini tungkol sa content ng page na shine-share mo</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Hindi pinapayagan ang on-device na data ng site</translation>
 <translation id="6762833852331690540">Naka-on</translation>
@@ -8993,7 +8991,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7320213904474460808">Pumili ng default na network</translation>
 <translation id="7321545336522791733">Hindi makakonekta sa server</translation>
 <translation id="7322515217754205362">Mga Pahintulot sa Site</translation>
-<translation id="7322919329844967709">Makakakuha ka ng mga mas nauugnay na sagot na may kaugnayan sa content ng page na shine-share mo</translation>
 <translation id="7323315405936922211">Laki ng lugar ng cursor</translation>
 <translation id="7324020307732396723">Buksan ang Mga Setting ng Wika</translation>
 <translation id="7324297612904500502">Forum sa Beta</translation>
@@ -10331,7 +10328,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8222112516148944758">Awtomatikong nase-save at naa-update ang iyong mga grupo ng tab sa lahat ng device mo</translation>
 <translation id="8222674561049363989">Hindi valid na dokumento ang file</translation>
 <translation id="822347941086490485">Naghahanap ng mga HID device...</translation>
-<translation id="8224209912580158729">I-share ang content ng page sa Gemini para makakuha ng mga mas nauugnay na sagot.</translation>
 <translation id="8224427620313426549">Hindi made-delete ang iyong <ph name="DOMAIN_LINK" /> account.</translation>
 <translation id="8225046344534779393">Tingnan ang koneksyon sa internet</translation>
 <translation id="8225265270453771718">Magbahagi ng application window</translation>

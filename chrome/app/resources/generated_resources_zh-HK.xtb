@@ -1103,7 +1103,6 @@
 <translation id="174123615272205933">自訂</translation>
 <translation id="1741314857973421784">繼續</translation>
 <translation id="1744108098763830590">背景頁面</translation>
-<translation id="174516937379651657">當你與 Gemini 分享頁面，頁面的所有內容和網址都會傳送到 Google。</translation>
 <translation id="1745732479023874451">管理聯絡人</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{要在這個網頁應用程式中開啟並編輯 # 個檔案嗎？}}</translation>
 <translation id="1748329107062243374">使用「<ph name="DEVICE_NAME" />」的密鑰登入 <ph name="WEBSITE" /></translation>
@@ -8189,7 +8188,6 @@
 <translation id="6759193508432371551">恢復原廠設定</translation>
 <translation id="6760354150216532978">警告：此網站可查看你編輯的內容</translation>
 <translation id="6761209758867628753">工具：幫我寫</translation>
-<translation id="6761459308170527362">你可以使用語音或文字對話，就你分享的頁面內容向 Gemini 提問</translation>
 <translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6761623907967804682">不允許在裝置上儲存網站資料</translation>
 <translation id="6762833852331690540">開啟</translation>
@@ -8979,7 +8977,6 @@
 <translation id="7320213904474460808">預設網絡</translation>
 <translation id="7321545336522791733">無法連接伺服器</translation>
 <translation id="7322515217754205362">網站權限</translation>
-<translation id="7322919329844967709">系統會根據你分享的頁面內容，提供更相關的答案</translation>
 <translation id="7323315405936922211">游標區域大小</translation>
 <translation id="7324020307732396723">開啟語言設定</translation>
 <translation id="7324297612904500502">Chrome 測試版論壇</translation>
@@ -10314,7 +10311,6 @@
 <translation id="8222112516148944758">分頁群組會自動儲存並同步至所有裝置</translation>
 <translation id="8222674561049363989">此檔案不是有效的文件</translation>
 <translation id="822347941086490485">正在尋找 HID 裝置…</translation>
-<translation id="8224209912580158729">與 Gemini 分享頁面內容以取得更相關的答案。</translation>
 <translation id="8224427620313426549">系統不會刪除你的 <ph name="DOMAIN_LINK" /> 帳戶</translation>
 <translation id="8225046344534779393">檢查互聯網連線</translation>
 <translation id="8225265270453771718">分享應用程式視窗</translation>

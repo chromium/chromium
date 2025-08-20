@@ -1105,7 +1105,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="174123615272205933">Personalizada</translation>
 <translation id="1741314857973421784">Continuar</translation>
 <translation id="1744108098763830590">página de plano de fundo</translation>
-<translation id="174516937379651657">Quando você compartilha uma página com o Gemini, o conteúdo completo e o URL dela são enviados ao Google.</translation>
 <translation id="1745732479023874451">Gerenciar contatos</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Abrir e editar # arquivo neste app da Web?}other{Abrir e editar # arquivos neste app da Web?}}</translation>
 <translation id="1748329107062243374">Use uma chave de acesso do dispositivo <ph name="DEVICE_NAME" /> para fazer login em <ph name="WEBSITE" /></translation>
@@ -3403,7 +3402,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3347086966102161372">C&amp;opiar endereço da imagem</translation>
 <translation id="3348038390189153836">Dispositivo removível detectado</translation>
 <translation id="3348131053948466246">Emoji sugerido. Pressione a seta para cima ou para baixo para navegar e "Enter" para inserir.</translation>
-<translation id="3349933790966648062">Ocupação da memória</translation>
+<translation id="3349933790966648062">Consumo de memória</translation>
 <translation id="3350450887151703713">Repetir 10 segundos</translation>
 <translation id="3351472127384196879">Adicionar ou localizar botões na caneta</translation>
 <translation id="3353786022389205125">Ative a opção "Mostrar tela de bloqueio ao sair do modo de suspensão" e tente novamente.</translation>
@@ -8204,7 +8203,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6759193508432371551">Configuração original</translation>
 <translation id="6760354150216532978">Aviso: este site pode conferir as edições que você faz</translation>
 <translation id="6761209758867628753">Ferramenta: Quero ajuda para escrever</translation>
-<translation id="6761459308170527362">Use a conversa por voz ou texto para fazer uma pergunta ao Gemini sobre o conteúdo da página que está compartilhando</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Não é permitido usar dados de sites no dispositivo</translation>
 <translation id="6762833852331690540">Ativado</translation>
@@ -8447,7 +8445,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6910211073230771657">Excluído</translation>
 <translation id="6910274140210351823">Escuro</translation>
 <translation id="691102290537033604">A extensão poderá executar códigos que não foram revisados pelo Google. Isso pode ser perigoso. Não ative essa opção se não tiver certeza do que está fazendo.</translation>
-<translation id="6911734910326569517">Ocupação da memória</translation>
+<translation id="6911734910326569517">Consumo de memória</translation>
 <translation id="6912007319859991306">PIN do chip da rede celular</translation>
 <translation id="6912380255120084882">Tente usar outro dispositivo</translation>
 <translation id="691289340230098384">Preferências de legenda</translation>
@@ -8994,7 +8992,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7320213904474460808">Usar rede como padrão</translation>
 <translation id="7321545336522791733">Servidor inacessível</translation>
 <translation id="7322515217754205362">Permissões de sites</translation>
-<translation id="7322919329844967709">Você vai receber respostas mais relevantes relacionadas ao conteúdo da página que está compartilhando</translation>
 <translation id="7323315405936922211">Tamanho da área do cursor</translation>
 <translation id="7324020307732396723">Abrir configurações de idioma</translation>
 <translation id="7324297612904500502">Fórum do Beta</translation>
@@ -10332,7 +10329,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8222112516148944758">Seus grupos de guias são salvos e atualizados automaticamente em todos os seus dispositivos</translation>
 <translation id="8222674561049363989">O arquivo não é um documento válido</translation>
 <translation id="822347941086490485">Procurando dispositivos HID…</translation>
-<translation id="8224209912580158729">Compartilhar o conteúdo da página com o Gemini para receber respostas mais relevantes.</translation>
 <translation id="8224427620313426549">Sua conta <ph name="DOMAIN_LINK" /> não será excluída.</translation>
 <translation id="8225046344534779393">Verifique a conexão com a Internet</translation>
 <translation id="8225265270453771718">Compartilhar uma janela de aplicativo</translation>

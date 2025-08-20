@@ -1094,7 +1094,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="174123615272205933">Personalizadas</translation>
 <translation id="1741314857973421784">Continuar</translation>
 <translation id="1744108098763830590">páxina en segundo plano</translation>
-<translation id="174516937379651657">Cando compartes unha páxina con Gemini, envíanse a Google tanto o contido completo como o URL da páxina.</translation>
 <translation id="1745732479023874451">Xestionar contactos</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Queres abrir e editar # ficheiros nesta aplicación web?}}</translation>
 <translation id="1748329107062243374">Usa unha clave de acceso de <ph name="DEVICE_NAME" /> para iniciar sesión en <ph name="WEBSITE" /></translation>
@@ -8186,7 +8185,6 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6759193508432371551">Restablecemento de fábrica</translation>
 <translation id="6760354150216532978">Advertencia: Este sitio poderá ver os cambios que fagas</translation>
 <translation id="6761209758867628753">Ferramenta: Axúdame a escribir</translation>
-<translation id="6761459308170527362">Podes usar o chat de voz ou de texto para facerlle unha pregunta a Gemini sobre o contido da páxina que estás compartindo</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Non se permiten os datos dos sitios no dispositivo</translation>
 <translation id="6762833852331690540">Si</translation>
@@ -8975,7 +8973,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7320213904474460808">Establecer rede como predeterminada</translation>
 <translation id="7321545336522791733">Non se pode acceder ao servidor</translation>
 <translation id="7322515217754205362">Permisos de sitios</translation>
-<translation id="7322919329844967709">Obterás respostas máis relevantes relacionadas co contido da páxina que estás compartindo</translation>
 <translation id="7323315405936922211">Tamaño da área do cursor</translation>
 <translation id="7324020307732396723">Abrir configuración de idioma</translation>
 <translation id="7324297612904500502">Foro de Chrome Beta</translation>
@@ -10312,7 +10309,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8222112516148944758">Os grupos de pestanas gárdanse e actualízanse automaticamente en todos os dispositivos</translation>
 <translation id="8222674561049363989">O ficheiro non é un documento válido</translation>
 <translation id="822347941086490485">Buscando dispositivos de interface humana…</translation>
-<translation id="8224209912580158729">Comparte o contido da páxina con Gemini para obter resultados máis relevantes.</translation>
 <translation id="8224427620313426549">Non se eliminará a túa conta de <ph name="DOMAIN_LINK" /></translation>
 <translation id="8225046344534779393">Comproba a conexión a Internet</translation>
 <translation id="8225265270453771718">Compartir unha ventá dunha aplicación</translation>

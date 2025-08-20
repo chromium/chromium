@@ -1104,7 +1104,6 @@
 <translation id="174123615272205933">ផ្ទាល់ខ្លួន</translation>
 <translation id="1741314857973421784">បន្ត</translation>
 <translation id="1744108098763830590">ទំព័រផ្ទៃខាងក្រោយ</translation>
-<translation id="174516937379651657">នៅពេល​អ្នកចែករំលែក​ទំព័រ​ជាមួយ Gemini ខ្លឹមសារ​ពេញលេញ និង URL របស់​ទំព័រនោះ​ត្រូវបាន​បញ្ជូនទៅ Google។</translation>
 <translation id="1745732479023874451">គ្រប់គ្រង​ទំនាក់ទំនង</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{បើក ហើយកែឯកសារ # នៅក្នុងកម្មវិធីលើអ៊ីនធឺណិតនេះឬ?}}</translation>
 <translation id="1748329107062243374">ប្រើ​កូដសម្ងាត់​ពី <ph name="DEVICE_NAME" /> ដើម្បី​ចូល​គណនី <ph name="WEBSITE" /></translation>
@@ -8197,7 +8196,6 @@
 <translation id="6759193508432371551">កំណត់ដូចដើមឡើងវិញ</translation>
 <translation id="6760354150216532978">សូមប្រុងប្រយ័ត្ន៖ គេហទំព័រនេះ​អាចមើលឃើញ​ការកែ​ដែលអ្នកធ្វើ</translation>
 <translation id="6761209758867628753">ឧបករណ៍៖ ជួយខ្ញុំ​ក្នុងការ​សរសេរ</translation>
-<translation id="6761459308170527362">អ្នក​អាចប្រើ​ការជជែក​ជាសំឡេង ឬ​ជាអក្សរ ដើម្បី​សួរសំណួរ​ទៅកាន់ Gemini អំពី​ខ្លឹមសារ​ទំព័រ​ដែលអ្នក​កំពុង​ចែករំលែក</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">មិនអនុញ្ញាត​ទិន្នន័យ​គេហទំព័រ​នៅលើ​ឧបករណ៍ទេ</translation>
 <translation id="6762833852331690540">បើក</translation>
@@ -8986,7 +8984,6 @@
 <translation id="7320213904474460808">កំណត់​បណ្ដាញ​ជាលំនាំដើម</translation>
 <translation id="7321545336522791733">មិនអាចភ្ជាប់ទៅម៉ាស៊ីនមេ</translation>
 <translation id="7322515217754205362">ការអនុញ្ញាត​គេហទំព័រ</translation>
-<translation id="7322919329844967709">អ្នកនឹង​ទទួលបាន​ចម្លើយ​ដែលកាន់តែ​ពាក់ព័ន្ធនឹង​ខ្លឹមសារ​ទំព័រ​ដែលអ្នក​កំពុង​ចែករំលែក</translation>
 <translation id="7323315405936922211">ទំហំ​តំបន់​ទស្សន៍ទ្រនិច</translation>
 <translation id="7324020307732396723">បើក​ការកំណត់​ភាសា</translation>
 <translation id="7324297612904500502">វេទិកា​បេតា</translation>
@@ -10323,7 +10320,6 @@
 <translation id="8222112516148944758">ក្រុមផ្ទាំង​របស់អ្នករក្សាទុក និង​ធ្វើបច្ចុប្បន្នភាព​ដោយស្វ័យប្រវត្តិ​នៅលើ​គ្រប់ឧបករណ៍​របស់អ្នក</translation>
 <translation id="8222674561049363989">ឯកសារមិនមែនជាឯកសារត្រឹមត្រូវទេ</translation>
 <translation id="822347941086490485">កំពុងស្វែងរកឧបករណ៍ HID...</translation>
-<translation id="8224209912580158729">ចែករំលែក​ខ្លឹមសារ​ទំព័រ​ជាមួយ Gemini ដើម្បី​ទទួលបាន​ចម្លើយ​ដែលកាន់តែ​ពាក់ព័ន្ធ។</translation>
 <translation id="8224427620313426549">គណនី <ph name="DOMAIN_LINK" /> របស់​អ្នក​នឹង​មិន​ត្រូវ​បានលុប​ទេ</translation>
 <translation id="8225046344534779393">ពិនិត្យការតភ្ជាប់​អ៊ីនធឺណិត</translation>
 <translation id="8225265270453771718">ចែករំលែក​វិនដូ​កម្មវិធី</translation>

@@ -1104,7 +1104,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="174123615272205933">Tersuai</translation>
 <translation id="1741314857973421784">Teruskan</translation>
 <translation id="1744108098763830590">halaman latar belakang</translation>
-<translation id="174516937379651657">Apabila anda berkongsi halaman dengan Gemini, kandungan penuh halaman dan URL dihantar kepada Google.</translation>
 <translation id="1745732479023874451">Urus kenalan</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Buka dan edit # fail dalam apl web ini?}}</translation>
 <translation id="1748329107062243374">Gunakan kunci laluan daripada <ph name="DEVICE_NAME" /> untuk log masuk ke <ph name="WEBSITE" /></translation>
@@ -8200,7 +8199,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6759193508432371551">Tetapan semula kilang</translation>
 <translation id="6760354150216532978">Amaran: laman ini boleh melihat pengeditan yang anda buat</translation>
 <translation id="6761209758867628753">Alat: Bantu saya tulis</translation>
-<translation id="6761459308170527362">Anda boleh menggunakan sembang suara atau teks untuk bertanya kepada Gemini tentang kandungan halaman yang anda kongsi</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Data laman pada peranti tidak dibenarkan</translation>
 <translation id="6762833852331690540">Hidupkan</translation>
@@ -8990,7 +8988,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7320213904474460808">Kembali ke rangkaian secara lalai</translation>
 <translation id="7321545336522791733">Pelayan tidak dapat dihubungi</translation>
 <translation id="7322515217754205362">Kebenaran Laman</translation>
-<translation id="7322919329844967709">Anda akan mendapat jawapan yang lebih berkaitan dengan kandungan halaman yang anda kongsi</translation>
 <translation id="7323315405936922211">Saiz kawasan kursor</translation>
 <translation id="7324020307732396723">Buka Tetapan Bahasa</translation>
 <translation id="7324297612904500502">Forum Beta</translation>
@@ -10328,7 +10325,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8222112516148944758">Kumpulan tab disimpan dan dikemaskinikan secara automatik merentas semua peranti anda</translation>
 <translation id="8222674561049363989">Fail ini bukan dokumen yang sah</translation>
 <translation id="822347941086490485">Mencari peranti HID...</translation>
-<translation id="8224209912580158729">Kongsi kandungan halaman dengan Gemini untuk mendapatkan jawapan yang lebih berkaitan.</translation>
 <translation id="8224427620313426549">Akaun <ph name="DOMAIN_LINK" /> anda tidak akan dipadamkan</translation>
 <translation id="8225046344534779393">Semak sambungan Internet</translation>
 <translation id="8225265270453771718">Kongsi tetingkap aplikasi</translation>

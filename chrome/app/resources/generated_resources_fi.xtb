@@ -1103,7 +1103,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="174123615272205933">Oma</translation>
 <translation id="1741314857973421784">Jatka</translation>
 <translation id="1744108098763830590">taustasivu:</translation>
-<translation id="174516937379651657">Kun jaat sivun Geminille, koko sisältö ja URL-osoite lähetetään Googlelle.</translation>
 <translation id="1745732479023874451">Ylläpidä kontakteja</translation>
 <translation id="1748283190377208783">{0,plural, =1{käyttämätön monikko}other{Haluatko avata ja muokata # tiedostoa tässä verkkosovelluksessa?}}</translation>
 <translation id="1748329107062243374">Käytä avainkoodia (<ph name="DEVICE_NAME" />) kirjautumiseen: <ph name="WEBSITE" /></translation>
@@ -8196,7 +8195,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6759193508432371551">Tehdasasetusten palauttaminen</translation>
 <translation id="6760354150216532978">Varoitus: sivusto voi nähdä tekemäsi muokkaukset</translation>
 <translation id="6761209758867628753">Työkalu: Auta minua kirjoittamaan</translation>
-<translation id="6761459308170527362">Voit kysyä Geminiltä kysymyksen jakamasi sivun sisällöstä ääni- tai tekstikeskustelussa</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Laitepohjaista sivustodataa ei sallita</translation>
 <translation id="6762833852331690540">Päällä</translation>
@@ -8986,7 +8984,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7320213904474460808">Aseta oletusverkko</translation>
 <translation id="7321545336522791733">Palvelimeen ei saada yhteyttä.</translation>
 <translation id="7322515217754205362">Sivustoluvat</translation>
-<translation id="7322919329844967709">Saat relevantimpia vastauksia jakamasi sivun sisältöön liittyen</translation>
 <translation id="7323315405936922211">Kohdistinalueen koko</translation>
 <translation id="7324020307732396723">Avaa kieliasetukset</translation>
 <translation id="7324297612904500502">Beta-keskusteluryhmä</translation>
@@ -10323,7 +10320,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8222112516148944758">Välilehtiryhmäsi tallentuvat ja päivittyvät automaattisesti kaikilla laitteillasi</translation>
 <translation id="8222674561049363989">Tiedosto ei ole kelvollinen dokumentti</translation>
 <translation id="822347941086490485">Haetaan HID-laitteita…</translation>
-<translation id="8224209912580158729">Jaa sivun sisältö Geminille, niin saat relevantimpia vastauksia.</translation>
 <translation id="8224427620313426549">Tiliäsi (<ph name="DOMAIN_LINK" />) ei poisteta</translation>
 <translation id="8225046344534779393">Tarkista internetyhteys</translation>
 <translation id="8225265270453771718">Jaa sovellusikkuna</translation>

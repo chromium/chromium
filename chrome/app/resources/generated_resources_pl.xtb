@@ -1097,7 +1097,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="174123615272205933">Niestandardowe</translation>
 <translation id="1741314857973421784">Dalej</translation>
 <translation id="1744108098763830590">strona w tle</translation>
-<translation id="174516937379651657">Gdy udostępniasz stronę Gemini, jej pełna zawartość i adres URL są wysyłane do Google.</translation>
 <translation id="1745732479023874451">Zarządzaj kontaktami</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}few{Otwierać i edytować # pliki w tej aplikacji internetowej?}many{Otwierać i edytować # plików w tej aplikacji internetowej?}other{Otwierać i edytować # pliku w tej aplikacji internetowej?}}</translation>
 <translation id="1748329107062243374">Aby zalogować się na <ph name="WEBSITE" />, użyj klucza z urządzenia <ph name="DEVICE_NAME" /></translation>
@@ -8170,7 +8169,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6759193508432371551">Ustawienia fabryczne</translation>
 <translation id="6760354150216532978">Ostrzeżenie: ta witryna może widzieć wprowadzane przez Ciebie zmiany</translation>
 <translation id="6761209758867628753">Narzędzie: Pomóż mi w pisaniu</translation>
-<translation id="6761459308170527362">Możesz użyć czatu głosowego lub tekstowego, aby zadać Gemini pytanie dotyczące udostępnianej treści strony</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6761623907967804682">Dane witryn na urządzeniu są niedozwolone</translation>
 <translation id="6762833852331690540">Włączono</translation>
@@ -8958,7 +8956,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7320213904474460808">Łącz domyślnie z siecią</translation>
 <translation id="7321545336522791733">Serwer niedostępny</translation>
 <translation id="7322515217754205362">Uprawnienia do witryny</translation>
-<translation id="7322919329844967709">Będziesz otrzymywać trafniejsze odpowiedzi związane z udostępnianą zawartością strony</translation>
 <translation id="7323315405936922211">Rozmiar obszaru kursora</translation>
 <translation id="7324020307732396723">Otwórz ustawienia języka</translation>
 <translation id="7324297612904500502">Forum użytkowników wersji beta</translation>
@@ -10295,7 +10292,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8222112516148944758">Grupy kart są automatycznie zapisywane i aktualizowane na wszystkich Twoich urządzeniach</translation>
 <translation id="8222674561049363989">Plik nie jest prawidłowym dokumentem</translation>
 <translation id="822347941086490485">Szukam urządzeń HID...</translation>
-<translation id="8224209912580158729">Udostępnij Gemini zawartość strony, aby otrzymywać trafniejsze odpowiedzi.</translation>
 <translation id="8224427620313426549">Twoje konto w domenie <ph name="DOMAIN_LINK" /> nie zostanie usunięte</translation>
 <translation id="8225046344534779393">Sprawdź połączenie z internetem</translation>
 <translation id="8225265270453771718">Udostępnij okno aplikacji</translation>

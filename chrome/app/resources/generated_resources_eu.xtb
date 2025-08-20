@@ -1095,7 +1095,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="174123615272205933">Pertsonalizatuak</translation>
 <translation id="1741314857973421784">Egin aurrera</translation>
 <translation id="1744108098763830590">atzeko planoko orria</translation>
-<translation id="174516937379651657">Gemini-rekin orri bat partekatzen duzunean, Google-ren eduki osoa eta URLa Google-ra bidaliko dira.</translation>
 <translation id="1745732479023874451">Kudeatu kontaktuak</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Sareko aplikazio honetan ireki eta editatu nahi dituzu # fitxategi horiek?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> webgunean saioa hasteko, erabili <ph name="DEVICE_NAME" /> gailuan gordetako sarbide-gako bat</translation>
@@ -8180,7 +8179,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6759193508432371551">Jatorrizko datuak berrezartzea</translation>
 <translation id="6760354150216532978">Abisua: webgune honek egiten dituzun aldaketak ikus ditzake</translation>
 <translation id="6761209758867628753">Tresna: Idazteko laguntza</translation>
-<translation id="6761459308170527362">Ahotsa edo testua erabil dezakezu partekatu duzun orriko edukiari buruzko galderak egiteko</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Ez da onartzen webguneetako datuak gailuan gordetzea</translation>
 <translation id="6762833852331690540">Aktibatuta</translation>
@@ -8969,7 +8967,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7320213904474460808">Lehenetsi sarea</translation>
 <translation id="7321545336522791733">Ezin da konektatu zerbitzarira</translation>
 <translation id="7322515217754205362">Webgunearen baimenak</translation>
-<translation id="7322919329844967709">Partekatu duzun orriko edukiarekin erlazionatutako erantzun egokiagoak jasoko duzu</translation>
 <translation id="7323315405936922211">Kurtsorearen inguruko eremuaren tamaina</translation>
 <translation id="7324020307732396723">Ireki hizkuntza-ezarpenak</translation>
 <translation id="7324297612904500502">Beta foroa</translation>
@@ -10305,7 +10302,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8222112516148944758">Fitxa taldeak automatikoki gordetzen eta eguneratzen dira zure gailu guztietan</translation>
 <translation id="8222674561049363989">Fitxategia ez da balio duen dokumentu bat</translation>
 <translation id="822347941086490485">HID gailuak bilatzen…</translation>
-<translation id="8224209912580158729">Erantzun egokiagoak lortzeko, partekatu orriaren edukia Gemini-rekin.</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> domeinuko kontua ez da ezabatuko</translation>
 <translation id="8225046344534779393">Egiaztatu Internetera konektatuta zaudela</translation>
 <translation id="8225265270453771718">Partekatu aplikazio baten leihoa</translation>

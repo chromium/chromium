@@ -1093,7 +1093,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="174123615272205933">Boshqa</translation>
 <translation id="1741314857973421784">Keyingisi</translation>
 <translation id="1744108098763830590">orqa fondagi sahifa</translation>
-<translation id="174516937379651657">Sahifa Gemini bilan ulashilganda sahifaning toʻliq kontenti va URL manzili Googlega yuboriladi.</translation>
 <translation id="1745732479023874451">Kontaktlarni boshqarish</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# ta fayl shu veb ilovada ochilib, tahrirlansinmi?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> saytiga kirishda <ph name="DEVICE_NAME" /> kodini ishlatish</translation>
@@ -8186,7 +8185,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6759193508432371551">Zavod sozlamalariga qaytarish</translation>
 <translation id="6760354150216532978">Diqqat: bu saytda tahrirlaringiz koʻrinmaydi</translation>
 <translation id="6761209758867628753">Vosita: Matn yordamchisi</translation>
-<translation id="6761459308170527362">Geminiga ovoz yoki matn orqali ulashilayotgan sahifa kontenti haqida savol berish mumkin</translation>
 <translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6761623907967804682">Qurilmada sayt maʼlumotlarini saqlash ruxsat etilmagan</translation>
 <translation id="6762833852331690540">Yoniq</translation>
@@ -8975,7 +8973,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7320213904474460808">Standart tarmoqni tanlash</translation>
 <translation id="7321545336522791733">Server ayni vaqtda ish faoliyatida emas</translation>
 <translation id="7322515217754205362">Saytga ruxsatlar</translation>
-<translation id="7322919329844967709">Ulashilgan sahifa kontentiga aloqador yanada muvofiq javoblarni olasiz</translation>
 <translation id="7323315405936922211">Kursor hududining hajmi</translation>
 <translation id="7324020307732396723">Til sozlamalarini ochish</translation>
 <translation id="7324297612904500502">Beta Forum</translation>
@@ -10311,7 +10308,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8222112516148944758">Varaqlar guruhi barcha qurilmalarda avtomatik saqlanadi va yangilanib turadi.</translation>
 <translation id="8222674561049363989">Fayl yaroqli hujjat turi emas</translation>
 <translation id="822347941086490485">HID qurilmalar qidirilmoqda...</translation>
-<translation id="8224209912580158729">Yanada mos javoblarni olish uchun sahifa kontentini Gemini bilan ulashish.</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> hisobingiz oʻchirilmaydi</translation>
 <translation id="8225046344534779393">Internet aloqasini tekshiring</translation>
 <translation id="8225265270453771718">Ilova oynasini namoyish qilish</translation>

@@ -1102,7 +1102,6 @@
 <translation id="174123615272205933">అనుకూల</translation>
 <translation id="1741314857973421784">కొనసాగించండి</translation>
 <translation id="1744108098763830590">బ్యాక్‌గ్రౌండ్ పేజీ</translation>
-<translation id="174516937379651657">మీరు Geminiకి ఒక పేజీని షేర్ చేసినప్పుడు, పేజీలోని పూర్తి కంటెంట్, URLలు Googleకు పంపబడతాయి.</translation>
 <translation id="1745732479023874451">కాంటాక్ట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# ఫైల్స్‌ని ఈ వెబ్ యాప్‌లో తెరిచి, ఎడిట్ చేయాలా?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> వెబ్‌సైట్‌కు సైన్ ఇన్ చేయడానికి <ph name="DEVICE_NAME" /> పరికరానికి వచ్చిన పాస్-కీని ఉపయోగించండి</translation>
@@ -8197,7 +8196,6 @@
 <translation id="6759193508432371551">ఫ్యాక్టరీ రీసెట్</translation>
 <translation id="6760354150216532978">హెచ్చరిక: ఈ సైట్ మీరు చేసే ఎడిట్‌లను చూడగలదు</translation>
 <translation id="6761209758867628753">టూల్: నాకు రాయడానికి సహాయం చేయండి</translation>
-<translation id="6761459308170527362">మీరు షేర్ చేస్తున్న పేజీ కంటెంట్ గురించి Geminiని ప్రశ్న అడగడానికి మీరు వాయిస్ లేదా టెక్స్ట్ చాట్ ఉపయోగించవచ్చు</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">పరికరంలోని సైట్ డేటా అనుమతించబడదు</translation>
 <translation id="6762833852331690540">ఆన్‌లో ఉంది</translation>
@@ -8987,7 +8985,6 @@
 <translation id="7320213904474460808">ఆటోమేటిక్ సెట్టింగ్ నెట్‌వర్క్</translation>
 <translation id="7321545336522791733">సర్వర్ అందుబాటులో లేదు</translation>
 <translation id="7322515217754205362">సైట్ అనుమతులు</translation>
-<translation id="7322919329844967709">షేర్ చేస్తున్న పేజీ కంటెంట్‌కు సంబంధించిన మరిన్ని సంబంధిత సమాధానాలను మీరు పొందుతారు</translation>
 <translation id="7323315405936922211">కర్సర్ ఏరియా సైజ్</translation>
 <translation id="7324020307732396723">భాషా సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="7324297612904500502">బీటా ఫోరమ్</translation>
@@ -10321,7 +10318,6 @@
 <translation id="8222112516148944758">మీ ట్యాబ్ గ్రూప్‌లు ఆటోమేటిక్‌గా సేవ్ అయ్యి, మీ పరికరాలన్నింటిలో అప్‌డేట్ అవుతాయి</translation>
 <translation id="8222674561049363989">ఫైల్ చెల్లుబాటు అయ్యే డాక్యుమెంట్ కాదు</translation>
 <translation id="822347941086490485">HID పరికరాలను కనుగొంటోంది...</translation>
-<translation id="8224209912580158729">మరింత సందర్భోచితమైన సమాధానాలను పొందడానికి, పేజీలోని కంటెంట్‌ను Geminiకి షేర్ చేయండి.</translation>
 <translation id="8224427620313426549">మీ <ph name="DOMAIN_LINK" /> ఖాతా తొలగించబడదు</translation>
 <translation id="8225046344534779393">ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="8225265270453771718">అప్లికేషన్ విండోను షేర్ చేయండి</translation>
