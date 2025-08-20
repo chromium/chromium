@@ -1146,7 +1146,7 @@ class CaptureControllerScrollParametersValidationTest
       gfx::Point((kDivWidth - 1) / 2, (kDivHeight - 1) / 2);
 
   CaptureControllerScrollParametersValidationTest()
-      : div_origin_(std::get<1>(GetParam())),
+      : div_origin_(std::get<0>(GetParam())),
         gesture_coordinates_(std::get<1>(GetParam())),
         horizontal_scroll_direction_(std::get<2>(GetParam())),
         vertical_scroll_direction_(std::get<3>(GetParam())) {}
