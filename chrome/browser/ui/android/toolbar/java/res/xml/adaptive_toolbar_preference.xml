@@ -13,7 +13,7 @@ found in the LICENSE file.
         android:selectable="false"
         android:key="adaptive_toolbar_header" />
 
-       <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="toolbar_shortcut_switch"
         android:title="@string/toolbar_shortcut" />
 

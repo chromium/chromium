@@ -14,10 +14,11 @@ import java.lang.annotation.RetentionPolicy;
 /** An interface for preferences that should have custom background styling applied to them. */
 @NullMarked
 public interface CustomStyledPreference {
-    @IntDef({BackgroundStyle.NONE})
+    @IntDef({BackgroundStyle.NONE, BackgroundStyle.CARD})
     @Retention(RetentionPolicy.SOURCE)
     @interface BackgroundStyle {
         int NONE = 0;
+        int CARD = 1;
     }
 
     /** Returns the custom background style for the preference. */

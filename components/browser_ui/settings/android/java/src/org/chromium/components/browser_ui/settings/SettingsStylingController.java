@@ -103,26 +103,22 @@ public class SettingsStylingController {
     }
 
     /**
-     * Returns whether the given preference should be excluded from background styling decoration.
+     * Returns whether the given preference requires custom styling.
      *
      * @param preference The preference to check.
-     * @return Whether to skip decoration.
+     * @return Whether the preference has custom styling.
      */
-    private boolean shouldSkipDecoration(Preference preference) {
-        if (preference instanceof PreferenceCategory) return true;
-        if (preference instanceof CustomStyledPreference) {
-            return ((CustomStyledPreference) preference).getCustomBackgroundStyle()
-                    == BackgroundStyle.NONE;
-        }
-        return false;
+    private boolean hasCustomStyling(Preference preference) {
+        return preference instanceof PreferenceCategory
+                || preference instanceof CustomStyledPreference;
     }
 
     private @NonNull BackgroundStyleDetails getBackgroundStyleDetailsForPosition(
             ArrayList<Preference> visiblePreferences, int position) {
-
         Preference currentPref = visiblePreferences.get(position);
-        if (shouldSkipDecoration(currentPref)) {
-            return BackgroundStyleDetails.EMPTY;
+
+        if (hasCustomStyling(currentPref)) {
+            return getBackgroundStyleDetailsForCustomPreference(currentPref);
         }
 
         Preference prefAbove = (position > 0) ? visiblePreferences.get(position - 1) : null;
@@ -131,8 +127,8 @@ public class SettingsStylingController {
                         ? visiblePreferences.get(position + 1)
                         : null;
 
-        boolean isTop = (prefAbove == null) || shouldSkipDecoration(prefAbove);
-        boolean isBottom = (prefBelow == null) || shouldSkipDecoration(prefBelow);
+        boolean isTop = (prefAbove == null) || hasCustomStyling(prefAbove);
+        boolean isBottom = (prefBelow == null) || hasCustomStyling(prefBelow);
 
         if (isTop && isBottom) {
             return new BackgroundStyleDetails(mOuterRadius, mOuterRadius);
@@ -143,5 +139,19 @@ public class SettingsStylingController {
         } else {
             return new BackgroundStyleDetails(mInnerRadius, mInnerRadius);
         }
+    }
+
+    private BackgroundStyleDetails getBackgroundStyleDetailsForCustomPreference(
+            Preference preference) {
+        if (preference instanceof PreferenceCategory) {
+            return BackgroundStyleDetails.EMPTY;
+        }
+        if (preference instanceof CustomStyledPreference customStyledPreference) {
+            if (customStyledPreference.getCustomBackgroundStyle() == BackgroundStyle.CARD) {
+                return new BackgroundStyleDetails(mOuterRadius, mOuterRadius);
+            }
+        }
+
+        return BackgroundStyleDetails.EMPTY;
     }
 }
