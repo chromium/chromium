@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_data_controls)
+
 source_set("features") {
   sources = [
     "features.h",
@@ -19,6 +23,7 @@ source_set("data_controls") {
   ]
   deps = [
     "//base",
+    "//components/enterprise/data_controls/core/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
     "//ui/base/clipboard",

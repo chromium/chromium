@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/c++/c++.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 import("//ios/chrome/features.gni")
@@ -294,7 +295,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/drive_file_picker/coordinator:unit_tests",
     "//ios/chrome/browser/enterprise/connectors:unit_tests",
     "//ios/chrome/browser/enterprise/connectors/reporting:unit_tests",
-    "//ios/chrome/browser/enterprise/data_controls:unit_tests",
     "//ios/chrome/browser/enterprise/identifiers:unit_tests",
     "//ios/chrome/browser/enterprise/model/idle:unit_tests",
     "//ios/chrome/browser/external_files/model:unit_tests",
@@ -568,6 +568,10 @@ test("ios_chrome_unittests") {
     deps += [
       "//ios/chrome/browser/default_browser/model/default_status:unit_tests",
     ]
+  }
+
+  if (enterprise_data_controls) {
+    deps += [ "//ios/chrome/browser/enterprise/data_controls:unit_tests" ]
   }
 
   if (ios_enable_widget_kit_extension) {

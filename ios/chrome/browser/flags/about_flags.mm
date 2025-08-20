@@ -43,6 +43,7 @@
 #import "components/dom_distiller/core/dom_distiller_switches.h"
 #import "components/download/public/background_service/features.h"
 #import "components/enterprise/browser/enterprise_switches.h"
+#import "components/enterprise/buildflags/buildflags.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/feature_list.h"
@@ -132,6 +133,10 @@
 #import "ios/web/common/features.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/common/web_view_creation_util.h"
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#import "ios/chrome/browser/enterprise/data_controls/features.h"
+#endif
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
 #import "ios/chrome/browser/screen_time/model/features.h"
@@ -2843,11 +2848,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCredentialProviderPasskeyLargeBlobName,
      flag_descriptions::kCredentialProviderPasskeyLargeBlobDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderPasskeyLargeBlob)},
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
     {"enable-clipboard-data-controls-ios",
      flag_descriptions::kEnableClipboardDataControlsIOSName,
      flag_descriptions::kEnableClipboardDataControlsIOSDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(data_controls::kEnableClipboardDataControlsIOS)},
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
     {"autofill-credit-card-scanner-ios",
      flag_descriptions::kAutofillCreditCardScannerIosName,
      flag_descriptions::kAutofillCreditCardScannerIosDescription,
