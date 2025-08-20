@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -92,6 +93,7 @@ class ActorToolsTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_for_init_;
+  base::ScopedTempDir temp_dir_;
 };
 
 gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,

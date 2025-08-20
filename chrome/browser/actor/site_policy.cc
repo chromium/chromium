@@ -25,6 +25,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/actor_logging.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -218,9 +219,19 @@ void MayActOnUrl(const GURL& url,
     return;
   }
 
+  // Check that the optimization guide component has loaded. It could be
+  // missing, for example, if the user has very recently installed chrome and
+  // the component updater has not yet run. We don't want to reject every URL,
+  // so we check for this and fail open.
+  const bool optimization_guide_component_loaded =
+      optimization_guide::OptimizationHintsComponentUpdateListener::
+          GetInstance()
+              ->hints_component_info()
+              .has_value();
+
   if (auto* optimization_guide_decider =
           OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-      optimization_guide_decider &&
+      optimization_guide_decider && optimization_guide_component_loaded &&
       base::FeatureList::IsEnabled(kGlicActionUseOptimizationGuide)) {
     optimization_guide_decider->CanApplyOptimization(
         url, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
@@ -229,8 +240,8 @@ void MayActOnUrl(const GURL& url,
     return;
   }
 
-  // Fail closed.
-  decision_wrapper->Reject("Fallback");
+  // Fail open.
+  decision_wrapper->Accept();
 }
 
 }  // namespace

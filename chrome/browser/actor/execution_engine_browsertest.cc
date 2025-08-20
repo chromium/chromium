@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,6 +31,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
@@ -124,6 +126,14 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
         &histogram_tester_for_init_,
         "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
 
+    // Simulate the component loading, as the implementation checks it, but the
+    // actual list is set via the command line.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
+        ->MaybeUpdateHintsComponent(
+            {base::Version("123"),
+             temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dont_care"))});
+
     content::SetBrowserClientForTesting(&mock_browser_client_);
   }
 
@@ -175,6 +185,7 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_for_init_;
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeChromeContentBrowserClient mock_browser_client_;
+  base::ScopedTempDir temp_dir_;
 };
 
 // The coordinator does not yet handle multi-tab cases. For now,

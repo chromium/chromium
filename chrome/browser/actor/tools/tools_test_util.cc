@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -111,6 +112,14 @@ void ActorToolsTest::SetUpOnMainThread() {
       "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
 
   InitActionBlocklist(browser()->profile());
+
+  // Simulate the component loading, as the implementation checks it, but the
+  // actual list is set via the command line.
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
+      ->MaybeUpdateHintsComponent(
+          {base::Version("123"),
+           temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dont_care"))});
 }
 
 void ActorToolsTest::SetUpCommandLine(base::CommandLine* command_line) {
