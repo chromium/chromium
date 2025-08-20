@@ -34,6 +34,7 @@
 #include "ui/views/view_observer.h"
 
 class BrowserView;
+class SidePanelEntryWaiter;
 
 namespace actions {
 class ActionItem;
@@ -303,7 +304,6 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   base::OneShotTimer pin_promo_timer_;
 
   // Inner class that waits for side panel entries to load.
-  class SidePanelEntryWaiter;
   std::unique_ptr<SidePanelEntryWaiter> waiter_;
 
   // Set to the appropriate pin promo for the current side panel entry, or null

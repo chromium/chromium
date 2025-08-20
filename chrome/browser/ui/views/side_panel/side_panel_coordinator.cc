@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_waiter.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -180,65 +181,7 @@ std::unique_ptr<views::Label> CreateTitle() {
   return title;
 }
 
-using PopulateSidePanelCallback = base::OnceCallback<void(
-    SidePanelEntry* entry,
-    std::optional<std::unique_ptr<views::View>> content_view)>;
-
 }  // namespace
-
-// This class uses the SidePanelContentProxy to wait for the SidePanelEntry's
-// content view to be ready to be shown.
-class SidePanelCoordinator::SidePanelEntryWaiter {
- public:
-  // Calling this method cancels all previous calls to this method.
-  // If the entry is destroyed while waiting, the callback is not invoked.
-  void WaitForEntry(SidePanelEntry* entry, PopulateSidePanelCallback callback) {
-    DCHECK(entry);
-    ResetLoadingEntryIfNecessary();
-    auto content_view = entry->GetContent();
-    SidePanelContentProxy* content_proxy =
-        SidePanelUtil::GetSidePanelContentProxy(content_view.get());
-    if (content_proxy->IsAvailable() || show_immediately_for_testing_) {
-      std::move(callback).Run(entry, std::move(content_view));
-    } else {
-      entry->CacheView(std::move(content_view));
-      loading_entry_ = entry->GetWeakPtr();
-      loaded_callback_.Reset(
-          base::BindOnce(&SidePanelEntryWaiter::RunLoadedCallback,
-                         base::Unretained(this), std::move(callback)));
-      content_proxy->SetAvailableCallback(loaded_callback_.callback());
-    }
-  }
-
-  void ResetLoadingEntryIfNecessary() {
-    loading_entry_.reset();
-    loaded_callback_.Cancel();
-  }
-
-  void SetNoDelaysForTesting(bool no_delays_for_testing) {
-    show_immediately_for_testing_ = no_delays_for_testing;
-  }
-
-  SidePanelEntry* loading_entry() const { return loading_entry_.get(); }
-
- private:
-  void RunLoadedCallback(PopulateSidePanelCallback callback) {
-    // content_proxy is owned by content_view which is owned by SidePanelEntry.
-    // If this callback runs then loading_entry_ must be valid.
-    CHECK(loading_entry_);
-    SidePanelEntry* entry = loading_entry_.get();
-    loading_entry_.reset();
-    std::move(callback).Run(entry, std::nullopt);
-  }
-
-  // When true, don't delay switching panels.
-  bool show_immediately_for_testing_ = false;
-  // Tracks the entry that is loading.
-  base::WeakPtr<SidePanelEntry> loading_entry_;
-  // This class will load at most one entry at a time. If a new one is
-  // requested, the old one is canceled automatically.
-  base::CancelableOnceClosure loaded_callback_;
-};
 
 SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
     : browser_view_(browser_view) {

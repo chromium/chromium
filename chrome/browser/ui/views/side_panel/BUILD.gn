@@ -71,6 +71,8 @@ source_set("side_panel") {
     "side_panel_entry_observer.h",
     "side_panel_entry_scope.cc",
     "side_panel_entry_scope.h",
+    "side_panel_entry_waiter.cc",
+    "side_panel_entry_waiter.h",
     "side_panel_enums.h",
     "side_panel_header.cc",
     "side_panel_header.h",
