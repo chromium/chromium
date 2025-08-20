@@ -1158,6 +1158,9 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
           return true;
         } else {
           //  Ensure the retry succeeds.
+          EXPECT_EQ(params->url_request.headers.GetHeader(
+                        KeepAliveURLLoader::kRetryAttemptsHeader),
+                    "1");
           URLLoaderInterceptor::WriteResponse(
               "HTTP/1.1 200 OK\n"
               "Content-type: text/html\n",

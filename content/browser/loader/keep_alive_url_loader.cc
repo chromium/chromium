@@ -65,6 +65,9 @@ const base::FeatureParam<double> kMinRetryBackoffFactor{
     &blink::features::kFetchRetry, "min_retry_backoff", 1.0};
 const base::FeatureParam<base::TimeDelta> kMaxRetryAge{
     &blink::features::kFetchRetry, "max_retry_age", base::Days(1)};
+// TODO(crbug.com/417930271): This should be reviewed beyond OT.
+const base::FeatureParam<bool> kAddRetryHeader{&blink::features::kFetchRetry,
+                                               "add_retry_header", true};
 
 }  // namespace features
 
@@ -1059,6 +1062,11 @@ void KeepAliveURLLoader::AttemptRetryIfAllowed() {
   // Retry using the original request, even if the failure happens after
   // redirects.
   resource_request_ = original_resource_request_;
+  if (features::kAddRetryHeader.Get()) {
+    // Add retry information in the header.
+    resource_request_.headers.SetHeader(kRetryAttemptsHeader,
+                                        base::NumberToString(retry_count_));
+  }
 
   // TODO(crbug.com/417930271): Track the retry as a state in the
   // KeepAliveRequestTracker too.
