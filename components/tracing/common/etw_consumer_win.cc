@@ -85,13 +85,24 @@ void EtwConsumer::ProcessEventRecord(EVENT_RECORD* event_record) {
       0x11d0,
       {0x9d, 0xda, 0x00, 0xc0, 0x4f, 0xd7, 0xba, 0x7c}};
 
+  // Not listed in the NT kernel logger constants. GUID was obtained through
+  // dumping the trace format via `tracerpt -o`. The xperf kernel provider is
+  // MEMINFO, or Microsoft-Windows-Kernel-Memory. It has a GUID of
+  // d1d93ef7-e1f2-4f45-9943-03d245fe6c00. Also verified via EtwExplorer.
+  static constexpr GUID kMemInfoGuid = {
+      0xd1d93ef7,
+      0xe1f2,
+      0x4f45,
+      {0x99, 0x43, 0x03, 0xd2, 0x45, 0xfe, 0x6c, 0x00}};
+
   // A mapping of provider GUIDs to handler member functions.
   static constexpr auto kGuidToProvider =
       base::MakeFixedFlatMap<std::reference_wrapper<const GUID>,
                              EventHandlerFunction, IsGuidLess>(
           {{kProcessGuid, &EtwConsumer::HandleProcessEvent},
            {kThreadGuid, &EtwConsumer::HandleThreadEvent},
-           {kLostEventGuid, &EtwConsumer::HandleLostEvent}});
+           {kLostEventGuid, &EtwConsumer::HandleLostEvent},
+           {kMemInfoGuid, &EtwConsumer::HandleMemInfoEvent}});
 
   auto* const self = reinterpret_cast<EtwConsumer*>(event_record->UserContext);
   DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
@@ -218,6 +229,72 @@ void EtwConsumer::HandleLostEvent(const EVENT_HEADER& header,
       // 34:  // RTLostFile
       break;
   }
+}
+
+void EtwConsumer::HandleMemInfoEvent(const EVENT_HEADER& header,
+                                     const ETW_BUFFER_CONTEXT& buffer_context,
+                                     size_t pointer_size,
+                                     base::span<const uint8_t> packet_data) {
+  switch (header.EventDescriptor.Opcode) {
+    case EVENT_TRACE_TYPE_INFO:
+      if (header.EventDescriptor.Id == 1) {
+        // MemInfo_V1
+        OnMemoryCounters(header, buffer_context, pointer_size, packet_data);
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+void EtwConsumer::OnMemoryCounters(const EVENT_HEADER& header,
+                                   const ETW_BUFFER_CONTEXT& buffer_context,
+                                   size_t pointer_size,
+                                   base::span<const uint8_t> packet_data) {
+  // This parses a MemInfoArgs_V1 struct.
+
+  base::BufferIterator<const uint8_t> iterator(packet_data);
+  std::optional<uint8_t> priority_levels_count_parsed =
+      iterator.CopyObject<uint8_t>();
+  if (!priority_levels_count_parsed.has_value()) {
+    return;
+  }
+  uint8_t priority_levels_count = *priority_levels_count_parsed;
+
+  // The true number of pointers of the struct is 10 + (2 *
+  // `priority_levels_count`).
+  if (packet_data.size() <
+      pointer_size * (10 + (2 * priority_levels_count)) + 1) {
+    return;
+  }
+  const auto& read_pointer =
+      (pointer_size == sizeof(uint32_t)) ?
+      [](base::BufferIterator<const uint8_t> &iterator ) {
+        return static_cast<uint64_t>(*iterator.CopyObject<uint32_t>());
+      } : [](base::BufferIterator<const uint8_t> &iterator ) {
+        return *iterator.CopyObject<uint64_t>();
+      };
+
+  // Generate a memory counter event.
+  perfetto::protos::pbzero::MemInfoEtwEvent* meminfo_event =
+      MakeNextEvent(header, buffer_context)->set_mem_info();
+  meminfo_event->set_priority_levels(priority_levels_count);
+  meminfo_event->set_zero_page_count(read_pointer(iterator));
+  meminfo_event->set_free_page_count(read_pointer(iterator));
+  meminfo_event->set_modified_page_count(read_pointer(iterator));
+  meminfo_event->set_modified_no_write_page_count(read_pointer(iterator));
+  meminfo_event->set_bad_page_count(read_pointer(iterator));
+  for (int i = 0; i < priority_levels_count; ++i) {
+    meminfo_event->add_standby_page_counts(read_pointer(iterator));
+  }
+  for (int i = 0; i < priority_levels_count; ++i) {
+    meminfo_event->add_repurposed_page_counts(read_pointer(iterator));
+  }
+  meminfo_event->set_modified_page_count_page_file(read_pointer(iterator));
+  meminfo_event->set_paged_pool_page_count(read_pointer(iterator));
+  meminfo_event->set_non_paged_pool_page_count(read_pointer(iterator));
+  meminfo_event->set_mdl_page_count(read_pointer(iterator));
+  meminfo_event->set_commit_page_count(read_pointer(iterator));
 }
 
 void EtwConsumer::OnProcessStart(const EVENT_HEADER& header,

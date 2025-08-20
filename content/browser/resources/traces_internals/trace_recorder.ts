@@ -462,6 +462,12 @@ export class TraceRecorderElement extends CrLitElement {
         provider: 'scheduler',
         description: 'Enables ready thread events',
       },
+      {
+        name: 'Memory Counters',
+        keyword: 'MEMINFO',
+        provider: 'memory',
+        description: 'Enables memory counters (free list, zero list, etc.)',
+      },
     ];
     // </if>
   }

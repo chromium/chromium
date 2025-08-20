@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/tracing/common/etw_system_data_source_win.h"
 
 #include <windows.h>
@@ -24,14 +23,20 @@ namespace tracing {
 
 namespace {
 
-ULONG EtwSystemFlagsFromSchedulerProvider(const std::string& keyword) {
+ULONG EtwSystemFlagsFromSchedulerProvider(std::string_view keyword) {
   if (keyword == "CONTEXT_SWITCH") {
     return EVENT_TRACE_FLAG_CSWITCH;
   } else if (keyword == "DISPATCHER") {
     return EVENT_TRACE_FLAG_DISPATCHER;
-  } else {
-    return 0;
   }
+  return 0;
+}
+
+ULONG EtwMemoryProviderFlagFromKeyword(std::string_view keyword) {
+  if (keyword == "MEMINFO") {
+    return 0x20U;  // KERNEL_MEM_KEYWORD_MEMINFO
+  }
+  return 0;
 }
 
 }  // namespace
@@ -115,11 +120,29 @@ void EtwSystemDataSource::OnStart(const StartArgs&) {
     p.EnableFlags |= EtwSystemFlagsFromSchedulerProvider(keyword);
   }
 
+  // The ETW Session must be started (but not opened) before providers can be
+  // enabled.
   hr = etw_controller_.Start(kEtwSystemSessionName, &prop);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to start system trace session: 0x" << std::hex << hr;
     return;
   }
+
+  ULONG memory_provider_flags = 0;
+  for (auto keyword : etw_config.memory_provider_events()) {
+    memory_provider_flags |= EtwMemoryProviderFlagFromKeyword(keyword);
+  }
+  // There is a SystemMemoryProviderGuid in <evntrace.h>, however, that is not
+  // the actual provider for the Microsoft-Windows-Kernel-Memory. This is the
+  // real GUID.
+  static constexpr GUID kKernelMemoryProviderGuid = {
+      0xd1d93ef7,
+      0xe1f2,
+      0x4f45,
+      {0x99, 0x43, 0x03, 0xd2, 0x45, 0xfe, 0x6c, 0x00}};
+  etw_controller_.EnableProvider(kKernelMemoryProviderGuid,
+                                 TRACE_LEVEL_INFORMATION,
+                                 memory_provider_flags);
 
   consumer_ = {new EtwConsumer(client_pid_, CreateTraceWriter()),
                base::OnTaskRunnerDeleter(consume_task_runner_)};

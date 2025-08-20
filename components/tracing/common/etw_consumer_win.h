@@ -89,6 +89,11 @@ class TRACING_EXPORT EtwConsumer
                        size_t pointer_size,
                        base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void HandleMemInfoEvent(const EVENT_HEADER& header,
+                          const ETW_BUFFER_CONTEXT& buffer_context,
+                          size_t pointer_size,
+                          base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   void OnProcessStart(const EVENT_HEADER& header,
                       const ETW_BUFFER_CONTEXT& buffer_context,
@@ -113,6 +118,11 @@ class TRACING_EXPORT EtwConsumer
   void OnThreadSetName(const EVENT_HEADER& header,
                        const ETW_BUFFER_CONTEXT& buffer_context,
                        base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void OnMemoryCounters(const EVENT_HEADER& header,
+                        const ETW_BUFFER_CONTEXT& buffer_context,
+                        size_t pointer_size,
+                        base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Decodes a CSwitch Event and emits a Perfetto trace event; see
