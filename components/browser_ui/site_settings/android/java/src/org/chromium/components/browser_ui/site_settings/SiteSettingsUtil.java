@@ -27,6 +27,7 @@ public class SiteSettingsUtil {
     public static final int[] SETTINGS_ORDER = {
         ContentSettingsType.COOKIES,
         ContentSettingsType.GEOLOCATION,
+        ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
         ContentSettingsType.MEDIASTREAM_CAMERA,
         ContentSettingsType.MEDIASTREAM_MIC,
         ContentSettingsType.NOTIFICATIONS,
