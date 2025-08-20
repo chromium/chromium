@@ -1704,6 +1704,24 @@ TEST_F(
               IsError(net::ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION));
 }
 
+TEST_F(IpProtectionProxyDelegateTest,
+       OnTunnelHeadersReceivedReturnsTunnelConnectionFailedForDnsNodata) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 502 Bad Gateway\nProxy-Status: proxy; "
+          "error=dns_error;rcode=\"NODATA\"\n"));
+
+  // An NODATA rcode should not trigger fallback.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsError(net::ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION));
+}
+
 TEST_F(
     IpProtectionProxyDelegateTest,
     OnTunnelHeadersReceivedReturnsProxyTunnelRequestFailedWithoutProxyStatusHeader) {
@@ -1810,8 +1828,7 @@ TEST_P(IpProtectionProxyDelegateOnTunnelHeadersReceivedTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          IpProtectionProxyDelegateOnTunnelHeadersReceivedTest,
-                         testing::Values("dns_timeout",
-                                         "destination_not_found",
+                         testing::Values("destination_not_found",
                                          "destination_unavailable",
                                          "destination_ip_unroutable",
                                          "connection_refused",
