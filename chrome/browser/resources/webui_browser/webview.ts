@@ -112,6 +112,7 @@ export class TabWebviewElement extends WebviewElement {
   setActive(active: boolean) {
     if (active) {
       this.classList.add('active');
+      this.$.iframe.focus();
     } else {
       this.classList.remove('active');
     }
