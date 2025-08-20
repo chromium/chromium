@@ -25,9 +25,8 @@
       l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_PRIMARY_ACTION);
   self.secondaryActionString = l10n_util::GetNSString(IDS_NO_THANKS);
   if (self.showReminderButton) {
-    /// TODO(crbug.com/438946348): Rename the string ID.
     self.tertiaryActionString = l10n_util::GetNSString(
-        IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_SECONDARY_ACTION);
+        IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_REMINDER_ACTION);
   }
   self.image = [UIImage imageNamed:@"safari_data_import"];
   self.imageHasFixedSize = YES;

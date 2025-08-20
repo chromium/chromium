@@ -5381,7 +5381,7 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SAFARI" desc="The Safari browser">
         Safari
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_SECONDARY_ACTION" desc="Safari import entry point screen - Button text to create a reminder to import data from Safari. [iOS only]">
+      <message name="IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_REMINDER_ACTION" desc="Safari import entry point screen - Button text to create a reminder to import data from Safari. [iOS only]">
         Remind me later
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_TITLE" desc="Safari import entry point screen - Title.">
