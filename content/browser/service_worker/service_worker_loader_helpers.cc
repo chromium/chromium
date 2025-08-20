@@ -107,7 +107,7 @@ bool IsPathRestrictionSatisfiedInternal(
 bool IsEligibleForSyntheticResponseInternal(
     const GURL& client_url,
     const std::string& allowed_url,
-    const std::string& denied_url_params) {
+    const base::flat_set<std::string>& denied_url_params) {
   if (allowed_url.empty()) {
     return false;
   }
@@ -129,22 +129,36 @@ bool IsEligibleForSyntheticResponseInternal(
   if (!is_allowed) {
     return false;
   }
-
-  const std::vector<std::string> parsed_denied_params = base::SplitString(
-      denied_url_params, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (parsed_denied_params.empty()) {
+  if (denied_url_params.empty()) {
     return true;
   }
 
   for (net::QueryIterator it(client_url); !it.IsAtEnd(); it.Advance()) {
-    for (const auto& denied_param : parsed_denied_params) {
-      if (it.GetKey() == denied_param) {
-        return false;
-      }
+    if (denied_url_params.contains(it.GetKey())) {
+      return false;
     }
   }
 
   return true;
+}
+
+const std::string& GetSyntheticResponseAllowedUrl() {
+  static const base::NoDestructor<std::string> allowed_url(
+      blink::features::kServiceWorkerSyntheticResponseAllowedUrl.Get());
+  return *allowed_url;
+}
+
+const base::flat_set<std::string>& GetSyntheticResponseDeniedUrlParams() {
+  static const base::NoDestructor<base::flat_set<std::string>>
+      denied_url_params_set([]() {
+        const std::string params_str(
+            blink::features::kServiceWorkerSyntheticResponseDeniedUrlParams
+                .Get());
+        const std::vector<std::string_view> params = base::SplitStringPiece(
+            params_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+        return base::flat_set<std::string>(params.begin(), params.end());
+      }());
+  return *denied_url_params_set;
 }
 
 }  // namespace
@@ -407,20 +421,20 @@ bool IsEligibleForSyntheticResponse(BrowserContext* browser_context,
   }
 
   // Additionally, it also accepts the allow list.
-  const std::string allowed_url =
-      blink::features::kServiceWorkerSyntheticResponseAllowedUrl.Get();
-  const std::string denied_url_params =
-      blink::features::kServiceWorkerSyntheticResponseDeniedUrlParams.Get();
-  return IsEligibleForSyntheticResponseInternal(client_url, allowed_url,
-                                                denied_url_params);
+  return IsEligibleForSyntheticResponseInternal(
+      client_url, GetSyntheticResponseAllowedUrl(),
+      GetSyntheticResponseDeniedUrlParams());
 }
 
 bool IsEligibleForSyntheticResponseForTesting(  // IN-TEST
     const GURL& client_url,
     const std::string& allowed_url,
     const std::string& denied_url_params) {
-  return IsEligibleForSyntheticResponseInternal(client_url, allowed_url,
-                                                denied_url_params);
+  const std::vector<std::string_view> params = base::SplitStringPiece(
+      denied_url_params, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  return IsEligibleForSyntheticResponseInternal(
+      client_url, allowed_url,
+      base::flat_set<std::string>(params.begin(), params.end()));
 }
 
 }  // namespace service_worker_loader_helpers
