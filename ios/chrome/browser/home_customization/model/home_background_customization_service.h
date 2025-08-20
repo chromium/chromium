@@ -7,6 +7,7 @@
 
 #import <string>
 
+#import "base/containers/lru_cache.h"
 #import "base/memory/raw_ref.h"
 #import "base/observer_list.h"
 #import "base/task/sequenced_task_runner.h"
@@ -21,6 +22,86 @@ class GURL;
 class HomeBackgroundCustomizationServiceObserver;
 class PrefRegistrySimple;
 class PrefService;
+
+// Type of the recently used backgrounds exposed externally.
+typedef std::variant<HomeCustomBackground, sync_pb::UserColorTheme>
+    RecentlyUsedBackground;
+
+// Internally used type for storing recently used backgrounds.
+typedef std::variant<sync_pb::ThemeSpecificsIos, HomeUserUploadedBackground>
+    RecentlyUsedBackgroundInternal;
+
+namespace std {
+
+// std::hash specialization for sync_pb::NtpCustomBackground.
+template <>
+struct std::hash<sync_pb::NtpCustomBackground> {
+  size_t operator()(const sync_pb::NtpCustomBackground& item) const {
+    // Only compare url from background.
+    return std::hash<std::string>()(item.url());
+  }
+};
+
+// std::hash specialization for sync_pb::UserColorTheme.
+template <>
+struct std::hash<sync_pb::UserColorTheme> {
+  size_t operator()(const sync_pb::UserColorTheme& item) const {
+    return std::hash<uint32_t>()(item.color()) ^
+           std::hash<sync_pb::UserColorTheme::BrowserColorVariant>()(
+               item.browser_color_variant());
+  }
+};
+
+// std::hash specialization for sync_pb::ThemeSpecificsIos.
+template <>
+struct std::hash<sync_pb::ThemeSpecificsIos> {
+  size_t operator()(const sync_pb::ThemeSpecificsIos& item) const {
+    // Ntp Background field takes precedence. Only compare colors if theme lacks
+    // a background.
+    if (item.has_ntp_background()) {
+      return std::hash<sync_pb::NtpCustomBackground>()(item.ntp_background());
+    }
+
+    return std::hash<sync_pb::UserColorTheme>()(item.user_color_theme());
+  }
+};
+
+// std::hash specialization for HomeUserUploadedBackground.
+template <>
+struct std::hash<HomeUserUploadedBackground> {
+  size_t operator()(const HomeUserUploadedBackground& item) const {
+    return std::hash<std::string>()(item.image_path);
+  }
+};
+
+// std::hash specialization for RecentlyUsedBackgroundInternal.
+template <>
+struct std::hash<RecentlyUsedBackgroundInternal> {
+  size_t operator()(const RecentlyUsedBackgroundInternal& item) const {
+    if (std::holds_alternative<sync_pb::ThemeSpecificsIos>(item)) {
+      sync_pb::ThemeSpecificsIos theme =
+          std::get<sync_pb::ThemeSpecificsIos>(item);
+      return std::hash<sync_pb::ThemeSpecificsIos>()(theme);
+    } else {
+      HomeUserUploadedBackground user_background =
+          std::get<HomeUserUploadedBackground>(item);
+
+      return std::hash<HomeUserUploadedBackground>()(user_background);
+    }
+  }
+};
+
+}  // namespace std
+
+// Equality operators.
+bool operator==(RecentlyUsedBackgroundInternal const& lhs,
+                RecentlyUsedBackgroundInternal const& rhs);
+bool operator==(sync_pb::NtpCustomBackground const& lhs,
+                sync_pb::NtpCustomBackground const& rhs);
+bool operator==(sync_pb::UserColorTheme const& lhs,
+                sync_pb::UserColorTheme const& rhs);
+bool operator==(sync_pb::ThemeSpecificsIos const& lhs,
+                sync_pb::ThemeSpecificsIos const& rhs);
 
 // Service for allowing customization of the Home surface background.
 class HomeBackgroundCustomizationService : public KeyedService {
@@ -42,6 +123,9 @@ class HomeBackgroundCustomizationService : public KeyedService {
 
   // Returns the current New Tab Page color theme, if there is one.
   std::optional<sync_pb::UserColorTheme> GetCurrentColorTheme();
+
+  // Returns a list of the recently used backgrounds.
+  std::vector<RecentlyUsedBackground> GetRecentlyUsedBackgrounds();
 
   /// Sets the background to the given parameters. This represents a background
   /// image url from the NtpBackgroundService.
@@ -108,9 +192,35 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Gets the current user-uploaded background data, if there is one.
   std::optional<HomeUserUploadedBackground> GetCurrentUserUploadedBackground();
 
+  // Backgrounds are stored on disk as either `sync_pb::ThemeSpecificsIos` or
+  // `HomeUserUploadedBackground`, as those are the 2 types that have easy
+  // persistence built-in. However, backgrounds are exposed to the user as
+  // either HomeCustomBackground or sync_pb::UserColorTheme. This method
+  // converts from the internal to the external representation.
+  RecentlyUsedBackground ConvertBackgroundRepresentation(
+      RecentlyUsedBackgroundInternal background);
+
+  // Encodes the provided theme specifics into a string for persisting to disk.
+  std::string EncodeThemeSpecificsIos(
+      sync_pb::ThemeSpecificsIos theme_specifics_ios);
+
+  // Decodes a previously-encoded string into theme specifics.
+  sync_pb::ThemeSpecificsIos DecodeThemeSpecificsIos(std::string string);
+
+  // Adds the provided `recent_background` to the list of recently used
+  // backgrounds. The list has the newest items at the front, and also a max
+  // size. The oldest item is removed when the size is exceeded.
+  void AddToRecentlyUsedBackgroundsList(
+      RecentlyUsedBackgroundInternal&& recent_background);
+
   sync_pb::ThemeSpecificsIos current_theme_;
 
   std::optional<HomeUserUploadedBackground> current_user_uploaded_background_;
+
+  // In-memory store for the recently used backgrounds. LRU cache keeps the most
+  // recently used/added element at the front.
+  base::HashingLRUCacheSet<RecentlyUsedBackgroundInternal>
+      recently_used_backgrounds_;
 
   // The PrefService associated with the Profile.
   raw_ptr<PrefService> pref_service_;

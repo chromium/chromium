@@ -58,6 +58,8 @@ struct HomeUserUploadedBackground {
 
   // Converts to base::Value::Dict for serialization.
   base::Value::Dict ToDict() const;
+
+  bool operator==(const HomeUserUploadedBackground& other) const = default;
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_DATA_H_

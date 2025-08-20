@@ -6,6 +6,7 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/sync/protocol/theme_types.pb.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_coordinates.h"
@@ -14,11 +15,17 @@
 #import "url/gurl.h"
 
 @implementation BackgroundCustomizationConfigurationItem {
-  CollectionImage _collectionImage;
   HomeCustomizationBackgroundStyle _backgroundStyle;
   NSString* _configurationID;
+
+  CollectionImage _collectionImage;
+
+  sync_pb::NtpCustomBackground _customBackground;
+  GURL _customBackgroundThumbnailURL;
+
   UIColor* _backgroundColor;
   ui::ColorProviderKey::SchemeVariant _colorVariant;
+
   NSString* _userUploadedImagePath;
   HomeCustomizationFramingCoordinates* _userUploadedFramingCoordinates;
 }
@@ -54,6 +61,23 @@
   return self;
 }
 
+- (instancetype)initWithNtpCustomBackground:
+    (const sync_pb::NtpCustomBackground&)customBackground {
+  self = [super init];
+  if (self) {
+    _customBackground = customBackground;
+    _backgroundStyle = HomeCustomizationBackgroundStyle::kPreset;
+    _customBackgroundThumbnailURL = AddOptionsToImageURL(
+        RemoveOptionsFromImageURL(_customBackground.url()).spec(),
+        GetThumbnailImageOptions());
+    _configurationID = [NSString
+        stringWithFormat:@"%@_%ld_%@", kBackgroundCellIdentifier,
+                         _backgroundStyle,
+                         base::SysUTF8ToNSString(customBackground.url())];
+  }
+  return self;
+}
+
 - (instancetype)initWithBackgroundColor:(UIColor*)backgroundColor
                            colorVariant:(ui::ColorProviderKey::SchemeVariant)
                                             colorVariant {
@@ -83,6 +107,10 @@
   return _collectionImage;
 }
 
+- (const sync_pb::NtpCustomBackground&)customBackground {
+  return _customBackground;
+}
+
 #pragma mark - BackgroundCustomizationConfiguration
 
 - (HomeCustomizationBackgroundStyle)backgroundStyle {
@@ -94,7 +122,9 @@
 }
 
 - (const GURL&)thumbnailURL {
-  return _collectionImage.thumbnail_image_url;
+  return (_collectionImage.thumbnail_image_url.is_empty())
+             ? _customBackgroundThumbnailURL
+             : _collectionImage.thumbnail_image_url;
 }
 
 - (UIColor*)backgroundColor {

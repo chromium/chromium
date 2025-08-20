@@ -53,6 +53,9 @@
   NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*
       _backgroundCustomizationConfigurationMap;
 
+  // Contains the order that the background cells should appear in.
+  NSMutableArray<NSString*>* _backgroundCustomizationConfigurationOrder;
+
   // The id of the selected background cell.
   NSString* _selectedBackgroundId;
 }
@@ -136,9 +139,7 @@
     // Create background customization section and add items to it.
     [snapshot
         appendSectionsWithIdentifiers:@[ kCustomizationSectionBackground ]];
-    [snapshot appendItemsWithIdentifiers:
-                  [self identifiersForBackgroundCells:
-                            _backgroundCustomizationConfigurationMap]
+    [snapshot appendItemsWithIdentifiers:[self identifiersForBackgroundCells]
                intoSectionWithIdentifier:kCustomizationSectionBackground];
     [snapshot appendItemsWithIdentifiers:@[ kBackgroundPickerCellIdentifier ]
                intoSectionWithIdentifier:kCustomizationSectionBackground];
@@ -325,10 +326,14 @@
             (NSMutableDictionary<NSString*,
                                  id<BackgroundCustomizationConfiguration>>*)
                 backgroundCustomizationConfigurationMap
+                                   configurationOrder:
+                                       (NSMutableArray<NSString*>*)
+                                           configurationOrder
                                  selectedBackgroundId:
                                      (NSString*)selectedBackgroundId {
   _backgroundCustomizationConfigurationMap =
       backgroundCustomizationConfigurationMap;
+  _backgroundCustomizationConfigurationOrder = configurationOrder;
   _selectedBackgroundId = selectedBackgroundId;
 
   // Recreate the snapshot with the new items to take into account all the
@@ -338,9 +343,8 @@
 
   // Reconfigure all present items to ensure that they are updated in case their
   // content changed.
-  [snapshot reconfigureItemsWithIdentifiers:
-                [self identifiersForBackgroundCells:
-                          _backgroundCustomizationConfigurationMap]];
+  [snapshot
+      reconfigureItemsWithIdentifiers:[self identifiersForBackgroundCells]];
 
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
@@ -349,11 +353,12 @@
 
 // Returns an array of identifiers for the background options, which can be used
 // by the snapshot.
-- (NSArray<NSString*>*)identifiersForBackgroundCells:
-    (NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*)
-        backgroundCustomizationConfigurationMap {
+- (NSArray<NSString*>*)identifiersForBackgroundCells {
   NSMutableArray<NSString*>* identifiers = [[NSMutableArray alloc] init];
-  for (NSString* key in backgroundCustomizationConfigurationMap) {
+  for (NSString* key in _backgroundCustomizationConfigurationOrder) {
+    if (![_backgroundCustomizationConfigurationMap objectForKey:key]) {
+      continue;
+    }
     [identifiers addObject:key];
   }
 
@@ -425,6 +430,7 @@
   [self.mutator deleteBackgroundFromRecentlyUsedAtIndex:indexPath.item];
   [snapshot deleteItemsWithIdentifiers:@[ identifier ]];
   [_backgroundCustomizationConfigurationMap removeObjectForKey:identifier];
+  [_backgroundCustomizationConfigurationOrder removeObject:identifier];
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 @end

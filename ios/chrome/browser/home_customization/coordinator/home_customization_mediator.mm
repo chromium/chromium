@@ -89,18 +89,24 @@
     NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*
         backgroundCustomizationConfigurationMap =
             [NSMutableDictionary dictionary];
+    NSMutableArray<NSString*>* configurationOrder = [NSMutableArray array];
 
     // Create and add a background configuration with no background applied.
     BackgroundCustomizationConfigurationItem* defaultConfig =
         [[BackgroundCustomizationConfigurationItem alloc] initWithNoBackground];
     backgroundCustomizationConfigurationMap[defaultConfig.configurationID] =
         defaultConfig;
+    [configurationOrder addObject:defaultConfig.configurationID];
 
-    BackgroundCustomizationConfigurationItem* currentConfig =
-        [self generateConfigurationItemForCurrentBackground];
-    if (currentConfig) {
-      backgroundCustomizationConfigurationMap[currentConfig.configurationID] =
-          currentConfig;
+    for (RecentlyUsedBackground background :
+         _backgroundService->GetRecentlyUsedBackgrounds()) {
+      BackgroundCustomizationConfigurationItem* config =
+          [self generateConfigurationItemForRecentBackground:background];
+      if (config) {
+        backgroundCustomizationConfigurationMap[config.configurationID] =
+            config;
+        [configurationOrder addObject:config.configurationID];
+      }
     }
 
     // TODO(crbug.com/408243803): fetch background customization
@@ -109,6 +115,7 @@
     [self.mainPageConsumer
         populateBackgroundCustomizationConfigurations:
             backgroundCustomizationConfigurationMap
+                                   configurationOrder:configurationOrder
                                  selectedBackgroundId:defaultConfig
                                                           .configurationID];
   }
@@ -242,6 +249,19 @@
   _backgroundService->StoreCurrentTheme();
 }
 
+- (void)applyPresetGalleryBackgroundForCustomBackground:
+            (const sync_pb::NtpCustomBackground)customBackground
+                                           thumbnailURL:
+                                               (const GURL&)thumbnailURL {
+  _backgroundService->SetCurrentBackground(
+      GURL(customBackground.url()), thumbnailURL,
+      customBackground.attribution_line_1(),
+      customBackground.attribution_line_2(),
+      GURL(customBackground.attribution_action_url()),
+      customBackground.collection_id());
+  _backgroundService->StoreCurrentTheme();
+}
+
 // Applies a background color to the NTP.
 - (void)applyBackgroundColor:
     (id<BackgroundCustomizationConfiguration>)backgroundConfiguration {
@@ -273,34 +293,23 @@
   _backgroundService->StoreCurrentTheme();
 }
 
-// Generates a `BackgroundCustomizationConfigurationItem` for the current
-// background customization state to display in the UI. Returns `nil` if there
-// is no customization currently.
+// Generates a `BackgroundCustomizationConfigurationItem` for the provided
+// recently used background to display in the UI.
 - (BackgroundCustomizationConfigurationItem*)
-    generateConfigurationItemForCurrentBackground {
-  std::optional<HomeCustomBackground> currentBackground =
-      _backgroundService->GetCurrentCustomBackground();
-  if (currentBackground) {
+    generateConfigurationItemForRecentBackground:
+        (RecentlyUsedBackground)recentBackground {
+  if (std::holds_alternative<HomeCustomBackground>(recentBackground)) {
+    HomeCustomBackground customBackground =
+        std::get<HomeCustomBackground>(recentBackground);
     if (std::holds_alternative<sync_pb::NtpCustomBackground>(
-            currentBackground.value())) {
+            customBackground)) {
       sync_pb::NtpCustomBackground ntpCustomBackground =
-          std::get<sync_pb::NtpCustomBackground>(currentBackground.value());
-      CollectionImage image;
-      image.collection_id = ntpCustomBackground.collection_id();
-      image.thumbnail_image_url = AddOptionsToImageURL(
-          RemoveOptionsFromImageURL(ntpCustomBackground.url()).spec(),
-          GetThumbnailImageOptions());
-      image.image_url = GURL(ntpCustomBackground.url());
-
-      image.attribution.push_back(ntpCustomBackground.attribution_line_1());
-      image.attribution.push_back(ntpCustomBackground.attribution_line_2());
-      image.attribution_action_url =
-          GURL(ntpCustomBackground.attribution_action_url());
+          std::get<sync_pb::NtpCustomBackground>(customBackground);
       return [[BackgroundCustomizationConfigurationItem alloc]
-          initWithCollectionImage:image];
+          initWithNtpCustomBackground:ntpCustomBackground];
     } else {
       HomeUserUploadedBackground currentUserUploadedBackground =
-          std::get<HomeUserUploadedBackground>(currentBackground.value());
+          std::get<HomeUserUploadedBackground>(customBackground);
       NSString* imagePath =
           base::SysUTF8ToNSString(currentUserUploadedBackground.image_path);
 
@@ -309,21 +318,17 @@
                      framingCoordinates:currentUserUploadedBackground
                                             .framing_coordinates];
     }
-  }
+  } else {
+    sync_pb::UserColorTheme colorTheme =
+        std::get<sync_pb::UserColorTheme>(recentBackground);
 
-  std::optional<sync_pb::UserColorTheme> currentColorTheme =
-      _backgroundService->GetCurrentColorTheme();
-
-  if (currentColorTheme) {
-    UIColor* backgroundColor = UIColorFromRGB(currentColorTheme->color());
+    UIColor* backgroundColor = UIColorFromRGB(colorTheme.color());
     ui::ColorProviderKey::SchemeVariant colorVariant =
-        ProtoEnumToSchemeVariant(currentColorTheme->browser_color_variant());
+        ProtoEnumToSchemeVariant(colorTheme.browser_color_variant());
     return [[BackgroundCustomizationConfigurationItem alloc]
         initWithBackgroundColor:backgroundColor
                    colorVariant:colorVariant];
   }
-
-  return nil;
 }
 
 #pragma mark - HomeCustomizationMutator
@@ -425,9 +430,17 @@
       [self applyUserUploadedBackground:configurationItem];
       break;
     case HomeCustomizationBackgroundStyle::kPreset:
-      [self
-          applyPresetGalleryBackgroundForCollectionImage:configurationItem
-                                                             .collectionImage];
+      // Use whichever data item has a URL.
+      if (!configurationItem.collectionImage.image_url.is_empty()) {
+        [self applyPresetGalleryBackgroundForCollectionImage:
+                  configurationItem.collectionImage];
+      } else {
+        [self
+            applyPresetGalleryBackgroundForCustomBackground:
+                configurationItem.customBackground
+                                               thumbnailURL:configurationItem
+                                                                .thumbnailURL];
+      }
       break;
     case HomeCustomizationBackgroundStyle::kColor:
       [self applyBackgroundColor:backgroundConfiguration];

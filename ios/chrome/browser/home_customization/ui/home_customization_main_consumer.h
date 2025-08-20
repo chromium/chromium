@@ -26,6 +26,9 @@
             (NSMutableDictionary<NSString*,
                                  id<BackgroundCustomizationConfiguration>>*)
                 BackgroundCustomizationConfigurationMap
+                                   configurationOrder:
+                                       (NSMutableArray<NSString*>*)
+                                           configurationOrder
                                  selectedBackgroundId:
                                      (NSString*)selectedBackgroundId;
 

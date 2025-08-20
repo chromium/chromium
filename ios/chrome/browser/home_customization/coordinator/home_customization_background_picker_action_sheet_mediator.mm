@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/sync/protocol/theme_types.pb.h"
 #import "ios/chrome/browser/home_customization/coordinator/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"

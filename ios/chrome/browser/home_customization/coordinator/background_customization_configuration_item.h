@@ -13,6 +13,11 @@
 #import "ui/color/color_provider_key.h"
 
 struct FramingCoordinates;
+
+namespace sync_pb {
+class NtpCustomBackground;
+}
+
 /**
  * A class representing a background customization configuration.
  * This class holds all the necessary data for a background choice.
@@ -23,6 +28,12 @@ struct FramingCoordinates;
 // Initializes a new instance of the background customization configuration
 // with the provided collection image.
 - (instancetype)initWithCollectionImage:(const CollectionImage&)collectionImage;
+
+// Initializes a new instance of the background customization configuration
+// with the provided NtpCustomBackground, which is the sync/persistence data
+// type for app-provided images.
+- (instancetype)initWithNtpCustomBackground:
+    (const sync_pb::NtpCustomBackground&)customBackground;
 
 // Initializes a new instance of the background customization configuration
 // with the provided background color and a variant.
@@ -42,6 +53,9 @@ struct FramingCoordinates;
 
 // A pointer to a CollectionImage that points to the background image.
 @property(readonly, nonatomic) const CollectionImage& collectionImage;
+
+@property(readonly, nonatomic)
+    const sync_pb::NtpCustomBackground& customBackground;
 
 // The color scheme variant associated with the UIColor representing the
 // background's base color.

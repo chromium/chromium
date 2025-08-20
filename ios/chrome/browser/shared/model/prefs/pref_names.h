@@ -411,6 +411,10 @@ inline constexpr char kIosSavedThemeSpecificsIos[] =
 inline constexpr char kIosUserUploadedBackground[] =
     "ios.user_uploaded_background";
 
+// List pref storing recently used NTP backgrounds.
+inline constexpr char kIosRecentlyUsedBackgrounds[] =
+    "ios.recently_used_backgrounds";
+
 // String preference containing the default account to use for saving images to
 // Google Photos.
 inline constexpr char kIosSaveToPhotosDefaultGaiaId[] =
