@@ -26,6 +26,7 @@
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
@@ -57,8 +58,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/result_codes.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/site_for_cookies.h"
@@ -211,8 +211,7 @@ std::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
     const ServiceWorkerScriptCacheMap& script_cache_map,
     std::optional<blink::mojom::ServiceWorkerFetchHandlerType>
         fetch_handler_type) {
-  const std::unique_ptr<crypto::SecureHash> checksum =
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  crypto::hash::Hasher checksum(crypto::hash::kSha256);
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
       script_cache_map.GetResources();
   // Sort |resources| by |sha256_checksum| value not to make the merged value
@@ -235,12 +234,11 @@ std::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
     // value collisions: ab,cdef vs abcd,ef
     const std::string checksum_with_delimiter =
         *resource->sha256_checksum + "|";
-    checksum->Update(checksum_with_delimiter.data(),
-                     checksum_with_delimiter.size());
+    checksum.Update(base::as_string_view(checksum_with_delimiter));
   }
 
-  uint8_t result[crypto::kSHA256Length];
-  checksum->Finish(result, crypto::kSHA256Length);
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  checksum.Finish(result);
   const std::string encoded = base::HexEncode(result);
 
   if (fetch_handler_type) {

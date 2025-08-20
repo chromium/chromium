@@ -14,8 +14,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/completion_once_callback.h"
@@ -175,8 +173,7 @@ ServiceWorkerCacheWriter::ServiceWorkerCacheWriter(
       copy_reader_(std::move(copy_reader)),
       writer_(std::move(writer)),
       writer_resource_id_(writer_resource_id),
-      checksum_update_timing_(checksum_update_timing),
-      checksum_(crypto::SecureHash::Create(crypto::SecureHash::SHA256)) {
+      checksum_update_timing_(checksum_update_timing) {
   if (compare_reader_) {
     compare_reader_.set_disconnect_handler(
         base::BindOnce(&ServiceWorkerCacheWriter::OnRemoteDisconnected,
@@ -293,7 +290,7 @@ net::Error ServiceWorkerCacheWriter::MaybeWriteData(
 
   if (checksum_update_timing_ == ChecksumUpdateTiming::kAlways &&
       len_to_write_ > 0) {
-    checksum_->Update(data_to_write_->data(), len_to_write_);
+    checksum_.Update(data_to_write_->first(len_to_write_));
   }
 
   if (comparing_)
@@ -864,7 +861,7 @@ int ServiceWorkerCacheWriter::WriteDataToResponseWriter(
   // If |checksum_update_timing_| is kAlways, the checksum update should be
   // handled in MaybeWriteData().
   if (checksum_update_timing_ == ChecksumUpdateTiming::kCacheMismatch) {
-    checksum_->Update(data->data(), length);
+    checksum_.Update(data->first(length));
   }
 
   mojo_base::BigBuffer big_buffer(base::as_bytes(data->span().first(length)));
@@ -948,10 +945,8 @@ void ServiceWorkerCacheWriter::AsyncDoLoop(int result) {
 
 std::string ServiceWorkerCacheWriter::GetSha256Checksum() {
   DCHECK_EQ(STATE_DONE, state_);
-  DCHECK(checksum_);
-  uint8_t result[crypto::kSHA256Length];
-  checksum_->Finish(result, crypto::kSHA256Length);
-  checksum_ = nullptr;
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  checksum_.Finish(result);
   return base::HexEncode(result);
 }
 
