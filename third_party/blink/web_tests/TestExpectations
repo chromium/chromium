@@ -6415,10 +6415,6 @@ crbug.com/1066891 virtual/web-bluetooth-new-permissions-backend/external/wpt/blu
 
 # Sheriff 2021-07-13
 
-# A number of http/tests/inspector-protocol/network tests are flaky.
-crbug.com/1196027 http/tests/inspector-protocol/network/request-interception.js [ Failure Pass ]
-crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-frame-id.js [ Failure Pass Timeout ]
-
 # Flakes that might be caused or aggravated by PlzServiceWorker
 crbug.com/996511 external/wpt/service-workers/service-worker/getregistrations.https.html [ Crash Failure Pass Timeout ]
 
