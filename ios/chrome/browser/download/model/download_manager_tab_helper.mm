@@ -245,7 +245,8 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
         [delegate_ downloadManagerTabHelper:this didCancelDownload:task_.get()];
       }
       task_->RemoveObserver(this);
-      task_ = nullptr;
+      // Defer task destruction to avoid clearing ObserverList during iteration.
+      ScheduleTaskDestruction();
       task_final_file_path_.clear();
       break;
     case web::DownloadTask::State::kInProgress:
@@ -365,4 +366,14 @@ void DownloadManagerTabHelper::MaybeScheduleFileForAutoDeletion() {
   auto_deletion::AutoDeletionService* service =
       GetApplicationContext()->GetAutoDeletionService();
   service->MarkTaskForDeletion(task_.get(), GetDownloadTaskFinalFilePath());
+}
+
+void DownloadManagerTabHelper::ScheduleTaskDestruction() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&DownloadManagerTabHelper::DestroyTask,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DownloadManagerTabHelper::DestroyTask() {
+  task_.reset();
 }

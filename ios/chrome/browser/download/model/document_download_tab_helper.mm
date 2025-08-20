@@ -141,9 +141,13 @@ void DocumentDownloadTabHelper::DidStartNavigation(
           observed_task_ = nullptr;
         }
         active_task->Cancel();
+        // Only clear task_uuid_ when we actually cancel the task.
+        task_uuid_ = nil;
       }
+    } else {
+      // If no active task matches our UUID, clear it.
+      task_uuid_ = nil;
     }
-    task_uuid_ = nil;
   }
 }
 
