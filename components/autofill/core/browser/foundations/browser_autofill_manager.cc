@@ -1440,7 +1440,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     return;
   }
   AutofillAiManager* ai_manager = client().GetAutofillAiManager();
-  if (form_structure && autofill_field &&
+  if (form_structure && autofill_field && ai_manager &&
       !context.do_not_generate_autofill_suggestions &&
       GetFieldsFillableByAutofillAi(*form_structure, client())
           .contains(field.global_id())) {
