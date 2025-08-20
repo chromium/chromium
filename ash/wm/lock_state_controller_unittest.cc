@@ -371,12 +371,20 @@ class LockStateControllerTest : public PowerButtonTestBase {
   raw_ptr<PrefService> local_state_ = nullptr;
 };
 
+class LockStateControllerLegacyTest : public LockStateControllerTest {
+ public:
+  LockStateControllerLegacyTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kAuraLegacyPowerButton);
+  }
+};
+
 // Test the show menu and shutdown flow for non-Chrome-OS hardware that doesn't
 // correctly report power button releases.  We should show menu the first
 // time the button is pressed and shut down when it's pressed from the locked
 // state.
-TEST_F(LockStateControllerTest, LegacyShowMenuAndShutDown) {
-  Initialize(ButtonType::LEGACY, LoginStatus::USER);
+TEST_F(LockStateControllerLegacyTest, ShowMenuAndShutDown) {
+  Initialize(LoginStatus::USER);
 
   ExpectUnlockedState("1");
 
@@ -410,8 +418,8 @@ TEST_F(LockStateControllerTest, LegacyShowMenuAndShutDown) {
 
 // Test that we ignore power button presses when the screen is turned off on an
 // unofficial system.
-TEST_F(LockStateControllerTest, LegacyIgnorePowerButtonIfScreenIsOff) {
-  Initialize(ButtonType::LEGACY, LoginStatus::USER);
+TEST_F(LockStateControllerLegacyTest, IgnorePowerButtonIfScreenIsOff) {
+  Initialize(LoginStatus::USER);
 
   // When the screen brightness is at 0%, we shouldn't do anything in response
   // to power button presses.
@@ -427,8 +435,8 @@ TEST_F(LockStateControllerTest, LegacyIgnorePowerButtonIfScreenIsOff) {
   ReleasePowerButton();
 }
 
-TEST_F(LockStateControllerTest, LegacyHonorPowerButtonInDockedMode) {
-  Initialize(ButtonType::LEGACY, LoginStatus::USER);
+TEST_F(LockStateControllerLegacyTest, HonorPowerButtonInDockedMode) {
+  Initialize(LoginStatus::USER);
   // Create two outputs, the first internal and the second external.
   display::DisplayConfigurator::DisplayStateList outputs;
 
@@ -471,7 +479,7 @@ TEST_F(LockStateControllerTest, LegacyHonorPowerButtonInDockedMode) {
 // Test the basic operation of the lock button (not logged in).
 TEST_F(LockStateControllerTest, LockButtonBasicNotLoggedIn) {
   // The lock button shouldn't do anything if we aren't logged in.
-  Initialize(ButtonType::NORMAL, LoginStatus::NOT_LOGGED_IN);
+  Initialize(LoginStatus::NOT_LOGGED_IN);
 
   PressLockButton();
   EXPECT_FALSE(lock_state_test_api_->is_animating_lock());
@@ -482,7 +490,7 @@ TEST_F(LockStateControllerTest, LockButtonBasicNotLoggedIn) {
 // Test the basic operation of the lock button (guest).
 TEST_F(LockStateControllerTest, LockButtonBasicGuest) {
   // The lock button shouldn't do anything when we're logged in as a guest.
-  Initialize(ButtonType::NORMAL, LoginStatus::GUEST);
+  Initialize(LoginStatus::GUEST);
 
   PressLockButton();
   EXPECT_FALSE(lock_state_test_api_->is_animating_lock());
@@ -525,7 +533,7 @@ class LockStateControllerAnimationTest
 TEST_P(LockStateControllerAnimationTest, LockButtonBasic) {
   // If we're logged in as a regular user, we should start the lock timer and
   // the pre-lock animation.
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
 
   PressLockButton();
   ExpectPreLockAnimationStarted("1");
@@ -623,7 +631,7 @@ TEST_P(LockStateControllerAnimationTest,
 // slow-close path (e.g. via the wrench menu), test that we still show the
 // fast-close animation.
 TEST_F(LockStateControllerTest, LockWithoutButton) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
   lock_state_controller_->OnStartingLock();
 
   ExpectPreLockAnimationStarted();
@@ -638,7 +646,7 @@ TEST_F(LockStateControllerTest, LockWithoutButton) {
 // When we hear that the process is exiting but we haven't had a chance to
 // display an animation, we should just blank the screen.
 TEST_F(LockStateControllerTest, ShutdownWithoutButton) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
   lock_state_controller_->OnChromeTerminating();
 
   EXPECT_TRUE(test_animator_->AreContainersAnimated(
@@ -653,7 +661,7 @@ TEST_F(LockStateControllerTest, ShutdownWithoutButton) {
 // Test that we display the fast-close animation and shut down when we get an
 // outside request to shut down (e.g. from the login or lock screen).
 TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLoginScreen) {
-  Initialize(ButtonType::NORMAL, LoginStatus::NOT_LOGGED_IN);
+  Initialize(LoginStatus::NOT_LOGGED_IN);
   EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 
   lock_state_controller_->RequestShutdown(
@@ -674,7 +682,7 @@ TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLoginScreen) {
 }
 
 TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLockScreen) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
 
   LockScreen();
 
@@ -702,7 +710,7 @@ TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLockScreen) {
 // Test that histogram of time delta was recorded if a previous shutdown was
 // initiated from login/lock screen.
 TEST_F(LockStateControllerTest, RequestShutdownFromLoginScreenThenRestart) {
-  Initialize(ButtonType::NORMAL, LoginStatus::NOT_LOGGED_IN);
+  Initialize(LoginStatus::NOT_LOGGED_IN);
   EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 
   lock_state_controller_->RequestShutdown(
@@ -725,7 +733,7 @@ TEST_F(LockStateControllerTest, RequestShutdownFromLoginScreenThenRestart) {
 }
 
 TEST_F(LockStateControllerTest, RequestShutdownFromLockScreenThenRestart) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
 
   LockScreen();
 
@@ -752,8 +760,8 @@ TEST_F(LockStateControllerTest, RequestShutdownFromLockScreenThenRestart) {
 
 // Test that histogram of time delta was not recorded if a previous shutdown
 // was not initiated from login/lock screen.
-TEST_F(LockStateControllerTest, LegacyShowMenuAndShutDownThenRestart) {
-  Initialize(ButtonType::LEGACY, LoginStatus::USER);
+TEST_F(LockStateControllerLegacyTest, ShowMenuAndShutDownThenRestart) {
+  Initialize(LoginStatus::USER);
 
   ExpectUnlockedState("1");
 
@@ -790,7 +798,7 @@ TEST_F(LockStateControllerTest, LegacyShowMenuAndShutDownThenRestart) {
 }
 // Test that hidden wallpaper appears and reverts correctly on lock/cancel.
 TEST_P(LockStateControllerAnimationTest, TestHiddenWallpaperLockCancel) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
   HideWallpaper();
 
   ExpectUnlockedState("1");
@@ -820,7 +828,7 @@ TEST_P(LockStateControllerAnimationTest, TestHiddenWallpaperLockCancel) {
 
 // Test that hidden wallpaper appears and revers correctly on lock/unlock.
 TEST_P(LockStateControllerAnimationTest, TestHiddenWallpaperLockUnlock) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
   HideWallpaper();
 
   ExpectUnlockedState("1");
@@ -873,7 +881,7 @@ TEST_P(LockStateControllerAnimationTest, TestHiddenWallpaperLockUnlock) {
 // Tests the default behavior of disabling the touchscreen when the screen is
 // turned off due to user inactivity.
 TEST_F(LockStateControllerTest, DisableTouchscreenForScreenOff) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
   // Run the event loop so PowerButtonDisplayController will get the initial
   // backlights-forced-off state from chromeos::PowerManagerClient.
   base::RunLoop().RunUntilIdle();
@@ -896,7 +904,7 @@ TEST_F(LockStateControllerTest, TouchscreenUnableWhileScreenOff) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kTouchscreenUsableWhileScreenOff);
   ResetPowerButtonController();
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
   // Run the event loop so PowerButtonDisplayController will get the initial
   // backlights-forced-off state from chromeos::PowerManagerClient.
   base::RunLoop().RunUntilIdle();
@@ -910,7 +918,7 @@ TEST_F(LockStateControllerTest, TouchscreenUnableWhileScreenOff) {
 // Tests that continue pressing the power button for a while after power menu is
 // shown should trigger the cancellable pre-shutdown animation.
 TEST_F(LockStateControllerTest, ShutDownAfterShowPowerMenu) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
   PressPowerButton();
   EXPECT_TRUE(power_button_test_api_->IsMenuOpened());
   ASSERT_TRUE(power_button_test_api_->TriggerPreShutdownTimeout());
@@ -947,7 +955,7 @@ TEST_F(LockStateControllerTest, ShutDownAfterShowPowerMenu) {
 }
 
 TEST_P(LockStateControllerAnimationTest, CancelShouldResetWallpaperBlur) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
 
   ExpectUnlockedState("1");
 
@@ -984,7 +992,10 @@ class LockStateControllerMockTimeTest : public PowerButtonTestBase {
  public:
   LockStateControllerMockTimeTest()
       : PowerButtonTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kAuraLegacyPowerButton);
+  }
   LockStateControllerMockTimeTest(const LockStateControllerMockTimeTest&) =
       delete;
   LockStateControllerMockTimeTest& operator=(
@@ -1023,7 +1034,7 @@ class TestLayerCopyAnimator final : public LayerCopyAnimator {
 };
 
 TEST_F(LockStateControllerMockTimeTest, LockWithoutAnimation) {
-  Initialize(ButtonType::LEGACY, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
   EXPECT_FALSE(Shell::Get()->session_controller()->IsScreenLocked());
   auto* shelf_container = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                                               kShellWindowId_ShelfContainer);
@@ -1068,7 +1079,7 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
     CHECK(temp_dir_.CreateUniqueTempDir());
     file_path_ = temp_dir_.GetPath().AppendASCII("test_informed_restore.png");
     SetInformedRestoreImagePathForTest(file_path_);
-    Initialize(ButtonType::NORMAL, LoginStatus::USER);
+    Initialize(LoginStatus::USER);
 
     // Although `kAskEveryTime` is the default value, this is needed because
     // `IsAskEveryTime` checks the pref is explicitly set using `HasPrefPath`.

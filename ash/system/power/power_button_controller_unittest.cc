@@ -155,7 +155,7 @@ class PowerButtonControllerTest : public PowerButtonTestBase {
 };
 
 TEST_F(PowerButtonControllerTest, LockScreenIfRequired) {
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
   EnableTabletMode(true);
   SetShouldLockScreenAutomatically(true);
   ASSERT_FALSE(GetLockedState());
@@ -386,7 +386,7 @@ TEST_F(PowerButtonControllerTest, HoldPowerButtonWhileMenuShownInLaptopMode) {
 // Tests press lock button and power button in sequence.
 TEST_F(PowerButtonControllerTest, PressAfterAnotherReleased) {
   // Tap power button after press lock button should still turn screen off.
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
   EnableTabletMode(true);
   PressLockButton();
   ReleaseLockButton();
@@ -408,7 +408,7 @@ TEST_F(PowerButtonControllerTest, PressAfterAnotherReleased) {
 TEST_F(PowerButtonControllerTest, PressBeforeAnotherReleased) {
   // Press lock button when power button is still being pressed will be ignored
   // and continue to turn screen off.
-  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  Initialize(LoginStatus::USER);
   EnableTabletMode(true);
   EXPECT_FALSE(power_manager_client()->backlights_forced_off());
   PressPowerButton();
@@ -825,7 +825,7 @@ TEST_F(PowerButtonControllerTest, MenuItemsToLoginAndLockedStatus) {
   // Should have sign out and feedback items if in guest mode (or, generally,
   // if screen locking is disabled).
   ClearLogin();
-  Initialize(ButtonType::NORMAL, LoginStatus::GUEST);
+  Initialize(LoginStatus::GUEST);
   OpenPowerButtonMenu();
   EXPECT_FALSE(GetLockedState());
   EXPECT_TRUE(power_button_test_api_->MenuHasSignOutItem());
@@ -1405,10 +1405,18 @@ TEST_P(PowerButtonControllerWithPositionTest, AdjustMenuShownForDisplaySize) {
       power_button_test_api_->GetMenuBoundsInScreen()));
 }
 
+class PowerButtonControllerLegacyTest : public PowerButtonControllerTest {
+ public:
+  PowerButtonControllerLegacyTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kAuraLegacyPowerButton);
+  }
+};
+
 // Tests that a power button press before the menu is fully shown will not
 // create a new menu.
-TEST_F(PowerButtonControllerTest, LegacyPowerButtonIgnoreExtraPress) {
-  Initialize(ButtonType::LEGACY, LoginStatus::USER);
+TEST_F(PowerButtonControllerLegacyTest, LegacyPowerButtonIgnoreExtraPress) {
+  Initialize(LoginStatus::USER);
 
   // Enable animations so that we can make sure that they occur.
   ui::ScopedAnimationDurationScaleMode regular_animations(

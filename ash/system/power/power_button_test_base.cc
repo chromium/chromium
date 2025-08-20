@@ -102,10 +102,7 @@ void PowerButtonTestBase::GenerateMouseMoveEvent() {
   GetEventGenerator()->MoveMouseTo(10, 10);
 }
 
-void PowerButtonTestBase::Initialize(
-    PowerButtonController::ButtonType button_type,
-    LoginStatus status) {
-  power_button_test_api_->SetPowerButtonType(button_type);
+void PowerButtonTestBase::Initialize(LoginStatus status) {
   if (status == LoginStatus::NOT_LOGGED_IN)
     ClearLogin();
   else

@@ -73,7 +73,7 @@ class PowerButtonTestBase : public AshTestBase {
   void GenerateMouseMoveEvent();
 
   // Initializes login status and sets power button type.
-  void Initialize(ButtonType button_type, LoginStatus status);
+  void Initialize(LoginStatus status);
 
   // Triggers a lock screen operation.
   void LockScreen();
