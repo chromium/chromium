@@ -2830,6 +2830,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Navigation.URLLoader.OnAcceptCHFrameReceived.EnabledClientHintsMatch"
+    enum="BooleanMatched" expires_after="2026-08-17">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the enabled client hints at resource request creation time
+    match the enabled client hints at the time OnAcceptCHFrameReceived is
+    called. This is to debug why the Accept-CH offloading optimization is not
+    performing as expected.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.URLLoader.OnAcceptCHFrameReceived.EnabledClientHintsMatch.{ClientHintsMismatchType}"
+    enum="BooleanMatched" expires_after="2026-08-17">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    As part of the Accept-CH offloading optimization, the browser calculates the
+    set of enabled client hints at the start of a navigation. This set can be
+    re-evaluated later (e.g., after receiving an `Accept-CH` frame). When the
+    initial set of hints does not match the re-evaluated set (recorded as
+    'false' in the parent
+    `Navigation.URLLoader.OnAcceptCHFrameReceived.EnabledClientHintsMatch`
+    histogram), this metric is recorded to identify which part of the
+    information differed. Specifically, it records whether the
+    {ClientHintsMismatchType} matches.
+  </summary>
+  <token key="ClientHintsMismatchType">
+    <variant name="Hints" summary="the hints vector"/>
+    <variant name="IsOutermostMainFrame"
+        summary="the is_outermost_main_frame field"/>
+    <variant name="Origin" summary="the origin field"/>
+  </token>
+</histogram>
+
 <histogram name="Navigation.URLLoader.OnAcceptCHFrameReceived.ExecutionTime"
     units="microseconds" expires_after="2026-02-01">
   <owner>yyanagisawa@chromium.org</owner>
@@ -2843,6 +2880,22 @@ chromium-metrics-reviews@google.com.
 
     Note: The metrics is reported from all clients. Some of clients may not have
     high resolution timer that can send metrics with microseconds precision.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.URLLoader.OnAcceptCHFrameReceived.HintsMismatch"
+    enum="WebClientHintsType" expires_after="2026-08-17">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    As part of the Accept-CH offloading optimization, the browser compares the
+    set of enabled client hints calculated at the start of a navigation with a
+    re-evaluated set from later in the process. When the list of specific hint
+    types within these sets does not match (recorded as 'false' in the
+    `Navigation.URLLoader.OnAcceptCHFrameReceived.EnabledClientHintsMatch.Hints`
+    histogram), this metric is recorded for each hint that is present in one
+    list but not the other. This helps identify exactly which client hints are
+    causing the mismatch.
   </summary>
 </histogram>
 

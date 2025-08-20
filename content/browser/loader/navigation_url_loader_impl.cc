@@ -391,6 +391,57 @@ void LogAcceptCHFrameStatus(AcceptCHFrameRestart status) {
   base::UmaHistogramEnumeration("ClientHints.AcceptCHFrame", status);
 }
 
+void RecordEnabledClientHintsMismatchHistograms(
+    const network::ResourceRequest::TrustedParams::EnabledClientHints&
+        old_hints,
+    const network::ResourceRequest::TrustedParams::EnabledClientHints&
+        new_hints) {
+  constexpr std::string_view kEnabledClientHintsMatch =
+      "Navigation.URLLoader.OnAcceptCHFrameReceived.EnabledClientHintsMatch";
+
+  const bool enabled_client_hints_match = (new_hints == old_hints);
+  base::UmaHistogramBoolean(kEnabledClientHintsMatch,
+                            enabled_client_hints_match);
+
+  if (enabled_client_hints_match) {
+    return;
+  }
+
+  base::UmaHistogramBoolean(base::StrCat({kEnabledClientHintsMatch, ".Origin"}),
+                            new_hints.origin == old_hints.origin);
+  base::UmaHistogramBoolean(
+      base::StrCat({kEnabledClientHintsMatch, ".IsOutermostMainFrame"}),
+      new_hints.is_outermost_main_frame == old_hints.is_outermost_main_frame);
+
+  // See services/network/public/mojom/web_client_hints_types.mojom for the
+  // full list of client hints. As of 2025-08-19, there are 23 non-deprecated
+  // entries.
+  std::vector<network::mojom::WebClientHintsType> old_hints_vector =
+      old_hints.hints;
+  std::vector<network::mojom::WebClientHintsType> new_hints_vector =
+      new_hints.hints;
+  std::sort(old_hints_vector.begin(), old_hints_vector.end());
+  std::sort(new_hints_vector.begin(), new_hints_vector.end());
+
+  const bool are_equal = (old_hints_vector == new_hints_vector);
+  base::UmaHistogramBoolean(base::StrCat({kEnabledClientHintsMatch, ".Hints"}),
+                            are_equal);
+
+  if (are_equal) {
+    return;
+  }
+
+  std::vector<network::mojom::WebClientHintsType> diff;
+  std::set_symmetric_difference(
+      old_hints_vector.begin(), old_hints_vector.end(),
+      new_hints_vector.begin(), new_hints_vector.end(),
+      std::back_inserter(diff));
+  for (const auto& hint : diff) {
+    base::UmaHistogramEnumeration(
+        "Navigation.URLLoader.OnAcceptCHFrameReceived.HintsMismatch", hint);
+  }
+}
+
 bool IsSameOriginRedirect(const std::vector<GURL>& url_chain) {
   if (url_chain.size() < 2) {
     return false;
@@ -1698,6 +1749,16 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
     RecordOnAcceptCHFrameReceivedReturnLocation(
         OnAcceptCHFrameReceivedReturnLocation::kNoClientHintDelegate);
     return;
+  }
+
+  if (resource_request_->trusted_params->enabled_client_hints) {
+    network::ResourceRequest::TrustedParams::EnabledClientHints
+        current_hints_obj = GetEnabledClientHints(origin, frame_tree_node,
+                                                  client_hint_delegate);
+    network::ResourceRequest::TrustedParams::EnabledClientHints& old_hints_obj =
+        *resource_request_->trusted_params->enabled_client_hints;
+    RecordEnabledClientHintsMismatchHistograms(old_hints_obj,
+                                               current_hints_obj);
   }
 
   // Filter out hints that are disabled by features and the like.
