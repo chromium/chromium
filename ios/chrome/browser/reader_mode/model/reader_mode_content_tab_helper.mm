@@ -41,6 +41,12 @@ void ReaderModeContentTabHelper::LoadContent(GURL content_url,
   if (!web_state() || web_state()->IsBeingDestroyed()) {
     return;
   }
+  // Sanitize the URL if it ends with an empty ref e.g. `https://example.org/#`
+  // is replaced with `https://example.org/`. Otherwise, `PageLoaded` may not
+  // be called.
+  if (content_url.ref_piece().empty()) {
+    content_url = content_url.GetWithoutRef();
+  }
   content_url_ = content_url;
   content_url_request_allowed_ = false;
   web::NavigationManager* const navigation_manager =
