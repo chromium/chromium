@@ -1421,9 +1421,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kTextTransform:
       return (value_id >= CSSValueID::kCapitalize &&
               value_id <= CSSValueID::kMathAuto) ||
-             value_id == CSSValueID::kNone ||
-             (RuntimeEnabledFeatures::CSSTextTransformFullWidthEnabled() &&
-              value_id == CSSValueID::kFullWidth);
+             value_id == CSSValueID::kNone;
     case CSSPropertyID::kUnicodeBidi:
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kEmbed ||

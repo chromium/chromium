@@ -1607,11 +1607,6 @@
       status: "test",
     },
     {
-      // https://issues.chromium.org/41297237: CSS `text-transform: full-width` value
-      name: "CSSTextTransformFullWidth",
-      status: "experimental",
-    },
-    {
       // crbug.com/41442840: Enabled by default on M139, remove after M141.
       name: "CSSTransitionNoneRunningTransitionsFix",
       status: "stable",
