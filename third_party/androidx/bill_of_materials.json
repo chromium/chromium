@@ -1152,22 +1152,27 @@
     {
         "name": "arcore",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha04"
+        "version": "1.0.0-alpha05"
     },
     {
         "name": "runtime",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha04"
+        "version": "1.0.0-alpha05"
+    },
+    {
+        "name": "runtime-manifest",
+        "group": "androidx.xr.runtime",
+        "version": "1.0.0-alpha05"
     },
     {
         "name": "runtime-openxr",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha04"
+        "version": "1.0.0-alpha05"
     },
     {
         "name": "scenecore",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha04"
+        "version": "1.0.0-alpha05"
     },
     {
         "name": "accessibility-test-framework",
@@ -1232,7 +1237,7 @@
     {
         "name": "impress",
         "group": "com.google.ar",
-        "version": "0.0.3"
+        "version": "0.0.4"
     },
     {
         "name": "auto-service-annotations",
@@ -1305,11 +1310,6 @@
         "version": "2.1.1"
     },
     {
-        "name": "rxjava",
-        "group": "io.reactivex.rxjava3",
-        "version": "3.0.2"
-    },
-    {
         "name": "javax.inject",
         "group": "javax.inject",
         "version": "1"
@@ -1332,7 +1332,7 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "3.12.0"
+        "version": "2.5.5"
     },
     {
         "name": "hamcrest",
@@ -1400,21 +1400,6 @@
         "version": "1.8.1"
     },
     {
-        "name": "kotlinx-coroutines-guava",
-        "group": "org.jetbrains.kotlinx",
-        "version": "1.8.1"
-    },
-    {
-        "name": "kotlinx-coroutines-reactive",
-        "group": "org.jetbrains.kotlinx",
-        "version": "1.8.1"
-    },
-    {
-        "name": "kotlinx-coroutines-rx3",
-        "group": "org.jetbrains.kotlinx",
-        "version": "1.8.1"
-    },
-    {
         "name": "kotlinx-coroutines-test",
         "group": "org.jetbrains.kotlinx",
         "version": "1.8.1"
@@ -1453,10 +1438,5 @@
         "name": "jspecify",
         "group": "org.jspecify",
         "version": "1.0.0"
-    },
-    {
-        "name": "reactive-streams",
-        "group": "org.reactivestreams",
-        "version": "1.0.3"
     }
 ]

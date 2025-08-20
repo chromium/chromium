@@ -1605,7 +1605,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_xr_runtime_runtime_java") {
-    aar_path = "cipd/libs/androidx_xr_runtime_runtime/runtime-1.0.0-alpha04.aar"
+    aar_path = "cipd/libs/androidx_xr_runtime_runtime/runtime-1.0.0-alpha05.aar"
     info_path = "committed/libs/androidx_xr_runtime_runtime/androidx_xr_runtime_runtime.info"
     enable_bytecode_checks = false
     deps = [
@@ -1613,10 +1613,9 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_runtime_java",
+      ":androidx_xr_runtime_runtime_manifest_java",
       "//third_party/android_deps:com_google_ar_impress_java",
-      "//third_party/android_deps:guava_android_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_guava_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -1624,21 +1623,19 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_xr_scenecore_scenecore_java") {
     aar_path =
-        "cipd/libs/androidx_xr_scenecore_scenecore/scenecore-1.0.0-alpha04.aar"
+        "cipd/libs/androidx_xr_scenecore_scenecore/scenecore-1.0.0-alpha05.aar"
     info_path = "committed/libs/androidx_xr_scenecore_scenecore/androidx_xr_scenecore_scenecore.info"
     enable_bytecode_checks = false
     deps = [
-      ":androidx_activity_activity_java",
       ":androidx_annotation_annotation_java",
       ":androidx_concurrent_concurrent_futures_java",
-      ":androidx_lifecycle_lifecycle_common_java",
-      ":androidx_lifecycle_lifecycle_runtime_java",
+      ":androidx_core_core_java",
       ":androidx_xr_arcore_arcore_java",
       ":androidx_xr_runtime_runtime_java",
       ":androidx_xr_runtime_runtime_openxr_java",
       "//third_party/android_deps:com_google_ar_impress_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -3708,7 +3705,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_xr_arcore_arcore_java") {
-    aar_path = "cipd/libs/androidx_xr_arcore_arcore/arcore-1.0.0-alpha04.aar"
+    aar_path = "cipd/libs/androidx_xr_arcore_arcore/arcore-1.0.0-alpha05.aar"
     info_path = "committed/libs/androidx_xr_arcore_arcore/androidx_xr_arcore_arcore.info"
     enable_bytecode_checks = false
 
@@ -3727,8 +3724,23 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_xr_runtime_runtime_manifest_java") {
+    aar_path = "cipd/libs/androidx_xr_runtime_runtime_manifest/runtime-manifest-1.0.0-alpha05.aar"
+    info_path = "committed/libs/androidx_xr_runtime_runtime_manifest/androidx_xr_runtime_runtime_manifest.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_annotation_annotation_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_xr_runtime_runtime_openxr_java") {
-    aar_path = "cipd/libs/androidx_xr_runtime_runtime_openxr/runtime-openxr-1.0.0-alpha04.aar"
+    aar_path = "cipd/libs/androidx_xr_runtime_runtime_openxr/runtime-openxr-1.0.0-alpha05.aar"
     info_path = "committed/libs/androidx_xr_runtime_runtime_openxr/androidx_xr_runtime_runtime_openxr.info"
     enable_bytecode_checks = false
 
@@ -3740,6 +3752,7 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":androidx_annotation_annotation_java",
+      ":androidx_core_core_ktx_java",
       ":androidx_xr_runtime_runtime_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",

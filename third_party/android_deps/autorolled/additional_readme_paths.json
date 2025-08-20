@@ -31,6 +31,7 @@
     "committed/libs/com_google_android_material_material",
     "committed/libs/com_google_android_play_core_common",
     "committed/libs/com_google_android_play_feature_delivery",
+    "committed/libs/com_google_ar_impress",
     "committed/libs/com_google_auto_service_auto_service_annotations",
     "committed/libs/com_google_auto_value_auto_value_annotations",
     "committed/libs/com_google_code_findbugs_jsr305",

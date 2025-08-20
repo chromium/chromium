@@ -1,8 +1,8 @@
 Name: impress
 Short Name: impress
 URL: https://maven.google.com/web/index.html?q=impress#com.google.ar:impress
-Version: 0.0.3
-Update Mechanism: Manual
+Version: 0.0.5
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

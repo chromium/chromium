@@ -180,6 +180,7 @@
     "committed/libs/androidx_window_window_core_android",
     "committed/libs/androidx_xr_arcore_arcore",
     "committed/libs/androidx_xr_runtime_runtime",
+    "committed/libs/androidx_xr_runtime_runtime_manifest",
     "committed/libs/androidx_xr_runtime_runtime_openxr",
     "committed/libs/androidx_xr_scenecore_scenecore"
 ]

@@ -21,11 +21,13 @@ group("robolectric_runtime_jars") {
     "cipd/lib/android-all-instrumented-13-robolectric-9030017-i7.jar",
     "cipd/lib/android-all-instrumented-14-robolectric-10818077-i7.jar",
     "cipd/lib/android-all-instrumented-15-robolectric-12650502-i7.jar",
+    "cipd/lib/android-all-instrumented-15-robolectric-12714715-i7.jar",
+    "cipd/lib/android-all-instrumented-16-robolectric-13921718-i7.jar",
   ]
 }
 
 # Robolectric tests compile against the robolectric sdk. This should be kept in
 # sync with the latest version in //third_party/android_sdk.
 android_system_java_prebuilt("robolectric_test_sdk_java") {
-  jar_path = "cipd/lib/android-all-15-robolectric-12650502.jar"
+  jar_path = "cipd/lib/android-all-15-robolectric-12714715.jar"
 }

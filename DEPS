@@ -1755,7 +1755,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'zduMrCbBDEmGUpVzfDvi5la9OFtBXMgzS-wktgOZ8YYC',
+          'version': 'KY5Qa1FIBo7fn4o_xq_Ey0zg9BW6TyC-zxWb9WyR8sYC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2840,7 +2840,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/robolectric',
-              'version': 'G3VkWqTv1YWDvC6zCrL34iQREzrzdBmSL4GMboAIiAEC',
+              'version': 'FVHssvN9xmmE8NIVUTfX0soOdkQtT5xaNtiCB47LOogC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3219,7 +3219,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/autorolled',
-              'version': '0tkoKB4cd56N50KYBlsBb7AlzdqIvuAcC6-y3CJdu-gC',
+              'version': 'Ey7MISvOFQZJK1WnIujLCnoSUoj5utHGFjCVD_oj6OEC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3277,17 +3277,6 @@ deps = {
           {
               'package': 'chromium/third_party/android_deps/libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework',
               'version': 'version:2@4.0.0.cr1',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/android_deps/cipd/libs/com_google_ar_impress': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/libs/com_google_ar_impress',
-              'version': 'version:2@0.0.3.cr1',
           },
       ],
       'condition': 'checkout_android and non_git_source',

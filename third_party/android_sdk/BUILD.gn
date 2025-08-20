@@ -64,7 +64,7 @@ if (enable_java_templates) {
   }
   android_sdk_optional_library("android_xr_extensions_java") {
     runtime_library_name = "com.android.extensions.xr"
-    input_jars_paths = [ "xr_extensions/com.android.extensions.xr.jar" ]
+    input_jars_paths = [ "//third_party/android_deps/autorolled/cipd/libs/com_android_extensions_xr_extensions_xr/extensions-xr-1.0.0.jar" ]
     required = false
   }
   if (!limit_android_deps) {

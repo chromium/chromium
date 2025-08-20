@@ -2,15 +2,13 @@
 # To regenerate, use "update_android_aar_prebuilts = true" and run "gn gen".
 
 aidl = []
-assets = [
-  "assets/images/black_skybox_android_xr_scenecore.exr"
-]
+assets = []
 has_classes_jar = true
 has_native_libraries = false
 has_proguard_flags = true
 has_r_text_file = false
-is_manifest_empty = false
-manifest_package = "androidx.xr.scenecore"
+is_manifest_empty = true
+manifest_package = "androidx.xr.runtime.manifest"
 resources = [
   "res/values/values.xml"
 ]

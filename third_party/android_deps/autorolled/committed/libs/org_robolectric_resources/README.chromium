@@ -1,7 +1,7 @@
 Name: resources
 Short Name: resources
 URL: https://robolectric.org
-Version: 4.15.1
+Version: 4.16-beta-1
 Update Mechanism: Autoroll
 License: Apache-2.0, MIT
 License File: LICENSE

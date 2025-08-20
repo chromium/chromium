@@ -4,7 +4,6 @@
     "libs/com_android_tools_layoutlib_layoutlib_api",
     "libs/com_android_tools_sdk_common",
     "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework",
-    "libs/com_google_ar_impress",
     "libs/com_googlecode_java_diff_utils_diffutils",
     "libs/com_squareup_javapoet",
     "libs/net_bytebuddy_byte_buddy",
