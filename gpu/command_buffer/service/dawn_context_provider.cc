@@ -174,6 +174,13 @@ std::vector<const char*> GetEnabledToggles(
       enabled_toggles.push_back("d3d11_delay_flush_to_gpu");
     }
   }
+
+  if (backend_type == wgpu::BackendType::D3D11 ||
+      backend_type == wgpu::BackendType::D3D12) {
+    if (features::kSkiaGraphiteDawnDisableD3DShaderOptimizations.Get()) {
+      enabled_toggles.push_back("d3d_skip_shader_optimizations");
+    }
+  }
 #endif
 
   if (backend_type == wgpu::BackendType::Vulkan) {

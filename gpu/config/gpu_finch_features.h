@@ -75,6 +75,8 @@ GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
 GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
     kSkiaGraphiteDawnDumpWCOnD3DError;
 GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
+    kSkiaGraphiteDawnDisableD3DShaderOptimizations;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
     kSkiaGraphiteDawnD3D11DelayFlush;
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDawnUseD3D12);

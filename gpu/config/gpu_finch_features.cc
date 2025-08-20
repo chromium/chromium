@@ -363,6 +363,10 @@ const base::FeatureParam<int> kSkiaGraphiteMaxPendingRecordings{
 const base::FeatureParam<bool> kSkiaGraphiteDawnDumpWCOnD3DError{
     &kSkiaGraphite, "dawn_dumpwc_d3d_errors", false};
 
+// Whether to disable D3D shader optimizations.
+const base::FeatureParam<bool> kSkiaGraphiteDawnDisableD3DShaderOptimizations{
+    &kSkiaGraphite, "dawn_disable_d3d_shader_optimizations", false};
+
 // Whether the Dawn D3D11 flush should be delayed until the end of the frame.
 const base::FeatureParam<bool> kSkiaGraphiteDawnD3D11DelayFlush{
     &kSkiaGraphite, "dawn_d3d11_delay_flush", true};
