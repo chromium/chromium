@@ -9,8 +9,9 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/base_export.h"
-#include "base/containers/heap_array.h"
 
 namespace base {
 namespace win {
@@ -43,7 +44,7 @@ class BASE_EXPORT StartupInformation {
   }
 
  private:
-  base::HeapArray<char> attribute_list_;
+  std::unique_ptr<char[]> attribute_list_;
   STARTUPINFOEXW startup_info_;
 };
 
