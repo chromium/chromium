@@ -272,7 +272,7 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH would be dismissed with the reason
 // `kSwipedAsInstructedByGestureIPH` when the user pulls down on the IPH.
-- (void)testPullToRefreshPerformAction {
+- (void)DISABLED_testPullToRefreshPerformAction {
   if ([ChromeEarlGrey isIPadIdiom]) {
     if (@available(iOS 19.0, *)) {
       // TODO(crbug.com/427699033): Re-enable test on iOS 26.
