@@ -26,6 +26,10 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 using autofill::AutofillType;
 using autofill::CalculateFieldSignatureForField;
 using autofill::CalculateFormSignature;
@@ -131,7 +135,7 @@ bool PasswordGenerationFrameHelper::IsGenerationEnabled(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (client_->GetPasswordFeatureManager()->ShouldUpdateGmsCore()) {
+  if (IsGmsCoreUpdateRequired()) {
     if (logger) {
       logger->LogMessage(
           Logger::STRING_GENERATION_DISABLED_CHROME_DOES_NOT_SYNC_PASSWORDS);

@@ -1549,12 +1549,6 @@ chromium-metrics-reviews@google.com.
     <variant name="EmptySecurityDomain"
         summary="error shown for trusted vault users when the security domain
                  is empty"/>
-    <variant name="GMSCoreOutdatedSavingDisabled"
-        summary="error that nudges to update GMSCore because password saving
-                 is disabled"/>
-    <variant name="GMSCoreOutdatedSavingPossible"
-        summary="error that nudges to update GMSCore because only account
-                 passwords can be saved"/>
     <variant name="IrretrievableSecurityDomain"
         summary="error shown for trusted vault users when the security domain
                  is irretrievable"/>

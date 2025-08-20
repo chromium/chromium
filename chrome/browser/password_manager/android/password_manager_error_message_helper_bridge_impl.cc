@@ -54,30 +54,10 @@ bool PasswordManagerErrorMessageHelperBridgeImpl::ShouldShowSignInErrorUI(
       base::android::AttachCurrentThread(), profile->GetJavaObject());
 }
 
-bool PasswordManagerErrorMessageHelperBridgeImpl::
-    ShouldShowUpdateGMSCoreErrorUI(content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  return Java_PasswordManagerErrorMessageHelperBridge_shouldShowUpdateGMSCoreErrorUi(
-      base::android::AttachCurrentThread(), profile->GetJavaObject());
-}
-
 void PasswordManagerErrorMessageHelperBridgeImpl::SaveErrorUIShownTimestamp(
     content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   Java_PasswordManagerErrorMessageHelperBridge_saveErrorUiShownTimestamp(
       base::android::AttachCurrentThread(), profile->GetJavaObject());
-}
-
-void PasswordManagerErrorMessageHelperBridgeImpl::LaunchGmsUpdate(
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-  ui::WindowAndroid* window_android =
-      web_contents->GetNativeView()->GetWindowAndroid();
-  if (window_android == nullptr) {
-    return;
-  }
-  Java_PasswordManagerErrorMessageHelperBridge_launchGmsUpdate(
-      base::android::AttachCurrentThread(), window_android->GetJavaObject());
 }

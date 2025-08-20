@@ -166,26 +166,6 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     }
 
     @Test
-    public void testEnoughTimeSinceLastUpmError() {
-        final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
-        when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
-                .thenReturn(Long.toString(timeOfFirstUpmPrompt));
-        mFakeTimeTestRule.advanceMillis(
-                PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
-        assertTrue(
-                PasswordManagerErrorMessageHelperBridge.shouldShowUpdateGMSCoreErrorUi(mProfile));
-    }
-
-    @Test
-    public void testNotEnoughTimeSinceLastUpmError() {
-        final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
-        when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
-                .thenReturn(Long.toString(timeOfFirstUpmPrompt));
-        assertFalse(
-                PasswordManagerErrorMessageHelperBridge.shouldShowUpdateGMSCoreErrorUi(mProfile));
-    }
-
-    @Test
     public void testSaveErrorUiShownTimestamp() {
         final long currentTimeMs = TimeUtils.currentTimeMillis();
         final long timeIncrementMs = 30;
