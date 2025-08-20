@@ -125,6 +125,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser:primitives",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/feedback",
     "//chrome/browser/lens/region_search",
     "//chrome/browser/media/webrtc",

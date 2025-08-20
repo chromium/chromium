@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,6 +35,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -350,6 +352,16 @@ bool LensOverlayEntryPointController::IsOverlayActive() const {
 bool LensOverlayEntryPointController::ShouldShowPageAction(
     tabs::TabInterface* active_tab) const {
   if (!AreVisible()) {
+    return false;
+  }
+
+  // When the AIM page action is enabled, the Lens overlay entrypoint
+  // in the Omnibox should be suppressed.
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(
+          browser_window_interface_->GetProfile());
+  if (OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
+          aim_eligibility_service)) {
     return false;
   }
 

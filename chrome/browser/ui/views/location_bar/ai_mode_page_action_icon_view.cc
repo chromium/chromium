@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -110,6 +112,13 @@ void AiModePageActionIconView::UpdateImpl() {
 }
 
 bool AiModePageActionIconView::ShouldShow() {
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(browser_->GetProfile());
+  if (!OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
+          aim_eligibility_service)) {
+    return false;
+  }
+
   // If the feature is enabled to hide the AIM entrypoint on user input, don't
   // show the AIM entrypoint if the user is currently typing and the user text
   // is non-empty.

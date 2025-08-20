@@ -168,7 +168,8 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
 
   std::vector<OmniboxPopupSelection> available_selections;
   const bool aim_button_enabled =
-      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(client);
+      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
+          client->GetAimEligibilityService());
   // The AIM button is included as a special case selection on the `kNoMatch`
   // line if:
   // - The AIM button is enabled,

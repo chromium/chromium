@@ -275,6 +275,7 @@ static_library("ui") {
     "//chrome/browser:global_features",
     "//chrome/browser/affiliations",
     "//chrome/browser/autocomplete",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/autofill",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/lens_overlay_page_action_icon_view.h"
 
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
@@ -23,6 +24,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metrics.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_controller.h"
@@ -94,7 +96,7 @@ bool LensOverlayPageActionIconView::ShouldShowLabel() const {
 }
 
 void LensOverlayPageActionIconView::UpdateImpl() {
-  // There are 4 reasons why the lens page action may be hidden.
+  // There are 5 reasons why the lens page action may be hidden.
   // (1) It may be hidden by pref.
   bool enabled_by_pref = browser_->profile()->GetPrefs()->GetBoolean(
       omnibox::kShowGoogleLensShortcut);
@@ -131,9 +133,18 @@ void LensOverlayPageActionIconView::UpdateImpl() {
   const bool is_broader_feature_enabled =
       controller && controller->AreVisible();
 
-  const bool should_show_lens_overlay = enabled_by_pref &&
-                                        location_bar_has_focus && !is_ntp &&
-                                        is_broader_feature_enabled;
+  // (5) The "AIM page action" feature in the Omnibox is enabled.
+  // Since the on-focus behavior of the Lens overlay entrypoint and the AIM
+  // page action could conflict, the Lens overlay entrypoint should be
+  // suppressed when the "AIM page action" feature is enabled.
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(browser_->profile());
+  const bool is_aim_page_action_enabled =
+      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service);
+
+  const bool should_show_lens_overlay =
+      enabled_by_pref && location_bar_has_focus && !is_ntp &&
+      is_broader_feature_enabled && !is_aim_page_action_enabled;
   SetVisible(should_show_lens_overlay);
   ResetSlideAnimation(true);
 
