@@ -149,12 +149,6 @@ class SidePanelService : public BrowserContextKeyedAPI,
       int window_id,
       bool include_incognito_information);
 
-  // Dispatch the sidePanel.onOpened event to the extension.
-  void DispatchOnOpenedEvent(const ExtensionId& extension_id,
-                             int window_id,
-                             std::optional<int> tab_id,
-                             const std::string& path);
-
  private:
   friend class BrowserContextKeyedAPIFactory<SidePanelService>;
 
