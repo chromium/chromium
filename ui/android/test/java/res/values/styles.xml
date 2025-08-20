@@ -35,4 +35,13 @@ found in the LICENSE file.
   <style name="ThemeOverlay.WhitePrimary.WithTextColor">
     <item name="android:textColorHighlight">@android:color/white</item>
   </style>
+
+  <style name="ThemeOverlay.TextLarge.SizeOnly" parent="">
+    <item name="textLargeSize">@dimen/text_size_large</item>
+  </style>
+
+  <style name="ThemeOverlay.TextLarge.Medium" parent="">
+    <item name="textLargeSize">@dimen/text_size_large_desktop</item>
+    <item name="textLargeLeading">@dimen/text_size_large_leading_desktop</item>
+  </style>
 </resources>
