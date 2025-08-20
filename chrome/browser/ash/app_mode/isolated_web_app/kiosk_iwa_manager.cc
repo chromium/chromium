@@ -212,8 +212,7 @@ void KioskIwaManager::ProcessDeviceLocalAccount(
     return;
   }
 
-  // TODO(crbug.com/378065964): Revisit app data processing below after
-  // implementing icon and title.
+  // Check the new app entry against existing apps.
   auto previous_match = previous_apps.find(new_iwa_data->app_id());
   if (previous_match != previous_apps.end()) {
     // Keep this app from deletion.
