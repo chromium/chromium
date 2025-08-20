@@ -259,6 +259,13 @@ void ContentBrowserClient::OverrideURLLoaderFactoryParams(
     bool is_for_service_worker,
     network::mojom::URLLoaderFactoryParams* factory_params) {}
 
+// Returns true if the given URL is in any of the NavigationEntries for the
+// given |browser_context|. This is used to determine if a URL is already
+// in the navigation history of any of the tabs in a given browser context.
+bool ContentBrowserClient::IsURLAccessibleByHistoryNavigation(const GURL& url) {
+  return false;
+}
+
 void ContentBrowserClient::GetAdditionalViewSourceSchemes(
     std::vector<std::string>* additional_schemes) {
   GetAdditionalWebUISchemes(additional_schemes);

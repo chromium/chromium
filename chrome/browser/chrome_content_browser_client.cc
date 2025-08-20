@@ -494,6 +494,7 @@
 #include "chrome/browser/digital_credentials/digital_identity_provider_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/chrome_descriptors_android.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
@@ -555,7 +556,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_error_page.h"
@@ -2173,6 +2176,54 @@ void ChromeContentBrowserClient::OverrideURLLoaderFactoryParams(
       browser_context, origin, is_for_isolated_world, is_for_service_worker,
       factory_params);
 #endif
+}
+
+bool IsURLAccessibleByHistoryNavigationFromWebContents(
+    const GURL& url,
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+  content::NavigationController& controller = web_contents->GetController();
+  for (int j = 0; j < controller.GetEntryCount(); ++j) {
+    content::NavigationEntry* entry = controller.GetEntryAtIndex(j);
+    if (entry && entry->GetURL().EqualsIgnoringRef(url)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ChromeContentBrowserClient::IsURLAccessibleByHistoryNavigation(
+    const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+  for (const TabModel* model : TabModelList::models()) {
+    if (!model) {
+      continue;
+    }
+    for (int i = 0; i < model->GetTabCount(); ++i) {
+      if (IsURLAccessibleByHistoryNavigationFromWebContents(
+              url, model->GetWebContentsAt(i))) {
+        return true;
+      }
+    }
+  }
+  return false;
+#else
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    TabStripModel* model = browser->tab_strip_model();
+    if (!model) {
+      continue;
+    }
+    for (int i = 0; i < model->count(); ++i) {
+      if (IsURLAccessibleByHistoryNavigationFromWebContents(
+              url, model->GetWebContentsAt(i))) {
+        return true;
+      }
+    }
+  }
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // These are treated as WebUI schemes but do not get WebUI bindings. Also,
