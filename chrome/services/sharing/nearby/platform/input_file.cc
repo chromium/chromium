@@ -12,8 +12,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/notimplemented.h"
-#include "third_party/abseil-cpp/absl/time/time.h"
 
 namespace nearby::chrome {
 
@@ -31,12 +29,6 @@ std::int64_t InputFile::GetTotalSize() const {
     return -1;
 
   return file_.GetLength();
-}
-
-absl::Time InputFile::GetLastModifiedTime() const {
-  // Intentionally left not implemented. Not supported in Chromium Nearby.
-  NOTIMPLEMENTED();
-  return absl::Now();
 }
 
 ExceptionOr<ByteArray> InputFile::Read(std::int64_t size) {

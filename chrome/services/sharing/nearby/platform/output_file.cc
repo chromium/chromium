@@ -5,8 +5,6 @@
 #include "chrome/services/sharing/nearby/platform/output_file.h"
 
 #include "base/containers/span.h"
-#include "base/notimplemented.h"
-#include "third_party/abseil-cpp/absl/time/time.h"
 
 namespace nearby::chrome {
 
@@ -22,11 +20,6 @@ Exception OutputFile::Write(const ByteArray& data) {
     return {Exception::kIo};
   }
   return {Exception::kSuccess};
-}
-
-void OutputFile::SetLastModifiedTime(absl::Time last_modified_time) {
-  // Intentionally left not implemented. Not supported in Chromium Nearby.
-  NOTIMPLEMENTED();
 }
 
 Exception OutputFile::Flush() {
