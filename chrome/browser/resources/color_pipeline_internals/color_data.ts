@@ -194,4 +194,36 @@ export const ALL_SECTIONS: ThemeSection[] = [
       },
     ],
   },
+  {
+    title: 'States',
+    entries: [
+      {
+        background: '--color-sys-state-hover-on-prominent',
+      },
+      {
+        background: '--color-sys-state-hover-on-subtle',
+      },
+      {
+        background: '--color-sys-state-focus-ring',
+        foreground: '--color-sys-surface',
+      },
+      {
+        background: '--color-sys-state-focus-highlight',
+      },
+      {
+        background: '--color-sys-state-text-highlight',
+        foreground: '--color-sys-state-on-text-highlight',
+      },
+      {
+        background: '--color-sys-state-on-text-highlight',
+      },
+      {
+        background: '--color-sys-state-disabled',
+        foreground: '--color-sys-surface',
+      },
+      {
+        background: '--color-sys-state-disabled-container',
+      },
+    ],
+  },
 ];
