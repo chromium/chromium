@@ -51,6 +51,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.R;
 import androidx.recyclerview.widget.ItemTouchUIUtil;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ItemTouchHelper.ViewDropHandler;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
@@ -1293,34 +1294,6 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
                 mRecyclerView.setChildDrawingOrderCallback(null);
             }
         }
-    }
-
-    /**
-     * An interface which can be implemented by LayoutManager for better integration with {@link
-     * ItemTouchHelper}.
-     */
-    public interface ViewDropHandler {
-
-        /**
-         * Called by the {@link ItemTouchHelper} after a View is dropped over another View.
-         *
-         * <p>A LayoutManager should implement this interface to get ready for the upcoming move
-         * operation.
-         *
-         * <p>For example, LinearLayoutManager sets up a "scrollToPositionWithOffset" calls so that
-         * the View under drag will be used as an anchor View while calculating the next layout,
-         * making layout stay consistent.
-         *
-         * @param view The View which is being dragged. It is very likely that user is still
-         *     dragging this View so there might be other calls to {@code prepareForDrop()} after
-         *     this one.
-         * @param target The target view which is being dropped on.
-         * @param x The <code>left</code> offset of the View that is being dragged. This value
-         *     includes the movement caused by the user.
-         * @param y The <code>top</code> offset of the View that is being dragged. This value
-         *     includes the movement caused by the user.
-         */
-        void prepareForDrop(@NonNull View view, @NonNull View target, int x, int y);
     }
 
     /**
