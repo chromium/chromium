@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_BACKGROUND_CUSTOMIZATION_INFORMATION_H_
-#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_BACKGROUND_CUSTOMIZATION_INFORMATION_H_
+#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_BACKGROUND_CUSTOMIZATION_CONFIGURATION_H_
+#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_BACKGROUND_CUSTOMIZATION_CONFIGURATION_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ui/color/color_provider_key.h"
 
 class GURL;
 @class HomeCustomizationFramingCoordinates;
+@class NewTabPageColorPalette;
 
 /**
  * A protocol representing a background customization information.
@@ -33,6 +35,12 @@ class GURL;
 // A pointer to a UIColor representing the background's base color.
 @property(readonly, nonatomic, strong) UIColor* backgroundColor;
 
+// The color variant for the background
+@property(readonly, nonatomic) ui::ColorProviderKey::SchemeVariant colorVariant;
+
+// The color palette for this background.
+@property(readonly, nonatomic) NewTabPageColorPalette* colorPalette;
+
 // The file path to the user-uploaded background image.
 @property(readonly, nonatomic) NSString* userUploadedImagePath;
 
@@ -42,4 +50,4 @@ class GURL;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_BACKGROUND_CUSTOMIZATION_INFORMATION_H_
+#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_BACKGROUND_CUSTOMIZATION_CONFIGURATION_H_

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/home_customization/model/background_collection_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 
 // A consumer protocol that receives updates about background galleries.
 @protocol HomeCustomizationBackgroundPresetGalleryPickerConsumer

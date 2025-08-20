@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_coordinates.h"
 
 #import "base/check.h"
 #import "base/values.h"
-#import "ios/chrome/browser/home_customization/model/home_background_data.h"
 
 namespace {
 // Keys for Value serialization.
@@ -54,18 +53,6 @@ const char kHeightKey[] = "height";
 - (id)copyWithZone:(NSZone*)zone {
   return [[HomeCustomizationFramingCoordinates alloc]
       initWithVisibleRect:self.visibleRect];
-}
-
-+ (instancetype)fromFramingCoordinates:(const FramingCoordinates&)coordinates {
-  CGRect visibleRect = CGRectMake(coordinates.x, coordinates.y,
-                                  coordinates.width, coordinates.height);
-  return [[self alloc] initWithVisibleRect:visibleRect];
-}
-
-- (FramingCoordinates)toFramingCoordinates {
-  CGRect rect = self.visibleRect;
-  return FramingCoordinates(rect.origin.x, rect.origin.y, rect.size.width,
-                            rect.size.height);
 }
 
 @end

@@ -7,9 +7,8 @@
 #import <Foundation/Foundation.h>
 
 #import "base/check.h"
-#import "ios/chrome/browser/home_customization/model/background_collection_configuration.h"
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
+#import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_mutator.h"

@@ -4,6 +4,8 @@
 
 source_set("coordinator") {
   sources = [
+    "background_customization_configuration_item.h",
+    "background_customization_configuration_item.mm",
     "home_customization_background_color_picker_mediator.h",
     "home_customization_background_color_picker_mediator.mm",
     "home_customization_background_photo_framing_mediator.h",
@@ -19,6 +21,8 @@ source_set("coordinator") {
     "home_customization_coordinator+Testing.h",
     "home_customization_coordinator.h",
     "home_customization_coordinator.mm",
+    "home_customization_data_conversion.h",
+    "home_customization_data_conversion.mm",
     "home_customization_delegate.h",
     "home_customization_mediator.h",
     "home_customization_mediator.mm",

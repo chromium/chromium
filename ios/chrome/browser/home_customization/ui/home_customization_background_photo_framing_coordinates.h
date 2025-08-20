@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_COORDINATES_H_
-#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_COORDINATES_H_
+#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_COORDINATES_H_
+#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_COORDINATES_H_
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 
 #import "base/values.h"
-
-struct FramingCoordinates;
 
 // Represents the framing coordinates for the home customization background
 // image.
@@ -30,10 +28,6 @@ struct FramingCoordinates;
 - (base::Value::Dict)toValue;
 + (instancetype)fromValue:(const base::Value::Dict&)dict;
 
-// C++ framing coordinates conversion methods.
-+ (instancetype)fromFramingCoordinates:(const FramingCoordinates&)coordinates;
-- (FramingCoordinates)toFramingCoordinates;
-
 @end
 
-#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_COORDINATES_H_
+#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_COORDINATES_H_

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"

@@ -9,7 +9,7 @@
 
 #include <map>
 
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
 // Consumer protocol for the HomeCustomizationMediator to provide data to the

@@ -10,11 +10,11 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_photo_picker_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_mediator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_preset_gallery_picker_mediator.h"
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
+#import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_library_picker_view_controller.h"
@@ -190,7 +190,7 @@ CGFloat const kSheetCornerRadius = 30;
       _mainViewController = [self createColorPickerViewController];
       _backgroundColorPickerMediator.consumer = (id)_mainViewController;
       _mediator.consumer = (id)_mainViewController;
-      [_backgroundColorPickerMediator configureColorPalettes];
+      [_backgroundColorPickerMediator configureBackgroundConfigurations];
       break;
     case HomeCustomizationBackgroundStyle::kPreset:
       _mainViewController = [self createPresetGalleryPickerViewController];

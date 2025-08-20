@@ -4,11 +4,6 @@
 
 source_set("model") {
   sources = [
-    "background_collection_configuration.h",
-    "background_collection_configuration.mm",
-    "background_customization_configuration.h",
-    "background_customization_configuration_item.h",
-    "background_customization_configuration_item.mm",
     "home_background_customization_service.h",
     "home_background_customization_service.mm",
     "home_background_customization_service_factory.h",
@@ -22,8 +17,6 @@ source_set("model") {
     "home_background_image_service.mm",
     "home_background_image_service_factory.h",
     "home_background_image_service_factory.mm",
-    "home_customization_background_photo_framing_coordinates.h",
-    "home_customization_background_photo_framing_coordinates.mm",
     "ntp_background_service_factory.h",
     "ntp_background_service_factory.mm",
     "user_uploaded_image_manager.h",

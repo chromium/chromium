@@ -25,7 +25,7 @@ class HomeBackgroundCustomizationService;
 
 // Generates a predefined set of color palettes and provides them to the
 // consumer.
-- (void)configureColorPalettes;
+- (void)configureBackgroundConfigurations;
 
 @end
 

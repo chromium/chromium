@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
@@ -46,8 +45,7 @@ CGFloat const kSheetCornerRadius = 30;
 @interface HomeCustomizationCoordinator () <
     UISheetPresentationControllerDelegate,
     HomeCustomizationBackgroundPickerPresentationDelegate,
-    HomeCustomizationSearchEngineLogoMediatorProvider,
-    HomeCustomizationColorPaletteProvider> {
+    HomeCustomizationSearchEngineLogoMediatorProvider> {
   // Displays the background picker action sheet.
   HomeCustomizationBackgroundPickerActionSheetCoordinator*
       _backgroundPickerActionSheetCoordinator;
@@ -193,7 +191,6 @@ CGFloat const kSheetCornerRadius = 30;
       self.mainViewController.backgroundPickerPresentationDelegate = self;
       self.mainViewController.mutator = _mediator;
       self.mainViewController.searchEngineLogoMediatorProvider = self;
-      self.mainViewController.colorPaletteProvider = self;
       self.mainViewController.isNTPCustomBackgroundEnabledByPolicy =
           self.profile->GetPrefs()->GetBoolean(
               prefs::kNTPCustomBackgroundEnabledByPolicy);
@@ -332,15 +329,6 @@ CGFloat const kSheetCornerRadius = 30;
   }
 
   return searchEngineLogoMediator;
-}
-
-#pragma mark - HomeCustomizationColorPaletteProvider
-
-- (NewTabPageColorPalette*)
-    provideColorPaletteFromSeedColor:(UIColor*)seedColor
-                        colorVariant:
-                            (ui::ColorProviderKey::SchemeVariant)colorVariant {
-  return CreateColorPaletteFromSeedColor(seedColor, colorVariant);
 }
 
 @end

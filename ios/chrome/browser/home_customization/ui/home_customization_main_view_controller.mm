@@ -5,12 +5,10 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
+#import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
@@ -387,16 +385,8 @@
 
   CustomUITraitAccessor* traitAccessor =
       [[CustomUITraitAccessor alloc] initWithMutableTraits:cell.traitOverrides];
-  if ([backgroundConfiguration
-          isKindOfClass:[BackgroundCustomizationConfigurationItem class]]) {
-    BackgroundCustomizationConfigurationItem* configurationItem =
-        static_cast<BackgroundCustomizationConfigurationItem*>(
-            backgroundConfiguration);
-    NewTabPageColorPalette* colorPalette = [self.colorPaletteProvider
-        provideColorPaletteFromSeedColor:backgroundConfiguration.backgroundColor
-                            colorVariant:configurationItem.colorVariant];
-    [traitAccessor setObjectForNewTabPageTrait:colorPalette];
-  }
+  [traitAccessor
+      setObjectForNewTabPageTrait:backgroundConfiguration.colorPalette];
 
   BOOL hasBackgroundImage =
       !backgroundConfiguration.thumbnailURL.is_empty() ||

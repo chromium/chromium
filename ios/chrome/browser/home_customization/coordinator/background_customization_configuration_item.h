@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_BACKGROUND_CUSTOMIZATION_CONFIGURATION_ITEM_H_
-#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_BACKGROUND_CUSTOMIZATION_CONFIGURATION_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_BACKGROUND_CUSTOMIZATION_CONFIGURATION_ITEM_H_
+#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_BACKGROUND_CUSTOMIZATION_CONFIGURATION_ITEM_H_
 
 #import <UIKit/UIKit.h>
 
 #import "components/themes/ntp_background_data.h"
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ui/color/color_provider_key.h"
 
@@ -49,4 +49,4 @@ struct FramingCoordinates;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_BACKGROUND_CUSTOMIZATION_CONFIGURATION_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_BACKGROUND_CUSTOMIZATION_CONFIGURATION_ITEM_H_

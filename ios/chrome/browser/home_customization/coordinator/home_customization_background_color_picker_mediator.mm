@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/home_customization/coordinator/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -36,16 +37,6 @@ const SeedColor kSeedColors[] = {
     {0xffe5d5fc, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Violet
 };
 
-// Returns a dynamic UIColor using two named color assets for light and dark
-// mode.
-UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
-  return
-      [UIColor colorWithDynamicProvider:^UIColor*(UITraitCollection* traits) {
-        BOOL isDark = (traits.userInterfaceStyle == UIUserInterfaceStyleDark);
-        return [UIColor colorNamed:isDark ? darkName : lightName];
-      }];
-}
-
 }  // namespace
 
 @implementation HomeCustomizationBackgroundColorPickerMediator {
@@ -62,34 +53,27 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
   return self;
 }
-- (void)configureColorPalettes {
-  NSMutableArray* colorPalettes = [NSMutableArray array];
+
+- (void)configureBackgroundConfigurations {
+  NSMutableArray<id<BackgroundCustomizationConfiguration>>*
+      backgroundConfigurations = [NSMutableArray array];
   std::optional<sync_pb::UserColorTheme> colorTheme =
       _backgroundCustomizationService->GetCurrentColorTheme();
   NSNumber* selectedColorIndex = nil;
 
-  NewTabPageColorPalette* defaultColorPalette =
-      [[NewTabPageColorPalette alloc] init];
-
-  // The first choice should be the "no background" option (default appearance
-  // colors).
-  defaultColorPalette.lightColor =
-      DynamicNamedColor(@"ntp_background_color", kGrey100Color);
-  defaultColorPalette.mediumColor =
-      [UIColor colorNamed:@"fake_omnibox_solid_background_color"];
-  defaultColorPalette.darkColor =
-      DynamicNamedColor(kBlueColor, kTextPrimaryColor);
-
-  [colorPalettes addObject:defaultColorPalette];
+  [backgroundConfigurations
+      addObject:[[BackgroundCustomizationConfigurationItem alloc]
+                    initWithNoBackground]];
 
   for (SeedColor seedColor : kSeedColors) {
-    [colorPalettes
-        addObject:CreateColorPaletteFromSeedColor(
-                      UIColorFromRGB(seedColor.color), seedColor.variant)];
+    [backgroundConfigurations
+        addObject:[[BackgroundCustomizationConfigurationItem alloc]
+                      initWithBackgroundColor:UIColorFromRGB(seedColor.color)
+                                 colorVariant:seedColor.variant]];
 
     if (colorTheme && colorTheme->color() &&
         seedColor.color == colorTheme->color()) {
-      selectedColorIndex = @(colorPalettes.count - 1);
+      selectedColorIndex = @(backgroundConfigurations.count - 1);
     }
   }
 
@@ -101,8 +85,9 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
                                                                       : @(0);
   }
 
-  [_consumer setColorPalettes:colorPalettes
-           selectedColorIndex:selectedColorIndex];
+  [_consumer
+      populateBackgroundCustomizationConfigurations:backgroundConfigurations
+                                 selectedColorIndex:selectedColorIndex];
 }
 
 @end

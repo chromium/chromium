@@ -9,10 +9,11 @@
 #import "base/check.h"
 #import "base/functional/callback_forward.h"
 #import "base/logging.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
-#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_mutator.h"
 
 @implementation HomeCustomizationBackgroundPhotoFramingMediator {
@@ -63,7 +64,8 @@
               completion:(base::OnceClosure)completion {
   if (!imagePath.empty() && _backgroundService) {
     _backgroundService->SetCurrentUserUploadedBackground(
-        imagePath.value(), [coordinates toFramingCoordinates]);
+        imagePath.value(),
+        FramingCoordinatesFromHomeCustomizationFramingCoordinates(coordinates));
     _backgroundService->StoreCurrentTheme();
   }
   std::move(completion).Run();

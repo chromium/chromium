@@ -16,10 +16,11 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
+#import "ios/chrome/browser/home_customization/coordinator/background_customization_configuration_item.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
-#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
@@ -213,7 +214,8 @@
 - (void)applyUserUploadedBackground:
     (BackgroundCustomizationConfigurationItem*)configurationItem {
   FramingCoordinates coordinates =
-      [configurationItem.userUploadedFramingCoordinates toFramingCoordinates];
+      FramingCoordinatesFromHomeCustomizationFramingCoordinates(
+          configurationItem.userUploadedFramingCoordinates);
   _backgroundService->SetCurrentUserUploadedBackground(
       base::SysNSStringToUTF8(configurationItem.userUploadedImagePath),
       coordinates);
