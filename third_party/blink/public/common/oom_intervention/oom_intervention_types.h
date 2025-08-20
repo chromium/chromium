@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/byte_count.h"
+
 namespace blink {
 
 // The struct with renderer metrics that are used to detect OOMs. This is stored
@@ -16,8 +18,8 @@ namespace blink {
 // the arm64 and renderer in the arm32.
 
 struct OomInterventionMetrics {
-  uint64_t current_available_memory_kb = 0;
-  uint64_t current_swap_free_kb = 0;
+  base::ByteCount current_available_memory;
+  base::ByteCount current_swap_free;
 
   // Indicates whether the crash was because of virtual address space OOM.
   // This holds only 0 or 1 as a value but because of the reason stated above,
