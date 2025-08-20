@@ -18,6 +18,8 @@
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/strings/grit/components_strings.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace actor_login {
@@ -25,6 +27,8 @@ namespace actor_login {
 using password_manager::PasswordForm;
 using password_manager::PasswordFormCache;
 using password_manager::PasswordFormManager;
+using password_manager::PasswordManagerDriver;
+using password_manager::PasswordManagerInterface;
 
 namespace {
 
@@ -140,13 +144,21 @@ void ActorLoginCredentialFiller::AttemptLogin(
 
   device_authenticator_ = client->GetDeviceAuthenticator();
 
-  if (client->IsReauthBeforeFillingRequired(device_authenticator_.get())) {
-    // TODO(crbug.com/427171273): Prompt to reauthenticate.
-    std::move(callback_).Run(LoginStatusResult::kErrorFillingNotAllowed);
-    return;
-  }
+  base::WeakPtr<PasswordManagerDriver> driver =
+      signin_form_manager->GetDriver()->AsWeakPtr();
+  autofill::FormRendererId form_renderer_id =
+      signin_form_manager->GetParsedObservedForm()->form_data.renderer_id();
 
-  FillForm(*signin_form_manager, *stored_credential);
+  auto fill_form_cb = base::BindOnce(
+      &ActorLoginCredentialFiller::FillForm, weak_ptr_factory_.GetWeakPtr(),
+      driver, form_renderer_id, stored_credential->username_value,
+      stored_credential->password_value);
+
+  if (client->IsReauthBeforeFillingRequired(device_authenticator_.get())) {
+    ReauthenticateAndFill(std::move(fill_form_cb));
+  } else {
+    std::move(fill_form_cb).Run();
+  }
 }
 
 const PasswordForm* ActorLoginCredentialFiller::GetMatchingStoredCredential(
@@ -164,19 +176,61 @@ const PasswordForm* ActorLoginCredentialFiller::GetMatchingStoredCredential(
   return matching_stored_credential;
 }
 
+void ActorLoginCredentialFiller::ReauthenticateAndFill(
+    base::OnceClosure fill_form_cb) {
+  std::u16string message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  const std::u16string origin =
+      base::UTF8ToUTF16(password_manager::GetShownOrigin(origin_));
+  message =
+      l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  auto on_reauth_completed =
+      base::BindOnce(&ActorLoginCredentialFiller::OnDeviceReauthCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(fill_form_cb));
+
+  device_authenticator_->AuthenticateWithMessage(
+      message, password_manager::metrics_util::TimeCallbackMediumTimes(
+                   std::move(on_reauth_completed),
+                   "PasswordManager.ActorLogin.AuthenticationTime2"));
+}
+
+void ActorLoginCredentialFiller::OnDeviceReauthCompleted(
+    base::OnceClosure fill_form_cb,
+    bool authenticated) {
+  if (!authenticated) {
+    std::move(callback_).Run(LoginStatusResult::kErrorFillingNotAllowed);
+    return;
+  }
+
+  std::move(fill_form_cb).Run();
+}
+
 void ActorLoginCredentialFiller::FillForm(
-    const PasswordFormManager& manager,
-    const PasswordForm& stored_credential) {
-  const password_manager::PasswordForm* form_to_fill =
-      manager.GetParsedObservedForm();
-  CHECK(form_to_fill);
+    base::WeakPtr<password_manager::PasswordManagerDriver> driver,
+    autofill::FormRendererId form_renderer_id,
+    std::u16string username,
+    std::u16string password) {
+  if (!driver) {
+    std::move(callback_).Run(LoginStatusResult::kErrorNoFillableFields);
+    return;
+  }
+
+  PasswordManagerInterface* password_manager = driver->GetPasswordManager();
+  PasswordFormCache* form_cache = password_manager->GetPasswordFormCache();
+  const PasswordForm* form_to_fill =
+      form_cache->GetPasswordForm(driver.get(), form_renderer_id);
+
+  if (!form_to_fill) {
+    std::move(callback_).Run(LoginStatusResult::kErrorNoFillableFields);
+    return;
+  }
 
   if (form_to_fill->username_element_renderer_id.is_null()) {
     OnUsernameFillingDone(false);
   } else {
-    manager.GetDriver()->FillField(
-        form_to_fill->username_element_renderer_id,
-        stored_credential.username_value,
+    driver->FillField(
+        form_to_fill->username_element_renderer_id, username,
         autofill::FieldPropertiesFlags::kAutofilledActorLogin,
         base::BindOnce(&ActorLoginCredentialFiller::OnUsernameFillingDone,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -185,9 +239,8 @@ void ActorLoginCredentialFiller::FillForm(
   if (form_to_fill->password_element_renderer_id.is_null()) {
     OnPasswordFillingDone(false);
   } else {
-    manager.GetDriver()->FillField(
-        form_to_fill->password_element_renderer_id,
-        stored_credential.password_value,
+    driver->FillField(
+        form_to_fill->password_element_renderer_id, password,
         autofill::FieldPropertiesFlags::kAutofilledActorLogin,
         base::BindOnce(&ActorLoginCredentialFiller::OnPasswordFillingDone,
                        weak_ptr_factory_.GetWeakPtr()));

@@ -4564,6 +4564,8 @@ useful for Chirp alerts (go/crca-alerts). -->
     of buckets
   </summary>
   <token key="Location">
+    <variant name="ActorLogin"
+        summary="when filling via the actor login component"/>
     <variant name="ManagementBubble"
         summary="in management bubble when navigating to details view"/>
     <variant name="PasswordFilling"

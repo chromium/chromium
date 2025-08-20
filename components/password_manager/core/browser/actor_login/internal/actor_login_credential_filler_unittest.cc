@@ -13,6 +13,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
@@ -34,6 +35,7 @@ using autofill::FormFieldData;
 using autofill::test::CreateTestFormField;
 using base::test::RunOnceCallback;
 using device_reauth::DeviceAuthenticator;
+using device_reauth::MockDeviceAuthenticator;
 using password_manager::FakeFormFetcher;
 using password_manager::MockPasswordFormCache;
 using password_manager::MockPasswordManager;
@@ -70,6 +72,7 @@ class MockStubPasswordManagerDriver
                base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
+  MOCK_METHOD(PasswordManagerInterface*, GetPasswordManager, (), (override));
 };
 
 class MockPasswordManagerClient
@@ -79,6 +82,10 @@ class MockPasswordManagerClient
   MOCK_METHOD(bool,
               IsReauthBeforeFillingRequired,
               (DeviceAuthenticator*),
+              (override));
+  MOCK_METHOD(std::unique_ptr<DeviceAuthenticator>,
+              GetDeviceAuthenticator,
+              (),
               (override));
 };
 
@@ -104,6 +111,19 @@ void SetSavedCredential(FakeFormFetcher* form_fetcher,
   form_fetcher->SetBestMatches({std::move(form)});
 }
 
+MockDeviceAuthenticator* SetUpDeviceAuthenticatorToRequireReauth(
+    const MockPasswordManagerClient& client) {
+  // Set up the device authenticator and pretend that reauth before
+  // filling is required.
+  auto mock_device_authenticator = std::make_unique<MockDeviceAuthenticator>();
+  MockDeviceAuthenticator* weak_device_authenticator =
+      mock_device_authenticator.get();
+  EXPECT_CALL(client, GetDeviceAuthenticator)
+      .WillOnce(Return(std::move(mock_device_authenticator)));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(true));
+  return weak_device_authenticator;
+}
+
 }  // namespace
 
 class ActorLoginCredentialFillerTest : public ::testing::Test {
@@ -118,6 +138,8 @@ class ActorLoginCredentialFillerTest : public ::testing::Test {
     ON_CALL(mock_password_manager_, GetPasswordFormCache())
         .WillByDefault(Return(&mock_form_cache_));
     ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(true));
+    ON_CALL(mock_driver_, GetPasswordManager)
+        .WillByDefault(Return(&mock_password_manager_));
     ON_CALL(mock_password_manager_, GetClient())
         .WillByDefault(Return(&mock_client_));
     ON_CALL(mock_client_, IsFillingEnabled).WillByDefault(Return(true));
@@ -318,6 +340,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillUsernameAndPassword) {
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(
+      mock_form_cache_,
+      GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
+      .WillOnce(Return(parsed_form));
 
   EXPECT_FALSE(parsed_form->username_element_renderer_id.is_null());
   EXPECT_FALSE(parsed_form->password_element_renderer_id.is_null());
@@ -358,6 +384,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillOnlyUsernameField) {
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(
+      mock_form_cache_,
+      GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
+      .WillOnce(Return(parsed_form));
 
   EXPECT_FALSE(parsed_form->username_element_renderer_id.is_null());
   EXPECT_TRUE(parsed_form->password_element_renderer_id.is_null());
@@ -367,7 +397,7 @@ TEST_F(ActorLoginCredentialFillerTest, FillOnlyUsernameField) {
       FillField(parsed_form->username_element_renderer_id, Eq(kTestUsername),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
-  ;
+
   EXPECT_CALL(
       mock_driver_,
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
@@ -399,6 +429,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillOnlyPasswordField) {
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(
+      mock_form_cache_,
+      GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
+      .WillOnce(Return(parsed_form));
 
   EXPECT_TRUE(parsed_form->username_element_renderer_id.is_null());
   EXPECT_FALSE(parsed_form->password_element_renderer_id.is_null());
@@ -437,6 +471,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillUsernameFails) {
   ActorLoginCredentialFiller filler(origin, credential, callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(
+      mock_form_cache_,
+      GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
+      .WillOnce(Return(parsed_form));
 
   EXPECT_CALL(
       mock_driver_,
@@ -471,6 +509,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillPasswordFails) {
   ActorLoginCredentialFiller filler(origin, credential, callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(
+      mock_form_cache_,
+      GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
+      .WillOnce(Return(parsed_form));
 
   EXPECT_CALL(
       mock_driver_,
@@ -505,6 +547,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillBothFails) {
   ActorLoginCredentialFiller filler(origin, credential, callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(
+      mock_form_cache_,
+      GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
+      .WillOnce(Return(parsed_form));
 
   EXPECT_CALL(
       mock_driver_,
@@ -541,7 +587,7 @@ TEST_F(ActorLoginCredentialFillerTest, FillingIsDisabled) {
   filler.AttemptLogin(&mock_password_manager_);
 }
 
-TEST_F(ActorLoginCredentialFillerTest, DoesntFillIfReauthIsRequired) {
+TEST_F(ActorLoginCredentialFillerTest, RequestsReauthBeforeFilling) {
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL());
@@ -556,13 +602,68 @@ TEST_F(ActorLoginCredentialFillerTest, DoesntFillIfReauthIsRequired) {
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
-  base::MockCallback<LoginStatusResultOrErrorReply> callback;
-  ActorLoginCredentialFiller filler(origin, credential, callback.Get());
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(
+      mock_form_cache_,
+      GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
+      .WillOnce(Return(parsed_form));
+
+  MockDeviceAuthenticator* weak_device_authenticator =
+      SetUpDeviceAuthenticatorToRequireReauth(mock_client_);
+
+  // Check that the authenticator is invoked before filling.
+  // Simulate successful reauth.
+  EXPECT_CALL(*weak_device_authenticator, AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(true));
+
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->username_element_renderer_id, Eq(kTestUsername),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(true));
+
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(true));
+  EXPECT_CALL(mock_callback,
+              Run(Eq(LoginStatusResult::kSuccessUsernameAndPasswordFilled)));
+  filler.AttemptLogin(&mock_password_manager_);
+}
+
+TEST_F(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
+  const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL());
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+
+  // Make sure a saved credential with a matching username exists.
+  SetSavedCredential(&form_fetcher_, origin.GetURL(), kTestUsername,
+                     kTestPassword);
+
+  // Simulate a signin form existing on the page.
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
+  const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
+
+  // Set up the device authenticator and pretend that reauth before
+  // filling is required.
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
 
-  EXPECT_CALL(mock_client_, IsReauthBeforeFillingRequired)
-      .WillOnce(Return(true));
+  MockDeviceAuthenticator* weak_device_authenticator =
+      SetUpDeviceAuthenticatorToRequireReauth(mock_client_);
+
+  // Check that the authenticator is invoked before filling.
+  // Simulate failed reauth.
+  EXPECT_CALL(*weak_device_authenticator, AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(false));
 
   EXPECT_CALL(
       mock_driver_,
@@ -575,7 +676,58 @@ TEST_F(ActorLoginCredentialFillerTest, DoesntFillIfReauthIsRequired) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .Times(0);
-  EXPECT_CALL(callback, Run(Eq(LoginStatusResult::kErrorFillingNotAllowed)));
+  EXPECT_CALL(mock_callback,
+              Run(Eq(LoginStatusResult::kErrorFillingNotAllowed)));
+  filler.AttemptLogin(&mock_password_manager_);
+}
+
+TEST_F(ActorLoginCredentialFillerTest, ReturnsErrorIfFormWentAwayDuringReauth) {
+  const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL());
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+
+  // Make sure a saved credential with a matching username exists.
+  SetSavedCredential(&form_fetcher_, origin.GetURL(), kTestUsername,
+                     kTestPassword);
+
+  // Simulate a signin form existing on the page.
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
+  const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
+
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillOnce(Return(base::span(form_managers)));
+
+  MockDeviceAuthenticator* weak_device_authenticator =
+      SetUpDeviceAuthenticatorToRequireReauth(mock_client_);
+
+  // Check that the authenticator is invoked before filling.
+  // Simulate failed reauth.
+  EXPECT_CALL(*weak_device_authenticator, AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(true));
+
+  // Pretend that the parsed form went away during the reauth.
+  EXPECT_CALL(
+      mock_form_cache_,
+      GetPasswordForm(&mock_driver_, parsed_form->form_data.renderer_id()))
+      .WillOnce(Return(nullptr));
+
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->username_element_renderer_id, Eq(kTestUsername),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .Times(0);
+
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .Times(0);
+  EXPECT_CALL(mock_callback,
+              Run(Eq(LoginStatusResult::kErrorNoFillableFields)));
   filler.AttemptLogin(&mock_password_manager_);
 }
 
