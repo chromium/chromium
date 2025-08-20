@@ -173,6 +173,12 @@ EncoderStatus VideoFrameGLSurfaceRenderer::Initialize() {
             "gl::GLContext::MakeCurrent() failed"};
   }
 
+  if (!gl_context_->GetCurrentGL()
+           ->Driver->ext.b_GL_EXT_texture_format_BGRA8888) {
+    return {EncoderStatus::Codes::kEncoderInitializationError,
+            "GL_EXT_texture_format_BGRA8888 is not supported"};
+  }
+
   InitializeGL();
 
   const GLenum error = glGetError();
