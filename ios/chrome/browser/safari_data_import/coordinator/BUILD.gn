@@ -20,6 +20,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/passwords/model:features",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/ui",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
