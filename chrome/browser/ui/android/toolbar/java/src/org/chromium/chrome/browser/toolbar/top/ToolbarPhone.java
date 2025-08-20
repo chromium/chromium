@@ -26,13 +26,11 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.FloatProperty;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -636,12 +634,8 @@ public class ToolbarPhone extends ToolbarLayout
     private boolean layoutLocationBarWithoutAnimationExpansion(int containerWidth) {
         // Note that Toolbar's direction depends on system layout direction while
         // LocationBar's direction depends on its text inside.
-        FrameLayout.LayoutParams locationBarLayoutParams =
-                getFrameLayoutParams(getLocationBar().getContainerView());
-
-        // Chrome prevents layout_gravity="left" from being defined in XML, but it simplifies
-        // the logic, so it is manually specified here.
-        locationBarLayoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+        MarginLayoutParams locationBarLayoutParams =
+                mLocationBar.getPhoneCoordinator().getMarginLayoutParams();
 
         int width = 0;
         int leftMargin = 0;

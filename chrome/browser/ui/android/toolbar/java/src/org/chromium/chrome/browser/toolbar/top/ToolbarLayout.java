@@ -414,15 +414,6 @@ public abstract class ToolbarLayout extends FrameLayout
         }
     }
 
-    /**
-     * Quick getter for LayoutParams for a View inside a FrameLayout.
-     * @param view {@link View} to fetch the layout params for.
-     * @return {@link LayoutParams} the given {@link View} is currently using.
-     */
-    FrameLayout.LayoutParams getFrameLayoutParams(View view) {
-        return ((FrameLayout.LayoutParams) view.getLayoutParams());
-    }
-
     /** This function handles native dependent initialization for this class. */
     protected void onNativeLibraryReady() {
         mNativeLibraryReady = true;
