@@ -122,7 +122,7 @@ BASE_FEATURE(UpdateStateBeforeUnbinding, FEATURE_DISABLED_BY_DEFAULT);
 
 // Use shared service connection to rebind a service binding to update the LRU
 // in the ProcessList of OomAdjuster.
-BASE_FEATURE(UseSharedRebindServiceConnection, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(UseSharedRebindServiceConnection, FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool IsReducePPMsEnabled() {

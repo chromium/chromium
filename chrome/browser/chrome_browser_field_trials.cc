@@ -120,10 +120,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
     feature_overrides.DisableFeature(features::kEyeDropper);
   }
 #elif BUILDFLAG(IS_ANDROID)  // BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/422902880): Remove when tablet rollout is complete.
-  feature_overrides.EnableFeature(
-      base::features::kUseSharedRebindServiceConnection);
-  feature_overrides.EnableFeature(features::kGroupRebindingForGroupImportance);
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
   // Nota bene: Anything here is expected to be short-lived, unless deemed too
   // risky to launch to non-desktop platforms. New features being added here

@@ -25696,25 +25696,6 @@
             ]
         }
     ],
-    "UseSharedRebindServiceConnectionWebview": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledDeferredBindings10",
-                    "params": {
-                        "max-deferred-bindings": "10"
-                    },
-                    "enable_features": [
-                        "GroupRebindingForGroupImportance",
-                        "UseSharedRebindServiceConnection"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseSmartRefForGPUFenceHandle": [
         {
             "platforms": [

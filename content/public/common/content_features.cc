@@ -1304,7 +1304,7 @@ BASE_FEATURE(GinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady,
 // done. If this is disabled, it rebinds the service binding on each
 // Context.updateServiceGroup() call.
 BASE_FEATURE(GroupRebindingForGroupImportance,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Reduce the priority of GPU process when in background so it is more likely
 // to be killed first if the OS needs more memory.
