@@ -21,6 +21,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/test:android_browsertests/",
         "name": "android_browsertests",
         "swarming": {
           "dimensions": {
@@ -63,6 +64,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -105,6 +107,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//content/test:content_browsertests/",
         "name": "content_browsertests",
         "swarming": {
           "dimensions": {
@@ -148,6 +151,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/perfetto:perfetto_unittests/",
         "name": "perfetto_unittests",
         "swarming": {
           "dimensions": {
@@ -190,6 +194,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//services:services_unittests/",
         "name": "services_unittests",
         "swarming": {
           "dimensions": {

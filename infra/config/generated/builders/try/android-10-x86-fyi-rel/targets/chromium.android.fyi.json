@@ -23,6 +23,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//content/test:content_browsertests/",
         "name": "content_browsertests",
         "resultdb": {
           "enable": true,

@@ -22,6 +22,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "name": "ios_chrome_integration_eg2tests_module iPhone 14 18.2",
         "resultdb": {
           "enable": true,
@@ -72,6 +73,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test:ios_chrome_unittests/",
         "name": "ios_chrome_unittests iPad (10th generation) 18.2",
         "resultdb": {
           "enable": true,
@@ -121,6 +123,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test:ios_chrome_unittests/",
         "name": "ios_chrome_unittests iPhone 14 18.2",
         "resultdb": {
           "enable": true,
@@ -171,6 +174,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "name": "ios_web_shell_eg2tests_module iPhone 14 18.2",
         "resultdb": {
           "enable": true,

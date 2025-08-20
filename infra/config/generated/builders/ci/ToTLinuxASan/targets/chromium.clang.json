@@ -11,6 +11,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -28,6 +29,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/highway:highway_tests/",
         "name": "highway_tests",
         "swarming": {
           "dimensions": {

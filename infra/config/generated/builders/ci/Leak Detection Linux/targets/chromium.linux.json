@@ -16,6 +16,7 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_test_suite/",
         "name": "memory.leak_detection",
         "swarming": {
           "dimensions": {

@@ -18,6 +18,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_32_cts_tests/",
         "name": "webview_trichrome_64_32_cts_tests",
         "resultdb": {
           "enable": true,
@@ -73,6 +74,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests/",
         "name": "webview_trichrome_64_cts_tests",
         "resultdb": {
           "enable": true,
@@ -129,6 +131,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests/",
         "name": "webview_trichrome_64_cts_tests_no_field_trial",
         "resultdb": {
           "enable": true,

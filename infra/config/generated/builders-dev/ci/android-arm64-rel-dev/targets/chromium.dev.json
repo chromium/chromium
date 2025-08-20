@@ -15,6 +15,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_smoke_test/",
         "name": "chrome_public_smoke_test",
         "resultdb": {
           "enable": true,

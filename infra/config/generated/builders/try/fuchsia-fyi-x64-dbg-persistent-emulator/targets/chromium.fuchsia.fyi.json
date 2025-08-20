@@ -11,6 +11,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/aura:aura_unittests/",
         "name": "aura_unittests",
         "resultdb": {
           "enable": true,
@@ -40,6 +41,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/blink/common:blink_common_unittests/",
         "name": "blink_common_unittests",
         "resultdb": {
           "enable": true,
@@ -69,6 +71,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//crypto:crypto_unittests/",
         "name": "crypto_unittests",
         "resultdb": {
           "enable": true,
@@ -98,6 +101,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/services/filesystem:filesystem_service_unittests/",
         "name": "filesystem_service_unittests",
         "resultdb": {
           "enable": true,
@@ -127,6 +131,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//fuchsia_web/webengine:web_engine_integration_tests/",
         "name": "web_engine_integration_tests",
         "resultdb": {
           "enable": true,
@@ -156,6 +161,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//fuchsia_web/webengine:web_engine_unittests/",
         "name": "web_engine_unittests",
         "resultdb": {
           "enable": true,

@@ -17,6 +17,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:trichrome_chrome_bundle_smoke_test/",
         "name": "trichrome_chrome_bundle_smoke_test",
         "resultdb": {
           "enable": true,

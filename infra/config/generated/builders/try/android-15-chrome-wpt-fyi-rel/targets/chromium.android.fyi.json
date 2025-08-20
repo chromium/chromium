@@ -14,6 +14,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//chrome/android:chrome_public_wpt/",
         "name": "chrome_public_wpt",
         "resultdb": {
           "enable": true,

@@ -8,6 +8,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests/",
         "name": "bf_cache_browser_tests",
         "swarming": {
           "dimensions": {
@@ -26,6 +27,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//content/test:content_browsertests/",
         "name": "bf_cache_content_browsertests",
         "swarming": {
           "dimensions": {
@@ -50,6 +52,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:blink_web_tests/",
         "name": "blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -78,6 +81,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:blink_wpt_tests/",
         "name": "blink_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -104,6 +108,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:chrome_wpt_tests/",
         "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -135,6 +140,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:headless_shell_wpt/",
         "name": "headless_shell_wpt_tests",
         "resultdb": {
           "enable": true,

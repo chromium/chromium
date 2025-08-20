@@ -12,6 +12,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:blink_web_tests/",
         "name": "blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -39,6 +40,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:blink_wpt_tests/",
         "name": "blink_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -65,6 +67,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:chrome_wpt_tests/",
         "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -96,6 +99,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:headless_shell_wpt/",
         "name": "headless_shell_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -140,6 +144,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -156,6 +161,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//sandbox/win:sbox_integration_tests/",
         "name": "sbox_integration_tests",
         "swarming": {
           "dimensions": {
@@ -173,6 +179,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//sandbox/win:sbox_unittests/",
         "name": "sbox_unittests",
         "swarming": {
           "dimensions": {
@@ -189,6 +196,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//sandbox/win:sbox_validation_tests/",
         "name": "sbox_validation_tests",
         "swarming": {
           "dimensions": {

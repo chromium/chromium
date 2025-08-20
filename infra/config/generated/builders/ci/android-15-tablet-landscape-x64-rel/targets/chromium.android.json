@@ -19,6 +19,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_test_apk/",
         "name": "chrome_public_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -72,6 +73,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_unit_test_apk/",
         "name": "chrome_public_unit_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",

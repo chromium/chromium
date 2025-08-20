@@ -5,6 +5,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -21,6 +22,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/highway:highway_tests/",
         "name": "highway_tests",
         "swarming": {
           "dimensions": {
@@ -39,6 +41,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/angle/src/tests:angle_unittests/",
         "name": "angle_unittests",
         "swarming": {
           "dimensions": {
@@ -62,6 +65,7 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//tools/fuchsia/size_tests:fuchsia_sizes/",
         "name": "fuchsia_sizes",
         "swarming": {
           "dimensions": {

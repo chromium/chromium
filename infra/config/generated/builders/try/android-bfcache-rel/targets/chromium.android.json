@@ -17,6 +17,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/test:android_browsertests/",
         "name": "bf_cache_android_browsertests",
         "resultdb": {
           "enable": true,
@@ -64,6 +65,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//content/test:content_browsertests/",
         "name": "bf_cache_content_browsertests",
         "resultdb": {
           "enable": true,
@@ -113,6 +115,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_cts_tests/",
         "name": "webview_cts_tests_bfcache_mutations",
         "resultdb": {
           "enable": true,
@@ -168,6 +171,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
         "name": "webview_instrumentation_test_apk_bfcache_mutations",
         "resultdb": {
           "enable": true,

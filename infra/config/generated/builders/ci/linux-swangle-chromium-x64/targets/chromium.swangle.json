@@ -18,6 +18,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
         "name": "webgl_conformance_swangle_passthrough_tests",
         "resultdb": {
           "enable": true,

@@ -5,6 +5,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/enterprise_companion:enterprise_companion_integration_tests/",
         "name": "enterprise_companion_integration_tests",
         "swarming": {
           "dimensions": {
@@ -21,6 +22,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/enterprise_companion:enterprise_companion_tests/",
         "name": "enterprise_companion_tests",
         "swarming": {
           "dimensions": {

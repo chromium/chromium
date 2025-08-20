@@ -8,6 +8,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
         "name": "absl_hardening_tests",
         "swarming": {
           "dimensions": {
@@ -26,6 +27,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/accessibility:accessibility_unittests/",
         "name": "accessibility_unittests",
         "swarming": {
           "dimensions": {
@@ -44,6 +46,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//extensions/shell:app_shell_unittests/",
         "name": "app_shell_unittests",
         "swarming": {
           "dimensions": {
@@ -62,6 +65,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -80,6 +84,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/blink/renderer/platform/heap:blink_heap_unittests/",
         "name": "blink_heap_unittests",
         "swarming": {
           "dimensions": {
@@ -99,6 +104,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/blink/renderer/platform:blink_platform_unittests/",
         "name": "blink_platform_unittests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -122,6 +128,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/blink/renderer/controller:blink_unittests/",
         "name": "blink_unittests",
         "swarming": {
           "dimensions": {
@@ -140,6 +147,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//cc:cc_unittests/",
         "name": "cc_unittests",
         "swarming": {
           "dimensions": {
@@ -158,6 +166,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components:components_unittests/",
         "name": "components_unittests",
         "swarming": {
           "dimensions": {
@@ -176,6 +185,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//content/test:content_unittests/",
         "name": "content_unittests",
         "swarming": {
           "dimensions": {
@@ -194,6 +204,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/crashpad/crashpad:crashpad_tests/",
         "name": "crashpad_tests",
         "swarming": {
           "dimensions": {
@@ -212,6 +223,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/cronet:cronet_unittests/",
         "name": "cronet_unittests",
         "swarming": {
           "dimensions": {
@@ -230,6 +242,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//device:device_unittests/",
         "name": "device_unittests",
         "swarming": {
           "dimensions": {
@@ -248,6 +261,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//net:net_unittests/",
         "name": "net_unittests",
         "swarming": {
           "dimensions": {

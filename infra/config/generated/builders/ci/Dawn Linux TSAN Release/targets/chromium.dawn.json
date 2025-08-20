@@ -14,6 +14,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "dimensions": {
@@ -41,6 +42,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "dimensions": {
@@ -67,6 +69,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
         "name": "dawn_end2end_tests",
         "swarming": {
           "dimensions": {
@@ -94,6 +97,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
         "name": "dawn_end2end_wire_tests",
         "swarming": {
           "dimensions": {

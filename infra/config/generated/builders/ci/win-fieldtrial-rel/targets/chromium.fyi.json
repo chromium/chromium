@@ -9,6 +9,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests/",
         "name": "browser_tests_no_field_trial",
         "swarming": {
           "dimensions": {
@@ -29,6 +30,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components:components_browsertests/",
         "name": "components_browsertests_no_field_trial",
         "swarming": {
           "dimensions": {
@@ -48,6 +50,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:interactive_ui_tests/",
         "name": "interactive_ui_tests_no_field_trial",
         "swarming": {
           "dimensions": {
@@ -67,6 +70,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:sync_integration_tests/",
         "name": "sync_integration_tests_no_field_trial",
         "swarming": {
           "dimensions": {

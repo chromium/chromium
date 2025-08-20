@@ -8,6 +8,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests/",
         "name": "browser_tests",
         "swarming": {
           "dimensions": {
@@ -23,6 +24,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components:components_unittests/",
         "name": "components_unittests",
         "swarming": {
           "dimensions": {
@@ -38,6 +40,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:unit_tests/",
         "name": "unit_tests",
         "swarming": {
           "dimensions": {

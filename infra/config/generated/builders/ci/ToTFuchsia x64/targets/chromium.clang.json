@@ -8,6 +8,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -23,6 +24,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/highway:highway_tests/",
         "name": "highway_tests",
         "swarming": {
           "dimensions": {
@@ -40,6 +42,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/angle/src/tests:angle_unittests/",
         "name": "angle_unittests",
         "swarming": {
           "dimensions": {
@@ -63,6 +66,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:blink_web_tests/",
         "name": "blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -91,6 +95,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:blink_wpt_tests/",
         "name": "blink_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -111,6 +116,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//build/fuchsia/test:component_storage_test/",
         "name": "component_storage_test",
         "swarming": {
           "dimensions": {

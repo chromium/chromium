@@ -15,6 +15,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//gpu:gpu_unittests/",
         "name": "gpu_memory_buffer_impl_tests",
         "swarming": {
           "containment_type": "AUTO",
@@ -52,6 +53,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
         "name": "noop_sleep_tests",
         "swarming": {
           "containment_type": "AUTO",

@@ -8,6 +8,7 @@
         "autotest_name": "chromium",
         "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
@@ -39,6 +40,7 @@
           "informational",
           "dep:no_chrome_dcheck"
         ],
+        "module_name": "//chromeos:chrome_all_tast_tests/",
         "name": "chrome_all_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
@@ -74,6 +76,7 @@
           "dep:no_chrome_dcheck"
         ],
         "experiment_percentage": 100,
+        "module_name": "//chromeos:chrome_criticalstaging_tast_tests/",
         "name": "chrome_criticalstaging_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
@@ -99,6 +102,7 @@
           "chromeos/tast_control_disabled_tests_public_builders.txt"
         ],
         "experiment_percentage": 100,
+        "module_name": "//chromeos:chrome_disabled_tast_tests/",
         "name": "chrome_disabled_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",

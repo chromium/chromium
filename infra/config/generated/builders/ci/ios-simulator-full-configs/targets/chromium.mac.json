@@ -20,6 +20,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
         "name": "absl_hardening_tests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -74,6 +75,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
         "name": "absl_hardening_tests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -128,6 +130,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -182,6 +185,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -236,6 +240,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -290,6 +295,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -344,6 +350,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/boringssl:boringssl_crypto_tests/",
         "name": "boringssl_crypto_tests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -398,6 +405,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/boringssl:boringssl_crypto_tests/",
         "name": "boringssl_crypto_tests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -452,6 +460,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/boringssl:boringssl_ssl_tests/",
         "name": "boringssl_ssl_tests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -506,6 +515,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/boringssl:boringssl_ssl_tests/",
         "name": "boringssl_ssl_tests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -560,6 +570,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components:components_unittests/",
         "name": "components_unittests iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -614,6 +625,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components:components_unittests/",
         "name": "components_unittests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -668,6 +680,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components:components_unittests/",
         "name": "components_unittests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -722,6 +735,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components:components_unittests/",
         "name": "components_unittests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -776,6 +790,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//crypto:crypto_unittests/",
         "name": "crypto_unittests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -830,6 +845,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//crypto:crypto_unittests/",
         "name": "crypto_unittests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -884,6 +900,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ui/gfx:gfx_unittests/",
         "name": "gfx_unittests iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -938,6 +955,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ui/gfx:gfx_unittests/",
         "name": "gfx_unittests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -992,6 +1010,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ui/gfx:gfx_unittests/",
         "name": "gfx_unittests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -1046,6 +1065,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ui/gfx:gfx_unittests/",
         "name": "gfx_unittests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -1100,6 +1120,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//google_apis:google_apis_unittests/",
         "name": "google_apis_unittests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -1154,6 +1175,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//google_apis:google_apis_unittests/",
         "name": "google_apis_unittests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -1208,6 +1230,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/gwp_asan:gwp_asan_unittests/",
         "name": "gwp_asan_unittests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -1262,6 +1285,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/gwp_asan:gwp_asan_unittests/",
         "name": "gwp_asan_unittests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -1317,6 +1341,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "name": "ios_chrome_bookmarks_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -1368,6 +1393,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "name": "ios_chrome_bookmarks_eg2tests_module iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -1419,6 +1445,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "name": "ios_chrome_bookmarks_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -1470,6 +1497,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "name": "ios_chrome_bookmarks_eg2tests_module iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -1523,6 +1551,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "name": "ios_chrome_integration_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -1576,6 +1605,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "name": "ios_chrome_integration_eg2tests_module iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -1629,6 +1659,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "name": "ios_chrome_integration_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -1682,6 +1713,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "name": "ios_chrome_integration_eg2tests_module iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -1735,6 +1767,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "name": "ios_chrome_settings_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -1788,6 +1821,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "name": "ios_chrome_settings_eg2tests_module iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -1841,6 +1875,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "name": "ios_chrome_settings_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -1894,6 +1929,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "name": "ios_chrome_settings_eg2tests_module iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -1945,6 +1981,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "name": "ios_chrome_signin_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -1996,6 +2033,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "name": "ios_chrome_signin_eg2tests_module iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -2047,6 +2085,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "name": "ios_chrome_signin_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -2098,6 +2137,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "name": "ios_chrome_signin_eg2tests_module iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -2149,6 +2189,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "name": "ios_chrome_smoke_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -2199,6 +2240,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "name": "ios_chrome_smoke_eg2tests_module iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -2249,6 +2291,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "name": "ios_chrome_smoke_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -2299,6 +2342,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "name": "ios_chrome_smoke_eg2tests_module iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -2351,6 +2395,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "name": "ios_chrome_ui_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -2404,6 +2449,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "name": "ios_chrome_ui_eg2tests_module iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -2457,6 +2503,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "name": "ios_chrome_ui_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -2510,6 +2557,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "name": "ios_chrome_ui_eg2tests_module iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -2560,6 +2608,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test:ios_chrome_unittests/",
         "name": "ios_chrome_unittests iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -2614,6 +2663,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test:ios_chrome_unittests/",
         "name": "ios_chrome_unittests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -2668,6 +2718,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test:ios_chrome_unittests/",
         "name": "ios_chrome_unittests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -2722,6 +2773,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test:ios_chrome_unittests/",
         "name": "ios_chrome_unittests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -2777,6 +2829,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "name": "ios_chrome_web_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -2828,6 +2881,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "name": "ios_chrome_web_eg2tests_module iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -2879,6 +2933,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "name": "ios_chrome_web_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -2930,6 +2985,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "name": "ios_chrome_web_eg2tests_module iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -2980,6 +3036,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/components:ios_components_unittests/",
         "name": "ios_components_unittests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -3034,6 +3091,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/components:ios_components_unittests/",
         "name": "ios_components_unittests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -3088,6 +3146,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/net:ios_net_unittests/",
         "name": "ios_net_unittests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -3143,6 +3202,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/net:ios_net_unittests/",
         "name": "ios_net_unittests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -3198,6 +3258,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/testing:ios_testing_unittests/",
         "name": "ios_testing_unittests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -3252,6 +3313,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/testing:ios_testing_unittests/",
         "name": "ios_testing_unittests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -3306,6 +3368,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web:ios_web_inttests/",
         "name": "ios_web_inttests iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -3360,6 +3423,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web:ios_web_inttests/",
         "name": "ios_web_inttests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -3414,6 +3478,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web:ios_web_inttests/",
         "name": "ios_web_inttests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -3468,6 +3533,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web:ios_web_inttests/",
         "name": "ios_web_inttests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -3523,6 +3589,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "name": "ios_web_shell_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -3573,6 +3640,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "name": "ios_web_shell_eg2tests_module iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -3623,6 +3691,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "name": "ios_web_shell_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -3673,6 +3742,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "name": "ios_web_shell_eg2tests_module iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -3722,6 +3792,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web:ios_web_unittests/",
         "name": "ios_web_unittests iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -3776,6 +3847,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web:ios_web_unittests/",
         "name": "ios_web_unittests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -3830,6 +3902,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web:ios_web_unittests/",
         "name": "ios_web_unittests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -3884,6 +3957,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web:ios_web_unittests/",
         "name": "ios_web_unittests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -3938,6 +4012,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web_view:ios_web_view_inttests/",
         "name": "ios_web_view_inttests iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -3992,6 +4067,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web_view:ios_web_view_inttests/",
         "name": "ios_web_view_inttests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -4046,6 +4122,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web_view:ios_web_view_inttests/",
         "name": "ios_web_view_inttests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -4100,6 +4177,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web_view:ios_web_view_inttests/",
         "name": "ios_web_view_inttests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -4154,6 +4232,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web_view:ios_web_view_unittests/",
         "name": "ios_web_view_unittests iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -4208,6 +4287,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web_view:ios_web_view_unittests/",
         "name": "ios_web_view_unittests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -4262,6 +4342,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web_view:ios_web_view_unittests/",
         "name": "ios_web_view_unittests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -4316,6 +4397,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web_view:ios_web_view_unittests/",
         "name": "ios_web_view_unittests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -4370,6 +4452,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//net:net_unittests/",
         "name": "net_unittests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -4424,6 +4507,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//net:net_unittests/",
         "name": "net_unittests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -4478,6 +4562,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//services:services_unittests/",
         "name": "services_unittests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -4532,6 +4617,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//services:services_unittests/",
         "name": "services_unittests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -4586,6 +4672,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//skia:skia_unittests/",
         "name": "skia_unittests iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -4640,6 +4727,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//skia:skia_unittests/",
         "name": "skia_unittests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -4694,6 +4782,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//skia:skia_unittests/",
         "name": "skia_unittests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -4748,6 +4837,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//skia:skia_unittests/",
         "name": "skia_unittests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -4802,6 +4892,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//sql:sql_unittests/",
         "name": "sql_unittests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -4856,6 +4947,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//sql:sql_unittests/",
         "name": "sql_unittests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,
@@ -4910,6 +5002,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ui/base:ui_base_unittests/",
         "name": "ui_base_unittests iPad Pro (12.9-inch) (6th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -4964,6 +5057,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ui/base:ui_base_unittests/",
         "name": "ui_base_unittests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
           "enable": true,
@@ -5018,6 +5112,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ui/base:ui_base_unittests/",
         "name": "ui_base_unittests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -5072,6 +5167,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ui/base:ui_base_unittests/",
         "name": "ui_base_unittests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -5126,6 +5222,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//url:url_unittests/",
         "name": "url_unittests iPhone 14 Plus 17.5",
         "resultdb": {
           "enable": true,
@@ -5180,6 +5277,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//url:url_unittests/",
         "name": "url_unittests iPhone 14 Plus 18.2",
         "resultdb": {
           "enable": true,

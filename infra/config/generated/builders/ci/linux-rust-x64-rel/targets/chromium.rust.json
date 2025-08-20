@@ -11,6 +11,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -25,6 +26,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//mojo/public/rust:mojo_rust_integration_unittests/",
         "name": "mojo_rust_integration_unittests",
         "swarming": {
           "dimensions": {
@@ -39,6 +41,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//mojo/public/rust:mojo_rust_unittests/",
         "name": "mojo_rust_unittests",
         "swarming": {
           "dimensions": {
@@ -53,6 +56,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//testing/rust_gtest_interop:rust_gtest_interop_unittests/",
         "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
@@ -67,6 +71,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests/",
         "name": "test_cpp_including_rust_unittests",
         "swarming": {
           "dimensions": {
@@ -81,6 +86,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient/",
         "name": "test_serde_json_lenient",
         "swarming": {
           "dimensions": {
@@ -97,6 +103,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//build/rust/tests:build_rust_tests/",
         "name": "build_rust_tests",
         "swarming": {
           "dimensions": {

@@ -18,6 +18,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_test_apk/",
         "name": "chrome_public_test_apk_tablet",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -74,6 +75,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
         "name": "absl_hardening_tests",
         "resultdb": {
           "enable": true,
@@ -121,6 +123,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/test:android_browsertests/",
         "name": "android_browsertests",
         "resultdb": {
           "enable": true,
@@ -170,6 +173,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/test:android_browsertests/",
         "name": "android_browsertests_no_fieldtrial",
         "resultdb": {
           "enable": true,
@@ -218,6 +222,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/test:android_sync_integration_tests/",
         "name": "android_sync_integration_tests",
         "resultdb": {
           "enable": true,
@@ -265,6 +270,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:android_webview_unittests/",
         "name": "android_webview_unittests",
         "resultdb": {
           "enable": true,
@@ -304,6 +310,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/angle/src/tests:angle_unittests/",
         "name": "angle_unittests",
         "resultdb": {
           "enable": true,
@@ -352,6 +359,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests",
         "resultdb": {
           "enable": true,
@@ -398,6 +406,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/blink/common:blink_common_unittests/",
         "name": "blink_common_unittests",
         "resultdb": {
           "enable": true,
@@ -444,6 +453,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/blink/renderer/platform/heap:blink_heap_unittests/",
         "name": "blink_heap_unittests",
         "resultdb": {
           "enable": true,
@@ -491,6 +501,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/blink/renderer/platform:blink_platform_unittests/",
         "name": "blink_platform_unittests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -542,6 +553,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/blink/renderer/controller:blink_unittests/",
         "name": "blink_unittests",
         "resultdb": {
           "enable": true,
@@ -589,6 +601,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/boringssl:boringssl_crypto_tests/",
         "name": "boringssl_crypto_tests",
         "resultdb": {
           "enable": true,
@@ -635,6 +648,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/boringssl:boringssl_ssl_tests/",
         "name": "boringssl_ssl_tests",
         "resultdb": {
           "enable": true,
@@ -682,6 +696,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//media/capture:capture_unittests/",
         "name": "capture_unittests",
         "resultdb": {
           "enable": true,
@@ -728,6 +743,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//media/cast:cast_unittests/",
         "name": "cast_unittests",
         "resultdb": {
           "enable": true,
@@ -774,6 +790,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//cc:cc_unittests/",
         "name": "cc_unittests",
         "resultdb": {
           "enable": true,
@@ -822,6 +839,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/test/android:chrome_public_apk_baseline_profile_generator/",
         "name": "chrome_public_apk_profile_tests",
         "resultdb": {
           "enable": true,
@@ -868,6 +886,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_smoke_test/",
         "name": "chrome_public_smoke_test",
         "resultdb": {
           "enable": true,
@@ -917,6 +936,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_test_apk/",
         "name": "chrome_public_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -970,6 +990,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_unit_test_apk/",
         "name": "chrome_public_unit_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -1022,6 +1043,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//components:components_browsertests/",
         "name": "components_browsertests",
         "resultdb": {
           "enable": true,
@@ -1069,6 +1091,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//components:components_unittests/",
         "name": "components_unittests",
         "resultdb": {
           "enable": true,
@@ -1118,6 +1141,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//content/test:content_browsertests/",
         "name": "content_browsertests",
         "resultdb": {
           "enable": true,
@@ -1167,6 +1191,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//content/shell/android:content_shell_test_apk/",
         "name": "content_shell_test_apk",
         "resultdb": {
           "enable": true,
@@ -1215,6 +1240,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//content/test:content_unittests/",
         "name": "content_unittests",
         "resultdb": {
           "enable": true,
@@ -1263,6 +1289,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/crashpad/crashpad:crashpad_tests/",
         "name": "crashpad_tests",
         "resultdb": {
           "enable": true,
@@ -1309,6 +1336,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//crypto:crypto_unittests/",
         "name": "crypto_unittests",
         "resultdb": {
           "enable": true,
@@ -1355,6 +1383,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//device:device_unittests/",
         "name": "device_unittests",
         "resultdb": {
           "enable": true,
@@ -1401,6 +1430,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//ui/display:display_unittests/",
         "name": "display_unittests",
         "resultdb": {
           "enable": true,
@@ -1448,6 +1478,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/leveldatabase:env_chromium_unittests/",
         "name": "env_chromium_unittests",
         "resultdb": {
           "enable": true,
@@ -1494,6 +1525,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//ui/events:events_unittests/",
         "name": "events_unittests",
         "resultdb": {
           "enable": true,
@@ -1540,6 +1572,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//testing/libfuzzer/tests:fuzzing_unittests/",
         "name": "fuzzing_unittests",
         "resultdb": {
           "enable": true,
@@ -1586,6 +1619,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//google_apis/gcm:gcm_unit_tests/",
         "name": "gcm_unit_tests",
         "resultdb": {
           "enable": true,
@@ -1632,6 +1666,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//ui/gfx:gfx_unittests/",
         "name": "gfx_unittests",
         "resultdb": {
           "enable": true,
@@ -1678,6 +1713,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//gin:gin_unittests/",
         "name": "gin_unittests",
         "resultdb": {
           "enable": true,
@@ -1726,6 +1762,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//gpu:gl_tests/",
         "name": "gl_tests_validating",
         "resultdb": {
           "enable": true,
@@ -1772,6 +1809,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//ui/gl:gl_unittests/",
         "name": "gl_unittests",
         "resultdb": {
           "enable": true,
@@ -1818,6 +1856,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//google_apis:google_apis_unittests/",
         "name": "google_apis_unittests",
         "resultdb": {
           "enable": true,
@@ -1864,6 +1903,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//gpu:gpu_unittests/",
         "name": "gpu_unittests",
         "resultdb": {
           "enable": true,
@@ -1911,6 +1951,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//components/gwp_asan:gwp_asan_unittests/",
         "name": "gwp_asan_unittests",
         "resultdb": {
           "enable": true,
@@ -1957,6 +1998,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//ipc:ipc_tests/",
         "name": "ipc_tests",
         "resultdb": {
           "enable": true,
@@ -2003,6 +2045,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/jni_zero/sample:jni_zero_sample_apk_test/",
         "name": "jni_zero_sample_apk_test",
         "resultdb": {
           "enable": true,
@@ -2049,6 +2092,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//ui/latency:latency_unittests/",
         "name": "latency_unittests",
         "resultdb": {
           "enable": true,
@@ -2097,6 +2141,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//cc:cc_unittests/",
         "name": "layer_list_mode_cc_unittests",
         "resultdb": {
           "enable": true,
@@ -2144,6 +2189,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/leveldatabase:leveldb_unittests/",
         "name": "leveldb_unittests",
         "resultdb": {
           "enable": true,
@@ -2190,6 +2236,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/libjingle_xmpp:libjingle_xmpp_unittests/",
         "name": "libjingle_xmpp_unittests",
         "resultdb": {
           "enable": true,
@@ -2236,6 +2283,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/liburlpattern:liburlpattern_unittests/",
         "name": "liburlpattern_unittests",
         "resultdb": {
           "enable": true,
@@ -2283,6 +2331,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//media:media_unittests/",
         "name": "media_unittests",
         "resultdb": {
           "enable": true,
@@ -2329,6 +2378,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//media/midi:midi_unittests/",
         "name": "midi_unittests",
         "resultdb": {
           "enable": true,
@@ -2375,6 +2425,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//components/minidump_uploader:minidump_uploader_test/",
         "name": "minidump_uploader_test",
         "resultdb": {
           "enable": true,
@@ -2421,6 +2472,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//mojo/public/java/system:mojo_test_apk/",
         "name": "mojo_test_apk",
         "resultdb": {
           "enable": true,
@@ -2467,6 +2519,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//mojo:mojo_unittests/",
         "name": "mojo_unittests",
         "resultdb": {
           "enable": true,
@@ -2513,6 +2566,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//net:net_unittests/",
         "name": "net_unittests",
         "resultdb": {
           "enable": true,
@@ -2561,6 +2615,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/perfetto:perfetto_unittests/",
         "name": "perfetto_unittests",
         "resultdb": {
           "enable": true,
@@ -2607,6 +2662,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//sandbox/linux:sandbox_linux_unittests/",
         "name": "sandbox_linux_unittests",
         "resultdb": {
           "enable": true,
@@ -2653,6 +2709,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//services:services_unittests/",
         "name": "services_unittests",
         "resultdb": {
           "enable": true,
@@ -2700,6 +2757,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//ui/shell_dialogs:shell_dialogs_unittests/",
         "name": "shell_dialogs_unittests",
         "resultdb": {
           "enable": true,
@@ -2746,6 +2804,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//skia:skia_unittests/",
         "name": "skia_unittests",
         "resultdb": {
           "enable": true,
@@ -2792,6 +2851,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//sql:sql_unittests/",
         "name": "sql_unittests",
         "resultdb": {
           "enable": true,
@@ -2838,6 +2898,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//storage:storage_unittests/",
         "name": "storage_unittests",
         "resultdb": {
           "enable": true,
@@ -2884,6 +2945,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk/",
         "name": "system_webview_shell_layout_test_apk",
         "resultdb": {
           "enable": true,
@@ -2930,6 +2992,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:trichrome_chrome_bundle_smoke_test/",
         "name": "trichrome_chrome_bundle_smoke_test",
         "resultdb": {
           "enable": true,
@@ -2976,6 +3039,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//ui/android:ui_android_unittests/",
         "name": "ui_android_unittests",
         "resultdb": {
           "enable": true,
@@ -3022,6 +3086,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//ui/base:ui_base_unittests/",
         "name": "ui_base_unittests",
         "resultdb": {
           "enable": true,
@@ -3068,6 +3133,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//ui/touch_selection:ui_touch_selection_unittests/",
         "name": "ui_touch_selection_unittests",
         "resultdb": {
           "enable": true,
@@ -3115,6 +3181,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/test:unit_tests/",
         "name": "unit_tests",
         "resultdb": {
           "enable": true,
@@ -3162,6 +3229,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//url:url_unittests/",
         "name": "url_unittests",
         "resultdb": {
           "enable": true,
@@ -3208,6 +3276,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//media/gpu/test:video_encode_accelerator_tests/",
         "name": "video_encode_accelerator_tests",
         "resultdb": {
           "enable": true,
@@ -3254,6 +3323,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//components/viz:viz_unittests/",
         "name": "viz_unittests",
         "resultdb": {
           "enable": true,
@@ -3302,6 +3372,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
         "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
@@ -3350,6 +3421,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests/",
         "name": "webview_trichrome_64_cts_tests full_mode",
         "resultdb": {
           "enable": true,
@@ -3409,6 +3481,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests/",
         "name": "webview_trichrome_64_cts_tests instant_mode",
         "resultdb": {
           "enable": true,
@@ -3467,6 +3540,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests/",
         "name": "webview_trichrome_64_cts_tests_no_field_trial",
         "resultdb": {
           "enable": true,
@@ -3521,6 +3595,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/",
         "name": "webview_ui_test_app_test_apk",
         "resultdb": {
           "enable": true,
@@ -3569,6 +3644,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/",
         "name": "webview_ui_test_app_test_apk_no_field_trial",
         "resultdb": {
           "enable": true,
@@ -3615,6 +3691,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/blink/renderer/platform/wtf:wtf_unittests/",
         "name": "wtf_unittests",
         "resultdb": {
           "enable": true,
@@ -3661,6 +3738,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/zlib:zlib_unittests/",
         "name": "zlib_unittests",
         "resultdb": {
           "enable": true,
@@ -3711,6 +3789,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//chrome/android:chrome_public_wpt/",
         "name": "android_chrome_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -3760,6 +3839,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//chrome/android:chrome_public_wpt/",
         "name": "android_webdriver_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -3807,6 +3887,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//android_webview/test:trichrome_webview_wpt_64/",
         "name": "android_webview_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -3847,6 +3928,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//build/private_code_test:private_code_failure_test/",
         "name": "private_code_failure_test",
         "resultdb": {
           "enable": true,
@@ -3897,6 +3979,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_hostside_tests/",
         "name": "webview_trichrome_64_cts_hostside_tests full_mode",
         "resultdb": {
           "enable": true,
@@ -3954,6 +4037,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_hostside_tests/",
         "name": "webview_trichrome_64_cts_hostside_tests instant_mode",
         "resultdb": {
           "enable": true,

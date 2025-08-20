@@ -17,6 +17,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/blink/renderer/platform/heap:blink_heap_unittests/",
         "name": "blink_heap_unittests",
         "swarming": {
           "dimensions": {
@@ -59,6 +60,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/blink/renderer/controller:blink_unittests/",
         "name": "blink_unittests",
         "swarming": {
           "dimensions": {

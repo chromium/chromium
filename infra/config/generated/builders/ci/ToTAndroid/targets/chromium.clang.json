@@ -19,6 +19,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//base:base_unittests/",
         "name": "base_unittests",
         "resultdb": {
           "enable": true,
@@ -52,6 +53,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/highway:highway_tests/",
         "name": "highway_tests",
         "resultdb": {
           "enable": true,

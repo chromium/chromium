@@ -5,6 +5,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/updater:updater_tests/",
         "name": "updater_tests",
         "swarming": {
           "dimensions": {

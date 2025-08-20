@@ -22,6 +22,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "name": "ios_chrome_integration_eg2tests_module iPad Air (5th generation) 26.0",
         "resultdb": {
           "enable": true,
@@ -74,6 +75,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "name": "ios_chrome_integration_eg2tests_module iPhone 14 26.0",
         "resultdb": {
           "enable": true,
@@ -126,6 +128,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "name": "ios_chrome_ui_eg2tests_module iPad Air (5th generation) 26.0",
         "resultdb": {
           "enable": true,
@@ -178,6 +181,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "name": "ios_chrome_ui_eg2tests_module iPhone 14 26.0",
         "resultdb": {
           "enable": true,
@@ -227,6 +231,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web:ios_web_inttests/",
         "name": "ios_web_inttests iPad Air (5th generation) 26.0",
         "resultdb": {
           "enable": true,
@@ -275,6 +280,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web:ios_web_inttests/",
         "name": "ios_web_inttests iPhone 14 26.0",
         "resultdb": {
           "enable": true,
@@ -323,6 +329,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web:ios_web_inttests/",
         "name": "ios_web_inttests iPhone SE (3rd generation) 26.0",
         "resultdb": {
           "enable": true,
