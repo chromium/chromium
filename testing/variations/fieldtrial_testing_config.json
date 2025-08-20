@@ -15614,21 +15614,6 @@
             ]
         }
     ],
-    "MvcUpdateViewWhenModelChanged": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MvcUpdateViewWhenModelChanged"
-                    ]
-                }
-            ]
-        }
-    ],
     "NavigationThrottleRegistryAttributeCache": [
         {
             "platforms": [
@@ -20476,21 +20461,6 @@
             ]
         }
     ],
-    "ReloadTabUiResourcesIfChanged": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReloadTabUiResourcesIfChanged"
-                    ]
-                }
-            ]
-        }
-    ],
     "RemotePageMetadataAndroid": [
         {
             "platforms": [
@@ -24650,6 +24620,22 @@
                     },
                     "enable_features": [
                         "IPH_TabSearch"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TabletTabStripOptimizations": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MvcUpdateViewWhenModelChanged",
+                        "ReloadTabUiResourcesIfChanged"
                     ]
                 }
             ]

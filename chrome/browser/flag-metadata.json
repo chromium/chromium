@@ -6852,7 +6852,7 @@
   {
     "name": "mvc-update-view-when-model-changed",
     "owners": [ "acondor@chromium.org" ],
-    "expiry_milestone": 141
+    "expiry_milestone": 142
   },
   {
     "name": "nav-bar-color-animation",
@@ -8637,7 +8637,7 @@
   {
     "name": "reload-tab-ui-resources-if-changed",
     "owners": [ "acondor@chromium.org" ],
-    "expiry_milestone": 141
+    "expiry_milestone": 142
   },
   {
     "name": "remote-playback-backend",
