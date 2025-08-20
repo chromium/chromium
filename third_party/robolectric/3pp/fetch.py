@@ -14,6 +14,8 @@ _ROBO_URL_FILES = {
         'https://repo1.maven.org/maven2/org/robolectric/android-all/15-robolectric-12714715/android-all-15-robolectric-12714715.jar',
     'android-all-15-robolectric-12650502.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all/15-robolectric-12650502/android-all-15-robolectric-12650502.jar',
+    'android-all-instrumented-16-robolectric-13921718-i7.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/16-robolectric-13921718-i7/android-all-instrumented-16-robolectric-13921718-i7.jar',
     'android-all-instrumented-15-robolectric-12714715-i7.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/15-robolectric-12714715-i7/android-all-instrumented-15-robolectric-12714715-i7.jar',
     'android-all-instrumented-15-robolectric-12650502-i7.jar':
