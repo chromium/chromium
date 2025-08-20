@@ -56,7 +56,7 @@ size_t MessageEvent::SizeOfExternalMemoryInBytes() {
       return 0;
     case kDataTypeSerializedScriptValue: {
       size_t result = 0;
-      for (auto const& array_buffer :
+      for (const auto& array_buffer :
            data_as_serialized_script_value_->ArrayBuffers()) {
         result += array_buffer->ByteLength();
       }
