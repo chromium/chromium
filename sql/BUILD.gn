@@ -33,8 +33,6 @@ component("sql") {
     "sandboxed_vfs.h",
     "sandboxed_vfs_file.cc",
     "sandboxed_vfs_file.h",
-    "sql_features.cc",
-    "sql_features.h",
     "sql_memory_dump_provider.cc",
     "sql_memory_dump_provider.h",
     "sqlite_result_code.cc",

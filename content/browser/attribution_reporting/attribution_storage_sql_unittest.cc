@@ -64,7 +64,6 @@
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/recovery.h"
-#include "sql/sql_features.h"
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
