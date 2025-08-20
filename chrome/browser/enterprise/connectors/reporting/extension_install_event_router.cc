@@ -87,12 +87,7 @@ void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
   extension_event->set_description(extension->description());
   extension_event->set_extension_action_type(extension_action);
   extension_event->set_extension_version(extension->GetVersionForDisplay());
-  extension_event->set_extension_source(
-      extension->from_webstore()
-          ? BrowserExtensionInstallEvent::ExtensionSource::
-                BrowserExtensionInstallEvent_ExtensionSource_CHROME_WEBSTORE
-          : BrowserExtensionInstallEvent::ExtensionSource::
-                BrowserExtensionInstallEvent_ExtensionSource_EXTERNAL);
+  extension_event->set_extension_source(GetExtensionSource(extension));
 
   reporting_client_->ReportEvent(std::move(event), std::move(settings.value()));
 }
@@ -163,6 +158,22 @@ void ExtensionInstallEventRouter::OnExtensionUninstalled(
 }
 
 // static
+BrowserExtensionInstallEvent::ExtensionSource
+ExtensionInstallEventRouter::GetExtensionSource(
+    const extensions::Extension* extension) {
+  if (extension->location() ==
+      extensions::mojom::ManifestLocation::kComponent) {
+    return BrowserExtensionInstallEvent::ExtensionSource::
+        BrowserExtensionInstallEvent_ExtensionSource_COMPONENT;
+  } else if (extension->from_webstore()) {
+    return BrowserExtensionInstallEvent::ExtensionSource::
+        BrowserExtensionInstallEvent_ExtensionSource_CHROME_WEBSTORE;
+  } else {
+    return BrowserExtensionInstallEvent::ExtensionSource::
+        BrowserExtensionInstallEvent_ExtensionSource_EXTERNAL;
+  }
+}
+
 ExtensionInstallEventRouterFactory*
 ExtensionInstallEventRouterFactory::GetInstance() {
   return base::Singleton<ExtensionInstallEventRouterFactory>::get();
