@@ -90,8 +90,9 @@ suite('FontMenu', () => {
 
     test('uses the first font if font not available', async () => {
       // Set the current font to one that will be removed
+      const defaultFont = 'EB Garamond';
       const fonts = ['Andika', 'Poppins', 'STIX Two Text'];
-      chrome.readingMode.fontName = 'EB Garamond';
+      chrome.readingMode.fontName = defaultFont;
       await updateFonts(fonts.concat(chrome.readingMode.fontName));
 
       // Update the fonts to exclude the previously chosen font
@@ -104,8 +105,9 @@ suite('FontMenu', () => {
               '.check-mark-hidden-true');
       assertEquals(1, checkMarks.length);
       assertEquals(2, hiddenCheckMarks.length);
-      assertEquals(fonts[0], chrome.readingMode.fontName);
       assertEquals(fonts[0], toolbar.style.fontFamily);
+      // Avoid overriding the user default font
+      assertEquals(defaultFont, chrome.readingMode.fontName);
     });
 
     test('each font option is styled with the font that it is', async () => {
@@ -188,16 +190,18 @@ suite('FontMenu', () => {
 
     test('uses the first font if font not available', async () => {
       // Set the current font to one that will be removed
+      const defaultFont = 'EB Garamond';
       const fonts = ['Andika', 'Poppins', 'STIX Two Text'];
-      chrome.readingMode.fontName = 'EB Garamond';
+      chrome.readingMode.fontName = defaultFont;
       await updateFonts(fonts.concat(chrome.readingMode.fontName));
 
       // Update the fonts to exclude the previously chosen font
       await updateFonts(fonts);
 
       assertEquals(0, fontSelect!.selectedIndex);
-      assertEquals(fonts[0], chrome.readingMode.fontName);
       assertEquals(fonts[0], toolbar.style.fontFamily);
+      // Avoid overriding the user default font
+      assertEquals(defaultFont, chrome.readingMode.fontName);
     });
 
     suite('on font option clicked', () => {

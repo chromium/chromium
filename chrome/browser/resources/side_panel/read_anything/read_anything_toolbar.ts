@@ -428,7 +428,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         this.fontOptions_.indexOf(chrome.readingMode.fontName);
     if (currentFontIndex < 0) {
       currentFontIndex = 0;
-      this.propagateFontChange_(this.fontOptions_[0]!);
+      this.propagateFontChange_(
+          this.fontOptions_[0]!, /*isTemporaryFallback=*/ true);
     }
     this.fontName_ = this.fontOptions_[currentFontIndex]!;
     if (!this.isReadAloudEnabled_) {
@@ -576,8 +577,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.propagateFontChange_(this.fontName_);
   }
 
-  private propagateFontChange_(fontName: string) {
-    chrome.readingMode.onFontChange(fontName);
+  private propagateFontChange_(
+      fontName: string, isTemporaryFallback: boolean = false) {
+    if (!isTemporaryFallback) {
+      // Persist the change only if it's a direct user selection, not a
+      // temporary fallback.
+      chrome.readingMode.onFontChange(fontName);
+    }
     this.fire(ToolbarEvent.FONT);
     this.style.fontFamily = chrome.readingMode.getValidatedFontName(fontName);
   }
