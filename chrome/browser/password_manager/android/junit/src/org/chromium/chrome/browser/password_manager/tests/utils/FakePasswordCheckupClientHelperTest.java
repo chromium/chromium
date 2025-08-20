@@ -57,7 +57,7 @@ public class FakePasswordCheckupClientHelperTest {
     public void testGetPasswordCheckupIntentForLocalCheckupSucceeds() {
         mFakeHelper.getPasswordCheckupIntent(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                (String) null,
+                null,
                 mSuccessCallbackHelper::notifyCalled,
                 mFailureCallbackHelper::notifyCalled);
 

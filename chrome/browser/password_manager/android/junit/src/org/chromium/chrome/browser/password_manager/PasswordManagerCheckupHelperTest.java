@@ -283,7 +283,7 @@ public class PasswordManagerCheckupHelperTest {
         verify(mPasswordCheckupClientHelperMock)
                 .getPasswordCheckupIntent(
                         eq(PasswordCheckReferrer.SAFETY_CHECK),
-                        eq((String) null),
+                        eq(null),
                         any(Callback.class),
                         any(Callback.class));
     }

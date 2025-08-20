@@ -794,7 +794,7 @@ public class SafetyCheckMediatorTest {
         click(getPasswordsClickListener(passwordCheckLocalModel));
 
         verify(mPasswordCheckupHelper, times(mUseGmsApi ? 1 : 0))
-                .getPasswordCheckupIntent(eq(SAFETY_CHECK), eq((String) null), any(), any());
+                .getPasswordCheckupIntent(eq(SAFETY_CHECK), eq(null), any(), any());
     }
 
     @Test

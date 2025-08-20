@@ -10,8 +10,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 
-import java.util.Optional;
-
 /** Interface for the helper responsible for Password Checkup operations. */
 @NullMarked
 public interface PasswordCheckupClientHelper {
@@ -30,32 +28,16 @@ public interface PasswordCheckupClientHelper {
      * credential manager. The intent is to either be used immediately or discarded.
      *
      * @param referrer the place that will launch the password checkup UI
-     * @param accountName the account name that is syncing passwords. If no value was provided local
-     *     account will be used.
-     * @param successCallback callback called with the intent if the retrieving was successful
-     * @param failureCallback callback called if the retrieving failed with the encountered error.
-     */
-    default void getPasswordCheckupIntent(
-            @PasswordCheckReferrer int referrer,
-            Optional<String> accountName,
-            Callback<PendingIntent> successCallback,
-            Callback<Exception> failureCallback) {}
-
-    /**
-     * Retrieves a pending intent that can be used to launch the Password Checkup UI in the
-     * credential manager. The intent is to either be used immediately or discarded.
-     *
-     * @param referrer the place that will launch the password checkup UI
      * @param accountName the account name that is syncing passwords. If it's empty, local account
      *     will be used.
      * @param successCallback callback called with the intent if the retrieving was successful
      * @param failureCallback callback called if the retrieving failed with the encountered error.
      */
-    default void getPasswordCheckupIntent(
+    void getPasswordCheckupIntent(
             @PasswordCheckReferrer int referrer,
             @Nullable String accountName,
             Callback<PendingIntent> successCallback,
-            Callback<Exception> failureCallback) {}
+            Callback<Exception> failureCallback);
 
     /**
      * Asynchronously runs Password Checkup and stores the result in PasswordSpecifics then saves it
@@ -67,27 +49,11 @@ public interface PasswordCheckupClientHelper {
      * @param successCallback callback called with Password Check started successful
      * @param failureCallback callback called if encountered an error.
      */
-    default void runPasswordCheckupInBackground(
-            @PasswordCheckReferrer int referrer,
-            Optional<String> accountName,
-            Callback<@Nullable Void> successCallback,
-            Callback<Exception> failureCallback) {}
-
-    /**
-     * Asynchronously runs Password Checkup and stores the result in PasswordSpecifics then saves it
-     * to the ChromeSync module.
-     *
-     * @param referrer the place that requested to start a check.
-     * @param accountName the account name that is syncing passwords. If no value was provided local
-     *     account will be used.
-     * @param successCallback callback called with Password Check started successful
-     * @param failureCallback callback called if encountered an error.
-     */
-    default void runPasswordCheckupInBackground(
+    void runPasswordCheckupInBackground(
             @PasswordCheckReferrer int referrer,
             @Nullable String accountName,
             Callback<@Nullable Void> successCallback,
-            Callback<Exception> failureCallback) {}
+            Callback<Exception> failureCallback);
 
     /**
      * Asynchronously returns the number of breached credentials for the provided account.
@@ -98,26 +64,11 @@ public interface PasswordCheckupClientHelper {
      * @param successCallback callback called with the number of breached passwords.
      * @param failureCallback callback called if encountered an error.
      */
-    default void getBreachedCredentialsCount(
-            @PasswordCheckReferrer int referrer,
-            Optional<String> accountName,
-            Callback<Integer> successCallback,
-            Callback<Exception> failureCallback) {}
-
-    /**
-     * Asynchronously returns the number of breached credentials for the provided account.
-     *
-     * @param referrer the place that requested number of breached credentials.
-     * @param accountName the account name that is syncing passwords. If no value was provided local
-     *     account will be used.
-     * @param successCallback callback called with the number of breached passwords.
-     * @param failureCallback callback called if encountered an error.
-     */
-    default void getBreachedCredentialsCount(
+    void getBreachedCredentialsCount(
             @PasswordCheckReferrer int referrer,
             @Nullable String accountName,
             Callback<Integer> successCallback,
-            Callback<Exception> failureCallback) {}
+            Callback<Exception> failureCallback);
 
     /**
      * Asynchronously returns the number of weak credentials for the provided account.
@@ -128,11 +79,11 @@ public interface PasswordCheckupClientHelper {
      * @param successCallback callback called with the number of weak passwords.
      * @param failureCallback callback called if encountered an error.
      */
-    default void getWeakCredentialsCount(
+    void getWeakCredentialsCount(
             @PasswordCheckReferrer int referrer,
             @Nullable String accountName,
             Callback<Integer> successCallback,
-            Callback<Exception> failureCallback) {}
+            Callback<Exception> failureCallback);
 
     /**
      * Asynchronously returns the number of reused credentials for the provided account.
@@ -143,9 +94,9 @@ public interface PasswordCheckupClientHelper {
      * @param successCallback callback called with the number of reused passwords.
      * @param failureCallback callback called if encountered an error.
      */
-    default void getReusedCredentialsCount(
+    void getReusedCredentialsCount(
             @PasswordCheckReferrer int referrer,
             @Nullable String accountName,
             Callback<Integer> successCallback,
-            Callback<Exception> failureCallback) {}
+            Callback<Exception> failureCallback);
 }
