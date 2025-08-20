@@ -56,6 +56,7 @@ class BoundSessionCookieControllerImpl
   void HandleRequestBlockedOnCookie(
       chrome::mojom::BoundSessionRequestThrottledHandler::
           HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
+  void StopCookieRotation() override;
   bool ShouldPauseThrottlingRequests() const override;
   bound_session_credentials::RotationDebugInfo TakeDebugInfo() override;
 
@@ -91,6 +92,7 @@ class BoundSessionCookieControllerImpl
   void ResetCookieFetcherBackoff();
   void MaybeScheduleCookieRotation(
       BoundSessionRefreshCookieFetcher::Trigger trigger);
+  void MaybeStartResumeBlockedRequestsTimer();
   void ResumeBlockedRequests(
       chrome::mojom::ResumeBlockedRequestsTrigger trigger);
   void OnResumeBlockedRequestsTimeout();
@@ -139,6 +141,15 @@ class BoundSessionCookieControllerImpl
   // Used to release blocked requests after a timeout.
   base::OneShotTimer resume_blocked_requests_timer_;
   size_t successive_timeout_ = 0;
+
+  // Once set to `true`, the cookies rotation is stopped and all requests are
+  // throttled until the session is terminated (i.e. this field is never flipped
+  // back to `false`).
+  bool rotation_stopped_ = false;
+
+  // Used to call `OnCookieRotationStoppedTimeout` after the session has been
+  // stopped for more than a timeout threshold.
+  base::OneShotTimer rotation_stopped_timer_;
 
   RefreshCookieFetcherFactoryForTesting
       refresh_cookie_fetcher_factory_for_testing_;

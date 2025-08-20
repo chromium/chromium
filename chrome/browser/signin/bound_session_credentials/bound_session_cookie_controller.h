@@ -50,6 +50,12 @@ class BoundSessionCookieController {
     // cookie expiration date changes. Cookie deletion is considered as a change
     // in the expiration date to the null time.
     virtual void OnBoundSessionThrottlerParamsChanged() = 0;
+
+    // Called when the cookie rotation has been stopped for more than a timeout
+    // period. `BoundSessionCookieController` is expected to be deleted after
+    // this call.
+    virtual void OnCookieRotationStoppedTimeout(
+        BoundSessionCookieController* controller) = 0;
   };
 
   BoundSessionCookieController(
@@ -67,6 +73,17 @@ class BoundSessionCookieController {
   virtual void HandleRequestBlockedOnCookie(
       chrome::mojom::BoundSessionRequestThrottledHandler::
           HandleRequestBlockedOnCookieCallback resume_blocked_request) = 0;
+
+  // Stops the cookie rotation for the given session.
+  //
+  // Once the cookie rotation is stopped, all throttled requests will remain
+  // throttled until the session is terminated. This is used by OAML to ensure
+  // all requests are throttled until the returned cookies are set.
+  //
+  // The session will be terminated after a timeout if it has not been
+  // terminated explicitly. This is a safety net to ensure the session is
+  // eventually terminated even if OAML fails to terminate the session.
+  virtual void StopCookieRotation() = 0;
 
   // URL determining the scope of the bound session. All requests that are
   // within the scope are subject to throttling.

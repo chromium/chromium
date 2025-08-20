@@ -808,6 +808,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Cookies cleared"/>
   <int value="2" label="Session termination header"/>
   <int value="3" label="Session override"/>
+  <int value="4" label="Rotation stopped timeout"/>
 </enum>
 
 <enum name="ShouldShowChromeSigninBubbleWithReason">

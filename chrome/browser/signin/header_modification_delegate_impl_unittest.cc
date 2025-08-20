@@ -48,6 +48,11 @@ class MockBoundSessionCookieRefreshService
               (BoundSessionRegistrationFetcherParam registration_params),
               (override));
 
+  MOCK_METHOD(void,
+              StopCookieRotation,
+              (const BoundSessionKey& key),
+              (override));
+
   MOCK_METHOD(void, Initialize, (), (override));
   MOCK_METHOD(void,
               RegisterNewBoundSession,

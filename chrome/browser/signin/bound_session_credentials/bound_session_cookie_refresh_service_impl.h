@@ -61,7 +61,8 @@ class BoundSessionCookieRefreshServiceImpl
     kCookiesCleared = 1,
     kSessionTerminationHeader = 2,
     kSessionOverride = 3,
-    kMaxValue = kSessionOverride,
+    kRotationStoppedTimeout = 4,
+    kMaxValue = kRotationStoppedTimeout,
   };
 
   BoundSessionCookieRefreshServiceImpl(
@@ -87,6 +88,7 @@ class BoundSessionCookieRefreshServiceImpl
           receiver) override;
   void CreateRegistrationRequest(
       BoundSessionRegistrationFetcherParam registration_params) override;
+  void StopCookieRotation(const BoundSessionKey& key) override;
   base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
   void AddObserver(
       BoundSessionCookieRefreshService::Observer* observer) override;
@@ -160,6 +162,8 @@ class BoundSessionCookieRefreshServiceImpl
   void OnPersistentErrorEncountered(
       BoundSessionCookieController* controller,
       BoundSessionRefreshCookieFetcher::Result refresh_error) override;
+  void OnCookieRotationStoppedTimeout(
+      BoundSessionCookieController* controller) override;
 
   // StoragePartition::DataRemovalObserver:
   void OnStorageKeyDataCleared(

@@ -121,6 +121,8 @@ GetRotationDebugTerminationReason(
                            : RotationDebugInfo::TERMINATION_REASON_OTHER;
     case kSessionOverride:
       return RotationDebugInfo::SESSION_OVERRIDE;
+    case kRotationStoppedTimeout:
+      return RotationDebugInfo::ROTATION_STOPPED_TIMEOUT;
     case kCookiesCleared:
       // `kCookiesCleared` should not be reported in the debug header.
       NOTREACHED();
@@ -407,6 +409,15 @@ void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
   }
 }
 
+void BoundSessionCookieRefreshServiceImpl::StopCookieRotation(
+    const BoundSessionKey& key) {
+  auto controller_it = cookie_controllers_.find(key);
+  if (controller_it == cookie_controllers_.end()) {
+    return;
+  }
+  controller_it->second->StopCookieRotation();
+}
+
 base::WeakPtr<BoundSessionCookieRefreshService>
 BoundSessionCookieRefreshServiceImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -464,6 +475,12 @@ void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
 void BoundSessionCookieRefreshServiceImpl::
     OnBoundSessionThrottlerParamsChanged() {
   UpdateAllRenderers();
+}
+
+void BoundSessionCookieRefreshServiceImpl::OnCookieRotationStoppedTimeout(
+    BoundSessionCookieController* controller) {
+  TerminateSession(controller,
+                   SessionTerminationTrigger::kRotationStoppedTimeout);
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnPersistentErrorEncountered(
@@ -599,8 +616,9 @@ void BoundSessionCookieRefreshServiceImpl::MaybeReportTerminationReason(
     SessionTerminationTrigger trigger,
     std::optional<BoundSessionRefreshCookieFetcher::Result> refresh_error) {
   if (trigger == SessionTerminationTrigger::kCookiesCleared) {
-    // Do not send the debug report if cookies were cleared as the request won't
-    // be attributed to a user in any case.
+    // Do not send the debug report if cookies were cleared or the rotation was
+    // terminated due to a stopping timeout as the request won't be attributed
+    // to a user in any case.
     return;
   }
 

@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "chrome/common/renderer_configuration.mojom-shared.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
@@ -239,6 +241,11 @@ class BoundSessionCookieControllerImplTest
     on_persistent_error_encountered_refresh_error_ = refresh_error;
   }
 
+  void OnCookieRotationStoppedTimeout(
+      BoundSessionCookieController* controller) override {
+    on_cookie_rotation_stopped_timeout_called_ = true;
+  }
+
   void SetExpirationTimeAndNotify(const std::string& cookie_name,
                                   const base::Time& expiration_time) {
     bound_session_cookie_controller_->SetCookieExpirationTimeAndNotify(
@@ -314,6 +321,10 @@ class BoundSessionCookieControllerImplTest
 
   std::optional<Result> on_persistent_error_encountered_refresh_error() {
     return on_persistent_error_encountered_refresh_error_;
+  }
+
+  bool on_cookie_rotation_stopped_timeout_called() {
+    return on_cookie_rotation_stopped_timeout_called_;
   }
 
   void ResetOnBoundSessionThrottlerParamsChangedCallCount() {
@@ -405,6 +416,7 @@ class BoundSessionCookieControllerImplTest
       bound_session_cookie_controller_;
   size_t on_bound_session_throttler_params_changed_call_count_ = 0;
   std::optional<Result> on_persistent_error_encountered_refresh_error_;
+  bool on_cookie_rotation_stopped_timeout_called_ = false;
 };
 
 TEST_F(BoundSessionCookieControllerImplTest, KeyLoadedOnStartup) {
@@ -1544,4 +1556,123 @@ TEST_F(BoundSessionCookieControllerImplTest, ThrottlingPausedMultipleAttempts) {
   VerifyCookieRotationOutageMetrics(
       /*periodic=*/false,
       kNumberOfErrorsToIgnoreForBackoff + 1 + kFailedAttempts);
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       StopCookieRotationCancelsPendingRequests) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kEnableOAuthMultiloginCookiesBinding);
+
+  ASSERT_EQ(cookie_fetcher_trigger(),
+            BoundSessionRefreshCookieFetcher::Trigger::kStartup);
+
+  bound_session_cookie_controller()->StopCookieRotation();
+
+  EXPECT_FALSE(CompletePendingRefreshRequestIfAny());
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+      future.GetCallback());
+  // The request is not resumed.
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       StopCookieRotationBlocksNewRequests) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kEnableOAuthMultiloginCookiesBinding);
+
+  bound_session_cookie_controller()->StopCookieRotation();
+
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+      future.GetCallback());
+  task_environment()->FastForwardBy(kResumeBlockedRequestTimeout);
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       StopCookieRotationKeepsBlockingAlreadyBlockedRequests) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kEnableOAuthMultiloginCookiesBinding);
+
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+      future.GetCallback());
+
+  // Verify that the request is blocked and the resume timer is running.
+  ASSERT_FALSE(future.IsReady());
+  base::OneShotTimer* resume_requests_timer = resume_blocked_requests_timer();
+  ASSERT_NE(resume_requests_timer, nullptr);
+  ASSERT_TRUE(resume_requests_timer->IsRunning());
+
+  bound_session_cookie_controller()->StopCookieRotation();
+
+  // The request is still blocked (even after the resume timer timeout) and the
+  // resume timer is stopped.
+  task_environment()->FastForwardBy(kResumeBlockedRequestTimeout);
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(resume_requests_timer->IsRunning());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       StopCookieRotationStopsCookieRotationTimer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kEnableOAuthMultiloginCookiesBinding);
+
+  CompletePendingRefreshRequestIfAny();
+  ASSERT_TRUE(cookie_refresh_timer()->IsRunning());
+
+  bound_session_cookie_controller()->StopCookieRotation();
+
+  EXPECT_FALSE(cookie_refresh_timer()->IsRunning());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       StopCookieRotationsPreventsFromSchedulingCookieRotation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kEnableOAuthMultiloginCookiesBinding);
+
+  bound_session_cookie_controller()->StopCookieRotation();
+
+  // Setting up an offline state and then online state to trigger on connection
+  // changed.
+  SetConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
+
+  // Cookie rotation should NOT start if the cookie rotation is stopped.
+  SetConnectionType(network::mojom::ConnectionType::CONNECTION_5G);
+  EXPECT_EQ(cookie_fetcher(), nullptr);
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       StopCookieRotationPreventsFromPausingThrottling) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kEnableOAuthMultiloginCookiesBinding);
+
+  TriggerThrottlingPausedAndVerify();
+
+  bound_session_cookie_controller()->StopCookieRotation();
+
+  EXPECT_FALSE(
+      bound_session_cookie_controller()->ShouldPauseThrottlingRequests());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest, StopCookieRotationTimeout) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kEnableOAuthMultiloginCookiesBinding);
+
+  ASSERT_FALSE(on_cookie_rotation_stopped_timeout_called());
+
+  bound_session_cookie_controller()->StopCookieRotation();
+
+  EXPECT_FALSE(on_cookie_rotation_stopped_timeout_called());
+  task_environment()->FastForwardBy(kResumeBlockedRequestTimeout);
+  EXPECT_TRUE(on_cookie_rotation_stopped_timeout_called());
 }
