@@ -44,23 +44,6 @@ namespace page_content_annotations {
 
 namespace {
 
-// Controls scaling and quality of tab screenshots.
-BASE_FEATURE(kGlicTabScreenshotExperiment,
-             "GlicTabScreenshotExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kMaxScreenshotWidthParam{
-    &kGlicTabScreenshotExperiment, "max_screenshot_width", 1024};
-
-const base::FeatureParam<int> kMaxScreenshotHeightParam{
-    &kGlicTabScreenshotExperiment, "max_screenshot_height", 1024};
-
-const base::FeatureParam<int> kScreenshotJpegQuality{
-    &kGlicTabScreenshotExperiment, "screenshot_jpeg_quality", 40};
-
-const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
-    &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(1)};
-
 gfx::Size GetScreenshotSize(const gfx::Size& original_size) {
   // By default, no scaling.
   if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
@@ -478,6 +461,22 @@ class PageContextFetcher : public content::WebContentsObserver {
 };
 
 }  // namespace
+
+BASE_FEATURE(kGlicTabScreenshotExperiment,
+             "GlicTabScreenshotExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kMaxScreenshotWidthParam{
+    &kGlicTabScreenshotExperiment, "max_screenshot_width", 1024};
+
+const base::FeatureParam<int> kMaxScreenshotHeightParam{
+    &kGlicTabScreenshotExperiment, "max_screenshot_height", 1024};
+
+const base::FeatureParam<int> kScreenshotJpegQuality{
+    &kGlicTabScreenshotExperiment, "screenshot_jpeg_quality", 40};
+
+const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
+    &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(1)};
 
 BASE_FEATURE(kGlicTabScreenshotPaintPreviewBackend,
              "GlicTabScreenshotPaintPreviewBackend",

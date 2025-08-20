@@ -81,6 +81,17 @@ using FetchPageContextResultCallbackArg =
     base::expected<std::unique_ptr<FetchPageContextResult>,
                    FetchPageContextErrorDetails>;
 
+// Controls scaling and quality of tab screenshots.
+BASE_DECLARE_FEATURE(kGlicTabScreenshotExperiment);
+
+extern const base::FeatureParam<int> kMaxScreenshotWidthParam;
+
+extern const base::FeatureParam<int> kMaxScreenshotHeightParam;
+
+extern const base::FeatureParam<int> kScreenshotJpegQuality;
+
+extern const base::FeatureParam<base::TimeDelta> kScreenshotTimeout;
+
 // Enables the Paint Preview backend for taking screenshots.
 BASE_DECLARE_FEATURE(kGlicTabScreenshotPaintPreviewBackend);
 

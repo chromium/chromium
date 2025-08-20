@@ -64,8 +64,24 @@ class MultiSourcePageContextFetcherBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   MultiSourcePageContextFetcherBrowserTest() {
-    features_.InitWithFeatureState(kGlicTabScreenshotPaintPreviewBackend,
-                                   use_paint_preview_screenshot_backend());
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {kGlicTabScreenshotExperiment,
+         {
+             {"max_screenshot_width", "0"},
+             {"max_screenshot_height", "0"},
+             {"screenshot_jpeg_quality", "100"},
+             {"screenshot_timeout_ms", "10s"},
+         }},
+    };
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (use_paint_preview_screenshot_backend()) {
+      enabled_features.push_back({kGlicTabScreenshotPaintPreviewBackend, {}});
+    } else {
+      disabled_features.emplace_back(kGlicTabScreenshotPaintPreviewBackend);
+    }
+
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            disabled_features);
   }
 
   ~MultiSourcePageContextFetcherBrowserTest() override = default;
@@ -90,9 +106,8 @@ INSTANTIATE_TEST_SUITE_P(,
                          MultiSourcePageContextFetcherBrowserTest,
                          testing::Bool());
 
-// TODO(crbug.com/439215082): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_P(MultiSourcePageContextFetcherBrowserTest,
-                       DISABLED_TakesScreenshot) {
+                       TakesScreenshot) {
   GURL url = embedded_https_test_server().GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
