@@ -422,12 +422,14 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         std::make_unique<ScopedPrefetchServiceContentBrowserClient>(
             std::move(mock_prefetch_service_delegate));
 
-    std::unique_ptr<PrefetchService> prefetch_service =
-        std::make_unique<PrefetchService>(browser_context());
     BrowserContextImpl::From(browser_context())
-        ->SetPrefetchServiceForTesting(std::move(prefetch_service));
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(
-        BrowserContextImpl::From(browser_context())->GetPrefetchService());
+        ->SetPrefetchServiceForTesting(
+            std::make_unique<PrefetchService>(browser_context()));
+    PrefetchDocumentManager::SetPrefetchServiceForTesting(&prefetch_service());
+  }
+
+  PrefetchService& prefetch_service() {
+    return *BrowserContextImpl::From(browser_context())->GetPrefetchService();
   }
 
   // Creates a prefetch request for |url| on the current main frame.
@@ -464,9 +466,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         /*attempt=*/nullptr);
-    return BrowserContextImpl::From(browser_context())
-        ->GetPrefetchService()
-        ->AddPrefetchContainerWithHandle(std::move(prefetch_container));
+    return prefetch_service().AddPrefetchContainerWithHandle(
+        std::move(prefetch_container));
   }
 
   [[nodiscard]] std::unique_ptr<content::PrefetchHandle>
@@ -560,9 +561,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   void VerifyPrefetchAttemptIsPending(const GURL& url) {
     PrefetchKey prefetch_key(MainDocumentToken(), url);
     base::WeakPtr<PrefetchContainer> prefetch_container =
-        BrowserContextImpl::From(browser_context())
-            ->GetPrefetchService()
-            ->MatchUrl(prefetch_key);
+        prefetch_service().MatchUrl(prefetch_key);
     ASSERT_TRUE(prefetch_container);
     ASSERT_FALSE(prefetch_container->GetResourceRequest());
     ASSERT_EQ(prefetch_container->GetLoadState(),
@@ -866,12 +865,10 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         },
         base::Unretained(&future),
         base::Unretained(&request_handler_keep_alive_));
-    PrefetchService* prefetch_service =
-        BrowserContextImpl::From(browser_context())->GetPrefetchService();
     auto key = PrefetchKey(initiator_document_token, url);
     PrefetchMatchResolver::FindPrefetch(
         std::move(key), PrefetchServiceWorkerState::kDisallowed,
-        /*is_nav_prerender=*/false, *prefetch_service,
+        /*is_nav_prerender=*/false, prefetch_service(),
         GetServingPageMetricsContainerForMostRecentNavigation(),
         std::move(callback));
   }
@@ -953,12 +950,10 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
 
       return serving_page_metrics_container->GetWeakPtr();
     }();
-    PrefetchService* prefetch_service =
-        BrowserContextImpl::From(browser_context())->GetPrefetchService();
     auto key = PrefetchKey(initiator_document_token, url);
     PrefetchMatchResolver::FindPrefetch(
         std::move(key), PrefetchServiceWorkerState::kDisallowed,
-        is_nav_prerender, *prefetch_service,
+        is_nav_prerender, prefetch_service(),
         std::move(serving_page_metrics_container), std::move(callback));
 
     return res;
@@ -5511,8 +5506,6 @@ TEST_P(PrefetchServiceTest, PrefetchEviction) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/std::nullopt));
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
   std::vector<std::unique_ptr<PrefetchHandle>> handles;
   for (const auto& test_case : test_cases) {
@@ -5530,7 +5523,7 @@ TEST_P(PrefetchServiceTest, PrefetchEviction) {
       BrowsingDataFilterBuilder::Mode::kDelete);
   filter_builder->AddOrigin(url::Origin::Create(GURL("https://a.test")));
   auto filter = filter_builder->BuildStorageKeyFilter();
-  prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
+  prefetch_service().EvictPrefetchesForBrowsingDataRemoval(
       filter, PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved);
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(handles[0]->IsAlive());
@@ -5544,7 +5537,7 @@ TEST_P(PrefetchServiceTest, PrefetchEviction) {
       PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 3);
 
   // Attempt to clear all the cache. The remaining prefetches are also removed.
-  prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
+  prefetch_service().EvictPrefetchesForBrowsingDataRemoval(
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kPreserve)
           ->BuildStorageKeyFilter(),
@@ -5586,14 +5579,12 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionForEligibleButNotStartedPrefetch) {
   prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2;
   std::tie(std::ignore, prefetch_container1) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(MainDocumentToken(), url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(MainDocumentToken(), url_2))[0];
 
   // `candidate_1` should be started, while `candidate_2` stays in a queue.
@@ -5603,7 +5594,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionForEligibleButNotStartedPrefetch) {
             PrefetchContainer::LoadState::kEligible);
 
   // Try to evict.
-  prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
+  prefetch_service().EvictPrefetchesForBrowsingDataRemoval(
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kPreserve)
           ->BuildStorageKeyFilter(),
@@ -5658,12 +5649,10 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringEligiblityCheck) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/1));
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
   // Pause the elibility check.
   base::test::TestFuture<base::OnceClosure> eligibility_check_callback_future;
-  prefetch_service->SetDelayEligibilityCheckForTesting(base::BindRepeating(
+  prefetch_service().SetDelayEligibilityCheckForTesting(base::BindRepeating(
       [](base::test::TestFuture<base::OnceClosure>*
              eligibility_check_callback_future,
          base::OnceClosure callback) {
@@ -5688,7 +5677,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringEligiblityCheck) {
 
   base::WeakPtr<PrefetchContainer> prefetch_container1;
   std::tie(std::ignore, prefetch_container1) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(MainDocumentToken(), url_1))[0];
 
   // `candidate_1` should be on a way of eligibility check.
@@ -5696,7 +5685,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringEligiblityCheck) {
             PrefetchContainer::LoadState::kNotStarted);
 
   // Try to evict.
-  prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
+  prefetch_service().EvictPrefetchesForBrowsingDataRemoval(
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kPreserve)
           ->BuildStorageKeyFilter(),
@@ -5728,7 +5717,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringEligiblityCheck) {
   // each eligibility check.
   eligibility_check_callback_future.Take().Run();
 
-  prefetch_service->SetDelayEligibilityCheckForTesting(base::NullCallback());
+  prefetch_service().SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 // Tests that the prefetch eviction for heldback triggers causes no crash. This
@@ -5743,8 +5732,6 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionWhenHoldback) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/1));
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
   const auto url_1 = GURL("https://example.com/one");
   auto candidate_1 = blink::mojom::SpeculationCandidate::New();
@@ -5763,7 +5750,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionWhenHoldback) {
 
   base::WeakPtr<PrefetchContainer> prefetch_container1;
   std::tie(std::ignore, prefetch_container1) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(MainDocumentToken(), url_1))[0];
   task_environment()->RunUntilIdle();
 
@@ -5772,7 +5759,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionWhenHoldback) {
             PrefetchContainer::LoadState::kFailedHeldback);
 
   // Try to evict.
-  prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
+  prefetch_service().EvictPrefetchesForBrowsingDataRemoval(
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kPreserve)
           ->BuildStorageKeyFilter(),
@@ -6341,8 +6328,6 @@ TEST_P(PrefetchServiceTest, PrefetchQueueNotStuckWhenResettingRunningPrefetch) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/0));
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
   const auto url_1 = GURL("https://example.com/one");
   const auto url_2 = GURL("https://example.com/two");
@@ -6354,10 +6339,10 @@ TEST_P(PrefetchServiceTest, PrefetchQueueNotStuckWhenResettingRunningPrefetch) {
 
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2;
   std::tie(std::ignore, prefetch_container1) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_2))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
@@ -6923,8 +6908,6 @@ TEST_P(
     DISABLED_CHROMEOS(URLLoaderDisconnectedWhileHandlingRedirectEligibilty)) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
@@ -6940,7 +6923,7 @@ TEST_P(
   // `PrefetchService::OnPrefetchRedirect` will be paused.
   base::test::TestFuture<base::OnceClosure>
       redirect_eligibility_check_callback_future;
-  prefetch_service->SetDelayEligibilityCheckForTesting(base::BindRepeating(
+  prefetch_service().SetDelayEligibilityCheckForTesting(base::BindRepeating(
       [](base::test::TestFuture<base::OnceClosure>*
              redirect_eligibility_check_callback_future,
          base::OnceClosure callback) {
@@ -6957,7 +6940,7 @@ TEST_P(
   // Disconnect URLLoader.
   base::test::TestFuture<void> disconnect_future;
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(MainDocumentToken(), GURL("https://example.com")));
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
@@ -6983,7 +6966,7 @@ TEST_P(
   ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
   EXPECT_FALSE(navigation_result->serving_handle_future.Take());
 
-  prefetch_service->SetDelayEligibilityCheckForTesting(base::NullCallback());
+  prefetch_service().SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 // Tests that the `PrefetchStreamingURLLoader` disconnection during
@@ -6997,8 +6980,6 @@ TEST_P(
         URLLoaderDisconnectedWhileHandlingRedirectEligibilty_BlockUntilHead)) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
@@ -7022,7 +7003,7 @@ TEST_P(
   // `PrefetchService::OnPrefetchRedirect` will be paused.
   base::test::TestFuture<base::OnceClosure>
       redirect_eligibility_check_callback_future;
-  prefetch_service->SetDelayEligibilityCheckForTesting(base::BindRepeating(
+  prefetch_service().SetDelayEligibilityCheckForTesting(base::BindRepeating(
       [](base::test::TestFuture<base::OnceClosure>*
              redirect_eligibility_check_callback_future,
          base::OnceClosure callback) {
@@ -7040,7 +7021,7 @@ TEST_P(
   // Disconnect URLLoader.
   base::test::TestFuture<void> disconnect_future;
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(MainDocumentToken(), GURL("https://example.com")));
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
@@ -7060,7 +7041,7 @@ TEST_P(
   // The prefetch should not be served.
   EXPECT_FALSE(navigation_result->serving_handle_future.Take());
 
-  prefetch_service->SetDelayEligibilityCheckForTesting(base::NullCallback());
+  prefetch_service().SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 // Test that multiple concurrent navigations are handled correctly.
@@ -7368,9 +7349,7 @@ TEST_P(PrefetchServiceTest,
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
   base::test::TestFuture<base::OnceClosure> eligibility_check_callback_future;
-  auto& prefetch_service = *PrefetchService::GetFromFrameTreeNodeId(
-      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
-  prefetch_service.SetDelayEligibilityCheckForTesting(base::BindRepeating(
+  prefetch_service().SetDelayEligibilityCheckForTesting(base::BindRepeating(
       [](base::test::TestFuture<base::OnceClosure>*
              eligibility_check_callback_future,
          base::OnceClosure callback) {
@@ -7435,7 +7414,7 @@ TEST_P(PrefetchServiceTest,
       "Immediate2",
       true, 1);
 
-  prefetch_service.SetDelayEligibilityCheckForTesting(base::NullCallback());
+  prefetch_service().SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 // Scenario:
@@ -7458,9 +7437,7 @@ TEST_P(PrefetchServiceTest,
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
   base::test::TestFuture<base::OnceClosure> eligibility_check_callback_future;
-  auto& prefetch_service = *PrefetchService::GetFromFrameTreeNodeId(
-      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
-  prefetch_service.SetDelayEligibilityCheckForTesting(base::BindRepeating(
+  prefetch_service().SetDelayEligibilityCheckForTesting(base::BindRepeating(
       [](base::test::TestFuture<base::OnceClosure>*
              eligibility_check_callback_future,
          base::OnceClosure callback) {
@@ -7500,7 +7477,7 @@ TEST_P(PrefetchServiceTest,
   // `HasPrefetchStatus()` doesn't hold in
   // `PrefetchContainer::UpdateServingPageMetrics()`.
 
-  prefetch_service.SetDelayEligibilityCheckForTesting(base::NullCallback());
+  prefetch_service().SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 TEST_P(PrefetchServiceTest,
@@ -7559,11 +7536,6 @@ class PrefetchServiceAddPrefetchContainerTest
         {features::kPrerender2FallbackPrefetchSpecRules}, {});
   }
 
-  PrefetchService& GetPrefetchService() {
-    return *PrefetchService::GetFromFrameTreeNodeId(
-        web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
-  }
-
   std::unique_ptr<PrefetchContainer> CreateSpeculationRulesPrefetchContainer(
       const blink::DocumentToken& document_token,
       const GURL& prefetch_url,
@@ -7577,7 +7549,7 @@ class PrefetchServiceAddPrefetchContainerTest
         PreloadingData::GetOrCreateForWebContents(web_contents());
     PreloadingURLMatchCallback matcher =
         PreloadingDataImpl::GetPrefetchServiceMatcher(
-            GetPrefetchService(), PrefetchKey(document_token, prefetch_url));
+            prefetch_service(), PrefetchKey(document_token, prefetch_url));
 
     auto* attempt = static_cast<PreloadingAttemptImpl*>(
         preloading_data->AddPreloadingAttempt(
@@ -7600,8 +7572,7 @@ class PrefetchServiceAddPrefetchContainerTest
 
   void AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::unique_ptr<PrefetchContainer> prefetch_container) {
-    // GetPrefetchService().AddPrefetchContainerWithoutStartingPrefetch(std::move(prefetch_container));
-    GetPrefetchService().AddPrefetchContainerWithoutStartingPrefetchForTesting(
+    prefetch_service().AddPrefetchContainerWithoutStartingPrefetchForTesting(
         std::move(prefetch_container));
   }
 
@@ -7634,7 +7605,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest, ReplacesOldWithNewByDefault) {
       std::move(prefetch_container2));
 
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
-      GetPrefetchService().GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(document_token, GURL("https://example.com")));
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
@@ -7662,7 +7633,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
       std::move(prefetch_container2));
 
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
-      GetPrefetchService().GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(document_token, GURL("https://example.com")));
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
@@ -7692,7 +7663,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
       std::move(prefetch_container2));
 
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
-      GetPrefetchService().GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(document_token, GURL("https://example.com")));
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
@@ -7721,7 +7692,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
 
   {
     std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
-        GetPrefetchService().GetAllForUrlWithoutRefAndQueryForTesting(
+        prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
             PrefetchKey(document_token, GURL("https://example.com")));
     ASSERT_EQ(1u, prefetches.size());
     base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
@@ -7742,7 +7713,7 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
 
   {
     std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
-        GetPrefetchService().GetAllForUrlWithoutRefAndQueryForTesting(
+        prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
             PrefetchKey(document_token, GURL("https://example.com")));
     ASSERT_EQ(1u, prefetches.size());
     base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
@@ -7775,8 +7746,6 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_RunsTwoConcurrentPrefetches) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/0));
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
   const auto url_1 = GURL("https://example.com/one");
   const auto url_2 = GURL("https://example.com/two");
@@ -7792,13 +7761,13 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_RunsTwoConcurrentPrefetches) {
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2,
       prefetch_container3;
   std::tie(std::ignore, prefetch_container1) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_2))[0];
   std::tie(std::ignore, prefetch_container3) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_3))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
@@ -7844,10 +7813,9 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Prioritize) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/0));
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
-  prefetch_service->GetPrefetchSchedulerForTesting()
+  prefetch_service()
+      .GetPrefetchSchedulerForTesting()
       .SetCalculatePriorityForTesting(
           base::BindRepeating([](const PrefetchContainer& prefetch_container) {
             if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
@@ -7872,13 +7840,13 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Prioritize) {
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2,
       prefetch_container3;
   std::tie(std::ignore, prefetch_container1) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_2))[0];
   std::tie(std::ignore, prefetch_container3) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_3))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
@@ -7924,10 +7892,9 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Prioritize_Async) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/0));
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
-  prefetch_service->GetPrefetchSchedulerForTesting()
+  prefetch_service()
+      .GetPrefetchSchedulerForTesting()
       .SetCalculatePriorityForTesting(
           base::BindRepeating([](const PrefetchContainer& prefetch_container) {
             if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
@@ -7948,10 +7915,10 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Prioritize_Async) {
 
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2;
   std::tie(std::ignore, prefetch_container1) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_2))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
@@ -7988,10 +7955,9 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Burst) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/0));
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
-  prefetch_service->GetPrefetchSchedulerForTesting()
+  prefetch_service()
+      .GetPrefetchSchedulerForTesting()
       .SetCalculatePriorityForTesting(
           base::BindRepeating([](const PrefetchContainer& prefetch_container) {
             if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
@@ -8015,10 +7981,10 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Burst) {
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2,
       prefetch_container3, prefetch_container4;
   std::tie(std::ignore, prefetch_container1) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_2))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
@@ -8033,10 +7999,10 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Burst) {
   task_environment()->RunUntilIdle();
 
   std::tie(std::ignore, prefetch_container3) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_3))[0];
   std::tie(std::ignore, prefetch_container4) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_4))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
@@ -8093,10 +8059,9 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_BurstTakesPriority) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/0));
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
-  prefetch_service->GetPrefetchSchedulerForTesting()
+  prefetch_service()
+      .GetPrefetchSchedulerForTesting()
       .SetCalculatePriorityForTesting(
           base::BindRepeating([](const PrefetchContainer& prefetch_container) {
             if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
@@ -8124,16 +8089,16 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_BurstTakesPriority) {
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2,
       prefetch_container3, prefetch_container4;
   std::tie(std::ignore, prefetch_container1) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_2))[0];
   std::tie(std::ignore, prefetch_container3) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_3))[0];
   std::tie(std::ignore, prefetch_container4) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_4))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
@@ -8198,10 +8163,9 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_BurstTakesPriority_Async) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/0));
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
-  prefetch_service->GetPrefetchSchedulerForTesting()
+  prefetch_service()
+      .GetPrefetchSchedulerForTesting()
       .SetCalculatePriorityForTesting(
           base::BindRepeating([](const PrefetchContainer& prefetch_container) {
             if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
@@ -8229,16 +8193,16 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_BurstTakesPriority_Async) {
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2,
       prefetch_container3, prefetch_container4;
   std::tie(std::ignore, prefetch_container1) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_1))[0];
   std::tie(std::ignore, prefetch_container2) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_2))[0];
   std::tie(std::ignore, prefetch_container3) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_3))[0];
   std::tie(std::ignore, prefetch_container4) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
           PrefetchKey(std::nullopt, url_4))[0];
 
   ASSERT_EQ(prefetch_container1->GetLoadState(),
