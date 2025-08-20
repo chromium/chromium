@@ -140,11 +140,6 @@ class GlicWindowController : public Host::Delegate {
   virtual bool ShouldStartDrag(const gfx::Point& initial_press_loc,
                                const gfx::Point& mouse_location) = 0;
 
-  // Drags the glic window following the current mouse location with the given
-  // `mouse_offset` and checks if the glic window is at a position where it
-  // could attach to a browser window when a drag ends.
-  virtual void HandleWindowDragWithOffset(gfx::Vector2d mouse_offset) = 0;
-
   // Host::Delegate implementation.
   const mojom::PanelState& GetPanelState() const override = 0;
 

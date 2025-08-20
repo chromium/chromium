@@ -97,7 +97,6 @@ class GlicWindowControllerImpl
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
   bool ShouldStartDrag(const gfx::Point& initial_press_loc,
                        const gfx::Point& mouse_location) override;
-  void HandleWindowDragWithOffset(gfx::Vector2d mouse_offset) override;
   const mojom::PanelState& GetPanelState() const override;
 
   void AddStateObserver(StateObserver* observer) override;
@@ -284,6 +283,11 @@ class GlicWindowControllerImpl
 
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
+
+  // Drags the glic window following the current mouse location with the given
+  // `mouse_offset` and checks if the glic window is at a position where it
+  // could attach to a browser window when a drag ends.
+  void HandleWindowDragWithOffset(gfx::Vector2d mouse_offset);
 
   const raw_ptr<Profile> profile_;
 

@@ -50,7 +50,6 @@ class MockGlicWindowController
               ShouldStartDrag,
               (const gfx::Point&, const gfx::Point&),
               (override));
-  MOCK_METHOD(void, HandleWindowDragWithOffset, (gfx::Vector2d), (override));
   MOCK_METHOD(const mojom::PanelState&, GetPanelState, (), (const, override));
   MOCK_METHOD(void, AddStateObserver, (StateObserver*), (override));
   MOCK_METHOD(void, RemoveStateObserver, (StateObserver*), (override));

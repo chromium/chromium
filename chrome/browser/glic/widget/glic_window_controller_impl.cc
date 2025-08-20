@@ -177,7 +177,7 @@ std::optional<gfx::Point> GetPreviousPositionFromPrefs(PrefService* prefs) {
 // Helper class for observing mouse and key events from native window.
 class GlicWindowControllerImpl::WindowEventObserver : public ui::EventObserver {
  public:
-  WindowEventObserver(glic::GlicWindowController* glic_window_controller,
+  WindowEventObserver(glic::GlicWindowControllerImpl* glic_window_controller,
                       glic::GlicView* glic_view)
       : glic_window_controller_(glic_window_controller), glic_view_(glic_view) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
@@ -266,7 +266,7 @@ class GlicWindowControllerImpl::WindowEventObserver : public ui::EventObserver {
   }
 
  private:
-  raw_ptr<glic::GlicWindowController> glic_window_controller_;
+  raw_ptr<glic::GlicWindowControllerImpl> glic_window_controller_;
   raw_ptr<glic::GlicView> glic_view_;
   std::unique_ptr<views::EventMonitor> event_monitor_;
 
