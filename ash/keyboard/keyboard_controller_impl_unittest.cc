@@ -142,8 +142,6 @@ class KeyboardControllerImplTest : public AshTestBase {
     test_observer()->set_config(keyboard_controller()->GetKeyboardConfig());
   }
 
-  void TearDown() override { AshTestBase::TearDown(); }
-
   KeyboardControllerImpl* keyboard_controller() {
     return Shell::Get()->keyboard_controller();
   }
@@ -784,7 +782,7 @@ TEST_F(KeyboardControllerImplTest, RecordsKeyRepeatSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.KeyboardAutoRepeatInterval", /*count=*/0u);
 
-  SimulateUserLogin({"user1"});
+  auto account_id = SimulateUserLogin({"user1"});
 
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.KeyboardAutoRepeatDelay", /*count=*/1u);
@@ -802,7 +800,7 @@ TEST_F(KeyboardControllerImplTest, RecordsKeyRepeatSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.KeyboardAutoRepeatInterval", /*count=*/2u);
 
-  SimulateUserLogin({"user1"});
+  SwitchActiveUser(account_id);
 
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.KeyboardAutoRepeatDelay", /*count=*/2u);
