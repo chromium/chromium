@@ -290,7 +290,8 @@ public class ContextMenuDialogUnitTest {
                         0,
                         mSpyDragDispatchingDestinationView,
                         new Rect(0, 0, 0, 0),
-                        /* shouldPadForWindowInsets= */ true);
+                        /* shouldPadForWindowInsets= */ true,
+                        /* isTouchSource */ true);
         mDialog.setContentView(new View(mActivity));
         EdgeToEdgeLayoutCoordinator edgeToEdgeLayoutCoordinator =
                 mDialog.getEdgeToEdgeLayoutCoordinatorForTesting();
@@ -325,7 +326,8 @@ public class ContextMenuDialogUnitTest {
                 0,
                 mSpyDragDispatchingDestinationView,
                 new Rect(0, 0, 0, 0),
-                /* shouldPadForWindowInsets= */ true);
+                /* shouldPadForWindowInsets= */ true,
+                /* isTouchSource */ true);
     }
 
     private void requestLayoutForRootView() {

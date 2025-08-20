@@ -367,7 +367,8 @@ public class ContextMenuCoordinatorTest {
                 0,
                 0,
                 webContentView,
-                new Rect(0, 0, 0, 0));
+                new Rect(0, 0, 0, 0),
+                /* isTouchSource */ true);
     }
 
     private ContextMenuDialog displayContextMenuDialogAtLocation(
