@@ -410,6 +410,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Media.ContextLength" units="bytes"
+    expires_after="2026-01-15">
+  <owner>liberato@chromium.org</owner>
+  <owner>muyaoxu@google.com</owner>
+  <summary>
+    Recorded when media context is collected by glic. Represents the total media
+    context length for the page at the time it was requested, including any that
+    was previously truncated for length restrictions.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Media.TimestampRangeCount" units="count"
     expires_after="2026-01-15">
   <owner>liberato@chromium.org</owner>

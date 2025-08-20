@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -23,7 +24,15 @@ DOCUMENT_USER_DATA_KEY_IMPL(GlicMediaContext);
 GlicMediaContext::GlicMediaContext(content::RenderFrameHost* frame)
     : DocumentUserData(frame) {}
 
-GlicMediaContext::~GlicMediaContext() = default;
+GlicMediaContext::~GlicMediaContext() {
+  // If we got any transcript, then record its max length we saw as its total.
+  // If anything is close to the cut-off, then we can infer that we likely
+  // truncated it.
+  if (max_transcript_size_ > 0) {
+    UMA_HISTOGRAM_COUNTS_1M("Glic.Media.TotalContextLength",
+                            max_transcript_size_);
+  }
+}
 
 bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
   if (IsExcludedFromTranscript()) {
@@ -170,6 +179,11 @@ void GlicMediaContext::TrimTranscript() {
   size_t total_size = 0;
   for (const auto& chunk : transcript_chunks_) {
     total_size += chunk.text.length();
+  }
+
+  // For metrics, record the maximum size this transcript reaches.
+  if (total_size > max_transcript_size_) {
+    max_transcript_size_ = total_size;
   }
 
   while (total_size > kMaxTranscriptLength) {

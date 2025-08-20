@@ -111,6 +111,9 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
   // insertion point.
   std::list<TranscriptChunk>::iterator last_insertion_it_ =
       transcript_chunks_.end();
+
+  // The maximum transcript size that we've recorded.
+  size_t max_transcript_size_ = 0u;
 };
 
 }  // namespace glic
