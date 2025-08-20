@@ -414,9 +414,8 @@ void RecordTimeToFirstInteraction(
       event.SetHomeworkActionChip(time_to_first_interaction.InMilliseconds());
       break;
     case lens::LensOverlayInvocationSource::kContentAreaContextMenuText:
-      // Not recorded since the text context menu entry point results in a
-      // search without the user having to interact with the overlay. Time to
-      // first interaction in this case is essentially zero.
+      event.SetContentAreaContextMenuText(
+          time_to_first_interaction.InMilliseconds());
       break;
   }
   event.SetFirstInteractionType(static_cast<int64_t>(first_interaction_type))

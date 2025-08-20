@@ -13147,6 +13147,19 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="ContentAreaContextMenuText">
+    <summary>
+      Time to first interaction when overlay invoked through the selected text
+      context menu.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="FindInPage">
     <summary>
       Time to first interaction when overlay invoked through the find in page
