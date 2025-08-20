@@ -135,6 +135,7 @@
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/widget/glic_side_panel_coordinator.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_controller.h"
 #endif
 
@@ -508,6 +509,11 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         std::make_unique<CommentsSidePanelCoordinator>(browser_view->browser());
   }
 
+#if BUILDFLAG(ENABLE_GLIC)
+  glic_side_panel_coordinator_ =
+      std::make_unique<glic::GlicSidePanelCoordinator>();
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
   side_panel_coordinator_->Init(browser_view->browser());
 
   extension_side_panel_manager_ =
@@ -518,9 +524,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   immersive_mode_controller_ =
       chrome::CreateImmersiveModeController(browser_view);
 
-  // Memory Saver mode is default off but is available to turn on.
-  // The controller relies on performance manager which isn't initialized in
-  // some unit tests without browser view.
   if (browser_view->GetIsNormalType()) {
 #if BUILDFLAG(ENABLE_GLIC)
     glic::GlicKeyedService* glic_service =
@@ -542,9 +545,11 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
                         ->GetTabStripActionContainer());
       }
     }
-
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+    // Memory Saver mode is default off but is available to turn on.
+    // The controller relies on performance manager which isn't initialized in
+    // some unit tests without browser view.
     memory_saver_opt_in_iph_controller_ =
         std::make_unique<MemorySaverOptInIPHController>(
             browser_view->browser());

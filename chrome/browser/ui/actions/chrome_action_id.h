@@ -538,6 +538,7 @@
   E(kActionSidePanelShowCustomizeChromeFooter) \
   E(kActionSidePanelShowCustomizeChromeToolbar) \
   E(kActionSidePanelShowFeed) \
+  E(kActionSidePanelShowGlic) \
   E(kActionSidePanelShowHistoryCluster) \
   E(kActionSidePanelShowHistory) \
   E(kActionSidePanelShowLens) \

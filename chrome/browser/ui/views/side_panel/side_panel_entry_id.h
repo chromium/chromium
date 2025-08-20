@@ -40,6 +40,7 @@
     "LensOverlayResults")                                                     \
   V(kMerchantTrust, kActionSidePanelShowMerchantTrust, "MerchantTrust")       \
   V(kComments, kActionSidePanelShowComments, "Comments")                      \
+  V(kGlic, kActionSidePanelShowGlic, "Glic")                                  \
   /* Extensions (nothing more should be added below here) */                  \
   V(kExtension, std::nullopt, "Extension")
 
