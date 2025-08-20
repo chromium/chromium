@@ -1,6 +1,17 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// Provides functions for associating FieldTrials with Google VariationIDs and
+// time windows.
+//
+// Example usage:
+//
+// AssociateGoogleVariationID(
+//   GOOGLE_WEB_PROPERTIES_FIRST_PARTY, "MyStudy", "TreatmentGroup", 1234);
+//
+// VariationID id = GetGoogleVariationID(
+//   GOOGLE_WEB_PROPERTIES_FIRST_PARTY, "MyStudy", "TreatmentGroup");
 
 #ifndef COMPONENTS_VARIATIONS_VARIATIONS_ASSOCIATED_DATA_H_
 #define COMPONENTS_VARIATIONS_VARIATIONS_ASSOCIATED_DATA_H_
@@ -13,36 +24,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/time/time.h"
 #include "components/variations/active_field_trials.h"
-
-// This file provides various helpers that extend the functionality around
-// base::FieldTrial.
-//
-// This includes several simple APIs to handle getting and setting additional
-// data related to Chrome variations, such as parameters and Google variation
-// IDs. These APIs are meant to extend the base::FieldTrial APIs to offer extra
-// functionality that is not offered by the simpler base::FieldTrial APIs.
-//
-// The AssociateGoogleVariationID function is
-// generally meant to be called by the VariationsService based on server-side
-// variation configs, but may also be used for client-only field trials by
-// invoking them directly after appending all the groups to a FieldTrial.
-//
-// Experiment code can then use the getter APIs to retrieve variation parameters
-// or IDs:
-//
-//  std::map<std::string, std::string> params;
-//  if (GetVariationParams("trial", &params)) {
-//    // use |params|
-//  }
-//
-//  std::string value = base::GetFieldTrialParamValue("trial", "param_x");
-//  // use |value|, which will be "" if it does not exist
-//
-// VariationID id = GetGoogleVariationID(
-//     GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, "trial", "group1");
-// if (id != variations::EMPTY_ID) {
-//   // use |id|
-// }
 
 namespace variations {
 
