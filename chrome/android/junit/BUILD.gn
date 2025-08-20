@@ -549,7 +549,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/compositor/layouts/StaticLayoutUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/layouts/content/TitleBitmapFactoryUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/layouts/eventfilter/AreaMotionEventFilterUnitTest.java",
-      "src/org/chromium/chrome/browser/compositor/overlays/strip/MultiSelectedTabsContextMenuCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/ScrollDelegateUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/ScrollingStripStackerUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutContextMenuCoordinatorTestUtils.java",

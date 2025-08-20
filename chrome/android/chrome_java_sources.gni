@@ -332,7 +332,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/SimpleAnimationLayout.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/stack/StackScroller.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/AnimationHost.java",
-  "java/src/org/chromium/chrome/browser/compositor/overlays/strip/MultiSelectedTabsContextMenuCoordinator.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/ScrollDelegate.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/ScrollingStripStacker.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutGroupTitle.java",

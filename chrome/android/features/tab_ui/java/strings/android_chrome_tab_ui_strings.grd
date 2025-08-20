@@ -1035,7 +1035,7 @@
         Dismiss the card.
       </message>
 
-      <!-- Tab context menu (for individual tabs) -->
+      <!-- Tab context menu -->
       <message name="IDS_SELECT_TAB" desc="Content description for an action which selects a singular tab.">
         Select tab
       </message>
@@ -1047,16 +1047,26 @@
           =1 {Move tab to new window}
           other {Move tab to another window}}
       </message>
+      <message name="IDS_PIN_TABS_MENU_ITEM" desc="Content description for an action which pins a selection of tabs.">
+        {TAB_COUNT, plural,
+          =1 {Pin tab}
+          other {Pin tabs}}
+      </message>
+      <message name="IDS_UNPIN_TABS_MENU_ITEM" desc="Content description for an action which unpins a selection of tabs.">
+        {TAB_COUNT, plural,
+          =1 {Unpin tab}
+          other {Unpin tabs}}
+      </message>
       <message name="IDS_PIN_TAB" desc="Content description for an action which pins a singular tab.">
         Pin tab
       </message>
       <message name="IDS_UNPIN_TAB" desc="Content description for an action which unpins a singular tab.">
         Unpin tab
       </message>
-
-      <!-- Multi Selected Tabs Context Menu -->
-      <message name="IDS_REMOVE_TABS_FROM_GROUP" desc="Content description for an action which removes a list of selected tabs from their group.">
-        Remove tabs from group
+      <message name="IDS_REMOVE_TABS_FROM_GROUP_MENU_ITEM" desc="Content description for an action which removes a list of selected tabs from their group.">
+        {TAB_COUNT, plural,
+          =1 {Remove tab from group}
+          other {Remove tabs from group}}
       </message>
       <message name="IDS_MOVE_TABS_TO_ANOTHER_WINDOW" desc="Content description for an action which moves a list of selected tabs to another window.">
         {WINDOW_COUNT, plural,

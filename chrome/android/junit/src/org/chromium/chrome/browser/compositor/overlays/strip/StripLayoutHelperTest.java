@@ -206,7 +206,6 @@ public class StripLayoutHelperTest {
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private TabContextMenuCoordinator mTabContextMenuCoordinator;
-    @Mock private MultiSelectedTabsContextMenuCoordinator mMultiSelectedTabsContextMenuCoordinator;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private ShareDelegate mShareDelegate;
@@ -2044,7 +2043,7 @@ public class StripLayoutHelperTest {
         ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
                 ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab context menu is showing.
-        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), anyInt());
+        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), any());
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertThat(view, instanceOf(StripLayoutTab.class));
@@ -2078,7 +2077,7 @@ public class StripLayoutHelperTest {
         ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
                 ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab context menu is showing.
-        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), anyInt());
+        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), any());
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertThat(view, instanceOf(StripLayoutTab.class));
@@ -2180,14 +2179,19 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testBottomSheet_constructedWithoutDestroyHide() {
         var tabs = initializeTest_ForTab();
-        setupForContextMenu();
-        when(mModel.getTabById(anyInt())).thenReturn(mTab);
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
+        tabModel.setActive(true);
+        tabModel.addTab(tabs[0].getTabId());
         when(mTab.getUrl()).thenReturn(URL);
 
         // Initialize the menu.
-        mStripLayoutHelper.showTabContextMenuForTesting(tabs[0]);
+        mStripLayoutHelper.showTabContextMenuForTesting(
+                Collections.singletonList(tabs[0].getTabId()), tabs[0]);
 
         verify(mBottomSheetCoordinatorFactory, times(1))
                 .create(
@@ -4976,7 +4980,7 @@ public class StripLayoutHelperTest {
                                         - stripViews[1].getTouchTargetBounds().left)
                                 / 2;
         mStripLayoutHelper.click(TIMESTAMP, viewMidX, 0, MotionEvent.BUTTON_SECONDARY, 0);
-        verify(mTabContextMenuCoordinator).showMenu(any(), anyInt());
+        verify(mTabContextMenuCoordinator).showMenu(any(), any());
 
         // Secondary click on tab close - show menu.
         // Mock tab's view.
@@ -5749,7 +5753,7 @@ public class StripLayoutHelperTest {
         assertTrue(
                 "Expected openKeyboardFocusedContextMenu to return true if tab context menu opened",
                 mStripLayoutHelper.openKeyboardFocusedContextMenu());
-        verify(mTabContextMenuCoordinator, times(1)).showMenu(any(), anyInt());
+        verify(mTabContextMenuCoordinator, times(1)).showMenu(any(), any());
     }
 
     @Test
@@ -6189,14 +6193,13 @@ public class StripLayoutHelperTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING})
-    public void testMultiSelectedTabsContextMenu_MultipleTabsSelected() {
+    public void testTabContextMenu_MultipleTabsSelected() {
         // Setup
         initializeTest(false, false, 0, 5);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
-        mStripLayoutHelper.setMultiSelectedTabsContextMenuCoordinatorForTesting(
-                mMultiSelectedTabsContextMenuCoordinator);
+        mStripLayoutHelper.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();
 
@@ -6225,7 +6228,7 @@ public class StripLayoutHelperTest {
         // Verify
         List<Integer> expectedTabIds =
                 List.of(tabs[0].getTabId(), tabs[1].getTabId(), tabs[3].getTabId());
-        verify(mMultiSelectedTabsContextMenuCoordinator).showMenu(any(), eq(expectedTabIds));
+        verify(mTabContextMenuCoordinator).showMenu(any(), eq(expectedTabIds));
     }
 
     // 1. Moving a tab to higher indices, leaving a tab group

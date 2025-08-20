@@ -569,11 +569,6 @@ public class StripLayoutHelper
     private @MonotonicNonNull TabGroupListBottomSheetCoordinator
             mTabGroupListBottomSheetCoordinator;
 
-    // Multi selected tab context menu
-    // Set when showMultiSelectedTabsContextMenu is called for the first time.
-    private @MonotonicNonNull MultiSelectedTabsContextMenuCoordinator
-            mMultiSelectedTabsContextMenuCoordinator;
-
     // Tab group share.
     // These are set if shouldEnableGroupSharing() is true.
     private @MonotonicNonNull DataSharingService mDataSharingService;
@@ -2170,17 +2165,12 @@ public class StripLayoutHelper
                         && mTabGroupContextMenuCoordinator.isMenuShowing())
                 || (mTabContextMenuCoordinator != null
                         && mTabContextMenuCoordinator.isMenuShowing())
-                || (mMultiSelectedTabsContextMenuCoordinator != null
-                        && mMultiSelectedTabsContextMenuCoordinator.isMenuShowing())
                 || (mCloseButtonMenu != null && mCloseButtonMenu.isShowing());
     }
 
     private void dismissContextMenu() {
         if (mTabGroupContextMenuCoordinator != null) mTabGroupContextMenuCoordinator.dismiss();
         if (mTabContextMenuCoordinator != null) mTabContextMenuCoordinator.dismiss();
-        if (mMultiSelectedTabsContextMenuCoordinator != null) {
-            mMultiSelectedTabsContextMenuCoordinator.dismiss();
-        }
         if (mCloseButtonMenu != null) mCloseButtonMenu.dismiss();
     }
 
@@ -2241,7 +2231,7 @@ public class StripLayoutHelper
         mTabGroupContextMenuCoordinator.showMenu(anchorRectProvider, groupTitle.getTabGroupId());
     }
 
-    private void showTabContextMenu(StripLayoutTab tab) {
+    private void showTabContextMenu(List<Integer> tabIds, StripLayoutTab anchorTab) {
         if (mModel == null || mTabGroupModelFilter == null) return;
         if (mTabContextMenuCoordinator == null) {
             if (mTabGroupListBottomSheetCoordinator == null) {
@@ -2271,42 +2261,9 @@ public class StripLayoutHelper
                             mContext);
         }
         RectProvider anchorRectProvider = new RectProvider();
-        getAnchorRect(tab, anchorRectProvider);
+        getAnchorRect(anchorTab, anchorRectProvider);
         StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
-        mTabContextMenuCoordinator.showMenu(anchorRectProvider, tab.getTabId());
-    }
-
-    private void showMultiSelectedTabsContextMenu(List<Integer> tabIds, StripLayoutTab clickedTab) {
-        if (mModel == null || mTabGroupModelFilter == null) return;
-        if (mMultiSelectedTabsContextMenuCoordinator == null) {
-            if (mTabGroupListBottomSheetCoordinator == null) {
-                mTabGroupListBottomSheetCoordinator =
-                        mTabGroupListBottomSheetCoordinatorFactory.create(
-                                mContext,
-                                assumeNonNull(mTabGroupModelFilter.getTabModel().getProfile()),
-                                (newTabGroupId) -> {
-                                    showTabGroupContextMenu(
-                                            findGroupTitle(newTabGroupId),
-                                            /* shouldWaitForUpdate= */ true);
-                                },
-                                /* tabMovedCallback= */ null,
-                                mTabGroupModelFilter,
-                                mBottomSheetController,
-                                /* supportsShowNewGroup= */ true,
-                                /* destroyOnHide= */ false);
-            }
-            mMultiSelectedTabsContextMenuCoordinator =
-                    MultiSelectedTabsContextMenuCoordinator.createContextMenuCoordinator(
-                            mModel,
-                            mTabGroupModelFilter,
-                            mTabGroupListBottomSheetCoordinator,
-                            mMultiInstanceManager,
-                            mWindowAndroid);
-        }
-        RectProvider anchorRectProvider = new RectProvider();
-        getAnchorRect(clickedTab, anchorRectProvider);
-        StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
-        mMultiSelectedTabsContextMenuCoordinator.showMenu(anchorRectProvider, tabIds);
+        mTabContextMenuCoordinator.showMenu(anchorRectProvider, tabIds);
     }
 
     /**
@@ -2334,8 +2291,9 @@ public class StripLayoutHelper
         return true;
     }
 
-    /* package */ void showTabContextMenuForTesting(StripLayoutTab tab) {
-        showTabContextMenu(tab);
+    /* package */ void showTabContextMenuForTesting(
+            List<Integer> tabIds, StripLayoutTab anchorTab) {
+        showTabContextMenu(tabIds, anchorTab);
     }
 
     /* package */ void destroyTabContextMenuForTesting() {
@@ -2664,11 +2622,6 @@ public class StripLayoutHelper
             TabContextMenuCoordinator tabGroupContextMenuCoordinator) {
         mTabContextMenuCoordinator = tabGroupContextMenuCoordinator;
         ResettersForTesting.register(() -> mTabContextMenuCoordinator = null);
-    }
-
-    void setMultiSelectedTabsContextMenuCoordinatorForTesting(
-            MultiSelectedTabsContextMenuCoordinator multiSelectedTabsGroupContextMenuCoordinator) {
-        mMultiSelectedTabsContextMenuCoordinator = multiSelectedTabsGroupContextMenuCoordinator;
     }
 
     private void clearLastHoveredTab() {
@@ -3025,12 +2978,12 @@ public class StripLayoutHelper
             if (mModel != null
                     && mModel.isTabMultiSelected(clickedTab.getTabId())
                     && mModel.getMultiSelectedTabsCount() > 1) {
-                showMultiSelectedTabsContextMenu(getMultiSelectedTabIds(), clickedTab);
+                showTabContextMenu(getMultiSelectedTabIds(), clickedTab);
             } else {
                 if (mModel != null) {
                     mModel.clearMultiSelection(/* notifyObservers= */ true);
                 }
-                showTabContextMenu(clickedTab);
+                showTabContextMenu(Collections.singletonList(clickedTab.getTabId()), clickedTab);
             }
             return true;
         } else if (clickedView instanceof CompositorButton button

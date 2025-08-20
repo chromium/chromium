@@ -55,8 +55,10 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.tasks.tab_management.GroupWindowChecker;
@@ -87,11 +89,12 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A coordinator for the context menu on the tab strip by long-pressing on a tab. It is responsible
- * for creating a list of menu items, setting up the menu, and displaying the menu.
+ * A coordinator for the context menu on the tab strip by long-pressing on a single tab or a tab
+ * part of a multiple tab selection. It is responsible for creating a list of menu items, setting up
+ * the menu, and displaying the menu.
  */
 @NullMarked
-public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Integer> {
+public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<Integer>> {
     @SuppressWarnings("HidingField")
     private final Supplier<TabModel> mTabModelSupplier;
 
@@ -170,117 +173,123 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
     }
 
     @VisibleForTesting
-    static OnItemClickedCallback<Integer> getMenuItemClickedCallback(
+    static OnItemClickedCallback<List<Integer>> getMenuItemClickedCallback(
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier) {
-        return (menuId, tabId, collaborationId, listViewTouchTracker) -> {
-            if (tabId == Tab.INVALID_TAB_ID) return;
+        return (menuId, tabIds, collaborationId, listViewTouchTracker) -> {
+            assert !tabIds.isEmpty() : "Empty tab id list provided";
             TabModel tabModel = tabModelSupplier.get();
-            Tab tab = tabModel.getTabById(tabId);
-            if (tab == null) return;
+            List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
+            assert !tabs.isEmpty() : "Empty tab list provided";
+            recordMenuAction(menuId, tabs.size() > 1);
 
             if (menuId == R.id.add_to_tab_group) {
-                tabGroupListBottomSheetCoordinator.showBottomSheet(List.of(tab));
-                RecordUserAction.record("MobileToolbarTabMenu.AddToTabGroup");
+                tabGroupListBottomSheetCoordinator.showBottomSheet(tabs);
             } else if (menuId == R.id.remove_from_tab_group) {
+                // Ungrouping in reverse to maintain the order of the tabs.
+                Collections.reverse(tabs);
                 tabGroupModelFilter
                         .getTabUngrouper()
-                        .ungroupTabs(List.of(tab), /* trailing= */ true, /* allowDialog= */ true);
-                RecordUserAction.record("MobileToolbarTabMenu.RemoveFromTabGroup");
+                        .ungroupTabs(tabs, /* trailing= */ true, /* allowDialog= */ true);
             } else if (menuId == R.id.move_to_other_window_menu_id) {
-                if (MultiWindowUtils.getInstanceCount() == 1) {
-                    RecordUserAction.record("MobileToolbarTabMenu.MoveTabToNewWindow");
-                } else {
-                    RecordUserAction.record("MobileToolbarTabMenu.MoveTabToOtherWindow");
-                }
-                multiInstanceManager.moveTabsToOtherWindow(Collections.singletonList(tab));
+                multiInstanceManager.moveTabsToOtherWindow(tabs);
             } else if (menuId == R.id.share_tab) {
+                assert tabs.size() == 1: "Share is only available for single tab selection.";
                 shareDelegateSupplier
                         .get()
-                        .share(tab, /* shareDirectly= */ false, TAB_STRIP_CONTEXT_MENU);
-                RecordUserAction.record("MobileToolbarTabMenu.ShareTab");
+                        .share(tabs.get(0), /* shareDirectly= */ false, TAB_STRIP_CONTEXT_MENU);
             } else if (menuId == R.id.pin_tab_menu_id) {
-                tabModel.pinTab(tab.getId());
+                for (Tab tab : tabs) {
+                    tabModel.pinTab(tab.getId());
+                }
             } else if (menuId == R.id.unpin_tab_menu_id) {
-                tabModel.unpinTab(tab.getId());
+                // Unpinning in reverse to maintain the order of the tabs.
+                for (int i = tabs.size() - 1; i >= 0; i--) {
+                    tabModel.unpinTab(tabs.get(i).getId());
+                }
             } else if (menuId == R.id.close_tab) {
                 boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 tabModel.getTabRemover()
                         .closeTabs(
-                                TabClosureParams.closeTab(tab)
+                                TabClosureParams.closeTabs(tabs)
                                         .allowUndo(allowUndo)
                                         .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
                                         .build(),
                                 /* allowDialog= */ true);
-                RecordUserAction.record("MobileToolbarTabMenu.CloseTab");
             }
         };
     }
 
     /**
-     * Show the context menu of the tab group.
+     * Show the context menu for the given tabs.
      *
      * @param anchorViewRectProvider The context menu's anchor view rect provider. These are screen
      *     coordinates.
-     * @param tabId The tab id of the interacting tab group.
+     * @param tabIds The tab ids of the interacting tabs.
      */
-    protected void showMenu(RectProvider anchorViewRectProvider, int tabId) {
+    protected void showMenu(RectProvider anchorViewRectProvider, List<Integer> tabIds) {
         createAndShowMenu(
                 anchorViewRectProvider,
-                tabId,
+                tabIds,
                 /* horizontalOverlapAnchor= */ true,
                 /* verticalOverlapAnchor= */ false,
                 /* animStyle= */ Resources.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 assumeNonNull(mWindowAndroid.getActivity().get()));
-        RecordUserAction.record("MobileToolbarTabMenu.Shown");
+        recordUserAction("Shown", tabIds.size() > 1);
     }
 
     @Override
-    protected void buildMenuActionItems(ModelList itemList, Integer id) {
-        var tab = mTabModelSupplier.get().getTabById(id);
-        if (tab == null) return;
-        boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
-
-        itemList.add(createMoveToTabGroupItem(tab, isIncognito));
-
-        if (tab.getTabGroupId() != null) {
-            // Show the option to remove the tab from its group iff the tab is already in a group.
-            itemList.add(
-                    buildListItem(
-                            R.string.remove_tab_from_group,
-                            R.id.remove_from_tab_group,
-                            isIncognito));
+    protected void buildMenuActionItems(ModelList itemList, List<Integer> ids) {
+        assert !ids.isEmpty() : "Empty tab id list provided";
+        TabModel tabModel = mTabModelSupplier.get();
+        List<Tab> tabs = TabModelUtils.getTabsById(ids, tabModel, /* allowClosing= */ false);
+        assert !tabs.isEmpty() : "Empty tab list provided";
+        boolean isIncognito = tabModel.isIncognitoBranded();
+        if (tabs.size() == 1) {
+            buildMenuActionItemsForSingleTab(itemList, tabs, isIncognito);
+        } else {
+            buildMenuActionItemsForMultipleTabs(itemList, tabs, isIncognito);
         }
+    }
 
-        if (tab.getTabGroupId() == null
-                && MultiWindowUtils.isMultiInstanceApi31Enabled()
-                && mMultiInstanceManager != null) {
-            // Show the option to move the tab to another window iff the tab is not in a group.
-            itemList.add(
-                    createMoveToWindowItem(
-                            id,
-                            isIncognito,
-                            R.plurals.move_tab_to_another_window,
-                            R.id.move_to_other_window_menu_id));
+    private void buildMenuActionItemsForSingleTab(
+            ModelList itemList, List<Tab> tabs, boolean isIncognito) {
+        itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
+        if (TabGroupUtils.isAnyTabInGroup(tabs)) {
+            itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
         }
-
+        if (shouldShowMoveToWindowItem(tabs)) {
+            itemList.add(createMoveToWindowItem(TabModelUtils.getTabIds(tabs), isIncognito));
+        }
         itemList.add(buildMenuDivider(isIncognito));
-
-        if (ShareUtils.shouldEnableShare(tab)) {
-            itemList.add(buildListItem(R.string.share, R.id.share_tab, isIncognito));
+        if (ShareUtils.shouldEnableShare(tabs.get(0))) {
+            // Share is only available for single tab selection.
+            itemList.add(createShareItem(isIncognito));
         }
-
         if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
-            int menuId = tab.getIsPinned() ? R.id.unpin_tab_menu_id : R.id.pin_tab_menu_id;
-            int titleId = tab.getIsPinned() ? R.string.menu_unpin_tab : R.string.menu_pin_tab;
-            itemList.add(buildListItem(titleId, menuId, isIncognito));
+            itemList.add(createPinUnpinTabItem(tabs, isIncognito));
         }
+        itemList.add(createCloseItem(isIncognito));
+    }
 
-        itemList.add(buildListItem(R.string.close, R.id.close_tab, isIncognito));
+    private void buildMenuActionItemsForMultipleTabs(
+            ModelList itemList, List<Tab> tabs, boolean isIncognito) {
+        itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
+        if (TabGroupUtils.isAnyTabInGroup(tabs)) {
+            itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
+        }
+        if (shouldShowMoveToWindowItem(tabs)) {
+            itemList.add(createMoveToWindowItem(TabModelUtils.getTabIds(tabs), isIncognito));
+        }
+        itemList.add(buildMenuDivider(isIncognito));
+        if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
+            itemList.add(createPinUnpinTabItem(tabs, isIncognito));
+        }
+        itemList.add(createCloseItem(isIncognito));
     }
 
     private static ListItem buildListItem(
@@ -292,48 +301,17 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 .build();
     }
 
-    @Override
-    protected int getMenuWidth(int anchorViewWidthPx) {
-        return MathUtils.clamp(
-                anchorViewWidthPx,
-                getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width),
-                getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width));
-    }
-
-    @Override
-    protected @Nullable String getCollaborationIdOrNull(Integer id) {
-        var tab = mTabModelSupplier.get().getTabById(id);
-        if (tab == null) return null;
-        return TabShareUtils.getCollaborationIdOrNull(tab.getTabGroupId(), mTabGroupSyncService);
-    }
-
-    @Override
-    protected void moveToNewWindow(Integer tabId) {
-        if (tabId == Tab.INVALID_TAB_ID) return;
-        TabModel tabModel = mTabModelSupplier.get();
-        Tab tab = tabModel.getTabById(tabId);
-        if (tab == null) return;
-        RecordUserAction.record("MobileToolbarTabMenu.MoveTabToNewWindow");
-        assumeNonNull(mMultiInstanceManager).moveTabsToNewWindow(Collections.singletonList(tab));
-    }
-
-    @Override
-    protected void moveToWindow(InstanceInfo instanceInfo, Integer tabId) {
-        if (tabId == Tab.INVALID_TAB_ID) return;
-        TabModel tabModel = mTabModelSupplier.get();
-        Tab tab = tabModel.getTabById(tabId);
-        if (tab == null) return;
-        RecordUserAction.record("MobileToolbarTabMenu.MoveTabToOtherWindow");
-        assumeNonNull(mMultiInstanceManager)
-                .moveTabsToWindow(
-                        instanceInfo, Collections.singletonList(tab), TabList.INVALID_TAB_INDEX);
-    }
-
-    private ListItem createMoveToTabGroupItem(Tab tab, boolean isIncognito) {
+    private ListItem createMoveToTabGroupItem(List<Tab> tabs, boolean isIncognito) {
+        String title =
+                mContext.getResources()
+                        .getQuantityString(R.plurals.add_tab_to_group_menu_item, tabs.size());
         if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)) {
-            return buildListItem(
-                    R.string.menu_add_tab_to_group, R.id.add_to_tab_group, isIncognito);
+            return new ListItemBuilder()
+                    .withTitle(title)
+                    .withMenuId(R.id.add_to_tab_group)
+                    .withIsIncognito(isIncognito)
+                    .build();
         }
         List<ListItem> submenuItems = new ArrayList<>();
         // "Add to new group" item
@@ -346,21 +324,22 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                                 .with(
                                         CLICK_LISTENER,
                                         (v) -> {
-                                            RecordUserAction.record(
-                                                    "MobileToolbarTabMenu.NewGroup");
+                                            recordMenuAction(
+                                                    R.id.add_to_new_group_sub_menu_id,
+                                                    tabs.size() > 1);
                                             createNewGroupForTabs(
-                                                    List.of(tab),
+                                                    tabs,
                                                     mTabGroupModelFilter,
                                                     /* tabMovedCallback= */ null,
                                                     /* tabGroupCreationCallback= */ null);
                                         })
                                 .build()));
         // Available tab groups.
-        @Nullable Token groupToNotBeIncluded = tab.getTabGroupId();
+        @Nullable Token groupToNotBeIncluded = tabs.get(0).getTabGroupId();
         List<ListItem> potentialGroups =
                 isIncognito
-                        ? getIncognitoTabGroups(tab, groupToNotBeIncluded)
-                        : getRegularTabGroups(tab, groupToNotBeIncluded);
+                        ? getIncognitoTabGroups(tabs, groupToNotBeIncluded)
+                        : getRegularTabGroups(tabs, groupToNotBeIncluded);
         if (!potentialGroups.isEmpty()) {
             submenuItems.add(buildMenuDivider(isIncognito));
             submenuItems.addAll(potentialGroups);
@@ -369,13 +348,104 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         return new ListItem(
                 MENU_ITEM_WITH_SUBMENU,
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
-                        .with(TITLE, mContext.getString(R.string.menu_add_tab_to_group))
+                        .with(TITLE, title)
                         .with(ENABLED, true)
                         .with(SUBMENU_ITEMS, submenuItems)
                         .build());
     }
 
-    private List<ListItem> getRegularTabGroups(Tab tab, @Nullable Token groupToNotBeIncluded) {
+    private boolean shouldShowMoveToWindowItem(List<Tab> tabs) {
+        if (TabGroupUtils.isAnyTabInGroup(tabs)) return false;
+        return MultiWindowUtils.isMultiInstanceApi31Enabled() && mMultiInstanceManager != null;
+    }
+
+    private ListItem createRemoveFromTabGroupItem(List<Tab> tabs, boolean isIncognito) {
+        String title =
+                mContext.getResources()
+                        .getQuantityString(R.plurals.remove_tabs_from_group_menu_item, tabs.size());
+        return new ListItemBuilder()
+                .withTitle(title)
+                .withMenuId(R.id.remove_from_tab_group)
+                .withIsIncognito(isIncognito)
+                .build();
+    }
+
+    private ListItem createMoveToWindowItem(List<Integer> tabIds, boolean isIncognito) {
+        assumeNonNull(mMultiInstanceManager);
+        return createMoveToWindowItem(
+                tabIds,
+                isIncognito,
+                tabIds.size() > 1
+                        ? R.plurals.move_tabs_to_another_window
+                        : R.plurals.move_tab_to_another_window,
+                R.id.move_to_other_window_menu_id);
+    }
+
+    private ListItem createShareItem(boolean isIncognito) {
+        return buildListItem(R.string.share, R.id.share_tab, isIncognito);
+    }
+
+    private ListItem createPinUnpinTabItem(List<Tab> tabs, boolean isIncognito) {
+        boolean showUnpin = true;
+        for (Tab tab : tabs) {
+            if (!tab.getIsPinned()) {
+                showUnpin = false;
+                break;
+            }
+        }
+        String title =
+                showUnpin
+                        ? mContext.getResources()
+                                .getQuantityString(R.plurals.unpin_tabs_menu_item, tabs.size())
+                        : mContext.getResources()
+                                .getQuantityString(R.plurals.pin_tabs_menu_item, tabs.size());
+        return new ListItemBuilder()
+                .withTitle(title)
+                .withMenuId(showUnpin ? R.id.unpin_tab_menu_id : R.id.pin_tab_menu_id)
+                .withIsIncognito(isIncognito)
+                .build();
+    }
+
+    private ListItem createCloseItem(boolean isIncognito) {
+        return buildListItem(R.string.close, R.id.close_tab, isIncognito);
+    }
+
+    private static void recordMenuAction(int menuId, boolean isMultipleTabs) {
+        if (menuId == R.id.add_to_tab_group) {
+            recordUserAction("AddToTabGroup", isMultipleTabs);
+        } else if (menuId == R.id.remove_from_tab_group) {
+            recordUserAction("RemoveTabFromTabGroup", isMultipleTabs);
+        } else if (menuId == R.id.move_to_other_window_menu_id) {
+            if (MultiWindowUtils.getInstanceCount() == 1) {
+                recordUserAction("MoveTabToNewWindow", isMultipleTabs);
+            } else {
+                recordUserAction("MoveTabsToOtherWindow", isMultipleTabs);
+            }
+        } else if (menuId == R.id.share_tab) {
+            recordUserAction("ShareTab", isMultipleTabs);
+        } else if (menuId == R.id.pin_tab_menu_id) {
+            recordUserAction("PinTab", isMultipleTabs);
+        } else if (menuId == R.id.unpin_tab_menu_id) {
+            recordUserAction("UnpinTab", isMultipleTabs);
+        } else if (menuId == R.id.close_tab) {
+            recordUserAction("CloseTab", isMultipleTabs);
+        } else if (menuId == R.id.add_to_new_group_sub_menu_id) {
+            recordUserAction("NewGroup", isMultipleTabs);
+        } else if (menuId == R.id.add_to_group_sub_menu_id) {
+            recordUserAction("MoveTabToGroup", isMultipleTabs);
+        } else if (menuId == R.id.add_to_group_incognito_sub_menu_id) {
+            recordUserAction("MoveTabToIncognitoGroup", isMultipleTabs);
+        } else if (menuId == R.id.move_to_new_window_sub_menu_id) {
+            recordUserAction("MoveTabToNewWindow", isMultipleTabs);
+        } else if (menuId == R.id.move_to_other_window_sub_menu_id) {
+            recordUserAction("MoveTabToOtherWindow", isMultipleTabs);
+        } else {
+            assert false : "Unknown menu id: " + menuId;
+        }
+    }
+
+    private List<ListItem> getRegularTabGroups(
+            List<Tab> tabs, @Nullable Token groupToNotBeIncluded) {
         GroupWindowChecker windowChecker =
                 new GroupWindowChecker(mTabGroupSyncService, mTabGroupModelFilter);
         List<SavedTabGroup> sortedTabGroups =
@@ -418,20 +488,18 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             String label = TextUtils.isEmpty(tabGroup.title) ? fallbackLabel : tabGroup.title;
             OnClickListener clickListener =
                     (v) -> {
-                        RecordUserAction.record("MobileToolbarTabMenu.MoveTabToGroup");
+                        recordMenuAction(R.id.add_to_group_sub_menu_id, tabs.size() > 1);
                         if (isGroupInCurrentWindow) {
                             // If the tab is already in the current window,
                             // then just merge it to the group.
                             mergeTabsToDest(
-                                    Collections.singletonList(tab),
+                                    tabs,
                                     firstTabInGroupTabId,
                                     mTabGroupModelFilter,
                                     /* tabMovedCallback= */ null);
                         } else {
                             mMultiInstanceManager.moveTabsToWindowAndMergeToDest(
-                                    activeInstancesById.get(windowId),
-                                    Collections.singletonList(tab),
-                                    firstTabInGroupTabId);
+                                    activeInstancesById.get(windowId), tabs, firstTabInGroupTabId);
                         }
                     };
             result.add(
@@ -447,7 +515,8 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         return result;
     }
 
-    private List<ListItem> getIncognitoTabGroups(Tab tab, @Nullable Token groupToNotBeIncluded) {
+    private List<ListItem> getIncognitoTabGroups(
+            List<Tab> tabs, @Nullable Token groupToNotBeIncluded) {
         List<ListItem> result = new ArrayList<>();
         for (Token groupId : mTabGroupModelFilter.getAllTabGroupIds()) {
             if (Objects.equals(groupToNotBeIncluded, groupId)) {
@@ -455,23 +524,22 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             }
 
             int tabIdInGroup = mTabGroupModelFilter.getGroupLastShownTabId(groupId);
+            OnClickListener clickListener =
+                    (v) -> {
+                        recordMenuAction(R.id.add_to_group_incognito_sub_menu_id, tabs.size() > 1);
+                        mergeTabsToDest(
+                                tabs,
+                                tabIdInGroup,
+                                mTabGroupModelFilter,
+                                /* tabMovedCallback= */ null);
+                    };
             result.add(
                     new ListItem(
                             MENU_ITEM,
                             new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                     .with(TITLE, mTabGroupModelFilter.getTabGroupTitle(groupId))
                                     .with(ENABLED, true)
-                                    .with(
-                                            CLICK_LISTENER,
-                                            (v) -> {
-                                                RecordUserAction.record(
-                                                        "MobileToolbarTabMenu.MoveTabToIncognitoGroup");
-                                                mergeTabsToDest(
-                                                        List.of(tab),
-                                                        tabIdInGroup,
-                                                        mTabGroupModelFilter,
-                                                        /* tabMovedCallback= */ null);
-                                            })
+                                    .with(CLICK_LISTENER, clickListener)
                                     .with(
                                             START_ICON_DRAWABLE,
                                             getCircleDrawable(
@@ -492,5 +560,60 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             circleDrawable.setColor(color);
         }
         return circleDrawable;
+    }
+
+    @Override
+    protected int getMenuWidth(int anchorViewWidthPx) {
+        return MathUtils.clamp(
+                anchorViewWidthPx,
+                getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width),
+                getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width));
+    }
+
+    @Override
+    protected @Nullable String getCollaborationIdOrNull(List<Integer> ids) {
+        if (ids.isEmpty() || ids.size() > 1) return null;
+        var tab = mTabModelSupplier.get().getTabById(ids.get(0));
+        if (tab == null) return null;
+        return TabShareUtils.getCollaborationIdOrNull(tab.getTabGroupId(), mTabGroupSyncService);
+    }
+
+    @Override
+    protected void moveToNewWindow(List<Integer> tabIds) {
+        if (tabIds.isEmpty()) return;
+        TabModel tabModel = mTabModelSupplier.get();
+        List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
+        if (tabs.isEmpty()) return;
+        ungroupTabs(tabs);
+        recordMenuAction(R.id.move_to_new_window_sub_menu_id, tabs.size() > 1);
+        assumeNonNull(mMultiInstanceManager).moveTabsToNewWindow(tabs);
+    }
+
+    @Override
+    protected void moveToWindow(InstanceInfo instanceInfo, List<Integer> tabIds) {
+        if (tabIds.isEmpty()) return;
+        TabModel tabModel = mTabModelSupplier.get();
+        List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
+        if (tabs.isEmpty()) return;
+        ungroupTabs(tabs);
+        recordMenuAction(R.id.move_to_other_window_sub_menu_id, tabs.size() > 1);
+        assumeNonNull(mMultiInstanceManager)
+                .moveTabsToWindow(instanceInfo, tabs, TabList.INVALID_TAB_INDEX);
+    }
+
+    /** Ungroups any tabs in {@param tabs} which are currently in a group. */
+    private void ungroupTabs(List<Tab> tabs) {
+        List<Tab> groupedTabs = TabGroupUtils.getGroupedTabs(mTabGroupModelFilter, tabs);
+        if (!groupedTabs.isEmpty()) {
+            // Ungroup all tabs before performing the move operation.
+            mTabGroupModelFilter
+                    .getTabUngrouper()
+                    .ungroupTabs(groupedTabs, /* trailing= */ true, /* allowDialog= */ false);
+        }
+    }
+
+    private static void recordUserAction(String label, boolean isMultipleTabs) {
+        String action = isMultipleTabs ? label + ".MultiTab" : label;
+        RecordUserAction.record("MobileToolbarTabMenu." + action);
     }
 }

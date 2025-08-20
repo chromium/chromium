@@ -22,6 +22,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -321,5 +322,33 @@ public class TabGroupUtils {
         if (tabMovedCallback != null) {
             tabMovedCallback.onTabMoved();
         }
+    }
+
+    /**
+     * Checks to see if any tab in a list of tabs is in a tab group.
+     *
+     * @param tabs The list of tabs to be checked.
+     */
+    public static boolean isAnyTabInGroup(List<Tab> tabs) {
+        for (Tab tab : tabs) {
+            if (tab.getTabGroupId() != null) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Filters the given list of tabs, returning a new list containing only the tabs that are part
+     * of a tab group.
+     *
+     * @param filter The {@link TabGroupModelFilter} used to find grouped tabs.
+     * @param tabs The list of {@link Tab}s to filter.
+     * @return A new list of {@link Tab}s that are in a tab group.
+     */
+    public static List<Tab> getGroupedTabs(TabGroupModelFilter filter, List<Tab> tabs) {
+        List<Tab> groupedTabs = new ArrayList<>();
+        for (Tab tab : tabs) {
+            if (filter.isTabInTabGroup(tab)) groupedTabs.add(tab);
+        }
+        return groupedTabs;
     }
 }

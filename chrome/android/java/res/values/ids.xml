@@ -135,6 +135,11 @@ found in the LICENSE file.
     <item type="id" name="new_window_menu_id" />
     <item type="id" name="new_incognito_window_menu_id" />
     <item type="id" name="move_to_other_window_menu_id" />
+    <item type="id" name="add_to_new_group_sub_menu_id" />
+    <item type="id" name="add_to_group_sub_menu_id" />
+    <item type="id" name="add_to_group_incognito_sub_menu_id" />
+    <item type="id" name="move_to_new_window_sub_menu_id" />
+    <item type="id" name="move_to_other_window_sub_menu_id" />
     <item type="id" name="manage_all_windows_menu_id" />
     <item type="id" name="divider_line_id" />
     <item type="id" name="open_history_menu_id" />

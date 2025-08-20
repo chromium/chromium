@@ -28737,91 +28737,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MobileToolbarTabMenu.AddToTabGroup">
+<action name="MobileToolbarTabMenu">
   <owner>jhimawan@google.com</owner>
+  <owner>hitarthkothario@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <description>
-    User opened the bottom sheet to add a tab to a new or existing tab group,
-    via the tab context menu on tab strip on Android.
-  </description>
-</action>
-
-<action name="MobileToolbarTabMenu.CloseTab">
-  <owner>jhimawan@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <description>
-    User closed a tab via the tab context menu on tab strip on Android.
-  </description>
-</action>
-
-<action name="MobileToolbarTabMenu.MoveTabToGroup">
-  <owner>jhimawan@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <description>
-    User moved a tab to a synced tab group via the tab context menu on tab strip
-    on Android.
-  </description>
-</action>
-
-<action name="MobileToolbarTabMenu.MoveTabToIncognitoGroup">
-  <owner>jhimawan@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <description>
-    User moved a tab to an incognito tab group via the tab context menu on tab
-    strip on Android.
-  </description>
-</action>
-
-<action name="MobileToolbarTabMenu.MoveTabToNewWindow">
-  <owner>jhimawan@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <description>
-    User moved a tab to a new window via the tab context menu on tab strip on
+    Recorded when the user interacts with the tab menu on the tab strip on
     Android.
-  </description>
-</action>
-
-<action name="MobileToolbarTabMenu.MoveTabToOtherWindow">
-  <owner>jhimawan@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <description>
-    User moved a tab to another window via the tab context menu on tab strip on
-    Android.
-  </description>
-</action>
-
-<action name="MobileToolbarTabMenu.NewGroup">
-  <owner>jhimawan@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <description>
-    User created a new tab group via the tab context menu on tab strip on
-    Android.
-  </description>
-</action>
-
-<action name="MobileToolbarTabMenu.RemoveFromTabGroup">
-  <owner>jhimawan@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <description>
-    User removed a tab from its tab group via the tab context menu on tab strip
-    on Android.
-  </description>
-</action>
-
-<action name="MobileToolbarTabMenu.ShareTab">
-  <owner>jhimawan@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <description>
-    User shared the URL open in a tab, via the tab context menu on tab strip on
-    Android.
-  </description>
-</action>
-
-<action name="MobileToolbarTabMenu.Shown">
-  <owner>jhimawan@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <description>
-    User opened the tab context menu via long-press on tab strip on Android.
   </description>
 </action>
 
@@ -51510,6 +51432,78 @@ should be able to be added at any place in this file.
       label="Recorded when a group suggestion is considered invalid."/>
   <suffix name="Shown" label="Recorded when a group suggestion is shown."/>
   <affected-action name="TabSwitcher.GroupSuggest"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="AddToTabGroup"
+      label="User opened the bottom sheet to add a tab to a new or existing
+             tab group, via the tab context menu on tab strip on Android."/>
+  <suffix name="AddToTabGroup.MultiTab"
+      label="User opened the bottom sheet to add multiple tabs to a new or
+             existing tab group, via the tab context menu on tab strip on
+             Android."/>
+  <suffix name="CloseTab"
+      label="User closed a tab via the tab context menu on tab strip on
+             Android."/>
+  <suffix name="CloseTab.MultiTab"
+      label="User closed multiple tabs via the tab context menu on tab strip
+             on Android."/>
+  <suffix name="MoveTabToGroup"
+      label="User moved a tab to a synced tab group via the tab context menu
+             on tab strip on Android."/>
+  <suffix name="MoveTabToGroup.MultiTab"
+      label="User moved multiple tabs to a synced tab group via the tab
+             context menu on tab strip on Android."/>
+  <suffix name="MoveTabToIncognitoGroup"
+      label="User moved a tab to an incognito tab group via the tab context
+             menu on tab strip on Android."/>
+  <suffix name="MoveTabToIncognitoGroup.MultiTab"
+      label="User moved multiple tabs to an incognito tab group via the tab
+             context menu on tab strip on Android."/>
+  <suffix name="MoveTabToNewWindow"
+      label="User moved a tab to a new window via the tab context menu on tab
+             strip on Android."/>
+  <suffix name="MoveTabToNewWindow.MultiTab"
+      label="User moved multiple tabs to a new window via the tab context
+             menu on tab strip on Android."/>
+  <suffix name="MoveTabToOtherWindow"
+      label="User moved a tab to another window via the tab context menu on
+             tab strip on Android."/>
+  <suffix name="MoveTabToOtherWindow.MultiTab"
+      label="User moved multiple tabs to another window via the tab context
+             menu on tab strip on Android."/>
+  <suffix name="NewGroup"
+      label="User created a new tab group via the tab context menu on tab
+             strip on Android."/>
+  <suffix name="NewGroup.MultiTab"
+      label="User created a new tab group with multiple tabs via the tab
+             context menu on tab strip on Android."/>
+  <suffix name="PinTab"
+      label="User pinned a tab via the tab context menu on tab strip on
+             Android."/>
+  <suffix name="PinTab.MultiTab"
+      label="User pinned multiple tabs via the tab context menu on tab strip
+             on Android."/>
+  <suffix name="RemoveTabFromTabGroup"
+      label="User removed a tab from its tab group via the tab context menu
+             on tab strip on Android."/>
+  <suffix name="RemoveTabFromTabGroup.MultiTab"
+      label="User removed multiple tabs from their tab group via the tab
+             context menu on tab strip on Android."/>
+  <suffix name="ShareTab"
+      label="User shared the URL open in a tab, via the tab context menu on
+             tab strip on Android."/>
+  <suffix name="Shown" label="Recorded when the tab context menu is shown."/>
+  <suffix name="Shown.MultiTab"
+      label="Recorded when the tab context menu is shown with multiple tabs
+             selected."/>
+  <suffix name="UnpinTab"
+      label="User unpinned a tab via the tab context menu on tab strip on
+             Android."/>
+  <suffix name="UnpinTab.MultiTab"
+      label="User unpinned multiple tabs via the tab context menu on tab
+             strip on Android."/>
+  <affected-action name="MobileToolbarTabMenu"/>
 </action-suffix>
 
 </actions>
