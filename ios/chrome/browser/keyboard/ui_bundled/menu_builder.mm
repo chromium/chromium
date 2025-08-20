@@ -23,32 +23,44 @@
   }
 
   if (@available(iOS 26, *)) {
-    // Application: Add elements.
+    // Application: Replace the Application elements.
     NSArray<UIMenuElement*>* applicationElements = @[
       UIKeyCommand.cr_showSettings,
       UIKeyCommand.cr_clearBrowsingData,
     ];
+    // Replace the existing elements, as none are relevant for Chrome.
     [builder replaceChildrenOfMenuForIdentifier:UIMenuApplication
                               fromChildrenBlock:^(NSArray<UIMenuElement*>* _) {
                                 return applicationElements;
                               }];
 
-    // File: Add elements.
+    // File: Replace the File elements.
     NSArray<UIMenuElement*>* fileElements = @[
       UIKeyCommand.cr_openNewTab,
       UIKeyCommand.cr_openNewIncognitoTab,
       UIKeyCommand.cr_openNewWindow,
       UIKeyCommand.cr_openNewIncognitoWindow,
       UIKeyCommand.cr_openLocation,
-      UIKeyCommand.cr_closeTab,
       UIKeyCommand.cr_voiceSearch,
-      UIKeyCommand.cr_closeAll,
     ];
-    [self insertElements:fileElements
-        atStartOfMenuForIdentifier:UIMenuFile
-                         inBuilder:builder];
+    // Replace the existing elements, as none are relevant for Chrome.
+    [builder replaceChildrenOfMenuForIdentifier:UIMenuFile
+                              fromChildrenBlock:^(NSArray<UIMenuElement*>* _) {
+                                return fileElements;
+                              }];
 
-    // Edit: Replace the Find actions.
+    // File: Add the Close elements as an inlined submenu.
+    UIMenu* closeMenu = [UIMenu menuWithTitle:@""
+                                        image:nil
+                                   identifier:nil
+                                      options:UIMenuOptionsDisplayInline
+                                     children:@[
+                                       UIKeyCommand.cr_closeTab,
+                                       UIKeyCommand.cr_closeAll,
+                                     ]];
+    [builder insertChildMenu:closeMenu atEndOfMenuForIdentifier:UIMenuFile];
+
+    // Edit: Replace the Find elements.
     NSArray<UIMenuElement*>* findElements = @[
       UIKeyCommand.cr_find,
       UIKeyCommand.cr_findNext,

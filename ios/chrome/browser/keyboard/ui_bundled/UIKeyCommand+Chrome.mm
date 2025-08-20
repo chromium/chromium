@@ -26,10 +26,12 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 #pragma mark - Specific Keyboard Commands
 
 + (UIKeyCommand*)cr_openNewTab {
+  UIImage* image = DefaultSymbolWithConfiguration(kPlusInCircleSymbol, nil);
   return [self cr_commandWithInput:@"t"
                      modifierFlags:Command
                             action:@selector(keyCommand_openNewTab)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_TAB"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_TAB"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_openNewRegularTab {
@@ -39,24 +41,30 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_openNewIncognitoTab {
+  UIImage* image = CustomSymbolWithConfiguration(kIncognitoSymbol, nil);
   return [self cr_commandWithInput:@"n"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_openNewIncognitoTab)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_INCOGNITO_TAB"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_INCOGNITO_TAB"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_openNewWindow {
+  UIImage* image = DefaultSymbolWithConfiguration(kPlusRectangleSymbol, nil);
   return [self cr_commandWithInput:@"n"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_openNewWindow)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_WINDOW"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_WINDOW"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_openNewIncognitoWindow {
+  UIImage* image = CustomSymbolWithConfiguration(kIncognitoRectangle, nil);
   return [self cr_commandWithInput:@"n"
                      modifierFlags:AltShiftCommand
                             action:@selector(keyCommand_openNewIncognitoWindow)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_INCOGNITO_WINDOW"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_INCOGNITO_WINDOW"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_reopenLastClosedTab {
@@ -88,17 +96,21 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_openLocation {
+  UIImage* image = DefaultSymbolWithConfiguration(kGlobeSymbol, nil);
   return [self cr_commandWithInput:@"l"
                      modifierFlags:Command
                             action:@selector(keyCommand_openLocation)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_OPEN_LOCATION"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_OPEN_LOCATION"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_closeTab {
+  UIImage* image = DefaultSymbolWithConfiguration(kXMarkSquareSymbol, nil);
   return [self cr_commandWithInput:@"w"
                      modifierFlags:Command
                             action:@selector(keyCommand_closeTab)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_CLOSE_TAB"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_CLOSE_TAB"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_showNextTab {
@@ -216,10 +228,12 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_voiceSearch {
+  UIImage* image = DefaultSymbolWithConfiguration(kMicrophoneSymbol, nil);
   return [self cr_commandWithInput:@"."
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_voiceSearch)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_VOICE_SEARCH"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_VOICE_SEARCH"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_close {
@@ -376,10 +390,12 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_closeAll {
+  UIImage* image = DefaultSymbolWithConfiguration(kXMarkSquareFillSymbol, nil);
   return [self cr_commandWithInput:@"w"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_closeAll)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_CLOSE_ALL"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_CLOSE_ALL"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_undo {

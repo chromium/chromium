@@ -53,6 +53,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/incognito_circle_fill.symbolset/incognito.circle.fill.cr.svg",
     "Assets.xcassets/incognito_circle_fill_ios14.symbolset/Contents.json",
     "Assets.xcassets/incognito_circle_fill_ios14.symbolset/incognito.circle.fill.ios14.cr.svg",
+    "Assets.xcassets/incognito_rectangle.symbolset/Contents.json",
+    "Assets.xcassets/incognito_rectangle.symbolset/incognito.rectangle.cr.svg",
     "Assets.xcassets/language.symbolset/Contents.json",
     "Assets.xcassets/language.symbolset/language.cr.svg",
     "Assets.xcassets/laptopcomputer_and_phone.symbolset/Contents.json",

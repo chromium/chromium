@@ -110,6 +110,7 @@ extern NSString* const kPasswordManagerTrustedVaultWidgetPromoImage;
 extern NSString* const kPasswordManagerTrustedVaultWidgetPromoDisabledImage;
 extern NSString* const kPhoneSparkleSymbol;
 extern NSString* const kTextSearchSymbol;
+extern NSString* const kIncognitoRectangle;
 
 // Custom symbol names which can be configured with a color palette. iOS 15+
 // only.
@@ -160,6 +161,7 @@ extern NSString* const kReadLaterActionSymbol;
 extern NSString* const kAddBookmarkActionSymbol;
 extern NSString* const kCopyActionSymbol;
 extern NSString* const kPasteActionSymbol;
+extern NSString* const kPlusRectangleSymbol;
 extern NSString* const kNewWindowActionSymbol;
 extern NSString* const kShowActionSymbol;
 extern NSString* const kHideActionSymbol;
@@ -182,6 +184,8 @@ extern NSString* const kSettingsSymbol;
 extern NSString* const kSettingsFilledSymbol;
 extern NSString* const kShareSymbol;
 extern NSString* const kXMarkSymbol;
+extern NSString* const kXMarkSquareSymbol;
+extern NSString* const kXMarkSquareFillSymbol;
 extern NSString* const kXMarkCircleFillSymbol;
 extern NSString* const kPlusSymbol;
 extern NSString* const kSearchSymbol;
