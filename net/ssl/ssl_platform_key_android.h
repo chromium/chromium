@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace net {
 
@@ -25,6 +26,13 @@ class X509Certificate;
 // object.
 NET_EXPORT scoped_refptr<SSLPrivateKey> WrapJavaPrivateKey(
     const X509Certificate* cert,
+    const base::android::JavaRef<jobject>& key);
+
+// Returns a new SSLPrivateKey for `pubkey` which uses `key` for signing
+// operations or nullptr on error. `key` must be a java.security.PrivateKey
+// object.
+NET_EXPORT scoped_refptr<SSLPrivateKey> WrapJavaPrivateKey(
+    bssl::UniquePtr<EVP_PKEY> pubkey,
     const base::android::JavaRef<jobject>& key);
 
 // Converts `algorithms` to a list of strings containing Java key types,

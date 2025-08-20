@@ -167,9 +167,15 @@ scoped_refptr<SSLPrivateKey> WrapJavaPrivateKey(
     const X509Certificate* certificate,
     const JavaRef<jobject>& key) {
   bssl::UniquePtr<EVP_PKEY> pubkey = GetClientCertPublicKey(certificate);
-  if (!pubkey)
-    return nullptr;
+  return WrapJavaPrivateKey(std::move(pubkey), key);
+}
 
+scoped_refptr<SSLPrivateKey> WrapJavaPrivateKey(
+    bssl::UniquePtr<EVP_PKEY> pubkey,
+    const JavaRef<jobject>& key) {
+   if (!pubkey) {
+    return nullptr;
+  }
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
       std::make_unique<SSLPlatformKeyAndroid>(std::move(pubkey), key),
       GetSSLPlatformKeyTaskRunner());
