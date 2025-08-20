@@ -753,6 +753,20 @@ if (use_blink) {
   }
 }
 
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":ui_base_features_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//ui/base/ui_base_features.cc" ]
+    class_name = "org.chromium.ui.base.UiBaseFeatures"
+  }
+  android_library("ui_base_features_java") {
+    # Right now, this only includes the Java features. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
+}
+
 static_library("test_support") {
   testonly = true
   sources = [

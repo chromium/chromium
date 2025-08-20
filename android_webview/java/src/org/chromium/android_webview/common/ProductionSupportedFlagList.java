@@ -33,6 +33,7 @@ import org.chromium.services.network.NetworkServiceFeatures;
 import org.chromium.services.tracing.TracingServiceFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.base.UiAndroidFeatures;
+import org.chromium.ui.base.UiBaseFeatures;
 import org.chromium.ui.gfx.GfxSwitches;
 
 /**
@@ -1115,6 +1116,10 @@ public final class ProductionSupportedFlagList {
                 AwSwitches.WEBVIEW_USE_BACKGROUND_THREAD_FOR_GMS,
                 "Tells the Google Service, GMS, to use a background thread for its Service bind and"
                         + " connection calls."),
+        Flag.baseFeature(
+                UiBaseFeatures.SEND_EMPTY_GESTURE_SCROLL_UPDATE,
+                "Send GestureScrollUpdates together with TouchMoves, including empty GSUs for 0"
+                        + " delta moves."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
