@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_SAVE_AND_FILL_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_SAVE_AND_FILL_MANAGER_H_
 
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
+
 namespace autofill::payments {
 
 // Interface for managing the Save and Fill dialog flow.
@@ -32,6 +34,10 @@ class SaveAndFillManager {
   virtual void OnCreditCardFormSubmitted() = 0;
   // Returns true if the maximum number of strikes has been reached.
   virtual bool IsMaxStrikesLimitReached() = 0;
+  // Logs the reason why the Save and Fill suggestion was not shown if this
+  // metric has not yet been recorded, as this is logged once per page load.
+  virtual void MaybeLogSaveAndFillSuggestionNotShownReason(
+      autofill_metrics::SaveAndFillSuggestionNotShownReason reason) = 0;
 };
 
 }  // namespace autofill::payments

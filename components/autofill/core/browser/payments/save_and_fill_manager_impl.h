@@ -5,6 +5,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_SAVE_AND_FILL_MANAGER_IMPL_H_
 
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/save_and_fill_manager.h"
@@ -30,6 +31,8 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   void OnSuggestionOffered() override;
   void OnCreditCardFormSubmitted() override;
   bool IsMaxStrikesLimitReached() override;
+  void MaybeLogSaveAndFillSuggestionNotShownReason(
+      autofill_metrics::SaveAndFillSuggestionNotShownReason reason) override;
 
   // Called when the user makes a decision on the local Save and Fill dialog.
   // The `user_provided_card_save_and_fill_details` holds the  data entered by
@@ -113,6 +116,9 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   bool save_and_fill_suggestion_offered_ = false;
   // True if the user accepted the Save and Fill suggestion.
   bool save_and_fill_suggestion_selected_ = false;
+  // Set to true after the first time the Save and Fill suggestion not being
+  // shown is logged. Ensures that logging occurs only once per page load.
+  bool has_logged_save_and_fill_suggestion_not_shown_reason_ = false;
 
   // StrikeDatabase used to check whether to show the Save and Fill suggestion.
   std::unique_ptr<SaveAndFillStrikeDatabase> save_and_fill_strike_database_;

@@ -20,7 +20,29 @@ enum class SaveAndFillFormEvent {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillFormEvent)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SaveAndFillSuggestionNotShownReason)
+enum class SaveAndFillSuggestionNotShownReason {
+  // The user has at least one credit card saved.
+  kHasSavedCards = 0,
+  // The suggestion is blocked by the strike database (e.g., max strikes
+  // reached or required delay has not passed).
+  kBlockedByStrikeDatabase = 1,
+  // The user is in incognito mode.
+  kUserInIncognito = 2,
+  // The credit card form is not complete.
+  kIncompleteCreditCardForm = 3,
+  kMaxValue = kIncompleteCreditCardForm,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillSuggestionNotShownReason)
+
 void LogSaveAndFillFormEvent(SaveAndFillFormEvent event);
+
+// Logs the reason why the Save and Fill suggestion was not shown.
+void LogSaveAndFillSuggestionNotShownReason(
+    SaveAndFillSuggestionNotShownReason reason);
 
 }  // namespace autofill::autofill_metrics
 

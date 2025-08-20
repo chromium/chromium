@@ -13,4 +13,10 @@ void LogSaveAndFillFormEvent(SaveAndFillFormEvent event) {
                                 event);
 }
 
+void LogSaveAndFillSuggestionNotShownReason(
+    SaveAndFillSuggestionNotShownReason reason) {
+  base::UmaHistogramEnumeration("Autofill.SaveAndFill.SuggestionNotShownReason",
+                                reason);
+}
+
 }  // namespace autofill::autofill_metrics

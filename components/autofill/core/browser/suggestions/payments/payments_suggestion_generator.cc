@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -1003,26 +1004,40 @@ Suggestion CreateBnplSuggestion(const std::vector<BnplIssuer>& bnpl_issuers,
 bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,
                                      bool is_complete_form,
                                      const FormFieldData& trigger_field) {
-  // Check if the strike database limit has been reached.
-  if (client.GetPaymentsAutofillClient()
-          ->GetSaveAndFillManager()
-          ->IsMaxStrikesLimitReached()) {
-    return false;
-  }
-  // Verify the user is not in incognito mode.
-  if (client.IsOffTheRecord()) {
-    return false;
-  }
+  payments::SaveAndFillManager* save_and_fill_manager =
+      client.GetPaymentsAutofillClient()->GetSaveAndFillManager();
+  CHECK(save_and_fill_manager);
   // Verify the user has no credit cards saved.
   if (!client.GetPersonalDataManager()
            .payments_data_manager()
            .GetCreditCards()
            .empty()) {
+    save_and_fill_manager->MaybeLogSaveAndFillSuggestionNotShownReason(
+        autofill_metrics::SaveAndFillSuggestionNotShownReason::kHasSavedCards);
+    return false;
+  }
+  // Verify that the feature isn't blocked by the strike database. This can
+  // happen when the maximum number of strikes is reached or the cooldown
+  // period hasn't passed.
+  if (save_and_fill_manager->IsMaxStrikesLimitReached()) {
+    save_and_fill_manager->MaybeLogSaveAndFillSuggestionNotShownReason(
+        autofill_metrics::SaveAndFillSuggestionNotShownReason::
+            kBlockedByStrikeDatabase);
+    return false;
+  }
+  // Verify the user is not in incognito mode.
+  if (client.IsOffTheRecord()) {
+    save_and_fill_manager->MaybeLogSaveAndFillSuggestionNotShownReason(
+        autofill_metrics::SaveAndFillSuggestionNotShownReason::
+            kUserInIncognito);
     return false;
   }
   // Verify the credit card form is complete for the purposes of "Save and
   // Fill".
   if (!is_complete_form) {
+    save_and_fill_manager->MaybeLogSaveAndFillSuggestionNotShownReason(
+        autofill_metrics::SaveAndFillSuggestionNotShownReason::
+            kIncompleteCreditCardForm);
     return false;
   }
   // Verify a field within the credit card form is clicked and has no more than

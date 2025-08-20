@@ -23,6 +23,10 @@ class MockSaveAndFillManager : public payments::SaveAndFillManager {
   MOCK_METHOD(void, OnSuggestionOffered, (), (override));
   MOCK_METHOD(void, OnCreditCardFormSubmitted, (), (override));
   MOCK_METHOD(bool, IsMaxStrikesLimitReached, (), (override));
+  MOCK_METHOD(void,
+              MaybeLogSaveAndFillSuggestionNotShownReason,
+              (autofill_metrics::SaveAndFillSuggestionNotShownReason reason),
+              (override));
 };
 
 }  // namespace autofill

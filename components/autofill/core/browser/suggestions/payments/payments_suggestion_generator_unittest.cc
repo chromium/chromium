@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -2193,6 +2194,17 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
 
+  MockSaveAndFillManager& mock_save_and_fill_manager =
+      static_cast<MockSaveAndFillManager&>(*autofill_client()
+                                                ->GetPaymentsAutofillClient()
+                                                ->GetSaveAndFillManager());
+
+  EXPECT_CALL(mock_save_and_fill_manager,
+              MaybeLogSaveAndFillSuggestionNotShownReason(
+                  autofill_metrics::SaveAndFillSuggestionNotShownReason::
+                      kHasSavedCards))
+      .Times(1);
+
   payments_data().AddCreditCard(test::GetCreditCard());
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
@@ -2212,6 +2224,17 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
 
+  MockSaveAndFillManager& mock_save_and_fill_manager =
+      static_cast<MockSaveAndFillManager&>(*autofill_client()
+                                                ->GetPaymentsAutofillClient()
+                                                ->GetSaveAndFillManager());
+
+  EXPECT_CALL(mock_save_and_fill_manager,
+              MaybeLogSaveAndFillSuggestionNotShownReason(
+                  autofill_metrics::SaveAndFillSuggestionNotShownReason::
+                      kIncompleteCreditCardForm))
+      .Times(1);
+
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
@@ -2228,6 +2251,17 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
   autofill_client()->set_is_off_the_record(true);
+
+  MockSaveAndFillManager& mock_save_and_fill_manager =
+      static_cast<MockSaveAndFillManager&>(*autofill_client()
+                                                ->GetPaymentsAutofillClient()
+                                                ->GetSaveAndFillManager());
+
+  EXPECT_CALL(mock_save_and_fill_manager,
+              MaybeLogSaveAndFillSuggestionNotShownReason(
+                  autofill_metrics::SaveAndFillSuggestionNotShownReason::
+                      kUserInIncognito))
+      .Times(1);
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
@@ -2271,6 +2305,12 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
   EXPECT_CALL(mock_save_and_fill_manager, IsMaxStrikesLimitReached())
       .WillOnce(testing::Return(true));
+
+  EXPECT_CALL(mock_save_and_fill_manager,
+              MaybeLogSaveAndFillSuggestionNotShownReason(
+                  autofill_metrics::SaveAndFillSuggestionNotShownReason::
+                      kBlockedByStrikeDatabase))
+      .Times(1);
 
   ASSERT_FALSE(autofill_client()->IsOffTheRecord());
   CreditCardSuggestionSummary summary;

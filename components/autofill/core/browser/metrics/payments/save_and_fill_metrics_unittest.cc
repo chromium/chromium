@@ -44,4 +44,52 @@ TEST_F(SaveAndFillMetricsTest, LogSuggestionAccepted) {
       /*expected_count=*/1);
 }
 
+TEST_F(SaveAndFillMetricsTest,
+       LogSaveAndFillSuggestionNotShownReason_HasSavedCards) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillSuggestionNotShownReason(
+      SaveAndFillSuggestionNotShownReason::kHasSavedCards);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.SuggestionNotShownReason",
+      SaveAndFillSuggestionNotShownReason::kHasSavedCards, 1);
+}
+
+TEST_F(SaveAndFillMetricsTest,
+       LogSaveAndFillSuggestionNotShownReason_BlockedByStrikeDatabase) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillSuggestionNotShownReason(
+      SaveAndFillSuggestionNotShownReason::kBlockedByStrikeDatabase);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.SuggestionNotShownReason",
+      SaveAndFillSuggestionNotShownReason::kBlockedByStrikeDatabase, 1);
+}
+
+TEST_F(SaveAndFillMetricsTest,
+       LogSaveAndFillSuggestionNotShownReason_UserInIncognito) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillSuggestionNotShownReason(
+      SaveAndFillSuggestionNotShownReason::kUserInIncognito);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.SuggestionNotShownReason",
+      SaveAndFillSuggestionNotShownReason::kUserInIncognito, 1);
+}
+
+TEST_F(SaveAndFillMetricsTest,
+       LogSaveAndFillSuggestionNotShownReason_IncompleteCreditCardForm) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillSuggestionNotShownReason(
+      SaveAndFillSuggestionNotShownReason::kIncompleteCreditCardForm);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.SuggestionNotShownReason",
+      SaveAndFillSuggestionNotShownReason::kIncompleteCreditCardForm, 1);
+}
+
 }  // namespace autofill::autofill_metrics

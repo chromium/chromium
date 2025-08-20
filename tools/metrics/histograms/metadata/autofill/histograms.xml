@@ -5914,6 +5914,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.SaveAndFill.SuggestionNotShownReason"
+    enum="SaveAndFillSuggestionNotShownReason" expires_after="2026-06-01">
+  <owner>averina@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logged when the Save and Fill suggestion is not shown to the user,
+    indicating the reason for it not being shown. Logged once per page load when
+    the conditions for showing the suggestion are checked and not met.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SaveCardCardholderNamePrefilled" enum="Boolean"
     expires_after="2026-06-01">
   <owner>osaul@google.com</owner>

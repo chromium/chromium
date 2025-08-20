@@ -73,6 +73,15 @@ bool SaveAndFillManagerImpl::IsMaxStrikesLimitReached() {
   return false;
 }
 
+void SaveAndFillManagerImpl::MaybeLogSaveAndFillSuggestionNotShownReason(
+    autofill_metrics::SaveAndFillSuggestionNotShownReason reason) {
+  if (has_logged_save_and_fill_suggestion_not_shown_reason_) {
+    return;
+  }
+  autofill_metrics::LogSaveAndFillSuggestionNotShownReason(reason);
+  has_logged_save_and_fill_suggestion_not_shown_reason_ = true;
+}
+
 void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
     CardSaveAndFillDialogUserDecision user_decision,
     const UserProvidedCardSaveAndFillDetails&
