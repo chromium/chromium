@@ -7,6 +7,5 @@ found in the LICENSE file.
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
   <item
-    android:color="@color/baseline_primary_80"
-    android:alpha="0.7"/>
+    android:color="@color/baseline_primary_80" />
 </selector>
