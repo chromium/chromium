@@ -266,7 +266,7 @@ public class PasswordManagerCheckupHelperTest {
         verify(mPasswordCheckupClientHelperMock)
                 .getPasswordCheckupIntent(
                         eq(PasswordCheckReferrer.SAFETY_CHECK),
-                        eq(Optional.of(TEST_EMAIL_ADDRESS)),
+                        eq(TEST_EMAIL_ADDRESS),
                         any(Callback.class),
                         any(Callback.class));
     }
@@ -283,7 +283,7 @@ public class PasswordManagerCheckupHelperTest {
         verify(mPasswordCheckupClientHelperMock)
                 .getPasswordCheckupIntent(
                         eq(PasswordCheckReferrer.SAFETY_CHECK),
-                        eq(Optional.empty()),
+                        eq((String) null),
                         any(Callback.class),
                         any(Callback.class));
     }
@@ -1231,10 +1231,7 @@ public class PasswordManagerCheckupHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .getPasswordCheckupIntent(
-                        anyInt(),
-                        eq(accountEmail == null ? Optional.empty() : Optional.of(accountEmail)),
-                        any(Callback.class),
-                        any(Callback.class));
+                        anyInt(), eq(accountEmail), any(Callback.class), any(Callback.class));
     }
 
     private void returnErrorWhenFetchingIntentForPasswordCheckup(
@@ -1247,10 +1244,7 @@ public class PasswordManagerCheckupHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .getPasswordCheckupIntent(
-                        anyInt(),
-                        eq(accountEmail == null ? Optional.empty() : Optional.of(accountEmail)),
-                        any(Callback.class),
-                        any(Callback.class));
+                        anyInt(), eq(accountEmail), any(Callback.class), any(Callback.class));
     }
 
     private void setUpSuccessfulRunPasswordCheckup() {

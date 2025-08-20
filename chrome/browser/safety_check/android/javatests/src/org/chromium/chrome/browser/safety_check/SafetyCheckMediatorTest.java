@@ -90,7 +90,6 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 /** Unit tests for {@link SafetyCheckMediator}. */
@@ -729,8 +728,7 @@ public class SafetyCheckMediatorTest {
         click(getPasswordsClickListener(mPasswordCheckModel));
 
         verify(mPasswordCheckupHelper, times(mUseGmsApi ? 1 : 0))
-                .getPasswordCheckupIntent(
-                        eq(SAFETY_CHECK), eq(Optional.of(TEST_EMAIL_ADDRESS)), any(), any());
+                .getPasswordCheckupIntent(eq(SAFETY_CHECK), eq(TEST_EMAIL_ADDRESS), any(), any());
     }
 
     @Test
@@ -796,7 +794,7 @@ public class SafetyCheckMediatorTest {
         click(getPasswordsClickListener(passwordCheckLocalModel));
 
         verify(mPasswordCheckupHelper, times(mUseGmsApi ? 1 : 0))
-                .getPasswordCheckupIntent(eq(SAFETY_CHECK), eq(Optional.empty()), any(), any());
+                .getPasswordCheckupIntent(eq(SAFETY_CHECK), eq((String) null), any(), any());
     }
 
     @Test

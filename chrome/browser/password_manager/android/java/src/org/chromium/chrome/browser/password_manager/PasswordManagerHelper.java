@@ -285,8 +285,6 @@ public class PasswordManagerHelper {
             @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
         assert accountEmail == null || !accountEmail.isEmpty();
 
-        // TODO(crbug.com/40945093): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
-        // take the accountEmail as String.
         Optional<String> account =
                 accountEmail == null ? Optional.empty() : Optional.of(accountEmail);
 
@@ -569,11 +567,9 @@ public class PasswordManagerHelper {
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
-        // TODO(crbug.com/40945093): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
-        // take the accountEmail as String.
         checkupClient.getPasswordCheckupIntent(
                 referrer,
-                account,
+                account.orElse(null),
                 (intent) -> {
                     passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
                     maybeLaunchIntentWithLoadingDialog(

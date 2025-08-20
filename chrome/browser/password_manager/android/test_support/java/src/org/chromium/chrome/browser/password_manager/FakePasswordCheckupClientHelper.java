@@ -7,18 +7,19 @@ package org.chromium.chrome.browser.password_manager;
 import android.app.PendingIntent;
 
 import org.chromium.base.Callback;
-
-import java.util.Optional;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Fake {@link PasswordCheckupClientHelper} to be used in integration tests. */
+@NullMarked
 public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHelper {
-    private PendingIntent mPendingIntentForLocalCheckup;
-    private PendingIntent mPendingIntentForAccountCheckup;
-    private Integer mBreachedCredentialsCount = 0;
-    private Integer mWeakCredentialsCount = 0;
-    private Integer mReusedCredentialsCount = 0;
-    private Exception mError;
-    private Exception mWeakCredentialsError;
+    private @Nullable PendingIntent mPendingIntentForLocalCheckup;
+    private @Nullable PendingIntent mPendingIntentForAccountCheckup;
+    private int mBreachedCredentialsCount;
+    private int mWeakCredentialsCount;
+    private int mReusedCredentialsCount;
+    private @Nullable Exception mError;
+    private @Nullable Exception mWeakCredentialsError;
 
     public void setIntentForLocalCheckup(PendingIntent pendingIntent) {
         mPendingIntentForLocalCheckup = pendingIntent;
@@ -28,15 +29,15 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
         mPendingIntentForAccountCheckup = pendingIntent;
     }
 
-    public void setBreachedCredentialsCount(Integer count) {
+    public void setBreachedCredentialsCount(int count) {
         mBreachedCredentialsCount = count;
     }
 
-    public void setWeakCredentialsCount(Integer count) {
+    public void setWeakCredentialsCount(int count) {
         mWeakCredentialsCount = count;
     }
 
-    public void setReusedCredentialsCount(Integer count) {
+    public void setReusedCredentialsCount(int count) {
         mReusedCredentialsCount = count;
     }
 
@@ -51,53 +52,26 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
     @Override
     public void getPasswordCheckupIntent(
             @PasswordCheckReferrer int referrer,
-            Optional<String> accountName,
+            @Nullable String accountName,
             Callback<PendingIntent> successCallback,
             Callback<Exception> failureCallback) {
         if (mError != null) {
             failureCallback.onResult(mError);
             return;
         }
-        successCallback.onResult(
-                accountName.isPresent()
-                        ? mPendingIntentForAccountCheckup
-                        : mPendingIntentForLocalCheckup);
-    }
-
-    @Override
-    public void getPasswordCheckupIntent(
-            @PasswordCheckReferrer int referrer,
-            String accountName,
-            Callback<PendingIntent> successCallback,
-            Callback<Exception> failureCallback) {
-        if (mError != null) {
-            failureCallback.onResult(mError);
-            return;
-        }
-        successCallback.onResult(
-                accountName.isEmpty()
+        @Nullable PendingIntent intent =
+                accountName == null
                         ? mPendingIntentForLocalCheckup
-                        : mPendingIntentForAccountCheckup);
+                        : mPendingIntentForAccountCheckup;
+        assert intent != null : "intent not set";
+        successCallback.onResult(intent);
     }
 
     @Override
     public void runPasswordCheckupInBackground(
             @PasswordCheckReferrer int referrer,
-            Optional<String> accountName,
-            Callback<Void> successCallback,
-            Callback<Exception> failureCallback) {
-        if (mError != null) {
-            failureCallback.onResult(mError);
-            return;
-        }
-        successCallback.onResult(null);
-    }
-
-    @Override
-    public void runPasswordCheckupInBackground(
-            @PasswordCheckReferrer int referrer,
-            String accountName,
-            Callback<Void> successCallback,
+            @Nullable String accountName,
+            Callback<@Nullable Void> successCallback,
             Callback<Exception> failureCallback) {
         if (mError != null) {
             failureCallback.onResult(mError);
@@ -109,20 +83,7 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
     @Override
     public void getBreachedCredentialsCount(
             @PasswordCheckReferrer int referrer,
-            Optional<String> accountName,
-            Callback<Integer> successCallback,
-            Callback<Exception> failureCallback) {
-        if (mError != null) {
-            failureCallback.onResult(mError);
-            return;
-        }
-        successCallback.onResult(mBreachedCredentialsCount);
-    }
-
-    @Override
-    public void getBreachedCredentialsCount(
-            @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
         if (mError != null) {
@@ -135,7 +96,7 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
     @Override
     public void getWeakCredentialsCount(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
         if (mError != null) {
@@ -154,7 +115,7 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
     @Override
     public void getReusedCredentialsCount(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
         if (mError != null) {

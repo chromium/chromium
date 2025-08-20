@@ -28,8 +28,6 @@ import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHel
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 
-import java.util.Optional;
-
 /** Tests for {@link FakePasswordCheckupClientHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -59,7 +57,7 @@ public class FakePasswordCheckupClientHelperTest {
     public void testGetPasswordCheckupIntentForLocalCheckupSucceeds() {
         mFakeHelper.getPasswordCheckupIntent(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.empty(),
+                (String) null,
                 mSuccessCallbackHelper::notifyCalled,
                 mFailureCallbackHelper::notifyCalled);
 
@@ -76,7 +74,7 @@ public class FakePasswordCheckupClientHelperTest {
     public void testGetPasswordCheckupIntentForAccountCheckupSucceeds() {
         mFakeHelper.getPasswordCheckupIntent(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 mSuccessCallbackHelper::notifyCalled,
                 mFailureCallbackHelper::notifyCalled);
 
@@ -103,7 +101,7 @@ public class FakePasswordCheckupClientHelperTest {
 
         mFakeHelper.getPasswordCheckupIntent(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
@@ -123,7 +121,7 @@ public class FakePasswordCheckupClientHelperTest {
 
         mFakeHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
@@ -147,7 +145,7 @@ public class FakePasswordCheckupClientHelperTest {
 
         mFakeHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
@@ -170,7 +168,7 @@ public class FakePasswordCheckupClientHelperTest {
 
         mFakeHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
@@ -194,7 +192,7 @@ public class FakePasswordCheckupClientHelperTest {
 
         mFakeHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
