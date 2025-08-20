@@ -415,8 +415,6 @@ external/wpt/css/css-text/text-transform/text-transform-full-size-kana-004.html 
 external/wpt/css/css-text/text-transform/text-transform-full-size-kana-005.html [ Skip ]
 external/wpt/css/css-text/text-transform/text-transform-full-size-kana-006.html [ Skip ]
 external/wpt/css/css-text/text-transform/text-transform-full-size-kana-007.html [ Skip ]
-external/wpt/css/css-text/text-transform/text-transform-fullwidth-008.html [ Skip ]
-external/wpt/css/css-text/text-transform/text-transform-fullwidth-009.html [ Skip ]
 external/wpt/css/css-text/word-boundary/* [ Skip ]
 external/wpt/css/css-text/writing-system/writing-system-line-break-001.html [ Skip ]
 external/wpt/css/css-text/writing-system/writing-system-line-break-002.html [ Skip ]

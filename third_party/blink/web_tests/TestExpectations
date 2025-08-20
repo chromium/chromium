@@ -829,6 +829,10 @@ crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-color.html [ F
 crbug.com/1284170 external/wpt/css/css-text-decor/text-decoration-dotted-001.html [ Failure ]
 crbug.com/1284170 external/wpt/css/css-text-decor/text-decoration-dotted-002.html [ Failure ]
 
+# Interaction between text-transform: full-width and white space processing.
+crbug.com/1219023 external/wpt/css/css-text/text-transform/text-transform-fullwidth-008.html [ Failure ]
+crbug.com/1219023 external/wpt/css/css-text/text-transform/text-transform-fullwidth-009.html [ Failure ]
+
 crbug.com/936084 external/wpt/css/css-sizing/max-content-input-001.html [ Failure ]
 
 #### Unprefix and update the implementation for text-emphasis
