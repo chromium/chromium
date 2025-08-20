@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
@@ -128,6 +129,8 @@ void FragmentItems::FinalizeAfterLayout(
   // up the FragmentData objects.
   bool may_be_non_contiguous_ifc = false;
 
+  bool has_regular_break = false;
+
   for (const auto& result : results) {
     const auto& fragment =
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
@@ -135,6 +138,25 @@ void FragmentItems::FinalizeAfterLayout(
     if (!fragment_items) [[unlikely]] {
       may_be_non_contiguous_ifc = true;
       continue;
+    }
+
+    if (const BlockBreakToken* break_token = fragment.GetBreakToken()) {
+      if (IsBreakInside(break_token)) {
+        has_regular_break = true;
+      } else if (has_regular_break && break_token->IsRepeated()) {
+        // Repeated content (inside a repeated table header, for instance)
+        // that's in a nested multicol container may effectively cause a
+        // non-contiguous inline formatting context, as soon as there's an
+        // inline child inside that isn't represented in all the columns.
+        //
+        // Example scenario: A table header group that's repeated three times
+        // (the table occupies three pages), and there's a two-column multicol
+        // container inside, and there's a text node inside that only exists in
+        // the first column. The inline formatting context established by the
+        // inner multicol will create 3*2 = 6 fragments, but the text node will
+        // only exist in the first, third, and fifth fragment.
+        may_be_non_contiguous_ifc = true;
+      }
     }
 
     bool found_inflow_content = false;
