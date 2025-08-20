@@ -38,7 +38,7 @@ class ExternsChecker(object):
 
       source = input_api.os_path.join(api_root, line)
       api_name, ext = line.rsplit('.', 1)
-      assert ext == 'json' or ext == 'idl'
+      assert ext == 'json' or ext == 'idl' or ext == 'webidl'
       externs = input_api.os_path.join(externs_root, api_name + '.js')
       ret[source] = externs
 

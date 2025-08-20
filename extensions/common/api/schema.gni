@@ -61,7 +61,7 @@ if (enable_extensions) {
     "bluetooth_low_energy.idl",
     "bluetooth_private.idl",
     "bluetooth_socket.idl",
-    "bluetooth.idl",
+    "bluetooth.webidl",
     "cec_private.idl",
     "clipboard.idl",
     "extension_options_internal.idl",

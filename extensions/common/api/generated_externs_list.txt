@@ -2,7 +2,7 @@
 # TODO(crbug.com/40868715): Remove these as we migrate all consumers towards
 # typescript definitions.
 audio.idl
-bluetooth.idl
+bluetooth.webidl
 bluetooth_private.idl
 clipboard.idl
 events.json
