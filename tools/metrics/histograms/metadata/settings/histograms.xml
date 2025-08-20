@@ -209,7 +209,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.AutocompleteSearches.OnStartup2"
-    enum="BooleanEnabled" expires_after="2025-08-24">
+    enum="BooleanEnabled" expires_after="2025-12-28">
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
