@@ -281,7 +281,8 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
     EXPECT_TRUE(resource_load_observer_);
     resource_load_observer_->WaitForResourceCompletion(url);
     EXPECT_TRUE(resource_load_observer_->GetResource(url));
-    EXPECT_EQ(0, (*resource_load_observer_->GetResource(url))->raw_body_bytes);
+    EXPECT_TRUE(
+        (*resource_load_observer_->GetResource(url))->raw_body_bytes.is_zero());
 
     // For later versions of ORB the error code lets us determine precisely
     // whether a fetch was blocked by ORB. For "v0.1" and "v0.2" (for

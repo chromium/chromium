@@ -100,8 +100,10 @@ void ResourceLoadObserver::CheckResourceLoaded(
       CheckTime(timing.connect_timing.connect_end);
     }
     if (file_size.has_value()) {
-      EXPECT_EQ(file_size.value(), resource_load_info->raw_body_bytes);
-      EXPECT_LT(file_size.value(), resource_load_info->total_received_bytes);
+      EXPECT_EQ(file_size.value(),
+                resource_load_info->raw_body_bytes.InBytes());
+      EXPECT_LT(file_size.value(),
+                resource_load_info->total_received_bytes.InBytes());
     }
   }
   EXPECT_TRUE(resource_load_info_found);

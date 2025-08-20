@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
@@ -69,7 +70,7 @@ blink::mojom::ResourceLoadInfoPtr CreateResourceLoadInfo(
   resource_load_info->original_url = url;
   resource_load_info->request_destination = request_destination;
   resource_load_info->was_cached = false;
-  resource_load_info->raw_body_bytes = 0;
+  resource_load_info->raw_body_bytes = base::ByteCount(0);
   resource_load_info->net_error = net::OK;
   resource_load_info->network_info = blink::mojom::CommonNetworkInfo::New();
   resource_load_info->network_info->remote_endpoint = net::IPEndPoint();

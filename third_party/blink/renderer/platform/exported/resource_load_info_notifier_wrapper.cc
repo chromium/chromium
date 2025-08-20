@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
@@ -187,8 +188,10 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCompleted(
 
   resource_load_info_->was_cached = status.exists_in_cache;
   resource_load_info_->net_error = status.error_code;
-  resource_load_info_->total_received_bytes = status.encoded_data_length;
-  resource_load_info_->raw_body_bytes = status.encoded_body_length;
+  resource_load_info_->total_received_bytes =
+      base::ByteCount(status.encoded_data_length);
+  resource_load_info_->raw_body_bytes =
+      base::ByteCount(status.encoded_body_length);
 
   if (task_runner_->BelongsToCurrentThread()) {
     if (weak_wrapper_resource_load_info_notifier_) {

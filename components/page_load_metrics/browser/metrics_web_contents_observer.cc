@@ -504,9 +504,8 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
         url::SchemeHostPort(resource_load_info.final_url),
         network_info->remote_endpoint.value(),
         render_frame_host->GetFrameTreeNodeId(), resource_load_info.was_cached,
-        base::ByteCount(resource_load_info.raw_body_bytes),
-        original_content_length, resource_load_info.request_destination,
-        resource_load_info.net_error,
+        resource_load_info.raw_body_bytes, original_content_length,
+        resource_load_info.request_destination, resource_load_info.net_error,
         std::make_unique<net::LoadTimingInfo>(
             resource_load_info.load_timing_info));
     tracker->OnLoadedResource(extra_request_complete_info);
