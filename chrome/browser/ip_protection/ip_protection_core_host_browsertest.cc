@@ -72,21 +72,6 @@ class ScopedIpProtectionFeatureList {
           {net::features::kIpPrivacyDisableForEnterpriseByDefault.name,
            base::ToString(enterprise_killswitch_enabled)}}});
     features_and_params.push_back({network::features::kMaskedDomainList, {}});
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    // Use of IpProtectionCoreHostFactory::GetInstance() in the test
-    // constructor means that the KeyedService Factory instances get
-    // created before feature overrides in
-    // testing/variations/fieldtrial_testing_config.json get applied;
-    // this is needed to ensure that the factory in
-    // chrome/browser/net/server_certificate_database_service_factory is
-    // created consistent with the rest of the code.
-    //
-    // See http://g/chrome-secure-web-and-net/Qre0HqS0hgA for more info.
-    features_and_params.push_back(
-        {::features::kEnableCertManagementUIV2Write, {}});
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
     feature_list_.InitWithFeaturesAndParameters(features_and_params, {});
   }
 

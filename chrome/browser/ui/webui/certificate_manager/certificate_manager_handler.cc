@@ -79,9 +79,7 @@ void GetCertManagementMetadataAsync(
           ? net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
                 profile.get())
           : nullptr;
-  if (base::FeatureList::IsEnabled(
-          ::features::kEnableCertManagementUIV2Write) &&
-      server_cert_service) {
+  if (server_cert_service) {
     metadata->show_user_certs_ui = true;
     server_cert_service->GetCertificatesCount(base::BindOnce(
         &GetUserCertsCountAsync, std::move(metadata), std::move(callback)));

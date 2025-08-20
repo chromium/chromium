@@ -110,10 +110,6 @@ BASE_FEATURE(ShowBorealisMotd, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableCertManagementUIV2,
              "EnableCertManagementUIV2_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableCertManagementUIV2Write,
-             "EnableCertManagementUIV2Write_LAUNCHED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

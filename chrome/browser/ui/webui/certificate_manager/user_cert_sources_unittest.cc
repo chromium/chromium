@@ -67,9 +67,7 @@ class FakeCertificateManagerPage
 class UserCertSourcesUnitTest : public ChromeRenderViewHostTestHarness {
  public:
   UserCertSourcesUnitTest() {
-    feature_list_.InitWithFeatures({features::kEnableCertManagementUIV2,
-                                    features::kEnableCertManagementUIV2Write},
-                                   {});
+    feature_list_.InitWithFeatures({features::kEnableCertManagementUIV2}, {});
   }
 
   void TearDown() override {

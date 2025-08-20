@@ -250,14 +250,11 @@ void UserSessionInitializer::InitializeCerts(Profile* profile) {
                        base::BindPostTaskToCurrentDefault(
                            base::BindOnce(&OnGotNSSCertDatabaseForUser))));
 
-    if (base::FeatureList::IsEnabled(
-            ::features::kEnableCertManagementUIV2Write)) {
-      net::ServerCertificateDatabaseService* user_cert_db =
-          net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-              profile);
-      CHECK(user_cert_db);
-      NetworkCertLoader::Get()->SetUserServerCertDatabaseService(user_cert_db);
-    }
+    net::ServerCertificateDatabaseService* user_cert_db =
+        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+            profile);
+    CHECK(user_cert_db);
+    NetworkCertLoader::Get()->SetUserServerCertDatabaseService(user_cert_db);
   }
 }
 
@@ -397,9 +394,7 @@ void UserSessionInitializer::OnProfileWillBeDestroyed(Profile* profile) {
   cros_safety_service_.reset();
 
   if (NetworkCertLoader::IsInitialized() &&
-      base::SysInfo::IsRunningOnChromeOS() &&
-      base::FeatureList::IsEnabled(
-          ::features::kEnableCertManagementUIV2Write)) {
+      base::SysInfo::IsRunningOnChromeOS()) {
     NetworkCertLoader::Get()->SetUserServerCertDatabaseService(nullptr);
   }
 }
@@ -407,10 +402,7 @@ void UserSessionInitializer::OnProfileWillBeDestroyed(Profile* profile) {
 void UserSessionInitializer::PreStartSession(bool is_primary_session) {
   if (is_primary_session) {
     NetworkCertLoader::Get()->MarkUserNSSDBWillBeInitialized();
-    if (base::FeatureList::IsEnabled(
-            ::features::kEnableCertManagementUIV2Write)) {
-      NetworkCertLoader::Get()->MarkUserServerCertDatabaseWillBeInitialized();
-    }
+    NetworkCertLoader::Get()->MarkUserServerCertDatabaseWillBeInitialized();
   }
 }
 

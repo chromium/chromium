@@ -188,9 +188,7 @@ void UserCertSource::GetCertificateInfos(
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
-  if (!base::FeatureList::IsEnabled(
-          ::features::kEnableCertManagementUIV2Write) ||
-      !server_cert_service) {
+  if (!server_cert_service) {
     std::vector<certificate_manager::mojom::SummaryCertInfoPtr> cert_infos;
     std::move(callback).Run(std::move(cert_infos));
     return;
