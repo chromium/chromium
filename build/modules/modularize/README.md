@@ -4,7 +4,11 @@ Modularize is a tool named after clang's
 modularize a platform.
 
 # How do I use it?
-If you want to update (or create a new) platform, you will need to:
+If you want to create a new platform, you will want to do the following. If you
+want to update an existing platform, you can either follow the instructions
+below, or replace the `-C <directory>` with `--all` to update all platforms
+(strongly recommended to do this at least once before submitting).
+
 1) Create a gn output directory for said platform with the following values set:
    * `target_os = "<platform's os>"`
    * `target_cpu = "<platform's cpu>"`
