@@ -8,6 +8,7 @@
 #import "ios/web/common/crw_edit_menu_builder.h"
 #import "ios/web/common/crw_input_view_provider.h"
 #import "ios/web/common/features.h"
+#import "ios/web/web_state/crw_data_controls_delegate.h"
 
 @implementation CRWWebView
 
@@ -77,6 +78,123 @@
     }
   }
   return [super inputAccessoryViewController];
+}
+
+#pragma mark - UIResponderStandardEditActions
+
+- (void)copy:(id)sender {
+  if (!self.dataControlsDelegate) {
+    [super copy:sender];
+    return;
+  }
+
+  __weak CRWWebView* weakSelf = self;
+  [self.dataControlsDelegate
+      shouldAllowCopyWithDecisionHandler:^(BOOL allowed) {
+        [weakSelf onCopyAllowed:allowed sender:sender];
+      }];
+}
+
+- (void)paste:(id)sender {
+  if (!self.dataControlsDelegate) {
+    [super paste:sender];
+    return;
+  }
+
+  __weak CRWWebView* weakSelf = self;
+  [self.dataControlsDelegate
+      shouldAllowPasteWithDecisionHandler:^(BOOL allowed) {
+        [weakSelf onPasteAllowed:allowed sender:sender];
+      }];
+}
+
+- (void)cut:(id)sender {
+  if (!self.dataControlsDelegate) {
+    [super cut:sender];
+    return;
+  }
+
+  __weak CRWWebView* weakSelf = self;
+  [self.dataControlsDelegate shouldAllowCutWithDecisionHandler:^(BOOL allowed) {
+    [weakSelf onCutAllowed:allowed sender:sender];
+  }];
+}
+
+- (void)pasteAndMatchStyle:(id)sender {
+  if (!self.dataControlsDelegate) {
+    [super pasteAndMatchStyle:sender];
+    return;
+  }
+
+  __weak CRWWebView* weakSelf = self;
+  [self.dataControlsDelegate
+      shouldAllowPasteWithDecisionHandler:^(BOOL allowed) {
+        [weakSelf onPasteAndMatchStyleAllowed:allowed sender:sender];
+      }];
+}
+
+- (void)pasteAndSearch:(id)sender {
+  if (!self.dataControlsDelegate) {
+    [super pasteAndSearch:sender];
+    return;
+  }
+
+  __weak CRWWebView* weakSelf = self;
+  [self.dataControlsDelegate
+      shouldAllowPasteWithDecisionHandler:^(BOOL allowed) {
+        [weakSelf onPasteAndSearchAllowed:allowed sender:sender];
+      }];
+}
+
+- (void)pasteAndGo:(id)sender {
+  if (!self.dataControlsDelegate) {
+    [super pasteAndGo:sender];
+    return;
+  }
+
+  __weak CRWWebView* weakSelf = self;
+  [self.dataControlsDelegate
+      shouldAllowPasteWithDecisionHandler:^(BOOL allowed) {
+        [weakSelf onPasteAndGoAllowed:allowed sender:sender];
+      }];
+}
+
+#pragma mark - Private
+
+- (void)onCopyAllowed:(BOOL)allowed sender:(id)sender {
+  if (allowed) {
+    [super copy:sender];
+  }
+}
+
+- (void)onPasteAllowed:(BOOL)allowed sender:(id)sender {
+  if (allowed) {
+    [super paste:sender];
+  }
+}
+
+- (void)onCutAllowed:(BOOL)allowed sender:(id)sender {
+  if (allowed) {
+    [super cut:sender];
+  }
+}
+
+- (void)onPasteAndMatchStyleAllowed:(BOOL)allowed sender:(id)sender {
+  if (allowed) {
+    [super pasteAndMatchStyle:sender];
+  }
+}
+
+- (void)onPasteAndSearchAllowed:(BOOL)allowed sender:(id)sender {
+  if (allowed) {
+    [super pasteAndSearch:sender];
+  }
+}
+
+- (void)onPasteAndGoAllowed:(BOOL)allowed sender:(id)sender {
+  if (allowed) {
+    [super pasteAndGo:sender];
+  }
 }
 
 @end

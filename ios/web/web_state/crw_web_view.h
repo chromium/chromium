@@ -9,6 +9,7 @@
 
 @protocol CRWEditMenuBuilder;
 @protocol CRWInputViewProvider;
+@protocol CRWDataControlsDelegate;
 
 // Subclass of WKWebView which supports custom input views.
 @interface CRWWebView : WKWebView
@@ -18,6 +19,9 @@
 
 // Customizer for the edit menu.
 @property(nonatomic, weak) id<CRWEditMenuBuilder> editMenuBuilder;
+
+// Delegate for controlling clipboard user interactions.
+@property(nonatomic, weak) id<CRWDataControlsDelegate> dataControlsDelegate;
 
 @end
 

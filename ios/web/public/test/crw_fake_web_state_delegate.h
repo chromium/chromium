@@ -23,6 +23,14 @@
 // Whether `webState:runRepostFormDialogWithCompletionHandler:` has been called
 // or not.
 @property(nonatomic, readonly) BOOL repostFormWarningRequested;
+// Whether `webState:shouldAllowCopyWithDecisionHandler:` has been called or
+// not.
+@property(nonatomic, readonly) BOOL copyAllowedRequested;
+// Whether `webState:shouldAllowPasteWithDecisionHandler:` has been called or
+// not.
+@property(nonatomic, readonly) BOOL pasteAllowedRequested;
+// Whether `webState:shouldAllowCutWithDecisionHandler:` has been called or not.
+@property(nonatomic, readonly) BOOL cutAllowedRequested;
 // Whether `javaScriptDialogPresenterForWebState:` has been called or not.
 @property(nonatomic, readonly) BOOL javaScriptDialogPresenterRequested;
 // Whether `webState:handlePermissions:decisionHandler` has been called or not.

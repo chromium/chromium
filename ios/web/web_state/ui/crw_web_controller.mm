@@ -59,6 +59,7 @@
 #import "ios/web/security/crw_ssl_status_updater.h"
 #import "ios/web/util/content_type_util.h"
 #import "ios/web/util/wk_web_view_util.h"
+#import "ios/web/web_state/crw_data_controls_delegate.h"
 #import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_web_controller_container_view.h"
@@ -88,7 +89,8 @@ BASE_FEATURE(IOSSessionRestoreLoadTriggerKillSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
-@interface CRWWebController () <CRWWKNavigationHandlerDelegate,
+@interface CRWWebController () <CRWDataControlsDelegate,
+                                CRWWKNavigationHandlerDelegate,
                                 CRWEditMenuBuilder,
                                 CRWInputViewProvider,
                                 CRWSSLStatusUpdaterDataSource,
@@ -1420,7 +1422,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 
   return web::BuildWKWebView(CGRectZero, config,
                              self.webStateImpl->GetBrowserState(),
-                             userAgentType, self, self);
+                             userAgentType, self, self, self);
 }
 
 // Wraps the web view in a CRWWebViewContentView and adds it to the container
@@ -1858,6 +1860,44 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 - (CRWWKNavigationHandler*)webRequestControllerNavigationHandler:
     (CRWWebRequestController*)requestController {
   return self.navigationHandler;
+}
+
+#pragma mark - CRWDataControlsDelegate
+
+- (void)shouldAllowCopyWithDecisionHandler:(void (^)(BOOL))completionHandler {
+  web::WebState* webState = self.webStateImpl;
+  if (webState && webState->GetDelegate()) {
+    webState->GetDelegate()->ShouldAllowCopy(webState,
+                                             base::BindOnce(^(bool allowed) {
+                                               completionHandler(allowed);
+                                             }));
+  } else {
+    completionHandler(YES);
+  }
+}
+
+- (void)shouldAllowPasteWithDecisionHandler:(void (^)(BOOL))completionHandler {
+  web::WebState* webState = self.webStateImpl;
+  if (webState && webState->GetDelegate()) {
+    webState->GetDelegate()->ShouldAllowPaste(webState,
+                                              base::BindOnce(^(bool allowed) {
+                                                completionHandler(allowed);
+                                              }));
+  } else {
+    completionHandler(YES);
+  }
+}
+
+- (void)shouldAllowCutWithDecisionHandler:(void (^)(BOOL))completionHandler {
+  web::WebState* webState = self.webStateImpl;
+  if (webState && webState->GetDelegate()) {
+    webState->GetDelegate()->ShouldAllowCut(webState,
+                                            base::BindOnce(^(bool allowed) {
+                                              completionHandler(allowed);
+                                            }));
+  } else {
+    completionHandler(YES);
+  }
 }
 
 #pragma mark -  CRWEditMenuBuilder

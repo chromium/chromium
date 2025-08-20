@@ -82,6 +82,7 @@ source_set("web_state_impl_header") {
 
 source_set("web_view_internal_creation_util") {
   deps = [
+    ":data_controls",
     "//base",
     "//ios/web/common",
     "//ios/web/common:user_agent",
@@ -96,6 +97,11 @@ source_set("web_view_internal_creation_util") {
     "web_view_internal_creation_util.h",
     "web_view_internal_creation_util.mm",
   ]
+}
+
+source_set("data_controls") {
+  sources = [ "crw_data_controls_delegate.h" ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("user_interaction") {
