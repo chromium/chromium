@@ -7,7 +7,14 @@
 
 namespace base {
 
-template <typename T>
+// No-op mock traits. Only used to support trait utterances that would
+// be necessary in real code.
+enum class RawPtrTraits : unsigned {
+  kEmpty = 0,
+  kAllowPtrArithmetic = (1 << 3),
+};
+
+template <typename T, RawPtrTraits PointerTraits = RawPtrTraits::kEmpty>
 class raw_ptr {
  public:
   raw_ptr() {}
@@ -54,5 +61,10 @@ class raw_ptr {
 }  // namespace base
 
 using base::raw_ptr;
+
+// Real-life users of `RawPtrTraits` should not use the qualified
+// variants directly, but the bubbled-up aliases.
+constexpr inline auto AllowPtrArithmetic =
+    base::RawPtrTraits::kAllowPtrArithmetic;
 
 #endif  // TOOLS_CLANG_SPANIFY_TESTS_BASE_MEMORY_RAW_PTR_H_
