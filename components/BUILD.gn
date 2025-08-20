@@ -664,6 +664,8 @@ test("components_unittests") {
       "//components/data_sharing/internal:native_test_helper_java",
       "//components/download/internal/common:internal_java",
       "//components/embedder_support/android:native_java_unittests_java",
+      "//components/enterprise/client_certificates/android:browser_binding_java",
+      "//components/enterprise/client_certificates/android:unit_device_javatests",
       "//components/facilitated_payments/android:unit_tests",
       "//components/facilitated_payments/android/java",
       "//components/facilitated_payments/content/browser:unit_tests",
