@@ -25,7 +25,8 @@ extern const base::FeatureParam<bool> kSendLnsSurfaceParam;
 // Whether to show zps suggestions under the composebox.
 extern const base::FeatureParam<bool> kShowComposeboxZps;
 
-struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
+class FeatureConfig : public omnibox_feature_configs::Config<FeatureConfig> {
+ public:
   // Whether the feature is enabled.
   bool enabled = false;
   // The configuration proto for the feature.
