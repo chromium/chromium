@@ -79,6 +79,7 @@ namespace {
 const char kSearchEngineURL[] = "http://searchengine/?q={searchTerms}";
 const char kSearchEngineHost[] = "searchengine";
 
+char kCountryCode[] = "us";
 char kURL1[] = "http://firstURL";
 char kURL2[] = "http://secondURL";
 char kURL3[] = "http://thirdURL";
@@ -504,6 +505,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 - (void)testPriceDrops {
+  // TODO(crbug.com/439174222) mock ShoppingService rather than
+  // OptimizationGuide.
   commerce::PriceTrackingData price_tracking_data;
   price_tracking_data.mutable_product_update()->set_offer_id(kOfferId);
   price_tracking_data.mutable_product_update()
@@ -518,6 +521,13 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   price_tracking_data.mutable_product_update()
       ->mutable_old_price()
       ->set_amount_micros(kPreviousPriceMicros);
+  price_tracking_data.mutable_buyable_product()->set_country_code(kCountryCode);
+  price_tracking_data.mutable_buyable_product()
+      ->mutable_current_price()
+      ->set_currency_code(kCurrencyCode);
+  price_tracking_data.mutable_buyable_product()
+      ->mutable_current_price()
+      ->set_amount_micros(kCurrentPriceMicros);
 
   std::string serialized_price_tracking_data;
   price_tracking_data.SerializeToString(&serialized_price_tracking_data);
