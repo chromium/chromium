@@ -256,6 +256,9 @@ const char kAidaOAuth2Scope[] = "https://www.googleapis.com/auth/aida";
 // OAuth2 scope for Chrome Web Store.
 const char kWebstoreOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromewebstore.readonly";
+// OAuth2 scope for push notifications.
+const char kPushNotificationOAuth2Scope[] =
+    "https://www.googleapis.com/auth/notifications";
 
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up

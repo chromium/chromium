@@ -35,8 +35,6 @@ namespace {
 constexpr char kAuthenticationErrorLogMessage[] =
     "Feedback report will be sent without authentication.";
 
-constexpr char kConsumer[] = "feedback_uploader_chrome";
-
 void QueueSingleReport(base::WeakPtr<feedback::FeedbackUploader> uploader,
                        scoped_refptr<FeedbackReport> report) {
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -130,11 +128,9 @@ void FeedbackUploaderChrome::StartDispatchingReport() {
   // has its own privacy notice.
   if (identity_manager &&
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    signin::ScopeSet scopes;
-    scopes.insert(GaiaConstants::kSupportContentOAuth2Scope);
     primary_account_token_fetcher_ =
         std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-            kConsumer, identity_manager, scopes,
+            signin::OAuthConsumerId::kFeedbackUploader, identity_manager,
             base::BindOnce(
                 &FeedbackUploaderChrome::PrimaryAccountAccessTokenAvailable,
                 base::Unretained(this)),
@@ -156,6 +152,7 @@ void FeedbackUploaderChrome::StartDispatchingReport() {
   bool isMeetDevice =
       policy::EnrollmentRequisitionManager::IsMeetDevice();
   if (isMeetDevice && !device_identity_provider->GetActiveAccountId().empty()) {
+    char kConsumer[] = "feedback_uploader";
     OAuth2AccessTokenManager::ScopeSet scopes;
     scopes.insert(GaiaConstants::kSupportContentOAuth2Scope);
     active_account_token_fetcher_ = device_identity_provider->FetchAccessToken(

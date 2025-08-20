@@ -42,9 +42,6 @@ const char kPageSize[] = "page_size";
 const char kPageToken[] = "page_token";
 const char kSecretIds[] = "secret_ids";
 
-const char kNearbyShareOAuth2Scope[] =
-    "https://www.googleapis.com/auth/nearbysharing-pa";
-
 // Creates the full Nearby Share v1 URL for endpoint to the API with
 // |request_path|.
 GURL CreateV1RequestUrl(const std::string& request_path) {
@@ -292,12 +289,9 @@ void NearbyShareClientImpl::MakeApiCall(
   request_url_ = request_url;
   error_callback_ = std::move(error_callback);
 
-  OAuth2AccessTokenManager::ScopeSet scopes;
-  scopes.insert(kNearbyShareOAuth2Scope);
-
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          "nearby_share_client", identity_manager_, scopes,
+          signin::OAuthConsumerId::kNearbyShare, identity_manager_,
           base::BindOnce(
               &NearbyShareClientImpl::OnAccessTokenFetched<ResponseProto>,
               weak_ptr_factory_.GetWeakPtr(), request_type, serialized_request,

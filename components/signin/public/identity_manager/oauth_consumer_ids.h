@@ -38,7 +38,12 @@ enum class OAuthConsumerId {
   kCaptureModeDelegate = 24,
   // TODO(crbug.com/434619290): Remove this once not used anymore.
   kFcmInvalidation = 25,
-  kMaxValue = kFcmInvalidation,
+  kNearbyShare = 26,
+  kAdvancedProtectionStatusManager = 27,
+  kPushNotification = 28,
+  kKAnonymityService = 29,
+  kFeedbackUploader = 30,
+  kMaxValue = kFeedbackUploader,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

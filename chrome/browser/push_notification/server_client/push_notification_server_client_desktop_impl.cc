@@ -27,11 +27,6 @@ const char kPushNotificationV1Path[] = "v1/";
 
 const char kMultiLoginUpdatePath[] = "multiloginupdate";
 
-const char kPushNotificationOath2Scope[] =
-    "https://www.googleapis.com/auth/notifications";
-
-const char kPushNotificationOAuthName[] = "push_notification_client";
-
 // Creates the full Push Notification v1 URL for endpoint to the API with
 // |request_path|.
 GURL CreateV1RequestUrl(const std::string& request_path) {
@@ -168,12 +163,9 @@ void PushNotificationServerClientDesktopImpl::MakeApiCall(
   request_url_ = request_url;
   error_callback_ = std::move(error_callback);
 
-  OAuth2AccessTokenManager::ScopeSet scopes;
-  scopes.insert(kPushNotificationOath2Scope);
-
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          kPushNotificationOAuthName, identity_manager_, scopes,
+          signin::OAuthConsumerId::kPushNotification, identity_manager_,
           base::BindOnce(
               &PushNotificationServerClientDesktopImpl::OnAccessTokenFetched<
                   ResponseProto>,

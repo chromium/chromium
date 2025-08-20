@@ -41,6 +41,12 @@ constexpr char kNtpDriveServiceName[] = "ntp_drive_service";
 constexpr char kForceSigninVerifierName[] = "force_signin_verifier";
 constexpr char kCaptureModeDelegateName[] = "capture_mode_delegate";
 constexpr char kFcmInvalidationName[] = "fcm_invalidation";
+constexpr char kNearbyShareName[] = "nearby_share";
+constexpr char kAdvancedProtectionStatusManagerName[] =
+    "advanced_protection_status_manager";
+constexpr char kPushNotificationName[] = "push_notification";
+constexpr char kKAnonymityServiceName[] = "k_anonymity_service";
+constexpr char kFeedbackUploaderName[] = "feedback_uploader";
 
 }  // namespace
 
@@ -181,6 +187,26 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kFcmInvalidationName,
           /*scopes=*/{GaiaConstants::kFCMOAuthScope});
+    case OAuthConsumerId::kNearbyShare:
+      return OAuthConsumer(
+          /*name=*/kNearbyShareName,
+          /*scopes=*/{GaiaConstants::kNearbyShareOAuth2Scope});
+    case OAuthConsumerId::kAdvancedProtectionStatusManager:
+      return OAuthConsumer(
+          /*name=*/kAdvancedProtectionStatusManagerName,
+          /*scopes=*/{GaiaConstants::kOAuth1LoginScope});
+    case OAuthConsumerId::kPushNotification:
+      return OAuthConsumer(
+          /*name=*/kPushNotificationName,
+          /*scopes=*/{GaiaConstants::kPushNotificationOAuth2Scope});
+    case OAuthConsumerId::kKAnonymityService:
+      return OAuthConsumer(
+          /*name=*/kKAnonymityServiceName,
+          /*scopes=*/{GaiaConstants::kKAnonymityServiceOAuth2Scope});
+    case OAuthConsumerId::kFeedbackUploader:
+      return OAuthConsumer(
+          /*name=*/kFeedbackUploaderName,
+          /*scopes=*/{GaiaConstants::kSupportContentOAuth2Scope});
   }
   NOTREACHED();
 }
