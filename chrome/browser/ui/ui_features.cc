@@ -675,7 +675,7 @@ BASE_FEATURE(kSessionRestoreInfobar,
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kNewTabAddsToActiveGroup,
-             "kNewTabAddsToActiveGroup",
+             "NewTabAddsToActiveGroup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsNewTabAddsToActiveGroupEnabled() {

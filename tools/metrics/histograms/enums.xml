@@ -14168,6 +14168,7 @@ from previous Chrome versions.
   <int value="-2512468" label="OmniboxMaterialDesignWeatherIcons:disabled"/>
   <int value="-2371418" label="disable-display-list-2d-canvas"/>
   <int value="-1978322" label="BlinkExtension:enabled"/>
+  <int value="-1594236" label="NewTabAddsToActiveGroup:disabled"/>
   <int value="-1164379" label="EnterpriseReportingInChromeOS:disabled"/>
   <int value="-319686" label="AccessibilityFaceGaze:disabled"/>
   <int value="0" label="BAD_FLAG_FORMAT">
@@ -15516,7 +15517,6 @@ from previous Chrome versions.
   <int value="481942786" label="AndroidGrammarCheck:enabled"/>
   <int value="482232604" label="PercentBasedScrolling:enabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
-  <int value="483156527" label="kNewTabAddsToActiveGroup:enabled"/>
   <int value="483173979" label="SecurePaymentConfirmationExtensions:disabled"/>
   <int value="483473934" label="HelpAppOnboardingRevamp:enabled"/>
   <int value="483629979" label="AccessibilityExtraLargeCursor:enabled"/>
@@ -16454,6 +16454,7 @@ from previous Chrome versions.
   <int value="821192723" label="show-fps-counter"/>
   <int value="821819319" label="NavBarColorAnimation:enabled"/>
   <int value="822352138" label="GameDashboard:enabled"/>
+  <int value="823002266" label="NewTabAddsToActiveGroup:enabled"/>
   <int value="823505300" label="LensOnQuickActionSearchWidget:disabled"/>
   <int value="823700125" label="TabSwitcherGroupSuggestionsAndroid:enabled"/>
   <int value="824022134" label="ShelfGesturesWithVirtualKeyboard:disabled"/>
@@ -19737,7 +19738,6 @@ from previous Chrome versions.
   <int value="1997457877" label="RemotePageMetadata:disabled"/>
   <int value="1997931863" label="OmniboxContextMenuShowFullUrls:enabled"/>
   <int value="1998126494" label="AppInstallServiceUri:enabled"/>
-  <int value="1998507181" label="kNewTabAddsToActiveGroup:disabled"/>
   <int value="1998568354" label="DocumentPictureInPictureAPI:enabled"/>
   <int value="1998917160" label="AppServiceAdaptiveIcon:enabled"/>
   <int value="1998924792" label="MlUrlSearchBlending:enabled"/>
