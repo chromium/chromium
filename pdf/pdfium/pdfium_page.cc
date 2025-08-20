@@ -376,8 +376,7 @@ gfx::RectF GetRotatedRectF(PageRotation rotation,
     }
   }
 
-  return gfx::RectF(bounds.left(), bounds.bottom(), bounds.width(),
-                    bounds.height());
+  return bounds.AsGfxRectF();
 }
 
 // Get the effective crop box. If empty or failed to calculate the effective

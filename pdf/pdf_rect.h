@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include "ui/gfx/geometry/rect_f.h"
+
 namespace chrome_pdf {
 
 // Represents PDF rectangles:
@@ -37,6 +39,8 @@ class PdfRect {
   float width() const { return right_ - left_; }
   float height() const { return top_ - bottom_; }
 
+  gfx::RectF AsGfxRectF() const;
+
   void Offset(float horizontal, float vertical);
 
   bool IsEmpty() const { return !width() || !height(); }
@@ -50,6 +54,8 @@ class PdfRect {
   void Intersect(const PdfRect& rect);
 
   void Union(const PdfRect& rect);
+
+  friend bool operator==(const PdfRect&, const PdfRect&) = default;
 
   // Exposes offsetof() values for the private variables.
   static constexpr size_t offsetof_left() { return offsetof(PdfRect, left_); }

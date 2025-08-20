@@ -7,7 +7,13 @@
 #include <algorithm>
 #include <utility>
 
+#include "ui/gfx/geometry/rect_f.h"
+
 namespace chrome_pdf {
+
+gfx::RectF PdfRect::AsGfxRectF() const {
+  return {/*x=*/left(), /*y=*/bottom(), /*width=*/width(), /*height=*/height()};
+}
 
 void PdfRect::Offset(float horizontal, float vertical) {
   left_ += horizontal;
