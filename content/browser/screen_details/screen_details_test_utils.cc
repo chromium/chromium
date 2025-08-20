@@ -13,7 +13,7 @@ namespace content::test {
 
 base::Value::List GetExpectedScreenDetails() {
   base::Value::List expected_screens;
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   std::vector<display::Display> displays = screen->GetAllDisplays();
 
   // Sort the displays by position; x first and then y, to match the API.

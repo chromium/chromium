@@ -141,9 +141,9 @@ double RoundKbpsToMbps(const std::string& host,
 
 double GetDeviceScaleFactor() {
   double device_scale_factor = 1.0;
-  if (display::Screen::GetScreen()) {
+  if (display::Screen::Get()) {
     device_scale_factor =
-        display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+        display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
   }
   DCHECK_LT(0.0, device_scale_factor);
   return device_scale_factor;

@@ -265,7 +265,7 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
   root_params->display_client = GetBoundRemote(task_runner);
 
   gfx::DisplayColorSpaces display_color_spaces =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(window_android)
           .GetColorSpaces();
 

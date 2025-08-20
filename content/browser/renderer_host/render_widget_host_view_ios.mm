@@ -99,7 +99,7 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
   ui_view_->view_ =
       [[RenderWidgetUIView alloc] initWithWidget:weak_factory_.GetWeakPtr()];
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   screen_infos_ =
       screen->GetScreenInfosNearestDisplay(screen->GetPrimaryDisplay().id());
 
@@ -419,7 +419,7 @@ void RenderWidgetHostViewIOS::UpdateScreenInfo() {
     host()->delegate()->SendScreenRects();
   }
 
-  auto* display_screen = display::Screen::GetScreen();
+  auto* display_screen = display::Screen::Get();
   display::ScreenInfos new_screen_infos =
       display_screen->GetScreenInfosNearestDisplay(
           display_screen->GetPrimaryDisplay().id());

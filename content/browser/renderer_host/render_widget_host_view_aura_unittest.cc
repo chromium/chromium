@@ -848,7 +848,7 @@ class RenderWidgetHostViewAuraOverscrollTest
     RenderWidgetHostViewAuraTest::SetUpEnvironment();
 
     view_->SetOverscrollControllerEnabled(true);
-    gfx::Size display_size = display::Screen::GetScreen()
+    gfx::Size display_size = display::Screen::Get()
                                  ->GetDisplayNearestView(view_->GetNativeView())
                                  .size();
     overscroll_delegate_ =
@@ -3523,9 +3523,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
   aura_test_helper_->GetTestScreen()->SetDeviceScaleFactor(1.74623f);
 
   view_->OnDisplayMetricsChanged(
-      display::Screen::GetScreen()->GetDisplayNearestView(
-          view_->GetNativeView()),
-      0);
+      display::Screen::Get()->GetDisplayNearestView(view_->GetNativeView()), 0);
 
   // Synchronization of visual properties should be allowed in spite of the
   // mismatch in preferred window scale and display scale.

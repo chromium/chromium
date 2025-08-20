@@ -36,7 +36,7 @@ NavigationEntryScreenshotManager::NavigationEntryScreenshotManager()
       FROM_HERE,
       base::BindRepeating(&NavigationEntryScreenshotManager::OnMemoryPressure,
                           base::Unretained(this)));
-  if (auto* screen = display::Screen::GetScreen()) {
+  if (auto* screen = display::Screen::Get()) {
     screen->AddObserver(this);
   }
 
@@ -45,7 +45,7 @@ NavigationEntryScreenshotManager::NavigationEntryScreenshotManager()
 }
 
 NavigationEntryScreenshotManager::~NavigationEntryScreenshotManager() {
-  if (auto* screen = display::Screen::GetScreen()) {
+  if (auto* screen = display::Screen::Get()) {
     screen->RemoveObserver(this);
   }
 }

@@ -730,9 +730,8 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     // If the device scale factor is 0,
     // get the original device scale factor to compare with
     if (!device_scale_factor) {
-      device_scale_factor = display::Screen::GetScreen()
-                                ->GetPrimaryDisplay()
-                                .device_scale_factor();
+      device_scale_factor =
+          display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
     }
 
     CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
@@ -784,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
       GenerateBitmap(actual_page_size, SkColorSetRGB(0x12, 0x34, 0x56));
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
   // Verify there are no scrollbars on the screenshot.
   CaptureScreenshotAndCompareTo(
@@ -837,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                      SkColorSetRGB(0x12, 0x34, 0x56));
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
   // Verify there are no scrollbars on the screenshot.
   // Even if margin is 0 then the iframe appears 8px away from beginning of the
@@ -884,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(
       CaptureScreenshot(ScreenshotEncoding::PNG, /*from_surface=*/false);
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
   // Compare the captured screenshot with one made "from_surface", where actual
   // scrollbar magic happened, and verify it looks the same, meaning the
@@ -1037,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 #if !BUILDFLAG(IS_ANDROID)
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
   // Check that device emulation does not affect the transparency.
   SetDeviceMetricsOverride(view_size.width(), view_size.height(),
@@ -1103,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
       GenerateBitmap(view_size, SK_ColorTRANSPARENT);
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
   gfx::RectF clip;
   clip.SetRect(0, 0, view_size.width(), view_size.height());
 
@@ -1214,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshotsFull) {
                                 /*from_surface=*/true);  //.
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
   gfx::RectF clip;
   clip.SetRect(0, 0, view_size.width(), view_size.height());
 
@@ -1349,7 +1348,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                                     /*a=*/1.0);
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
   // Check device emulation.
   // Additionally checks if emulation doesnt affect color change

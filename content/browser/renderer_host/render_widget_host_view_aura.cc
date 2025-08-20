@@ -725,7 +725,7 @@ viz::SurfaceId RenderWidgetHostViewAura::GetFallbackSurfaceIdForTesting()
 bool RenderWidgetHostViewAura::ShouldSkipCursorUpdate() const {
   aura::Window* root_window = window_->GetRootWindow();
   CHECK(root_window);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   CHECK(screen);
 
   // Ignore cursor update messages if the window under the cursor is not us.
@@ -807,7 +807,7 @@ void RenderWidgetHostViewAura::ComputeDisplayFeature() {
   }
 
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+      display::Screen::Get()->GetDisplayNearestWindow(window_);
   // Set the display feature only if the browser window is maximized or
   // fullscreen.
   if (window_->GetRootWindow()->GetBoundsInScreen() != display.work_area() &&
@@ -1047,7 +1047,7 @@ void RenderWidgetHostViewAura::CopyFromSurface(
 #if BUILDFLAG(IS_WIN)
 void RenderWidgetHostViewAura::UpdateMouseLockRegion() {
   RECT window_rect =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->DIPToScreenRectInWindow(window_, window_->GetBoundsInScreen())
           .ToRECT();
   ::ClipCursor(&window_rect);
@@ -1140,8 +1140,7 @@ gfx::Rect RenderWidgetHostViewAura::GetBoundsInRootWindow() {
 
     // Pixels come back from GetWindowHost, so we need to convert those back to
     // DIPs here.
-    bounds = display::Screen::GetScreen()->ScreenToDIPRectInWindow(top_level,
-                                                                   bounds);
+    bounds = display::Screen::Get()->ScreenToDIPRectInWindow(top_level, bounds);
   }
 
 #endif
@@ -2106,7 +2105,7 @@ void RenderWidgetHostViewAura::OnDisplayMetricsChanged(
     return;
   }
 #endif  // BUILDFLAG(IS_OZONE)
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (display.id() != screen->GetDisplayNearestWindow(window_).id())
     return;
 
@@ -2704,7 +2703,7 @@ void RenderWidgetHostViewAura::UpdateCursorIfOverSelf() {
   if (ShouldSkipCursorUpdate())
     return;
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   CHECK(screen);
   gfx::Point root_window_point = screen->GetCursorScreenPoint();
   aura::client::ScreenPositionClient* screen_position_client =

@@ -12,7 +12,7 @@ namespace content {
 
 void WebCursor::UpdateDisplayInfoForWindow(aura::Window* window) {
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
 
   if (rotation_ == display.panel_rotation() &&
       device_scale_factor_ == display.device_scale_factor() &&

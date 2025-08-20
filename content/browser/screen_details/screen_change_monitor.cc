@@ -11,14 +11,15 @@ namespace content {
 ScreenChangeMonitor::ScreenChangeMonitor(
     base::RepeatingCallback<void(bool)> callback)
     : callback_(callback) {
-  if (display::Screen* screen = display::Screen::GetScreen())
+  if (display::Screen* screen = display::Screen::Get()) {
     cached_displays_ = screen->GetAllDisplays();
+  }
 }
 
 ScreenChangeMonitor::~ScreenChangeMonitor() = default;
 
 void ScreenChangeMonitor::OnScreensChange() {
-  if (display::Screen* screen = display::Screen::GetScreen()) {
+  if (display::Screen* screen = display::Screen::Get()) {
     const auto& displays = screen->GetAllDisplays();
     if (cached_displays_ == displays)
       return;

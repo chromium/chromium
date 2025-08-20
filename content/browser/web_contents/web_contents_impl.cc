@@ -560,7 +560,7 @@ bool IsAutomaticFullscreenGranted(RenderFrameHost* host) {
 // enforced later should resolve most inaccuracies, but this early enforcement
 // is needed to ensure bounds indicate the appropriate display.
 int64_t AdjustWindowRectForDisplay(gfx::Rect* rect, RenderFrameHost* host) {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   auto display = screen->GetDisplayMatching(*rect);
 
   // Check, but do not prompt, for permission to place windows on other screens.
@@ -3713,7 +3713,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
   // TODO(crbug.com/40925473): GetPrimaryDisplay() won't be correct for
   // externally connected displays. Get the display where Chrome is opened
   // instead.
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   gfx::Size size = display.GetSizeInPixel();
   int min_width = size.width() < size.height() ? size.width() : size.height();
   int min_width_in_dp =

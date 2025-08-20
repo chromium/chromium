@@ -21,7 +21,7 @@ MockOverscrollControllerDelegateAura::MockOverscrollControllerDelegateAura(
 MockOverscrollControllerDelegateAura::~MockOverscrollControllerDelegateAura() {}
 
 gfx::Size MockOverscrollControllerDelegateAura::GetDisplaySize() const {
-  return display::Screen::GetScreen()
+  return display::Screen::Get()
       ->GetDisplayNearestView(rwhva_->GetNativeView())
       .size();
 }

@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // TODO(oshima): allow DeviceScaleFactor change on other platforms
   // (win, linux, mac, android and mus).
   aura::TestScreen* test_screen =
-      static_cast<aura::TestScreen*>(display::Screen::GetScreen());
+      static_cast<aura::TestScreen*>(display::Screen::Get());
   test_screen->CreateHostForPrimaryDisplay();
   test_screen->SetDeviceScaleFactor(expected_dip_scale);
 

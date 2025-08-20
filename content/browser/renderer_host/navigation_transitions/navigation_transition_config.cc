@@ -79,8 +79,8 @@ size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
   // the physical screen's uncompressed bitmap.
   // Assume one pixel for unit tests that don't have or need a screen.
   size_t display_size_in_bytes = 4;
-  if (auto* screen = display::Screen::GetScreen(); screen) {
-    for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  if (auto* screen = display::Screen::Get(); screen) {
+    for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
       display_size_in_bytes =
           std::max(display_size_in_bytes,
                    static_cast<size_t>(4 * display.GetSizeInPixel().Area64()));

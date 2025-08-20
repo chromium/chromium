@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, IsExtendedBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(shell(), "'isExtended' in screen"));
   EXPECT_EQ("boolean", EvalJs(shell(), "typeof screen.isExtended"));
-  EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays() > 1,
+  EXPECT_EQ(display::Screen::Get()->GetNumDisplays() > 1,
             EvalJs(shell(), "screen.isExtended"));
 }
 

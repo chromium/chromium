@@ -8884,7 +8884,7 @@ void RenderFrameHostImpl::EnterFullscreen(
   // Allow sites with the Window Management permission to open a popup window
   // after requesting fullscreen on a specific screen of a multi-screen device.
   // This enables multi-screen content experiences from a single user gesture.
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   display::Display display;
   if (screen && screen->GetNumDisplays() > 1 &&
       screen->GetDisplayWithDisplayId(options->display_id, &display) &&

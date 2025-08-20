@@ -16,7 +16,7 @@ namespace content {
 class PanelRotationBrowserTest : public ContentBrowserTest {
  protected:
   void SetPanelRotation(display::Display::Rotation rotation) {
-    display::Screen* screen = display::Screen::GetScreen();
+    display::Screen* screen = display::Screen::Get();
     screen->SetPanelRotationForTesting(screen->GetPrimaryDisplay().id(),
                                        rotation);
   }

@@ -22,8 +22,7 @@ namespace {
 aura::Window* FindRootWindowForDisplayId(int64_t display_id) {
   for (auto& window_tree_host : aura::Env::GetInstance()->window_tree_hosts()) {
     auto* root_window = window_tree_host->window();
-    auto display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+    auto display = display::Screen::Get()->GetDisplayNearestWindow(root_window);
     if (display.id() == display_id) {
       return root_window;
     }
@@ -38,7 +37,7 @@ DesktopCapturerAsh::DesktopCapturerAsh() = default;
 DesktopCapturerAsh::~DesktopCapturerAsh() = default;
 
 bool DesktopCapturerAsh::GetSourceList(SourceList* result) {
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     result->emplace_back(display.id(), std::string(), display.id());
   }
   return true;
@@ -64,7 +63,7 @@ void DesktopCapturerAsh::CaptureFrame() {
   }
   if (!root_window) {
     root_window = FindRootWindowForDisplayId(
-        display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+        display::Screen::Get()->GetDisplayForNewWindows().id());
   }
   if (!root_window) {
     // No root window to capture was found.

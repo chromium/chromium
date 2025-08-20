@@ -97,9 +97,8 @@ NOINLINE void FatalSurfaceFailure() {
 
 gpu::SharedMemoryLimits GetCompositorContextSharedMemoryLimits(
     gfx::NativeWindow window) {
-  const gfx::Size screen_size = display::Screen::GetScreen()
-                                    ->GetDisplayNearestWindow(window)
-                                    .GetSizeInPixel();
+  const gfx::Size screen_size =
+      display::Screen::Get()->GetDisplayNearestWindow(window).GetSizeInPixel();
   return gpu::SharedMemoryLimits::ForDisplayCompositor(screen_size);
 }
 
@@ -523,7 +522,7 @@ void CompositorImpl::OnGpuChannelEstablished(
 
   constexpr bool support_locking = false;
   constexpr bool automatic_flushes = false;
-  display_color_spaces_ = display::Screen::GetScreen()
+  display_color_spaces_ = display::Screen::Get()
                               ->GetDisplayNearestWindow(root_window_)
                               .GetColorSpaces();
 
@@ -670,9 +669,8 @@ void CompositorImpl::RemoveChildFrameSink(
 
 void CompositorImpl::OnDisplayMetricsChanged(const display::Display& display,
                                              uint32_t changed_metrics) {
-  if (display.id() != display::Screen::GetScreen()
-                          ->GetDisplayNearestWindow(root_window_)
-                          .id()) {
+  if (display.id() !=
+      display::Screen::Get()->GetDisplayNearestWindow(root_window_).id()) {
     return;
   }
 
@@ -723,7 +721,7 @@ void CompositorImpl::OnAdaptiveRefreshRateInfoChanged() {
     display_private_->SetAdaptiveRefreshRateInfo(
         arr_info.supports_adaptive_refresh_rate,
         arr_info.suggested_frame_rate_high,
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(root_window_)
             .device_scale_factor());
   }
@@ -769,7 +767,7 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   root_params->display_client = display_client_->GetBoundRemote(task_runner);
 
   const auto& display_props =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window_);
+      display::Screen::Get()->GetDisplayNearestWindow(root_window_);
 
   viz::RendererSettings renderer_settings;
   renderer_settings.partial_swap_enabled = true;

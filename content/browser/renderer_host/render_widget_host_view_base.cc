@@ -478,7 +478,7 @@ void RenderWidgetHostViewBase::UpdateScreenInfo() {
           ->GetPlatformRuntimeProperties()
           .supports_per_window_scaling) {
     const float window_scale =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetPreferredScaleFactorForView(GetNativeView())
             .value_or(1.0f);
     auto& screen = new_screen_infos.mutable_current();
@@ -809,7 +809,7 @@ display::ScreenInfos RenderWidgetHostViewBase::GetNewScreenInfosForUpdate() {
 
   display::ScreenInfos screen_infos;
 
-  if (auto* screen = display::Screen::GetScreen()) {
+  if (auto* screen = display::Screen::Get()) {
     gfx::NativeView native_view = GetNativeView();
     const auto& display = native_view
                               ? screen->GetDisplayNearestView(native_view)

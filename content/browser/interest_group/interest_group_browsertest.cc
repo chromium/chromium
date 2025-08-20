@@ -10726,14 +10726,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       test_origin,
       embedded_https_test_server().GetURL("a.test",
                                           "/interest_group/decision_logic.js"));
-  int screen_width = static_cast<int>(display::Screen::GetScreen()
-                                          ->GetPrimaryDisplay()
-                                          .GetSizeInPixel()
-                                          .width());
-  int screen_height = static_cast<int>(0.5 * display::Screen::GetScreen()
-                                                 ->GetPrimaryDisplay()
-                                                 .GetSizeInPixel()
-                                                 .height());
+  int screen_width = static_cast<int>(
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel().width());
+  int screen_height = static_cast<int>(
+      0.5 *
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel().height());
   GURL expected_url = embedded_https_test_server().GetURL(
       "c.test", base::StringPrintf("/echo?render_cars&size=%ix%i", screen_width,
                                    screen_height));
@@ -10778,14 +10775,11 @@ IN_PROC_BROWSER_TEST_F(
       test_origin,
       embedded_https_test_server().GetURL("a.test",
                                           "/interest_group/decision_logic.js"));
-  int screen_width = static_cast<int>(display::Screen::GetScreen()
-                                          ->GetPrimaryDisplay()
-                                          .GetSizeInPixel()
-                                          .width());
-  int screen_height = static_cast<int>(0.5 * display::Screen::GetScreen()
-                                                 ->GetPrimaryDisplay()
-                                                 .GetSizeInPixel()
-                                                 .height());
+  int screen_width = static_cast<int>(
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel().width());
+  int screen_height = static_cast<int>(
+      0.5 *
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel().height());
   GURL expected_url = embedded_https_test_server().GetURL(
       "c.test", base::StringPrintf("/echo?render_cars&size=%ix%i", screen_width,
                                    screen_height));
@@ -12946,14 +12940,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
       RunAuctionAndNavigateFencedFrame(ad_url, auction_config));
 
   // Verify the ad is loaded with the size specified in the winning bid.
-  int screen_width = static_cast<int>(display::Screen::GetScreen()
-                                          ->GetPrimaryDisplay()
-                                          .GetSizeInPixel()
-                                          .width());
-  int screen_height = static_cast<int>(0.5 * display::Screen::GetScreen()
-                                                 ->GetPrimaryDisplay()
-                                                 .GetSizeInPixel()
-                                                 .height());
+  int screen_width = static_cast<int>(
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel().width());
+  int screen_height = static_cast<int>(
+      0.5 *
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel().height());
   RenderFrameHost* ad_frame = GetFencedFrameRenderFrameHost(shell());
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   // Force layout.
@@ -13014,14 +13005,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   RenderFrameHost* ad_frame = GetFencedFrameRenderFrameHost(shell());
 
   // Verify the ad is loaded with the size specified in the winning bid.
-  int screen_width = static_cast<int>(display::Screen::GetScreen()
-                                          ->GetPrimaryDisplay()
-                                          .GetSizeInPixel()
-                                          .width());
-  int screen_height = static_cast<int>(0.5 * display::Screen::GetScreen()
-                                                 ->GetPrimaryDisplay()
-                                                 .GetSizeInPixel()
-                                                 .height());
+  int screen_width = static_cast<int>(
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel().width());
+  int screen_height = static_cast<int>(
+      0.5 *
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel().height());
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   // Force layout.
   EXPECT_TRUE(
