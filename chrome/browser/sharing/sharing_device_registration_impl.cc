@@ -132,8 +132,6 @@ void SharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved(
     return;
   }
 
-  base::UmaHistogramBoolean("Sharing.LocalSharingTargetInfoSupportsSync",
-                            !!sharing_target_info);
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features =
       GetEnabledFeatures();
   syncer::DeviceInfo::SharingInfo sharing_info(
