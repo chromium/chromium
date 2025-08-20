@@ -67,12 +67,15 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
             DeviceFormFactor.ONLY_TABLET)
     public void
             startChromeTabbedActivity_triggerTaskBoundsChange_notifyExtensionWindowController() {
-        // Arrange: launch ChromeTabbedActivity (the first window).
+        // Arrange:
+        // (1) Launch ChromeTabbedActivity (the first window).
+        // (2) Add a native WindowControllerListObserverForTesting to capture extension internal
+        // events.
         WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
         int firstTaskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
         var extensionWindowControllerBridge = getExtensionWindowControllerBridge(firstTaskId);
         assertNotNull(extensionWindowControllerBridge);
-        extensionWindowControllerBridge.addWindowControllerListObserverForTesting();
+        ExtensionWindowControllerBridgeImpl.addWindowControllerListObserverForTesting();
 
         // Act: Open a new window.
         // On tablets, this will enter split screen mode and trigger a window bounds change for the
@@ -85,15 +88,19 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
         CriteriaHelper.pollUiThread(secondChromeAndroidTask::isActive);
 
         // Assert.
+        var firstExtensionWindowId =
+                extensionWindowControllerBridge.getExtensionWindowIdForTesting();
         var extensionInternalEvents =
-                extensionWindowControllerBridge.getExtensionInternalEventsForTesting();
+                ExtensionWindowControllerBridgeImpl.getExtensionInternalEventsForTesting()
+                        .get(firstExtensionWindowId);
+        assertNotNull(extensionInternalEvents);
         assertEquals(1, extensionInternalEvents.size());
         assertEquals(
                 ExtensionInternalWindowEventForTesting.BOUNDS_CHANGED,
                 (int) extensionInternalEvents.get(0));
 
         // Cleanup.
-        extensionWindowControllerBridge.removeWindowControllerListObserverForTesting();
+        ExtensionWindowControllerBridgeImpl.removeWindowControllerListObserverForTesting();
         ntpStation.getActivity().finish();
     }
 

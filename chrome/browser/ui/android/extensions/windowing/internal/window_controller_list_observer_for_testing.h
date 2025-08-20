@@ -12,10 +12,13 @@ namespace extensions {
 class WindowController;
 }  // namespace extensions
 
-class ExtensionWindowControllerBridge;
-
-// |WindowControllerListObserver| for tests to observe window events received
-// by extension internals.
+// A singleton |WindowControllerListObserver| for tests to observe window
+// events received by extension internals.
+//
+// The reasons we make this a singleton are:
+// (1) Tests can observe events received by all windows; and
+// (2) Allow the observer to exist before window creation and after window
+// destruction so that we can observe those events.
 //
 // This will help Java integration tests more than native unit tests:
 //
@@ -30,15 +33,12 @@ class ExtensionWindowControllerBridge;
 class WindowControllerListObserverForTesting final
     : public extensions::WindowControllerListObserver {
  public:
-  explicit WindowControllerListObserverForTesting(
-      ExtensionWindowControllerBridge* bridge);
+  // Returns the singleton instance.
+  static WindowControllerListObserverForTesting* GetInstance();
 
   // Implements |WindowControllerListObserver|.
   void OnWindowBoundsChanged(
       extensions::WindowController* window_controller) override;
-
- private:
-  const raw_ref<ExtensionWindowControllerBridge> bridge_;
 };
 
 // Events to be relayed by |WindowControllerListObserverForTesting| so that

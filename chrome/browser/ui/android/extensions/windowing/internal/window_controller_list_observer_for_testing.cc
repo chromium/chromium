@@ -5,17 +5,20 @@
 #include "chrome/browser/ui/android/extensions/windowing/internal/window_controller_list_observer_for_testing.h"
 
 #include "base/check_deref.h"
+#include "base/memory/singleton.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/ui/android/extensions/windowing/internal/extension_window_controller_bridge.h"
 
-WindowControllerListObserverForTesting::WindowControllerListObserverForTesting(
-    ExtensionWindowControllerBridge* bridge)
-    : bridge_(CHECK_DEREF(bridge)) {}
+// static
+WindowControllerListObserverForTesting*
+WindowControllerListObserverForTesting::GetInstance() {
+  return base::Singleton<WindowControllerListObserverForTesting>::get();
+}
 
 void WindowControllerListObserverForTesting::OnWindowBoundsChanged(
     extensions::WindowController* window_controller) {
-  if (window_controller == &(bridge_->extension_window_controller_)) {
-    bridge_->RecordExtensionInternalEventForTesting(  // IN-TEST
-        ExtensionInternalWindowEventForTesting::BOUNDS_CHANGED);
-  }
+  ExtensionWindowControllerBridge::
+      RecordExtensionInternalEventForTesting(  // IN-TEST
+          window_controller,
+          ExtensionInternalWindowEventForTesting::BOUNDS_CHANGED);
 }

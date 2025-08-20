@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.extensions.windowing;
 
 import android.graphics.Rect;
+import android.util.ArrayMap;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
@@ -14,16 +15,61 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /** Implements {@link ExtensionWindowControllerBridge}. */
 @NullMarked
 final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowControllerBridge {
 
-    private final ChromeAndroidTask mChromeAndroidTask;
+    /**
+     * Events received by the native singleton {@code WindowControllerListObserverForTesting}.
+     *
+     * <p>The keys are extension internal window IDs as returned by {@code
+     * extensions::WindowController::GetWindowId()}, and the value for each key is the sequence of
+     * events received by a window.
+     */
+    private static final Map<Integer, List<@ExtensionInternalWindowEventForTesting Integer>>
+            sExtensionInternalEventsForTesting = new ArrayMap<>();
 
-    /** Events received by the native {@code WindowControllerListObserverForTesting}. */
-    private final List<@ExtensionInternalWindowEventForTesting Integer>
-            mExtensionInternalEventsForTesting = new ArrayList<>();
+    /**
+     * See {@link Natives#addWindowControllerListObserverForTesting()}.
+     *
+     * <p>Note: this is a static method, but in tests, we should call it after the native library
+     * has been loaded, which usually means starting a {@code ChromeTabbedActivity}. Otherwise, the
+     * JNI call in the method will cause {@code UnsatisfiedLinkError}.
+     */
+    static void addWindowControllerListObserverForTesting() {
+        ExtensionWindowControllerBridgeImplJni.get()
+                .addWindowControllerListObserverForTesting(); // IN-TEST
+    }
+
+    static void removeWindowControllerListObserverForTesting() {
+        ExtensionWindowControllerBridgeImplJni.get()
+                .removeWindowControllerListObserverForTesting(); // IN-TEST
+        sExtensionInternalEventsForTesting.clear();
+    }
+
+    static Map<Integer, List<@ExtensionInternalWindowEventForTesting Integer>>
+            getExtensionInternalEventsForTesting() {
+        return sExtensionInternalEventsForTesting;
+    }
+
+    @CalledByNative
+    private static void recordExtensionInternalEventForTesting( // IN-TEST
+            int extensionWindowId, @ExtensionInternalWindowEventForTesting int event) {
+        List<@ExtensionInternalWindowEventForTesting Integer> events =
+                sExtensionInternalEventsForTesting.get(extensionWindowId);
+        if (events != null) {
+            events.add(event);
+            return;
+        }
+
+        events = new ArrayList<>();
+        events.add(event);
+        sExtensionInternalEventsForTesting.put(extensionWindowId, events);
+    }
+
+    private final ChromeAndroidTask mChromeAndroidTask;
 
     private long mNativeExtensionWindowControllerBridge;
 
@@ -68,35 +114,15 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
         return mNativeExtensionWindowControllerBridge;
     }
 
-    void addWindowControllerListObserverForTesting() {
-        if (mNativeExtensionWindowControllerBridge != 0) {
-            ExtensionWindowControllerBridgeImplJni.get()
-                    .addWindowControllerListObserverForTesting( // IN-TEST
-                            mNativeExtensionWindowControllerBridge);
-        }
-    }
-
-    void removeWindowControllerListObserverForTesting() {
-        if (mNativeExtensionWindowControllerBridge != 0) {
-            ExtensionWindowControllerBridgeImplJni.get()
-                    .removeWindowControllerListObserverForTesting( // IN-TEST
-                            mNativeExtensionWindowControllerBridge);
-        }
-    }
-
-    List<@ExtensionInternalWindowEventForTesting Integer> getExtensionInternalEventsForTesting() {
-        return mExtensionInternalEventsForTesting;
+    int getExtensionWindowIdForTesting() {
+        assert mNativeExtensionWindowControllerBridge != 0;
+        return ExtensionWindowControllerBridgeImplJni.get()
+                .getExtensionWindowIdForTesting(mNativeExtensionWindowControllerBridge); // IN-TEST
     }
 
     @CalledByNative
     private void clearNativePtr() {
         mNativeExtensionWindowControllerBridge = 0;
-    }
-
-    @CalledByNative
-    private void recordExtensionInternalEventForTesting(
-            @ExtensionInternalWindowEventForTesting int event) {
-        mExtensionInternalEventsForTesting.add(event);
     }
 
     @NativeMethods
@@ -117,17 +143,22 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
         void onTaskBoundsChanged(long nativeExtensionWindowControllerBridge);
 
         /**
-         * Add a native {@code WindowControllerListObserverForTesting} for tests to observe window
-         * events received by extension internals.
+         * Returns the extension internal window ID for the given {@param
+         * nativeExtensionWindowControllerBridge}, as in {@code
+         * extensions::WindowController::GetWindowId()}.
          */
-        void addWindowControllerListObserverForTesting( // IN-TEST
-                long nativeExtensionWindowControllerBridge);
+        int getExtensionWindowIdForTesting(long nativeExtensionWindowControllerBridge); // IN-TEST
 
         /**
-         * Removes the native {@code WindowControllerListObserverForTesting} added by {@link
-         * #addWindowControllerListObserverForTesting(long)}
+         * Add the native singleton {@code WindowControllerListObserverForTesting} for tests to
+         * observe window events received by extension internals.
          */
-        void removeWindowControllerListObserverForTesting( // IN-TEST
-                long nativeExtensionWindowControllerBridge);
+        void addWindowControllerListObserverForTesting(); // IN-TEST
+
+        /**
+         * Removes the native singleton {@code WindowControllerListObserverForTesting} added by
+         * {@link #addWindowControllerListObserverForTesting()}
+         */
+        void removeWindowControllerListObserverForTesting(); // IN-TEST
     }
 }
