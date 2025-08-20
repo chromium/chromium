@@ -1678,6 +1678,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kServiceWorkerSyntheticResponseAllowedUrl);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kServiceWorkerSyntheticResponseIgnoredHeaders);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kServiceWorkerSyntheticResponseReportInconsistentHeader);
 

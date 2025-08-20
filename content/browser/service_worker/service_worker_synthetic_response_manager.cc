@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <numeric>
+#include <string>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -52,8 +53,8 @@ BASE_FEATURE(ServiceWorkerBypassSyntheticResponseHeaderCheck,
 
 const base::FeatureParam<std::string>
     kServiceWorkerBypassSyntheticResponseIgnoredHeaders{
-        &kServiceWorkerBypassSyntheticResponseHeaderCheck, "ignored_headers",
-        ""};
+        &kServiceWorkerBypassSyntheticResponseHeaderCheck,
+        "ignored_headers_for_bypass", ""};
 
 bool IsBypassSyntheticResponseHeaderCheckEnabled() {
   static const bool kIsEnabled = base::FeatureList::IsEnabled(
@@ -65,6 +66,22 @@ const std::string& GetIgnoredHeadersForBypass() {
   static const base::NoDestructor<std::string> ignored_headers(
       kServiceWorkerBypassSyntheticResponseIgnoredHeaders.Get());
   return *ignored_headers;
+}
+
+const base::flat_set<std::string>& GetIgnoredHeadersForSyntheticResponse() {
+  static const base::NoDestructor<base::flat_set<std::string>>
+      ignored_headers_set([]() {
+        const std::string ignored_headers_str(
+            blink::features::kServiceWorkerSyntheticResponseIgnoredHeaders
+                .Get());
+        const std::vector<std::string_view> ignored_headers_sv =
+            base::SplitStringPiece(ignored_headers_str, ",",
+                                   base::TRIM_WHITESPACE,
+                                   base::SPLIT_WANT_NONEMPTY);
+        return base::flat_set<std::string>(ignored_headers_sv.begin(),
+                                           ignored_headers_sv.end());
+      }());
+  return *ignored_headers_set;
 }
 
 void RecordReloadReason(SyntheticResponseReloadReason reason) {
@@ -395,8 +412,8 @@ bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   const auto& response_head = version_->GetResponseHeadForSyntheticResponse();
   CHECK(response_head);
-  base::flat_set<std::string> ignored_headers = {"date", "alt-svc", "p3p",
-                                                 "strict-transport-security"};
+  base::flat_set<std::string> ignored_headers =
+      GetIgnoredHeadersForSyntheticResponse();
   if (IsBypassSyntheticResponseHeaderCheckEnabled()) {
     const std::string& ignored_headers_str = GetIgnoredHeadersForBypass();
     std::vector<std::string_view> testing_ignored_headers =

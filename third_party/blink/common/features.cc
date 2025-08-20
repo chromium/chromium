@@ -2140,6 +2140,13 @@ BASE_FEATURE_PARAM(std::string,
                    "allowed_url",
                    "");
 
+// The comma-separated list of headers to be ignored for the consistency check.
+BASE_FEATURE_PARAM(std::string,
+                   kServiceWorkerSyntheticResponseIgnoredHeaders,
+                   &kServiceWorkerSyntheticResponse,
+                   "ignored_headers",
+                   "date,alt-svc,p3p,strict-transport-security");
+
 // If true, the browser reports crashes via `DumpWithoutCrashing()` when theare
 // was a header mismatch.
 BASE_FEATURE_PARAM(bool,
