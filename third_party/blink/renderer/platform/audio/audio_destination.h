@@ -62,16 +62,13 @@ class PushPullFIFO;
 class WebAudioLatencyHint;
 class WebAudioSinkDescriptor;
 
-// The AudioDestination class is an audio sink interface between the media
-// renderer and the Blink's WebAudio module. It has a FIFO to adapt the
-// different processing block sizes of WebAudio renderer and actual hardware
-// audio callback.
+// `AudioDestination` is an audio sink that bridges the WebAudio module with the
+// underlying media renderer. It uses a FIFO to adapt the different processing
+// block sizes between the WebAudio renderer and the actual hardware audio
+// callback.
 //
-// Currently AudioDestination supports two types of threading models:
-//  - Single-thread (default): process the entire WebAudio render call chain by
-//    AudioDeviceThread.
-//  - Dual-thread (experimental): Use WebThread for the WebAudio rendering with
-//    AudioWorkletThread.
+// For a detailed architectural overview of this class, see the documentation at
+// `docs/audio_destination_lifetime_threading.md`.
 class PLATFORM_EXPORT AudioDestination final
     : public ThreadSafeRefCounted<AudioDestination>,
       public media::AudioRendererSink::RenderCallback {
