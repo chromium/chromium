@@ -34,7 +34,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
@@ -101,7 +100,7 @@ public class PasswordCheckupLauncherTest {
             new FakeAccountManagerFacade();
 
     @Before
-    public void setUp() throws PasswordCheckBackendException {
+    public void setUp() {
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mMockPasswordManagerUtilBridgeJni);
 

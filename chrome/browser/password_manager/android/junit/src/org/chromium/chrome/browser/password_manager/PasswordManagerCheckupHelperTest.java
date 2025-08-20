@@ -53,7 +53,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
-import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordManagerUnavailableException;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -120,7 +120,7 @@ public class PasswordManagerCheckupHelperTest {
     private PasswordManagerHelper mPasswordManagerHelper;
 
     @Before
-    public void setUp() throws PasswordCheckBackendException {
+    public void setUp() {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         mPasswordManagerHelper = new PasswordManagerHelper(mProfile);
@@ -166,58 +166,10 @@ public class PasswordManagerCheckupHelperTest {
                 TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 failureCallback);
-        final ArgumentCaptor<PasswordCheckBackendException> captor =
-                ArgumentCaptor.forClass(PasswordCheckBackendException.class);
+        final ArgumentCaptor<PasswordManagerUnavailableException> captor =
+                ArgumentCaptor.forClass(PasswordManagerUnavailableException.class);
 
         verify(failureCallback).onResult(captor.capture());
-        assertEquals(
-                CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE, captor.getValue().errorCode);
-    }
-
-    @Test
-    public void testShowsUpdateDialogOnShowPasswordCheckupForAccountWhenBackendUpdateNeeded()
-            throws PasswordCheckBackendException {
-        chooseToSyncPasswords();
-
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired()).thenReturn(true);
-
-        when(mPasswordCheckupClientHelperFactoryMock.createHelper())
-                .thenThrow(
-                        new PasswordCheckBackendException(
-                                "", CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED));
-
-        mPasswordManagerHelper.showPasswordCheckup(
-                ContextUtils.getApplicationContext(),
-                PasswordCheckReferrer.SAFETY_CHECK,
-                mModalDialogManagerSupplier,
-                TEST_EMAIL_ADDRESS,
-                mSettingsCustomTabLauncher);
-
-        assertNotNull(mModalDialogManager.getCurrentDialogForTest());
-    }
-
-    @Test
-    public void testShowsUpdateDialogOnShowPasswordCheckupForLocalWhenBackendUpdateNeeded()
-            throws PasswordCheckBackendException {
-        chooseToSyncPasswords();
-
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired()).thenReturn(true);
-
-        when(mPasswordCheckupClientHelperFactoryMock.createHelper())
-                .thenThrow(
-                        new PasswordCheckBackendException(
-                                "", CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED));
-
-        mPasswordManagerHelper.showPasswordCheckup(
-                ContextUtils.getApplicationContext(),
-                PasswordCheckReferrer.SAFETY_CHECK,
-                mModalDialogManagerSupplier,
-                TEST_NO_EMAIL_ADDRESS,
-                mSettingsCustomTabLauncher);
-
-        assertNotNull(mModalDialogManager.getCurrentDialogForTest());
     }
 
     @Test
@@ -366,7 +318,7 @@ public class PasswordManagerCheckupHelperTest {
         HistogramWatcher.Builder builder =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                         PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
-                        CredentialManagerError.UNCATEGORIZED,
+                        CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
                         OptionalInt.empty());
         HistogramWatcher histogram =
                 builder.expectNoRecords(
@@ -376,8 +328,7 @@ public class PasswordManagerCheckupHelperTest {
 
         chooseToSyncPasswords();
         returnErrorWhenFetchingIntentForPasswordCheckup(
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED),
-                TEST_EMAIL_ADDRESS);
+                new PasswordManagerUnavailableException(), TEST_EMAIL_ADDRESS);
 
         mPasswordManagerHelper.showPasswordCheckup(
                 ContextUtils.getApplicationContext(),
@@ -394,7 +345,7 @@ public class PasswordManagerCheckupHelperTest {
         HistogramWatcher.Builder builder =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                         PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
-                        CredentialManagerError.UNCATEGORIZED,
+                        CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
                         OptionalInt.empty());
         HistogramWatcher histogram =
                 builder.expectNoRecords(
@@ -403,8 +354,7 @@ public class PasswordManagerCheckupHelperTest {
                         .build();
 
         returnErrorWhenFetchingIntentForPasswordCheckup(
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED),
-                TEST_NO_EMAIL_ADDRESS);
+                new PasswordManagerUnavailableException(), TEST_NO_EMAIL_ADDRESS);
 
         mPasswordManagerHelper.showPasswordCheckup(
                 ContextUtils.getApplicationContext(),
@@ -493,13 +443,12 @@ public class PasswordManagerCheckupHelperTest {
         HistogramWatcher histogram =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                                 PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
-                                CredentialManagerError.UNCATEGORIZED,
+                                CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
                                 OptionalInt.empty())
                         .build();
 
         chooseToSyncPasswords();
-        returnErrorWhenRunningPasswordCheckup(
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
+        returnErrorWhenRunningPasswordCheckup(new PasswordManagerUnavailableException());
 
         mPasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
@@ -594,12 +543,11 @@ public class PasswordManagerCheckupHelperTest {
         HistogramWatcher histogram =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                                 PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT,
-                                CredentialManagerError.UNCATEGORIZED,
+                                CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
                                 OptionalInt.empty())
                         .build();
         chooseToSyncPasswords();
-        returnErrorWhenGettingBreachedCredentialsCount(
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
+        returnErrorWhenGettingBreachedCredentialsCount(new PasswordManagerUnavailableException());
 
         mPasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
@@ -615,12 +563,11 @@ public class PasswordManagerCheckupHelperTest {
         HistogramWatcher histogram =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                                 PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT,
-                                CredentialManagerError.UNCATEGORIZED,
+                                CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
                                 OptionalInt.empty())
                         .build();
         chooseToSyncPasswords();
-        returnErrorWhenGettingWeakCredentialsCount(
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
+        returnErrorWhenGettingWeakCredentialsCount(new PasswordManagerUnavailableException());
 
         mPasswordManagerHelper.getWeakCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
@@ -636,12 +583,11 @@ public class PasswordManagerCheckupHelperTest {
         HistogramWatcher histogram =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                                 PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT,
-                                CredentialManagerError.UNCATEGORIZED,
+                                CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
                                 OptionalInt.empty())
                         .build();
         chooseToSyncPasswords();
-        returnErrorWhenGettingReusedCredentialsCount(
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
+        returnErrorWhenGettingReusedCredentialsCount(new PasswordManagerUnavailableException());
 
         mPasswordManagerHelper.getReusedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
@@ -794,8 +740,7 @@ public class PasswordManagerCheckupHelperTest {
             throws CanceledException {
         chooseToSyncPasswords();
         returnErrorWhenFetchingIntentForPasswordCheckup(
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED),
-                TEST_EMAIL_ADDRESS);
+                new PasswordManagerUnavailableException(), TEST_EMAIL_ADDRESS);
 
         mPasswordManagerHelper.launchPasswordCheckup(
                 PasswordCheckReferrer.SAFETY_CHECK,
@@ -1009,8 +954,7 @@ public class PasswordManagerCheckupHelperTest {
             throws CanceledException {
         chooseToSyncPasswords();
         returnErrorWhenFetchingIntentForPasswordCheckup(
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED),
-                TEST_EMAIL_ADDRESS);
+                new PasswordManagerUnavailableException(), TEST_EMAIL_ADDRESS);
         when(mLoadingModalDialogCoordinator.getState())
                 .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
 
@@ -1047,8 +991,7 @@ public class PasswordManagerCheckupHelperTest {
     @Test
     public void testRecordsErrorMetricsWhenRunPasswordCheckupFails() {
         chooseToSyncPasswords();
-        Exception expectedException =
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED);
+        Exception expectedException = new PasswordManagerUnavailableException();
         returnErrorWhenRunningPasswordCheckup(expectedException);
 
         mPasswordManagerHelper.runPasswordCheckupInBackground(
@@ -1061,8 +1004,7 @@ public class PasswordManagerCheckupHelperTest {
     @Test
     public void testRecordsErrorMetricsWhenGetBreachedCredentialsCountFails() {
         chooseToSyncPasswords();
-        Exception expectedException =
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED);
+        Exception expectedException = new PasswordManagerUnavailableException();
         returnErrorWhenGettingBreachedCredentialsCount(expectedException);
 
         mPasswordManagerHelper.getBreachedCredentialsCount(
@@ -1075,8 +1017,7 @@ public class PasswordManagerCheckupHelperTest {
     @Test
     public void testRecordsErrorMetricsWhenGetWeakCredentialsCountFails() {
         chooseToSyncPasswords();
-        Exception expectedException =
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED);
+        Exception expectedException = new PasswordManagerUnavailableException();
         returnErrorWhenGettingWeakCredentialsCount(expectedException);
 
         mPasswordManagerHelper.getWeakCredentialsCount(
@@ -1089,8 +1030,7 @@ public class PasswordManagerCheckupHelperTest {
     @Test
     public void testRecordsErrorMetricsWhenGetReusedCredentialsCountFails() {
         chooseToSyncPasswords();
-        Exception expectedException =
-                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED);
+        Exception expectedException = new PasswordManagerUnavailableException();
         returnErrorWhenGettingReusedCredentialsCount(expectedException);
 
         mPasswordManagerHelper.getReusedCredentialsCount(

@@ -32,7 +32,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
-import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordManagerUnavailableException;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -186,6 +186,7 @@ public class PasswordManagerHelper {
                     LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
             launchTheCredentialManager(
                     referrer,
+                    prefService,
                     syncService,
                     loadingDialogCoordinator,
                     modalDialogManagerSupplier,
@@ -485,23 +486,19 @@ public class PasswordManagerHelper {
     }
 
     @VisibleForTesting
-    public void launchTheCredentialManager(
+    void launchTheCredentialManager(
             @ManagePasswordsReferrer int referrer,
+            PrefService prefService,
             @Nullable SyncService syncService,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Context context,
             @Nullable String account) {
         assert syncService != null;
-
-        CredentialManagerLauncher credentialManagerLauncher;
-        try {
-            credentialManagerLauncher = getCredentialManagerLauncher();
-        } catch (CredentialManagerBackendException exception) {
-            if (exception.errorCode != CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) return;
-            showGmsUpdateDialog(modalDialogManagerSupplier, context);
-            return;
-        }
+        assert PasswordManagerUtilBridge.isPasswordManagerAvailable(prefService);
+        CredentialManagerLauncher credentialManagerLauncher =
+                CredentialManagerLauncherFactory.getInstance().createLauncher();
+        assert credentialManagerLauncher != null;
 
         loadingDialogCoordinator.show();
 
@@ -541,25 +538,20 @@ public class PasswordManagerHelper {
         PasswordCheckupClientHelper checkupClient;
         try {
             checkupClient = getPasswordCheckupClientHelper();
-        } catch (PasswordCheckBackendException exception) {
+        } catch (PasswordManagerUnavailableException exception) {
             // This is slightly different than the access to the management UI where if there
             // is an auto-exported CSV, a dialog shown even if the password manager is available
             // If a checkup is possible, the results of the checkup are more important than
             // the CSV. In addition, the CSV issue is being prominently presented on the
             // main settings view.
-            if (exception.errorCode == CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE) {
-                if (!UserPrefs.get(mProfile).getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)) {
-                    // The auto-exported file is not ready, so there it's not possible to show a
-                    // dialog to download the CSV.
-                    return;
-                }
-                assert settingsCustomTabLauncher != null;
-                showPwmUnavailableOrDownloadCsvDialog(
-                        context, modalDialogManagerSupplier, settingsCustomTabLauncher);
+            if (!UserPrefs.get(mProfile).getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)) {
+                // The auto-exported file is not ready, so there it's not possible to show a
+                // dialog to download the CSV.
                 return;
             }
-            if (exception.errorCode != CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) return;
-            showGmsUpdateDialog(modalDialogManagerSupplier, context);
+            assert settingsCustomTabLauncher != null;
+            showPwmUnavailableOrDownloadCsvDialog(
+                    context, modalDialogManagerSupplier, settingsCustomTabLauncher);
             return;
         }
 
@@ -738,63 +730,19 @@ public class PasswordManagerHelper {
                 });
     }
 
-    private static void showGmsUpdateDialog(
-            Supplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
-        ModalDialogManager modalDialogManager = modalDialogManagerSupplier.get();
-        if (modalDialogManager == null) return;
-
-        OutdatedGmsCoreDialog dialog =
-                new OutdatedGmsCoreDialog(
-                        modalDialogManager,
-                        context,
-                        isAccepted -> {
-                            if (isAccepted) GmsUpdateLauncher.launch(context);
-                        });
-        dialog.show();
-    }
-
-    // TODO(crbug.com/40841269): Exceptions should be thrown by factory, remove this method.
     private PasswordCheckupClientHelper getPasswordCheckupClientHelper()
-            throws PasswordCheckBackendException {
+            throws PasswordManagerUnavailableException {
         // Callers shouldn't need to distinguish between the errors anymore, since there will be no
         // more partial support, so PASSWORD_MANGER_NOT_AVAILABLE will replace and include all the
         // errors.
         if (!PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
-            throw new PasswordCheckBackendException(
-                    "Password manager is not available",
-                    CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE);
+            throw new PasswordManagerUnavailableException();
         }
 
         PasswordCheckupClientHelper helper =
                 PasswordCheckupClientHelperFactory.getInstance().createHelper();
-        if (helper != null) return helper;
-
-        throw new PasswordCheckBackendException(
-                "Can not instantiate backend client.", CredentialManagerError.UNCATEGORIZED);
-    }
-
-    // TODO(crbug.com/40854052): Exceptions should be thrown by factory, remove this method.
-    private CredentialManagerLauncher getCredentialManagerLauncher()
-            throws CredentialManagerBackendException {
-        // TODO(crbug.com/434662359): Make preconditions consistent with checkup launcher.
-        if (!PasswordManagerBackendSupportHelper.getInstance().isBackendPresent()) {
-            throw new CredentialManagerBackendException(
-                    "Backend downstream implementation is not available.",
-                    CredentialManagerError.BACKEND_NOT_AVAILABLE);
-        }
-        // This checks whether the GMSCore version supports the credential manager.
-        if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired()) {
-            throw new CredentialManagerBackendException(
-                    "Backend version is not supported.",
-                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
-        }
-
-        CredentialManagerLauncher launcher =
-                CredentialManagerLauncherFactory.getInstance().createLauncher();
-        if (launcher != null) return launcher;
-
-        throw new CredentialManagerBackendException(
-                "Can not instantiate backend client.", CredentialManagerError.UNCATEGORIZED);
+        assert helper != null;
+        return helper;
     }
 
     @NativeMethods

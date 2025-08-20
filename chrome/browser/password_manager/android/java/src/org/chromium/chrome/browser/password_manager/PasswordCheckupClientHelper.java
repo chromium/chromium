@@ -8,18 +8,14 @@ import android.app.PendingIntent;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 
 /** Interface for the helper responsible for Password Checkup operations. */
 @NullMarked
 public interface PasswordCheckupClientHelper {
-    /** Serves as a general exception for failed requests to the password checkup backend. */
-    class PasswordCheckBackendException extends Exception {
-        public @CredentialManagerError int errorCode;
-
-        public PasswordCheckBackendException(String message, @CredentialManagerError int error) {
-            super(message);
-            errorCode = error;
+    /** Thrown when isPasswordManagerAvailable() is false upon the backend call. */
+    class PasswordManagerUnavailableException extends Exception {
+        public PasswordManagerUnavailableException() {
+            super("Password manager is unavailable");
         }
     }
 

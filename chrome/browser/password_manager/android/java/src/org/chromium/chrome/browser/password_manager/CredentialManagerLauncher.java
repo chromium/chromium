@@ -25,9 +25,7 @@ public interface CredentialManagerLauncher {
      */
     @IntDef({
         CredentialManagerError.NO_ACCOUNT_NAME,
-        CredentialManagerError.UNCATEGORIZED,
         CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED,
-        CredentialManagerError.BACKEND_NOT_AVAILABLE,
         CredentialManagerError.API_EXCEPTION,
         CredentialManagerError.OTHER_API_ERROR,
         CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
@@ -47,13 +45,15 @@ public interface CredentialManagerLauncher {
         // int API_ERROR = 2;
 
         // Error is not categorized.
-        int UNCATEGORIZED = 3;
+        // Obsolete.
+        // int UNCATEGORIZED = 3;
 
         // Operation can not be executed due to unsupported backend version.
         int BACKEND_VERSION_NOT_SUPPORTED = 4;
 
         // Backend downstream implementation is not available.
-        int BACKEND_NOT_AVAILABLE = 5;
+        // Obsolete.
+        // int BACKEND_NOT_AVAILABLE = 5;
 
         // Recorded when the call failed at the API level, with an exception that is an instance
         // of ApiException.

@@ -38,6 +38,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
@@ -60,6 +61,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
@@ -75,9 +77,12 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
@@ -121,6 +126,56 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public final class SafetyHubTest {
+    // This test suite currently expects that calls to password check via PasswordManagerHelper
+    // cause an exception, so the state of the UI can be controlled by setting prefs in
+    // setAccountCompromisedPasswordsCount() and friends.
+    private static class FailingPasswordCheckupClientHelper implements PasswordCheckupClientHelper {
+        @Override
+        public void getPasswordCheckupIntent(
+                int referrer,
+                @Nullable String accountName,
+                Callback<PendingIntent> successCallback,
+                Callback<Exception> failureCallback) {
+            failureCallback.onResult(new Exception("error"));
+        }
+
+        @Override
+        public void runPasswordCheckupInBackground(
+                int referrer,
+                @Nullable String accountName,
+                Callback<Void> successCallback,
+                Callback<Exception> failureCallback) {
+            failureCallback.onResult(new Exception("error"));
+        }
+
+        @Override
+        public void getBreachedCredentialsCount(
+                int referrer,
+                @Nullable String accountName,
+                Callback<Integer> successCallback,
+                Callback<Exception> failureCallback) {
+            failureCallback.onResult(new Exception("error"));
+        }
+
+        @Override
+        public void getWeakCredentialsCount(
+                int referrer,
+                @Nullable String accountName,
+                Callback<Integer> successCallback,
+                Callback<Exception> failureCallback) {
+            failureCallback.onResult(new Exception("error"));
+        }
+
+        @Override
+        public void getReusedCredentialsCount(
+                int referrer,
+                @Nullable String accountName,
+                Callback<Integer> successCallback,
+                Callback<Exception> failureCallback) {
+            failureCallback.onResult(new Exception("error"));
+        }
+    }
+
     private static final PermissionsData PERMISSIONS_DATA_1 =
             PermissionsData.create(
                     "http://example1.com",
@@ -229,6 +284,15 @@ public final class SafetyHubTest {
 
         mPage = mActivityTestRule.startOnBlankPage();
         mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
+
+        PasswordCheckupClientHelper helper = new FailingPasswordCheckupClientHelper();
+        PasswordCheckupClientHelperFactory.setFactoryForTesting(
+                new PasswordCheckupClientHelperFactory() {
+                    @Override
+                    public PasswordCheckupClientHelper createHelper() {
+                        return helper;
+                    }
+                });
 
         // Reset state to the default of the compromised passwords count and the browsing data
         // state.

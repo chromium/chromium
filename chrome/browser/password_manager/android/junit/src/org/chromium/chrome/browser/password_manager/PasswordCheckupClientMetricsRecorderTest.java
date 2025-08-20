@@ -17,7 +17,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
-import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordManagerUnavailableException;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
 
 import java.util.Optional;
@@ -149,12 +149,11 @@ public class PasswordCheckupClientMetricsRecorderTest {
         @PasswordCheckOperation int operation = PasswordCheckOperation.RUN_PASSWORD_CHECKUP;
         PasswordCheckupClientMetricsRecorder metricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(operation);
-        metricsRecorder.recordMetrics(
-                Optional.of(
-                        new PasswordCheckBackendException(
-                                "", CredentialManagerError.BACKEND_NOT_AVAILABLE)));
+        metricsRecorder.recordMetrics(Optional.of(new PasswordManagerUnavailableException()));
         checkHistogramsOnFailure(
-                operation, CredentialManagerError.BACKEND_NOT_AVAILABLE, OptionalInt.empty());
+                operation,
+                CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
+                OptionalInt.empty());
     }
 
     @Test
@@ -163,12 +162,11 @@ public class PasswordCheckupClientMetricsRecorderTest {
         int operation = PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT;
         PasswordCheckupClientMetricsRecorder metricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(operation);
-        metricsRecorder.recordMetrics(
-                Optional.of(
-                        new PasswordCheckBackendException(
-                                "", CredentialManagerError.BACKEND_NOT_AVAILABLE)));
+        metricsRecorder.recordMetrics(Optional.of(new PasswordManagerUnavailableException()));
         checkHistogramsOnFailure(
-                operation, CredentialManagerError.BACKEND_NOT_AVAILABLE, OptionalInt.empty());
+                operation,
+                CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
+                OptionalInt.empty());
     }
 
     @Test
@@ -176,12 +174,11 @@ public class PasswordCheckupClientMetricsRecorderTest {
         @PasswordCheckOperation int operation = PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT;
         PasswordCheckupClientMetricsRecorder metricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(operation);
-        metricsRecorder.recordMetrics(
-                Optional.of(
-                        new PasswordCheckBackendException(
-                                "", CredentialManagerError.BACKEND_NOT_AVAILABLE)));
+        metricsRecorder.recordMetrics(Optional.of(new PasswordManagerUnavailableException()));
         checkHistogramsOnFailure(
-                operation, CredentialManagerError.BACKEND_NOT_AVAILABLE, OptionalInt.empty());
+                operation,
+                CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
+                OptionalInt.empty());
     }
 
     @Test
@@ -189,12 +186,11 @@ public class PasswordCheckupClientMetricsRecorderTest {
         @PasswordCheckOperation int operation = PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT;
         PasswordCheckupClientMetricsRecorder metricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(operation);
-        metricsRecorder.recordMetrics(
-                Optional.of(
-                        new PasswordCheckBackendException(
-                                "", CredentialManagerError.BACKEND_NOT_AVAILABLE)));
+        metricsRecorder.recordMetrics(Optional.of(new PasswordManagerUnavailableException()));
         checkHistogramsOnFailure(
-                operation, CredentialManagerError.BACKEND_NOT_AVAILABLE, OptionalInt.empty());
+                operation,
+                CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
+                OptionalInt.empty());
     }
 
     @Test
@@ -202,12 +198,11 @@ public class PasswordCheckupClientMetricsRecorderTest {
         @PasswordCheckOperation int operation = PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT;
         PasswordCheckupClientMetricsRecorder metricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(operation);
-        metricsRecorder.recordMetrics(
-                Optional.of(
-                        new PasswordCheckBackendException(
-                                "", CredentialManagerError.BACKEND_NOT_AVAILABLE)));
+        metricsRecorder.recordMetrics(Optional.of(new PasswordManagerUnavailableException()));
         checkHistogramsOnFailure(
-                operation, CredentialManagerError.BACKEND_NOT_AVAILABLE, OptionalInt.empty());
+                operation,
+                CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
+                OptionalInt.empty());
     }
 
     @Test

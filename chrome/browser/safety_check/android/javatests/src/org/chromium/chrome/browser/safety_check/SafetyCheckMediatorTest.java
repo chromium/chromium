@@ -47,13 +47,10 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher;
-import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
-import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncherFactory;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
-import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
 import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
@@ -233,7 +230,7 @@ public class SafetyCheckMediatorTest {
     }
 
     @Before
-    public void setUp() throws PasswordCheckBackendException, CredentialManagerBackendException {
+    public void setUp() {
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
         PasswordManagerHelperJni.setInstanceForTesting(mPasswordManagerHelperNativeMock);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
@@ -385,25 +382,6 @@ public class SafetyCheckMediatorTest {
                 PasswordStorageType.ACCOUNT_STORAGE, new Exception("Test exception"));
 
         assertEquals(PasswordsState.ERROR, mPasswordCheckModel.get(PASSWORDS_STATE));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM, PasswordsStatus.ERROR));
-    }
-
-    @Test
-    public void testPasswordsCheckBackendOutdated() {
-        if (!mUseGmsApi) return;
-
-        mMediator.performSafetyCheck();
-        setUpPasswordCheckToReturnError(
-                PasswordStorageType.ACCOUNT_STORAGE,
-                new PasswordCheckBackendException(
-                        "test", CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED));
-
-        assertEquals(
-                PasswordsState.BACKEND_VERSION_NOT_SUPPORTED,
-                mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(

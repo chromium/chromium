@@ -23,10 +23,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.PayloadCallbackHelper;
-import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
-import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordManagerUnavailableException;
 
 /** Tests for {@link FakePasswordCheckupClientHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -90,8 +89,7 @@ public class FakePasswordCheckupClientHelperTest {
 
     @Test
     public void testGetPasswordCheckupIntentReturnsError() {
-        final Exception expectedException =
-                new PasswordCheckBackendException("test", CredentialManagerError.UNCATEGORIZED);
+        final Exception expectedException = new PasswordManagerUnavailableException();
         mFakeHelper.setError(expectedException);
 
         final PayloadCallbackHelper<PendingIntent> successCallbackHelper =
@@ -135,8 +133,7 @@ public class FakePasswordCheckupClientHelperTest {
 
     @Test
     public void testRunPasswordCheckupInBackgroundReturnsError() {
-        final Exception expectedException =
-                new PasswordCheckBackendException("test", CredentialManagerError.UNCATEGORIZED);
+        final Exception expectedException = new PasswordManagerUnavailableException();
         mFakeHelper.setError(expectedException);
 
         final PayloadCallbackHelper<Void> successCallbackHelper = new PayloadCallbackHelper<>();
@@ -182,8 +179,7 @@ public class FakePasswordCheckupClientHelperTest {
 
     @Test
     public void testGetBreachedCredentialsCountReturnsError() {
-        final Exception expectedException =
-                new PasswordCheckBackendException("test", CredentialManagerError.UNCATEGORIZED);
+        final Exception expectedException = new PasswordManagerUnavailableException();
         mFakeHelper.setError(expectedException);
 
         final PayloadCallbackHelper<Integer> successCallbackHelper = new PayloadCallbackHelper<>();

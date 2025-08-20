@@ -136,6 +136,9 @@ public class PasswordManagerHelperTest {
         // TODO(crbug.com/40940922): Parametrise the tests for local and account.
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
+                        eq(mPrefService), anyBoolean()))
+                .thenReturn(true);
         mPasswordManagerHelper = new PasswordManagerHelper(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
@@ -252,7 +255,7 @@ public class PasswordManagerHelperTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_ERROR_HISTOGRAM,
-                                CredentialManagerError.UNCATEGORIZED)
+                                CredentialManagerError.NO_ACCOUNT_NAME)
                         .expectIntRecord(
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0)
                         .expectNoRecords(PasswordMetricsUtil.ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM)
@@ -261,7 +264,7 @@ public class PasswordManagerHelperTest {
                                         .ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
         chooseToSyncPasswords();
-        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.UNCATEGORIZED);
+        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.NO_ACCOUNT_NAME);
 
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
@@ -310,6 +313,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -327,6 +331,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -345,6 +350,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -362,6 +368,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -381,6 +388,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -400,6 +408,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -418,6 +427,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -439,6 +449,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -459,6 +470,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -480,6 +492,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -502,6 +515,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -519,6 +533,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -540,6 +555,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -557,6 +573,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -579,6 +596,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -599,6 +617,7 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
+                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,

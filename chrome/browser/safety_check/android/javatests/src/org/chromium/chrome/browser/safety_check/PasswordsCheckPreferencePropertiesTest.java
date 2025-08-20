@@ -11,8 +11,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
-import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
-import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
 import org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperties.PasswordsState;
 
@@ -36,15 +34,6 @@ public class PasswordsCheckPreferencePropertiesTest {
                     // Password check result: 10 credentials, 1 breached.
                     // Expected result: PasswordsState.COMPROMISED_EXIST.
                     {new PasswordCheckResult(10, 1), PasswordsState.COMPROMISED_EXIST},
-                    // Password check result: Backend version not supported error set.
-                    // Expected result: PasswordsState.BACKEND_VERSION_NOT_SUPPORTED.
-                    {
-                        new PasswordCheckResult(
-                                new PasswordCheckBackendException(
-                                        "Simulate that password check throws an exception",
-                                        CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED)),
-                        PasswordsState.BACKEND_VERSION_NOT_SUPPORTED
-                    },
                     // Password check result: some unknown error set.
                     // Expected result: PasswordsState.ERROR.
                     {

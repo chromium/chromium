@@ -354,9 +354,10 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="(Obsolete) No context"/>
   <int value="1" label="Provided account is empty"/>
   <int value="2" label="(Obsolete) API error"/>
-  <int value="3" label="Uncategorized error"/>
+  <int value="3" label="(Obsolete) Uncategorized error"/>
   <int value="4" label="Backend version is not supported"/>
-  <int value="5" label="Backend downstream implementation is not available"/>
+  <int value="5"
+      label="(Obsolete) Backend downstream implementation is not available"/>
   <int value="6" label="ApiException"/>
   <int value="7" label="Other API error"/>
   <int value="8" label="Password manager not available"/>
@@ -663,12 +664,6 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="(obsolete) Password access loss warning"/>
   <int value="28" label="Passkey upgrade bubble"/>
   <int value="29" label="Password change state information bubble"/>
-</enum>
-
-<enum name="OutdatedGMSDialogDismissalReason">
-  <int value="0" label="Other"/>
-  <int value="1" label="Accepted"/>
-  <int value="2" label="Rejected"/>
 </enum>
 
 <enum name="PasskeysMigrationStatus">

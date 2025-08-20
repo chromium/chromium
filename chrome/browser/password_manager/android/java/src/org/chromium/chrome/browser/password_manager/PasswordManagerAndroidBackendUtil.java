@@ -35,9 +35,8 @@ class PasswordManagerAndroidBackendUtil {
     }
 
     static @CredentialManagerError int getPasswordCheckupBackendError(Exception exception) {
-        if (exception instanceof PasswordCheckupClientHelper.PasswordCheckBackendException) {
-            return ((PasswordCheckupClientHelper.PasswordCheckBackendException) exception)
-                    .errorCode;
+        if (exception instanceof PasswordCheckupClientHelper.PasswordManagerUnavailableException) {
+            return CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE;
         }
         if (exception instanceof ApiException) {
             return CredentialManagerError.API_EXCEPTION;

@@ -48,8 +48,6 @@ class SafetyCheckViewBinder {
                                 R.plurals.safety_check_passwords_compromised_exist,
                                 compromised,
                                 compromised);
-            case PasswordsState.BACKEND_VERSION_NOT_SUPPORTED:
-                return context.getString(R.string.safety_check_passwords_update_play_services);
             default:
                 assert false : "Unknown PasswordsState value.";
         }
@@ -68,7 +66,6 @@ class SafetyCheckViewBinder {
                 return R.drawable.ic_warning_red_24dp;
             case PasswordsState.NO_PASSWORDS:
             case PasswordsState.ERROR:
-            case PasswordsState.BACKEND_VERSION_NOT_SUPPORTED:
                 return R.drawable.ic_info_outline_grey_24dp;
             default:
                 assert false : "Unknown PasswordsState value.";
