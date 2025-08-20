@@ -4,15 +4,32 @@
 
 #include "content/public/renderer/render_frame_media_playback_options.h"
 
-#include "build/android_buildflags.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
+#include "content/public/common/content_features.h"
 
-namespace content {
-
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
-const bool kIsBackgroundMediaSuspendEnabled = true;
-#else
-const bool kIsBackgroundMediaSuspendEnabled = false;
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/base/device_form_factor.h"
 #endif
 
+namespace content {
+bool IsBackgroundMediaSuspendEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  // For Android devices, do not suspend background media for large form
+  // factors.
+  if (base::FeatureList::IsEnabled(
+          features::kAndroidEnableBackgroundMediaLargeFormFactors)) {
+    auto device_form_factor = ui::GetDeviceFormFactor();
+
+    return !(device_form_factor == ui::DEVICE_FORM_FACTOR_TABLET ||
+             device_form_factor == ui::DEVICE_FORM_FACTOR_DESKTOP);
+  } else {
+    return true;
+  }
+
+#else
+  // For non-Android devices, always allow background media to play
+  return false;
+#endif
+}
 }  // namespace content
