@@ -50,11 +50,6 @@ const CGFloat kChipSymbolPointSize = 15;
   ]];
 }
 
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-  self.button.layer.cornerRadius = self.button.bounds.size.height / 2.0;
-}
-
 #pragma mark - Private
 
 - (UIButton*)configuredButton {
@@ -62,26 +57,30 @@ const CGFloat kChipSymbolPointSize = 15;
   UIAction* buttonAction = [UIAction actionWithHandler:^(UIAction* action) {
     [weakSelf showReaderModeOptions];
   }];
-  UIButton* button =
-      [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero
-                                         primaryAction:buttonAction];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.backgroundColor = [UIColor colorNamed:kBlue600Color];
-  button.clipsToBounds = YES;
-  button.pointerInteractionEnabled = YES;
-  button.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
-  button.accessibilityIdentifier = kReaderModeChipViewAccessibilityIdentifier;
-  button.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_READER_MODE_CHIP_ACCESSIBILITY_LABEL);
+
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration filledButtonConfiguration];
+  configuration.baseBackgroundColor = [UIColor colorNamed:kBlue600Color];
+  configuration.baseForegroundColor =
+      [UIColor colorNamed:kInvertedTextPrimaryColor];
+  configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
 
   UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
       configurationWithPointSize:kChipSymbolPointSize
                           weight:UIImageSymbolWeightRegular
                            scale:UIImageSymbolScaleMedium];
-  UIImage* image =
+  configuration.image =
       DefaultSymbolWithConfiguration(GetReaderModeSymbolName(), symbolConfig);
-  [button setImage:image forState:UIControlStateNormal];
-  button.tintColor = [UIColor colorNamed:kInvertedTextPrimaryColor];
+
+  UIButton* button =
+      [ExtendedTouchTargetButton buttonWithConfiguration:configuration
+                                           primaryAction:buttonAction];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
+  button.accessibilityIdentifier = kReaderModeChipViewAccessibilityIdentifier;
+  button.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_READER_MODE_CHIP_ACCESSIBILITY_LABEL);
 
   return button;
 }
