@@ -831,7 +831,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that the "Cancel", "Edit" and "Mark Unread" buttons are not visible
 // after delete (using swipe).
-- (void)testVisibleButtonsAfterSwipeDeletion {
+// TODO(crbug.com/440119404): Re-enable after roll is complete and testers are
+// also updated.
+- (void)DISABLED_testVisibleButtonsAfterSwipeDeletion {
   AddEntriesAndOpenReadingList();
 
   [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kReadTitle)]
