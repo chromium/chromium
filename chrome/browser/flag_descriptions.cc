@@ -5986,12 +5986,11 @@ const char kMediaFoundationCameraUsageMonitoringDescription[] =
 
 const char kUseAngleDescriptionWindows[] =
     "Choose the graphics backend for ANGLE. D3D11 is used on most Windows "
-    "computers by default. Using the OpenGL backend is not supported and will "
-    "likely exhibit rendering artifacts.";
+    "computers by default.";
 
 const char kUseAngleD3D11[] = "D3D11";
 const char kUseAngleD3D9[] = "D3D9";
-const char kUseAngleD3D11on12[] = "D3D11on12";
+const char kUseAngleD3D11Warp[] = "D3D11 WARP";
 
 const char kUseWaitableSwapChainName[] = "Use waitable swap chains";
 const char kUseWaitableSwapChainDescription[] =

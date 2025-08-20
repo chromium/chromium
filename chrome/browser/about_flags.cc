@@ -459,14 +459,12 @@ const FeatureEntry::FeatureVariation kMediaFoundationClearStrategyVariations[] =
 
 const FeatureEntry::Choice kUseAngleChoicesWindows[] = {
     {flag_descriptions::kUseAngleDefault, "", ""},
-    {flag_descriptions::kUseAngleGL, switches::kUseANGLE,
-     gl::kANGLEImplementationOpenGLName},
     {flag_descriptions::kUseAngleD3D11, switches::kUseANGLE,
      gl::kANGLEImplementationD3D11Name},
     {flag_descriptions::kUseAngleD3D9, switches::kUseANGLE,
      gl::kANGLEImplementationD3D9Name},
-    {flag_descriptions::kUseAngleD3D11on12, switches::kUseANGLE,
-     gl::kANGLEImplementationD3D11on12Name}};
+    {flag_descriptions::kUseAngleD3D11Warp, switches::kUseANGLE,
+     gl::kANGLEImplementationD3D11WarpName}};
 #elif BUILDFLAG(IS_MAC)
 const FeatureEntry::Choice kUseAngleChoicesMac[] = {
     {flag_descriptions::kUseAngleDefault, "", ""},
