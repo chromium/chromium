@@ -2151,8 +2151,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, DisableSync) {
 
   ASSERT_TRUE(GetClient(1)->DisableSyncForAllDatatypes());
   ASSERT_NE(nullptr, AddFolder(0, IndexedFolderName(0)));
-  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(0, GetSyncService(0),
-                                                    GetFakeServer())
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
   ASSERT_FALSE(AllModelsMatch());
 
@@ -2195,8 +2195,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, MC_DeleteBookmark) {
   ASSERT_NE(nullptr, AddURL(0, GetBookmarkBarNode(0), 0, u"bar", bar_url));
   ASSERT_NE(nullptr, AddURL(0, GetOtherNode(0), 0, u"other", other_url));
 
-  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(0, GetSyncService(0),
-                                                    GetFakeServer())
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
 
   ASSERT_TRUE(HasNodeWithURL(0, bar_url));
@@ -2205,8 +2205,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, MC_DeleteBookmark) {
   ASSERT_FALSE(HasNodeWithURL(1, other_url));
 
   Remove(0, GetBookmarkBarNode(0), 0);
-  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(0, GetSyncService(0),
-                                                    GetFakeServer())
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
 
   ASSERT_FALSE(HasNodeWithURL(0, bar_url));

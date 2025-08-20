@@ -28,6 +28,7 @@
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/nigori/cryptographer.h"
 #include "components/sync/test/fake_server.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -439,9 +440,11 @@ class BookmarksUuidChecker : public SingleBookmarksModelMatcherChecker {
 class BookmarkModelMatchesFakeServerChecker
     : public SingleClientStatusChangeChecker {
  public:
-  BookmarkModelMatchesFakeServerChecker(int profile,
+  BookmarkModelMatchesFakeServerChecker(bookmarks::BookmarkModel* model,
                                         syncer::SyncServiceImpl* service,
-                                        fake_server::FakeServer* fake_server);
+                                        fake_server::FakeServer* fake_server,
+                                        bool is_transport_mode = false);
+  ~BookmarkModelMatchesFakeServerChecker() override;
 
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
@@ -475,7 +478,7 @@ class BookmarkModelMatchesFakeServerChecker
       const;
 
   const raw_ptr<fake_server::FakeServer> fake_server_;
-  const int profile_index_;
+  const std::unique_ptr<sync_bookmarks::BookmarkModelView> model_view_;
 };
 
 }  // namespace bookmarks_helper

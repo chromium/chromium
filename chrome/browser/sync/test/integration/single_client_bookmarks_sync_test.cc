@@ -322,8 +322,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
   // Setup sync, wait for its completion, and make sure changes were synced.
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
   EXPECT_THAT(
       other_node->children(),
@@ -371,8 +371,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
 
   // Wait for the bookmark position change to sync.
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
   EXPECT_THAT(bar->children(),
               ElementsAre(IsUrlBookmark(u"CNN", GURL("http://www.cnn.com")),
@@ -389,8 +389,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
 
   // Wait for the rearranged hierarchy to sync.
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
   EXPECT_THAT(
       bar->children(),
@@ -427,8 +427,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
 
   // Wait for the title change to sync.
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
   EXPECT_THAT(
       bar->children(),
@@ -472,8 +472,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
 
   // Wait for newly added bookmarks to sync.
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
 
   EXPECT_THAT(
@@ -548,8 +548,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, CommitLocalCreations) {
   // Setup sync, wait for its completion, and make sure changes were synced.
   ASSERT_TRUE(SetupSync());
   EXPECT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
   EXPECT_THAT(
       other_node->children(),
@@ -646,8 +646,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   SetTitle(kSingleProfileIndex, GetBookmarkBarNode(0)->children().front().get(),
            title2);
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
 
   // Verify the UUID that was committed to the server.
@@ -801,8 +801,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, OneFolderRemovedEvent) {
       ->Remove(folder0, bookmarks::metrics::BookmarkEditSource::kOther,
                kDeletionLocation);
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
 
   EXPECT_EQ(1u, GetOtherNode(kSingleProfileIndex)->children().size());
@@ -871,8 +871,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   GetBookmarkModel(kSingleProfileIndex)
       ->RemoveAllUserBookmarks(kDeletionLocation);
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
 
   EXPECT_THAT(
@@ -998,8 +998,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
 
   // Wait till all entities are committed.
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
 
   // Collect the titles committed on the server.
@@ -1189,8 +1189,8 @@ IN_PROC_BROWSER_TEST_F(
                             /*parent=*/GetOtherNode(kSingleProfileIndex),
                             /*index=*/0, u"title", GURL("http://www.url.com")));
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
 
   // There should have been one creation and no deletions.
@@ -1416,8 +1416,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   const BookmarkNode* node =
       bookmark_model->AddFolder(bookmark_bar_node, /*index=*/0, title);
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
   const std::vector<sync_pb::SyncEntity> server_bookmarks_before =
       fake_server_->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
@@ -1996,8 +1996,8 @@ IN_PROC_BROWSER_TEST_F(
       BookmarkFaviconLoadedChecker(kSingleProfileIndex, GURL(kBookmarkPageUrl))
           .Wait());
   EXPECT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
   EXPECT_TRUE(GetFakeServer()
                   ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
@@ -2049,8 +2049,8 @@ IN_PROC_BROWSER_TEST_F(
   // model matches the server bookmarks which verifies that the bookmark has
   // been reuploaded.
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
   const std::vector<sync_pb::SyncEntity> server_bookmarks =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
@@ -2103,8 +2103,8 @@ IN_PROC_BROWSER_TEST_F(
   // Add another folder to initiate commit to the server.
   AddFolder(kSingleProfileIndex, u"Folder 2");
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
 
   // All elements must have unique_position now.
@@ -2161,8 +2161,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest, DepleteQuota) {
   // All bookmarks get committed in the commit cycle but the quota gets
   // depleted.
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
                    "Sync.DataTypeCommitMessageHasDepletedQuota",
@@ -2198,8 +2198,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
   // All bookmarks get committed in the commit cycle despite the quota gets
   // depleted long before all is committed.
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
   EXPECT_EQ(4 + 1, histogram_tester.GetBucketCount(
                        "Sync.DataTypeCommitMessageHasDepletedQuota",
@@ -2229,8 +2229,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
 
   SetupBookmarksSync();
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
 
   base::HistogramTester histogram_tester;
@@ -2240,8 +2240,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
   AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0,
             client_title);
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
 
   // There is no record in the depleted quota histogram.
@@ -2277,8 +2277,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
     SetupBookmarksSync();
 
     ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                    kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                    GetFakeServer())
+                    GetBookmarkModel(kSingleProfileIndex),
+                    GetSyncService(kSingleProfileIndex), GetFakeServer())
                     .Wait());
     // The quota should *just* be depleted now.
     EXPECT_EQ(1, histogram_tester.GetBucketCount(
@@ -2291,8 +2291,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
   // scheduled in 3s from now.
   AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, u"Foo");
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
 
   {
@@ -2307,8 +2307,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
     // Since the extra nudge delay is only two seconds, it still manages to
     // commit before test timeout.
     ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                    kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                    GetFakeServer())
+                    GetBookmarkModel(kSingleProfileIndex),
+                    GetSyncService(kSingleProfileIndex), GetFakeServer())
                     .Wait());
     // Check that it takes at least one second, that should be robust enough to
     // not flake.
@@ -2994,8 +2994,8 @@ IN_PROC_BROWSER_TEST_F(
   // Setup sync, wait for its completion, and make sure changes were synced.
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
-                  GetFakeServer())
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
                   .Wait());
 
   // Enable account storage for bookmarks.

@@ -32,6 +32,7 @@
 
 namespace {
 
+using bookmarks_helper::GetBookmarkModel;
 using device_info_helper::HasCacheGuid;
 using device_info_helper::HasSharingFields;
 using syncer::DataType;
@@ -377,13 +378,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // there are at least 2 sync cycles and check the second one only.
   bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
 
   // Perform the second sync cycle.
   bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
 
   // Double check that DeviceInfo hasn't been committed during the test. It may
@@ -418,13 +419,13 @@ IN_PROC_BROWSER_TEST_F(
   // there are at least 2 sync cycles and check the second one only.
   bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
 
   // Perform the second sync cycle.
   bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
 
   sync_pb::ClientToServerMessage message;
@@ -452,13 +453,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // there are at least 2 sync cycles and check the second one only.
   bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
 
   // Perform the second sync cycle.
   bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
 
   sync_pb::ClientToServerMessage message;
@@ -494,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // request.
   bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
 
   sync_pb::ClientToServerMessage message;
