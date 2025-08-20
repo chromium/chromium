@@ -1226,9 +1226,6 @@ class TabStripModel {
       const std::optional<tab_groups::TabGroupId> initial_group,
       const std::optional<tab_groups::TabGroupId> new_group);
 
-  // Updates the `group_model` by decrementing the tab count of `group`.
-  void RemoveTabFromGroupModel(const tab_groups::TabGroupId& group);
-
   // Updates the `group_model` by incrementing the tab count of `group`.
   void AddTabToGroupModel(const tab_groups::TabGroupId& group);
 

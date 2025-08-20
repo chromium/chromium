@@ -4338,13 +4338,22 @@ void TabStripModel::TabGroupStateChanged(
   }
 
   if (initial_group.has_value()) {
+    TabGroup* tab_group = group_model_->GetTabGroup(initial_group.value());
+    tab_group->RemoveTab();
+
     // Send the observation
     for (auto& observer : observers_) {
       observer.TabGroupedStateChanged(this, initial_group, std::nullopt, tab,
                                       index);
     }
-    // Update the group model.
-    RemoveTabFromGroupModel(initial_group.value());
+
+    // If the group model must be deleted, then do that at this point.
+    if (tab_group->IsEmpty()) {
+      NotifyTabGroupClosed(initial_group.value());
+      group_model_->RemoveTabGroup(initial_group.value(),
+                                   base::PassKey<TabStripModel>());
+      contents_data_->CloseDetachedTabGroup(initial_group.value());
+    }
   }
 
   if (new_group.has_value()) {
@@ -4370,24 +4379,6 @@ void TabStripModel::TabGroupStateChanged(
       TabGroupChange::VisualsChange visuals;
       NotifyTabGroupVisualsChanged(new_group.value(), visuals);
     }
-  }
-}
-
-void TabStripModel::RemoveTabFromGroupModel(
-    const tab_groups::TabGroupId& group) {
-  if (!group_model_) {
-    return;
-  }
-
-  TabGroup* tab_group = group_model_->GetTabGroup(group);
-  tab_group->RemoveTab();
-  if (tab_group->IsEmpty()) {
-    NotifyTabGroupClosed(group);
-  }
-
-  if (tab_group->IsEmpty()) {
-    group_model_->RemoveTabGroup(group, base::PassKey<TabStripModel>());
-    contents_data_->CloseDetachedTabGroup(group);
   }
 }
 
