@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "content/public/common/url_constants.h"
+#include "url/url_constants.h"
 
 MultiContentsViewDelegateImpl::MultiContentsViewDelegateImpl(Browser& browser)
     : browser_(browser), tab_strip_model_(*browser.tab_strip_model()) {}
@@ -67,6 +69,16 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
   CHECK(!urls.empty());
   CHECK(!tab_strip_model_->GetActiveTab()->IsSplit());
 
+  // Disallow javascript: URLs to prevent self-XSS.
+  std::vector<GURL> filtered_urls;
+  for (const GURL& url : urls) {
+    if (url.SchemeIs(url::kJavaScriptScheme)) {
+      filtered_urls.emplace_back(content::kBlockedURL);
+    } else {
+      filtered_urls.push_back(url);
+    }
+  }
+
   // Insert the tab before or after the active tab, according to the drop side.
   const int new_tab_idx =
       tab_strip_model_->active_index() +
@@ -78,7 +90,7 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
 
   // We currently only support creating a split with one link; i.e., the first
   // link in the provided list.
-  tab_strip_model_->delegate()->AddTabAt(urls.front(), new_tab_idx,
+  tab_strip_model_->delegate()->AddTabAt(filtered_urls.front(), new_tab_idx,
                                          /*foreground=*/true);
   // Create a split with the previously active tab, which should be before or
   // after the newly created tab.

@@ -22,6 +22,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/split_tab_data.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -179,6 +180,42 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   // The original tab is at index 0, the new tab from the drop is at index 1.
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(kDropUrl,
+            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
+                       HandleDropTargetViewLinkDrop_BlockJavascriptUrl) {
+  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_split_view_drag_and_drop) {
+    return;
+  }
+#endif
+  ui::OSExchangeData data;
+  const GURL kDropUrl("javascript:alert(1)");
+  data.SetURL(kDropUrl, u"javascript");
+  gfx::PointF point = {10, 10};
+  ui::DropTargetEvent event(data, point, point, ui::DragDropTypes::DRAG_LINK);
+
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
+                          MultiContentsDropTargetView::DropTargetState::kFull);
+  auto drop_cb = drop_target_view().GetDropCallback(event);
+  EXPECT_FALSE(multi_contents_view().IsInSplitView());
+
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
+
+  EXPECT_TRUE(multi_contents_view().IsInSplitView());
+
+  // After the drop, a new tab should be created in the split view.
+  // The original tab is at index 0, the new tab from the drop is at index 1.
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(GURL(content::kBlockedURL),
             browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
