@@ -23,18 +23,29 @@
           "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)",
           "shard_method=hash"
         ],
-        "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
+        "cros_ctp_suite_name": "chrome-uprev-hw",
+        "cros_test_max_in_shard": 20,
+        "cros_test_names_exclude_from_file": [
+          "chromeos/tast_control_disabled_tests.txt",
+          "chromeos/tast_control_disabled_tests_public_builders.txt"
+        ],
+        "cros_test_tags": [
+          "group:mainline",
+          "dep:chrome"
+        ],
+        "cros_test_tags_exclude": [
+          "informational",
+          "dep:no_chrome_dcheck"
+        ],
         "name": "chrome_all_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "shard_level_retries_on_ctp": 1,
-        "shards": 30,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
-        "test_level_retries": 2,
         "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "PUBLIC_LKGM"
@@ -49,6 +60,7 @@
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
         "cros_board": "jacuzzi",
+        "cros_test_max_in_shard": 20,
         "experiment_percentage": 100,
         "name": "chrome_criticalstaging_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
@@ -68,10 +80,14 @@
           "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)",
           "shard_method=hash"
         ],
-        "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
         "cros_board": "jacuzzi",
+        "cros_test_max_in_shard": 20,
+        "cros_test_names_from_file": [
+          "chromeos/tast_control_disabled_tests.txt",
+          "chromeos/tast_control_disabled_tests_public_builders.txt"
+        ],
         "experiment_percentage": 100,
         "name": "chrome_disabled_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",

@@ -1376,11 +1376,12 @@ targets.bundle(
     name = "chromeos_jacuzzi_rel_skylab_tests",
     targets = [
         targets.bundle(
-            targets = "chromeos_chrome_all_tast_tests",
+            targets = "chromeos_chrome_all_tast_tests_tfc",
             mixins = [
                 "chromeos-tast-public-builder",
-                # jacuzzi is slow. So that we use more number of shards.
-                "skylab-shards-30",
+                "tfc-exclude-public",
+                # jacuzzi is slow. So that we use run fewer tests per shard.
+                "skylab-20-tests-per-shard",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1390,6 +1391,7 @@ targets.bundle(
             targets = "chromeos_chrome_criticalstaging_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
+                "skylab-20-tests-per-shard",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1399,6 +1401,8 @@ targets.bundle(
             targets = "chromeos_chrome_disabled_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
+                "tfc-run-public",
+                "skylab-20-tests-per-shard",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1433,27 +1437,32 @@ targets.bundle(
     name = "chromeos_octopus_rel_skylab_tests",
     targets = [
         targets.bundle(
-            targets = "chromeos_chrome_all_tast_tests",
+            targets = "chromeos_chrome_all_tast_tests_tfc",
             mixins = [
                 "chromeos-tast-public-builder",
+                "tfc-exclude-public",
+                "skylab-50-tests-per-shard",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
             ],
         ),
         targets.bundle(
-            targets = "chromeos_chrome_criticalstaging_tast_tests",
+            targets = "chromeos_chrome_criticalstaging_tast_tests_tfc",
             mixins = [
                 "chromeos-tast-public-builder",
+                "skylab-50-tests-per-shard",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
             ],
         ),
         targets.bundle(
-            targets = "chromeos_chrome_disabled_tast_tests",
+            targets = "chromeos_chrome_disabled_tast_tests_tfc",
             mixins = [
                 "chromeos-tast-public-builder",
+                "tfc-run-public",
+                "skylab-20-tests-per-shard",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",

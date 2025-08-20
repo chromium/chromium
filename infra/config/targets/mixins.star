@@ -552,6 +552,22 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "tfc-exclude-public",
+    generate_pyl_entry = False,
+    skylab = targets.skylab(
+        cros_test_names_exclude_from_file = ["chromeos/tast_control_disabled_tests.txt", "chromeos/tast_control_disabled_tests_public_builders.txt"],
+    ),
+)
+
+targets.mixin(
+    name = "tfc-run-public",
+    generate_pyl_entry = False,
+    skylab = targets.skylab(
+        cros_test_names_from_file = ["chromeos/tast_control_disabled_tests.txt", "chromeos/tast_control_disabled_tests_public_builders.txt"],
+    ),
+)
+
+targets.mixin(
     name = "chromeos-generic-vm",
     generate_pyl_entry = False,
     args = [
