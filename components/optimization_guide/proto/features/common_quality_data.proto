@@ -720,7 +720,10 @@ message PaidContentMetadata {
 }
 
 // The media data for a frame in the web page. If the frame has multiple media
-// elements, only one of them is controlled by the media session.
+// elements, only one of them is controlled by the media session. The
+// transcripts are always attached if any have been generated for past media or
+// current media in this frame, while other fields are only populated if there
+// is an active media session in the frame.
 // Next ID: 9
 message MediaData {
   // Type of the media in the frame.
