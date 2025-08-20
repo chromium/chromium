@@ -6,24 +6,30 @@
 
 #include <stdint.h>
 
-#include <memory>
+#include <cstddef>
 #include <optional>
+#include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "services/device/public/mojom/screen_orientation_lock_types.mojom-data-view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-data-view.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-blink.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
-#include "third_party/liburlpattern/pattern.h"
+#include "third_party/liburlpattern/part.h"
 
 namespace blink {
 
@@ -39,8 +45,8 @@ class ManifestParserTest : public SimTest {
   ManifestParserTest& operator=(const ManifestParserTest&) = delete;
 
  protected:
-  ManifestParserTest() {}
-  ~ManifestParserTest() override {}
+  ManifestParserTest() = default;
+  ~ManifestParserTest() override = default;
 
   mojom::blink::ManifestPtr& ParseManifestWithURLs(const String& data,
                                                    const KURL& manifest_url,
@@ -52,8 +58,9 @@ class ManifestParserTest : public SimTest {
     parser.TakeErrors(&errors);
 
     errors_.clear();
-    for (auto& error : errors)
+    for (auto& error : errors) {
       errors_.push_back(std::move(error->message));
+    }
     manifest_ = parser.TakeManifest();
     EXPECT_TRUE(manifest_);
     return manifest_;
@@ -957,7 +964,6 @@ TEST_F(ManifestParserTest, DisplayParseRules) {
 }
 
 TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
-
   // Smoke test: if no display_override, no value.
   {
     auto& manifest = ParseManifest(R"({ "display_override": [] })");
