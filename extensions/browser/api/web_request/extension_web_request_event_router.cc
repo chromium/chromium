@@ -1755,9 +1755,16 @@ void WebRequestEventRouter::OnEventHandled(
     return;
   }
 
-  listener->blocked_requests.erase(request_id);
-  DecrementBlockCount(browser_context, extension_id, event_name, request_id,
-                      std::move(response), listener->extra_info_spec);
+  // Check if this listener was a blocking listener. We only decrement the
+  // block count if it was. This prevents a scenario where a non-blocking
+  // listener that fails to re-register upon wake-up (via
+  // `cannot_dispatch_callback`) causes the request to resume before other
+  // blocking listeners have responded. See crbug.com/412695438.
+  if (listener->IsBlocking()) {
+    listener->blocked_requests.erase(request_id);
+    DecrementBlockCount(browser_context, extension_id, event_name, request_id,
+                        std::move(response), listener->extra_info_spec);
+  }
 }
 
 bool WebRequestEventRouter::AddEventListener(
