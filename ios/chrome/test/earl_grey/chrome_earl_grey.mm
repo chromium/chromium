@@ -1466,6 +1466,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 }
 
 - (void)waitForKeyboardToDisappear {
+  // Disable the synchronization due to the infinite spinner. Without this, the
+  // timer waits for the keyboard to disappear infinitely although the keyboard
+  // is not visible.
+  ScopedSynchronizationDisabler disabler;
+
   GREYCondition* waitForKeyboard = [GREYCondition
       conditionWithName:@"Wait for keyboard to disappear"
                   block:^BOOL {
