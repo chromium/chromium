@@ -567,12 +567,11 @@ class RTCVideoEncoderTest {
     rtc_encoder_->RegisterEncodeCompleteCallback(callback_wrapper_.get());
   }
 
-  webrtc::VideoCodec GetDefaultCodec() {
-    webrtc::VideoCodec codec = {};
-    memset(&codec, 0, sizeof(codec));
+  webrtc::VideoCodec GetDefaultCodec(webrtc::VideoCodecType codec_type) {
+    webrtc::VideoCodec codec;
     codec.width = kInputFrameWidth;
     codec.height = kInputFrameHeight;
-    codec.codecType = webrtc::kVideoCodecVP8;
+    codec.codecType = codec_type;
     codec.startBitrate = kStartBitrate;
     return codec;
   }
@@ -896,20 +895,16 @@ class RTCVideoEncoderInitTest
 };
 
 TEST_P(RTCVideoEncoderInitTest, CreateAndInitSucceeds) {
-  const webrtc::VideoCodecType codec_type = GetParam();
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  const webrtc::VideoCodec codec = GetDefaultCodec(GetParam());
+  CreateEncoder(codec.codecType);
   ExpectCreateInitAndDestroyVEA();
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
 TEST_P(RTCVideoEncoderInitTest, RepeatedInitSucceeds) {
-  const webrtc::VideoCodecType codec_type = GetParam();
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  const webrtc::VideoCodec codec = GetDefaultCodec(GetParam());
+  CreateEncoder(codec.codecType);
   EXPECT_CALL(*mock_encoder_metrics_provider_factory_,
               CreateVideoEncoderMetricsProvider())
       .WillOnce(Return(::testing::ByMove(
@@ -930,31 +925,27 @@ TEST_P(RTCVideoEncoderInitTest, RepeatedInitSucceeds) {
 #if !BUILDFLAG(IS_ANDROID)
 
 TEST_P(RTCVideoEncoderInitTest, SoftwareFallbackForLowResolution) {
-  const webrtc::VideoCodecType codec_type = GetParam();
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
+  webrtc::VideoCodec codec = GetDefaultCodec(GetParam());
+  CreateEncoder(codec.codecType);
   codec.width = kSoftwareFallbackInputFrameWidth;
-  if (codec_type == webrtc::kVideoCodecAV1) {
+  if (codec.codecType == webrtc::kVideoCodecAV1) {
     codec.height = kSoftwareFallbackInputFrameHeightForAV1;
   } else {
     codec.height = kSoftwareFallbackInputFrameHeight;
   }
-  codec.codecType = codec_type;
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
 TEST_P(RTCVideoEncoderInitTest, AV1Supports270p) {
-  const webrtc::VideoCodecType codec_type = GetParam();
-  if (codec_type != webrtc::kVideoCodecAV1) {
+  webrtc::VideoCodec codec = GetDefaultCodec(GetParam());
+  if (codec.codecType != webrtc::kVideoCodecAV1) {
     GTEST_SKIP();
   }
-  CreateEncoder(codec_type);
+  CreateEncoder(codec.codecType);
   ExpectCreateInitAndDestroyVEA();
-  webrtc::VideoCodec codec = GetDefaultCodec();
   codec.width = 480;
   codec.height = 270;
-  codec.codecType = codec_type;
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
@@ -1108,20 +1099,16 @@ class RTCVideoEncoderFrameSizeChangeTest : public RTCVideoEncoderEncodeTest {
 };
 
 TEST_F(RTCVideoEncoderEncodeTest, H264SoftwareFallbackForOddSize) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  CreateEncoder(codec.codecType);
   codec.width = kInputFrameWidth - 1;
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
 TEST_F(RTCVideoEncoderEncodeTest, VP8CreateAndInitSucceedsForOddSize) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP8);
+  CreateEncoder(codec.codecType);
   codec.width = kInputFrameWidth - 1;
   ExpectCreateInitAndDestroyVEA();
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
@@ -1129,10 +1116,8 @@ TEST_F(RTCVideoEncoderEncodeTest, VP8CreateAndInitSucceedsForOddSize) {
 }
 
 TEST_F(RTCVideoEncoderEncodeTest, VP9CreateAndInitSucceedsForOddSize) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP9);
+  CreateEncoder(codec.codecType);
   codec.width = kInputFrameWidth - 1;
   ExpectCreateInitAndDestroyVEA();
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
@@ -1162,10 +1147,8 @@ TEST_F(RTCVideoEncoderEncodeTest, VP9SoftwareFallbackForVEANotSupport) {
 }
 
 TEST_F(RTCVideoEncoderEncodeTest, ClearSetErrorRequestWhenInitNewEncoder) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP9);
+  CreateEncoder(codec.codecType);
 
   EXPECT_CALL(*mock_gpu_factories_.get(),
               GetVideoEncodeAcceleratorSupportedProfiles())
@@ -1236,10 +1219,8 @@ TEST_F(RTCVideoEncoderEncodeTest, ClearSetErrorRequestWhenInitNewEncoder) {
 // Checks that WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE is returned when there is
 // platform error.
 TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackAfterError) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP8);
+  CreateEncoder(codec.codecType);
   ExpectCreateInitAndDestroyVEA();
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
@@ -1289,9 +1270,8 @@ TEST_F(RTCVideoEncoderEncodeTest, NoSoftwareFallbackOnMappableNativeInput) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kVideoCaptureUseGpuMemoryBuffer);
 
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  CreateEncoder(codec.codecType);
   ExpectCreateInitAndDestroyVEA(
       media::PIXEL_FORMAT_NV12,
       media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer);
@@ -1319,10 +1299,8 @@ TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kVideoCaptureUseGpuMemoryBuffer);
 
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP8);
+  CreateEncoder(codec.codecType);
   ExpectCreateInitAndDestroyVEA(
       media::PIXEL_FORMAT_NV12,
       media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer);
@@ -1367,9 +1345,8 @@ TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
 }
 
 TEST_F(RTCVideoEncoderEncodeTest, EncodeScaledFrame) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP8);
+  CreateEncoder(codec.codecType);
   ExpectCreateInitAndDestroyVEA();
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
@@ -1405,9 +1382,8 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeScaledFrame) {
 }
 
 TEST_F(RTCVideoEncoderEncodeTest, PreserveTimestamps) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP8);
+  CreateEncoder(codec.codecType);
   ExpectCreateInitAndDestroyVEA();
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
@@ -1439,9 +1415,8 @@ TEST_F(RTCVideoEncoderEncodeTest, PreserveTimestamps) {
 TEST_F(RTCVideoEncoderEncodeTest, AcceptsRepeatedWrappedMediaVideoFrame) {
   // Ensure encoder is accepting subsequent frames with the same timestamp in
   // the wrapped media::VideoFrame.
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP8);
+  CreateEncoder(codec.codecType);
   ExpectCreateInitAndDestroyVEA();
   rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings);
 
@@ -1508,9 +1483,8 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeVP9TemporalLayer) {
 }
 
 TEST_F(RTCVideoEncoderEncodeTest, EncodeWithDropFrame) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
+  webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP8);
+  CreateEncoder(codec.codecType);
   codec.SetFrameDropEnabled(/*enabled=*/true);
   ExpectCreateInitAndDestroyVEA(
       media::PIXEL_FORMAT_I420,
@@ -1609,11 +1583,9 @@ TEST_F(RTCVideoEncoderEncodeTest, InitializeWithTooHighBitrateFails) {
   // We expect initialization to fail. We do not want a mock video encoder, as
   // it will not be successfully attached to the rtc_encoder_. So we do not call
   // CreateEncoder, but instead CreateEncoderWithoutVea.
-  constexpr webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
-  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP8);
+  CreateEncoder(codec.codecType);
 
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
   codec.startBitrate = std::numeric_limits<uint32_t>::max() / 100;
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_ERR_PARAMETER,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
@@ -2458,9 +2430,8 @@ TEST_F(RTCVideoEncoderEncodeTest,
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(RTCVideoEncoderEncodeTest, MetricsProviderSetErrorIsCalledOnError) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP9);
+  CreateEncoder(codec.codecType);
   const auto pixel_format = media::PIXEL_FORMAT_I420;
   const auto storage_type =
       media::VideoEncodeAccelerator::Config::StorageType::kShmem;
@@ -2527,9 +2498,8 @@ TEST_F(RTCVideoEncoderEncodeTest, MetricsProviderSetErrorIsCalledOnError) {
 }
 
 TEST_F(RTCVideoEncoderEncodeTest, EncodeVp9FrameWithMetricsProvider) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP9);
+  CreateEncoder(codec.codecType);
   const auto pixel_format = media::PIXEL_FORMAT_I420;
   const auto storage_type =
       media::VideoEncodeAccelerator::Config::StorageType::kShmem;
@@ -2598,9 +2568,8 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeVp9FrameWithMetricsProvider) {
 }
 
 TEST_F(RTCVideoEncoderEncodeTest, EncodeFrameWithAdapter) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP8);
+  CreateEncoder(codec.codecType);
   ExpectCreateInitAndDestroyVEA();
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
@@ -2717,9 +2686,8 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodedBufferLifetimeExceedsEncoderLifetime) {
 }
 
 TEST_F(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP8);
+  CreateEncoder(codec.codecType);
 
   ExpectCreateInitAndDestroyVEA();
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
@@ -2916,10 +2884,8 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
                                  media::VideoEncodeAccelerator::kConstantMode,
                                  {media::SVCScalabilityMode::kL1T1}});
 
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH265;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH265);
+  CreateEncoder(codec.codecType);
   ExpectCreateInitAndDestroyVEA();
 
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
@@ -2955,10 +2921,8 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
 
 TEST_F(RTCVideoEncoderFrameSizeChangeTest,
        FrameSizeChangeSupportedReCreateEncoder) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP9);
+  CreateEncoder(codec.codecType);
   EXPECT_CALL(*mock_encoder_metrics_provider_factory_,
               CreateVideoEncoderMetricsProvider())
       .WillOnce(Return(::testing::ByMove(
@@ -2978,10 +2942,8 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest,
 }
 
 TEST_F(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeSupportedVP9) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecVP9);
+  CreateEncoder(codec.codecType);
   SetUpEncodingWithFrameSizeChangeSupport(codec);
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
 
@@ -3119,10 +3081,8 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest,
 }
 
 TEST_F(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeSupported) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  CreateEncoder(codec.codecType);
   SetUpEncodingWithFrameSizeChangeSupport(codec);
 
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
@@ -3177,10 +3137,8 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeSupported) {
 
 TEST_F(RTCVideoEncoderFrameSizeChangeTest,
        FrameSizeChangeSameSizeAfterSoftwareFallback) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  CreateEncoder(codec.codecType);
   SetUpEncodingWithFrameSizeChangeSupport(codec);
 
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
@@ -3239,10 +3197,8 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest,
 }
 
 TEST_F(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeFlushFailure) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  CreateEncoder(codec.codecType);
   SetUpEncodingWithFrameSizeChangeSupport(codec);
 
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
@@ -3272,10 +3228,8 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeFlushFailure) {
 }
 
 TEST_F(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeFailure) {
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
+  webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  CreateEncoder(codec.codecType);
   SetUpEncodingWithFrameSizeChangeSupport(codec);
 
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
