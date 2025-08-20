@@ -9,6 +9,7 @@ include_rules = [
   "+components/language_detection/core/browser",
   "+components/services/storage/privileged",
   "+components/services/storage/public",
+  "+components/tracing/common",
   "+components/viz/common",
   "+components/viz/host",
   "+device/vr/buildflags",
