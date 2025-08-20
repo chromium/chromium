@@ -9,17 +9,13 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
-BASE_FEATURE(kEnhancedCalendar,
-             "EnhancedCalendar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnhancedCalendar, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsEnhancedCalendarEnabled() {
   return base::FeatureList::IsEnabled(kEnhancedCalendar);
 }
 
-BASE_FEATURE(kPageActionMenu,
-             "PageActionMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(PageActionMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kPageActionMenuDirectEntryPointParam[] =
     "PageActionMenuDirectEntryPoint";
@@ -31,9 +27,7 @@ bool IsPageActionMenuEnabled() {
   return base::FeatureList::IsEnabled(kPageActionMenu);
 }
 
-BASE_FEATURE(kGeminiCrossTab,
-             "GeminiCrossTab",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(GeminiCrossTab, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiCrossTabEnabled() {
   if (!IsPageActionMenuEnabled()) {
@@ -83,9 +77,7 @@ bool ShouldForceBWGPromo() {
          BWGPromoConsentVariations::kForceFRE;
 }
 
-BASE_FEATURE(kBWGPromoConsent,
-             "BWGPromoConsent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(BWGPromoConsent, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kExplainGeminiEditMenuParams[] = "PositionForExplainGeminiEditMenu";
 
@@ -101,30 +93,22 @@ PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition() {
   return PositionForExplainGeminiEditMenu::kDisabled;
 }
 
-BASE_FEATURE(kExplainGeminiEditMenu,
-             "ExplainGeminiEditMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(ExplainGeminiEditMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBWGPreciseLocation,
-             "BWGPreciseLocation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(BWGPreciseLocation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsBWGPreciseLocationEnabled() {
   CHECK(IsPageActionMenuEnabled());
   return base::FeatureList::IsEnabled(kBWGPreciseLocation);
 }
 
-BASE_FEATURE(kPageContextAnchorTags,
-             "PageContextAnchorTags",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(PageContextAnchorTags, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPageContextAnchorTagsEnabled() {
   return base::FeatureList::IsEnabled(kPageContextAnchorTags);
 }
 
-BASE_FEATURE(kGeminiForManagedAccounts,
-             "GeminiForManagedAccounts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(GeminiForManagedAccounts, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiAvailableForManagedAccounts() {
   return base::FeatureList::IsEnabled(kGeminiForManagedAccounts);

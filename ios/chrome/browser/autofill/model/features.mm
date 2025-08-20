@@ -6,18 +6,14 @@
 
 #import "base/feature_list.h"
 
-BASE_FEATURE(kStatelessFormSuggestionController,
-             "StatelessFormSuggestionController",
+BASE_FEATURE(StatelessFormSuggestionController,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStatelessFormSuggestionControllerWithRequestDeduping,
-             "StatelessFormSuggestionControllerWithRequestDeduping",
+BASE_FEATURE(StatelessFormSuggestionControllerWithRequestDeduping,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThrottleFormInputAccessorySuggestionRefresh,
-             "ThrottleFormInputAccessorySuggestionRefresh",
+BASE_FEATURE(ThrottleFormInputAccessorySuggestionRefresh,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground,
-             "FormInputAccessorySkipInputViewReloadInBackground",
+BASE_FEATURE(FormInputAccessorySkipInputViewReloadInBackground,
              base::FEATURE_ENABLED_BY_DEFAULT);

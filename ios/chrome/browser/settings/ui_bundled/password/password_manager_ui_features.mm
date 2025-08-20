@@ -6,16 +6,12 @@
 
 namespace password_manager::features {
 
-BASE_FEATURE(kIOSEnablePasscodeSettings,
-             "IOSEnablePasscodeSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(IOSEnablePasscodeSettings, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSuggestStrongPasswordInAddPassword,
-             "SuggestStrongPasswordInAddPassword",
+BASE_FEATURE(SuggestStrongPasswordInAddPassword,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSEnablePasswordManagerTrustedVaultWidget,
-             "IOSEnablePasswordManagerTrustedVaultWidget",
+BASE_FEATURE(IOSEnablePasswordManagerTrustedVaultWidget,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPasscodeSettingsEnabled() {

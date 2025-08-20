@@ -85,8 +85,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 
 // Disables logic to update CRWWebController's `_currentURLLoadWasTriggered`
 // when setting a WKWebView's interaction state.
-BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
-             "IOSSessionRestoreLoadTriggerKillSwitch",
+BASE_FEATURE(IOSSessionRestoreLoadTriggerKillSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 

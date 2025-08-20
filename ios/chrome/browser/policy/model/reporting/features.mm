@@ -7,8 +7,6 @@
 namespace enterprise_reporting {
 
 // Enables Cloud Profile Reporting on iOS.
-BASE_FEATURE(kCloudProfileReporting,
-             "CloudProfileReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(CloudProfileReporting, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace enterprise_reporting
