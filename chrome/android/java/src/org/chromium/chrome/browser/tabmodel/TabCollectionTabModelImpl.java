@@ -846,8 +846,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                         tab, /* notifyTabClosureCommitted= */ false, params.tabClosingSource);
             }
         }
-        // TODO(crbug.com/429145597): Close any detached tab group if this is not an undoable
-        // closure.
 
         return true;
     }
@@ -937,8 +935,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         if (finalIndex == curIndex) return;
 
-        // TODO(crbug.com/432297442): See if anything cares about sequencing this after all the tabs
-        // are moved.
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
             for (TabModelObserver observer : mTabModelObservers) {
@@ -1025,9 +1021,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public int getIndividualTabAndGroupCount() {
-        // TODO(crbug.com/428692223): Revisit the performance of this method as compared to checking
-        // this in C++ and returning a count.
-        return getRepresentativeTabList().size();
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return 0;
+        return TabCollectionTabModelImplJni.get()
+                .getIndividualTabAndGroupCount(mNativeTabCollectionTabModelImplPtr);
     }
 
     @Override
@@ -1071,22 +1068,26 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public int getTabGroupCount() {
-        // TODO(crbug.com/428692223): Revisit the performance of this method by doing it in C++.
-        return getAllTabGroupIds().size();
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return 0;
+        return TabCollectionTabModelImplJni.get()
+                .getTabGroupCount(mNativeTabCollectionTabModelImplPtr);
     }
 
     @Override
     public int getTabCountForGroup(@Nullable Token tabGroupId) {
-        // TODO(crbug.com/428692223): Revisit the performance of this method as compared to checking
-        // this in C++ and returning a count.
-        return getTabsInGroup(tabGroupId).size();
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0 || tabGroupId == null) return 0;
+        return TabCollectionTabModelImplJni.get()
+                .getTabCountForGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId);
     }
 
     @Override
     public boolean tabGroupExists(@Nullable Token tabGroupId) {
-        // TODO(crbug.com/428692223): Revisit the performance of this method as compared to checking
-        // this in C++ and returning a boolean.
-        return getTabsInGroup(tabGroupId).size() > 0;
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0 || tabGroupId == null) return false;
+        return TabCollectionTabModelImplJni.get()
+                .tabGroupExists(mNativeTabCollectionTabModelImplPtr, tabGroupId);
     }
 
     @Override
@@ -1114,9 +1115,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public int getIndexOfTabInGroup(Tab tab) {
-        // TODO(crbug.com/428692223): Revisit the performance of this method as compared to
-        // computing the index in C++ and returning it.
-        return getTabsInGroup(tab.getTabGroupId()).indexOf(tab);
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return TabList.INVALID_TAB_INDEX;
+        Token tabGroupId = tab.getTabGroupId();
+        if (tabGroupId == null) return TabList.INVALID_TAB_INDEX;
+        return TabCollectionTabModelImplJni.get()
+                .getIndexOfTabInGroup(mNativeTabCollectionTabModelImplPtr, tab, tabGroupId);
     }
 
     @Override
@@ -1488,6 +1492,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 /* newTabGroupId= */ null,
                 /* isPinned= */ false,
                 /* isDestinationTab= */ false);
+
+        if (detachedTabGroupExists(oldTabGroupId)) {
+            closeDetachedTabGroup(oldTabGroupId);
+        }
     }
 
     // Internal methods.
@@ -1973,8 +1981,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             assumeNonNull(oldTabGroupId);
             boolean wasLastTabInGroup =
                     wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(tab, oldTabGroupId);
-            // TODO(crbug.com/429145597): Also close the detached tab group if this is not an
-            // undoable merge.
             if (wasLastTabInGroup && newTabGroupId == null) {
                 final @DidRemoveTabGroupReason int reason;
                 if (isPinned) {
@@ -2190,6 +2196,21 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         @JniType("std::vector<TabAndroid*>")
         List<Tab> getTabsInGroup(
                 long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
+
+        int getTabCountForGroup(
+                long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
+
+        boolean tabGroupExists(
+                long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
+
+        int getIndividualTabAndGroupCount(long nativeTabCollectionTabModelImpl);
+
+        int getTabGroupCount(long nativeTabCollectionTabModelImpl);
+
+        int getIndexOfTabInGroup(
+                long nativeTabCollectionTabModelImpl,
+                @JniType("TabAndroid*") Tab tab,
+                @JniType("base::Token") Token tabGroupId);
 
         void updateTabGroupVisualData(
                 long nativeTabCollectionTabModelImpl,

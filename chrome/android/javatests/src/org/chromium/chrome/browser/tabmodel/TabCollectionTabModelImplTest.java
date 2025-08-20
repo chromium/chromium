@@ -828,6 +828,7 @@ public class TabCollectionTabModelImplTest {
                             "getTabGroupCount should be 1.",
                             1,
                             mCollectionModel.getTabGroupCount());
+                    assertFalse(mCollectionModel.detachedTabGroupExists(groupId0));
 
                     // Group 1 should be removed as it's now also empty.
                     mCollectionModel.moveTabOutOfGroupInDirection(
@@ -841,6 +842,7 @@ public class TabCollectionTabModelImplTest {
                             "getTabGroupCount should be 0 again.",
                             0,
                             mCollectionModel.getTabGroupCount());
+                    assertFalse(mCollectionModel.detachedTabGroupExists(groupId1));
                 });
     }
 
