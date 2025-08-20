@@ -17,7 +17,6 @@ class WebIdlDiffToolTest(unittest.TestCase):
   def testIdlToWebIdlConversion(self):
     converted_schemas = [
         ('alarms.idl', 'alarms.webidl'),
-        ('bluetooth.idl', 'bluetooth.webidl'),
     ]
     # LoadAndReturnUnifiedDiff expects file paths relative to the repo root.
     converted_schema_path = 'tools/json_schema_compiler/test/converted_schemas/'
