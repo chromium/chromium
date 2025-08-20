@@ -510,7 +510,6 @@ crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-clang-covera
 crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
 crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
-crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 
 ####################
@@ -655,7 +654,6 @@ crbug.com/332743717 conformance/uniforms/uniform-location.html [ Failure ]
 # Temporary suppressions for introduction of drawingBufferStorage
 #################################################################
 crbug.com/1230619 conformance/offscreencanvas/methods-worker.html [ Failure ]
-crbug.com/1230619 conformance/offscreencanvas/methods.html [ Failure ]
 
 
 #######################################################################
