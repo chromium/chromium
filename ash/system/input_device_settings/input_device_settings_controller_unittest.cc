@@ -894,10 +894,10 @@ TEST_F(InputDeviceSettingsControllerTest,
   EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
 
-  SimulateUserLogin(kAccountId2);
+  SwitchActiveUser(kAccountId2);
   task_runner_->RunUntilIdle();
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 2u);
-  SimulateUserLogin(kAccountId1);
+  SwitchActiveUser(kAccountId1);
   task_runner_->RunUntilIdle();
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 3u);
 }
@@ -1314,7 +1314,7 @@ TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsSettings) {
       "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
       "Initial",
       /*expected_count=*/4u);
-  SimulateUserLogin(kAccountId2);
+  SwitchActiveUser(kAccountId2);
   task_runner_->RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
