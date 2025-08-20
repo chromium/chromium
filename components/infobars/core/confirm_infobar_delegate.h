@@ -45,7 +45,7 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // InfoBarDelegate:
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
   void InfoBarDismissed() override;
-  const ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate() const override;
+  ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate() override;
 
   // Returns the title string to be displayed for the InfoBar.
   // Defaults to having not title. Currently only used on iOS.
@@ -76,10 +76,6 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // Returns the tooltip for the specified button. The default implementation
   // returns an empty tooltip.
   virtual std::u16string GetButtonTooltip(InfoBarButton button) const;
-
-  // Returns true if this specific infobar instance should use the
-  // custom layout to show the link text before the button.
-  virtual bool ShouldShowLinkBeforeButton() const;
 
 #if BUILDFLAG(IS_IOS)
   // Returns whether or not a tint should be applied to the icon background.

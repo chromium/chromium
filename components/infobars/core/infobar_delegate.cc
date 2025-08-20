@@ -93,12 +93,6 @@ bool InfoBarDelegate::ShouldHideInFullscreen() const {
 }
 
 ConfirmInfoBarDelegate* InfoBarDelegate::AsConfirmInfoBarDelegate() {
-  return const_cast<ConfirmInfoBarDelegate*>(
-      static_cast<const InfoBarDelegate*>(this)->AsConfirmInfoBarDelegate());
-}
-
-const ConfirmInfoBarDelegate* InfoBarDelegate::AsConfirmInfoBarDelegate()
-    const {
   return nullptr;
 }
 
