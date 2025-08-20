@@ -45,8 +45,7 @@ class Extension;
 // these two panel types.
 class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
                                       public SidePanelService::Observer,
-                                      public SidePanelEntryObserver,
-                                      public content::WebContentsObserver {
+                                      public SidePanelEntryObserver {
  public:
   explicit ExtensionSidePanelCoordinator(Profile* profile,
                                          BrowserWindowInterface* browser,
@@ -67,14 +66,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   void DeregisterEntry();
 
  private:
-  // Called when the host WebContents is destroyed. Responsible for
-  // deregistering the SidePanelEntry to ensure it does not outlive the tab it's
-  // associated with.
-  void OnWebContentsClosed();
-
-  // Helper class to observe the destruction of the WebContents.
-  class WebContentsLifetimeHelper;
-
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* entry) override;
   void OnEntryWillHide(SidePanelEntry* entry,
@@ -82,10 +73,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   // Dispatch the onOpened event when the panel is opened.
   void OnOpened();
-
-  // Dispatches the onClosed event when the panel is closed or its WebContents
-  // is destroyed.
-  void OnClosed();
 
   SidePanelEntry::Key GetEntryKey() const;
 
@@ -174,9 +161,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   // Track whether the side panel is currently active for this entry.
   bool is_panel_active_ = false;
-
-  // The ID of the browser window in which the panel is shown, or –1 if unset.
-  int window_id_ = -1;
 
   // Whether this coordinator is tab-scoped or window-scoped.
   const bool for_tab_;
