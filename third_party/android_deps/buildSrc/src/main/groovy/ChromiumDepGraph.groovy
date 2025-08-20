@@ -102,6 +102,7 @@ class ChromiumDepGraph {
             // internal android override is defined, android targets should use that instead (and fail compile if they
             // use this one) but non-android targets still needs this guava target to exist.
             com_google_guava_guava: new PropertyOverride(
+                    cpePrefix: 'cpe:/a:google:guava',
                     url: 'https://github.com/google/guava',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0',
