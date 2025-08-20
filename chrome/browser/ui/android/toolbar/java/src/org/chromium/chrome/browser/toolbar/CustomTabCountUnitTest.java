@@ -7,17 +7,27 @@ package org.chromium.chrome.browser.toolbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Unit tests for {@link CustomTabCount}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CustomTabCountUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private TabModelSelector mTabModelSelector;
+    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
+            new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Integer> mTabModelSelectorTabCountSupplier =
             new ObservableSupplierImpl<>();
     private CustomTabCount mCustomTabCount;
@@ -25,7 +35,10 @@ public class CustomTabCountUnitTest {
     @Before
     public void setUp() {
         mTabModelSelectorTabCountSupplier.set(0);
-        mCustomTabCount = new CustomTabCount(mTabModelSelectorTabCountSupplier);
+        when(mTabModelSelector.getCurrentModelTabCountSupplier())
+                .thenReturn(mTabModelSelectorTabCountSupplier);
+        mCustomTabCount = new CustomTabCount(mTabModelSelectorSupplier);
+        mTabModelSelectorSupplier.set(mTabModelSelector);
     }
 
     @Test

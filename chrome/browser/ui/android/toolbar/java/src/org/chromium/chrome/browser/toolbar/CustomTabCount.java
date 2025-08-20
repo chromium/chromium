@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.util.TokenHolder;
 
 /**
@@ -17,32 +21,40 @@ import org.chromium.ui.util.TokenHolder;
  */
 @NullMarked
 public class CustomTabCount extends ObservableSupplierImpl<Integer> implements Destroyable {
-    private final ObservableSupplier<Integer> mTabModelSelectorTabCountSupplier;
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Callback<TabModelSelector> mTabModelSelectorObserver =
+            this::onTabModelSelectorAvailable;
     private final Callback<Integer> mTabCountObserver = this::onUpdateTabCount;
     private final TokenHolder mTokenHolder;
+    private @Nullable ObservableSupplier<Integer> mTabModelSelectorTabCountSupplier;
 
     /**
      * Creates an instance of {@link CustomTabCount}.
      *
-     * @param tabModelSelectorTabCountSupplier Supplier for the current tab count in the current tab
-     *     model. It updates as the current tab model changes so it will contain the current tab
-     *     count.
+     * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}.
      */
-    public CustomTabCount(ObservableSupplier<Integer> tabModelSelectorTabCountSupplier) {
-        super(tabModelSelectorTabCountSupplier.get());
-        mTabModelSelectorTabCountSupplier = tabModelSelectorTabCountSupplier;
-        mTabModelSelectorTabCountSupplier.addObserver(mTabCountObserver);
+    public CustomTabCount(ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mTabModelSelectorSupplier.addSyncObserverAndCallIfNonNull(mTabModelSelectorObserver);
         mTokenHolder = new TokenHolder(this::onTokenChanged);
+    }
+
+    private void onTabModelSelectorAvailable(TabModelSelector tabModelSelector) {
+        mTabModelSelectorSupplier.removeObserver(mTabModelSelectorObserver);
+        mTabModelSelectorTabCountSupplier = tabModelSelector.getCurrentModelTabCountSupplier();
+        mTabModelSelectorTabCountSupplier.addObserver(mTabCountObserver);
     }
 
     private void onUpdateTabCount(int tabCount) {
         if (!mTokenHolder.hasTokens()) {
+            assumeNonNull(mTabModelSelectorTabCountSupplier);
             super.set(mTabModelSelectorTabCountSupplier.get());
         }
     }
 
     private void onTokenChanged() {
         if (!mTokenHolder.hasTokens()) {
+            assumeNonNull(mTabModelSelectorTabCountSupplier);
             super.set(mTabModelSelectorTabCountSupplier.get());
         }
     }
@@ -74,7 +86,9 @@ public class CustomTabCount extends ObservableSupplierImpl<Integer> implements D
 
     @Override
     public void destroy() {
-        mTabModelSelectorTabCountSupplier.removeObserver(mTabCountObserver);
+        if (mTabModelSelectorTabCountSupplier != null) {
+            mTabModelSelectorTabCountSupplier.removeObserver(mTabCountObserver);
+        }
     }
 
     public boolean hasTokensForTesting() {
