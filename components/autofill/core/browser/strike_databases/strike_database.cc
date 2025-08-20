@@ -15,7 +15,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
 namespace autofill {
@@ -87,7 +86,7 @@ void StrikeDatabase::SetStrikeData(const std::string& key, int num_strikes) {
   StrikeData data;
   data.set_num_strikes(num_strikes);
   data.set_last_update_timestamp(
-      AutofillClock::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   UpdateCache(key, data);
   SetProtoStrikeData(key, data, base::DoNothing());
 }

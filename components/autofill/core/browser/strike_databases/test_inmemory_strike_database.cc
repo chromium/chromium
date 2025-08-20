@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
-#include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {
 
@@ -94,7 +93,7 @@ void TestInMemoryStrikeDatabase::SetStrikeData(const std::string& key,
   StrikeData data;
   data.set_num_strikes(num_strikes);
   data.set_last_update_timestamp(
-      AutofillClock::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   strike_map_cache_[key] = data;
 }
 

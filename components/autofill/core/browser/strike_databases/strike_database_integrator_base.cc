@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_base.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
@@ -50,7 +49,7 @@ StrikeDatabaseIntegratorBase::GetStrikeDatabaseDecision(
   // the last strike was logged for candidate with `id`. Note that some features
   // don't specify a required delay.
   if (GetRequiredDelaySinceLastStrike().has_value() &&
-      (AutofillClock::Now() -
+      (base::Time::Now() -
        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
            strike_database_->GetLastUpdatedTimestamp(GetKey(id))))) <
           GetRequiredDelaySinceLastStrike()) {
@@ -262,7 +261,7 @@ std::string StrikeDatabaseIntegratorBase::GetIdFromKey(
 
 base::TimeDelta StrikeDatabaseIntegratorBase::GetEntryAge(
     const StrikeData& strike_data) {
-  return AutofillClock::Now() -
+  return base::Time::Now() -
          base::Time::FromDeltaSinceWindowsEpoch(
              base::Microseconds(strike_data.last_update_timestamp()));
 }
