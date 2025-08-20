@@ -37,7 +37,7 @@
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/webid/federated_auth_autofill_source.h"
+#include "content/public/browser/webid/autofill_source.h"
 #include "content/public/browser/webid/identity_request_account.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/common/content_client.h"
@@ -2080,7 +2080,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
   run_loop.Run();
 
   // Gets the pending conditional request.
-  auto* source = FederatedAuthAutofillSource::FromPage(
+  auto* source = webid::AutofillSource::FromPage(
       shell()->web_contents()->GetPrimaryPage());
 
   EXPECT_TRUE(source != nullptr);
@@ -2167,7 +2167,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest,
   run_loop.Run();
 
   // Gets the pending conditional request.
-  auto* source = FederatedAuthAutofillSource::FromPage(
+  auto* source = webid::AutofillSource::FromPage(
       shell()->web_contents()->GetPrimaryPage());
 
   EXPECT_TRUE(source != nullptr);

@@ -28,7 +28,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/webid/federated_auth_autofill_source.h"
+#include "content/public/browser/webid/autofill_source.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
@@ -69,7 +69,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       public FederatedIdentityPermissionContextDelegate::
           IdpSigninStatusObserver,
       public IdentityRegistryDelegate,
-      public FederatedAuthAutofillSource {
+      public webid::AutofillSource {
  public:
   static constexpr char kWildcardDomainHint[] = "any";
 
@@ -130,7 +130,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                         const url::Origin& expected,
                         const url::Origin& actual) override;
 
-  // content::FederatedAuthAutofillSource
+  // content::webid::AutofillSource
   const std::optional<std::vector<IdentityRequestAccountPtr>>
   GetAutofillSuggestions() const override;
   void NotifyAutofillSuggestionAccepted(

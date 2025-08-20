@@ -12,7 +12,7 @@
 #include "components/autofill/core/browser/data_model/identity_credential/identity_credential.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/webid/federated_auth_autofill_source.h"
+#include "content/public/browser/webid/autofill_source.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -107,14 +107,14 @@ ContentIdentityCredentialDelegate::ContentIdentityCredentialDelegate(
     content::WebContents* web_contents)
     : ContentIdentityCredentialDelegate(base::BindRepeating(
           [](content::WebContents* web_contents)
-              -> content::FederatedAuthAutofillSource* {
-            return content::FederatedAuthAutofillSource::FromPage(
+              -> content::webid::AutofillSource* {
+            return content::webid::AutofillSource::FromPage(
                 web_contents->GetPrimaryPage());
           },
           web_contents)) {}
 
 ContentIdentityCredentialDelegate::ContentIdentityCredentialDelegate(
-    base::RepeatingCallback<content::FederatedAuthAutofillSource*()> source)
+    base::RepeatingCallback<content::webid::AutofillSource*()> source)
     : source_(std::move(source)) {}
 
 ContentIdentityCredentialDelegate::~ContentIdentityCredentialDelegate() =
@@ -133,7 +133,7 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
 
   // TODO(crbug.com/380367784): reproduce and add a test to make sure this
   // works properly when FedCM is called from inner frames.
-  content::FederatedAuthAutofillSource* source = source_.Run();
+  content::webid::AutofillSource* source = source_.Run();
 
   if (!source) {
     return {};
@@ -207,7 +207,7 @@ void ContentIdentityCredentialDelegate::NotifySuggestionAccepted(
     const Suggestion& suggestion,
     bool show_modal,
     OnFederatedTokenReceivedCallback callback) const {
-  content::FederatedAuthAutofillSource* source = source_.Run();
+  content::webid::AutofillSource* source = source_.Run();
 
   if (!source) {
     return;

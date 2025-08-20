@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/webid/federated_auth_autofill_source.h"
+#include "content/public/browser/webid/autofill_source.h"
 
 namespace autofill {
 
@@ -21,10 +21,10 @@ class ContentIdentityCredentialDelegate : public IdentityCredentialDelegate {
   explicit ContentIdentityCredentialDelegate(
       content::WebContents* web_contents);
 
-  // Exposed for tests to inject a mock `FederatedAuthAutofillSource` as a
+  // Exposed for tests to inject a mock `AutofillSource` as a
   // dependency.
   explicit ContentIdentityCredentialDelegate(
-      base::RepeatingCallback<content::FederatedAuthAutofillSource*()> source);
+      base::RepeatingCallback<content::webid::AutofillSource*()> source);
 
   ~ContentIdentityCredentialDelegate() override;
 
@@ -41,9 +41,9 @@ class ContentIdentityCredentialDelegate : public IdentityCredentialDelegate {
       OnFederatedTokenReceivedCallback callback) const override;
 
  private:
-  // Provides a `FederatedAuthAutofillSource`. Derived from `WebContents` in
+  // Provides a `AutofillSource`. Derived from `WebContents` in
   // practice and mocked in tests.
-  base::RepeatingCallback<content::FederatedAuthAutofillSource*()> source_;
+  base::RepeatingCallback<content::webid::AutofillSource*()> source_;
 };
 
 }  // namespace autofill

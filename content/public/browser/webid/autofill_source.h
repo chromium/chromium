@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_WEBID_FEDERATED_AUTH_AUTOFILL_SOURCE_H_
-#define CONTENT_PUBLIC_BROWSER_WEBID_FEDERATED_AUTH_AUTOFILL_SOURCE_H_
+#ifndef CONTENT_PUBLIC_BROWSER_WEBID_AUTOFILL_SOURCE_H_
+#define CONTENT_PUBLIC_BROWSER_WEBID_AUTOFILL_SOURCE_H_
 
 #include "base/functional/callback.h"
 #include "content/public/browser/page.h"
@@ -13,11 +13,11 @@
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
 
-namespace content {
+namespace content::webid {
 
 // A data source for autofill, used to (a) augment it with suggestions coming
 // from federated accounts and (b) handle when the suggestion gets selected.
-class FederatedAuthAutofillSource {
+class AutofillSource {
  public:
   // For 3P logins the identity provider needs to issue a federated
   // token such as ID token, access token etc. to complete the flow. This
@@ -27,8 +27,8 @@ class FederatedAuthAutofillSource {
   // parameter passed to the callback indicating a successful response or not.
   using OnFederatedTokenReceivedCallback = base::OnceCallback<void(bool)>;
 
-  FederatedAuthAutofillSource() = default;
-  virtual ~FederatedAuthAutofillSource() = default;
+  AutofillSource() = default;
+  virtual ~AutofillSource() = default;
 
   // Generates autofill suggestions from identity credential requests.
   virtual const std::optional<std::vector<IdentityRequestAccountPtr>>
@@ -49,10 +49,9 @@ class FederatedAuthAutofillSource {
 
   // Returns the a data source for autofill if there is a pending conditional
   // FedCM requests. Returns null otherwise.
-  CONTENT_EXPORT static FederatedAuthAutofillSource* FromPage(
-      content::Page& page);
+  CONTENT_EXPORT static AutofillSource* FromPage(content::Page& page);
 };
 
-}  // namespace content
+}  // namespace content::webid
 
-#endif  // CONTENT_PUBLIC_BROWSER_WEBID_FEDERATED_AUTH_AUTOFILL_SOURCE_H_
+#endif  // CONTENT_PUBLIC_BROWSER_WEBID_AUTOFILL_SOURCE_H_

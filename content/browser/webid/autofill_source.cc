@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/webid/federated_auth_autofill_source.h"
+#include "content/public/browser/webid/autofill_source.h"
 
 #include <optional>
 
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/request_page_data.h"
 
-namespace content {
+namespace content::webid {
 
 // static
-FederatedAuthAutofillSource* FederatedAuthAutofillSource::FromPage(
-    content::Page& page) {
+AutofillSource* AutofillSource::FromPage(content::Page& page) {
   auto* request = webid::RequestPageData::GetOrCreateForPage(page)
                       ->PendingWebIdentityRequest();
 
@@ -25,4 +24,4 @@ FederatedAuthAutofillSource* FederatedAuthAutofillSource::FromPage(
   return request;
 }
 
-}  // namespace content
+}  // namespace content::webid
