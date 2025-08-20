@@ -187,6 +187,9 @@ template("generate_jni_registration") {
       rebase_path(depfile, root_build_dir),
       "--java-sources-file",
       rebase_path(_java_sources_list, root_build_dir),
+
+      # TODO(http://crbug.com/434278751): Remove support for legacy natives.
+      "--enable-legacy-natives",
     ]
 
     if (defined(_native_sources_list)) {
@@ -357,6 +360,9 @@ template("generate_jni_impl") {
           rebase_path(_srcjar_output, root_build_dir),
           "--placeholder-srcjar-path",
           rebase_path(_placeholder_srcjar_output, root_build_dir),
+
+          # TODO(http://crbug.com/434278751): Remove support for legacy natives.
+          "--enable-legacy-natives",
         ]
         outputs += [
           _srcjar_output,
@@ -378,6 +384,10 @@ template("generate_jni_impl") {
         if (defined(invoker.enable_definition_macros) &&
             invoker.enable_definition_macros) {
           args += [ "--enable-definition-macros" ]
+        }
+        if (defined(invoker.allow_private_called_by_natives) &&
+            invoker.allow_private_called_by_natives) {
+          args += [ "--allow-private-called-by-natives" ]
         }
 
         # Cronet needs to rename jni_zero classes
@@ -506,6 +516,9 @@ template("generate_jni") {
   generate_jni_impl(target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    # TODO(http://crbug.com/330720762): Change to False and migrate.
+    allow_private_called_by_natives = true
     metadata = {
       # keep as abspath as this is used by cronet team
       # to convert JNI registration targets from GN to BP (GN2BP).
