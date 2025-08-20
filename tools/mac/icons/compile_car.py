@@ -22,7 +22,6 @@ $ python3 compile_car.py chrome/app/theme/chromium/mac/Assets.xcasset
 import argparse
 import os
 import pathlib
-import platform
 import plistlib
 import re
 import shutil
@@ -44,11 +43,39 @@ def _unsplit_version(version: tuple[int, ...]) -> str:
     return '.'.join((str(x) for x in version))
 
 
-_REQUIRED_ACTOOL_VERSION = _split_version('26.0')
+# A minimum `actool` version. It's likely that versions from earlier releases of
+# Xcode 26 would work, but they are untested. This is the last version (as of
+# writing, mid-August 2025) that is capable of emitting a compatibility `.icns`
+# file.
+_ACTOOL_26B4_VERSION = _split_version('24112')
+# The latest `actool` version as of writing, mid-August 2025.
+_ACTOOL_26B6_VERSION = _split_version('24123.1')
 
 
-def _verify_actool_version() -> None:
+class CompatibilityExpectations:
+    __slots__ = [
+        # Through Xcode 26b6, the `--enable-icon-stack-fallback-generation` +
+        # `--include-all-app-icons` workaround can be used to include existing
+        # app icon bitmaps for use on macOS <26 while including the macOS 26
+        # icon. Xcode 26b4 also correctly includes a backwards-compatibility
+        # `.icns` file, but Xcode 26b5 and later no longer include that file and
+        # instead log an error. See FB19772616 for a general filing of
+        # grievances about being unable to specify bitmaps, though (for obvious
+        # reasons) it doesn't go into detail about undocumented command-line
+        # flags.
+        #
+        # This slot is set to `True` if `actool` is expected to create an
+        # `.icns` file, `False` if it is not expected to create the file, and
+        # `None` if it is unknown whether or not the file will be created.
+        'icns_expected'
+    ]
+
+
+def _verify_actool_version() -> CompatibilityExpectations:
     """Verifies that the `actool` being used is suitably recent.
+
+    Returns:
+        A CompatibilityExpectations object
 
     Raises:
         AssetCatalogException: If `actool` is too old
@@ -58,14 +85,34 @@ def _verify_actool_version() -> None:
     output_dict = plistlib.loads(process)
 
     version = _split_version(
-        output_dict['com.apple.actool.version']['short-bundle-version'])
+        output_dict['com.apple.actool.version']['bundle-version'])
 
-    if version < _REQUIRED_ACTOOL_VERSION:
+    if version < _ACTOOL_26B4_VERSION:
         raise AssetCatalogException(
-            'actool is too old; it is version '
-            f'{_unsplit_version(version)} but at least version '
-            f'{_unsplit_version(_REQUIRED_ACTOOL_VERSION)} is '
-            'required')
+            f'actool is too old; it is version {_unsplit_version(version)} but '
+            f'at least version {_unsplit_version(_ACTOOL_26B4_VERSION)} is '
+            'required. Install at least Xcode 26b4.')
+
+    compatibility_expectations = CompatibilityExpectations()
+
+    if version == _ACTOOL_26B4_VERSION:
+        compatibility_expectations.icns_expected = True
+    elif version <= _ACTOOL_26B6_VERSION:
+        print(
+            '⚠️  Compatibility warning: the active version of `actool` will '
+            'not emit an\n`.icns` file. If an `.icns` file is required, use '
+            'Xcode 26b4.',
+            file=sys.stderr)
+        compatibility_expectations.icns_expected = False
+    else:
+        print(
+            '⚠️  Compatibility warning: it is unknown if the active version '
+            'of `actool`\nwill emit an `.icns` file. If an `.icns` file is '
+            'required, use Xcode 26b4.',
+            file=sys.stderr)
+        compatibility_expectations.icns_expected = None
+
+    return compatibility_expectations
 
 
 def _min_deployment_target() -> str:
@@ -87,6 +134,7 @@ def _min_deployment_target() -> str:
 
 
 def _process_path(path: pathlib.Path, min_deployment_target: str,
+                  compatibility_expectations: CompatibilityExpectations,
                   verbose: bool) -> None:
     """Compiles a single `.xcassets` directory and `.icon` into a .car file.
 
@@ -151,17 +199,28 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
             # file found in various places inside the Xcode package.
             '--lightweight-asset-runtime-mode=enabled',
 
-            # Correctness. This command-line argument is undocumented. By
-            # default, if an `.icon` file is provided to `actool`, then `actool`
-            # will ignore any corresponding fallback bitmaps in the provided
-            # `.xcassets` directory, and generate its own. However, `actool`
-            # only generates 1x fallback bitmaps, which causes blurry icons to
-            # appear on 2x screens on macOS releases prior to macOS 26, which is
-            # undesirable (FB19028379). Given that there already are hand-
-            # crafted icon bitmaps available in the `.xcassets` directory, stop
-            # `actool` from generating its own, and have it use the available
-            # ones instead.
+            # Correctness. The `--enable-icon-stack-fallback-generation`
+            # command-line argument is undocumented. By default, if an `.icon`
+            # file is provided to `actool`, then `actool` will ignore any
+            # corresponding fallback bitmaps in the provided `.xcassets`
+            # directory, and generate its own. With that command-line argument
+            # specified, `actool` will use the ones in the provided `.xcassets`
+            # directory instead.
+            #
+            # With Xcode 26b4, the first command-line argument is all that is
+            # needed, and a backward-compatibility `.icns` file will be
+            # generated. With 26b5 and 26b6, adding the
+            # `--include-all-app-icons` argument is required to include the
+            # provided fallback bitmaps, and even then there will be no `.icns`
+            # file generated. (Adding that argument is harmless on 26b4.)
+            #
+            # See the discussion at
+            # https://mjtsai.com/blog/2025/08/08/separate-icons-for-macos-tahoe-vs-earlier/
+            # and specifically the toots at
+            # https://mas.to/@avidrissman/114989207727177911 and
+            # https://mastodon.social/@vslavik/115016258774715162 .
             '--enable-icon-stack-fallback-generation=disabled',
+            '--include-all-app-icons',
 
             # Target information.
             '--app-icon=AppIcon',
@@ -208,12 +267,25 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
         # Some warnings are expected, so swallow those. Raise all others.
         # TODO(avi): Remove the "ambiguous content" warning exception when
         # switching to `actool`-generated fallback bitmaps.
-        collect_failures(
-            output_dict, 'com.apple.actool.document.warnings', failures,
-            'document warnings', lambda warnings: [
+        #
+        # If an `.icns` file is expected, then raise on errors to create it. If
+        # the file is not expected, swallow the error that is generated when
+        # trying to create it, as that error is expected.
+        if compatibility_expectations.icns_expected:
+            filter = lambda warnings: [
                 warning for warning in warnings
                 if warning['type'] != 'Ambiguous Content'
-            ])
+            ]
+        else:
+            filter = lambda warnings: [
+                warning for warning in warnings
+                if warning['type'] != 'Ambiguous Content' and not (warning[
+                    'type'] == 'Unsupported Configuration' and warning[
+                        'message'].startswith(
+                            'Failed to generate flattened icon stack'))
+            ]
+        collect_failures(output_dict, 'com.apple.actool.document.warnings',
+                         failures, 'document warnings', filter)
         # Weirdly, actool classifies any missing input files as a "notice", so
         # fail upon any "notices".
         collect_failures(output_dict, 'com.apple.actool.notices', failures,
@@ -234,10 +306,14 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
         output_files = compilation_results.get('output-files')
         if output_files is None:
             raise AssetCatalogException('actool had no output files')
-        if len(output_files) != 3:
-            raise AssetCatalogException(
-                'expected actool to output 3 files, but it instead output '
-                f'{len(output_files)} files, namely {output_files}')
+        if compatibility_expectations.icns_expected is not None:
+            expected_file_count = (3 if compatibility_expectations.icns_expected
+                                   else 2)
+            if len(output_files) != expected_file_count:
+                raise AssetCatalogException(
+                    f'expected actool to output {expected_file_count} files, '
+                    f'but it instead output {len(output_files)} files, namely '
+                    f'{output_files}')
 
         # Exactly three output files are expected; handle them each
         # appropriately.
@@ -248,6 +324,10 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
                 # the required information.
                 pass
             elif output_file.name == 'AppIcon.icns':
+                if compatibility_expectations.icns_expected is None:
+                    print(
+                        '⚠️ `.icns` file generated; FB19772616 addressed?',
+                        file=sys.stderr)
                 destination_path = source_dir.joinpath(f'app{name_tag}.icns')
                 if verbose:
                     print(f'  Copying output to: {destination_path}')
@@ -264,7 +344,7 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
 
 
 def main(args: list[str]):
-    _verify_actool_version()
+    compatibility_expectations = _verify_actool_version()
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -288,7 +368,9 @@ def main(args: list[str]):
     for path in parsed.paths:
         if parsed.verbose:
             print(f'Processing: {path}')
-        _process_path(pathlib.Path(path), min_deployment_target, parsed.verbose)
+        _process_path(
+            pathlib.Path(path), min_deployment_target,
+            compatibility_expectations, parsed.verbose)
 
 
 if __name__ == '__main__':
