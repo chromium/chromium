@@ -51,7 +51,6 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
-#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -506,9 +505,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   CHECK(web_contents);
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   url_ = web_contents->GetLastCommittedURL();
-  if (base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport)) {
-    frame_url_chain_ = CollectFrameUrls(web_contents, access_point_);
-  }
+  frame_url_chain_ = CollectFrameUrls(web_contents, access_point_);
   title_ = base::UTF16ToUTF8(web_contents->GetTitle());
   user_action_id_ = base::HexEncode(base::RandBytesAsVector(128));
   page_content_type_ = web_contents->GetContentsMimeType();
