@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -5476,6 +5477,12 @@ public class StripLayoutHelper
             }
         }
         return mStripTabs.length;
+    }
+
+    public @MediaState int getMediaIndicatorState(StripLayoutTab stripLayoutTab) {
+        Tab tab = getTabById(stripLayoutTab.getTabId());
+        if (tab == null) return MediaState.NONE;
+        return tab.getMediaState();
     }
 
     private boolean isViewDraggingInProgress() {

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.compositor.scene_layer;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
 
+import android.content.res.Resources;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
@@ -24,7 +26,11 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
+import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.resources.ResourceManager;
 
 /**
@@ -100,9 +106,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             StripLayoutTab[] stripLayoutTabsToRender,
             StripLayoutGroupTitle[] stripLayoutGroupTitlesToRender,
             float yOffset,
-            int selectedTabId,
-            int hoveredTabId,
-            int scrimColor,
+            @TabId int selectedTabId,
+            @TabId int hoveredTabId,
+            @ColorInt int scrimColor,
             float scrimOpacity,
             float leftPaddingDp,
             float rightPaddingDp,
@@ -226,7 +232,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             StripLayoutHelperManager layoutHelper,
             LayerTitleCache layerTitleCache,
             StripLayoutTab[] stripTabs,
-            int selectedTabId) {
+            @TabId int selectedTabId) {
         final int tabsCount = stripTabs != null ? stripTabs.length : 0;
         final float widthToHideTabTitle =
                 StripLayoutUtils.shouldApplyMoreDensity() ? StripLayoutUtils.MIN_TAB_WIDTH_DP : 0.f;
@@ -242,6 +248,14 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     isSelected && shouldShowOutline
                             ? TabUiThemeUtil.getSelectedTabInTabGroupKeyboardFocusDrawableRes()
                             : TabUiThemeUtil.getTabKeyboardFocusDrawableRes();
+            @MediaState int mediaState = layoutHelper.getMediaIndicatorState(st);
+            boolean shouldShowMediaIndicator =
+                    !(mediaState == MediaState.NONE || st.shouldHideMediaIndicator());
+            @DrawableRes
+            int mediaIndicatorRes =
+                    shouldShowMediaIndicator
+                            ? TabUtils.getMediaIndicatorDrawable(mediaState)
+                            : Resources.ID_NULL;
 
             // TODO(crbug.com/326301060): Update tab outline placeholder color with color picker.
             TabStripSceneLayerJni.get()
@@ -264,7 +278,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.isForegrounded(),
                             shouldShowOutline,
                             st.getClosePressed(),
-                            st.shouldHideFavicon(),
+                            st.shouldHideFavicon(shouldShowMediaIndicator),
+                            shouldShowMediaIndicator,
+                            mediaIndicatorRes,
+                            Math.round(st.getMediaIndicatorWidth() * mDpToPx),
                             Math.round(layoutHelper.getWidth() * mDpToPx),
                             Math.round(st.getDrawX() * mDpToPx),
                             Math.round(st.getDrawY() * mDpToPx),
@@ -370,68 +387,71 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         void updateNewTabButton(
                 long nativeTabStripSceneLayer,
-                int resourceId,
-                int backgroundResourceId,
+                @DrawableRes int resourceId,
+                @DrawableRes int backgroundResourceId,
                 float x,
                 float y,
                 float touchTargetOffset,
                 boolean visible,
                 boolean isHovered,
-                int tint,
-                int backgroundTint,
+                @ColorInt int tint,
+                @ColorInt int backgroundTint,
                 float buttonAlpha,
                 boolean isKeyboardFocused,
-                int keyboardFocusRingResourceId,
-                int keyboardFocusRingColor);
+                @DrawableRes int keyboardFocusRingResourceId,
+                @ColorInt int keyboardFocusRingColor);
 
         void updateModelSelectorButton(
                 long nativeTabStripSceneLayer,
-                int resourceId,
-                int backgroundResourceId,
+                @DrawableRes int resourceId,
+                @DrawableRes int backgroundResourceId,
                 float x,
                 float y,
                 boolean visible,
                 boolean isHovered,
-                int tint,
-                int backgroundTint,
+                @ColorInt int tint,
+                @ColorInt int backgroundTint,
                 float buttonAlpha,
                 boolean isKeyboardFocused,
-                int keyboardFocusRingResourceId,
-                int keyboardFocusRingColor);
+                @DrawableRes int keyboardFocusRingResourceId,
+                @ColorInt int keyboardFocusRingColor);
 
         void updateTabStripLeftFade(
                 long nativeTabStripSceneLayer,
-                int resourceId,
+                @DrawableRes int resourceId,
                 float opacity,
                 @ColorInt int leftFadeColor,
                 float leftPaddingPx);
 
         void updateTabStripRightFade(
                 long nativeTabStripSceneLayer,
-                int resourceId,
+                @DrawableRes int resourceId,
                 float opacity,
                 @ColorInt int rightFadeColor,
                 float rightPaddingPx);
 
         void putStripTabLayer(
                 long nativeTabStripSceneLayer,
-                int id,
-                int closeResourceId,
-                int closeBackgroundResourceId,
+                @TabId int id,
+                @DrawableRes int closeResourceId,
+                @DrawableRes int closeBackgroundResourceId,
                 boolean isCloseKeyboardFocused,
-                int closeFocusRingResourceId,
-                int dividerResourceId,
-                int handleResourceId,
-                int handleOutlineResourceId,
-                int closeTint,
-                int closeHoverBackgroundTint,
-                int dividerTint,
-                int handleTint,
-                int handleOutlineTint,
+                @DrawableRes int closeFocusRingResourceId,
+                @DrawableRes int dividerResourceId,
+                @DrawableRes int handleResourceId,
+                @DrawableRes int handleOutlineResourceId,
+                @ColorInt int closeTint,
+                @ColorInt int closeHoverBackgroundTint,
+                @ColorInt int dividerTint,
+                @ColorInt int handleTint,
+                @ColorInt int handleOutlineTint,
                 boolean foreground,
                 boolean shouldShowTabOutline,
                 boolean closePressed,
                 boolean shouldHideFavicon,
+                boolean shouldShowMediaIndicator,
+                @DrawableRes int mediaIndicatorResourceId,
+                float mediaIndicatorWidth,
                 float toolbarWidth,
                 float x,
                 float y,
@@ -450,8 +470,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float spinnerRotation,
                 float opacity,
                 boolean isKeyboardFocused,
-                int keyboardFocusRingResourceId,
-                int keyboardFocusRingColor,
+                @DrawableRes int keyboardFocusRingResourceId,
+                @ColorInt int keyboardFocusRingColor,
                 int keyboardFocusRingOffset,
                 int strokeWidth,
                 float folioFootLength);
@@ -463,9 +483,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 boolean collapsed,
                 boolean showBubble,
                 Token groupToken,
-                int tint,
-                int reorderBackgroundTint,
-                int bubbleTint,
+                @TabGroupColorId int tint,
+                @ColorInt int reorderBackgroundTint,
+                @ColorInt int bubbleTint,
                 float x,
                 float y,
                 float width,
@@ -478,8 +498,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float bubblePadding,
                 float bubbleSize,
                 boolean isKeyboardFocused,
-                int keyboardFocusRingResourceId,
-                int keyboardFocusRingColor,
+                @DrawableRes int keyboardFocusRingResourceId,
+                @ColorInt int keyboardFocusRingColor,
                 int keyboardFocusRingOffset,
                 int keyboardFocusRingWidth);
 

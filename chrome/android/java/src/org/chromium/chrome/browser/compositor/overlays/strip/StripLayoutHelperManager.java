@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tab.TabClosingSource;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -204,6 +205,7 @@ public class StripLayoutHelperManager
     private @MonotonicNonNull TabModelSelector mTabModelSelector; // Set on native initialization.
     private final LayoutManagerHost mManagerHost;
     private final LayoutUpdateHost mUpdateHost;
+    private final LayoutRenderHost mRenderHost;
 
     // Event Filters
     private @Nullable AreaMotionEventFilter mEventFilter;
@@ -479,6 +481,7 @@ public class StripLayoutHelperManager
         Resources res = context.getResources();
         mManagerHost = managerHost;
         mUpdateHost = updateHost;
+        mRenderHost = renderHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mDensity = res.getDisplayMetrics().density;
         mTabStripTreeProvider = new TabStripSceneLayer(mDensity);
@@ -1123,6 +1126,10 @@ public class StripLayoutHelperManager
         return getActiveStripLayoutHelper().shouldShowTabOutline(tab);
     }
 
+    public @MediaState int getMediaIndicatorState(StripLayoutTab tab) {
+        return getActiveStripLayoutHelper().getMediaIndicatorState(tab);
+    }
+
     /**
      * @return The touch target offset to be applied to the new tab button.
      */
@@ -1510,6 +1517,11 @@ public class StripLayoutHelperManager
                             mTabStripTreeProvider.updateOffsetTag(
                                     offsetTagsInfo.getContentOffsetTag());
                         }
+                    }
+
+                    @Override
+                    public void onMediaStateChanged(Tab tab, int mediaState) {
+                        mRenderHost.requestRender();
                     }
                 };
 

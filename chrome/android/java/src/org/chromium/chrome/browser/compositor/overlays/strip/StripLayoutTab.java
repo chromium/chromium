@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTabDelegate.VisualState;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
@@ -137,7 +138,11 @@ public class StripLayoutTab extends StripLayoutView {
     private static final float FAVICON_WIDTH = 16.f;
     private static final float FAVICON_PADDING = 26.f;
     protected static final float MIN_WIDTH = FAVICON_WIDTH + (FOLIO_FOOT_LENGTH_DP * 2);
-    private static final float WIDTH_TO_HIDE_FAVICON = 86.f;
+    // TODO(crbug.com/430072416): Check media indicator constants with UX.
+    private static final float MEDIA_INDICATOR_WIDTH = 16.f;
+    private static final float WIDTH_TO_HIDE_ICON = 86.f;
+    private static final float WIDTH_TO_HIDE_FAVICON_FOR_MEDIA_INDICATOR =
+            WIDTH_TO_HIDE_ICON + MEDIA_INDICATOR_WIDTH;
 
     // Divider Constants
     private static final int DIVIDER_OFFSET_X = 13;
@@ -906,8 +911,27 @@ public class StripLayoutTab extends StripLayoutView {
                 : getTabTouchTargetEndOffsetX();
     }
 
-    public boolean shouldHideFavicon() {
-        return mIsSelected && getWidth() <= WIDTH_TO_HIDE_FAVICON;
+    public boolean shouldHideFavicon(boolean mediaIndicatorIsPresent) {
+        // TODO(crbug.com/439931221): Toggle the favicon visibility based on the close button's
+        // opacity.
+        final float width = getWidth();
+
+        if (mediaIndicatorIsPresent) {
+            float widthThreshold =
+                    mIsSelected ? WIDTH_TO_HIDE_FAVICON_FOR_MEDIA_INDICATOR : WIDTH_TO_HIDE_ICON;
+            return width <= widthThreshold;
+        }
+        return mIsSelected && width <= WIDTH_TO_HIDE_ICON;
+    }
+
+    public boolean shouldHideMediaIndicator() {
+        if (!ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) return true;
+
+        return mIsSelected && getWidth() <= WIDTH_TO_HIDE_ICON;
+    }
+
+    public float getMediaIndicatorWidth() {
+        return MEDIA_INDICATOR_WIDTH;
     }
 
     @Override

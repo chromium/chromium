@@ -87,34 +87,31 @@ class TabStripSceneLayer : public SceneLayer {
                           jint keyboard_focus_ring_resource_id,
                           jint keyboard_focus_ring_color);
 
-  void UpdateModelSelectorButton(
-      JNIEnv* env,
-      jint resource_id,
-      jint bg_resource_id,
-      jfloat x,
-      jfloat y,
-      jboolean visible,
-      jboolean should_apply_hover_highlight,
-      jint tint,
-      jint background_tint,
-      jfloat button_alpha,
-      jboolean is_keyboard_focused,
-      jint keyboard_focus_ring_resource_id,
-      jint keyboard_focus_ring_color);
+  void UpdateModelSelectorButton(JNIEnv* env,
+                                 jint resource_id,
+                                 jint bg_resource_id,
+                                 jfloat x,
+                                 jfloat y,
+                                 jboolean visible,
+                                 jboolean should_apply_hover_highlight,
+                                 jint tint,
+                                 jint background_tint,
+                                 jfloat button_alpha,
+                                 jboolean is_keyboard_focused,
+                                 jint keyboard_focus_ring_resource_id,
+                                 jint keyboard_focus_ring_color);
 
-  void UpdateTabStripLeftFade(
-      JNIEnv* env,
-      jint resource_id,
-      jfloat opacity,
-      jint leftFadeColor,
-      jfloat left_padding);
+  void UpdateTabStripLeftFade(JNIEnv* env,
+                              jint resource_id,
+                              jfloat opacity,
+                              jint leftFadeColor,
+                              jfloat left_padding);
 
-  void UpdateTabStripRightFade(
-      JNIEnv* env,
-      jint resource_id,
-      jfloat opacity,
-      jint rightFadeColor,
-      jfloat right_padding);
+  void UpdateTabStripRightFade(JNIEnv* env,
+                               jint resource_id,
+                               jfloat opacity,
+                               jint rightFadeColor,
+                               jfloat right_padding);
 
   void PutStripTabLayer(JNIEnv* env,
                         jint id,
@@ -134,6 +131,9 @@ class TabStripSceneLayer : public SceneLayer {
                         jboolean shouldShowTabOutline,
                         jboolean close_pressed,
                         jboolean should_hide_favicon,
+                        jboolean should_show_media_indicator,
+                        jint media_indicator_resource_id,
+                        jfloat media_indicator_width,
                         jfloat toolbar_width,
                         jfloat x,
                         jfloat y,
