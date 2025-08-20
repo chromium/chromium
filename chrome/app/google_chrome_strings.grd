@@ -2535,6 +2535,9 @@ Google Chrome is unable to recover your settings.
                  desc="Error message displayed in the main dialog when the downloaded file fails hash verification.">
           The downloaded file failed verification.
         </message>
+        <message name="IDS_UPDATER_DISK_FULL" desc="Error displayed if there is not enough disk space to install and application or download an update.">
+          Not enough disk space.
+        </message>
         <message name="IDS_GENERIC_DOWNLOAD_ERROR"
                  desc="Error message displayed in the main dialog when the update client returns an error while downloading.">
           Download error: <ph name="DOWNLOAD_ERROR">$1<ex>error-internal</ex></ph>.

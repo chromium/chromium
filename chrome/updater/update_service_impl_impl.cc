@@ -240,6 +240,8 @@ std::wstring GetTextForDownloadError(int error, const std::wstring& language) {
 
     case static_cast<int>(update_client::CrxDownloaderError::BAD_HASH):
       return GetLocalizedString(IDS_DOWNLOAD_HASH_MISMATCH_BASE);
+    case static_cast<int>(update_client::CrxDownloaderError::DISK_FULL):
+      return GetLocalizedString(IDS_UPDATER_DISK_FULL_BASE);
 
     default:
       return GetLocalizedStringF(IDS_GENERIC_DOWNLOAD_ERROR_BASE,
