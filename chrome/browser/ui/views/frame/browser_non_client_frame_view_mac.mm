@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_mac.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
@@ -43,7 +47,13 @@
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -175,7 +185,11 @@ gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStripRegion(
           gfx::Insets::TLBR(0, GetLayoutConstant(TOOLBAR_CORNER_RADIUS), 0, 0));
     }
   } else {
-    bounds.Inset(GetCaptionButtonInsets());
+    // The bottom curve of the first/last tab swoops into the caption button
+    // region, so account for this when calculating insets.
+    const gfx::Insets insets = GetCaptionButtonInsets(
+        /*visual_overlap=*/TabStyle::Get()->GetBottomCornerRadius());
+    bounds.Inset(insets);
   }
 
   return bounds;
@@ -387,16 +401,97 @@ void BrowserNonClientFrameViewMac::PaintChildren(const views::PaintInfo& info) {
   }
 }
 
-gfx::Insets BrowserNonClientFrameViewMac::GetCaptionButtonInsets() const {
-  int button_total_width;
-  if (@available(macOS 26, *)) {
-    button_total_width = 86;
-  } else {
-    button_total_width = 92;
+bool BrowserNonClientFrameViewMac::GetCaptionButtonRegion(
+    gfx::RectF& bounds) const {
+  NSWindow* ns_window = GetWidget()->GetNativeWindow().GetNativeNSWindow();
+  if (!ns_window) {
+    return false;
   }
-  int caption_button_inset =
-      button_total_width - TabStyle::Get()->GetBottomCornerRadius();
 
+  // Build a list of caption button bounds.
+  std::vector<gfx::RectF> button_rects;
+
+  // Also track some other data that will be useful for calculating the visual
+  // margins of the buttons against the window border.
+  float min_x = width();
+  float max_x = 0;
+  float min_y = height();
+
+  // Chrome coordinates are reversed in RTL but
+  const bool is_rtl = base::i18n::IsRTL();
+
+  // Build the list. If any of the buttons are not present or are zero size,
+  // abort (this will fall back to previous hard-coded values).
+  for (NSButton* button :
+       {[ns_window standardWindowButton:NSWindowCloseButton],
+        [ns_window standardWindowButton:NSWindowMiniaturizeButton],
+        [ns_window standardWindowButton:NSWindowZoomButton]}) {
+    if (!button) {
+      return false;
+    }
+    NSRect ns_rect = [button convertRect:[button bounds] toView:nil];
+
+    // When converting from Mac to Chrome coordinates:
+    //  - Y axis is inverted (Mac coordinates start at bottom-left).
+    //  - X axis is inverted in RTL mode only (Mac coordinates are invariant
+    //    while Chrome reverses them).
+    button_rects.emplace_back(
+        gfx::RectF(is_rtl ? width() - (ns_rect.origin.x + ns_rect.size.width)
+                          : ns_rect.origin.x,
+                   height() - (ns_rect.origin.y + ns_rect.size.height),
+                   ns_rect.size.width, ns_rect.size.height));
+    const auto& rect = button_rects.back();
+    if (rect.IsEmpty()) {
+      return false;
+    }
+    min_x = std::min(min_x, rect.x());
+    max_x = std::max(max_x, rect.right());
+    min_y = std::min(min_y, rect.y());
+  }
+
+  // Calculate the margins that the buttons are using.
+  const float block_margin = min_y;
+  const float inline_margin =
+      CaptionButtonsOnLeadingEdge() ? min_x : width() - max_x;
+
+  // Accumulate the button bounds.
+  bounds = gfx::RectF();
+  for (const auto& rect : button_rects) {
+    bounds.Union(rect);
+  }
+
+  // Apply the margins on the exterior of the region, so that the padding around
+  // the buttons appears visually symmetrical.
+  bounds.Outset(gfx::OutsetsF::VH(block_margin, inline_margin));
+
+  return true;
+}
+
+gfx::Insets BrowserNonClientFrameViewMac::GetCaptionButtonInsets(
+    int visual_overlap) const {
+  int button_total_width;
+
+  // Attempt to get bounds from the buttons themselves.
+  gfx::RectF button_extents;
+  if (GetCaptionButtonRegion(button_extents)) {
+    // This only works because the caption button region is always aligned with
+    // the edge of the container.
+    button_total_width = base::ClampRound(button_extents.width());
+  } else {
+    // If that doesn't work, fall back to some hard-coded constants.
+    if (@available(macOS 26, *)) {
+      button_total_width = 86;
+    } else {
+      button_total_width = 92;
+    }
+  }
+
+  // Subtract out the overlap, if any.
+  const int caption_button_inset =
+      std::max(0, button_total_width - visual_overlap);
+
+  // Which side the inset goes on depends on which side the caption buttons are
+  // on.
   if (CaptionButtonsOnLeadingEdge()) {
     return gfx::Insets::TLBR(0, caption_button_inset, 0, 0);
   } else {
