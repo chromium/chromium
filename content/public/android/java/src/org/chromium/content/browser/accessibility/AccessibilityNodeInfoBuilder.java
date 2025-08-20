@@ -79,7 +79,7 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeaturesMap;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -144,16 +144,6 @@ public class AccessibilityNodeInfoBuilder {
     public static final String ACCESSIBILITY_SPANNABLE_CREATION_TIME =
             "Accessibility.Android.Performance.SpannableCreationTime2";
     private static final int MAX_TIME_BUCKET = 5 * 1000; // 5,000 microseconds = 5ms.
-
-    // Static instances of the three types of extra data keys that can be added to nodes.
-    private static final List<String> sTextCharacterLocation =
-            Collections.singletonList(EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
-
-    private static final List<String> sTextCharacterLocationInWindow =
-            Collections.singletonList(EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY);
-
-    private static final List<String> sRequestImageData =
-            Collections.singletonList(EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY);
 
     /** Delegate interface for any client that wants to use the node builder. */
     interface BuilderDelegate {
@@ -228,16 +218,18 @@ public class AccessibilityNodeInfoBuilder {
         node.setContentInvalid(contentInvalid);
         node.setHeading(isHeading);
 
+        List<String> availableExtraData = new ArrayList<>();
         if (hasImage) {
             Bundle bundle = node.getExtras();
             bundle.putCharSequence(EXTRAS_KEY_HAS_IMAGE, "true");
-            node.setAvailableExtraData(sRequestImageData);
+            availableExtraData.add(EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY);
         }
 
         if (hasCharacterLocations) {
-            node.setAvailableExtraData(sTextCharacterLocation);
-            node.setAvailableExtraData(sTextCharacterLocationInWindow);
+            availableExtraData.add(EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
+            availableExtraData.add(EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY);
         }
+        node.setAvailableExtraData(availableExtraData);
 
         node.setMovementGranularities(
                 MOVEMENT_GRANULARITY_CHARACTER
