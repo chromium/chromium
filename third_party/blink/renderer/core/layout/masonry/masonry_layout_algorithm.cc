@@ -799,7 +799,7 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
 
 Vector<LayoutUnit> MasonryLayoutAlgorithm::GetIntrinsicRepeaterTrackSizes(
     const GridSizingTrackCollection& track_collection) const {
-  CHECK_NE(track_collection.GetIntrinsicSizedRepeaterTrackIndex(), kNotFound);
+  CHECK_NE(track_collection.GetIntrinsicSizedRepeaterSetIndex(), kNotFound);
   const ComputedStyle& style = Style();
   const bool is_for_columns =
       style.MasonryTrackSizingDirection() == kForColumns;
@@ -812,7 +812,7 @@ Vector<LayoutUnit> MasonryLayoutAlgorithm::GetIntrinsicRepeaterTrackSizes(
   Vector<LayoutUnit> intrinsic_repeat_track_sizes(repeat_track_count);
   for (wtf_size_t i = 0; i < repeat_track_count; ++i) {
     GridSet current_set = track_collection.GetSetAt(
-        track_collection.GetIntrinsicSizedRepeaterTrackIndex() + i);
+        track_collection.GetIntrinsicSizedRepeaterSetIndex() + i);
 
     // During the first pass to calculate the intrinsic repeater track
     // sizes, we consolidate all spanners to a single span and place

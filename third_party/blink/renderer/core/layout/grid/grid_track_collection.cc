@@ -55,12 +55,20 @@ bool GridRange::IsImplicit() const {
   return properties.HasProperty(TrackSpanProperties::kIsImplicit);
 }
 
+bool GridRange::IsAutoRepeat() const {
+  return properties.HasProperty(TrackSpanProperties::kIsAutoRepeat);
+}
+
 void GridRange::SetIsCollapsed() {
   properties.SetProperty(TrackSpanProperties::kIsCollapsed);
 }
 
 void GridRange::SetIsImplicit() {
   properties.SetProperty(TrackSpanProperties::kIsImplicit);
+}
+
+void GridRange::SetIsAutoRepeat() {
+  properties.SetProperty(TrackSpanProperties::kIsAutoRepeat);
 }
 
 GridRangeBuilder::GridRangeBuilder(const ComputedStyle& grid_style,
@@ -222,6 +230,13 @@ GridRangeVector GridRangeBuilder::FinalizeRanges(
       range.repeater_offset =
           (current_range_start_line - current_explicit_grid_line) %
           current_repeater_size;
+
+      const auto repeat_type =
+          explicit_tracks_.RepeatType(current_explicit_repeater_index);
+      if (repeat_type == GridTrackRepeater::RepeatType::kAutoFit ||
+          repeat_type == GridTrackRepeater::RepeatType::kAutoFill) {
+        range.SetIsAutoRepeat();
+      }
     } else {
       range.SetIsImplicit();
       if (!implicit_tracks_.RepeaterCount()) {
@@ -1005,17 +1020,18 @@ void GridSizingTrackCollection::SetMinorBaseline(
 }
 
 void GridSizingTrackCollection::BuildSets(
-    const ComputedStyle& grid_style,
-    const LogicalSize& grid_available_size) {
+    const ComputedStyle& container_style,
+    const LogicalSize& container_available_size) {
   gutter_size_ = GridTrackSizingAlgorithm::CalculateGutterSize(
-      grid_style, grid_available_size, track_direction_);
+      container_style, container_available_size, track_direction_);
 
   const auto& available_size = (track_direction_ == kForColumns)
-                                   ? grid_available_size.inline_size
-                                   : grid_available_size.block_size;
+                                   ? container_available_size.inline_size
+                                   : container_available_size.block_size;
 
-  BuildSets(grid_style.TemplateTracks(track_direction_).GetTrackList(),
-            grid_style.AutoTracks(track_direction_),
+  BuildSets(container_style.TemplateTracks(track_direction_).GetTrackList(),
+            container_style.AutoTracks(track_direction_),
+            container_style.IsDisplayMasonryBox(),
             available_size == kIndefiniteSize);
   InitializeSets(available_size);
 }
@@ -1023,14 +1039,15 @@ void GridSizingTrackCollection::BuildSets(
 void GridSizingTrackCollection::BuildSets(
     const GridTrackList& explicit_track_list,
     const GridTrackList& implicit_track_list,
+    bool is_masonry,
     bool is_available_size_indefinite) {
-  properties_.Reset();
+  properties_.ResetType();
   sets_.Shrink(0);
 
   for (auto& range : ranges_) {
     // Notice that |GridRange::Reset| does not reset the |kIsCollapsed| or
     // |kIsImplicit| flags as they're not affected by the set definitions.
-    range.properties.Reset();
+    range.properties.ResetType();
 
     // Collapsed ranges don't produce sets as they will be sized to zero anyway.
     if (range.IsCollapsed())
@@ -1120,9 +1137,30 @@ void GridSizingTrackCollection::BuildSets(
               TrackSpanProperties::kIsDependentOnAvailableSize);
         }
 
-        if (intrinsic_sized_repeater_track_index_ == kNotFound &&
+        if (intrinsic_sized_repeater_set_index_ == kNotFound &&
+            range.IsAutoRepeat() &&
             set_track_size.IsTrackDefinitionIntrinsic()) {
-          intrinsic_sized_repeater_track_index_ = i;
+          // This is not yet supported in Grid, only Masonry.
+          CHECK(is_masonry);
+
+          // Get the index of the first set of the intrinsic auto repeat. For
+          // example, if the track definition was repeat(auto-fill, 50px auto),
+          // we want the index of the set that holds 50px.
+          wtf_size_t repeater_offset = range.repeater_offset;
+
+          // Use the size since that will be the index of the current set once
+          // it is added.
+          wtf_size_t set_index = sets_.size();
+
+          // If this range/set doesn't start the intrinsic auto repeat, walk the
+          // sets backward until we hit the first track in the repeat.
+          while (repeater_offset > 0) {
+            set_index--;
+            CHECK_LT(set_index, sets_.size());
+            repeater_offset -= sets_[set_index].track_count;
+          }
+          CHECK_EQ(repeater_offset, 0U);
+          intrinsic_sized_repeater_set_index_ = set_index;
         }
 
         CacheSetProperties(sets_.emplace_back(set_track_count, set_track_size,

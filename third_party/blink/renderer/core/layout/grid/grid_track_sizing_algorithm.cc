@@ -40,7 +40,7 @@ void GridTrackSizingAlgorithm::CacheGridItemsProperties(
                                       : grid_item.row_span_properties;
 
     grid_item.ComputeSetIndices(track_collection);
-    track_span_properties.Reset();
+    track_span_properties.ResetType();
 
     // If a grid item spans only one range, then we can just cache the track
     // span properties directly. On the contrary, if a grid item spans multiple

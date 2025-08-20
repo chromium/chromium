@@ -45,10 +45,13 @@ class CORE_EXPORT TrackSpanProperties {
     kIsCollapsed = 1 << 6,
     kIsDependentOnAvailableSize = 1 << 7,
     kIsImplicit = 1 << 8,
+    kIsAutoRepeat = 1 << 9,
   };
 
   inline bool HasProperty(PropertyId id) const { return bitmask_ & id; }
-  inline void Reset() { bitmask_ &= kIsCollapsed | kIsImplicit; }
+  inline void ResetType() {
+    bitmask_ &= kIsCollapsed | kIsImplicit | kIsAutoRepeat;
+  }
   inline void SetProperty(PropertyId id) { bitmask_ |= id; }
 
   inline TrackSpanProperties& operator|=(const TrackSpanProperties& other) {
@@ -63,9 +66,11 @@ class CORE_EXPORT TrackSpanProperties {
 struct CORE_EXPORT GridRange {
   bool IsCollapsed() const;
   bool IsImplicit() const;
+  bool IsAutoRepeat() const;
 
   void SetIsCollapsed();
   void SetIsImplicit();
+  void SetIsAutoRepeat();
 
   wtf_size_t begin_set_index;
   wtf_size_t repeater_index;
@@ -428,8 +433,8 @@ class CORE_EXPORT GridSizingTrackCollection final
   }
   LayoutUnit TotalTrackSize() const;
 
-  void BuildSets(const ComputedStyle& grid_style,
-                 const LogicalSize& grid_available_size);
+  void BuildSets(const ComputedStyle& container_style,
+                 const LogicalSize& container_available_size);
   void SetIndefiniteGrowthLimitsToBaseSize();
 
   // Caches the geometry of definite sets; this is useful when building the sets
@@ -447,10 +452,10 @@ class CORE_EXPORT GridSizingTrackCollection final
   void SetMajorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
   void SetMinorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
 
-  // Return the index of the first intrinsic sized track within an auto repeat
-  // definition.
-  wtf_size_t GetIntrinsicSizedRepeaterTrackIndex() const {
-    return intrinsic_sized_repeater_track_index_;
+  // Return the index of the first set with an intrinsically sized track within
+  // an auto repeat definition.
+  wtf_size_t GetIntrinsicSizedRepeaterSetIndex() const {
+    return intrinsic_sized_repeater_set_index_;
   }
 
  private:
@@ -461,11 +466,12 @@ class CORE_EXPORT GridSizingTrackCollection final
   // These methods are internal implementations also used in testing.
   void BuildSets(const GridTrackList& explicit_track_list,
                  const GridTrackList& implicit_track_list,
+                 bool is_masonry,
                  bool is_available_size_indefinite = true);
   void InitializeSets(LayoutUnit grid_available_size = kIndefiniteSize);
 
   wtf_size_t non_collapsed_track_count_{0};
-  wtf_size_t intrinsic_sized_repeater_track_index_{kNotFound};
+  wtf_size_t intrinsic_sized_repeater_set_index_{kNotFound};
 
   // A vector of every set element that compose the entire collection's ranges;
   // track definitions from the same set are stored in consecutive positions,
