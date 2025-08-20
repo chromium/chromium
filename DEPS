@@ -260,7 +260,7 @@ vars = {
   # REAPI address for REAPI backends.
   'reapi_address': Str(''),
   # siso CIPD package version.
-  'siso_version': 'git_revision:7e3433bde6dcf9d760b0423c5f47c51e65c7c0fa',
+  'siso_version': 'git_revision:fac028f33f398558bd6e73380eb3327545751171',
 
   # reclient options.
   # RBE project to download rewrapper config files for. Only needed if
@@ -2595,7 +2595,7 @@ deps = {
   'src/third_party/siso/cipd': {
     'packages': [
       {
-        'package': 'infra/build/siso/${{platform}}',
+        'package': 'build/siso/${{platform}}',
         'version': Var('siso_version'),
       }
     ],
