@@ -34,6 +34,7 @@ specific_include_rules = {
     "+components/policy/test_support/embedded_policy_test_server.h",
   ],
   "first_run_test_case_base\.mm": [
+    "+ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h",
     "+ios/chrome/browser/authentication/ui_bundled/signin_matchers.h",
     "+ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h",
   ],

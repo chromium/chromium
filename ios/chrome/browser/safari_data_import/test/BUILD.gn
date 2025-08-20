@@ -1,0 +1,14 @@
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "safari_data_import_earl_grey_ui.h",
+    "safari_data_import_earl_grey_ui.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/safari_data_import/public:utils",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}

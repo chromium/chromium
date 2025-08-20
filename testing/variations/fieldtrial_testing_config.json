@@ -13201,6 +13201,21 @@
             ]
         }
     ],
+    "IOSSafariImportWorkflow": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ImportPasswordsFromSafari"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSaveToPhotosImprovements": [
         {
             "platforms": [
