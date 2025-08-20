@@ -104,6 +104,9 @@ void ClearSuggestedKeyWasAssignedPrefs(
   ExtensionPrefs::ScopedDictionaryUpdate updater(&extension_prefs, extension_id,
                                                  kCommands);
   std::unique_ptr<prefs::DictionaryValueUpdate> current_prefs = updater.Get();
+  if (!current_prefs) {
+    return;
+  }
 
   for (const Command& removed_command : removed_commands) {
     std::unique_ptr<prefs::DictionaryValueUpdate> command_prefs;
