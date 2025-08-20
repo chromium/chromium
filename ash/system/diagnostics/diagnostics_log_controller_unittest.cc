@@ -56,8 +56,6 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
       delete;
   ~DiagnosticsLogControllerTest() override = default;
 
-  void SetUp() override { NoSessionAshTestBase::SetUp(); }
-
  protected:
   base::FilePath GetSessionLogPath() {
     EXPECT_TRUE(save_dir_.CreateUniqueTempDir());
@@ -273,7 +271,6 @@ TEST_F(DiagnosticsLogControllerTest,
   InitializeWithFakeDelegate();
 
   // Simulate sign-in user.
-  ClearLogin();
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
@@ -281,10 +278,12 @@ TEST_F(DiagnosticsLogControllerTest,
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
+  ClearLogin();
   SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
+  ClearLogin();
   SimulateKioskMode(user_manager::UserType::kKioskWebApp);
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
@@ -320,18 +319,20 @@ TEST_F(DiagnosticsLogControllerTest,
   InitializeWithFakeDelegate();
 
   // Simulate sign-in user.
-  ClearLogin();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
   SimulateGuestLogin();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
+  ClearLogin();
   SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
+  ClearLogin();
   SimulateKioskMode(user_manager::UserType::kKioskWebApp);
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
+  ClearLogin();
   SimulateUserLogin({kTestUserEmail});
   const base::FilePath expected_path_regular_user =
       base::FilePath(kDefaultUserDir).Append(kDiangosticsDirName);
