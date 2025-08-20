@@ -103,12 +103,23 @@ void PageContentMetadataObserver::UpdateFrameObservers() {
       });
 }
 
+void PageContentMetadataObserver::DispatchMetadata() {
+  auto page_metadata = blink::mojom::PageMetadata::New();
+  for (const auto& it : frame_data_) {
+    if (it.second.metadata) {
+      page_metadata->frame_metadata.push_back(it.second.metadata->Clone());
+    }
+  }
+  callback_.Run(std::move(page_metadata));
+}
+
 void PageContentMetadataObserver::OnMetaTagsChangedForFrame(
     content::RenderFrameHost* render_frame_host,
     std::vector<blink::mojom::MetaTagPtr> meta_tags) {
   // `render_frame_host` can be null when a frame is deleted, when this happens
   // do not update the frame data, but do notify the callback.
   if (render_frame_host) {
+    DCHECK(render_frame_host->GetPage().IsPrimary());
     auto it = frame_data_.find(render_frame_host);
     if (it != frame_data_.end()) {
       if (meta_tags.empty()) {
@@ -128,23 +139,7 @@ void PageContentMetadataObserver::OnMetaTagsChangedForFrame(
   // creation.
   DCHECK(callback_);
 
-  auto page_metadata = blink::mojom::PageMetadata::New();
-
-  for (const auto& [rfh, data] : frame_data_) {
-    if (!data.metadata) {
-      continue;
-    }
-
-    if (!rfh->GetParent()) {
-      // The metadata for the main frame should be the first entry.
-      page_metadata->frame_metadata.insert(
-          page_metadata->frame_metadata.begin(), data.metadata.Clone());
-    } else {
-      page_metadata->frame_metadata.push_back(data.metadata.Clone());
-    }
-  }
-
-  callback_.Run(std::move(page_metadata));
+  DispatchMetadata();
 }
 
 PageContentMetadataObserver::FrameData::FrameData(

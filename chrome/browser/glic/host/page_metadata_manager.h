@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/page/page.mojom-forward.h"
 
 namespace content {
@@ -67,8 +68,7 @@ class PageMetadataManager {
 
   absl::flat_hash_map<int32_t, PageMetadataSubscription>
       tab_id_to_page_metadata_subscriptions_;
-  absl::flat_hash_map<int32_t, blink::mojom::PageMetadataPtr>
-      tab_id_to_cached_page_metadata_;
+  absl::flat_hash_set<int32_t> tab_ids_with_pending_metadata_;
 };
 
 }  // namespace glic

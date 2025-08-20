@@ -46,6 +46,10 @@ class PageContentMetadataObserver : public content::WebContentsObserver {
   PageContentMetadataObserver& operator=(const PageContentMetadataObserver&) =
       delete;
 
+  // Delivers the current metadata to the callback.  Clients may use this to
+  // prompt sending the most recent metadata.
+  void DispatchMetadata();
+
  private:
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
