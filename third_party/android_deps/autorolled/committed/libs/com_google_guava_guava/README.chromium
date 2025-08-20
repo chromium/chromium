@@ -5,7 +5,7 @@ Version: 33.4.8-jre
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
-CPEPrefix: unknown
+CPEPrefix: cpe:/a:google:guava
 Security Critical: no
 Shipped: yes
 
