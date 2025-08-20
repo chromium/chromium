@@ -1507,6 +1507,62 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, MouseHoverShowsAllControls) {
   EXPECT_TRUE(overlay_window().AreControlsVisible());
 }
 
+TEST_F(VideoOverlayWindowViewsWith2024UITest, TopControlsAreAlwaysOnTheRight) {
+  const gfx::Rect work_area(0, 0, 4000, 4000);
+  SetDisplayWorkArea(work_area);
+  overlay_window().ShowInactive();
+  overlay_window().ForceControlsVisibleForTesting(true, true);
+
+  constexpr int kMargin = 100;
+  const gfx::Size window_size(500, 500);
+
+  const gfx::Rect top_left_quadrant_bounds(gfx::Point(kMargin, kMargin),
+                                           window_size);
+  const gfx::Rect top_right_quadrant_bounds(
+      gfx::Point(work_area.width() - window_size.width() - kMargin, kMargin),
+      window_size);
+  const gfx::Rect bottom_left_quadrant_bounds(
+      gfx::Point(kMargin, work_area.height() - window_size.height() - kMargin),
+      window_size);
+  const gfx::Rect bottom_right_quadrant_bounds(
+      gfx::Point(work_area.width() - window_size.width() - kMargin,
+                 work_area.height() - window_size.height() - kMargin),
+      window_size);
+
+  struct {
+    std::string name;
+    gfx::Rect bounds;
+  } quadrant_test_cases[] = {
+      {"Top-left", top_left_quadrant_bounds},
+      {"Top-right", top_right_quadrant_bounds},
+      {"Bottom-left", bottom_left_quadrant_bounds},
+      {"Bottom-right", bottom_right_quadrant_bounds},
+  };
+
+  for (const auto& test_case : quadrant_test_cases) {
+    SCOPED_TRACE(testing::Message() << "Quadrant: " << test_case.name);
+    overlay_window().SetBounds(test_case.bounds);
+    overlay_window().OnUpdateControlsBounds();
+
+    // The top controls (minimize, back-to-tab, close) should always be on the
+    // top-right of the picture-in-picture window, regardless of which quadrant
+    // the window is in.
+    const auto pip_window_bounds = overlay_window().GetWindowBoundsInScreen();
+    const auto check_control_bounds = [&](const views::View* button_view) {
+      SCOPED_TRACE(testing::Message()
+                   << "Button view: " << button_view->layer()->name());
+      EXPECT_GT(button_view->GetMirroredBounds().x(),
+                pip_window_bounds.width() / 2);
+      EXPECT_LT(button_view->GetMirroredBounds().y(),
+                pip_window_bounds.height() / 2);
+    };
+
+    check_control_bounds(overlay_window().close_button_for_testing());
+    check_control_bounds(overlay_window().minimize_button_for_testing());
+    check_control_bounds(overlay_window().back_to_tab_button_for_testing());
+  }
+}
+
 class VideoOverlayWindowWithShowAnimationTest
     : public VideoOverlayWindowViewsTest {
  public:

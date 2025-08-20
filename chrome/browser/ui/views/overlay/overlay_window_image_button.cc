@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "media/base/media_switches.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -32,6 +33,11 @@ void OverlayWindowImageButton::OnThemeChanged() {
 
   views::InkDrop::Get(this)->SetBaseColor(
       GetColorProvider()->GetColor(kColorPipWindowForeground));
+}
+
+bool OverlayWindowImageButton::Use2024UI() const {
+  return base::FeatureList::IsEnabled(
+      media::kVideoPictureInPictureControlsUpdate2024);
 }
 
 BEGIN_METADATA(OverlayWindowImageButton)

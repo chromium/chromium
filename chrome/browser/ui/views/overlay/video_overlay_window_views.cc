@@ -1806,8 +1806,8 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
         {top_controls_bounds.width() - origin_position.x() - kOriginRightMargin,
          kOriginHeight});
 
-    minimize_button_->SetPosition(GetBounds().size(), quadrant);
-    back_to_tab_button_->SetPosition(GetBounds().size(), quadrant);
+    minimize_button_->SetPosition(GetBounds().size());
+    back_to_tab_button_->SetPosition(GetBounds().size());
 
     // Positioning of the middle row of controls.
     const gfx::Point center_control_position(

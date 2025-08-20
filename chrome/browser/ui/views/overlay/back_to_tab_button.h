@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_BACK_TO_TAB_BUTTON_H_
 
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
-#include "chrome/browser/ui/views/overlay/video_overlay_window_views.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 // An image button representing a back-to-tab button.
@@ -21,8 +20,7 @@ class OverlayWindowBackToTabButton : public OverlayWindowImageButton {
   ~OverlayWindowBackToTabButton() override = default;
 
   // Sets the position of itself with an offset from the given window size.
-  void SetPosition(const gfx::Size& size,
-                   VideoOverlayWindowViews::WindowQuadrant quadrant);
+  void SetPosition(const gfx::Size& size);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_BACK_TO_TAB_BUTTON_H_

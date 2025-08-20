@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -45,17 +44,16 @@ void CloseImageButton::SetPosition(
     const gfx::Size& size,
     VideoOverlayWindowViews::WindowQuadrant quadrant) {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (quadrant == VideoOverlayWindowViews::WindowQuadrant::kBottomLeft) {
+  if (!Use2024UI() &&
+      quadrant == VideoOverlayWindowViews::WindowQuadrant::kBottomLeft) {
     views::ImageButton::SetPosition(
         gfx::Point(kCloseButtonMargin, kCloseButtonMargin));
     return;
   }
 #endif
 
-  const int top_margin = base::FeatureList::IsEnabled(
-                             media::kVideoPictureInPictureControlsUpdate2024)
-                             ? kCloseButtonTopMargin
-                             : kCloseButtonMargin;
+  const int top_margin =
+      Use2024UI() ? kCloseButtonTopMargin : kCloseButtonMargin;
 
   views::ImageButton::SetPosition(gfx::Point(
       size.width() - kCloseButtonSize - kCloseButtonMargin, top_margin));
