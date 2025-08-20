@@ -301,8 +301,7 @@ void FontCache::InvalidateFromAnyThread() {
   if (!IsMainThread()) {
     Thread::MainThread()
         ->GetTaskRunner(MainThreadTaskRunnerRestricted())
-        ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&FontCache::InvalidateFromAnyThread));
+        ->PostTask(FROM_HERE, BindOnce(&FontCache::InvalidateFromAnyThread));
     return;
   }
   FontCache::Get().Invalidate();

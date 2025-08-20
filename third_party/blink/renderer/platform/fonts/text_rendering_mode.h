@@ -38,8 +38,8 @@ enum TextRenderingMode {
   kGeometricPrecision
 };
 
-PLATFORM_EXPORT WTF::String ToString(TextRenderingMode);
-PLATFORM_EXPORT WTF::String ToStringForIdl(TextRenderingMode);
+PLATFORM_EXPORT String ToString(TextRenderingMode);
+PLATFORM_EXPORT String ToStringForIdl(TextRenderingMode);
 
 }  // namespace blink
 

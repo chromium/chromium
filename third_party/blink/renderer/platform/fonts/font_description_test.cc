@@ -67,7 +67,7 @@ TEST_F(FontDescriptionTest, TestHashCollision) {
       std::to_array<FontSelectionValue>({kNormalSlopeValue, kItalicSlopeValue});
 
   FontDescription source;
-  WTF::Vector<unsigned> hashes;
+  Vector<unsigned> hashes;
   for (size_t i = 0; i < std::size(weights); i++) {
     source.SetWeight(weights[i]);
     for (size_t j = 0; j < std::size(stretches); j++) {

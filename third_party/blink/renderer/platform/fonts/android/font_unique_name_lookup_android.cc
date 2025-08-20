@@ -55,9 +55,9 @@ void FontUniqueNameLookupAndroid::PrepareFontUniqueNameLookup(
 
   EnsureServiceConnected();
 
-  firmware_font_lookup_service_->GetUniqueNameLookupTable(WTF::BindOnce(
+  firmware_font_lookup_service_->GetUniqueNameLookupTable(blink::BindOnce(
       &FontUniqueNameLookupAndroid::ReceiveReadOnlySharedMemoryRegion,
-      WTF::Unretained(this)));
+      Unretained(this)));
 }
 
 bool FontUniqueNameLookupAndroid::IsFontUniqueNameLookupReadyForSyncLookup() {
@@ -121,11 +121,10 @@ void FontUniqueNameLookupAndroid::Init() {
   if (RuntimeEnabledFeatures::AndroidDownloadableFontsMatchingEnabled()) {
     EnsureServiceConnected();
     if (android_font_lookup_service_) {
-      // WTF::Unretained is safe here because |this| owns
+      // blink::Unretained is safe here because |this| owns
       // |android_font_lookup_service_|.
-      android_font_lookup_service_->FetchAllFontFiles(
-          WTF::BindOnce(&FontUniqueNameLookupAndroid::FontsPrefetched,
-                        WTF::Unretained(this)));
+      android_font_lookup_service_->FetchAllFontFiles(blink::BindOnce(
+          &FontUniqueNameLookupAndroid::FontsPrefetched, Unretained(this)));
     }
   }
   if (base::FeatureList::IsEnabled(features::kPrefetchFontLookupTables) &&

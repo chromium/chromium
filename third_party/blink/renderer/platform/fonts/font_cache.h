@@ -274,7 +274,7 @@ class PLATFORM_EXPORT FontCache final {
   // BCP47 list used when requesting fallback font for a character.
   // inlineCapacity is set to 4: the array vector not need to hold more than 4
   // elements.
-  using Bcp47Vector = WTF::Vector<const char*, 4>;
+  using Bcp47Vector = Vector<const char*, 4>;
 
   const SimpleFontData* PlatformFallbackFontForCharacter(
       const FontDescription&,

@@ -42,10 +42,10 @@ class PLATFORM_EXPORT FontSizeAdjust {
   Metric GetMetric() const { return metric_; }
 
   unsigned GetHash() const;
-  WTF::String ToString() const;
+  String ToString() const;
 
  private:
-  WTF::String ToString(Metric metric) const;
+  String ToString(Metric metric) const;
 
   float value_{kFontSizeAdjustNone};
   Metric metric_{Metric::kExHeight};

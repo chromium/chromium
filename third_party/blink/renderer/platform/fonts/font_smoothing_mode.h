@@ -38,7 +38,7 @@ enum FontSmoothingMode {
   kSubpixelAntialiased
 };
 
-PLATFORM_EXPORT WTF::String ToString(FontSmoothingMode);
+PLATFORM_EXPORT String ToString(FontSmoothingMode);
 
 }  // namespace blink
 

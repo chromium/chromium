@@ -194,10 +194,10 @@ OpenTypeMathSupport::GetGlyphVariantRecords(
   DCHECK(harfbuzz_face);
   DCHECK(base_glyph);
 
-  auto getter = WTF::BindOnce(&hb_ot_math_get_glyph_variants);
+  auto getter = BindOnce(&hb_ot_math_get_glyph_variants);
   auto converter =
-      WTF::BindRepeating([](hb_ot_math_glyph_variant_t record)
-                             -> OpenTypeMathStretchData::GlyphVariantRecord {
+      BindRepeating([](hb_ot_math_glyph_variant_t record)
+                        -> OpenTypeMathStretchData::GlyphVariantRecord {
         return record.glyph;
       });
   return GetHarfBuzzMathRecord(
@@ -215,18 +215,18 @@ OpenTypeMathSupport::GetGlyphPartRecords(
   DCHECK(harfbuzz_face);
   DCHECK(base_glyph);
 
-  auto getter = WTF::BindOnce(
-      [](hb_font_t* font, hb_codepoint_t glyph, hb_direction_t direction,
-         unsigned int start_offset, unsigned int* parts_count,
-         hb_ot_math_glyph_part_t* parts) {
+  auto getter =
+      BindOnce([](hb_font_t* font, hb_codepoint_t glyph,
+                  hb_direction_t direction, unsigned int start_offset,
+                  unsigned int* parts_count, hb_ot_math_glyph_part_t* parts) {
         hb_position_t italic_correction;
         return hb_ot_math_get_glyph_assembly(font, glyph, direction,
                                              start_offset, parts_count, parts,
                                              &italic_correction);
       });
   auto converter =
-      WTF::BindRepeating([](hb_ot_math_glyph_part_t record)
-                             -> OpenTypeMathStretchData::GlyphPartRecord {
+      BindRepeating([](hb_ot_math_glyph_part_t record)
+                        -> OpenTypeMathStretchData::GlyphPartRecord {
         return {static_cast<Glyph>(record.glyph),
                 HarfBuzzUnitsToFloat(record.start_connector_length),
                 HarfBuzzUnitsToFloat(record.end_connector_length),
