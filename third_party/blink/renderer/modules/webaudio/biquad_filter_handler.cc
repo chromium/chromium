@@ -37,8 +37,13 @@ namespace blink {
 namespace {
 
 constexpr unsigned kRenderQuantumFramesExpected = 128;
-constexpr uint32_t kNumberOfChannels = 1;
 constexpr unsigned kDefaultNumberOfOutputChannels = 1;
+
+// TODO(crbug.com/40268882): A reasonable upper limit for the tail time. While
+// it's easy to create biquad filters whose tail time can be much larger than
+// this, limit the maximum to this value so that we don't keep such nodes alive
+// "forever". Investigate if we can adjust this to a smaller value.
+constexpr double kMaxTailTime = 30.0;
 
 bool HasConstantValues(
     base::span<float> values,
@@ -137,12 +142,7 @@ class BiquadProcessor final {
 
   bool IsInitialized() const { return is_initialized_; }
 
-  float SampleRate() const { return sample_rate_; }
-
-  unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
-
   double TailTime() const;
-  double LatencyTime() const;
   bool RequiresTailProcessing() const;
 
   void SetNumberOfChannels(unsigned);
@@ -198,8 +198,8 @@ class BiquadProcessor final {
 
   bool is_initialized_ = false;
   unsigned number_of_channels_;
-  float sample_rate_;
-  unsigned render_quantum_frames_;
+  const double sample_rate_;
+  const unsigned render_quantum_frames_;
 
   Vector<std::unique_ptr<BiquadDSPKernel>> kernels_ GUARDED_BY(process_lock_);
   mutable base::Lock process_lock_;
@@ -209,21 +209,20 @@ class BiquadProcessor final {
 // BiquadProcessor using a Biquad object.
 class BiquadDSPKernel final {
  public:
-  explicit BiquadDSPKernel(BiquadProcessor* processor)
-      : biquad_(processor->RenderQuantumFrames()),
+  explicit BiquadDSPKernel(BiquadProcessor* processor,
+                           double sample_rate,
+                           unsigned render_quantum_frames)
+      : biquad_(render_quantum_frames),
         tail_time_(std::numeric_limits<double>::infinity()),
         kernel_processor_(processor),
-        sample_rate_(processor->SampleRate()),
-        render_quantum_frames_(processor->RenderQuantumFrames()) {}
+        sample_rate_(sample_rate),
+        nyquist_(0.5 * sample_rate),
+        render_quantum_frames_(render_quantum_frames) {}
 
   // AudioDSPKernel
   void Process(const float* source, float* dest, uint32_t frames_to_process);
   void ProcessOnlyAudioParams(uint32_t frames_to_process) {}
   void Reset() { biquad_.Reset(); }
-
-  float SampleRate() const { return sample_rate_; }
-  unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
-  double Nyquist() const { return 0.5 * SampleRate(); }
 
   BiquadProcessor* Processor() { return kernel_processor_; }
   const BiquadProcessor* Processor() const { return kernel_processor_; }
@@ -231,14 +230,12 @@ class BiquadDSPKernel final {
   // Get the magnitude and phase response of the given BiquadDSPKernel at the
   // given set of frequencies (in Hz). The phase response is in radians.  This
   // must be called from the main thread.
-  static void GetFrequencyResponse(BiquadDSPKernel& kernel,
-                                   base::span<const float> frequency_hz,
-                                   base::span<float> mag_response,
-                                   base::span<float> phase_response);
+  void GetFrequencyResponse(base::span<const float> frequency_hz,
+                            base::span<float> mag_response,
+                            base::span<float> phase_response) const;
 
   bool RequiresTailProcessing() const;
   double TailTime() const;
-  double LatencyTime() const;
   // Update the biquad coefficients with the given parameters
   void UpdateCoefficients(
       int spanification_suspected_redundant_number_of_frames,
@@ -270,8 +267,9 @@ class BiquadDSPKernel final {
   // This raw pointer is safe because the AudioDSPKernelProcessor object is
   // guaranteed to be kept alive while the AudioDSPKernel object is alive.
   raw_ptr<BiquadProcessor> kernel_processor_;
-  float sample_rate_;
-  unsigned render_quantum_frames_;
+  const double sample_rate_;
+  const double nyquist_;
+  const unsigned render_quantum_frames_;
 };
 
 void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
@@ -279,14 +277,14 @@ void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
     // TODO(crbug.com/40637820): Eventually, the render quantum size will no
     // longer be hardcoded as 128. At that point, we'll need to switch from
     // stack allocation to heap allocation.
-    CHECK_EQ(RenderQuantumFrames(), kRenderQuantumFramesExpected);
+    CHECK_EQ(render_quantum_frames_, kRenderQuantumFramesExpected);
     float cutoff_frequency[kRenderQuantumFramesExpected];
     float q[kRenderQuantumFramesExpected];
     float gain[kRenderQuantumFramesExpected];
     float detune[kRenderQuantumFramesExpected];  // in Cents
 
     SECURITY_CHECK(static_cast<unsigned>(frames_to_process) <=
-                   RenderQuantumFrames());
+                   render_quantum_frames_);
 
     if (GetBiquadProcessor()->HasSampleAccurateValues() &&
         GetBiquadProcessor()->IsAudioRate()) {
@@ -339,13 +337,11 @@ void BiquadDSPKernel::UpdateCoefficients(
             static_cast<int>(cutoff_frequency.size()),
         base::NotFatalUntil::M143);
   // Convert from Hertz to normalized frequency 0 -> 1.
-  double nyquist = Nyquist();
-
   biquad_.SetHasSampleAccurateValues(
       spanification_suspected_redundant_number_of_frames > 1);
 
   for (int k = 0; k < spanification_suspected_redundant_number_of_frames; ++k) {
-    double normalized_frequency = cutoff_frequency[k] / nyquist;
+    double normalized_frequency = cutoff_frequency[k] / nyquist_;
 
     // Offset frequency by detune.
     if (detune[k]) {
@@ -394,15 +390,8 @@ void BiquadDSPKernel::UpdateCoefficients(
 }
 
 void BiquadDSPKernel::UpdateTailTime(int coef_index) {
-  // TODO(crbug.com/40268882): A reasonable upper limit for the tail time. While
-  // it's easy to create biquad filters whose tail time can be much larger than
-  // this, limit the maximum to this value so that we don't keep such nodes
-  // alive "forever". Investigate if we can adjust this to a smaller value.
-  constexpr double kMaxTailTime = 30.0;
-
-  double sample_rate = SampleRate();
   double tail =
-      biquad_.TailFrame(coef_index, kMaxTailTime * sample_rate) / sample_rate;
+      biquad_.TailFrame(coef_index, kMaxTailTime * sample_rate_) / sample_rate_;
 
   tail_time_ = ClampTo(tail, 0.0, kMaxTailTime);
 }
@@ -432,10 +421,10 @@ void BiquadDSPKernel::Process(const float* source,
   biquad_.Process(source, destination, frames_to_process);
 }
 
-void BiquadDSPKernel::GetFrequencyResponse(BiquadDSPKernel& kernel,
-                                           base::span<const float> frequency_hz,
-                                           base::span<float> mag_response,
-                                           base::span<float> phase_response) {
+void BiquadDSPKernel::GetFrequencyResponse(
+    base::span<const float> frequency_hz,
+    base::span<float> mag_response,
+    base::span<float> phase_response) const {
   // Only allow on the main thread because we don't want the audio thread to be
   // updating `kernel` while we're computing the response.
   DCHECK(IsMainThread());
@@ -445,15 +434,14 @@ void BiquadDSPKernel::GetFrequencyResponse(BiquadDSPKernel& kernel,
   DCHECK(!phase_response.empty());
 
   Vector<float> frequency(frequency_hz.size());
-  double nyquist = kernel.Nyquist();
 
   // Convert from frequency in Hz to normalized frequency (0 -> 1),
   // with 1 equal to the Nyquist frequency.
   for (size_t k = 0; k < frequency_hz.size(); ++k) {
-    frequency[k] = frequency_hz[k] / nyquist;
+    frequency[k] = frequency_hz[k] / nyquist_;
   }
 
-  kernel.biquad_.GetFrequencyResponse(frequency, mag_response, phase_response);
+  biquad_.GetFrequencyResponse(frequency, mag_response, phase_response);
 }
 
 bool BiquadDSPKernel::RequiresTailProcessing() const {
@@ -467,10 +455,6 @@ bool BiquadDSPKernel::RequiresTailProcessing() const {
 
 double BiquadDSPKernel::TailTime() const {
   return tail_time_;
-}
-
-double BiquadDSPKernel::LatencyTime() const {
-  return 0;
 }
 
 BiquadProcessor::BiquadProcessor(float sample_rate,
@@ -495,7 +479,8 @@ BiquadProcessor::~BiquadProcessor() {
 }
 
 std::unique_ptr<BiquadDSPKernel> BiquadProcessor::CreateKernel() {
-  return std::make_unique<BiquadDSPKernel>(this);
+  return std::make_unique<BiquadDSPKernel>(this, sample_rate_,
+                                           render_quantum_frames_);
 }
 
 void BiquadProcessor::CheckForDirtyCoefficients() {
@@ -606,7 +591,7 @@ void BiquadProcessor::ProcessOnlyAudioParams(uint32_t frames_to_process) {
   // TODO(crbug.com/40637820): Eventually, the render quantum size will no
   // longer be hardcoded as 128. At that point, we'll need to switch from
   // stack allocation to heap allocation.
-  CHECK_EQ(RenderQuantumFrames(), kRenderQuantumFramesExpected);
+  CHECK_EQ(render_quantum_frames_, kRenderQuantumFramesExpected);
 
   DCHECK_LE(frames_to_process, kRenderQuantumFramesExpected);
 
@@ -662,18 +647,6 @@ double BiquadProcessor::TailTime() const {
   return std::numeric_limits<double>::infinity();
 }
 
-double BiquadProcessor::LatencyTime() const {
-  DCHECK(!IsMainThread());
-  base::AutoTryLock try_locker(process_lock_);
-  if (try_locker.is_acquired()) {
-    // It is expected that all the kernels have the same latencyTime.
-    return !kernels_.empty() ? kernels_.front()->LatencyTime() : 0;
-  }
-  // Since we don't want to block the Audio Device thread, we return a large
-  // value instead of trying to acquire the lock.
-  return std::numeric_limits<double>::infinity();
-}
-
 void BiquadProcessor::SetType(V8BiquadFilterType::Enum type) {
   if (type != type_) {
     type_ = type;
@@ -691,7 +664,8 @@ void BiquadProcessor::GetFrequencyResponse(base::span<const float> frequency_hz,
   // thread on the main kernels.
 
   std::unique_ptr<BiquadDSPKernel> response_kernel =
-      std::make_unique<BiquadDSPKernel>(this);
+      std::make_unique<BiquadDSPKernel>(this, sample_rate_,
+                                        render_quantum_frames_);
 
   float cutoff_frequency;
   float q;
@@ -716,8 +690,8 @@ void BiquadProcessor::GetFrequencyResponse(base::span<const float> frequency_hz,
   response_kernel->UpdateCoefficients(
       1, base::span_from_ref(cutoff_frequency), base::span_from_ref(q),
       base::span_from_ref(gain), base::span_from_ref(detune));
-  BiquadDSPKernel::GetFrequencyResponse(*response_kernel, frequency_hz,
-                                        mag_response, phase_response);
+  response_kernel->GetFrequencyResponse(frequency_hz, mag_response,
+                                        phase_response);
 }
 
 BiquadFilterHandler::BiquadFilterHandler(AudioNode& node,
@@ -729,7 +703,7 @@ BiquadFilterHandler::BiquadFilterHandler(AudioNode& node,
     : AudioHandler(NodeType::kNodeTypeBiquadFilter, node, sample_rate),
       processor_(std::make_unique<BiquadProcessor>(
           sample_rate,
-          kNumberOfChannels,
+          kDefaultNumberOfOutputChannels,
           node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
           frequency,
           q,
@@ -788,7 +762,7 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
   AudioBus* destination_bus = Output(0).Bus();
 
   if (!IsInitialized() || !processor_ ||
-      processor_->NumberOfChannels() != NumberOfChannels()) {
+      processor_->NumberOfChannels() != Output(0).NumberOfChannels()) {
     destination_bus->Zero();
   } else {
     scoped_refptr<AudioBus> source_bus = Input(0).Bus();
@@ -806,13 +780,17 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
     // Inform the user once if the output has a non-finite value.  This is a
     // proxy for the filter state containing non-finite values since the output
     // is also saved as part of the state of the filter.
-    if (HasNonFiniteOutput()) {
-      did_warn_bad_filter_state_ = true;
-
-      PostCrossThreadTask(
-          *task_runner_, FROM_HERE,
-          CrossThreadBindOnce(&BiquadFilterHandler::NotifyBadState,
-                              weak_ptr_factory_.GetWeakPtr()));
+    AudioBus* output_bus = Output(0).Bus();
+    for (wtf_size_t k = 0; k < output_bus->NumberOfChannels(); ++k) {
+      AudioChannel* channel = output_bus->Channel(k);
+      if (channel->length() > 0 && !std::isfinite(channel->Data()[0])) {
+        did_warn_bad_filter_state_ = true;
+        PostCrossThreadTask(
+            *task_runner_, FROM_HERE,
+            CrossThreadBindOnce(&BiquadFilterHandler::NotifyBadState,
+                                weak_ptr_factory_.GetWeakPtr()));
+        break;
+      }
     }
   }
 }
@@ -863,10 +841,6 @@ void BiquadFilterHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
   AudioHandler::CheckNumberOfChannelsForInput(input);
 }
 
-unsigned BiquadFilterHandler::NumberOfChannels() {
-  return Output(0).NumberOfChannels();
-}
-
 void BiquadFilterHandler::GetFrequencyResponse(
     base::span<const float> frequency_hz,
     base::span<float> mag_response,
@@ -891,20 +865,7 @@ double BiquadFilterHandler::TailTime() const {
 }
 
 double BiquadFilterHandler::LatencyTime() const {
-  return processor_->LatencyTime();
-}
-
-bool BiquadFilterHandler::HasNonFiniteOutput() const {
-  AudioBus* output_bus = Output(0).Bus();
-
-  for (wtf_size_t k = 0; k < output_bus->NumberOfChannels(); ++k) {
-    AudioChannel* channel = output_bus->Channel(k);
-    if (channel->length() > 0 && !std::isfinite(channel->Data()[0])) {
-      return true;
-    }
-  }
-
-  return false;
+  return 0;
 }
 
 void BiquadFilterHandler::NotifyBadState() const {
