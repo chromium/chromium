@@ -93,28 +93,6 @@ BASE_FEATURE(kEnableHistorySyncOptinExpansionPill,
              "EnableHistorySyncOptinExpansionPill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<HistorySyncOptinExpansionPillOption>::Option
-    kHistorySyncOptinExpansionPillOptions[] = {
-        {HistorySyncOptinExpansionPillOption::kBrowseAcrossDevices,
-         "browse-across-devices"},
-        {HistorySyncOptinExpansionPillOption::kSyncHistory, "sync-history"},
-        {HistorySyncOptinExpansionPillOption::kSeeTabsFromOtherDevices,
-         "see-tabs-from-other-devices"},
-        {HistorySyncOptinExpansionPillOption::
-             kBrowseAcrossDevicesNewProfileMenuPromoVariant,
-         "browse-across-devices-new-profile-menu-promo-variant"}};
-
-// Determines the experiment arm of the History Sync Opt-in expansion pill
-// (different text options for the pill and the profile menu promo variant).
-//
-// It is no-op unless "EnableHistorySyncOptin" is enabled.
-constexpr base::FeatureParam<HistorySyncOptinExpansionPillOption>
-    kHistorySyncOptinExpansionPillOption = {
-        &kEnableHistorySyncOptinExpansionPill,
-        "history-sync-optin-expansion-pill-option",
-        HistorySyncOptinExpansionPillOption::kBrowseAcrossDevices,
-        &kHistorySyncOptinExpansionPillOptions};
-
 // Force enable the default browser step in the first run experience on Desktop.
 const char kForceFreDefaultBrowserStep[] = "force-fre-default-browser-step";
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
