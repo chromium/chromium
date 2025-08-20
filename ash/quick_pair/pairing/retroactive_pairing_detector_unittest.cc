@@ -137,14 +137,15 @@ namespace ash {
 namespace quick_pair {
 
 class RetroactivePairingDetectorTest
-    : public AshTestBase,
+    : public NoSessionAshTestBase,
       public RetroactivePairingDetector::Observer {
  public:
   RetroactivePairingDetectorTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : NoSessionAshTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
     FastPairGattServiceClientImpl::Factory::SetFactoryForTesting(
         &fast_pair_gatt_service_factory_);
 
@@ -178,8 +179,7 @@ class RetroactivePairingDetectorTest
   void TearDown() override {
     fast_pair_repository_.reset();
     retroactive_pairing_detector_.reset();
-    ClearLogin();
-    AshTestBase::TearDown();
+    NoSessionAshTestBase::TearDown();
   }
 
   void CreateRetroactivePairingDetector() {
@@ -247,7 +247,11 @@ class RetroactivePairingDetectorTest
   }
 
   void Login(user_manager::UserType user_type) {
-    SimulateUserLogin({kUserEmail, user_type});
+    if (user_type == user_manager::UserType::kGuest) {
+      SimulateGuestLogin();
+    } else {
+      SimulateUserLogin({kUserEmail, user_type});
+    }
   }
 
   void SetGattServiceClientConnected(bool connected) {
@@ -911,6 +915,7 @@ TEST_F(RetroactivePairingDetectorTest,
   CreateRetroactivePairingDetector();
   base::RunLoop().RunUntilIdle();
 
+  ClearLogin();
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
 
