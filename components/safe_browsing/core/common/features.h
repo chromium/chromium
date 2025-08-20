@@ -20,18 +20,18 @@ namespace safe_browsing {
 // detailed semantics.
 //
 // clang-format off
-// keep-sorted start sticky_prefixes=["#if"] group_prefixes=["#else", "#endif", "extern const base::FeatureParam"] newline_separated=yes
+// keep-sorted start allow_yaml_lists=yes sticky_prefixes=["#if"] group_prefixes=["#else", "#endif", "extern const base::FeatureParam"] newline_separated=yes
 // clang-format on
 
 // Controls various parameters related to occasionally collecting ad samples,
 // for example to control how often collection should occur.
 BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 
-// Enables Bundled Security Settings UI on chrome://settings/security
-BASE_DECLARE_FEATURE(kBundledSecuritySettings);
-
 // Enables adding warning shown timestamp to client safe browsing report.
 BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
+
+// Enables Bundled Security Settings UI on chrome://settings/security
+BASE_DECLARE_FEATURE(kBundledSecuritySettings);
 
 // Create a response containing the brand and the intent of the page using the
 // on-device model LLM.
