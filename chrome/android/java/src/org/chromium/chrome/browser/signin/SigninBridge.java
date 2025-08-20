@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+
 import android.content.Context;
 import android.content.Intent;
 
@@ -16,6 +19,7 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -49,6 +53,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /** The bridge regroups methods invoked by native code to interact with Android Signin UI. */
+@NullMarked
 final class SigninBridge {
     /** Used for dependency injection in unit tests. */
     @VisibleForTesting
@@ -149,6 +154,7 @@ final class SigninBridge {
         }
         Profile profile = tab.getProfile().getOriginalProfile();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        assumeNonNull(signinManager);
         if (!signinManager.isSigninAllowed()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,

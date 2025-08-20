@@ -8,13 +8,14 @@ import android.graphics.Color;
 import android.os.SystemClock;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
@@ -28,6 +29,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Base class for First run experience and fullscreen signin and history sync promos. */
+@NullMarked
 public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncInitializationActivity
         implements BackPressHandler {
     private final AppRestrictionSupplier mAppRestrictionSupplier;
@@ -42,7 +44,7 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
     private final PolicyLoadListener mPolicyLoadListener;
     private final long mStartTime;
 
-    private ChildAccountStatusSupplier mChildAccountStatusSupplier;
+    private @Nullable ChildAccountStatusSupplier mChildAccountStatusSupplier;
 
     public FullscreenSigninAndHistorySyncActivityBase() {
         mAppRestrictionSupplier = new AppRestrictionSupplier();
@@ -66,9 +68,9 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
     @Override
     protected OneshotSupplier<ProfileProvider> createProfileProvider() {
         return new ActivityProfileProvider(getLifecycleDispatcher()) {
-            @Nullable
+
             @Override
-            protected OtrProfileId createOffTheRecordProfileId() {
+            protected @Nullable OtrProfileId createOffTheRecordProfileId() {
                 throw new IllegalStateException("Attempting to access incognito in the re-FRE");
             }
         };
@@ -118,7 +120,7 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
     }
 
     /** Returns the supplier that supplies child account status. */
-    public OneshotSupplier<Boolean> getChildAccountStatusSupplier() {
+    public @Nullable OneshotSupplier<Boolean> getChildAccountStatusSupplier() {
         return mChildAccountStatusSupplier;
     }
 
