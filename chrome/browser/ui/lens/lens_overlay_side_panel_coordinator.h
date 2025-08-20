@@ -262,10 +262,11 @@ class LensOverlaySidePanelCoordinator
   // Passes the `message` to the side panel WebUI to be passed to the remote
   // UI in the side panel iframe. `message` should be a serialized
   // ClientToAimMessage proto.
-  void SendClientMessageToAim(const std::vector<uint8_t>& serialized_message);
+  virtual void SendClientMessageToAim(
+      const std::vector<uint8_t>& serialized_message);
 
   // Notifies the side panel WebUI that the AIM handshake has been received.
-  void AimHandshakeReceived();
+  virtual void AimHandshakeReceived();
 
  private:
   // Data class for constructing the side panel and storing side panel state for

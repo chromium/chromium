@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_SIDE_PANEL_COORDINATOR_H_
 #define CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_SIDE_PANEL_COORDINATOR_H_
 
-#include "lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 
 namespace lens {
 
@@ -21,8 +22,16 @@ class TestLensOverlaySidePanelCoordinator
 
   void SetSidePanelIsLoadingResults(bool is_loading) override;
 
+  void SendClientMessageToAim(
+      const std::vector<uint8_t>& serialized_message) override;
+
+  void AimHandshakeReceived() override;
+
   void ResetSidePanelTracking();
 
+  lens::ClientToAimMessage last_sent_client_message_to_aim_;
+  int send_client_message_to_aim_call_count_ = 0;
+  int aim_handshake_received_call_count_ = 0;
   int side_panel_loading_set_to_true_ = 0;
   int side_panel_loading_set_to_false_ = 0;
 };

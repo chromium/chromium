@@ -49,6 +49,8 @@ class VariationsClient;
 
 namespace lens {
 
+class LensComposeboxController;
+
 // Data struct representing content data to be sent to the Lens server.
 struct PageContent {
   PageContent();
@@ -205,6 +207,11 @@ class LensOverlayQueryController {
 
   uint64_t gen204_id() const { return gen204_id_; }
 
+  // Returns the search session id for the current query flow.
+  std::string search_session_id() const {
+    return cluster_info_->search_session_id();
+  }
+
   // Testing method to reset the cluster info state.
   void ResetRequestClusterInfoStateForTesting();
 
@@ -224,6 +231,8 @@ class LensOverlayQueryController {
   lens::proto::LensOverlaySuggestInputs suggest_inputs_for_testing() {
     return suggest_inputs_;
   }
+
+  friend class lens::LensComposeboxController;
 
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
@@ -263,6 +272,12 @@ class LensOverlayQueryController {
   virtual void SendSemanticEventGen204IfEnabled(
       lens::mojom::SemanticEvent event,
       std::optional<lens::LensOverlayRequestId> request_id);
+
+  // Updates the request id based on the given update mode and returns the
+  // request id proto. Also updates the suggest signals with the new request id
+  // and runs the suggest inputs callback.
+  std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
+      lens::RequestIdUpdateMode update_mode);
 
   // Updates the suggest inputs with the feature params and latest cluster info
   // response, then runs the callback. The request id in the suggest inputs will
@@ -341,12 +356,6 @@ class LensOverlayQueryController {
     // can be used to run some logic once the request has been sent.
     std::optional<base::OnceClosure> request_sent_callback_;
   };
-
-  // Updates the request id based on the given update mode and returns the
-  // request id proto. Also updates the suggest signals with the new request id
-  // and runs the suggest inputs callback.
-  std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
-      RequestIdUpdateMode update_mode);
 
   // Makes a LensOverlayServerClusterInfoRequest to get the cluster info. Will
   // continue to the FullImageRequest once a response is received.

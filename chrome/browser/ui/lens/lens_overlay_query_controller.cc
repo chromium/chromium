@@ -750,6 +750,19 @@ void LensOverlayQueryController::SendSemanticEventGen204IfEnabled(
   SendSemanticEventGen204IfEnabled(event, request_id);
 }
 
+std::unique_ptr<lens::LensOverlayRequestId>
+LensOverlayQueryController::GetNextRequestId(RequestIdUpdateMode update_mode) {
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      request_id_generator_->GetNextRequestId(update_mode);
+  latest_request_id_ = *request_id.get();
+  latest_encoded_analytics_id_ =
+      request_id_generator_->GetBase32EncodedAnalyticsId();
+  std::string encoded_request_id = Base64EncodeRequestId(*request_id);
+  suggest_inputs_.set_encoded_request_id(encoded_request_id);
+  RunSuggestInputsCallback();
+  return request_id;
+}
+
 void LensOverlayQueryController::RunSuggestInputsCallback() {
   suggest_inputs_.set_send_gsession_vsrid_for_contextual_suggest(true);
   suggest_inputs_.set_send_gsession_vsrid_vit_for_lens_suggest(
@@ -837,19 +850,6 @@ std::string LensOverlayQueryController::GetVsridForNewTab() {
       request_id_generator_->GetNextRequestId(
           RequestIdUpdateMode::kOpenInNewTab);
   return Base64EncodeRequestId(*request_id);
-}
-
-std::unique_ptr<lens::LensOverlayRequestId>
-LensOverlayQueryController::GetNextRequestId(RequestIdUpdateMode update_mode) {
-  std::unique_ptr<lens::LensOverlayRequestId> request_id =
-      request_id_generator_->GetNextRequestId(update_mode);
-  latest_request_id_ = *request_id.get();
-  latest_encoded_analytics_id_ =
-      request_id_generator_->GetBase32EncodedAnalyticsId();
-  std::string encoded_request_id = Base64EncodeRequestId(*request_id);
-  suggest_inputs_.set_encoded_request_id(encoded_request_id);
-  RunSuggestInputsCallback();
-  return request_id;
 }
 
 void LensOverlayQueryController::FetchClusterInfoRequest() {
