@@ -804,5 +804,16 @@ if (!is_android) {
       "//ui/views",
       "//url",
     ]
+
+    if (enable_glic) {
+      sources += [ "glic_actor_task_icon_manager_unittest.cc" ]
+
+      deps += [
+        "//chrome/browser/actor:test_support",
+        "//chrome/browser/glic",
+        "//chrome/browser/glic/test_support",
+        "//chrome/browser/ui/tabs:glic",
+      ]
+    }
   }
 }
