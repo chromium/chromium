@@ -494,7 +494,16 @@ CGFloat SpaceBetweenModules() {
     _feedContainer = [[UIView alloc] initWithFrame:CGRectZero];
     _feedContainer.userInteractionEnabled = YES;
     _feedContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    if (!IsNTPBackgroundCustomizationEnabled()) {
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      UIVisualEffect* blurEffect =
+          [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
+      _feedVisualEffectBackgroundView =
+          [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+      _feedVisualEffectBackgroundView
+          .translatesAutoresizingMaskIntoConstraints = NO;
+      [_feedContainer addSubview:_feedVisualEffectBackgroundView];
+      AddSameConstraints(_feedContainer, _feedVisualEffectBackgroundView);
+    } else {
       _feedContainer.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     }
 
@@ -505,16 +514,6 @@ CGFloat SpaceBetweenModules() {
         kCALayerMaxXMinYCorner | kCALayerMinXMinYCorner;
     _feedContainer.layer.masksToBounds = YES;
     _feedContainer.layer.zPosition = -CGFLOAT_MAX;
-
-    UIVisualEffect* blurEffect =
-        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
-    _feedVisualEffectBackgroundView =
-        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-    _feedVisualEffectBackgroundView.translatesAutoresizingMaskIntoConstraints =
-        NO;
-    _feedVisualEffectBackgroundView.hidden = NO;
-    [_feedContainer addSubview:_feedVisualEffectBackgroundView];
-    AddSameConstraints(_feedContainer, _feedVisualEffectBackgroundView);
 
     [self.collectionView insertSubview:_feedContainer atIndex:0];
   }
