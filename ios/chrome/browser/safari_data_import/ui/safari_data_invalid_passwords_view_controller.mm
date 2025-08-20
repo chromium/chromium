@@ -5,68 +5,21 @@
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_invalid_passwords_view_controller.h"
 
 #import "base/check_op.h"
-#import "base/notreached.h"
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
 #import "ios/chrome/browser/safari_data_import/public/ui_utils.h"
 #import "ios/chrome/browser/safari_data_import/public/utils.h"
+#import "ios/chrome/browser/safari_data_import/ui/password_import_item_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-/// Spacing between cell labels.
-const CGFloat kLabelSpacing = 4;
-
 /// The identifier for the only section in the table.
 NSString* const kSafariDataInvalidPasswordSection =
     @"kSafariDataInvalidPasswordSection";
-
-/// Returns the error message corresponding to the password import status.
-NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
-  int message_id;
-  switch (status) {
-    case PasswordImportStatus::kUnknownError:
-      message_id = IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_REASON_UNKNOWN;
-      break;
-    case PasswordImportStatus::kMissingPassword:
-      message_id =
-          IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_REASON_MISSING_PASSWORD;
-      break;
-    case PasswordImportStatus::kMissingURL:
-      message_id = IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_REASON_MISSING_URL;
-      break;
-    case PasswordImportStatus::kInvalidURL:
-      message_id = IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_REASON_INVALID_URL;
-      break;
-    case PasswordImportStatus::kLongUrl:
-      message_id = IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_REASON_LONG_URL;
-      break;
-    case PasswordImportStatus::kLongPassword:
-      message_id = IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_REASON_LONG_PASSWORD;
-      break;
-    case PasswordImportStatus::kLongUsername:
-      message_id = IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_REASON_LONG_USERNAME;
-      break;
-    case PasswordImportStatus::kLongNote:
-    case PasswordImportStatus::kLongConcatenatedNote:
-      message_id = IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_REASON_LONG_NOTE;
-      break;
-    case PasswordImportStatus::kConflictProfile:
-    case PasswordImportStatus::kConflictAccount:
-    case PasswordImportStatus::kNone:
-    case PasswordImportStatus::kValid:
-      NOTREACHED();
-  }
-  return l10n_util::GetNSString(message_id);
-}
-
 }  // namespace
 
 @interface SafariDataInvalidPasswordsViewController () <UITableViewDelegate>
@@ -111,7 +64,7 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
   self.tableView.separatorInset =
       GetSafariDataImportSeparatorInset(/*multiSelectionMode=*/NO);
   /// Register cells.
-  RegisterTableViewCell<TableViewURLCell>(self.tableView);
+  RegisterTableViewCell<UITableViewCell>(self.tableView);
   RegisterTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(
       self.tableView);
   /// Initialize table.
@@ -148,31 +101,24 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
 }
 
 /// Returns the cell with the properties of the `item` displayed.
-- (TableViewURLCell*)cellForIndexPath:(NSIndexPath*)indexPath
-                       itemIdentifier:(NSNumber*)identifier {
-  TableViewURLCell* cell =
-      DequeueTableViewCell<TableViewURLCell>(self.tableView);
-  cell.accessibilityIdentifier =
-      GetInvalidPasswordsTableViewCellAccessibilityIdentifier(indexPath.item);
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.labelSpacing = kLabelSpacing;
-  /// Populate cell with information.
+- (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
+                      itemIdentifier:(NSNumber*)identifier {
   PasswordImportItem* item = _invalidPasswords[identifier.intValue];
-  cell.titleLabel.text = item.url.title;
-  cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-  cell.URLLabel.text = item.username;
-  cell.URLLabel.numberOfLines = 2;
-  cell.thirdRowLabel.text = GetErrorMessageForPasswordImportStatus(item.status);
-  cell.thirdRowLabel.textColor = [UIColor colorNamed:kRed600Color];
+  PasswordImportItemCellContentConfiguration* config =
+      [PasswordImportItemCellContentConfiguration
+          cellConfigurationForErrorMessage:item];
   if (item.faviconAttributes) {
-    [cell.faviconView configureWithAttributes:item.faviconAttributes];
+    config.faviconAttributes = item.faviconAttributes;
   } else {
     __weak __typeof(self) weakSelf = self;
     [item loadFaviconWithUIUpdateHandler:^{
       [weakSelf updateItemWithIdentifier:identifier];
     }];
   }
-  [cell configureUILayout];
+  UITableViewCell* cell = DequeueTableViewCell<UITableViewCell>(self.tableView);
+  cell.accessibilityIdentifier =
+      GetInvalidPasswordsTableViewCellAccessibilityIdentifier(indexPath.item);
+  cell.contentConfiguration = config;
   return cell;
 }
 

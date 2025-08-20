@@ -10,17 +10,14 @@
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
 #import "ios/chrome/browser/safari_data_import/public/ui_utils.h"
 #import "ios/chrome/browser/safari_data_import/public/utils.h"
+#import "ios/chrome/browser/safari_data_import/ui/password_import_item_cell_content_configuration.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_password_conflict_mutator.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
-#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -28,8 +25,6 @@ namespace {
 /// The identifier for the only section in the table.
 NSString* const kSafariDataImportPasswordConflictResolutionSection =
     @"SafariDataImportPasswordConflictResolutionSection";
-/// Spacing between cell labels.
-const CGFloat kLabelSpacing = 4;
 }  // namespace
 
 @interface SafariDataImportPasswordConflictResolutionViewController () <
@@ -82,7 +77,7 @@ const CGFloat kLabelSpacing = 4;
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
   self.tableView.editing = YES;
   /// Register cells.
-  RegisterTableViewCell<TableViewURLCell>(self.tableView);
+  RegisterTableViewCell<UITableViewCell>(self.tableView);
   RegisterTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(
       self.tableView);
   /// Initialize table.
@@ -183,37 +178,32 @@ const CGFloat kLabelSpacing = 4;
 }
 
 /// Returns the cell with the properties of the `item` displayed.
-- (TableViewURLCell*)cellForIndexPath:(NSIndexPath*)indexPath
-                       itemIdentifier:(NSNumber*)identifier {
-  TableViewURLCell* cell =
-      DequeueTableViewCell<TableViewURLCell>(self.tableView);
+- (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
+                      itemIdentifier:(NSNumber*)identifier {
+  /// Populate cell with information.
+  PasswordImportItem* item = _passwordConflicts[identifier.intValue];
+  UITableViewCell* cell = DequeueTableViewCell<UITableViewCell>(self.tableView);
   cell.accessibilityIdentifier =
       GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(
           indexPath.item);
-  /// Populate cell with information.
-  PasswordImportItem* item = _passwordConflicts[identifier.intValue];
-  cell.titleLabel.text = item.url.title;
-  cell.URLLabel.text = item.username;
-  cell.URLLabel.numberOfLines = 2;
+  PasswordImportItemCellContentConfiguration* config;
+  if (_shouldUnmaskPasswordAtIndex[identifier.intValue].boolValue) {
+    config = [PasswordImportItemCellContentConfiguration
+        cellConfigurationForUnmaskPassword:item];
+  } else {
+    config = [PasswordImportItemCellContentConfiguration
+        cellConfigurationForMaskPassword:item];
+  }
   if (item.faviconAttributes) {
-    [cell.faviconView configureWithAttributes:item.faviconAttributes];
+    config.faviconAttributes = item.faviconAttributes;
   } else {
     __weak __typeof(self) weakSelf = self;
     [item loadFaviconWithUIUpdateHandler:^{
       [weakSelf updateItemWithIdentifier:identifier];
     }];
   }
-  BOOL shouldUnmaskPassword =
-      _shouldUnmaskPasswordAtIndex[identifier.intValue].boolValue;
-  cell.thirdRowLabel.numberOfLines = 1;
-  cell.thirdRowLabel.text =
-      shouldUnmaskPassword ? item.password : kMaskedPassword;
-  cell.thirdRowLabel.lineBreakMode = shouldUnmaskPassword
-                                         ? NSLineBreakByClipping
-                                         : NSLineBreakByTruncatingTail;
-  cell.labelSpacing = kLabelSpacing;
+  cell.contentConfiguration = config;
   cell.editingAccessoryView = [self accessoryViewForItemIdentifier:identifier];
-  [cell configureUILayout];
   UIView* selectedBackgroundView = [[UIView alloc] init];
   selectedBackgroundView.backgroundColor = [UIColor clearColor];
   cell.selectedBackgroundView = selectedBackgroundView;
