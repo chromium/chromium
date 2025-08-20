@@ -75,7 +75,10 @@ import java.util.concurrent.TimeoutException;
 /** Unit tests for {@link InstanceSwitcherCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+@DisableFeatures({
+    ChromeFeatureList.INSTANCE_SWITCHER_V2,
+    ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+})
 public class InstanceSwitcherCoordinatorTest {
     private static final int MAX_INSTANCE_COUNT = 5;
 
@@ -913,7 +916,10 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    @EnableFeatures({
+        ChromeFeatureList.INSTANCE_SWITCHER_V2,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+    })
     public void testRenameWindow() throws Exception {
         InstanceInfo[] instances =
                 createPersistedInstances(
@@ -972,7 +978,10 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    @EnableFeatures({
+        ChromeFeatureList.INSTANCE_SWITCHER_V2,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+    })
     public void testRenameWindowWithEmptyName() throws Exception {
         InstanceInfo[] instances =
                 createPersistedInstances(
@@ -1034,7 +1043,10 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    @EnableFeatures({
+        ChromeFeatureList.INSTANCE_SWITCHER_V2,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+    })
     public void testCancelRenameWindow() throws Exception {
         InstanceInfo[] instances =
                 createPersistedInstances(
