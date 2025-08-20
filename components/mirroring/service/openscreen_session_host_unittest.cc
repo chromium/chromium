@@ -186,6 +186,14 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   }
 
  protected:
+  void PauseCapturingVideo() { session_host().PauseCapturingVideo(); }
+
+  bool TryResumeCapturingVideo() {
+    return session_host().TryResumeCapturingVideo();
+  }
+
+  MirrorSettings* mirror_settings() { return &session_host_->mirror_settings_; }
+
   // mojom::SessionObserver implementation.
   MOCK_METHOD(void, OnError, (SessionError));
   MOCK_METHOD(void, DidStart, ());
@@ -505,7 +513,10 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     EXPECT_CALL(*this, OnRemotingStateChanged(true));
     if (is_remote_playback_) {
-      EXPECT_TRUE(video_host_ && video_host_->paused());
+      EXPECT_TRUE(video_host_);
+      if (video_host_) {
+        EXPECT_TRUE(video_host_->paused());
+      }
     }
     remoter_->Start();
     run_loop.Run();
@@ -629,7 +640,6 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
 
     // A pending reinitialization should not stop the session entirely.
     ASSERT_NE(session_host_->state_, OpenscreenSessionHost::State::kStopped);
-    ASSERT_TRUE(session_host_->is_video_capture_paused_);
 
     // Then restart the encoder.
     PushVideoEncoderStatus(config,
@@ -638,7 +648,6 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     // The session should be still going and the video encoder should be
     // started.
     ASSERT_NE(session_host_->state_, OpenscreenSessionHost::State::kStopped);
-    ASSERT_FALSE(session_host_->is_video_capture_paused_);
   }
 
   void SetTargetPlayoutDelay(int target_playout_delay_ms) {
@@ -800,6 +809,32 @@ TEST_F(OpenscreenSessionHostTest,
   CreateSession(SessionType::AUDIO_AND_VIDEO);
   StartSession();
   RestartVideoEncoderDueToError();
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, ResumeVideoCapture) {
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  // WE should pause the session twice, and only resume once.
+  EXPECT_CALL(*video_host_, OnPaused()).Times(2);
+  EXPECT_CALL(*video_host_, OnResumed());
+
+  // Pause video capture.
+  PauseCapturingVideo();
+
+  // Resume with the same parameters.
+  EXPECT_TRUE(TryResumeCapturingVideo());
+
+  // Pause again.
+  PauseCapturingVideo();
+
+  // Change the video capture parameters.
+  mirror_settings()->SetResolutionConstraints(1280, 720);
+
+  // Resume with different parameters.
+  EXPECT_FALSE(TryResumeCapturingVideo());
+
   StopSession();
 }
 

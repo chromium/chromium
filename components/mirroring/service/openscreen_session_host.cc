@@ -503,19 +503,21 @@ void OpenscreenSessionHost::OnNegotiated(
         std::move(video_sender), weak_factory_.GetWeakPtr(),
         mirror_settings_.refresh_interval());
 
+    // Have a new video encoder, so it has not been initialized yet.
+    has_video_encoder_been_initialized_ = false;
+
     logger_.LogInfo(base::StringPrintf(
         "Created video stream with refresh interval of %d ms",
         static_cast<int>(
             mirror_settings_.refresh_interval().InMilliseconds())));
 
-    if (video_capture_client_ && video_stream_) {
-      // NOTE: it is possible that we may renegotiate without pausing video
-      // capture, in which case we don't need to change the video capture client
-      // state.
-      if (is_video_capture_paused_) {
-        ResumeCapturingVideo();
-      }
-    } else {
+    // First, try pausing the capture client. This is necessary to update the
+    // callback to use our new `video_stream_` instance.
+    PauseCapturingVideo();
+
+    // Then, try resuming capture. If it fails, then we need to start a new
+    // capture client.
+    if (!TryResumeCapturingVideo()) {
       StartCapturingVideo();
     }
   }
@@ -904,11 +906,8 @@ void OpenscreenSessionHost::OnVideoEncoderStatus(
       break;
 
     case OperationalStatus::STATUS_INITIALIZED: {
-      const bool should_resume = has_video_encoder_been_initialized_ &&
-                                 is_video_capture_paused_ &&
-                                 state_ != State::kStopped;
-      if (should_resume) {
-        ResumeCapturingVideo();
+      if (has_video_encoder_been_initialized_ && state_ != State::kStopped) {
+        TryResumeCapturingVideo();
       }
       has_video_encoder_been_initialized_ = true;
       break;
@@ -1175,23 +1174,29 @@ void OpenscreenSessionHost::StartCapturingVideo() {
 }
 
 void OpenscreenSessionHost::PauseCapturingVideo() {
-  // It's not an error to request pausing while already paused.
-  if (is_video_capture_paused_) {
-    return;
-  }
   if (video_capture_client_) {
     video_capture_client_->Pause();
   }
-  is_video_capture_paused_ = true;
 }
 
-void OpenscreenSessionHost::ResumeCapturingVideo() {
-  CHECK(is_video_capture_paused_);
-  if (video_capture_client_ && video_stream_) {
+bool OpenscreenSessionHost::TryResumeCapturingVideo() {
+  if (!video_capture_client_ || !video_stream_) {
+    return false;
+  }
+
+  // We may be able to reuse the existing client if it has the exact same
+  // capture params.
+  const media::VideoCaptureParams& capture_params =
+      mirror_settings_.GetVideoCaptureParams();
+  if (video_capture_client_->params() == capture_params) {
+    logger_.LogInfo(
+        base::StrCat({"Reusing existing VideoCaptureHost with params ",
+                      ToString(capture_params)}));
     video_capture_client_->Resume(base::BindRepeating(
         &VideoRtpStream::InsertVideoFrame, video_stream_->AsWeakPtr()));
+    return true;
   }
-  is_video_capture_paused_ = false;
+  return false;
 }
 
 network::mojom::NetworkContext* OpenscreenSessionHost::GetNetworkContext() {

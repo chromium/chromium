@@ -75,6 +75,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
   void SwitchVideoCaptureHost(
       mojo::PendingRemote<media::mojom::VideoCaptureHost> host);
 
+  // Reference to the const capture params set on construction.
+  const media::VideoCaptureParams& params() const { return params_; }
+
  private:
   using BufferFinishedCallback = base::OnceCallback<void()>;
   // Called by the VideoFrame destructor.

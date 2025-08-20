@@ -226,7 +226,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // `video_capture_client_` instance.
   void StartCapturingVideo();
   void PauseCapturingVideo();
-  void ResumeCapturingVideo();
+
+  // Returns `true` if successfully restarted video capture, otherwise it
+  // may need to be started again.
+  bool TryResumeCapturingVideo();
 
   // Called to provide Open Screen with access to this host's network proxy.
   network::mojom::NetworkContext* GetNetworkContext();
@@ -314,9 +317,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // calls to change encoder status to true are reinitializations, for which
   // capture should be resumed.
   bool has_video_encoder_been_initialized_ = false;
-
-  // True if video capture has been paused.
-  bool is_video_capture_paused_ = false;
 
   // Manages the clock and thread proxies for the audio sender, video sender,
   // and media remoter.
