@@ -17,7 +17,7 @@ namespace cc {
 // This is intended to be the single canonical definition of the enum, it's used
 // elsewhere in both Blink and content since touch action logic spans those
 // subsystems.
-const size_t kTouchActionBits = 10;
+const size_t kTouchActionBits = 8;
 
 enum class TouchAction {
   // No scrolling or zooming allowed.
@@ -30,6 +30,7 @@ enum class TouchAction {
   kPanY = kPanUp | kPanDown,
   kPan = kPanX | kPanY,
   kPinchZoom = 0x10,
+  kManipulation = kPan | kPinchZoom,
   kDoubleTapZoom = 0x20,
   // Used by swipe to move cursor feature. This is only used internally
   // for swipe to move cursor feature  and it is not a web-visible value. When
@@ -44,19 +45,8 @@ enum class TouchAction {
   // field and has kPan, we don't set this bit.
   kInternalNotWritable = 0x80,
 
-  // TODO(crbug.com/382525574): This value is currently being used to measure
-  // how many pages would lose handwriting if handwriting were to ship as a new
-  // touch action value as describedd in the linked bug.
-  kInternalHandwriting = 0x100,
-  // This value will be used to measure how many pages will lose handwriting
-  // if it follows the panning rules for re-enablement.
-  kInternalHandwritingPanningRules = 0x200,
-
-  kManipulation = kPan | kPinchZoom | kInternalHandwriting |
-                  kInternalHandwritingPanningRules,
   kAuto = kManipulation | kDoubleTapZoom | kInternalPanXScrolls |
-          kInternalNotWritable | kInternalHandwriting |
-          kInternalHandwritingPanningRules,
+          kInternalNotWritable,
   kMax = (1 << kTouchActionBits) - 1
 };
 
@@ -88,13 +78,6 @@ inline const char* TouchActionToString(TouchAction touch_action) {
   // we skip printing kInternalNotWritable since it's not a web exposed
   // touch action field.
   touch_action &= ~TouchAction::kInternalNotWritable;
-
-  // Until handwriting is a web exposed feature, the combination of
-  // non-handwriting bits should result in values of auto / manipulation in the
-  // exposed CSS value.
-  // TODO(crbug.com/382525574): Launch or clean up kHandwriting.
-  touch_action &= ~(TouchAction::kInternalHandwriting |
-                    TouchAction::kInternalHandwritingPanningRules);
 
   switch (static_cast<int>(touch_action)) {
     case 0:

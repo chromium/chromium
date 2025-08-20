@@ -380,12 +380,9 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
                                             ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else if (expected_action == "pan-x-y") {
-          EXPECT_EQ(TouchAction::kPan,
-                    widget->LastTouchAction() &
-                        ~TouchAction::kInternalPanXScrolls &
-                        ~TouchAction::kInternalNotWritable &
-                        ~TouchAction::kInternalHandwriting &
-                        ~TouchAction::kInternalHandwritingPanningRules)
+          EXPECT_EQ(TouchAction::kPan, widget->LastTouchAction() &
+                                           ~TouchAction::kInternalPanXScrolls &
+                                           ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else if (expected_action == "manipulation") {
           EXPECT_EQ(TouchAction::kManipulation,

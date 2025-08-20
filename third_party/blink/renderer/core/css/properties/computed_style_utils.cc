@@ -2319,21 +2319,11 @@ CSSValue* ComputedStyleUtils::ValueForTextOverflow(
 CSSValue* ComputedStyleUtils::TouchActionFlagsToCSSValue(
     TouchAction touch_action) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  // Until handwriting is a web exposed feature, the combination of
-  // non-handwriting bits should result in values of auto / manipulation in the
-  // exposed CSS value.
-  // TODO(crbug.com/382525574): Launch or clean up kHandwriting.
-  const static auto kHandwritingTouchAction =
-      TouchAction::kInternalHandwriting |
-      TouchAction::kInternalHandwritingPanningRules;
-  touch_action &= ~kHandwritingTouchAction;
-
-  if (touch_action == (TouchAction::kAuto & ~kHandwritingTouchAction)) {
+  if (touch_action == TouchAction::kAuto) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
   } else if (touch_action == TouchAction::kNone) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
-  } else if (touch_action ==
-             (TouchAction::kManipulation & ~kHandwritingTouchAction)) {
+  } else if (touch_action == TouchAction::kManipulation) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kManipulation));
   } else {
     if ((touch_action & TouchAction::kPanX) == TouchAction::kPanX) {

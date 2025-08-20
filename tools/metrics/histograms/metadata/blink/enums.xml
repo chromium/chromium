@@ -5817,7 +5817,8 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8AuthenticatorAttestationResponse_GetPublicKey_Method"/>
   <int value="5215" label="CloseWatcherScriptConstructor"/>
   <int value="5216" label="Canvas2DImageSmoothingQuality2"/>
-  <int value="5217" label="NonNoneTouchActionWouldLoseEditableHandwriting"/>
+  <int value="5217"
+      label="OBSOLETENonNoneTouchActionWouldLoseEditableHandwriting"/>
   <int value="5218"
       label="CSSEnvironmentVariable_SafeAreaInsetBottom_FastPath"/>
   <int value="5219" label="SrcSetUsedHigherDensityImageFromCache"/>
@@ -6016,7 +6017,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5390"
       label="CredentialsGetImmediateMediationWithWebAuthnAndPasswords"/>
   <int value="5391"
-      label="NonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller"/>
+      label="OBSOLETENonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller"/>
   <int value="5392" label="Translator_Create"/>
   <int value="5393" label="Translator_Availability"/>
   <int value="5394" label="Translator_SourceLanguage"/>
