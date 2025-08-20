@@ -161,10 +161,10 @@ class CableMockBluetoothAdvertisement : public BluetoothAdvertisement {
 
   void ExpectUnregisterAndSucceed() {
     EXPECT_CALL(*this, Unregister(_, _))
-        .WillOnce(::testing::WithArg<0>(::testing::Invoke([](auto success_cb) {
+        .WillOnce(::testing::WithArg<0>([](auto success_cb) {
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, std::move(success_cb));
-        })));
+        }));
   }
 
  private:

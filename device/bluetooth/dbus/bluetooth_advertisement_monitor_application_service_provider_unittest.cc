@@ -275,8 +275,8 @@ TEST(BluetoothAdvertisementMonitorApplicationServiceProviderImplTest,
       &method_call, base::BindOnce(&ResponseSenderCallback, kExpectedMessage1));
 
   ON_CALL(*mock_exported_object, SendSignal(testing::_))
-      .WillByDefault(testing::Invoke(
-          [](dbus::Signal* signal) { SendSignal(kExpectedMessage3, signal); }));
+      .WillByDefault(
+          [](dbus::Signal* signal) { SendSignal(kExpectedMessage3, signal); });
   EXPECT_CALL(*mock_exported_object, SendSignal(testing::_));
 
   provider_impl.AddMonitor(std::move(advertisement_monitor));
@@ -285,8 +285,8 @@ TEST(BluetoothAdvertisementMonitorApplicationServiceProviderImplTest,
       &method_call, base::BindOnce(&ResponseSenderCallback, kExpectedMessage2));
 
   ON_CALL(*mock_exported_object, SendSignal(testing::_))
-      .WillByDefault(testing::Invoke(
-          [](dbus::Signal* signal) { SendSignal(kExpectedMessage4, signal); }));
+      .WillByDefault(
+          [](dbus::Signal* signal) { SendSignal(kExpectedMessage4, signal); });
   EXPECT_CALL(*mock_exported_object, SendSignal(testing::_));
   provider_impl.RemoveMonitor(monitor_object_path);
 

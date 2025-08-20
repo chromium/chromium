@@ -10,7 +10,6 @@
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 
 using testing::Return;
-using testing::Invoke;
 using testing::_;
 
 namespace device {
@@ -24,19 +23,19 @@ MockBluetoothGattService::MockBluetoothGattService(
   ON_CALL(*this, GetUUID()).WillByDefault(Return(uuid));
   ON_CALL(*this, IsPrimary()).WillByDefault(Return(is_primary));
   ON_CALL(*this, GetDevice()).WillByDefault(Return(device));
-  ON_CALL(*this, GetCharacteristics()).WillByDefault(Invoke([this] {
+  ON_CALL(*this, GetCharacteristics()).WillByDefault([this] {
     return BluetoothRemoteGattService::GetCharacteristics();
-  }));
+  });
   ON_CALL(*this, GetIncludedServices())
       .WillByDefault(Return(std::vector<BluetoothRemoteGattService*>()));
   ON_CALL(*this, GetCharacteristic(_))
-      .WillByDefault(Invoke([this](const std::string& id) {
+      .WillByDefault([this](const std::string& id) {
         return BluetoothRemoteGattService::GetCharacteristic(id);
-      }));
+      });
   ON_CALL(*this, GetCharacteristicsByUUID(_))
-      .WillByDefault(Invoke([this](const BluetoothUUID& uuid) {
+      .WillByDefault([this](const BluetoothUUID& uuid) {
         return BluetoothRemoteGattService::GetCharacteristicsByUUID(uuid);
-      }));
+      });
 }
 
 MockBluetoothGattService::~MockBluetoothGattService() = default;

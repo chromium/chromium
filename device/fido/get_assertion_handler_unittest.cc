@@ -767,7 +767,7 @@ TEST_F(FidoGetAssertionHandlerTest, DeviceFailsImmediately) {
           IsCtap2Command(CtapRequestCommand::kAuthenticatorGetAssertion), _))
       .WillOnce(::testing::DoAll(
           ::testing::WithArg<1>(
-              ::testing::Invoke([this](FidoDevice::DeviceCallback& callback) {
+              [this](FidoDevice::DeviceCallback& callback) {
                 std::vector<uint8_t> response = {static_cast<uint8_t>(
                     CtapDeviceResponseCode::kCtap2ErrInvalidCBOR)};
                 base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -780,7 +780,7 @@ TEST_F(FidoGetAssertionHandlerTest, DeviceFailsImmediately) {
                     CtapRequestCommand::kAuthenticatorGetAssertion,
                     test_data::kTestGetAssertionResponse);
                 discovery()->AddDevice(std::move(working_device));
-              })),
+              }),
           ::testing::Return(0)));
 
   auto request_handler = CreateGetAssertionHandlerCtap();
