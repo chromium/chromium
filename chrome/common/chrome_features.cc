@@ -349,6 +349,10 @@ const base::FeatureParam<base::TimeDelta> kGlicActorKeyUpDuration{
 const base::FeatureParam<bool> kGlicActorScrollTargetIntoView{
     &kGlicActor, "scroll-target-into-view", true};
 
+BASE_FEATURE(kGlicActorPermissionsBypass,
+             "GlicActorPermissionsBypass",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(ENABLE_GLIC)
 // Controls whether the Glic feature is enabled.
 BASE_FEATURE(Glic, base::FEATURE_DISABLED_BY_DEFAULT);
