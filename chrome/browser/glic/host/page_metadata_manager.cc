@@ -83,12 +83,9 @@ void PageMetadataManager::SubscribeToPageMetadata(
     return;
   }
 
-  auto on_page_metadata_changed = base::BindRepeating(
-      [](PageMetadataManager* manager, int32_t tab_id,
-         const blink::mojom::PageMetadata& metadata) {
-        manager->NotifyPageMetadataChanged(tab_id, metadata.Clone());
-      },
-      base::Unretained(this), tab_id);
+  auto on_page_metadata_changed =
+      base::BindRepeating(&PageMetadataManager::NotifyPageMetadataChanged,
+                          base::Unretained(this), tab_id);
 
   auto observer =
       std::make_unique<optimization_guide::PageContentMetadataObserver>(
@@ -142,12 +139,9 @@ void PageMetadataManager::OnTabWillDiscardContents(
     return;
   }
 
-  auto on_page_metadata_changed = base::BindRepeating(
-      [](PageMetadataManager* manager, int32_t tab_id,
-         const blink::mojom::PageMetadata& metadata) {
-        manager->NotifyPageMetadataChanged(tab_id, metadata.Clone());
-      },
-      base::Unretained(this), tab_id);
+  auto on_page_metadata_changed =
+      base::BindRepeating(&PageMetadataManager::NotifyPageMetadataChanged,
+                          base::Unretained(this), tab_id);
 
   auto observer =
       std::make_unique<optimization_guide::PageContentMetadataObserver>(

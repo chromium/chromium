@@ -144,7 +144,7 @@ void PageContentMetadataObserver::OnMetaTagsChangedForFrame(
     }
   }
 
-  callback_.Run(*page_metadata);
+  callback_.Run(std::move(page_metadata));
 }
 
 PageContentMetadataObserver::FrameData::FrameData(

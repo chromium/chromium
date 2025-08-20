@@ -75,8 +75,8 @@ class PageContentMetadataObserverBrowserTest
             base::Unretained(this)));
   }
 
-  void OnMetaTagsChanged(const blink::mojom::PageMetadata& page_metadata) {
-    page_metadata_ = page_metadata.Clone();
+  void OnMetaTagsChanged(blink::mojom::PageMetadataPtr page_metadata) {
+    page_metadata_ = std::move(page_metadata);
     // This may be called multiple times in some tests, but TestFuture handles
     // this gracefully.
     callback_waiter_.SetValue(true);
