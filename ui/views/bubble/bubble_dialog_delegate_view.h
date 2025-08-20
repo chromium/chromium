@@ -94,7 +94,6 @@ namespace arc {
 class ArcSplashScreenDialogView;
 class BaseDialogDelegateView;
 class ResizeConfirmationDialogView;
-class RoundedCornerBubbleDialogDelegateView;
 
 namespace input_overlay {
 class DeleteEditShortcut;
@@ -811,7 +810,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   friend class ::arc::ArcSplashScreenDialogView;
   friend class ::arc::BaseDialogDelegateView;
   friend class ::arc::ResizeConfirmationDialogView;
-  friend class ::arc::RoundedCornerBubbleDialogDelegateView;
   friend class ::arc::input_overlay::DeleteEditShortcut;
   friend class ::arc::input_overlay::RichNudge;
   friend class ::ash::AnchoredNudge;

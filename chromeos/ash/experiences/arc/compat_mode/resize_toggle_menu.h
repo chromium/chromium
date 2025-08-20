@@ -26,7 +26,7 @@ struct VectorIcon;
 }  // namespace gfx
 
 namespace views {
-class BubbleDialogDelegateView;
+class BubbleDialogDelegate;
 class ImageView;
 class Label;
 }  // namespace views
@@ -98,9 +98,7 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
   gfx::Rect GetAnchorRect() const;
 
-  base::WeakPtr<views::BubbleDialogDelegateView> bubble_view_;
-
-  std::unique_ptr<views::BubbleDialogDelegateView> MakeBubbleDelegateView(
+  std::unique_ptr<views::BubbleDialogDelegate> MakeBubbleDelegate(
       views::Widget* parent,
       gfx::Rect anchor_rect,
       base::RepeatingCallback<void(ash::ResizeCompatMode)> command_handler);
@@ -120,7 +118,8 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
   base::CancelableOnceClosure auto_close_closure_;
 
-  raw_ptr<views::Widget> bubble_widget_{nullptr};
+  std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate_;
+  std::unique_ptr<views::Widget> bubble_widget_;
 
   // Store only for testing.
   raw_ptr<MenuButtonView, DanglingUntriaged> phone_button_{nullptr};
