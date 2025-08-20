@@ -954,6 +954,10 @@ void DismissPaymentBottomSheet() {
 // Tests that, after switching fields, the content size of the table view didn't
 // grow.
 - (void)testCreditCardControllerKeepsRightSize {
+  // TODO(crbug.com/440045841): Test fails when run on iOS 17 iPad simulator.
+  if (base::ios::IsRunningOnIOS17OrLater() && [ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 17 iPad simulator.");
+  }
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
