@@ -12,9 +12,6 @@ source_set("install_attribution") {
   deps = []
   public_deps = [
     "//base",
-    "//components/prefs",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/app_group",
   ]
@@ -28,6 +25,5 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/app_group",
-    "//ios/chrome/test:test_support",
   ]
 }

@@ -2269,34 +2269,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="IOS.GMOSKOAttributionPlacementID.LongAttributionWindow"
-    units="Placement ID" expires_after="2026-08-14">
-  <owner>gujen@google.com</owner>
-  <owner>sebsg@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <summary>
-    The placement ID associated with a GMOSKO-attributed install. This is
-    recorded on the first launch of the calendar month following the install, at
-    startup, if the install happened within the long attribution window (15
-    days) of the promo acceptance time.
-  </summary>
-</histogram>
-
-<histogram name="IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow"
-    units="Placement ID" expires_after="2026-08-14">
-  <owner>gujen@google.com</owner>
-  <owner>sebsg@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <summary>
-    The placement ID associated with a GMOSKO-attributed install. This is
-    recorded on the first launch of the calendar month following the install, at
-    startup, if the install happened within the short attribution window (24
-    hours) of the promo acceptance time.
-  </summary>
-</histogram>
-
 <histogram name="IOS.GMOSKOInstallAttribution" enum="IOSInstallAttributionType"
-    expires_after="2026-08-14">
+    expires_after="2026-08-04">
   <owner>gujen@google.com</owner>
   <owner>sebsg@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>

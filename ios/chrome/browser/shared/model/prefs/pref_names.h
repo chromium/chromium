@@ -836,20 +836,6 @@ inline constexpr char kMultiProfileForcedMigrationDone[] =
 inline constexpr char kWidgetsForMultiProfile[] =
     "ios.multi_profile_for_widgets";
 
-// An integer pref to store the placement ID of the acceptance data if the
-// install was attributable to the external promo.
-inline constexpr char kIOSGMOSKOLastAttributionPlacementID[] =
-    "ios.gmosko_last_attribution_placement_id";
-
-// A time pref to store the date after which the placement ID can be logged.
-inline constexpr char kIOSGMOSKOPlacementIDNextLogDate[] =
-    "ios.gmosko_placement_id_next_log_date";
-
-// An integer storing whether the install attribution was attributable within
-// the short window or the long window.
-inline constexpr char kIOSGMOSKOLastAttributionWindowType[] =
-    "ios.gmosko_last_attribution_window_type";
-
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_
