@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
 .spacer {
@@ -10,11 +9,22 @@
   font: 50px/2 Ahem;
   height: 275px;
 }
+.clamp {
+  line-clamp: 3;
+}
+@supports not (line-clamp: 3) {
+  .clamp {
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
 </style>
 <div class="spacer"></div>
 <div class="target clamp">
   A<br>
   B<br>
-  C…
-</div>
+  C<br>
+  D</div>
 <div class="spacer"></div>

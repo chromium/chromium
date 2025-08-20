@@ -29,21 +29,12 @@ struct LineClampData {
     kClampByLines,
     kClampAfterLayoutObject,
     kMeasureLinesUntilBfcOffset,
-    kClampByLinesWithBfcOffset,
   };
 
   bool IsLineClampContext() const { return state != kDisabled; }
 
-  bool IsClampByLines() const {
-    return state == kClampByLines || state == kClampByLinesWithBfcOffset;
-  }
-  bool IsMeasureUntilBfcOffset() const {
-    return state == kMeasureLinesUntilBfcOffset ||
-           state == kClampByLinesWithBfcOffset;
-  }
-
   std::optional<int> LinesUntilClamp(bool show_measured_lines = false) const {
-    if (IsClampByLines() ||
+    if (state == kClampByLines ||
         (show_measured_lines && state == kMeasureLinesUntilBfcOffset)) {
       return lines_until_clamp;
     }
@@ -51,11 +42,11 @@ struct LineClampData {
   }
 
   bool IsAtClampPoint() const {
-    return IsClampByLines() && lines_until_clamp == 1;
+    return state == kClampByLines && lines_until_clamp == 1;
   }
 
   bool IsPastClampPoint() const {
-    return IsClampByLines() && lines_until_clamp <= 0;
+    return state == kClampByLines && lines_until_clamp <= 0;
   }
 
   bool ShouldHideForPaint() const {
@@ -69,10 +60,7 @@ struct LineClampData {
     switch (state) {
       case kClampByLines:
         return lines_until_clamp == other.lines_until_clamp;
-      case kClampAfterLayoutObject:
-        return clamp_after_layout_object == other.clamp_after_layout_object;
       case kMeasureLinesUntilBfcOffset:
-      case kClampByLinesWithBfcOffset:
         return lines_until_clamp == other.lines_until_clamp &&
                clamp_bfc_offset == other.clamp_bfc_offset;
       default:
@@ -80,9 +68,8 @@ struct LineClampData {
     }
   }
 
-  // If state == kClampByLines or kClampByLinesWithBfcOffset, the number of
-  // lines until the clamp point. A value of 1 indicates the current line should
-  // be clamped. May go negative.
+  // If state == kClampByLines, the number of lines until the clamp point.
+  // A value of 1 indicates the current line should be clamped. May go negative.
   // With state == kMeasureLinesUntilBfcOffset, the number of lines found in the
   // BFC so far.
   int lines_until_clamp = 0;
@@ -90,8 +77,7 @@ struct LineClampData {
   // The BFC offset where the current block container should clamp.
   // (Might not be the same BFC offset as other block containers in the same
   // BFC, depending on the bottom bmp).
-  // Only valid if state == kMeasureLinesUntilBfcOffset or
-  // kClampByLinesWithBfcOffset.
+  // Only valid if state == kMeasureLinesUntilBfcOffset
   LayoutUnit clamp_bfc_offset;
 
   // A LayoutObject immediately after which the container should clamp.
