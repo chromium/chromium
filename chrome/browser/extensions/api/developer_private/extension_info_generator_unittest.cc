@@ -929,16 +929,12 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
       GenerateExtensionInfo(active_tab_extension->id());
   EXPECT_TRUE(active_tab_info->permissions.can_access_site_data);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/427285233): Desktop Android does not support the debugger
-  // API nor its permission.
   scoped_refptr<const Extension> debugger_extension =
       CreateExtension("activeTab", base::Value::List().Append("debugger"),
                       ManifestLocation::kInternal);
   std::unique_ptr<developer::ExtensionInfo> debugger_info =
       GenerateExtensionInfo(debugger_extension->id());
   EXPECT_TRUE(debugger_info->permissions.can_access_site_data);
-#endif
 }
 
 // Tests that the granted optional API permissions, when revoked, are not
