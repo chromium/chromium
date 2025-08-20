@@ -290,6 +290,16 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void MaybeRecordServiceWorkerMainResourceInfo(
       const network::mojom::URLResponseHeadPtr& head);
 
+  // TODO(https://crbug.com/434182226): We record the sequence of
+  // `EventForDebug`s for crash analysis. Remove the following once debug is
+  // complete.
+  enum class EventForDebug : char;
+  void AddEventForDebug(EventForDebug event);
+  // We store (and record on crash) the events as `std::string` (with each char
+  // corresponding to `EventForDebug`, rather than `std::vector<EventForDebug>`)
+  // for reducing the length.
+  std::string events_for_debug_;
+
   raw_ptr<NavigationURLLoaderDelegate, DanglingUntriaged> delegate_;
   raw_ptr<BrowserContext> browser_context_;
   raw_ptr<StoragePartitionImpl> storage_partition_;
