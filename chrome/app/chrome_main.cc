@@ -156,8 +156,7 @@ int ChromeMain(int argc, const char** argv) {
   // dynamic linking.
   base::debug::SetDumpWithoutCrashingFunction(&DumpProcessWithoutCrash);
 
-  // Verify that chrome_elf and this module (chrome.dll and chrome_child.dll)
-  // have the same version.
+  // Verify that chrome_elf and this module (chrome.dll) have the same version.
   if (install_static::InstallDetails::Get().VersionMismatch())
     base::debug::DumpWithoutCrashing();
 #else
