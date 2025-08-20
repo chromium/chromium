@@ -184,6 +184,7 @@
 
   /* Composebox default colors are for light mode on AIM results. */
   #composeboxContainer {
+    --ntp-composebox-background-color: #f3f5f6;
     display: none;
     inset-block-end: 0;
     position: absolute;
@@ -200,7 +201,6 @@
   /* Light mode not on AIM results */
   :host(:not([is-on-aim-results])) #composeboxContainer {
     --color-new-tab-page-composebox-scrim-background: white;
-    --ntp-composebox-background-color: #f3f5f6;
   }
 
   /* Dark mode not on AIM results */
