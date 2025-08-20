@@ -732,6 +732,25 @@ ios_builder(
 )
 
 ios_builder(
+    name = "ios-structured-test-ids-simulator-fyi",
+    mirrors = [
+        "ci/ios-structured-test-ids-simulator-fyi",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/ios-structured-test-ids-simulator-fyi",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    experiments = {
+        "chromium_test.resultdb_module": 100,
+    },
+    main_list_view = "try",
+    xcode = xcode.xcode_default,
+)
+
+ios_builder(
     name = "ios-vm",
     mirrors = ["ci/ios-vm"],
     gn_args = "ci/ios-vm",

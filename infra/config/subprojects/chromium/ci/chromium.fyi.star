@@ -477,6 +477,66 @@ ci.builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
+fyi_ios_builder(
+    name = "ios-structured-test-ids-simulator-fyi",
+    description_html = "iOS builder for running tests with an experiment for" +
+                       " structured test ids.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "remoteexec",
+            "ios_simulator",
+            "arm64",
+            "xctest",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "ios_simulator_tests",
+        ],
+        mixins = [
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "mac_default_arm64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_main",
+            "xctest",
+        ],
+    ),
+    builderless = True,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "ios|default",
+            short_name = "sim_RDB",
+        ),
+    ],
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    experiments = {
+        "chromium_test.resultdb_module": 100,
+    },
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
+)
+
 ci.builder(
     name = "linux-blink-wpt-reset-rel",
     builder_spec = builder_config.builder_spec(
