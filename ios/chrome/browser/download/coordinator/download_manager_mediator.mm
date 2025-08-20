@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/download/model/document_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
+#import "ios/chrome/browser/download/model/download_record_service.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/drive/model/drive_availability.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
@@ -59,6 +60,12 @@ void DownloadManagerMediator::SetDriveService(
 
 void DownloadManagerMediator::SetPrefService(PrefService* pref_service) {
   pref_service_ = pref_service;
+}
+
+void DownloadManagerMediator::SetDownloadRecordService(
+    DownloadRecordService* download_record_service) {
+  CHECK(IsDownloadListEnabled());
+  download_record_service_ = download_record_service;
 }
 
 void DownloadManagerMediator::SetConsumer(
@@ -115,6 +122,11 @@ void DownloadManagerMediator::StartDownloading() {
   // If an upload task associated with the current download task exists, start
   // to observe it.
   UpdateUploadTask();
+
+  // Record regular downloads (excludes Drive uploads).
+  if (download_record_service_ && download_task_ && upload_task_ == nullptr) {
+    download_record_service_->RecordDownload(download_task_);
+  }
 }
 
 DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {

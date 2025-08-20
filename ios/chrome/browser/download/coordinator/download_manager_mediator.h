@@ -16,6 +16,8 @@
 
 @protocol DownloadManagerConsumer;
 
+class DownloadRecordService;
+
 namespace drive {
 class DriveService;
 }
@@ -56,6 +58,9 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
 
   // Sets the pref service.
   void SetPrefService(PrefService* pref_service);
+
+  // Sets the download record service.
+  void SetDownloadRecordService(DownloadRecordService* download_record_service);
 
   // Sets download manager consumer. Not retained by mediator.
   void SetConsumer(id<DownloadManagerConsumer> consumer);
@@ -130,6 +135,7 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
       identity_manager_observation_{this};
   raw_ptr<drive::DriveService> drive_service_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<DownloadRecordService> download_record_service_ = nullptr;
   bool is_incognito_;
   raw_ptr<web::DownloadTask> download_task_ = nullptr;
   raw_ptr<UploadTask> upload_task_ = nullptr;
