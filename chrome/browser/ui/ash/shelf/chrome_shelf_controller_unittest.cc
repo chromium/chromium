@@ -268,7 +268,7 @@ std::vector<arc::mojom::AppInfoPtr> GetArcSettingsAppInfo() {
 }
 
 int GetPrimaryDisplayId() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  return display::Screen::Get()->GetPrimaryDisplay().id();
 }
 
 bool ValidateImageIsFullyLoaded(const gfx::ImageSkia& image) {

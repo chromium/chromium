@@ -101,7 +101,7 @@ void WebContentsDisplayObserverView::CheckForDisplayChange() {
 
 display::Display WebContentsDisplayObserverView::GetDisplayNearestWidget()
     const {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(
+  return display::Screen::Get()->GetDisplayNearestWindow(
       widget_->GetNativeWindow());
 }
 

@@ -221,7 +221,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
     gfx::Rect bounds;
     const int shelf_height = has_shelf_ ? ShelfConfig::Get()->shelf_size() : 0;
     const gfx::Size display_size =
-        display::Screen::GetScreen()->GetPrimaryDisplay().size();
+        display::Screen::Get()->GetPrimaryDisplay().size();
     const bool is_horizontal = display_size.width() > display_size.height();
     CalculateOobeDialogBounds(GetContentsBounds(), shelf_height, is_horizontal,
                               &bounds);

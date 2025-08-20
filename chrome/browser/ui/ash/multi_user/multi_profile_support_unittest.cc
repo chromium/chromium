@@ -1660,7 +1660,7 @@ TEST_F(MultiProfileSupportTest, WindowBoundsAfterTabletMode) {
   UpdateDisplay("400x200");
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(),
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      display::Screen::Get()->GetPrimaryDisplay().id());
 
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 

@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
   gfx::Rect expectation = original_bounds;
   if (!is_test_app) {
     expectation =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestPoint(browser->window()->GetBounds().origin())
             .work_area();
     expectation.ClampToCenteredSize(original_bounds.size());

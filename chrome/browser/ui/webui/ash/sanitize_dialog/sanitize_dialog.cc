@@ -63,8 +63,7 @@ std::string SanitizeDialog::Id() {
 }
 
 void SanitizeDialog::GetDialogSize(gfx::Size* size) const {
-  const display::Display display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   gfx::Size display_size = display.size();
   display_size = gfx::Size(kSanitizeWindowWidth, kSanitizeWindowHeight);
   *size = display_size;

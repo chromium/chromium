@@ -140,7 +140,7 @@ void PopupTestBase::SetUpWindowManagement(Browser* browser) {
 // static
 display::Display PopupTestBase::GetDisplayNearestBrowser(
     const Browser* browser) {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(
+  return display::Screen::Get()->GetDisplayNearestWindow(
       browser->window()->GetNativeWindow());
 }
 

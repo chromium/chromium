@@ -191,7 +191,7 @@ InlineLoginDialog::~InlineLoginDialog() {
 
 void InlineLoginDialog::GetDialogSize(gfx::Size* size) const {
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(dialog_window());
+      display::Screen::Get()->GetDisplayNearestWindow(dialog_window());
 
   if (ProfileManager::GetActiveUserProfile()->IsChild()) {
     size->SetSize(

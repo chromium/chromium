@@ -134,7 +134,7 @@ TEST_F(MahiMenuViewTest, SettingsButtonClicked) {
   EXPECT_CALL(
       mock_mahi_web_contents_manager,
       OnContextMenuClicked(
-          Eq(display::Screen::GetScreen()
+          Eq(display::Screen::Get()
                  ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                  .id()),
           Eq(::chromeos::mahi::ButtonType::kSettings),
@@ -181,7 +181,7 @@ TEST_F(MahiMenuViewTest, SummaryButtonClicked) {
                     int64_t display_id,
                     ::chromeos::mahi::ButtonType button_type,
                     std::u16string_view question, gfx::Rect mahi_menu_bounds) {
-        EXPECT_EQ(display::Screen::GetScreen()
+        EXPECT_EQ(display::Screen::Get()
                       ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                       .id(),
                   display_id);
@@ -232,7 +232,7 @@ TEST_F(MahiMenuViewTest, SummaryOfSelectionButtonClicked) {
                     int64_t display_id,
                     ::chromeos::mahi::ButtonType button_type,
                     std::u16string_view question, gfx::Rect mahi_menu_bounds) {
-        EXPECT_EQ(display::Screen::GetScreen()
+        EXPECT_EQ(display::Screen::Get()
                       ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                       .id(),
                   display_id);
@@ -340,7 +340,7 @@ TEST_F(MahiMenuViewTest, ElucidationButtonClicked) {
                     int64_t display_id,
                     ::chromeos::mahi::ButtonType button_type,
                     std::u16string_view question, gfx::Rect mahi_menu_bounds) {
-        EXPECT_EQ(display::Screen::GetScreen()
+        EXPECT_EQ(display::Screen::Get()
                       ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                       .id(),
                   display_id);
@@ -417,7 +417,7 @@ TEST_F(MahiMenuViewTest, QuestionSubmitted) {
                     ::chromeos::mahi::ButtonType button_type,
                     std::u16string_view question,
                     const gfx::Rect& mahi_menu_bounds) {
-        EXPECT_EQ(display::Screen::GetScreen()
+        EXPECT_EQ(display::Screen::Get()
                       ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                       .id(),
                   display_id);

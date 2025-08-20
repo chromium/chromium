@@ -18,7 +18,7 @@
 using ApplicationLaunchBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest, CreateWindowInDisplay) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   // Create 2 displays.
   display::DisplayManager* display_manager =
       ash::Shell::Get()->display_manager();

@@ -30,7 +30,7 @@ gfx::Rect ComputePopupWindowBounds(content::WebContents* source_window) {
     y_coordinate = source_window_bounds.y() +
                    ((source_window_bounds.height() - kPopupWindowHeight) / 2);
   } else {
-    display::Screen* screen = display::Screen::GetScreen();
+    display::Screen* screen = display::Screen::Get();
     gfx::Rect source_display_bounds =
         screen->GetDisplayNearestView(source_window->GetNativeView())
             .work_area();

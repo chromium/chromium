@@ -190,7 +190,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   const ui::ColorProvider& provider = web_contents_->GetColorProvider();
   const int icon_color_id = ui::kColorSysOnSurface;
   const float scale_factor =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(web_contents_->GetTopLevelNativeWindow())
           .device_scale_factor();
 

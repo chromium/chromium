@@ -55,7 +55,7 @@ void OobeDisplayChooser::TryToPlaceUiOnTouchDisplay() {
   }
 
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
 
   if (primary_display.is_valid() && !TouchSupportAvailable(primary_display)) {
     content::GetUIThreadTaskRunner({})->PostTask(

@@ -622,17 +622,16 @@ void OobeUI::ConfigureOobeDisplay() {
 }
 
 bool OobeUI::ShouldUpScaleOobe() {
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   return upscaled_display_id_ != display_id && switches::ShouldScaleOobe() &&
          policy::EnrollmentRequisitionManager::IsMeetDevice();
 }
 
 void OobeUI::UpScaleOobe() {
-  upscaled_display_id_ = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  upscaled_display_id_ = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   const gfx::Size size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area_size();
+      display::Screen::Get()->GetPrimaryDisplay().work_area_size();
   const int longest_side = std::max(size.width(), size.height());
   if (longest_side >= k4KDisplay.longest_side) {
     display_manager->UpdateZoomFactor(upscaled_display_id_,

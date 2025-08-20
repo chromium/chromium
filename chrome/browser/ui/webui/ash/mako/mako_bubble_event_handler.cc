@@ -31,7 +31,7 @@ constexpr int kWidgetPadding = 4;
 
 bool IsInSameDisplay(const gfx::Rect& original_bounds,
                      const gfx::Rect& new_bounds) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (screen == nullptr) {
     return false;
   }

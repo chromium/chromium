@@ -198,9 +198,9 @@ class ShelfGuestSessionBrowserTest : public InProcessBrowserTest {
 // aligned, instead of bottom locked (crbug.com/699661).
 IN_PROC_BROWSER_TEST_F(ShelfGuestSessionBrowserTest, ShelfAlignment) {
   // Check the alignment pref for the primary display.
-  ShelfAlignment alignment = GetShelfAlignmentPref(
-      browser()->profile()->GetPrefs(),
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  ShelfAlignment alignment =
+      GetShelfAlignmentPref(browser()->profile()->GetPrefs(),
+                            display::Screen::Get()->GetPrimaryDisplay().id());
   EXPECT_EQ(ShelfAlignment::kBottom, alignment);
 
   // Check the locked state, which is not exposed via prefs.

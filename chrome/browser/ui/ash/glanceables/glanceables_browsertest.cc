@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, TasksViewLayout) {
 
   // Calculate the available space for tasks and make sure there is enough for
   // additional task view.
-  auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto display = display::Screen::Get()->GetPrimaryDisplay();
   const int kGlanceableMargins = 8;
   const int kCalendarHeight = 340;
   const int available_height_for_tasks =

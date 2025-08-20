@@ -489,7 +489,7 @@ void CrostiniHandler::OnCanDisableArcAdbSideloading(
 
 void CrostiniHandler::LaunchTerminal(apps::IntentPtr intent) {
   guest_os::LaunchTerminalWithIntent(
-      profile_, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      profile_, display::Screen::Get()->GetPrimaryDisplay().id(),
       std::move(intent), base::DoNothing());
 }
 

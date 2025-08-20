@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest, GetAndUpdateBounds) {
       << "\n  Direction (should be LTR): "
       << (base::i18n::IsRTL() ? "RTL" : "LTR")
       << "\n  Display dimensions (should hold browser window comfortably): "
-      << display::Screen::GetScreen()
+      << display::Screen::Get()
              ->GetDisplayMatching(initial_bounds)
              .bounds()
              .ToString()

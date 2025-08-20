@@ -386,7 +386,7 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
   }
 
   bool GetTabletModeEnabled() const {
-    return display::Screen::GetScreen()->InTabletMode();
+    return display::Screen::Get()->InTabletMode();
   }
 
   void CheckBrowserLayout(BrowserView* browser_view,

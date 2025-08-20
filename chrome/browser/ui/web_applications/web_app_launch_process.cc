@@ -298,7 +298,7 @@ Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
     int64_t display_id = display::kInvalidDisplayId;
 #if BUILDFLAG(IS_CHROMEOS)
     if (params_->disposition != WindowOpenDisposition::CURRENT_TAB) {
-      display_id = display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+      display_id = display::Screen::Get()->GetDisplayForNewWindows().id();
     }
 #endif
     return chrome::FindTabbedBrowser(

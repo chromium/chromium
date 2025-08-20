@@ -35,9 +35,8 @@ constexpr int kMakoRewriteHeightThreshold = 400;
 gfx::Rect ComputeInitialWidgetBounds(gfx::Rect caret_bounds,
                                      gfx::Insets inset,
                                      bool can_fallback_to_center_position) {
-  gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                   ->GetDisplayMatching(caret_bounds)
-                                   .work_area();
+  gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(caret_bounds).work_area();
   screen_work_area.Inset(kMakoScreenEdgePadding);
 
   gfx::Size initial_size = gfx::Size(kMakoInitialWidth, kMakoInitialHeight);
@@ -110,9 +109,8 @@ void MakoRewriteView::ResizeDueToAutoResize(content::WebContents* source,
   }
 
   WebUIBubbleDialogView::ResizeDueToAutoResize(source, new_size);
-  gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                   ->GetDisplayMatching(caret_bounds_)
-                                   .work_area();
+  gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(caret_bounds_).work_area();
   screen_work_area.Inset(kMakoScreenEdgePadding);
 
   // If the contents is very tall, just place it at the center of the screen.

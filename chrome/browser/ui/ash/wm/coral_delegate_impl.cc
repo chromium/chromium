@@ -109,7 +109,7 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
       new_app_restore_data = std::make_unique<app_restore::AppRestoreData>();
       new_app_restore_data->container = 0;
       new_app_restore_data->display_id =
-          display::Screen::GetScreen()->GetPrimaryDisplay().id();
+          display::Screen::Get()->GetPrimaryDisplay().id();
       new_app_restore_data->disposition = 3;
       continue;
     }

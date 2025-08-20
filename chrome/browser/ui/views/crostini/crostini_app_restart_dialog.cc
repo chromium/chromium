@@ -20,7 +20,7 @@ namespace crostini {
 namespace {
 
 gfx::NativeWindow GetNativeWindowFromDisplayId(int64_t display_id) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   display::Display display;
   screen->GetDisplayWithDisplayId(display_id, &display);
   return screen->GetWindowAtScreenPoint(display.bounds().origin());

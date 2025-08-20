@@ -167,7 +167,7 @@ VideoOverlayWindowViews::WindowQuadrant GetCurrentWindowQuadrant(
     const gfx::Rect window_bounds,
     content::PictureInPictureWindowController* controller) {
   const gfx::Rect work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(
               controller->GetWebContents()->GetTopLevelNativeWindow())
           .work_area();
@@ -501,14 +501,14 @@ VideoOverlayWindowViews::VideoOverlayWindowViews(
           base::BindRepeating(
               &VideoOverlayWindowViews::ReEnableControlsAfterMove,
               base::Unretained(this))) {
-  display::Screen::GetScreen()->AddObserver(this);
+  display::Screen::Get()->AddObserver(this);
 }
 
 VideoOverlayWindowViews::~VideoOverlayWindowViews() {
   if (overlay_view_) {
     overlay_view_->RemoveObserver(this);
   }
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
   PictureInPictureWindowManager::GetInstance()->OnPictureInPictureWindowHidden(
       this);
 }
@@ -946,7 +946,7 @@ void VideoOverlayWindowViews::OnDisplayMetricsChanged(
   // Some display metric changes, such as display scaling, can affect the work
   // area, so max size needs to be updated.
   if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_WORK_AREA &&
-      display.id() == display::Screen::GetScreen()
+      display.id() == display::Screen::Get()
                           ->GetDisplayNearestWindow(GetNativeWindow())
                           .id()) {
     UpdateMaxSize(GetWorkAreaForWindow());
@@ -985,7 +985,7 @@ void VideoOverlayWindowViews::OnAutoPipSettingOverlayViewHidden() {
 }
 
 gfx::Rect VideoOverlayWindowViews::GetWorkAreaForWindow() const {
-  return display::Screen::GetScreen()
+  return display::Screen::Get()
       ->GetDisplayNearestWindow(
           native_widget() && IsVisible()
               ? GetNativeWindow()

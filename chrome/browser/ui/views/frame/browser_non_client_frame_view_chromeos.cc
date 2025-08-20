@@ -410,8 +410,7 @@ int BrowserNonClientFrameViewChromeOS::NonClientHitTest(
   // large click target above the tabs to drag the window, so redirect clicks in
   // the tab's shadow to caption.
   if (hit_test == HTCLIENT && !frame()->IsMaximized() &&
-      !frame()->IsFullscreen() &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !frame()->IsFullscreen() && !display::Screen::Get()->InTabletMode()) {
     // TODO(crbug.com/40768579): Tab Strip hit calculation and bounds logic
     // should reside in the TabStrip class.
     gfx::Point client_point(point);
@@ -864,7 +863,7 @@ bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
       !GetFrameWindow()->GetProperty(chromeos::kUseImmersiveInTrustedPinned)) {
     return false;
   }
-  if (display::Screen::GetScreen()->InTabletMode() &&
+  if (display::Screen::Get()->InTabletMode() &&
       (IsSnapped() || frame()->IsMaximized())) {
     // Snapped or maximized browser windows that doesn't have tabstrip uses
     // immersive frame to hide frame in tablet mode.
@@ -931,7 +930,7 @@ bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
 
   // Browsers in tablet mode still show their caption buttons in float state,
   // even with the webUI tab strip.
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return IsFloated();
   }
 

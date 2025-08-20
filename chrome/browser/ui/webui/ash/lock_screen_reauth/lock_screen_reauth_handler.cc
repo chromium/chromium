@@ -287,7 +287,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
 }
 
 void LockScreenReauthHandler::UpdateOrientationAndWidth() {
-  gfx::Size display = display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  gfx::Size display = display::Screen::Get()->GetPrimaryDisplay().size();
   bool is_horizontal = display.width() >= display.height();
   CallJavascript("setOrientation", is_horizontal);
   const LockScreenStartReauthDialog* lock_screen_online_reauth_dialog =

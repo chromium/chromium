@@ -162,13 +162,13 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   }
 
   display::Display registered_display;
-  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(
-          display_id, &registered_display)) {
+  if (!display::Screen::Get()->GetDisplayWithDisplayId(display_id,
+                                                       &registered_display)) {
     return;
   }
 
   display::Display current_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
 
   if (registered_display != current_display) {
     auto* state = ash::WindowState::Get(window);

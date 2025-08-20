@@ -666,7 +666,7 @@ bool ChromeNativeAppWindowViewsAuraAsh::ShouldEnableImmersiveMode() const {
   // is no need for immersive mode.
   // TODO(crbug.com/41364538): This adds a little extra animation
   // when minimizing or unminimizing window.
-  return display::Screen::GetScreen()->InTabletMode() && CanResize() &&
+  return display::Screen::Get()->InTabletMode() && CanResize() &&
          !IsMinimized() &&
          GetNativeWindow()->GetProperty(chromeos::kWindowStateTypeKey) !=
              chromeos::WindowStateType::kFloated;

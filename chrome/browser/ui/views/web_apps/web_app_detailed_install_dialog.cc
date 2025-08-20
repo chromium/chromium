@@ -271,7 +271,7 @@ class ImageCarouselView : public views::View {
                            std::optional<std::u16string> label) {
     CHECK(index < static_cast<int>(image_inner_container_->children().size()));
     float current_scale =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetPreferredScaleFactorForView(GetWidget()->GetNativeView())
             .value_or(1.0f);
 

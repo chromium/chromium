@@ -122,7 +122,7 @@ bool CanUseViewsMessageBox() {
   }
 
   // aura::WindowTreeHost observes display::Screen for device scale change.
-  if (!display::Screen::GetScreen()) {
+  if (!display::Screen::Get()) {
     return false;
   }
 

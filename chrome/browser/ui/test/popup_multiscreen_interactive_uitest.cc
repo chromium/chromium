@@ -56,7 +56,7 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
     if (!SetUpVirtualDisplays()) {
       GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
     }
-    ASSERT_GE(display::Screen::GetScreen()->GetNumDisplays(), 2);
+    ASSERT_GE(display::Screen::Get()->GetNumDisplays(), 2);
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     content::WebContents* web_contents =
@@ -78,11 +78,11 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
   // testing multi-screen functionality. Not all platforms and OS versions are
   // supported. Returns false if virtual displays could not be created.
   bool SetUpVirtualDisplays() {
-    if (display::Screen::GetScreen()->GetNumDisplays() > 1) {
+    if (display::Screen::Get()->GetNumDisplays() > 1) {
       return true;
     }
     if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
-             display::Screen::GetScreen()))) {
+             display::Screen::Get()))) {
       virtual_display_util_->AddDisplay(
           display::test::VirtualDisplayUtil::k1024x768);
       return true;
@@ -100,7 +100,7 @@ INSTANTIATE_TEST_SUITE_P(, MAYBE_PopupMultiScreenTest, ::testing::Bool());
 IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, Basic) {
   // Copy the display vector so references are not invalidated while looping.
   std::vector<display::Display> displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, Basic) {
 IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, OpenOnAnotherScreen) {
   // Copy the display vector so references are not invalidated while looping.
   std::vector<display::Display> displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest,
   content::WebContents* opener_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Copy the display vector so references are not invalidated while looping.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   std::vector<display::Display> displays = screen->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, CrossOriginIFrame) {
 
   // Copy the display vector so references are not invalidated while looping.
   std::vector<display::Display> displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());

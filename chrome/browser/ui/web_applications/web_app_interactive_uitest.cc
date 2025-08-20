@@ -46,9 +46,9 @@ class WebAppInteractiveUiTest : public WebAppBrowserTestBase {};
 IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
                        MAYBE_TabOpensOnCorrectDisplayMultiScreen) {
   std::unique_ptr<display::test::VirtualDisplayUtil> virtual_display_util;
-  if (display::Screen::GetScreen()->GetNumDisplays() < 2) {
+  if (display::Screen::Get()->GetNumDisplays() < 2) {
     if ((virtual_display_util = display::test::VirtualDisplayUtil::TryCreate(
-             display::Screen::GetScreen()))) {
+             display::Screen::Get()))) {
       virtual_display_util->AddDisplay(
           display::test::VirtualDisplayUtil::k1024x768);
     } else {
@@ -63,9 +63,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
   // as what the display Id is for a second display.
   Browser* original_browser = browser();
   const std::vector<display::Display>& displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   display::Display original_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           original_browser->window()->GetNativeWindow());
   display::Display other_display;
   for (const auto& d : displays) {
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
     EXPECT_NE(app_browser, original_browser);
     EXPECT_EQ(
         other_display.id(),
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(app_browser->window()->GetNativeWindow())
             .id());
     EXPECT_EQ(2, original_browser->tab_strip_model()->count());

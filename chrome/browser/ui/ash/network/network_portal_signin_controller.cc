@@ -73,7 +73,7 @@ class SigninWebDialogDelegate : public ui::WebDialogDelegate {
 
     const float kScale = 0.8;
     set_dialog_size(gfx::ScaleToRoundedSize(
-        display::Screen::GetScreen()->GetPrimaryDisplay().size(), kScale));
+        display::Screen::Get()->GetPrimaryDisplay().size(), kScale));
   }
 
   ~SigninWebDialogDelegate() override = default;

@@ -155,7 +155,7 @@ bool TestBrowserDialog::VerifyUi() {
   const gfx::Rect dialog_bounds = dialog_widget->GetWindowBoundsInScreen();
   gfx::NativeWindow native_window = dialog_widget->GetNativeWindow();
   DCHECK(native_window);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const gfx::Rect display_work_area =
       screen->GetDisplayNearestWindow(native_window).work_area();
 

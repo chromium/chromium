@@ -94,7 +94,7 @@ TEST_F(MakoRewriteViewTest, AtTopLeftOfCaretForCaretAtScreenBottom) {
   TestWebUIContentsWrapper contents_wrapper(&profile);
 
   const int screen_bottom =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().bottom();
+      display::Screen::Get()->GetPrimaryDisplay().work_area().bottom();
   const gfx::Rect caret_bounds(30, screen_bottom - 20, 0, 10);
   auto mako_rewrite_view = std::make_unique<MakoRewriteView>(
       &contents_wrapper, caret_bounds,
@@ -123,9 +123,8 @@ TEST_F(MakoRewriteViewTest, OnScreenWithoutOverlapForSmallSelection) {
 
   mako_rewrite_view_ptr->ShowUI();
 
-  EXPECT_TRUE(
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().Contains(
-          mako_rewrite_view_ptr->GetBoundsInScreen()));
+  EXPECT_TRUE(display::Screen::Get()->GetPrimaryDisplay().work_area().Contains(
+      mako_rewrite_view_ptr->GetBoundsInScreen()));
   EXPECT_FALSE(
       mako_rewrite_view_ptr->GetBoundsInScreen().Intersects(kSelectionBounds));
 }
@@ -135,7 +134,7 @@ TEST_F(MakoRewriteViewTest, OnScreenForLargeSelection) {
   TestWebUIContentsWrapper contents_wrapper(&profile);
 
   const gfx::Rect selection_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   auto mako_rewrite_view = std::make_unique<MakoRewriteView>(
       &contents_wrapper, selection_bounds,
       /*can_fallback_to_center_position=*/false);
@@ -144,9 +143,8 @@ TEST_F(MakoRewriteViewTest, OnScreenForLargeSelection) {
 
   mako_rewrite_view_ptr->ShowUI();
 
-  EXPECT_TRUE(
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().Contains(
-          mako_rewrite_view_ptr->GetBoundsInScreen()));
+  EXPECT_TRUE(display::Screen::Get()->GetPrimaryDisplay().work_area().Contains(
+      mako_rewrite_view_ptr->GetBoundsInScreen()));
 }
 
 TEST_F(MakoRewriteViewTest, FallbackToScreenCenterIfCaretBoundsAreEmpty) {
@@ -164,8 +162,7 @@ TEST_F(MakoRewriteViewTest, FallbackToScreenCenterIfCaretBoundsAreEmpty) {
 
   mako_rewrite_view_ptr->ShowUI();
 
-  gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect work_area = display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   EXPECT_EQ(mako_rewrite_view_ptr->GetBoundsInScreen().x(),
             work_area.x() + work_area.width() / 2 - kWebViewSize.width() / 2);
@@ -186,8 +183,7 @@ TEST_F(MakoRewriteViewTest, FallbackToScreenCenterIfCaretBoundsAreInvalid) {
 
   mako_rewrite_view_ptr->ShowUI();
 
-  gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect work_area = display::Screen::Get()->GetPrimaryDisplay().work_area();
   EXPECT_EQ(mako_rewrite_view_ptr->GetBoundsInScreen().x(),
             work_area.x() + work_area.width() / 2 - kWebViewSize.width() / 2);
 }

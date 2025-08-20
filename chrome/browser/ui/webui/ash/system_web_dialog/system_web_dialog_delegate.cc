@@ -113,7 +113,7 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
   }
 
   display::Display internal_display;
-  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(
+  if (!display::Screen::Get()->GetDisplayWithDisplayId(
           display::Display::InternalDisplayId(), &internal_display)) {
     // GetDisplayWithDisplayId() returns false if the laptop's lid is closed.
     // Return the preferred size instead.

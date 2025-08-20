@@ -132,7 +132,7 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
   ui::ResourceScaleFactor scale_factor = ui::k100Percent;
   // Use the scaling that matches primary display. These source images are
   // 96x96 and often used at that size in WebUI pages.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (screen) {
     scale_factor = ui::GetSupportedResourceScaleFactor(
         screen->GetPrimaryDisplay().device_scale_factor());

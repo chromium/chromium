@@ -22,9 +22,8 @@ namespace ash {
 gfx::Rect GetBubbleBoundsAroundCaret(const gfx::Rect& caret_bounds,
                                      const gfx::Outsets& bubble_border_outsets,
                                      const gfx::Size& bubble_size) {
-  gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                   ->GetDisplayMatching(caret_bounds)
-                                   .work_area();
+  gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(caret_bounds).work_area();
 
   screen_work_area.Inset(kScreenEdgePadding);
 

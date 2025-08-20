@@ -199,7 +199,7 @@ class PopupBaseView::Widget : public views::Widget {
       // Save the synthesized event position to use it for the exit event
       // later.
       last_synthesized_parent_mouse_move_position_ =
-          display::Screen::GetScreen()->GetCursorScreenPoint();
+          display::Screen::Get()->GetCursorScreenPoint();
     } else if (!parent_content_view->IsMouseHovered() &&
                last_synthesized_parent_mouse_move_position_.has_value()) {
       // Generate the exit event after a set of move events as there is no one

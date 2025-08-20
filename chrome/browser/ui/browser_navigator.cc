@@ -260,7 +260,7 @@ std::tuple<Browser*, int> GetBrowserAndTabForDisposition(
       const gfx::NativeWindow native_window =
           browser_window ? browser_window->GetNativeWindow()
                          : gfx::NativeWindow();
-      const display::Screen* const screen = display::Screen::GetScreen();
+      const display::Screen* const screen = display::Screen::Get();
       const display::Display display =
           browser_window ? screen->GetDisplayNearestWindow(native_window)
                          : screen->GetDisplayForNewWindows();

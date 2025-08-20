@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Place the anchor near the right edge of the screen.
   const int screen_right =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().right();
+      display::Screen::Get()->GetPrimaryDisplay().work_area().right();
   const gfx::Rect anchor_bounds = gfx::Rect(screen_right - 80, 250, 70, 160);
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(

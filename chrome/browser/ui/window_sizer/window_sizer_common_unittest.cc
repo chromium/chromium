@@ -28,7 +28,7 @@ namespace {
 
 class TestScreen : public display::ScreenBase {
  public:
-  TestScreen() : previous_screen_(display::Screen::GetScreen()) {
+  TestScreen() : previous_screen_(display::Screen::Get()) {
     display::Screen::SetScreenInstance(this);
   }
 

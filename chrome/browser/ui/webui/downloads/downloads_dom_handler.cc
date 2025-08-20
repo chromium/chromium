@@ -280,7 +280,7 @@ void DownloadsDOMHandler::Drag(const std::string& id) {
   if (file->GetState() != download::DownloadItem::COMPLETE) {
     return;
   }
-  const display::Screen* const screen = display::Screen::GetScreen();
+  const display::Screen* const screen = display::Screen::Get();
   gfx::NativeView view = web_contents->GetNativeView();
   gfx::Image* icon = g_browser_process->icon_manager()->LookupIconFromFilepath(
       file->GetTargetFilePath(), IconLoader::NORMAL,

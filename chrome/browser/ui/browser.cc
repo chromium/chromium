@@ -2167,7 +2167,7 @@ content::WebContents* Browser::AddNewContents(
   // However if this Browser is for an app or the popup is being requested on a
   // different display, we don't want to turn popups into new tabs. Popups
   // should open as new windows instead.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   bool targeting_different_display =
       screen && source && source->GetContentNativeView() &&
       screen->GetDisplayNearestView(source->GetContentNativeView()) !=

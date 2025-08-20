@@ -1228,7 +1228,7 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
     if (!SetUpVirtualDisplays()) {
       GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
     }
-    display::Screen* screen = display::Screen::GetScreen();
+    display::Screen* screen = display::Screen::Get();
     for (const auto& d : screen->GetAllDisplays()) {
       if (d.id() != screen->GetPrimaryDisplay().id()) {
         secondary_display_id_ = d.id();
@@ -1254,11 +1254,11 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
   // testing multi-screen functionality. Not all platforms and OS versions are
   // supported. Returns false if virtual displays could not be created.
   bool SetUpVirtualDisplays() {
-    if (display::Screen::GetScreen()->GetNumDisplays() > 1) {
+    if (display::Screen::Get()->GetNumDisplays() > 1) {
       return true;
     }
     if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
-             display::Screen::GetScreen()))) {
+             display::Screen::Get()))) {
       virtual_display_util_->AddDisplay(
           display::test::VirtualDisplayUtil::k1024x768);
       return true;
@@ -1287,7 +1287,7 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
 
   // Get the display matching the `browser`'s current window bounds.
   display::Display GetCurrentDisplay(Browser* browser) const {
-    return display::Screen::GetScreen()->GetDisplayMatching(
+    return display::Screen::Get()->GetDisplayMatching(
         browser->window()->GetBounds());
   }
 
@@ -1682,7 +1682,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 }
 
 // TODO(crbug.com/40723237): Disabled on Windows, where RenderWidgetHostViewAura
-// blindly casts display::Screen::GetScreen() to display::win::ScreenWin*.
+// blindly casts display::Screen::Get() to display::win::ScreenWin*.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_FullscreenOnPermissionGrant DISABLED_FullscreenOnPermissionGrant
 #else

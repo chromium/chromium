@@ -565,7 +565,7 @@ Browser* TabDragControllerTest::CreateAnotherBrowserAndResize() {
   // handle space, preventing us from resizing or moving it.
   const gfx::NativeWindow window = browser()->window()->GetNativeWindow();
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+      display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
   const gfx::Size size(work_area.width() / 3, work_area.height() / 2);
   gfx::Rect browser_rect(work_area.origin() + gfx::Vector2d(50, 50), size);
 
@@ -2574,7 +2574,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DetachFromFullsizeWindow) {
   // Resize the browser window so that it is as big as the work area.
   gfx::Rect work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(browser()->window()->GetNativeWindow())
           .work_area();
   ui_test_utils::SetAndWaitForBounds(*browser(), work_area);
@@ -4890,7 +4890,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
   ResetIDs(app_browser2->tab_strip_model(), 100);
 
   gfx::Rect work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(app_browser1->window()->GetNativeWindow())
           .work_area();
   const gfx::Size size(work_area.width() / 3, work_area.height() / 2);
@@ -4973,7 +4973,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
 
   // Move to the first tab and drag it enough so that it detaches.
   // Then drag it to the final destination on the second screen.
-  display::Screen* const screen = display::Screen::GetScreen();
+  display::Screen* const screen = display::Screen::Get();
   display::Display second_display = ui_test_utils::GetSecondaryDisplay(screen);
   const gfx::Point start = GetCenterInScreenCoordinates(tab_strip->tab_at(0));
   ASSERT_FALSE(second_display.bounds().Contains(start));
@@ -5056,7 +5056,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   ResetIDs(browser2->tab_strip_model(), 100);
 
   // Move the second browser to the second display.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   Display second_display = ui_test_utils::GetSecondaryDisplay(screen);
   ui_test_utils::SetAndWaitForBounds(*browser2, second_display.work_area());
   EXPECT_EQ(
@@ -5095,7 +5095,7 @@ IN_PROC_BROWSER_TEST_P(
   // Set the browser's window bounds such that the majority of its bounds
   // resides in the second display.
   const std::pair<Display, Display> displays =
-      GetDisplays(display::Screen::GetScreen());
+      GetDisplays(display::Screen::Get());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   {
@@ -5174,7 +5174,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   ResetIDs(browser2->tab_strip_model(), 100);
 
   // Move both browsers to be side by side on the second display.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   Display second_display = ui_test_utils::GetSecondaryDisplay(screen);
   gfx::Rect work_area = second_display.work_area();
   work_area.set_width(work_area.width() / 2);
@@ -5240,7 +5240,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   // Create another browser on the second display.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   ASSERT_EQ(2, screen->GetNumDisplays());
   const std::pair<Display, Display> displays = GetDisplays(screen);
   gfx::Rect work_area = displays.second.work_area();
@@ -5308,7 +5308,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   ResetIDs(browser2->tab_strip_model(), 100);
 
   // Move the second browser to the second display.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const std::pair<Display, Display> displays = GetDisplays(screen);
   ui_test_utils::SetAndWaitForBounds(*browser2, displays.second.work_area());
   EXPECT_EQ(
@@ -5465,7 +5465,7 @@ IN_PROC_BROWSER_TEST_P(DifferentDeviceScaleFactorDisplayTabDragControllerTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   // Move the second browser to the second display.
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   // Move to the first tab and drag it enough so that it detaches.
   DragTabAndNotify(tab_strip, base::BindOnce(&CursorDeviceScaleFactorStep, this,
@@ -5518,7 +5518,7 @@ void CancelDragTabToWindowInSeparateDisplayStep2(
   Browser* new_browser = test->browser_list()->get(num_browsers - 1);
   EXPECT_EQ(
       current_display.id(),
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(new_browser->window()->GetNativeWindow())
           .id());
 
@@ -5552,7 +5552,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Move the second browser to the second display.
   const std::pair<Display, Display> displays =
-      GetDisplays(display::Screen::GetScreen());
+      GetDisplays(display::Screen::Get());
   gfx::Point final_destination = displays.second.work_area().CenterPoint();
 
   // Move to the first tab and drag it enough so that it detaches, but not
@@ -5585,7 +5585,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest,
     MAYBE_CancelDragTabToWindowIn1stDisplay) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const std::pair<Display, Display> displays = GetDisplays(screen);
 
   AddTabsAndResetBrowser(browser(), 1);
@@ -5724,7 +5724,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   DragTabAndNotify(
       tab_strip, base::BindLambdaForTesting([&]() {
         const gfx::Rect display_bounds =
-            display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+            display::Screen::Get()->GetPrimaryDisplay().bounds();
         const gfx::Point target(display_bounds.x(),
                                 display_bounds.CenterPoint().y());
         ASSERT_TRUE(DragInputToNotifyWhenDone(

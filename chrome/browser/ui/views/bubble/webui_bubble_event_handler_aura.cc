@@ -29,7 +29,7 @@ void WebUIBubbleEventHandlerAura::OnGestureEvent(ui::GestureEvent* event) {
 bool WebUIBubbleEventHandlerAura::IsInSameDisplay(
     const gfx::Rect& original_bounds,
     const gfx::Rect& new_bounds) {
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   CHECK(screen);
   const display::Display original_display =
       screen->GetDisplayMatching(original_bounds);
@@ -74,9 +74,9 @@ void WebUIBubbleEventHandlerAura::ProcessLocatedEvent(ui::LocatedEvent* event) {
         break;
       }
 
-      target->SetBoundsInScreen(new_bounds,
-                                CHECK_DEREF(display::Screen::GetScreen())
-                                    .GetDisplayMatching(new_bounds));
+      target->SetBoundsInScreen(
+          new_bounds,
+          CHECK_DEREF(display::Screen::Get()).GetDisplayMatching(new_bounds));
       event->SetHandled();
       break;
     }

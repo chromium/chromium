@@ -136,7 +136,7 @@ bool BrowserMatches(Browser* browser,
 #endif
 
   if (match_types & kMatchDisplayId &&
-      display::Screen::GetScreen()
+      display::Screen::Get()
               ->GetDisplayNearestWindow(browser->window()->GetNativeWindow())
               .id() != display_id) {
     return false;

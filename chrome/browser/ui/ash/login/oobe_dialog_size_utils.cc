@@ -51,7 +51,7 @@ gfx::Size CalculateOobeDialogSize(const gfx::Size& host_size,
 
 gfx::Size CalculateOobeDialogSizeForPrimaryDisplay() {
   const gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+      display::Screen::Get()->GetPrimaryDisplay().size();
   const bool is_horizontal = display_size.width() > display_size.height();
   // ShellConfig is only non-existent in test scenarios.
   const int shelf_height = ShelfConfig::Get() ? ShelfConfig::Get()->shelf_size()

@@ -158,7 +158,7 @@ void FullscreenController::RemoveObserver(FullscreenObserver* observer) {
 }
 
 int64_t FullscreenController::GetDisplayId(const WebContents& web_contents) {
-  if (auto* screen = display::Screen::GetScreen()) {
+  if (auto* screen = display::Screen::Get()) {
     // crbug.com/1347558 WebContents::GetNativeView is const-incorrect.
     // const_cast is used to access GetNativeView(). Also GetDisplayNearestView
     // should accept const gfx::NativeView, but there is other const

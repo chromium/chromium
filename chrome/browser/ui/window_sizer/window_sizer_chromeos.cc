@@ -126,7 +126,7 @@ bool WindowSizerChromeOS::GetBrowserBounds(
   if (browser()->is_type_normal() &&
       *show_state == ui::mojom::WindowShowState::kDefault) {
     display::Display display =
-        display::Screen::GetScreen()->GetDisplayMatching(*bounds);
+        display::Screen::Get()->GetDisplayMatching(*bounds);
     gfx::Rect work_area = display.work_area();
     bounds->AdjustToFit(work_area);
     if (*bounds == work_area) {
@@ -161,8 +161,7 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
 
   if (browser()->is_session_restore()) {
     // Respect display for saved bounds during session restore.
-    display =
-        display::Screen::GetScreen()->GetDisplayMatching(*bounds_in_screen);
+    display = display::Screen::Get()->GetDisplayMatching(*bounds_in_screen);
   } else if (BrowserList::GetInstance()->empty() && !is_saved_bounds &&
              (ShouldForceMaximizeOnFirstRun(browser()->profile()) ||
               (display.work_area().width() <= kForceMaximizeWidthLimit &&

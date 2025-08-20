@@ -402,7 +402,7 @@ void MahiMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 void MahiMenuView::OnButtonPressed(ButtonType button_type) {
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(
       GetWidget()->GetNativeWindow());
   if (surface_ == Surface::kBrowser) {
     chromeos::MahiWebContentsManager::Get()->OnContextMenuClicked(
@@ -449,7 +449,7 @@ void MahiMenuView::OnButtonPressed(ButtonType button_type) {
 }
 
 void MahiMenuView::OnQuestionSubmitted() {
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(
       GetWidget()->GetNativeWindow());
   if (surface_ == Surface::kBrowser) {
     chromeos::MahiWebContentsManager::Get()->OnContextMenuClicked(

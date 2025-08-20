@@ -62,7 +62,7 @@ class WindowSizerChromeOSTest : public ChromeAshTestBase {
     } else {
       DCHECK_EQ(source, DEFAULT);
     }
-    display::Screen::GetScreen()->SetDisplayForNewWindows(display_id);
+    display::Screen::Get()->SetDisplayForNewWindows(display_id);
 
     ui::mojom::WindowShowState ignored;
     WindowSizer::GetBrowserWindowBoundsAndShowState(
@@ -391,7 +391,7 @@ TEST_F(WindowSizerChromeOSTest, PlaceNewWindows) {
   auto* shelf = ash::Shell::GetPrimaryRootWindowController()->shelf();
   shelf->SetAutoHideBehavior(ash::ShelfAutoHideBehavior::kAlways);
 
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
 
   // Create a browser to pass into the WindowSizerTestUtil::GetWindowBounds
   // function.
@@ -522,7 +522,7 @@ TEST_F(WindowSizerChromeOSTest, PlaceNewBrowserWindowOnLargeDesktop) {
 TEST_F(WindowSizerChromeOSTest, PlaceNewWindowsOnMultipleDisplays) {
   UpdateDisplay("1600x1200,1600x1200");
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   display::Display second_display =
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
@@ -738,7 +738,7 @@ TEST_F(WindowSizerChromeOSTest, DefaultStateBecomesMaximized) {
   auto browser = CreateWindowlessBrowser(native_params);
 
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   gfx::Rect specified_bounds = display_bounds;
 
   // Make a window bigger than the display work area.
@@ -787,7 +787,7 @@ TEST_F(WindowSizerChromeOSTest, DefaultBoundsInTargetDisplay) {
         display::test::DisplayManagerTestApi(display_manager())
             .GetSecondaryDisplay()
             .id();
-    display::Screen::GetScreen()->SetDisplayForNewWindows(second_display_id);
+    display::Screen::Get()->SetDisplayForNewWindows(second_display_id);
     gfx::Rect bounds;
     ui::mojom::WindowShowState show_state;
     WindowSizer::GetBrowserWindowBoundsAndShowState(gfx::Rect(), nullptr,

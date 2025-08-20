@@ -2310,7 +2310,7 @@ gfx::Size TabDragController::CalculateDraggedWindowSize(
 
   // Limit the window size to the current display's size, less some insets.
   const gfx::Size work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestPoint(last_point_in_screen_)
           .work_area()
           .size();
@@ -2457,9 +2457,8 @@ Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
   create_params.restore_id = Browser::kDefaultRestoreId;
 
   // Open the window in the same display.
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          source->GetWidget()->GetNativeWindow());
+  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+      source->GetWidget()->GetNativeWindow());
   create_params.display_id = display.id();
 #endif
   // Do not copy attached window's show state as the attached window might be a
@@ -2504,7 +2503,7 @@ gfx::Point TabDragController::GetCursorScreenPoint() {
   return aura::Env::GetInstance()->GetLastPointerPoint(
       event_source_, widget_window, /*fallback=*/last_point_in_screen_);
 #else
-  return display::Screen::GetScreen()->GetCursorScreenPoint();
+  return display::Screen::Get()->GetCursorScreenPoint();
 #endif
 }
 

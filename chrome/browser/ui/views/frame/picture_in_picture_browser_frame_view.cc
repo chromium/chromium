@@ -716,7 +716,7 @@ void PictureInPictureBrowserFrameView::OnBrowserViewInitViewsComplete() {
       browser_view()->browser()->window();
   const gfx::NativeWindow native_window =
       browser_window ? browser_window->GetNativeWindow() : gfx::NativeWindow();
-  const display::Screen* const screen = display::Screen::GetScreen();
+  const display::Screen* const screen = display::Screen::Get();
   const gfx::Rect original_override_bounds =
       browser_view()->browser()->override_bounds();
   display::Display display;
@@ -837,7 +837,7 @@ gfx::Size PictureInPictureBrowserFrameView::GetMaximumSize() const {
     return GetMinimumSize();
   }
 
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(
       GetWidget()->GetNativeWindow());
   return PictureInPictureWindowManager::GetMaximumWindowSize(display);
 }
@@ -966,7 +966,7 @@ void PictureInPictureBrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
   // that it's not increasing beyond the site-requested maximum.
   if (bounds.size().width() > current_bounds.size().width() ||
       bounds.size().height() > current_bounds.size().height()) {
-    auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+    auto display = display::Screen::Get()->GetDisplayNearestWindow(
         GetWidget()->GetNativeWindow());
     gfx::Size adjusted_new_size =
         PictureInPictureWindowManager::AdjustRequestedSizeIfNecessary(

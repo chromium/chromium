@@ -79,7 +79,7 @@ void ArcAppInfoLinksPanel::UpdateLink(bool enabled) {
 void ArcAppInfoLinksPanel::LinkClicked() {
   gfx::NativeView native_view = GetWidget()->GetNativeView();
   const int64_t display_id =
-      display::Screen::GetScreen()->GetDisplayNearestView(native_view).id();
+      display::Screen::Get()->GetDisplayNearestView(native_view).id();
   if (arc::ShowPackageInfo(arc::kArcIntentHelperPackageName,
                            arc::mojom::ShowPackageInfoPage::MANAGE_LINKS,
                            display_id)) {

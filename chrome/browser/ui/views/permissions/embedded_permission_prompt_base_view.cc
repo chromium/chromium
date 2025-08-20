@@ -86,7 +86,7 @@ int GetPermissionIconSize() {
 
 float GetScreenScaleFactor(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  return browser_view ? display::Screen::GetScreen()
+  return browser_view ? display::Screen::Get()
                             ->GetPreferredScaleFactorForWindow(
                                 browser_view->GetNativeWindow())
                             .value_or(1.0f)

@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
   // Resize app window to only take up the left half of the screen.
   views::Widget* widget = browser_view_->GetWidget();
   gfx::Size screen_size =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(widget->GetNativeWindow())
           .work_area_size();
   widget->SetBounds(
@@ -1243,7 +1243,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
       browser_view->GetNativeWindow()->GetRootWindow());
   event_generator.SetTouchRadius(10, 5);
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   // Swipe down gesture should reveal multitask menu.
   event_generator.PressTouch(display_bounds.top_center());
   event_generator.MoveTouchBy(0, 80);

@@ -96,7 +96,7 @@ class BackGestureBrowserTest : public InProcessBrowserTest {
 
     // Enter tablet mode.
     ash::TabletModeControllerTestApi().EnterTabletMode();
-    ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+    ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   }
 
   content::RenderWidgetHost* GetRenderWidgetHost() {

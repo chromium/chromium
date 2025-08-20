@@ -976,7 +976,7 @@ class SystemWebAppNewWindowMenuItemTest
   }
 
   int64_t GetDisplayId() {
-    return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    return display::Screen::Get()->GetPrimaryDisplay().id();
   }
 };
 

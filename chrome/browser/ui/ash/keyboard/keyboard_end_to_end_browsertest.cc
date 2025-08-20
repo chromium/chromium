@@ -70,7 +70,7 @@ bool WaitUntilHidden() {
 }
 
 gfx::Size GetScreenBounds() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
+  return display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel();
 }
 
 }  // namespace

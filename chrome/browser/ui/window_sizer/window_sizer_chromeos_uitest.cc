@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(WindowSizerTest, MAYBE_OpenBrowserUsingShelfItem) {
   OpenBrowserUsingShelfOnRootWindow(root_windows[1]);
 
   // A new browser window should be opened on the 2nd display.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   std::pair<display::Display, display::Display> displays =
       ui_test_utils::GetDisplays(screen);
   EXPECT_EQ(1u, browser_list->size());

@@ -607,7 +607,7 @@ void QuickAnswersControllerImpl::ShowMagicBoostDisclaimerView() {
   ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
       // Display the magic boost disclaimer view in the display that most
       // closely matches the anchor bounds.
-      /*display_id=*/display::Screen::GetScreen()
+      /*display_id=*/display::Screen::Get()
           ->GetDisplayMatching(anchor_bounds())
           .id(),
       /*action=*/

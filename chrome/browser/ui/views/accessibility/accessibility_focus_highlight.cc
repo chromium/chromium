@@ -195,7 +195,7 @@ void AccessibilityFocusHighlight::CreateOrUpdateLayer(gfx::Rect node_bounds) {
 
   // Schedule the animation observer, or update it if needed.
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(layer_bounds);
+      display::Screen::Get()->GetDisplayMatching(layer_bounds);
   ui::Compositor* compositor = root_layer->GetCompositor();
   if (compositor != compositor_) {
     if (compositor_ && compositor_->HasAnimationObserver(this)) {

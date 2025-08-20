@@ -456,7 +456,7 @@ void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
   // otherwise.  This is done by MoveBrowsersInWorkspaceToFront()
   // which reorders the browsers such that the ones in the current
   // workspace appear before ones in other workspaces.
-  auto workspace = display::Screen::GetScreen()->GetCurrentWorkspace();
+  auto workspace = display::Screen::Get()->GetCurrentWorkspace();
   if (!workspace.empty()) {
     BrowserList::MoveBrowsersInWorkspaceToFront(workspace);
   }

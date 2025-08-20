@@ -169,7 +169,7 @@ SharesheetBubbleView::~SharesheetBubbleView() {
     std::move(close_callback_).Run(views::Widget::ClosedReason::kUnspecified);
   }
 
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
 }
 
 void SharesheetBubbleView::ShowBubble(
@@ -642,7 +642,7 @@ void SharesheetBubbleView::SetUpAndShowBubble() {
       window, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
 
   OnAnchorBoundsChanged();
-  display::Screen::GetScreen()->AddObserver(this);
+  display::Screen::Get()->AddObserver(this);
 }
 
 gfx::Rect SharesheetBubbleView::GetDesiredBubbleBounds() {

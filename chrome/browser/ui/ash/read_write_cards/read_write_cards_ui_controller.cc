@@ -171,7 +171,7 @@ void ReadWriteCardsUiController::Relayout() {
   gfx::Point widget_origin_with_maximum_size =
       GetWidgetOrigin(context_menu_bounds_, maximum_widget_size,
                       /*above_context_menu=*/true);
-  widget_above_context_menu_ = display::Screen::GetScreen()
+  widget_above_context_menu_ = display::Screen::Get()
                                    ->GetDisplayMatching(context_menu_bounds_)
                                    .work_area()
                                    .Contains(widget_origin_with_maximum_size);

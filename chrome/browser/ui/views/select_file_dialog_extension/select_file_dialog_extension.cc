@@ -458,8 +458,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   const bool skip_finding_browser =
       is_for_capture_mode || owner.android_task_id.has_value();
 
-  can_resize_ =
-      !display::Screen::GetScreen()->InTabletMode() && !is_for_capture_mode;
+  can_resize_ = !display::Screen::Get()->InTabletMode() && !is_for_capture_mode;
 
   // Obtain BaseWindow and WebContents if the owner window is browser.
   if (!skip_finding_browser) {

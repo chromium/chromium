@@ -156,7 +156,7 @@ void DownloadBubbleRowView::UpdateRow(bool initial_setup) {
 
 void DownloadBubbleRowView::AddedToWidget() {
   current_scale_ =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetPreferredScaleFactorForView(GetWidget()->GetNativeView())
           .value_or(1.0);
   SetIcon();

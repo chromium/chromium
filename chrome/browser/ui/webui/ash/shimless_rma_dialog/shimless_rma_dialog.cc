@@ -53,7 +53,7 @@ void ShimlessRmaDialog::AdjustWidgetInitParams(
 }
 
 void ShimlessRmaDialog::GetDialogSize(gfx::Size* size) const {
-  *size = display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  *size = display::Screen::Get()->GetPrimaryDisplay().size();
 }
 
 bool ShimlessRmaDialog::ShouldShowCloseButton() const {
@@ -71,7 +71,7 @@ bool ShimlessRmaDialog::CanMaximizeDialog() const {
 void ShimlessRmaDialog::OnDisplayMetricsChanged(const display::Display& display,
                                                 uint32_t changed_metrics) {
   dialog_window()->SetBounds(
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
+      display::Screen::Get()->GetPrimaryDisplay().bounds());
 }
 
 }  // namespace ash

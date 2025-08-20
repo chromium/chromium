@@ -49,9 +49,8 @@ GURL DialogDelegate::GetDialogContentURL() const {
 }
 
 void DialogDelegate::GetDialogSize(gfx::Size* size) const {
-  gfx::Size screen_size = display::Screen::GetScreen()
-                              ->GetDisplayNearestWindow(native_window_)
-                              .size();
+  gfx::Size screen_size =
+      display::Screen::Get()->GetDisplayNearestWindow(native_window_).size();
   *size = gfx::Size(kRelativeScreenWidth * screen_size.width(),
                     kRelativeScreenHeight * screen_size.height());
 }

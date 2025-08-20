@@ -353,7 +353,7 @@ gfx::NativeViewId ScreenCaptureNotificationUIImpl::OnStarted(
   widget_->set_frame_type(views::Widget::FrameType::kForceCustom);
   widget_->Init(std::move(params));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   // TODO(sergeyu): Move the notification to the display being captured when
   // per-display screen capture is supported.
   gfx::Rect work_area = screen->GetPrimaryDisplay().work_area();

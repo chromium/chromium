@@ -55,7 +55,7 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
     // float and PIP windows for example. See crbug.com/402617739 for more
     // details.
     display::Display display =
-        display::Screen::GetScreen()->GetDisplayMatching(caret_bounds);
+        display::Screen::Get()->GetDisplayMatching(caret_bounds);
     aura::Window* root_window =
         ash::Shell::GetRootWindowForDisplayId(display.id());
     CHECK(root_window);
@@ -144,7 +144,7 @@ bool EmojiUI::ShouldShow(const ui::TextInputClient* input_client,
 void EmojiUI::Show(ui::EmojiPickerCategory category,
                    ui::EmojiPickerFocusBehavior focus_behavior,
                    const std::string& initial_query) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     ui::ShowTabletModeEmojiPanel();
     return;
   }

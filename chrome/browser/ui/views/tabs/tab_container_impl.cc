@@ -1759,7 +1759,7 @@ gfx::Rect TabContainerImpl::GetDropBounds(int drop_index,
                         g_drop_indicator_height);
 
   // If the rect doesn't fit on the monitor, push the arrow to the bottom.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   display::Display display = screen->GetDisplayMatching(drop_bounds);
   *is_beneath = !display.bounds().Contains(drop_bounds);
   if (*is_beneath) {

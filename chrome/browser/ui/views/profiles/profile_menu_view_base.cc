@@ -671,7 +671,7 @@ void ProfileMenuViewBase::OnActionableItemClicked(ActionableItem item) {
 int ProfileMenuViewBase::GetMaxHeight() const {
   gfx::Rect anchor_rect = GetAnchorRect();
   gfx::Rect screen_space =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestPoint(anchor_rect.CenterPoint())
           .work_area();
   int available_space = screen_space.bottom() - anchor_rect.bottom();

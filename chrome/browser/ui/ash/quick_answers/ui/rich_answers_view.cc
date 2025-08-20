@@ -313,7 +313,7 @@ void RichAnswersView::OnGoogleSearchLinkClicked() {
 }
 
 void RichAnswersView::UpdateBounds() {
-  auto display_bounds = display::Screen::GetScreen()
+  auto display_bounds = display::Screen::Get()
                             ->GetDisplayMatching(anchor_view_bounds_)
                             .work_area();
   int preferred_height = GetPreferredSize().height();

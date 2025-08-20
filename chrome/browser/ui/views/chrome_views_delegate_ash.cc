@@ -53,7 +53,7 @@ void ChromeViewsDelegate::AdjustSavedWindowPlacementChromeOS(
   // On ChromeOS a window won't span across displays.  Adjust the bounds to fit
   // the work area.
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(*bounds);
+      display::Screen::Get()->GetDisplayMatching(*bounds);
   bounds->AdjustToFit(display.work_area());
 }
 

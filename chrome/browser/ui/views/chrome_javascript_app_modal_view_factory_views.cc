@@ -80,7 +80,7 @@ class ChromeJavaScriptAppModalDialogViews
 void AdjustWidgetBoundsIfOffscreen(views::Widget* widget) {
   gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
   gfx::Rect screen_rect =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestPoint(widget_bounds.CenterPoint())
           .work_area();
 

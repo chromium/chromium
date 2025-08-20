@@ -282,7 +282,7 @@ void MagicBoostOptInCard::OnPrimaryButtonPressed() {
   controller_->CloseOptInUi();
 
   controller_->ShowDisclaimerUi(/*display_id=*/
-                                display::Screen::GetScreen()
+                                display::Screen::Get()
                                     ->GetDisplayNearestWindow(
                                         GetWidget()->GetNativeWindow())
                                     .id());

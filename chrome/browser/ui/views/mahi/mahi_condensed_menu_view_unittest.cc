@@ -65,7 +65,7 @@ TEST_F(MahiCondensedMenuViewTest, NotifiesWebContentsManagerOnClick) {
   EXPECT_CALL(
       mock_mahi_web_contents_manager,
       OnContextMenuClicked(
-          Eq(display::Screen::GetScreen()
+          Eq(display::Screen::Get()
                  ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                  .id()),
           Eq(::chromeos::mahi::ButtonType::kSummary), /*question=*/Eq(u""),

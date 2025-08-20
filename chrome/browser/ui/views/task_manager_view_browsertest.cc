@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, RestoreBounds) {
   // Also make sure that the task manager is not restored off-screen.
   // This is a regression test for https://crbug.com/308606
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(non_default_bounds);
+      display::Screen::Get()->GetDisplayMatching(non_default_bounds);
   const gfx::Rect offscreen_bounds =
       default_bounds + gfx::Vector2d(0, display.bounds().bottom());
   GetView()->GetWidget()->SetBounds(offscreen_bounds);
