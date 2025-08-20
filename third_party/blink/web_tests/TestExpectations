@@ -9487,9 +9487,6 @@ crbug.com/421782213 [ Mac14-arm64 ] fast/inline/vertical-align-with-fallback-fon
 # Susceptible to subtle timing flakes
 crbug.com/415870039 external/wpt/web-animations/interfaces/Animation/finished.html [ Failure Pass ]
 
-# Skipped due to feature implementation in progress
-crbug.com/420393952 external/wpt/html/semantics/permission-element/quirks-mode-no-height-is-still-bounded.tentative.html [ Failure Skip ]
-
 # view-transitions do not trigger DOM callbacks in creation order
 crbug.com/424474086 external/wpt/css/css-view-transitions/scoped/callback-order.tentative.html [ Failure Pass ]
 
