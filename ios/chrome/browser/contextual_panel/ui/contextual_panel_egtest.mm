@@ -18,6 +18,7 @@
 #import "net/test/embedded_test_server/request_handler_util.h"
 
 namespace {
+
 // The page height of test pages. This must be big enough to triger fullscreen.
 const int kPageHeightEM = 200;
 
@@ -30,6 +31,14 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
       "<p style='height:%dem'>test1</p><p>test2</p>", kPageHeightEM));
   return result;
 }
+
+// Returns the Contextual Panel's entrypoint view GREY matcher.
+id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(@"ContextualPanelEntrypointImageViewAXID"),
+      grey_interactable(), nil);
+}
+
 }  // namespace
 
 @interface ContextualPanelTestCase : ChromeTestCase
@@ -83,9 +92,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
 - (void)testOpenContextualPanel {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContextualPanelEntrypointImageViewAXID")]
+      selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
       performAction:grey_tap()];
 
   // Check that the contextual panel opened up.
@@ -158,9 +169,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContextualPanelEntrypointImageViewAXID")]
+      selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
       performAction:grey_tap()];
 
   // Check that the contextual panel opened up.
@@ -184,9 +197,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
 - (void)testCloseLastTabWithPanelOpen {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContextualPanelEntrypointImageViewAXID")]
+      selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
       performAction:grey_tap()];
 
   // Check that the contextual panel opened up.
@@ -217,9 +232,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContextualPanelEntrypointImageViewAXID")]
+      selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
       performAction:grey_tap()];
 
   // Check that the contextual panel opened up.
@@ -260,9 +277,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/long-fullscreen")];
 
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContextualPanelEntrypointImageViewAXID")]
+      selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
       performAction:grey_tap()];
 
   // Check that the contextual panel opened up.
@@ -342,9 +361,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
   // Open a page wth a text field.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_login_form.html")];
 
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContextualPanelEntrypointImageViewAXID")]
+      selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
       performAction:grey_tap()];
 
   // Check that the contextual panel opened up.
