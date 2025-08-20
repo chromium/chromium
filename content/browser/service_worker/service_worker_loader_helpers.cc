@@ -23,6 +23,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/features.h"
@@ -103,12 +104,15 @@ bool IsPathRestrictionSatisfiedInternal(
   return true;
 }
 
-bool IsEligibleForSyntheticResponseInternal(const GURL& client_url,
-                                            const std::string& allowed_url) {
+bool IsEligibleForSyntheticResponseInternal(
+    const GURL& client_url,
+    const std::string& allowed_url,
+    const std::string& denied_url_params) {
   if (allowed_url.empty()) {
     return false;
   }
   const GURL url(allowed_url);
+  bool is_allowed = false;
   // TODO(crbug.com/352578800): It's OK to use `start_with()` as far as the
   // variation of given `client_url` value is limited, but consider
   // replacing it with the standard SW scope matching if possible.
@@ -119,9 +123,28 @@ bool IsEligibleForSyntheticResponseInternal(const GURL& client_url,
       client_url.host_piece() == url.host_piece() &&
       client_url.path_piece() == url.path_piece() &&
       client_url.query_piece().starts_with(url.query_piece())) {
+    is_allowed = true;
+  }
+
+  if (!is_allowed) {
+    return false;
+  }
+
+  const std::vector<std::string> parsed_denied_params = base::SplitString(
+      denied_url_params, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (parsed_denied_params.empty()) {
     return true;
   }
-  return false;
+
+  for (net::QueryIterator it(client_url); !it.IsAtEnd(); it.Advance()) {
+    for (const auto& denied_param : parsed_denied_params) {
+      if (it.GetKey() == denied_param) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -386,13 +409,18 @@ bool IsEligibleForSyntheticResponse(BrowserContext* browser_context,
   // Additionally, it also accepts the allow list.
   const std::string allowed_url =
       blink::features::kServiceWorkerSyntheticResponseAllowedUrl.Get();
-  return IsEligibleForSyntheticResponseInternal(client_url, allowed_url);
+  const std::string denied_url_params =
+      blink::features::kServiceWorkerSyntheticResponseDeniedUrlParams.Get();
+  return IsEligibleForSyntheticResponseInternal(client_url, allowed_url,
+                                                denied_url_params);
 }
 
 bool IsEligibleForSyntheticResponseForTesting(  // IN-TEST
     const GURL& client_url,
-    const std::string& allowed_url) {
-  return IsEligibleForSyntheticResponseInternal(client_url, allowed_url);
+    const std::string& allowed_url,
+    const std::string& denied_url_params) {
+  return IsEligibleForSyntheticResponseInternal(client_url, allowed_url,
+                                                denied_url_params);
 }
 
 }  // namespace service_worker_loader_helpers

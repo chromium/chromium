@@ -28,9 +28,11 @@ bool IsPathRestrictionSatisfiedWithServiceWorkerAllowedHeader(
 }
 
 bool IsEligibleForSyntheticResponse(const GURL& client_url,
-                                    const std::string& allowed_url) {
+                                    const std::string& allowed_url,
+                                    const std::string& denied_url_params = "") {
   return service_worker_loader_helpers::
-      IsEligibleForSyntheticResponseForTesting(client_url, allowed_url);
+      IsEligibleForSyntheticResponseForTesting(client_url, allowed_url,
+                                               denied_url_params);
 }
 
 }  // namespace
@@ -357,6 +359,58 @@ TEST(ServiceWorkerLoaderHelpersTest, IsEligibleForSyntheticResponse) {
                                      "http://example.com/bar?param=test"));
   // Empty string is not allowed.
   EXPECT_FALSE(IsEligibleForSyntheticResponse(GURL("http://example.com/"), ""));
+}
+
+TEST(ServiceWorkerLoaderHelpersTest,
+     IsEligibleForSyntheticResponse_DeniedUrlParams) {
+  // Test with a simple URL.
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(
+      GURL("http://example.com/?foo=bar"), "http://example.com/", "foo"));
+  EXPECT_TRUE(IsEligibleForSyntheticResponse(
+      GURL("http://example.com/?foo=bar"), "http://example.com/", "bar"));
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(
+      GURL("http://example.com/?foo=bar&bar=baz"), "http://example.com/",
+      "bar"));
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(
+      GURL("http://example.com/?foo=bar&bar=baz"), "http://example.com/",
+      "foo,bar"));
+  EXPECT_TRUE(IsEligibleForSyntheticResponse(
+      GURL("http://example.com/?foo=bar&bar=baz"), "http://example.com/",
+      "baz"));
+
+  // Test with a more specific URL and query.
+  const char kAllowedUrl[] = "https://example.com/search?q=";
+  const char kDeniedUrlParams[] = "foo,bar";
+
+  // Allowed URL, but denied param "foo" is present.
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(
+      GURL("https://example.com/search?q=test&foo=1"), kAllowedUrl,
+      kDeniedUrlParams));
+
+  // Allowed URL, but denied param "bar" is present.
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(
+      GURL("https://example.com/search?q=test&bar=2"), kAllowedUrl,
+      kDeniedUrlParams));
+
+  // Allowed URL, and no denied params are present.
+  EXPECT_TRUE(IsEligibleForSyntheticResponse(
+      GURL("https://example.com/search?q=test&baz=3"), kAllowedUrl,
+      kDeniedUrlParams));
+
+  // Allowed URL, with a query parameter that is a substring of a denied
+  // parameter.
+  EXPECT_TRUE(IsEligibleForSyntheticResponse(
+      GURL("https://example.com/search?q=test&fo=4"), kAllowedUrl,
+      kDeniedUrlParams));
+
+  // Not an allowed URL.
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(
+      GURL("https://example.com/other?q=test&baz=3"), kAllowedUrl,
+      kDeniedUrlParams));
+
+  // Denied string is in the value of "q". This should be allowed.
+  EXPECT_TRUE(IsEligibleForSyntheticResponse(
+      GURL("https://example.com/search?q=foo"), kAllowedUrl, kDeniedUrlParams));
 }
 
 }  // namespace service_worker_loader_helpers

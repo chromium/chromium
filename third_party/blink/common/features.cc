@@ -2140,6 +2140,14 @@ BASE_FEATURE_PARAM(std::string,
                    "allowed_url",
                    "");
 
+// The comma-separated URL parameters that explains non-eligible for the
+// synthetic response.
+BASE_FEATURE_PARAM(std::string,
+                   kServiceWorkerSyntheticResponseDeniedUrlParams,
+                   &kServiceWorkerSyntheticResponse,
+                   "denied_url_params",
+                   "");
+
 // The comma-separated list of headers to be ignored for the consistency check.
 BASE_FEATURE_PARAM(std::string,
                    kServiceWorkerSyntheticResponseIgnoredHeaders,
