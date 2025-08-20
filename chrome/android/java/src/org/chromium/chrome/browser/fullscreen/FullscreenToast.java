@@ -8,11 +8,12 @@ import android.app.Activity;
 import android.view.Gravity;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.DeviceInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.Toast.ToastPriority;
@@ -96,7 +97,7 @@ interface FullscreenToast {
                     UiUtils.isGestureNavigationMode(mActivity.getWindow())
                             ? R.string.immersive_fullscreen_gesture_navigation_mode_api_notification
                             : R.string.immersive_fullscreen_api_notification;
-            if (DeviceInfo.isDesktop()) {
+            if (KeyboardUtils.isHardKeyboardConnected(ContextUtils.getApplicationContext())) {
                 if (ChromeFeatureList.isEnabled(
                         ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN)) {
                     toastTextId = R.string.immersive_fullscreen_api_notification_desktop;
