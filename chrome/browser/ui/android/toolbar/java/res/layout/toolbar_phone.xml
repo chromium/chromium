@@ -8,6 +8,7 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.toolbar.top.ToolbarPhone
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow"
@@ -36,9 +37,10 @@ found in the LICENSE file.
         android:id="@+id/location_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
+        android:layout_gravity="top|left"
         android:paddingStart="@dimen/location_bar_start_padding"
-        android:paddingEnd="@dimen/location_bar_end_padding"/>
+        android:paddingEnd="@dimen/location_bar_end_padding"
+        tools:ignore="RtlHardcoded" />
 
     <LinearLayout
         android:id="@+id/toolbar_buttons"
