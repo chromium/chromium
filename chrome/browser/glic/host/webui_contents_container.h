@@ -39,6 +39,10 @@ class WebUIContentsContainer : public content::WebContentsDelegate,
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
+  void RunFileChooser(
+      content::RenderFrameHost* render_frame_host,
+      scoped_refptr<content::FileSelectListener> listener,
+      const blink::mojom::FileChooserParams& params) override;
 
   // content::WebContentsObserver:
   void PrimaryMainFrameRenderProcessGone(
